@@ -1,0 +1,25 @@
+# Menu links for E-Invoice B2B module.
+#
+# Admin menu entries under Content and Structure.
+# Spec: Doc 181. Plan: FASE 9, entregable F9-8.
+
+jaraba_einvoice_b2b.admin:
+  title: 'E-Invoice B2B'
+  description: 'Manage B2B electronic invoices: UBL 2.1, SPFE, Peppol, payment tracking.'
+  route_name: entity.einvoice_document.collection
+  parent: system.admin_content
+  weight: 55
+
+jaraba_einvoice_b2b.admin.structure:
+  title: 'E-Invoice Documents'
+  description: 'Manage E-Invoice B2B documents, delivery logs and payment events.'
+  route_name: entity.einvoice_document.collection
+  parent: system.admin_structure
+  weight: 65
+
+jaraba_einvoice_b2b.config:
+  title: 'E-Invoice B2B Settings'
+  description: 'Configure E-Invoice B2B: tenant SPFE credentials, Peppol, payment terms.'
+  route_name: entity.einvoice_tenant_config.collection
+  parent: system.admin_config_system
+  weight: 75

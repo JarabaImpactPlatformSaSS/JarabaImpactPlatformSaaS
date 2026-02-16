@@ -1,0 +1,78 @@
+services:
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  logger.channel.jaraba_verifactu:
+    parent: logger.channel_base
+    arguments: ['jaraba_verifactu']
+
+  # ===========================================
+  # CORE SERVICES (FASE 2)
+  # ===========================================
+
+  jaraba_verifactu.hash_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuHashService
+    arguments:
+      - '@entity_type.manager'
+      - '@lock'
+      - '@logger.channel.jaraba_verifactu'
+
+  jaraba_verifactu.event_log_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuEventLogService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@request_stack'
+      - '@logger.channel.jaraba_verifactu'
+
+  jaraba_verifactu.qr_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuQrService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_verifactu'
+
+  jaraba_verifactu.record_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuRecordService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_verifactu.hash_service'
+      - '@jaraba_verifactu.qr_service'
+      - '@jaraba_verifactu.event_log_service'
+      - '@config.factory'
+      - '@lock'
+      - '@logger.channel.jaraba_verifactu'
+
+  # ===========================================
+  # AEAT SOAP & REMISION (FASE 3)
+  # ===========================================
+
+  jaraba_verifactu.xml_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuXmlService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_verifactu'
+
+  jaraba_verifactu.remision_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuRemisionService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_verifactu.xml_service'
+      - '@jaraba_verifactu.event_log_service'
+      - '@ecosistema_jaraba_core.certificate_manager'
+      - '@config.factory'
+      - '@state'
+      - '@lock'
+      - '@queue'
+      - '@logger.channel.jaraba_verifactu'
+
+  # ===========================================
+  # PDF SERVICE (FASE 4)
+  # ===========================================
+
+  jaraba_verifactu.pdf_service:
+    class: Drupal\jaraba_verifactu\Service\VeriFactuPdfService
+    arguments:
+      - '@jaraba_verifactu.qr_service'
+      - '@file_system'
+      - '@logger.channel.jaraba_verifactu'

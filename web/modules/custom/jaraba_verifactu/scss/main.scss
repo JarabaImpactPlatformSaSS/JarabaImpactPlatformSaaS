@@ -1,0 +1,18 @@
+// =============================================================================
+// JARABA VERIFACTU — ARCHIVO PRINCIPAL DE COMPILACIÓN SCSS
+// =============================================================================
+// DIRECTRIZ: Solo @use, nunca @import. Cada parcial declara sus propias
+// dependencias.
+//
+// Compilación:
+// npx sass scss/main.scss:css/verifactu.css --style=compressed --no-source-map
+// =============================================================================
+
+@use 'variables-fiscal';
+@use 'verifactu-badges';
+@use 'verifactu-dashboard';
+@use 'verifactu-records';
+@use 'verifactu-chain';
+@use 'verifactu-remision';
+@use 'verifactu-qr';
+@use 'verifactu-responsive';

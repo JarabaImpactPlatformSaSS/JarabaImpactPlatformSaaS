@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * Theme template for Facturae dashboard render array.
+ *
+ * Variables:
+ * - facturae_stats: Dashboard statistics array.
+ * - facturae_recent: Array of recent document data.
+ *
+ * Spec: Doc 180, Seccion 7.
+ * Plan: FASE 8, entregable F8-1.
+ */
+#}
+<div class="facturae-dashboard-content">
+  {# Stats grid #}
+  <div class="facturae-dashboard-content__stats">
+    {% include '@jaraba_facturae/partials/_facturae-stats.html.twig' with {
+      'stats': facturae_stats
+    } only %}
+  </div>
+
+  {# Recent documents #}
+  <div class="facturae-dashboard-content__recent">
+    <h2 class="facturae-dashboard-content__section-title">{% trans %}Recent Documents{% endtrans %}</h2>
+    {% if facturae_recent is not empty %}
+      <div class="facturae-dashboard-content__recent-grid">
+        {% for doc in facturae_recent %}
+          {% include '@jaraba_facturae/partials/_facturae-document-card.html.twig' with {
+            'document': doc
+          } only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="facturae-dashboard-content__empty">{% trans %}No documents found.{% endtrans %}</p>
+    {% endif %}
+  </div>
+</div>

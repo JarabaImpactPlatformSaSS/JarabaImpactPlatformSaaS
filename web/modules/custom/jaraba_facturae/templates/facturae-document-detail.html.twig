@@ -1,0 +1,136 @@
+{#
+/**
+ * @file
+ * Theme template for Facturae document detail view.
+ *
+ * Variables:
+ * - document: FacturaeDocument entity.
+ *
+ * Spec: Doc 180, Seccion 7.3.
+ * Plan: FASE 8, entregable F8-1.
+ */
+#}
+<div class="facturae-detail">
+  <div class="facturae-detail__header">
+    <a href="{{ path('jaraba_facturae.documents') }}" class="facturae-detail__back">
+      &larr; {% trans %}Back to Documents{% endtrans %}
+    </a>
+    <h1 class="facturae-detail__title">
+      {% trans %}Invoice{% endtrans %} {{ document.facturae_number.value }}
+    </h1>
+    <div class="facturae-detail__badges">
+      {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+        'status': document.status.value,
+        'size': 'lg'
+      } only %}
+      {% if document.face_status.value != 'not_sent' %}
+        {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+          'status': document.face_status.value,
+          'size': 'lg',
+          'label_prefix': 'FACe'
+        } only %}
+      {% endif %}
+    </div>
+  </div>
+
+  {# Two-column layout #}
+  <div class="facturae-detail__grid">
+    {# Left column: Invoice data #}
+    <div class="facturae-detail__data">
+      {# Seller info #}
+      <section class="facturae-detail__section">
+        <h2 class="facturae-detail__section-title">{% trans %}Seller{% endtrans %}</h2>
+        <dl class="facturae-detail__dl">
+          <dt>{% trans %}NIF{% endtrans %}</dt>
+          <dd>{{ document.seller_nif.value }}</dd>
+          <dt>{% trans %}Name{% endtrans %}</dt>
+          <dd>{{ document.seller_name.value }}</dd>
+        </dl>
+      </section>
+
+      {# Buyer info #}
+      <section class="facturae-detail__section">
+        <h2 class="facturae-detail__section-title">{% trans %}Buyer{% endtrans %}</h2>
+        <dl class="facturae-detail__dl">
+          <dt>{% trans %}NIF{% endtrans %}</dt>
+          <dd>{{ document.buyer_nif.value }}</dd>
+          <dt>{% trans %}Name{% endtrans %}</dt>
+          <dd>{{ document.buyer_name.value }}</dd>
+        </dl>
+      </section>
+
+      {# Invoice details #}
+      <section class="facturae-detail__section">
+        <h2 class="facturae-detail__section-title">{% trans %}Invoice Details{% endtrans %}</h2>
+        <dl class="facturae-detail__dl">
+          <dt>{% trans %}Invoice Class{% endtrans %}</dt>
+          <dd>{{ document.invoice_class.value }}</dd>
+          <dt>{% trans %}Invoice Type{% endtrans %}</dt>
+          <dd>{{ document.invoice_type.value }}</dd>
+          <dt>{% trans %}Issue Date{% endtrans %}</dt>
+          <dd>{{ document.issue_date.value }}</dd>
+          <dt>{% trans %}Series{% endtrans %}</dt>
+          <dd>{{ document.facturae_series.value }}</dd>
+        </dl>
+      </section>
+
+      {# Amounts #}
+      <section class="facturae-detail__section">
+        <h2 class="facturae-detail__section-title">{% trans %}Amounts{% endtrans %}</h2>
+        <dl class="facturae-detail__dl facturae-detail__dl--amounts">
+          <dt>{% trans %}Gross Amount{% endtrans %}</dt>
+          <dd>{{ document.total_gross_amount.value|default('0.00') }} &euro;</dd>
+          <dt>{% trans %}Tax Outputs{% endtrans %}</dt>
+          <dd>{{ document.total_tax_outputs.value|default('0.00') }} &euro;</dd>
+          <dt>{% trans %}Tax Withheld{% endtrans %}</dt>
+          <dd>{{ document.total_tax_withheld.value|default('0.00') }} &euro;</dd>
+          <dt class="facturae-detail__dt--total">{% trans %}Invoice Total{% endtrans %}</dt>
+          <dd class="facturae-detail__dd--total">{{ document.total_invoice_amount.value|default('0.00') }} &euro;</dd>
+          <dt>{% trans %}Outstanding{% endtrans %}</dt>
+          <dd>{{ document.total_outstanding.value|default('0.00') }} &euro;</dd>
+        </dl>
+      </section>
+    </div>
+
+    {# Right column: Status panels #}
+    <div class="facturae-detail__panels">
+      {# Signature info #}
+      {% include '@jaraba_facturae/partials/_facturae-signature-info.html.twig' with {
+        'document': document
+      } only %}
+
+      {# FACe status #}
+      {% if document.face_status.value != 'not_sent' %}
+        {% include '@jaraba_facturae/partials/_facturae-face-status.html.twig' with {
+          'document': document,
+          'show_detail': true
+        } only %}
+      {% endif %}
+
+      {# XML preview #}
+      {% include '@jaraba_facturae/partials/_facturae-xml-preview.html.twig' with {
+        'document': document
+      } only %}
+
+      {# Actions #}
+      <div class="facturae-detail__actions">
+        {% if document.status.value == 'draft' or document.status.value == 'validated' %}
+          <button type="button" class="facturae-detail__action-btn facturae-detail__action-btn--sign"
+                  data-action="sign" data-document-id="{{ document.id }}">
+            {% trans %}Sign Document{% endtrans %}
+          </button>
+        {% endif %}
+        {% if document.status.value == 'signed' %}
+          <button type="button" class="facturae-detail__action-btn facturae-detail__action-btn--send"
+                  data-action="send-face" data-document-id="{{ document.id }}">
+            {% trans %}Send to FACe{% endtrans %}
+          </button>
+        {% endif %}
+        <a href="{{ path('jaraba_facturae.api.document_pdf', {'facturae_document': document.id}) }}"
+           class="facturae-detail__action-btn facturae-detail__action-btn--pdf">
+          {% trans %}Download PDF{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

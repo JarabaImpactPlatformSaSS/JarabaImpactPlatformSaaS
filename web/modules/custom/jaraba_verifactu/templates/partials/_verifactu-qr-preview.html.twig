@@ -1,0 +1,65 @@
+{#
+/**
+ * @file
+ * VeriFactu QR code verification preview partial.
+ *
+ * Variables:
+ * - qr_image (string): Base64-encoded QR image (data URI or raw base64).
+ * - verification_url (string): AEAT verification URL.
+ * - record_number (string): Invoice number for label.
+ * - hash_abbreviated (string): First 12 chars of the SHA-256 hash.
+ * - show_label (bool): Whether to show VERI*FACTU label.
+ *
+ * CSS: BEM — verifactu-qr-preview
+ * i18n: {% trans %}
+ */
+#}
+{% set show_label = show_label|default(true) %}
+
+<div class="verifactu-qr-preview"
+     aria-label="{% trans %}VeriFactu QR verification code{% endtrans %}">
+
+  {% if show_label %}
+    <div class="verifactu-qr-preview__label">
+      <span class="verifactu-qr-preview__verifactu-tag">VERI*FACTU</span>
+    </div>
+  {% endif %}
+
+  <div class="verifactu-qr-preview__code">
+    {% if qr_image %}
+      <img src="{{ qr_image }}"
+           alt="{% trans %}QR code for invoice {{ record_number|default('') }}{% endtrans %}"
+           class="verifactu-qr-preview__image"
+           width="120"
+           height="120"
+           loading="lazy" />
+    {% else %}
+      <div class="verifactu-qr-preview__placeholder">
+        {{ jaraba_icon('fiscal', 'invoice-check', { size: '48px' }) }}
+        <span>{% trans %}QR not available{% endtrans %}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="verifactu-qr-preview__info">
+    {% if record_number %}
+      <span class="verifactu-qr-preview__number">{{ record_number }}</span>
+    {% endif %}
+    {% if hash_abbreviated %}
+      <code class="verifactu-qr-preview__hash" title="{% trans %}SHA-256 hash (abbreviated){% endtrans %}">
+        {{ hash_abbreviated }}
+      </code>
+    {% endif %}
+  </div>
+
+  {% if verification_url %}
+    <a href="{{ verification_url }}"
+       class="verifactu-qr-preview__verify-link"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="{% trans %}Verify on AEAT{% endtrans %}">
+      {{ jaraba_icon('fiscal', 'aeat-seal', { size: '14px' }) }}
+      {% trans %}Verify on AEAT{% endtrans %}
+    </a>
+  {% endif %}
+</div>

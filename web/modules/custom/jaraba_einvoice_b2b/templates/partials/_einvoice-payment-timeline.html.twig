@@ -1,0 +1,28 @@
+{# E-Invoice Payment Timeline partial — chronological payment events. #}
+<section class="einvoice-timeline">
+  <h2 class="einvoice-timeline__title">{{ 'Payment History'|t }}</h2>
+
+  <ol class="einvoice-timeline__list">
+    {% for event in events %}
+      <li class="einvoice-timeline__item einvoice-timeline__item--{{ event.event_type }}">
+        <time class="einvoice-timeline__date" datetime="{{ event.payment_date }}">
+          {{ event.payment_date|date('d/m/Y') }}
+        </time>
+        <div class="einvoice-timeline__content">
+          <span class="einvoice-timeline__type">
+            {{ event.event_type|replace({'_': ' '})|capitalize }}
+          </span>
+          <span class="einvoice-timeline__amount">
+            {{ event.amount|number_format(2, ',', '.') }} EUR
+          </span>
+          {% if event.payment_method %}
+            <span class="einvoice-timeline__method">{{ event.payment_method }}</span>
+          {% endif %}
+          {% if event.communicated_to_spfe %}
+            <span class="einvoice-timeline__spfe" title="{{ 'Communicated to SPFE'|t }}">SPFE</span>
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+</section>

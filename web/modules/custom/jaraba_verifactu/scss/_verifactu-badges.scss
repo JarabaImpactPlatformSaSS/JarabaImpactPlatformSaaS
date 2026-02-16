@@ -1,0 +1,116 @@
+// =============================================================================
+// VERIFACTU BADGES — SCSS
+// =============================================================================
+// Estilos para los badges de estado VeriFactu (fiscal-badge).
+// Complementa el parcial _fiscal-status-badge.html.twig compartido.
+//
+// BEM: .fiscal-badge, .verifactu-stats__mini
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-fiscal' as *;
+
+// ---------------------------------------------------------------------------
+// FISCAL BADGE (shared component)
+// ---------------------------------------------------------------------------
+
+.fiscal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1;
+
+  &--sm {
+    padding: 0.1875rem 0.5rem;
+    font-size: 0.6875rem;
+  }
+
+  &--md {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  &--lg {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  // Status variants using color-mix().
+  &--accepted {
+    background: color-mix(in srgb, var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback}) 15%, transparent);
+    color: var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback});
+  }
+
+  &--pending {
+    background: color-mix(in srgb, var(--ej-fiscal-pending, #{$fiscal-pending-fallback}) 15%, transparent);
+    color: var(--ej-fiscal-pending, #{$fiscal-pending-fallback});
+  }
+
+  &--rejected {
+    background: color-mix(in srgb, var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback}) 15%, transparent);
+    color: var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback});
+  }
+
+  &--error {
+    background: color-mix(in srgb, var(--ej-fiscal-error, #{$fiscal-error-fallback}) 15%, transparent);
+    color: var(--ej-fiscal-error, #{$fiscal-error-fallback});
+  }
+
+  &--draft {
+    background: color-mix(in srgb, var(--ej-color-text-secondary, #6B7280) 12%, transparent);
+    color: var(--ej-color-text-secondary, #6B7280);
+  }
+
+  &--sent {
+    background: color-mix(in srgb, var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback}) 12%, transparent);
+    color: var(--ej-fiscal-aeat, #{$fiscal-aeat-fallback});
+  }
+
+  &--cancelled {
+    background: color-mix(in srgb, var(--ej-color-text-secondary, #6B7280) 10%, transparent);
+    color: var(--ej-color-text-secondary, #6B7280);
+    text-decoration: line-through;
+  }
+
+  &--overdue {
+    background: color-mix(in srgb, var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback}) 12%, transparent);
+    color: var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback});
+  }
+}
+
+.fiscal-badge__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.fiscal-badge__label {
+  line-height: 1.2;
+}
+
+// ---------------------------------------------------------------------------
+// STATS MINI BADGES (dashboard stats breakdown)
+// ---------------------------------------------------------------------------
+
+.verifactu-stats__mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &--accepted {
+    color: var(--ej-fiscal-accepted, #{$fiscal-accepted-fallback});
+  }
+
+  &--pending {
+    color: var(--ej-fiscal-pending, #{$fiscal-pending-fallback});
+  }
+
+  &--rejected {
+    color: var(--ej-fiscal-rejected, #{$fiscal-rejected-fallback});
+  }
+}

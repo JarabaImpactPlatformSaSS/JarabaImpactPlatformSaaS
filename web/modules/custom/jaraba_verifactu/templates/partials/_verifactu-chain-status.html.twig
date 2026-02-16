@@ -1,0 +1,106 @@
+{#
+/**
+ * @file
+ * VeriFactu hash chain integrity status partial.
+ *
+ * Variables:
+ * - chain (array): {
+ *     is_valid (bool), total_records (int), valid_records (int),
+ *     break_at_record_id (int|null), expected_hash (string|null),
+ *     actual_hash (string|null), verification_time_ms (float|null),
+ *     error_message (string|null), last_verified_at (string|null)
+ *   }
+ *
+ * CSS: BEM — verifactu-chain-status
+ * Icons: jaraba_icon('fiscal', ...)
+ * i18n: {% trans %}
+ */
+#}
+{% set c = chain|default({}) %}
+{% set is_valid = c.is_valid|default(false) %}
+{% set status = is_valid ? 'valid' : 'broken' %}
+
+<div class="verifactu-chain-status verifactu-chain-status--{{ status }}"
+     aria-label="{% trans %}Hash chain integrity status{% endtrans %}">
+
+  <div class="verifactu-chain-status__header">
+    {{ jaraba_icon('fiscal', 'shield-fiscal', { variant: 'duotone', size: '24px' }) }}
+    <h3 class="verifactu-chain-status__title">{% trans %}Hash Chain Integrity{% endtrans %}</h3>
+    <span class="verifactu-chain-status__indicator verifactu-chain-status__indicator--{{ status }}">
+      {% if is_valid %}
+        {% trans %}Verified{% endtrans %}
+      {% else %}
+        {% trans %}Broken{% endtrans %}
+      {% endif %}
+    </span>
+  </div>
+
+  <div class="verifactu-chain-status__body">
+    <div class="verifactu-chain-status__metrics">
+      <div class="verifactu-chain-status__metric">
+        <span class="verifactu-chain-status__metric-value">{{ c.total_records|default(0) }}</span>
+        <span class="verifactu-chain-status__metric-label">{% trans %}Total records{% endtrans %}</span>
+      </div>
+      <div class="verifactu-chain-status__metric">
+        <span class="verifactu-chain-status__metric-value">{{ c.valid_records|default(0) }}</span>
+        <span class="verifactu-chain-status__metric-label">{% trans %}Valid links{% endtrans %}</span>
+      </div>
+      {% if c.verification_time_ms %}
+        <div class="verifactu-chain-status__metric">
+          <span class="verifactu-chain-status__metric-value">{{ c.verification_time_ms|number_format(1) }}ms</span>
+          <span class="verifactu-chain-status__metric-label">{% trans %}Verification time{% endtrans %}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if is_valid %}
+      <div class="verifactu-chain-status__progress">
+        <div class="verifactu-chain-status__progress-bar verifactu-chain-status__progress-bar--full"></div>
+      </div>
+      <p class="verifactu-chain-status__message verifactu-chain-status__message--valid">
+        {% trans %}All records are correctly chained per RD 1007/2023 Anexo II.{% endtrans %}
+      </p>
+
+    {% else %}
+      {% if c.total_records > 0 %}
+        {% set pct = ((c.valid_records|default(0)) / c.total_records * 100)|round %}
+        <div class="verifactu-chain-status__progress">
+          <div class="verifactu-chain-status__progress-bar verifactu-chain-status__progress-bar--partial"
+               style="width: {{ pct }}%"></div>
+        </div>
+      {% endif %}
+
+      {% if c.break_at_record_id %}
+        <div class="verifactu-chain-status__break">
+          <p class="verifactu-chain-status__message verifactu-chain-status__message--broken">
+            {% trans %}Chain break detected at record #{{ c.break_at_record_id }}.{% endtrans %}
+          </p>
+          <div class="verifactu-chain-status__hashes">
+            <div class="verifactu-chain-status__hash">
+              <span class="verifactu-chain-status__hash-label">{% trans %}Expected{% endtrans %}</span>
+              <code class="verifactu-chain-status__hash-value">{{ c.expected_hash|default('—')|slice(0, 16) }}&hellip;</code>
+            </div>
+            <div class="verifactu-chain-status__hash">
+              <span class="verifactu-chain-status__hash-label">{% trans %}Actual{% endtrans %}</span>
+              <code class="verifactu-chain-status__hash-value">{{ c.actual_hash|default('—')|slice(0, 16) }}&hellip;</code>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if c.error_message %}
+        <p class="verifactu-chain-status__message verifactu-chain-status__message--error">
+          {{ c.error_message }}
+        </p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% if c.last_verified_at %}
+    <div class="verifactu-chain-status__footer">
+      <span class="verifactu-chain-status__timestamp">
+        {% trans %}Last verified: {{ c.last_verified_at }}{% endtrans %}
+      </span>
+    </div>
+  {% endif %}
+</div>

@@ -1,0 +1,118 @@
+@use 'variables-fiscal' as *;
+
+.einvoice-morosity {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title { font-size: 1.5rem; font-weight: 600; margin: 0; }
+  &__timestamp { font-size: 0.8125rem; color: var(--ej-text-secondary, $fiscal-text-secondary); }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__stat {
+    background: var(--ej-bg-surface, $fiscal-surface);
+    border: 1px solid var(--ej-border-color, $fiscal-border);
+    border-radius: $fiscal-radius;
+    padding: 1.25rem;
+    text-align: center;
+
+    &--overdue { border-color: var(--ej-danger, $fiscal-danger); }
+
+    &-value {
+      display: block;
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: $fiscal-font-mono;
+    }
+
+    &-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--ej-text-secondary, $fiscal-text-secondary);
+    }
+  }
+
+  &__severity {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__severity-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: $fiscal-radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--critical { background: color-mix(in srgb, $fiscal-danger 15%, transparent); color: $fiscal-danger; }
+    &--urgent { background: color-mix(in srgb, $fiscal-warning 15%, transparent); color: darken($fiscal-warning, 20%); }
+    &--warning { background: color-mix(in srgb, $fiscal-info 15%, transparent); color: $fiscal-info; }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 2px solid var(--ej-border-color, $fiscal-border);
+      font-weight: 600;
+      font-size: 0.8125rem;
+    }
+
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--ej-border-color, $fiscal-border);
+    }
+  }
+
+  &__row {
+    &--critical { background: color-mix(in srgb, $fiscal-danger 5%, transparent); }
+    &--urgent { background: color-mix(in srgb, $fiscal-warning 5%, transparent); }
+  }
+}
+
+.einvoice-morosidad-alert {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in srgb, var(--ej-danger, $fiscal-danger) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ej-danger, $fiscal-danger) 30%, transparent);
+  border-radius: $fiscal-radius;
+  margin-bottom: 1.5rem;
+
+  &__title {
+    color: var(--ej-danger, $fiscal-danger);
+    font-size: 0.875rem;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+  }
+
+  &__item { padding: 0.125rem 0; }
+
+  &__severity {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-left: 0.25rem;
+  }
+}

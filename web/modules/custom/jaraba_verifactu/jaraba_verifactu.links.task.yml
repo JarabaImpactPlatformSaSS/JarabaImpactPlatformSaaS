@@ -1,0 +1,28 @@
+jaraba_verifactu.dashboard:
+  route_name: jaraba_verifactu.dashboard
+  title: 'Dashboard'
+  base_route: jaraba_verifactu.dashboard
+
+jaraba_verifactu.records:
+  route_name: jaraba_verifactu.records
+  title: 'Records'
+  base_route: jaraba_verifactu.dashboard
+  weight: 10
+
+jaraba_verifactu.remision:
+  route_name: jaraba_verifactu.remision
+  title: 'AEAT Remision'
+  base_route: jaraba_verifactu.dashboard
+  weight: 20
+
+jaraba_verifactu.audit:
+  route_name: jaraba_verifactu.audit
+  title: 'Audit Log'
+  base_route: jaraba_verifactu.dashboard
+  weight: 30
+
+jaraba_verifactu.config_tab:
+  route_name: jaraba_verifactu.config
+  title: 'Configuration'
+  base_route: jaraba_verifactu.dashboard
+  weight: 40

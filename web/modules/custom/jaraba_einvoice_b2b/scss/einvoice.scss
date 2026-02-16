@@ -1,0 +1,9 @@
+// E-Invoice B2B — SCSS entry point.
+// Imports all partials in dependency order.
+
+@use 'variables-fiscal';
+@use 'einvoice-dashboard';
+@use 'einvoice-documents';
+@use 'einvoice-payment';
+@use 'einvoice-morosity';
+@use 'einvoice-responsive';

@@ -1,0 +1,32 @@
+administer facturae:
+  title: 'Administer Facturae'
+  description: 'Full access to Facturae configuration, documents and FACe integration.'
+  restrict access: true
+
+view facturae documents:
+  title: 'View Facturae documents'
+  description: 'View Facturae electronic invoices for own tenant.'
+
+create facturae documents:
+  title: 'Create Facturae documents'
+  description: 'Create new Facturae electronic invoices (typically automated from billing).'
+
+delete facturae documents:
+  title: 'Delete Facturae documents'
+  description: 'Delete draft Facturae documents that have not been signed or sent.'
+
+sign facturae documents:
+  title: 'Sign Facturae documents'
+  description: 'Apply XAdES-EPES digital signature to Facturae documents.'
+
+send facturae to face:
+  title: 'Send Facturae to FACe'
+  description: 'Submit signed Facturae documents to the FACe portal (B2G).'
+
+view facturae logs:
+  title: 'View Facturae FACe logs'
+  description: 'View the FACe communication log (read-only, append-only).'
+
+manage facturae config:
+  title: 'Manage Facturae tenant config'
+  description: 'Configure Facturae settings for own tenant (certificate, NIF, DIR3, IBAN).'

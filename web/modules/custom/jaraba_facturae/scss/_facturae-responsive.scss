@@ -1,0 +1,105 @@
+/**
+ * @file
+ * Responsive breakpoints for Facturae module.
+ *
+ * Mobile-first approach with min-width breakpoints.
+ *
+ * Plan: FASE 8, entregable F8-3.
+ */
+
+// Mobile: <= 480px.
+@media (max-width: 480px) {
+  .facturae-dashboard {
+    padding: 1rem;
+
+    &__header {
+      flex-direction: column;
+    }
+
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__recent-grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__actions-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .facturae-documents {
+    padding: 1rem;
+
+    &__filters {
+      flex-direction: column;
+    }
+
+    &__pagination {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  .facturae-detail {
+    padding: 1rem;
+
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .facturae-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Tablet: <= 768px.
+@media (max-width: 768px) {
+  .facturae-dashboard {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__recent-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &__actions-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .facturae-documents {
+    &__filters {
+      flex-wrap: wrap;
+    }
+
+    &__col-hide-mobile {
+      display: none;
+    }
+  }
+
+  .facturae-detail {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .facturae-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Reduced motion preference.
+@media (prefers-reduced-motion: reduce) {
+  .facturae-dashboard__action-card,
+  .facturae-doc-card,
+  .facturae-documents__table tbody tr,
+  .facturae-documents__filter-select,
+  .facturae-documents__filter-input,
+  .facturae-detail__action-btn {
+    transition: none;
+  }
+}

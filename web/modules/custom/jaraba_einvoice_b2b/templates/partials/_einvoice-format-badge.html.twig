@@ -1,0 +1,9 @@
+{# E-Invoice Format Badge partial — UBL/Facturae/CII indicator. #}
+{% set format_labels = {
+  'ubl_2.1': 'UBL 2.1',
+  'facturae_3.2.2': 'Facturae',
+  'cii_d16b': 'CII',
+} %}
+<span class="einvoice-format einvoice-format--{{ format|default('ubl_2.1')|replace({'.': '-'}) }}">
+  {{ format_labels[format|default('ubl_2.1')]|default(format) }}
+</span>

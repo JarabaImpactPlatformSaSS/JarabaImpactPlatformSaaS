@@ -1,0 +1,28 @@
+administer verifactu:
+  title: 'Administer VeriFactu'
+  description: 'Full access to VeriFactu configuration and records.'
+  restrict access: true
+
+view verifactu records:
+  title: 'View VeriFactu records'
+  description: 'View VeriFactu invoice records for own tenant.'
+
+create verifactu records:
+  title: 'Create VeriFactu records'
+  description: 'Create new VeriFactu invoice records (typically automated).'
+
+view verifactu event log:
+  title: 'View VeriFactu event log'
+  description: 'View the VeriFactu SIF event log (read-only, append-only).'
+
+manage verifactu remision:
+  title: 'Manage VeriFactu remision'
+  description: 'View and trigger AEAT remision batches.'
+
+manage verifactu config:
+  title: 'Manage VeriFactu tenant config'
+  description: 'Configure VeriFactu settings for own tenant (certificate, NIF, series).'
+
+access verifactu api:
+  title: 'Access VeriFactu API'
+  description: 'Access VeriFactu REST API endpoints.'

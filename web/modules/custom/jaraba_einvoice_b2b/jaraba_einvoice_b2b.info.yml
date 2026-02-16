@@ -1,0 +1,9 @@
+name: 'Jaraba E-Factura B2B'
+type: module
+description: 'E-Factura B2B module: UBL 2.1 + EN 16931 electronic invoicing with SPFE integration, Peppol support, bidirectional format conversion, and payment status tracking (Ley 18/2022 Crea y Crece).'
+package: 'Jaraba Fiscal'
+core_version_requirement: ^11
+php: 8.4
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_billing:jaraba_billing

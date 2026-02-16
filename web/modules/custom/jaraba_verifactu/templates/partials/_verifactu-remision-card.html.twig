@@ -1,0 +1,128 @@
+{#
+/**
+ * @file
+ * VeriFactu AEAT remision batch card partial.
+ *
+ * Variables:
+ * - batch (array): {
+ *     id, status ('queued'|'sending'|'sent'|'partial'|'failed'|'cancelled'),
+ *     total_records (int), accepted_records (int), rejected_records (int),
+ *     aeat_environment ('production'|'testing'), aeat_csv (string|null),
+ *     retry_count (int), sent_at (string|null), created (string)
+ *   }
+ * - show_actions (bool): Whether to show retry/view actions.
+ *
+ * CSS: BEM — verifactu-remision-card
+ * Icons: jaraba_icon('fiscal', ...)
+ * i18n: {% trans %}
+ */
+#}
+{% set b = batch|default({}) %}
+{% set show_actions = show_actions|default(true) %}
+
+{% set status_map = {
+  'queued': 'pending',
+  'sending': 'pending',
+  'sent': 'accepted',
+  'partial': 'error',
+  'failed': 'rejected',
+  'cancelled': 'cancelled',
+} %}
+
+<article class="verifactu-remision-card verifactu-remision-card--{{ b.status|default('queued') }}"
+         aria-label="{% trans %}Remision batch{% endtrans %} #{{ b.id|default('') }}">
+
+  <div class="verifactu-remision-card__header">
+    <div class="verifactu-remision-card__id">
+      {{ jaraba_icon('fiscal', 'aeat-seal', { size: '16px' }) }}
+      <span>{% trans %}Batch{% endtrans %} #{{ b.id|default('—') }}</span>
+    </div>
+    {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+      'status': status_map[b.status]|default('pending'),
+      'label': b.status|default('queued')|capitalize,
+      'size': 'sm'
+    } only %}
+  </div>
+
+  <div class="verifactu-remision-card__body">
+    <div class="verifactu-remision-card__records">
+      <div class="verifactu-remision-card__record-stat">
+        <span class="verifactu-remision-card__record-count">{{ b.total_records|default(0) }}</span>
+        <span class="verifactu-remision-card__record-label">{% trans %}total{% endtrans %}</span>
+      </div>
+      {% if b.status in ['sent', 'partial', 'failed'] %}
+        <div class="verifactu-remision-card__record-stat verifactu-remision-card__record-stat--accepted">
+          <span class="verifactu-remision-card__record-count">{{ b.accepted_records|default(0) }}</span>
+          <span class="verifactu-remision-card__record-label">{% trans %}accepted{% endtrans %}</span>
+        </div>
+        <div class="verifactu-remision-card__record-stat verifactu-remision-card__record-stat--rejected">
+          <span class="verifactu-remision-card__record-count">{{ b.rejected_records|default(0) }}</span>
+          <span class="verifactu-remision-card__record-label">{% trans %}rejected{% endtrans %}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if b.total_records|default(0) > 0 and b.accepted_records is defined %}
+      {% set pct = ((b.accepted_records / b.total_records) * 100)|round %}
+      <div class="verifactu-remision-card__progress">
+        <div class="verifactu-remision-card__progress-bar"
+             style="width: {{ pct }}%"></div>
+      </div>
+    {% endif %}
+
+    <div class="verifactu-remision-card__meta">
+      <div class="verifactu-remision-card__row">
+        <span class="verifactu-remision-card__label">{% trans %}Environment{% endtrans %}</span>
+        <span class="verifactu-remision-card__value verifactu-remision-card__value--env-{{ b.aeat_environment|default('testing') }}">
+          {{ b.aeat_environment|default('testing')|upper }}
+        </span>
+      </div>
+
+      {% if b.aeat_csv %}
+        <div class="verifactu-remision-card__row">
+          <span class="verifactu-remision-card__label">{% trans %}CSV{% endtrans %}</span>
+          <span class="verifactu-remision-card__value verifactu-remision-card__value--mono">{{ b.aeat_csv }}</span>
+        </div>
+      {% endif %}
+
+      {% if b.retry_count|default(0) > 0 %}
+        <div class="verifactu-remision-card__row">
+          <span class="verifactu-remision-card__label">{% trans %}Retries{% endtrans %}</span>
+          <span class="verifactu-remision-card__value">{{ b.retry_count }}</span>
+        </div>
+      {% endif %}
+
+      <div class="verifactu-remision-card__row">
+        <span class="verifactu-remision-card__label">{% trans %}Created{% endtrans %}</span>
+        <span class="verifactu-remision-card__value">{{ b.created|default('—') }}</span>
+      </div>
+
+      {% if b.sent_at %}
+        <div class="verifactu-remision-card__row">
+          <span class="verifactu-remision-card__label">{% trans %}Sent{% endtrans %}</span>
+          <span class="verifactu-remision-card__value">{{ b.sent_at }}</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if show_actions %}
+    <div class="verifactu-remision-card__actions">
+      {% if b.status in ['failed', 'partial'] %}
+        <button type="button"
+                class="verifactu-remision-card__action verifactu-remision-card__action--retry"
+                data-verifactu-retry-batch="{{ b.id }}"
+                aria-label="{% trans %}Retry batch{% endtrans %}">
+          {{ jaraba_icon('fiscal', 'aeat-seal', { size: '14px' }) }}
+          {% trans %}Retry{% endtrans %}
+        </button>
+      {% endif %}
+      <a href="{{ path('jaraba_verifactu.api.remisions.get', { id: b.id }) }}"
+         class="verifactu-remision-card__action"
+         aria-label="{% trans %}View batch details{% endtrans %}">
+        {{ jaraba_icon('fiscal', 'invoice-check', { size: '14px' }) }}
+        {% trans %}Details{% endtrans %}
+      </a>
+    </div>
+  {% endif %}
+</article>

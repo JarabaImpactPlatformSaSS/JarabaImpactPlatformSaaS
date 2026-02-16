@@ -1,0 +1,11 @@
+facturae_tenant_config.add:
+  route_name: entity.facturae_tenant_config.add_form
+  title: 'Add Facturae tenant config'
+  appears_on:
+    - entity.facturae_tenant_config.collection
+
+facturae_document.add:
+  route_name: entity.facturae_document.add_form
+  title: 'Create Facturae document'
+  appears_on:
+    - entity.facturae_document.collection

@@ -1,0 +1,16 @@
+# Action links for E-Invoice B2B module.
+#
+# Provides "Add" buttons on collection pages.
+# Spec: Doc 181. Plan: FASE 9, entregable F9-8.
+
+einvoice_document.add:
+  route_name: entity.einvoice_document.add_form
+  title: 'Add E-Invoice document'
+  appears_on:
+    - entity.einvoice_document.collection
+
+einvoice_tenant_config.add:
+  route_name: entity.einvoice_tenant_config.add_form
+  title: 'Add E-Invoice B2B configuration'
+  appears_on:
+    - entity.einvoice_tenant_config.collection

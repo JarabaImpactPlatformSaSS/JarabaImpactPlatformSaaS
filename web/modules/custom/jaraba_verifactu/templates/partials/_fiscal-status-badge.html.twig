@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * _fiscal-status-badge.html.twig — Badge de estado fiscal reutilizable.
+ *
+ * Parcial compartido por los 3 modulos del stack fiscal. Muestra un badge
+ * de estado compacto con color semantico e icono. Usado en listados,
+ * cards y tablas.
+ *
+ * VARIABLES ESPERADAS:
+ * - status (string): Estado del registro. Valores posibles:
+ *   - 'accepted': Aceptado por AEAT/FACe
+ *   - 'pending': Pendiente de envio o procesamiento
+ *   - 'rejected': Rechazado por AEAT/FACe o validacion fallida
+ *   - 'error': Error de comunicacion o sistema
+ *   - 'draft': Borrador (solo para B2B/Facturae)
+ *   - 'sent': Enviado (pendiente de respuesta)
+ *   - 'cancelled': Anulado
+ *   - 'overdue': Pago vencido (morosidad B2B)
+ * - label (string|null): Etiqueta personalizada. Si NULL, usa default i18n.
+ * - size (string): 'sm', 'md' (default), 'lg'
+ * - show_icon (bool): Mostrar icono junto al texto (default: true)
+ *
+ * DIRECTRICES:
+ * - i18n: Todos los textos con {% trans %}
+ * - CSS: Variables var(--ej-fiscal-*)
+ * - BEM: fiscal-badge fiscal-badge--{status} fiscal-badge--{size}
+ *
+ * Plan Implementacion Stack Cumplimiento Fiscal v1 — FASE 0, entregable F0-6.
+ */
+#}
+{% set status = status|default('pending') %}
+{% set size = size|default('md') %}
+{% set show_icon = show_icon|default(true) %}
+
+{# Mapa de etiquetas por defecto (i18n) #}
+{% set default_labels = {
+  'accepted': 'Accepted'|t,
+  'pending': 'Pending'|t,
+  'rejected': 'Rejected'|t,
+  'error': 'Error'|t,
+  'draft': 'Draft'|t,
+  'sent': 'Sent'|t,
+  'cancelled': 'Cancelled'|t,
+  'overdue': 'Overdue'|t,
+} %}
+
+{# Mapa de iconos por estado #}
+{% set status_icons = {
+  'accepted': { category: 'fiscal', name: 'invoice-check' },
+  'pending': { category: 'fiscal', name: 'aeat-seal' },
+  'rejected': { category: 'fiscal', name: 'shield-fiscal' },
+  'error': { category: 'fiscal', name: 'shield-fiscal' },
+  'draft': { category: 'fiscal', name: 'signed-document' },
+  'sent': { category: 'fiscal', name: 'face-portal' },
+  'cancelled': { category: 'fiscal', name: 'invoice-check' },
+  'overdue': { category: 'fiscal', name: 'payment-status' },
+} %}
+
+{% set display_label = label|default(default_labels[status]|default(status|capitalize)) %}
+{% set icon_data = status_icons[status]|default({ category: 'fiscal', name: 'shield-fiscal' }) %}
+
+<span class="fiscal-badge fiscal-badge--{{ status }} fiscal-badge--{{ size }}" role="status">
+  {% if show_icon %}
+    <span class="fiscal-badge__icon">
+      {{ jaraba_icon(icon_data.category, icon_data.name, { size: size == 'sm' ? '12px' : (size == 'lg' ? '18px' : '14px') }) }}
+    </span>
+  {% endif %}
+  <span class="fiscal-badge__label">{{ display_label }}</span>
+</span>

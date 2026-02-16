@@ -1,0 +1,293 @@
+# ============================================================================
+# RUTAS DEL MÓDULO JARABA VERIFACTU
+# ============================================================================
+# Dashboard, records, remision, audit y configuración.
+# API REST se define en la sección api.v1.verifactu.*.
+# ============================================================================
+
+# --- FRONTEND PAGES ---
+
+jaraba_verifactu.dashboard:
+  path: '/admin/jaraba/fiscal/verifactu'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuDashboardController::dashboard'
+    _title: 'VeriFactu Dashboard'
+  requirements:
+    _permission: 'view verifactu records'
+
+jaraba_verifactu.records:
+  path: '/admin/jaraba/fiscal/verifactu/records'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuDashboardController::records'
+    _title: 'VeriFactu Records'
+  requirements:
+    _permission: 'view verifactu records'
+
+jaraba_verifactu.record_detail:
+  path: '/admin/jaraba/fiscal/verifactu/records/{verifactu_invoice_record}'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuDashboardController::recordDetail'
+    _title: 'Record Detail'
+  requirements:
+    _permission: 'view verifactu records'
+  options:
+    parameters:
+      verifactu_invoice_record:
+        type: entity:verifactu_invoice_record
+
+jaraba_verifactu.remision:
+  path: '/admin/jaraba/fiscal/verifactu/remision'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuDashboardController::remision'
+    _title: 'AEAT Remision'
+  requirements:
+    _permission: 'manage verifactu remision'
+
+jaraba_verifactu.audit:
+  path: '/admin/jaraba/fiscal/verifactu/audit'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuAuditController::auditLog'
+    _title: 'VeriFactu Audit Log'
+  requirements:
+    _permission: 'view verifactu event log'
+
+jaraba_verifactu.config:
+  path: '/admin/jaraba/fiscal/verifactu/config'
+  defaults:
+    _form: '\Drupal\jaraba_verifactu\Form\VeriFactuTenantConfigForm'
+    _title: 'VeriFactu Configuration'
+  requirements:
+    _permission: 'manage verifactu config'
+
+jaraba_verifactu.settings:
+  path: '/admin/config/jaraba/verifactu'
+  defaults:
+    _form: '\Drupal\jaraba_verifactu\Form\VeriFactuSettingsForm'
+    _title: 'VeriFactu Settings'
+  requirements:
+    _permission: 'administer verifactu'
+
+# --- FIELD UI BASE ROUTES ---
+# Required by field_ui_base_route in entity annotations.
+
+jaraba_verifactu.verifactu_invoice_record.settings:
+  path: '/admin/structure/verifactu-invoice-record/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'VeriFactu Invoice Record Settings'
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.verifactu_event_log.settings:
+  path: '/admin/structure/verifactu-event-log/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'VeriFactu Event Log Settings'
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.verifactu_remision_batch.settings:
+  path: '/admin/structure/verifactu-remision-batch/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'VeriFactu Remision Batch Settings'
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.verifactu_tenant_config.settings:
+  path: '/admin/structure/verifactu-tenant-config/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'VeriFactu Tenant Config Settings'
+  requirements:
+    _permission: 'administer verifactu'
+
+# ============================================================================
+# API REST v1 — ADMIN
+# ============================================================================
+
+jaraba_verifactu.api.config.get:
+  path: '/api/v1/verifactu/config'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getConfig'
+  methods: [GET]
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.api.config.update:
+  path: '/api/v1/verifactu/config'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::updateConfig'
+  methods: [PUT]
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.api.config.certificate.upload:
+  path: '/api/v1/verifactu/config/certificate'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::uploadCertificate'
+  methods: [POST]
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.api.config.certificate.status:
+  path: '/api/v1/verifactu/config/certificate/status'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getCertificateStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.api.config.test_connection:
+  path: '/api/v1/verifactu/config/test-connection'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::testConnection'
+  methods: [POST]
+  requirements:
+    _permission: 'administer verifactu'
+
+# ============================================================================
+# API REST v1 — RECORDS
+# ============================================================================
+
+jaraba_verifactu.api.records.list:
+  path: '/api/v1/verifactu/records'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::listRecords'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+
+jaraba_verifactu.api.records.create:
+  path: '/api/v1/verifactu/records'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::createRecord'
+  methods: [POST]
+  requirements:
+    _permission: 'create verifactu records'
+
+jaraba_verifactu.api.records.get:
+  path: '/api/v1/verifactu/records/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getRecord'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+    id: \d+
+
+jaraba_verifactu.api.records.cancel:
+  path: '/api/v1/verifactu/records/{id}/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::cancelRecord'
+  methods: [POST]
+  requirements:
+    _permission: 'create verifactu records'
+    id: \d+
+
+jaraba_verifactu.api.records.qr:
+  path: '/api/v1/verifactu/records/{id}/qr'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getRecordQr'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+    id: \d+
+
+jaraba_verifactu.api.records.xml:
+  path: '/api/v1/verifactu/records/{id}/xml'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getRecordXml'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+    id: \d+
+
+# ============================================================================
+# API REST v1 — REMISION
+# ============================================================================
+
+jaraba_verifactu.api.remisions.list:
+  path: '/api/v1/verifactu/remisions'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::listRemisions'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+
+jaraba_verifactu.api.remisions.create:
+  path: '/api/v1/verifactu/remisions'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::createRemision'
+  methods: [POST]
+  requirements:
+    _permission: 'manage verifactu remision'
+
+jaraba_verifactu.api.remisions.get:
+  path: '/api/v1/verifactu/remisions/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getRemision'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+    id: \d+
+
+jaraba_verifactu.api.remisions.retry:
+  path: '/api/v1/verifactu/remisions/{id}/retry'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::retryRemision'
+  methods: [POST]
+  requirements:
+    _permission: 'manage verifactu remision'
+    id: \d+
+
+jaraba_verifactu.api.remisions.queue_status:
+  path: '/api/v1/verifactu/remisions/queue-status'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuApiController::getQueueStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'administer verifactu'
+
+# ============================================================================
+# API REST v1 — AUDIT
+# ============================================================================
+
+jaraba_verifactu.api.audit.chain:
+  path: '/api/v1/verifactu/audit/chain'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuAuditController::getChainStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu event log'
+
+jaraba_verifactu.api.audit.chain_verify:
+  path: '/api/v1/verifactu/audit/chain/verify'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuAuditController::verifyChain'
+  methods: [POST]
+  requirements:
+    _permission: 'administer verifactu'
+
+jaraba_verifactu.api.audit.events:
+  path: '/api/v1/verifactu/audit/events'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuAuditController::listEvents'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu event log'
+
+jaraba_verifactu.api.audit.stats:
+  path: '/api/v1/verifactu/audit/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuAuditController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'view verifactu records'
+
+jaraba_verifactu.api.audit.declaration:
+  path: '/api/v1/verifactu/audit/declaration'
+  defaults:
+    _controller: '\Drupal\jaraba_verifactu\Controller\VeriFactuAuditController::getDeclaration'
+  methods: [GET]
+  requirements:
+    _permission: 'administer verifactu'

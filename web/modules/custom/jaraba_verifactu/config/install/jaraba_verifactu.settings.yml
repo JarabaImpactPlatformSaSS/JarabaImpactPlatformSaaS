@@ -1,0 +1,44 @@
+# ============================================================================
+# Configuración por defecto del módulo Jaraba VeriFactu.
+# ============================================================================
+# Estos valores se instalan con el módulo y pueden ser modificados
+# en /admin/config/jaraba/verifactu.
+
+# Endpoint de la AEAT para envio de registros.
+# Producción: https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroFactEmitidas.wsdl
+# Pruebas: https://prewww2.aeat.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroFactEmitidas.wsdl
+aeat_endpoint_production: 'https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroFactEmitidas.wsdl'
+aeat_endpoint_testing: 'https://prewww2.aeat.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroFactEmitidas.wsdl'
+
+# Segundos entre remisiones AEAT (control de flujo).
+flow_control_seconds: 60
+
+# Máximo de registros por batch de remisión.
+max_records_per_batch: 1000
+
+# Máximo de reintentos ante error de comunicación.
+max_retries: 5
+
+# Segundos de backoff exponencial base entre reintentos.
+retry_backoff_base_seconds: 30
+
+# Identificador del software de facturación (Jaraba Impact Platform).
+software_id: 'JarabaImpactPlatform'
+
+# Versión del software de facturación.
+software_version: '1.0.0'
+
+# Nombre del software para la declaración responsable.
+software_name: 'Jaraba Impact Platform SaaS'
+
+# NIF del desarrollador del software.
+software_developer_nif: ''
+
+# Habilitar verificación diaria de integridad de cadena de hash.
+enable_daily_integrity_check: true
+
+# Hora UTC para la verificación diaria (formato HH:MM).
+daily_integrity_check_time: '03:00'
+
+# Días de umbral para alerta de expiración de certificado.
+certificate_expiry_alert_days: 30

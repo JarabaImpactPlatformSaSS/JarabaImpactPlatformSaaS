@@ -5559,6 +5559,56 @@ parameters:
 			path: web/modules/custom/jaraba_einvoice_b2b/src/Service/EInvoicePaymentStatusService.php
 
 		-
+			message: "#^Method Behat\\\\Mink\\\\WebAssert\\:\\:statusCodeEquals\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 2
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Functional/EInvoiceDashboardTest.php
+
+		-
+			message: "#^You should use assertCount\\(\\$expectedCount, \\$variable\\) instead of assertSame\\(\\$expectedCount, count\\(\\$variable\\)\\)\\.$#"
+			count: 1
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Functional/EInvoiceDocumentListTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:get\\(\\)\\.$#"
+			count: 7
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoiceDeliveryLogEntityTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:get\\(\\)\\.$#"
+			count: 13
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoiceDocumentEntityTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:set\\(\\)\\.$#"
+			count: 3
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoiceDocumentEntityTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:get\\(\\)\\.$#"
+			count: 9
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoicePaymentEventEntityTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:set\\(\\)\\.$#"
+			count: 3
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoicePaymentEventEntityTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:get\\(\\)\\.$#"
+			count: 7
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoiceTenantConfigEntityTest.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:set\\(\\)\\.$#"
+			count: 2
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Kernel/EInvoiceTenantConfigEntityTest.php
+
+		-
+			message: "#^Call to an undefined method DOMNode\\:\\:getAttribute\\(\\)\\.$#"
+			count: 1
+			path: web/modules/custom/jaraba_einvoice_b2b/tests/src/Unit/EInvoiceUblServiceTest.php
+
+		-
 			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:get\\(\\)\\.$#"
 			count: 21
 			path: web/modules/custom/jaraba_email/src/Controller/EmailApiController.php

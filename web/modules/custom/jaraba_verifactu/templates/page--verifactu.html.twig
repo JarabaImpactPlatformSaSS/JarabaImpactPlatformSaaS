@@ -1,0 +1,147 @@
+{#
+/**
+ * @file
+ * Zero-region page template for VeriFactu dashboard.
+ *
+ * This template provides a clean layout without Drupal's default page regions,
+ * following the zero-region pattern established by the platform.
+ *
+ * Variables (injected via hook_preprocess_page()):
+ * - verifactu_stats (array): Dashboard statistics.
+ * - verifactu_records (array): Recent invoice records.
+ * - verifactu_chain (array): Chain integrity status.
+ * - verifactu_certificate (array): Certificate status.
+ * - verifactu_has_certificate (bool): Whether certificate is configured.
+ * - verifactu_current_tenant (array): Current tenant info.
+ * - verifactu_available_tenants (array): Available tenants.
+ * - site_name, site_slogan, logo, logged_in: Standard Drupal variables.
+ */
+#}
+{{ attach_library('jaraba_verifactu/verifactu-dashboard') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium page-wrapper--fiscal">
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in
+  } only %}
+
+  <main class="main-content main-content--full main-content--fiscal" role="main">
+    <div class="main-content__inner main-content__inner--full">
+
+      {# Dashboard header #}
+      <div class="verifactu-dashboard__header">
+        <div class="verifactu-dashboard__title-wrapper">
+          <h1 class="verifactu-dashboard__title">
+            {{ jaraba_icon('fiscal', 'aeat-seal', { variant: 'duotone', size: '32px' }) }}
+            {% trans %}VeriFactu Dashboard{% endtrans %}
+          </h1>
+          <p class="verifactu-dashboard__description">
+            {% trans %}VeriFactu compliance management: invoice records, AEAT submission, and audit trail.{% endtrans %}
+          </p>
+        </div>
+
+        {% if verifactu_available_tenants|default([])|length > 1 %}
+          {% include '@jaraba_verifactu/partials/_fiscal-tenant-selector.html.twig' with {
+            'current_tenant': verifactu_current_tenant|default({}),
+            'available_tenants': verifactu_available_tenants|default([]),
+            'switch_url': path('jaraba_verifactu.dashboard')
+          } only %}
+        {% endif %}
+      </div>
+
+      {# Statistics cards #}
+      {% include '@jaraba_verifactu/partials/_verifactu-stats.html.twig' with {
+        'stats': verifactu_stats|default({})
+      } only %}
+
+      {# Main grid: Chain + Certificate #}
+      <div class="verifactu-dashboard__grid">
+        <div class="verifactu-dashboard__grid-item verifactu-dashboard__grid-item--chain">
+          {% include '@jaraba_verifactu/partials/_verifactu-chain-status.html.twig' with {
+            'chain': verifactu_chain|default({})
+          } only %}
+        </div>
+
+        <div class="verifactu-dashboard__grid-item verifactu-dashboard__grid-item--certificate">
+          {% include '@jaraba_verifactu/partials/_certificate-status.html.twig' with {
+            'certificate': verifactu_certificate|default({}),
+            'has_certificate': verifactu_has_certificate|default(false),
+            'tenant_name': verifactu_current_tenant.name|default('')
+          } only %}
+        </div>
+      </div>
+
+      {# Recent records #}
+      {% if verifactu_records|default([])|length > 0 %}
+        <section class="verifactu-dashboard__recent" aria-label="{% trans %}Recent records{% endtrans %}">
+          <div class="verifactu-dashboard__section-header">
+            <h2 class="verifactu-dashboard__section-title">{% trans %}Recent Invoice Records{% endtrans %}</h2>
+            <a href="{{ path('jaraba_verifactu.records') }}" class="verifactu-dashboard__view-all">
+              {% trans %}View all{% endtrans %}
+            </a>
+          </div>
+          <div class="verifactu-dashboard__records-grid">
+            {% for record in verifactu_records %}
+              {% include '@jaraba_verifactu/partials/_verifactu-record-card.html.twig' with {
+                'record': record
+              } only %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {# Quick actions #}
+      <section class="verifactu-dashboard__actions" aria-label="{% trans %}Quick actions{% endtrans %}">
+        <h2 class="verifactu-dashboard__section-title">{% trans %}Quick Actions{% endtrans %}</h2>
+        <div class="verifactu-dashboard__quick-actions">
+          <a href="{{ path('jaraba_verifactu.records') }}" class="verifactu-quick-action">
+            <div class="verifactu-quick-action__icon">
+              {{ jaraba_icon('fiscal', 'signed-document', { size: '24px' }) }}
+            </div>
+            <div class="verifactu-quick-action__content">
+              <span class="verifactu-quick-action__title">{% trans %}Invoice Records{% endtrans %}</span>
+              <span class="verifactu-quick-action__description">{% trans %}View and manage VeriFactu records{% endtrans %}</span>
+            </div>
+          </a>
+          <a href="{{ path('jaraba_verifactu.remision') }}" class="verifactu-quick-action">
+            <div class="verifactu-quick-action__icon">
+              {{ jaraba_icon('fiscal', 'aeat-seal', { size: '24px' }) }}
+            </div>
+            <div class="verifactu-quick-action__content">
+              <span class="verifactu-quick-action__title">{% trans %}AEAT Remision{% endtrans %}</span>
+              <span class="verifactu-quick-action__description">{% trans %}Manage submission batches{% endtrans %}</span>
+            </div>
+          </a>
+          <a href="{{ path('jaraba_verifactu.audit') }}" class="verifactu-quick-action">
+            <div class="verifactu-quick-action__icon">
+              {{ jaraba_icon('fiscal', 'shield-fiscal', { size: '24px' }) }}
+            </div>
+            <div class="verifactu-quick-action__content">
+              <span class="verifactu-quick-action__title">{% trans %}Audit Log{% endtrans %}</span>
+              <span class="verifactu-quick-action__description">{% trans %}Review compliance events{% endtrans %}</span>
+            </div>
+          </a>
+          <a href="{{ path('jaraba_verifactu.config') }}" class="verifactu-quick-action">
+            <div class="verifactu-quick-action__icon">
+              {{ jaraba_icon('fiscal', 'certificate', { size: '24px' }) }}
+            </div>
+            <div class="verifactu-quick-action__content">
+              <span class="verifactu-quick-action__title">{% trans %}Configuration{% endtrans %}</span>
+              <span class="verifactu-quick-action__description">{% trans %}Tenant settings and certificate{% endtrans %}</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
+</div>

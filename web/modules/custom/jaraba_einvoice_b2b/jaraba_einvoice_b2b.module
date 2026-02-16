@@ -1,0 +1,502 @@
+<?php
+
+/**
+ * @file
+ * Module file for Jaraba E-Factura B2B.
+ *
+ * Provides UBL 2.1 electronic invoicing with EN 16931 compliance,
+ * SPFE integration, Peppol support, bidirectional format conversion,
+ * and payment status tracking under Ley 18/2022 (Crea y Crece).
+ *
+ * ECA Hooks:
+ *   ECA-EI-001: Auto-generate B2B e-invoice on billing_invoice paid (buyer = empresa).
+ *   ECA-EI-002: Sync payment status when billing_payment completed.
+ *   ECA-EI-003: Daily morosity detection (08:00 cron).
+ *   ECA-EI-004: Inbound invoice reception logging.
+ *   ECA-EI-005: Periodic SPFE communication (every 6h cron).
+ *
+ * Spec: Doc 181, Sections 5-7.
+ * Plan: FASES 9-10.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_einvoice_b2b_theme(): array {
+  return [
+    'einvoice_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'recent_documents' => [],
+        'overdue_alerts' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'einvoice-dashboard',
+    ],
+    'einvoice_document_detail' => [
+      'variables' => [
+        'document' => NULL,
+        'payment_history' => [],
+        'delivery_logs' => [],
+      ],
+      'template' => 'einvoice-document-detail',
+    ],
+    'einvoice_morosity_report' => [
+      'variables' => [
+        'report' => [],
+        'tenant_id' => NULL,
+      ],
+      'template' => 'einvoice-morosity-report',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ */
+function jaraba_einvoice_b2b_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  $routeSuggestions = [
+    'entity.einvoice_document.collection' => 'page__einvoice__documents',
+    'entity.einvoice_document.canonical' => 'page__einvoice__document_detail',
+    'entity.einvoice_tenant_config.collection' => 'page__einvoice__config',
+    'entity.einvoice_delivery_log.collection' => 'page__einvoice__delivery_log',
+    'entity.einvoice_payment_event.collection' => 'page__einvoice__payment_events',
+  ];
+
+  if (isset($routeSuggestions[$route_name])) {
+    $suggestions[] = $routeSuggestions[$route_name];
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function jaraba_einvoice_b2b_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  $routeClasses = [
+    'entity.einvoice_document.collection' => 'page--einvoice-documents',
+    'entity.einvoice_document.canonical' => 'page--einvoice-document-detail',
+    'entity.einvoice_tenant_config.collection' => 'page--einvoice-config',
+    'entity.einvoice_delivery_log.collection' => 'page--einvoice-delivery-log',
+    'entity.einvoice_payment_event.collection' => 'page--einvoice-payment-events',
+  ];
+
+  if (isset($routeClasses[$route_name])) {
+    $variables['attributes']['class'][] = $routeClasses[$route_name];
+    $variables['attributes']['class'][] = 'page--fiscal';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * ECA-EI-001: Auto-generate B2B e-invoice when billing_invoice is created
+ * and buyer is a private company (not AAPP = not B2G).
+ *
+ * ECA-EI-004: Log inbound invoice reception.
+ */
+function jaraba_einvoice_b2b_entity_insert(EntityInterface $entity): void {
+  $entity_type_id = $entity->getEntityTypeId();
+
+  // ECA-EI-001: Auto-generate B2B when billing_invoice with empresa buyer.
+  if ($entity_type_id === 'billing_invoice') {
+    _jaraba_einvoice_b2b_check_b2b_invoice($entity);
+  }
+
+  // ECA-EI-004: Log inbound e-invoice reception.
+  if ($entity_type_id === 'einvoice_document') {
+    $direction = $entity->get('direction')->value ?? '';
+    if ($direction === 'inbound') {
+      _jaraba_einvoice_b2b_log_inbound_reception($entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * ECA-EI-002: Sync payment status when billing_payment status changes to completed.
+ */
+function jaraba_einvoice_b2b_entity_update(EntityInterface $entity): void {
+  $entity_type_id = $entity->getEntityTypeId();
+
+  // ECA-EI-002: Payment status sync.
+  if ($entity_type_id === 'billing_payment') {
+    $status = $entity->get('status')->value ?? '';
+    $original_status = $entity->original ? ($entity->original->get('status')->value ?? '') : '';
+
+    if ($status === 'completed' && $original_status !== 'completed') {
+      _jaraba_einvoice_b2b_sync_payment($entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * ECA-EI-003: Daily morosity detection (every 24h starting 08:00).
+ * ECA-EI-005: Periodic SPFE payment communication (every 6h).
+ */
+function jaraba_einvoice_b2b_cron(): void {
+  $state = \Drupal::state();
+  $now = \Drupal::time()->getRequestTime();
+
+  // ECA-EI-003: Morosity detection — daily at 08:00.
+  $lastMorosityCheck = (int) $state->get('jaraba_einvoice_b2b.last_morosity_check', 0);
+  $morosityInterval = 86400; // 24 hours.
+  if (($now - $lastMorosityCheck) >= $morosityInterval) {
+    $currentHour = (int) date('G', $now);
+    if ($currentHour >= 8) {
+      _jaraba_einvoice_b2b_detect_morosity();
+      $state->set('jaraba_einvoice_b2b.last_morosity_check', $now);
+    }
+  }
+
+  // ECA-EI-005: SPFE payment communication — every 6 hours.
+  $lastSpfeCommunication = (int) $state->get('jaraba_einvoice_b2b.last_spfe_communication', 0);
+  $spfeInterval = 21600; // 6 hours.
+  if (($now - $lastSpfeCommunication) >= $spfeInterval) {
+    _jaraba_einvoice_b2b_communicate_pending_to_spfe();
+    $state->set('jaraba_einvoice_b2b.last_spfe_communication', $now);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_einvoice_b2b_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'einvoice_delivery':
+      $message['subject'] = $params['subject'] ?? t('E-Invoice Delivery');
+      $message['body'][] = t('E-Invoice @number has been sent.', [
+        '@number' => $params['invoice_number'] ?? '',
+      ]);
+      break;
+
+    case 'morosity_alert':
+      $message['subject'] = t('E-Invoice Morosity Alert: @count overdue invoices', [
+        '@count' => $params['overdue_count'] ?? 0,
+      ]);
+      $message['body'][] = t('The following invoices are overdue for tenant @tenant:', [
+        '@tenant' => $params['tenant_name'] ?? '',
+      ]);
+      foreach ($params['overdue_invoices'] ?? [] as $inv) {
+        $message['body'][] = t('  - @number: @days days overdue (@severity)', [
+          '@number' => $inv['invoice_number'] ?? '',
+          '@days' => $inv['overdue_days'] ?? 0,
+          '@severity' => $inv['severity'] ?? '',
+        ]);
+      }
+      break;
+
+    case 'inbound_received':
+      $message['subject'] = t('New inbound E-Invoice received: @number', [
+        '@number' => $params['invoice_number'] ?? '',
+      ]);
+      $message['body'][] = t('A new E-Invoice has been received from @seller.', [
+        '@seller' => $params['seller_name'] ?? '',
+      ]);
+      break;
+  }
+}
+
+/**
+ * ECA-EI-001: Check if billing invoice qualifies for B2B e-invoice.
+ *
+ * Conditions:
+ *   - Buyer is NOT Administracion Publica (not B2G).
+ *   - Tenant has einvoice_tenant_config active.
+ *   - No existing einvoice_document for this invoice.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $invoice
+ *   The billing invoice entity.
+ */
+function _jaraba_einvoice_b2b_check_b2b_invoice(EntityInterface $invoice): void {
+  $buyerNif = $invoice->get('client_nif')->value ?? '';
+  if (empty($buyerNif)) {
+    return;
+  }
+
+  // Skip AAPP (B2G is handled by jaraba_facturae module).
+  $clientType = $invoice->get('client_type')->value ?? '';
+  if ($clientType === 'aapp') {
+    return;
+  }
+
+  // Also skip if buyer NIF starts with Q/S/P (public entities).
+  $firstChar = strtoupper(substr($buyerNif, 0, 1));
+  if (in_array($firstChar, ['Q', 'S', 'P'], TRUE)) {
+    return;
+  }
+
+  $tenantId = (int) ($invoice->get('tenant_id')->target_id ?? 0);
+  if (!$tenantId) {
+    return;
+  }
+
+  // Check tenant has active einvoice config.
+  $configStorage = \Drupal::entityTypeManager()->getStorage('einvoice_tenant_config');
+  $configIds = $configStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('tenant_id', $tenantId)
+    ->condition('active', TRUE)
+    ->range(0, 1)
+    ->execute();
+
+  if (empty($configIds)) {
+    return;
+  }
+
+  $config = $configStorage->load(reset($configIds));
+
+  // Check no duplicate.
+  $invoiceId = (int) $invoice->id();
+  $docStorage = \Drupal::entityTypeManager()->getStorage('einvoice_document');
+  $existingIds = $docStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('invoice_id', $invoiceId)
+    ->condition('direction', 'outbound')
+    ->range(0, 1)
+    ->execute();
+
+  if (!empty($existingIds)) {
+    return;
+  }
+
+  // Create the B2B e-invoice document.
+  try {
+    $format = $config->get('preferred_format')->value ?: 'ubl_2.1';
+    $invoiceNumber = $invoice->get('number')->value ?? 'EI-' . $invoiceId;
+
+    $document = $docStorage->create([
+      'tenant_id' => $tenantId,
+      'direction' => 'outbound',
+      'invoice_id' => $invoiceId,
+      'format' => $format,
+      'invoice_number' => $invoiceNumber,
+      'invoice_date' => date('Y-m-d'),
+      'seller_nif' => $config->get('nif_emisor')->value ?? '',
+      'seller_name' => $config->get('nombre_razon')->value ?? '',
+      'buyer_nif' => $buyerNif,
+      'buyer_name' => $invoice->get('client_name')->value ?? '',
+      'currency_code' => 'EUR',
+      'total_without_tax' => $invoice->get('subtotal')->value ?? '0.00',
+      'total_tax' => $invoice->get('tax_total')->value ?? '0.00',
+      'total_amount' => $invoice->get('total')->value ?? '0.00',
+      'status' => 'draft',
+    ]);
+    $document->save();
+
+    // Generate XML.
+    $ublService = \Drupal::service('jaraba_einvoice_b2b.ubl_service');
+    $xml = $ublService->generateUbl($document);
+    $document->set('xml_content', $xml);
+
+    // Validate.
+    $validationService = \Drupal::service('jaraba_einvoice_b2b.validation_service');
+    $result = $validationService->validate($xml, $format);
+    $document->set('validation_status', $result->valid ? 'valid' : 'invalid');
+    if (!$result->valid) {
+      $document->set('validation_errors_json', json_encode($result->errors));
+    }
+
+    $document->save();
+
+    \Drupal::logger('jaraba_einvoice_b2b')->info(
+      'ECA-EI-001: Auto-generated B2B e-invoice @number for billing invoice @id.',
+      ['@number' => $invoiceNumber, '@id' => $invoiceId]
+    );
+
+    // Auto-send if configured.
+    if ((bool) $config->get('auto_send_on_paid')->value && $result->valid) {
+      $deliveryService = \Drupal::service('jaraba_einvoice_b2b.delivery_service');
+      $deliveryService->deliver((int) $document->id());
+    }
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_einvoice_b2b')->error(
+      'ECA-EI-001: Failed to auto-generate B2B e-invoice for invoice @id: @error',
+      ['@id' => $invoiceId, '@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * ECA-EI-002: Sync payment status from billing_payment to einvoice_document.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $payment
+ *   The billing payment entity.
+ */
+function _jaraba_einvoice_b2b_sync_payment(EntityInterface $payment): void {
+  $invoiceId = (int) ($payment->get('invoice_id')->value ?? 0);
+  if (!$invoiceId) {
+    return;
+  }
+
+  // Find the einvoice_document linked to this billing invoice.
+  $docStorage = \Drupal::entityTypeManager()->getStorage('einvoice_document');
+  $docIds = $docStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('invoice_id', $invoiceId)
+    ->condition('direction', 'outbound')
+    ->range(0, 1)
+    ->execute();
+
+  if (empty($docIds)) {
+    return;
+  }
+
+  $documentId = (int) reset($docIds);
+  $amount = $payment->get('amount')->value ?? '0.00';
+
+  try {
+    $paymentService = \Drupal::service('jaraba_einvoice_b2b.payment_status_service');
+    $eventId = $paymentService->recordPayment($documentId, [
+      'amount' => $amount,
+      'payment_date' => date('Y-m-d'),
+      'payment_method' => $payment->get('method')->value ?? 'transfer',
+      'payment_reference' => $payment->get('reference')->value ?? '',
+    ]);
+
+    // Communicate to SPFE.
+    $paymentService->communicateToSPFE($eventId);
+
+    \Drupal::logger('jaraba_einvoice_b2b')->info(
+      'ECA-EI-002: Payment synced for document @doc (event @event).',
+      ['@doc' => $documentId, '@event' => $eventId]
+    );
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_einvoice_b2b')->error(
+      'ECA-EI-002: Payment sync failed for invoice @id: @error',
+      ['@id' => $invoiceId, '@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * ECA-EI-003: Detect overdue invoices for all active tenants.
+ */
+function _jaraba_einvoice_b2b_detect_morosity(): void {
+  $configStorage = \Drupal::entityTypeManager()->getStorage('einvoice_tenant_config');
+  $configIds = $configStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('active', TRUE)
+    ->condition('payment_status_tracking', TRUE)
+    ->execute();
+
+  $paymentService = \Drupal::service('jaraba_einvoice_b2b.payment_status_service');
+
+  foreach ($configStorage->loadMultiple($configIds) as $config) {
+    $tenantId = (int) $config->get('tenant_id')->target_id;
+    $overdueResults = $paymentService->detectMorosidad($tenantId);
+
+    if (empty($overdueResults)) {
+      continue;
+    }
+
+    // Update document statuses.
+    $docStorage = \Drupal::entityTypeManager()->getStorage('einvoice_document');
+    foreach ($overdueResults as $result) {
+      $paymentService->updateStatus($result->documentId, 'overdue');
+    }
+
+    // Send alert email.
+    $overdueData = array_map(fn($r) => $r->toArray(), $overdueResults);
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $mailManager->mail(
+      'jaraba_einvoice_b2b',
+      'morosity_alert',
+      \Drupal::config('system.site')->get('mail') ?? '',
+      'es',
+      [
+        'tenant_name' => $config->get('nombre_razon')->value ?? '',
+        'overdue_count' => count($overdueResults),
+        'overdue_invoices' => $overdueData,
+      ],
+    );
+
+    \Drupal::logger('jaraba_einvoice_b2b')->warning(
+      'ECA-EI-003: @count overdue invoices detected for tenant @tenant.',
+      ['@count' => count($overdueResults), '@tenant' => $tenantId]
+    );
+  }
+}
+
+/**
+ * ECA-EI-004: Log inbound e-invoice reception.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $document
+ *   The inbound einvoice_document entity.
+ */
+function _jaraba_einvoice_b2b_log_inbound_reception(EntityInterface $document): void {
+  try {
+    $logStorage = \Drupal::entityTypeManager()->getStorage('einvoice_delivery_log');
+    $logStorage->create([
+      'tenant_id' => $document->get('tenant_id')->target_id ?? 0,
+      'einvoice_document_id' => $document->id(),
+      'operation' => 'receive',
+      'channel' => $document->get('delivery_method')->value ?? 'api',
+      'response_code' => 'OK',
+      'http_status' => 200,
+    ])->save();
+
+    // Notify admin.
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $mailManager->mail(
+      'jaraba_einvoice_b2b',
+      'inbound_received',
+      \Drupal::config('system.site')->get('mail') ?? '',
+      'es',
+      [
+        'invoice_number' => $document->get('invoice_number')->value ?? '',
+        'seller_name' => $document->get('seller_name')->value ?? '',
+      ],
+    );
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_einvoice_b2b')->error(
+      'ECA-EI-004: Failed to log inbound reception: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * ECA-EI-005: Communicate pending payment events to SPFE.
+ */
+function _jaraba_einvoice_b2b_communicate_pending_to_spfe(): void {
+  $eventStorage = \Drupal::entityTypeManager()->getStorage('einvoice_payment_event');
+  $pendingIds = $eventStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('communicated_to_spfe', FALSE)
+    ->sort('created', 'ASC')
+    ->range(0, 50)
+    ->execute();
+
+  if (empty($pendingIds)) {
+    return;
+  }
+
+  $paymentService = \Drupal::service('jaraba_einvoice_b2b.payment_status_service');
+  $successCount = 0;
+  $failCount = 0;
+
+  foreach ($pendingIds as $eventId) {
+    $success = $paymentService->communicateToSPFE((int) $eventId);
+    $success ? $successCount++ : $failCount++;
+  }
+
+  \Drupal::logger('jaraba_einvoice_b2b')->info(
+    'ECA-EI-005: SPFE batch communication — @success succeeded, @fail failed.',
+    ['@success' => $successCount, '@fail' => $failCount]
+  );
+}

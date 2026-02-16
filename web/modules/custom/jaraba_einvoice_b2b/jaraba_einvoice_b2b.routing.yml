@@ -1,0 +1,201 @@
+# Routing for jaraba_einvoice_b2b module.
+#
+# Defines admin routes, API endpoints, and field_ui_base_route settings pages.
+# Admin routes: /admin/jaraba/fiscal/einvoice
+# API routes: /api/v1/einvoice/*
+#
+# Spec: Doc 181. Plan: FASES 9-10.
+
+# ============================================================
+# Entity settings (field_ui_base_route).
+# ============================================================
+
+jaraba_einvoice_b2b.einvoice_document.settings:
+  path: '/admin/structure/einvoice-document/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'E-Invoice Document Settings'
+  requirements:
+    _permission: 'administer einvoice b2b'
+
+jaraba_einvoice_b2b.einvoice_tenant_config.settings:
+  path: '/admin/structure/einvoice-tenant-config/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'E-Invoice Tenant Config Settings'
+  requirements:
+    _permission: 'administer einvoice b2b'
+
+jaraba_einvoice_b2b.einvoice_delivery_log.settings:
+  path: '/admin/structure/einvoice-delivery-log/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'E-Invoice Delivery Log Settings'
+  requirements:
+    _permission: 'administer einvoice b2b'
+
+jaraba_einvoice_b2b.einvoice_payment_event.settings:
+  path: '/admin/structure/einvoice-payment-event/settings'
+  defaults:
+    _form: '\Drupal\Core\Form\FormBase'
+    _title: 'E-Invoice Payment Event Settings'
+  requirements:
+    _permission: 'administer einvoice b2b'
+
+# ============================================================
+# API: Documents (Section 4.1).
+# ============================================================
+
+jaraba_einvoice_b2b.api.documents:
+  path: '/api/v1/einvoice/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::listDocuments'
+    _title: 'E-Invoice Documents API'
+  requirements:
+    _permission: 'view einvoice documents'
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.document:
+  path: '/api/v1/einvoice/documents/{einvoice_document}'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::getDocument'
+    _title: 'E-Invoice Document API'
+  requirements:
+    _permission: 'view einvoice documents'
+    einvoice_document: \d+
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.generate:
+  path: '/api/v1/einvoice/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::generate'
+    _title: 'Generate E-Invoice'
+  requirements:
+    _permission: 'create einvoice documents'
+  methods: [POST]
+  options:
+    _format: json
+
+# ============================================================
+# API: Delivery (Section 4.2).
+# ============================================================
+
+jaraba_einvoice_b2b.api.send:
+  path: '/api/v1/einvoice/send/{einvoice_document}'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::send'
+    _title: 'Send E-Invoice'
+  requirements:
+    _permission: 'send einvoice'
+    einvoice_document: \d+
+  methods: [POST]
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.receive:
+  path: '/api/v1/einvoice/receive'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::receive'
+    _title: 'Receive E-Invoice'
+  requirements:
+    _permission: 'receive einvoice'
+  methods: [POST]
+  options:
+    _format: json
+
+# ============================================================
+# API: Payment Status (Section 4.3).
+# ============================================================
+
+jaraba_einvoice_b2b.api.payment.record:
+  path: '/api/v1/einvoice/payment/{einvoice_document}/record'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoicePaymentController::recordPayment'
+    _title: 'Record Payment'
+  requirements:
+    _permission: 'manage einvoice payment events'
+    einvoice_document: \d+
+  methods: [POST]
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.payment.history:
+  path: '/api/v1/einvoice/payment/{einvoice_document}/history'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoicePaymentController::paymentHistory'
+    _title: 'Payment History'
+  requirements:
+    _permission: 'view einvoice documents'
+    einvoice_document: \d+
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.payment.communicate:
+  path: '/api/v1/einvoice/payment/{event_id}/communicate'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoicePaymentController::communicateToSPFE'
+    _title: 'Communicate Payment to SPFE'
+  requirements:
+    _permission: 'manage einvoice payment events'
+    event_id: \d+
+  methods: [POST]
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.payment.overdue:
+  path: '/api/v1/einvoice/payment/overdue'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoicePaymentController::overdueInvoices'
+    _title: 'Overdue Invoices'
+  requirements:
+    _permission: 'view einvoice documents'
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.payment.morosity:
+  path: '/api/v1/einvoice/payment/morosity-report'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoicePaymentController::morosityReport'
+    _title: 'Morosity Report'
+  requirements:
+    _permission: 'view einvoice reports'
+  options:
+    _format: json
+
+# ============================================================
+# API: Config and Conversion (Section 4.4).
+# ============================================================
+
+jaraba_einvoice_b2b.api.convert:
+  path: '/api/v1/einvoice/convert'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::convertFormat'
+    _title: 'E-Invoice Format Conversion API'
+  requirements:
+    _permission: 'create einvoice documents'
+  methods: [POST]
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.validate:
+  path: '/api/v1/einvoice/validate'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::validateXml'
+    _title: 'E-Invoice Validation API'
+  requirements:
+    _permission: 'view einvoice documents'
+  methods: [POST]
+  options:
+    _format: json
+
+jaraba_einvoice_b2b.api.dashboard:
+  path: '/api/v1/einvoice/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_einvoice_b2b\Controller\EInvoiceApiController::dashboard'
+    _title: 'E-Invoice Dashboard API'
+  requirements:
+    _permission: 'view einvoice documents'
+  options:
+    _format: json

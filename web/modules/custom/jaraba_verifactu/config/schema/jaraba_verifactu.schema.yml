@@ -1,0 +1,43 @@
+jaraba_verifactu.settings:
+  type: config_object
+  label: 'Jaraba VeriFactu settings'
+  mapping:
+    aeat_endpoint_production:
+      type: string
+      label: 'AEAT production WSDL endpoint'
+    aeat_endpoint_testing:
+      type: string
+      label: 'AEAT testing WSDL endpoint'
+    flow_control_seconds:
+      type: integer
+      label: 'Seconds between AEAT remission batches'
+    max_records_per_batch:
+      type: integer
+      label: 'Maximum records per remission batch'
+    max_retries:
+      type: integer
+      label: 'Maximum retry attempts for AEAT communication'
+    retry_backoff_base_seconds:
+      type: integer
+      label: 'Base seconds for exponential backoff between retries'
+    software_id:
+      type: string
+      label: 'Software identifier for AEAT declaration'
+    software_version:
+      type: string
+      label: 'Software version for AEAT declaration'
+    software_name:
+      type: string
+      label: 'Software name for responsible declaration'
+    software_developer_nif:
+      type: string
+      label: 'NIF of the software developer'
+    enable_daily_integrity_check:
+      type: boolean
+      label: 'Enable daily hash chain integrity verification'
+    daily_integrity_check_time:
+      type: string
+      label: 'UTC time for daily integrity check (HH:MM)'
+    certificate_expiry_alert_days:
+      type: integer
+      label: 'Days threshold for certificate expiration alert'

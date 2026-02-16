@@ -1,0 +1,185 @@
+{#
+/**
+ * @file
+ * Zero-region page template for VeriFactu records listing.
+ *
+ * Variables (injected via hook_preprocess_page()):
+ * - verifactu_records (array): Paginated invoice records.
+ * - verifactu_pagination (array): { page, per_page, total, total_pages }.
+ * - verifactu_filters (array): { status, record_type, date_from, date_to }.
+ * - verifactu_current_tenant (array): Current tenant info.
+ * - site_name, site_slogan, logo, logged_in: Standard Drupal variables.
+ */
+#}
+{{ attach_library('jaraba_verifactu/verifactu-dashboard') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium page-wrapper--fiscal">
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in
+  } only %}
+
+  <main class="main-content main-content--full main-content--fiscal" role="main">
+    <div class="main-content__inner main-content__inner--full">
+
+      {# Page header #}
+      <div class="verifactu-records__header">
+        <div class="verifactu-records__title-wrapper">
+          <h1 class="verifactu-records__title">
+            {{ jaraba_icon('fiscal', 'signed-document', { variant: 'duotone', size: '28px' }) }}
+            {% trans %}VeriFactu Invoice Records{% endtrans %}
+          </h1>
+          <a href="{{ path('jaraba_verifactu.dashboard') }}" class="verifactu-records__back">
+            {% trans %}Back to Dashboard{% endtrans %}
+          </a>
+        </div>
+      </div>
+
+      {# Filters bar #}
+      {% set f = verifactu_filters|default({}) %}
+      <div class="verifactu-records__filters" data-verifactu-filters>
+        <div class="verifactu-records__filter-group">
+          <label for="filter-status" class="verifactu-records__filter-label">{% trans %}AEAT Status{% endtrans %}</label>
+          <select id="filter-status" name="status" class="verifactu-records__filter-select" data-verifactu-filter="status">
+            <option value="">{% trans %}All{% endtrans %}</option>
+            <option value="draft" {{ f.status == 'draft' ? 'selected' }}>{% trans %}Draft{% endtrans %}</option>
+            <option value="pending" {{ f.status == 'pending' ? 'selected' }}>{% trans %}Pending{% endtrans %}</option>
+            <option value="accepted" {{ f.status == 'accepted' ? 'selected' }}>{% trans %}Accepted{% endtrans %}</option>
+            <option value="rejected" {{ f.status == 'rejected' ? 'selected' }}>{% trans %}Rejected{% endtrans %}</option>
+            <option value="error" {{ f.status == 'error' ? 'selected' }}>{% trans %}Error{% endtrans %}</option>
+          </select>
+        </div>
+
+        <div class="verifactu-records__filter-group">
+          <label for="filter-type" class="verifactu-records__filter-label">{% trans %}Record Type{% endtrans %}</label>
+          <select id="filter-type" name="record_type" class="verifactu-records__filter-select" data-verifactu-filter="record_type">
+            <option value="">{% trans %}All{% endtrans %}</option>
+            <option value="alta" {{ f.record_type == 'alta' ? 'selected' }}>{% trans %}Alta{% endtrans %}</option>
+            <option value="anulacion" {{ f.record_type == 'anulacion' ? 'selected' }}>{% trans %}Anulacion{% endtrans %}</option>
+          </select>
+        </div>
+
+        <div class="verifactu-records__filter-group">
+          <label for="filter-date-from" class="verifactu-records__filter-label">{% trans %}From{% endtrans %}</label>
+          <input type="date" id="filter-date-from" name="date_from"
+                 class="verifactu-records__filter-input"
+                 value="{{ f.date_from|default('') }}"
+                 data-verifactu-filter="date_from" />
+        </div>
+
+        <div class="verifactu-records__filter-group">
+          <label for="filter-date-to" class="verifactu-records__filter-label">{% trans %}To{% endtrans %}</label>
+          <input type="date" id="filter-date-to" name="date_to"
+                 class="verifactu-records__filter-input"
+                 value="{{ f.date_to|default('') }}"
+                 data-verifactu-filter="date_to" />
+        </div>
+
+        <button type="button" class="verifactu-records__filter-btn" data-verifactu-filter-apply>
+          {% trans %}Apply Filters{% endtrans %}
+        </button>
+      </div>
+
+      {# Records table #}
+      <div class="verifactu-records__table-wrapper" data-verifactu-records-container>
+        <table class="verifactu-records__table">
+          <thead>
+            <tr>
+              <th class="verifactu-records__th">{% trans %}Invoice #{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}Type{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}Invoice Type{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}Emitter{% endtrans %}</th>
+              <th class="verifactu-records__th verifactu-records__th--right">{% trans %}Total{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}Date{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}AEAT Status{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}Hash{% endtrans %}</th>
+              <th class="verifactu-records__th">{% trans %}Actions{% endtrans %}</th>
+            </tr>
+          </thead>
+          <tbody data-verifactu-records-body>
+            {% for record in verifactu_records|default([]) %}
+              <tr class="verifactu-records__row verifactu-records__row--{{ record.aeat_status|default('draft') }}">
+                <td class="verifactu-records__td verifactu-records__td--number">
+                  {{ record.numero_factura|default('—') }}
+                </td>
+                <td class="verifactu-records__td">
+                  <span class="verifactu-records__type verifactu-records__type--{{ record.record_type|default('alta') }}">
+                    {{ record.record_type|default('alta')|upper }}
+                  </span>
+                </td>
+                <td class="verifactu-records__td">{{ record.tipo_factura|default('—') }}</td>
+                <td class="verifactu-records__td">
+                  {{ record.nombre_emisor|default('—') }}
+                  {% if record.nif_emisor %}
+                    <small class="verifactu-records__nif">({{ record.nif_emisor }})</small>
+                  {% endif %}
+                </td>
+                <td class="verifactu-records__td verifactu-records__td--right verifactu-records__td--amount">
+                  {{ record.importe_total|default('0.00')|number_format(2, ',', '.') }} &euro;
+                </td>
+                <td class="verifactu-records__td">{{ record.fecha_expedicion|default('—') }}</td>
+                <td class="verifactu-records__td">
+                  {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+                    'status': record.aeat_status|default('draft'),
+                    'size': 'sm'
+                  } only %}
+                </td>
+                <td class="verifactu-records__td verifactu-records__td--mono"
+                    title="{{ record.hash_record|default('') }}">
+                  {{ record.hash_record|default('—')|slice(0, 8) }}{% if record.hash_record %}&hellip;{% endif %}
+                </td>
+                <td class="verifactu-records__td">
+                  <a href="{{ path('jaraba_verifactu.record_detail', { verifactu_invoice_record: record.id }) }}"
+                     class="verifactu-records__action-link"
+                     data-slide-panel="record-{{ record.id }}"
+                     data-slide-panel-title="{% trans %}Record Detail{% endtrans %}"
+                     data-slide-panel-size="--large">
+                    {% trans %}View{% endtrans %}
+                  </a>
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="9" class="verifactu-records__td verifactu-records__td--empty">
+                  {% trans %}No records found matching the current filters.{% endtrans %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {# Pagination #}
+      {% set p = verifactu_pagination|default({}) %}
+      {% if p.total_pages|default(0) > 1 %}
+        <nav class="verifactu-records__pagination" aria-label="{% trans %}Records pagination{% endtrans %}">
+          <span class="verifactu-records__pagination-info">
+            {% trans %}Page {{ p.page }} of {{ p.total_pages }} ({{ p.total }} records){% endtrans %}
+          </span>
+          <div class="verifactu-records__pagination-links">
+            {% if p.page > 1 %}
+              <a href="?page={{ p.page - 1 }}" class="verifactu-records__pagination-link" data-verifactu-page="{{ p.page - 1 }}">
+                {% trans %}Previous{% endtrans %}
+              </a>
+            {% endif %}
+            {% if p.page < p.total_pages %}
+              <a href="?page={{ p.page + 1 }}" class="verifactu-records__pagination-link" data-verifactu-page="{{ p.page + 1 }}">
+                {% trans %}Next{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </nav>
+      {% endif %}
+
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name
+  } only %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
+</div>

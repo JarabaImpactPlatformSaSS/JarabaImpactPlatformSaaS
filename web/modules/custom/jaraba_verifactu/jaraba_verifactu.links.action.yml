@@ -1,0 +1,5 @@
+verifactu_tenant_config.add:
+  route_name: entity.verifactu_tenant_config.add_form
+  title: 'Add VeriFactu tenant config'
+  appears_on:
+    - entity.verifactu_tenant_config.collection

@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * FACe portal status panel.
+ *
+ * Used in dashboard (summary mode) and document detail (detail mode).
+ *
+ * Variables:
+ * - document: FacturaeDocument entity (optional, for detail mode).
+ * - show_detail: Boolean, if TRUE shows full FACe detail.
+ *
+ * Plan: FASE 8, entregable F8-2.
+ */
+#}
+<div class="facturae-face-status">
+  <h3 class="facturae-face-status__title">
+    <span class="facturae-face-status__icon" aria-hidden="true">{{ jaraba_icon('government', 'fiscal') }}</span>
+    {% trans %}FACe Portal{% endtrans %}
+  </h3>
+
+  {% if show_detail is defined and show_detail and document is defined %}
+    {# Detail mode: show full FACe info for one document #}
+    <div class="facturae-face-status__detail">
+      <dl class="facturae-face-status__dl">
+        <dt>{% trans %}FACe Status{% endtrans %}</dt>
+        <dd>
+          {% include '@jaraba_verifactu/partials/_fiscal-status-badge.html.twig' with {
+            'status': document.face_status.value|default('not_sent'),
+            'size': 'md'
+          } only %}
+        </dd>
+
+        {% if document.face_registry_number.value %}
+          <dt>{% trans %}Registry Number{% endtrans %}</dt>
+          <dd class="facturae-face-status__mono">{{ document.face_registry_number.value }}</dd>
+        {% endif %}
+
+        {% if document.face_csv.value %}
+          <dt>{% trans %}CSV Code{% endtrans %}</dt>
+          <dd class="facturae-face-status__mono">{{ document.face_csv.value }}</dd>
+        {% endif %}
+
+        {% if document.face_tramitacion_status.value %}
+          <dt>{% trans %}Tramitacion{% endtrans %}</dt>
+          <dd>{{ document.face_tramitacion_status.value }}</dd>
+        {% endif %}
+
+        {% if document.face_tramitacion_date.value %}
+          <dt>{% trans %}Last Update{% endtrans %}</dt>
+          <dd>{{ document.face_tramitacion_date.value }}</dd>
+        {% endif %}
+
+        {% if document.face_anulacion_status.value %}
+          <dt>{% trans %}Cancellation{% endtrans %}</dt>
+          <dd class="facturae-face-status__anulacion">
+            {{ document.face_anulacion_status.value }}
+          </dd>
+        {% endif %}
+      </dl>
+    </div>
+  {% else %}
+    {# Summary mode: dashboard overview #}
+    <div class="facturae-face-status__summary">
+      <p class="facturae-face-status__description">
+        {% trans %}Punto General de Entrada de Facturas Electronicas de la Administracion General del Estado.{% endtrans %}
+      </p>
+      <div class="facturae-face-status__indicator">
+        <span class="facturae-face-status__dot facturae-face-status__dot--active" aria-hidden="true"></span>
+        {% trans %}Connected{% endtrans %}
+      </div>
+    </div>
+  {% endif %}
+</div>

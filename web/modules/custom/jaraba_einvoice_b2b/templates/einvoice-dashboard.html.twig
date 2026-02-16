@@ -1,0 +1,38 @@
+{#
+ # E-Invoice B2B Dashboard template.
+ #
+ # Variables:
+ #   - stats: Dashboard statistics array.
+ #   - recent_documents: Array of recent document data.
+ #   - overdue_alerts: Array of overdue alert data.
+ #   - tenant_id: Current tenant ID.
+ #
+ # Spec: Doc 181, Section 7.
+ #}
+<div class="einvoice-dashboard">
+  <header class="einvoice-dashboard__header">
+    <h1 class="einvoice-dashboard__title">{{ 'E-Invoice B2B Dashboard'|t }}</h1>
+    <div class="einvoice-dashboard__actions">
+      <a href="{{ path('entity.einvoice_document.add_form') }}" class="einvoice-dashboard__action einvoice-dashboard__action--primary">
+        {{ 'New E-Invoice'|t }}
+      </a>
+    </div>
+  </header>
+
+  {% include '@jaraba_einvoice_b2b/partials/_einvoice-stats.html.twig' with { stats: stats } only %}
+
+  {% if overdue_alerts is not empty %}
+    {% include '@jaraba_einvoice_b2b/partials/_einvoice-morosidad-alert.html.twig' with { alerts: overdue_alerts } only %}
+  {% endif %}
+
+  <section class="einvoice-dashboard__documents">
+    <h2 class="einvoice-dashboard__section-title">{{ 'Recent Documents'|t }}</h2>
+    <div class="einvoice-dashboard__grid">
+      {% for document in recent_documents %}
+        {% include '@jaraba_einvoice_b2b/partials/_einvoice-document-card.html.twig' with { document: document } only %}
+      {% else %}
+        <p class="einvoice-dashboard__empty">{{ 'No documents yet.'|t }}</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>

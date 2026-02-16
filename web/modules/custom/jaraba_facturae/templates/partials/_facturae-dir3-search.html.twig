@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * DIR3 directory autocomplete search widget.
+ *
+ * Provides a search input with autocomplete for DIR3 organizational
+ * units used in B2G invoicing (Oficina Contable, Organo Gestor,
+ * Unidad Tramitadora).
+ *
+ * Plan: FASE 8, entregable F8-2.
+ */
+#}
+{{ attach_library('jaraba_facturae/facturae-dir3') }}
+
+<div class="facturae-dir3-search" data-dir3-autocomplete>
+  <label for="dir3-search-input" class="facturae-dir3-search__label">
+    {% trans %}DIR3 Unit Search{% endtrans %}
+  </label>
+
+  <div class="facturae-dir3-search__input-group">
+    <input type="text"
+           id="dir3-search-input"
+           class="facturae-dir3-search__input"
+           placeholder="{% trans %}Search by code or name (min. 3 chars){% endtrans %}"
+           autocomplete="off"
+           data-dir3-input
+           aria-describedby="dir3-search-help"
+           aria-autocomplete="list"
+           aria-controls="dir3-results-list"
+           role="combobox"
+           aria-expanded="false">
+    <span class="facturae-dir3-search__spinner" aria-hidden="true" data-dir3-spinner></span>
+  </div>
+
+  <p id="dir3-search-help" class="facturae-dir3-search__help">
+    {% trans %}Enter a DIR3 code (e.g., L01234567) or organization name to search.{% endtrans %}
+  </p>
+
+  {# Type filter #}
+  <div class="facturae-dir3-search__filters">
+    <label class="facturae-dir3-search__filter-label">{% trans %}Filter by type:{% endtrans %}</label>
+    <select class="facturae-dir3-search__filter-select" data-dir3-type>
+      <option value="all">{% trans %}All types{% endtrans %}</option>
+      <option value="01">{% trans %}Oficina Contable (01){% endtrans %}</option>
+      <option value="02">{% trans %}Organo Gestor (02){% endtrans %}</option>
+      <option value="03">{% trans %}Unidad Tramitadora (03){% endtrans %}</option>
+    </select>
+  </div>
+
+  {# Results list #}
+  <ul id="dir3-results-list" class="facturae-dir3-search__results" role="listbox" data-dir3-results aria-label="{% trans %}Search results{% endtrans %}">
+  </ul>
+
+  {# Selected units display #}
+  <div class="facturae-dir3-search__selected" data-dir3-selected>
+    <h4 class="facturae-dir3-search__selected-title">{% trans %}Selected DIR3 Centres{% endtrans %}</h4>
+    <div class="facturae-dir3-search__selected-list" data-dir3-selected-list>
+      {# Populated dynamically by JS #}
+    </div>
+  </div>
+</div>

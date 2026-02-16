@@ -1,0 +1,747 @@
+<?php
+
+/**
+ * @file
+ * Module file for Jaraba VeriFactu.
+ *
+ * Cumplimiento VeriFactu (RD 1007/2023): registro de facturas con
+ * encadenamiento SHA-256, comunicacion SOAP con la AEAT, QR de
+ * verificacion y etiqueta VERI*FACTU.
+ *
+ * Las automaciones se implementan via hooks nativos de Drupal,
+ * NO via ECA BPMN.
+ *
+ * @see docs/implementacion/20260216-Plan_Implementacion_Stack_Cumplimiento_Fiscal_v1.md
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Registers Twig templates and partials for the VeriFactu module.
+ */
+function jaraba_verifactu_theme(): array {
+  return [
+    'page__verifactu' => [
+      'template' => 'page--verifactu',
+      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_verifactu') . '/templates',
+      'variables' => [
+        'verifactu_stats' => [],
+        'verifactu_records' => [],
+        'verifactu_chain' => [],
+        'verifactu_certificate' => [],
+        'verifactu_has_certificate' => FALSE,
+        'verifactu_current_tenant' => [],
+        'verifactu_available_tenants' => [],
+      ],
+    ],
+    'page__verifactu_records' => [
+      'template' => 'page--verifactu-records',
+      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_verifactu') . '/templates',
+      'variables' => [
+        'verifactu_records' => [],
+        'verifactu_pagination' => [],
+        'verifactu_filters' => [],
+        'verifactu_current_tenant' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Assigns zero-region page templates to VeriFactu admin routes.
+ */
+function jaraba_verifactu_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === NULL) {
+    return;
+  }
+
+  $routeTemplates = [
+    'jaraba_verifactu.dashboard' => 'page__verifactu',
+    'jaraba_verifactu.records' => 'page__verifactu_records',
+  ];
+
+  if (isset($routeTemplates[$route_name])) {
+    $suggestions[] = $routeTemplates[$route_name];
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Injects CSS classes to <body> based on the active VeriFactu route.
+ * DIRECTRIZ: NUNCA usar attributes.addClass() en templates Twig para body.
+ */
+function jaraba_verifactu_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === NULL) {
+    return;
+  }
+
+  $routeClasses = [
+    'jaraba_verifactu.dashboard' => 'page--verifactu-dashboard',
+    'jaraba_verifactu.records' => 'page--verifactu-records',
+    'jaraba_verifactu.record_detail' => 'page--verifactu-record-detail',
+    'jaraba_verifactu.remision' => 'page--verifactu-remision',
+    'jaraba_verifactu.audit' => 'page--verifactu-audit',
+    'jaraba_verifactu.settings' => 'page--verifactu-settings',
+    'jaraba_verifactu.config' => 'page--verifactu-config',
+  ];
+
+  if (isset($routeClasses[$route_name])) {
+    $variables['attributes']['class'][] = $routeClasses[$route_name];
+    $variables['attributes']['class'][] = 'page--fiscal';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+}
+
+// ===========================================================================
+// FASE 5: ECA HOOKS — AUTOMATIZACIONES VERIFACTU
+// ===========================================================================
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * ECA-VF-001: When a billing_invoice is created with status 'paid',
+ * automatically generate a VeriFactu alta record.
+ */
+function jaraba_verifactu_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'billing_invoice') {
+    return;
+  }
+
+  $status = $entity->get('status')->value ?? '';
+  if ($status !== 'paid') {
+    return;
+  }
+
+  _jaraba_verifactu_generate_alta_record($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * ECA-VF-001: When a billing_invoice transitions to 'paid', generate alta.
+ * ECA-VF-002: When a billing_invoice transitions to 'void', generate anulacion.
+ */
+function jaraba_verifactu_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'billing_invoice') {
+    return;
+  }
+
+  $newStatus = $entity->get('status')->value ?? '';
+  $oldStatus = isset($entity->original)
+    ? ($entity->original->get('status')->value ?? '')
+    : '';
+
+  // No status transition — nothing to do.
+  if ($newStatus === $oldStatus) {
+    return;
+  }
+
+  // ECA-VF-001: Transition to 'paid' → generate alta record.
+  if ($newStatus === 'paid') {
+    _jaraba_verifactu_generate_alta_record($entity);
+  }
+
+  // ECA-VF-002: Transition to 'void' → generate anulacion record.
+  if ($newStatus === 'void' && $oldStatus === 'paid') {
+    _jaraba_verifactu_generate_anulacion_record($entity);
+  }
+}
+
+/**
+ * Generates a VeriFactu alta record for a paid invoice.
+ *
+ * ECA-VF-001: Guards check that the tenant has VeriFactu enabled and
+ * that no duplicate alta record exists for this invoice.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $invoice
+ *   The billing_invoice entity with status 'paid'.
+ */
+function _jaraba_verifactu_generate_alta_record(EntityInterface $invoice): void {
+  try {
+    $tenantId = (int) ($invoice->get('tenant_id')->target_id ?? 0);
+    if ($tenantId === 0) {
+      return;
+    }
+
+    // Guard: Check tenant has VeriFactu enabled.
+    if (!_jaraba_verifactu_tenant_enabled($tenantId)) {
+      return;
+    }
+
+    // Guard: No duplicate alta for this invoice.
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $existing = $entityTypeManager->getStorage('verifactu_invoice_record')
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('tenant_id', $tenantId)
+      ->condition('numero_factura', $invoice->get('invoice_number')->value ?? '')
+      ->condition('record_type', 'alta')
+      ->count()
+      ->execute();
+
+    if ((int) $existing > 0) {
+      return;
+    }
+
+    /** @var \Drupal\jaraba_verifactu\Service\VeriFactuRecordService $recordService */
+    $recordService = \Drupal::service('jaraba_verifactu.record_service');
+    $record = $recordService->createAltaRecord($invoice);
+
+    // Queue for automatic remision if configured.
+    $tenantConfig = _jaraba_verifactu_load_tenant_config($tenantId);
+    if ($tenantConfig && ($tenantConfig->get('remision_automatica')->value ?? FALSE)) {
+      $queue = \Drupal::queue('verifactu_remision');
+      $queue->createItem([
+        'record_id' => $record->id(),
+        'tenant_id' => $tenantId,
+      ]);
+    }
+
+    \Drupal::logger('jaraba_verifactu')->info(
+      'ECA-VF-001: Alta record @record created for invoice @invoice (tenant @tenant).',
+      [
+        '@record' => $record->id(),
+        '@invoice' => $invoice->id(),
+        '@tenant' => $tenantId,
+      ]
+    );
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'ECA-VF-001: Failed to create alta for invoice @invoice: @error',
+      [
+        '@invoice' => $invoice->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+  }
+}
+
+/**
+ * Generates a VeriFactu anulacion record when an invoice is voided.
+ *
+ * ECA-VF-002: Guards check that a matching accepted alta record exists.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $invoice
+ *   The billing_invoice entity transitioning to 'void'.
+ */
+function _jaraba_verifactu_generate_anulacion_record(EntityInterface $invoice): void {
+  try {
+    $tenantId = (int) ($invoice->get('tenant_id')->target_id ?? 0);
+    if ($tenantId === 0) {
+      return;
+    }
+
+    if (!_jaraba_verifactu_tenant_enabled($tenantId)) {
+      return;
+    }
+
+    // Find the original alta record for this invoice.
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $altaIds = $entityTypeManager->getStorage('verifactu_invoice_record')
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('tenant_id', $tenantId)
+      ->condition('numero_factura', $invoice->get('invoice_number')->value ?? '')
+      ->condition('record_type', 'alta')
+      ->sort('created', 'DESC')
+      ->range(0, 1)
+      ->execute();
+
+    if (empty($altaIds)) {
+      \Drupal::logger('jaraba_verifactu')->warning(
+        'ECA-VF-002: No alta record found for voided invoice @invoice.',
+        ['@invoice' => $invoice->id()]
+      );
+      return;
+    }
+
+    $altaRecord = $entityTypeManager->getStorage('verifactu_invoice_record')
+      ->load(reset($altaIds));
+
+    if (!$altaRecord) {
+      return;
+    }
+
+    /** @var \Drupal\jaraba_verifactu\Service\VeriFactuRecordService $recordService */
+    $recordService = \Drupal::service('jaraba_verifactu.record_service');
+    $anulacion = $recordService->createAnulacionRecord($altaRecord);
+
+    \Drupal::logger('jaraba_verifactu')->info(
+      'ECA-VF-002: Anulacion record @record created for invoice @invoice (tenant @tenant).',
+      [
+        '@record' => $anulacion->id(),
+        '@invoice' => $invoice->id(),
+        '@tenant' => $tenantId,
+      ]
+    );
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'ECA-VF-002: Failed to create anulacion for invoice @invoice: @error',
+      [
+        '@invoice' => $invoice->id(),
+        '@error' => $e->getMessage(),
+      ]
+    );
+  }
+}
+
+// ===========================================================================
+// FASE 5: CRON — REMISION, CHAIN VERIFY, CERT ALERTS
+// ===========================================================================
+
+/**
+ * Implements hook_cron().
+ *
+ * Runs three VeriFactu cron tasks with independent throttling:
+ * - ECA-VF-003: AEAT remision queue processing (every cron, 60s throttle).
+ * - ECA-VF-004: Daily chain integrity verification (03:00 UTC).
+ * - ECA-VF-005: Weekly certificate expiry alerts (Monday).
+ */
+function jaraba_verifactu_cron(): void {
+  _jaraba_verifactu_cron_remision();
+  _jaraba_verifactu_cron_chain_verify();
+  _jaraba_verifactu_cron_cert_alerts();
+}
+
+/**
+ * ECA-VF-003: Process AEAT remision queue.
+ *
+ * Groups pending records into batches and enqueues for SOAP submission.
+ * Respects 60-second flow control between submissions.
+ */
+function _jaraba_verifactu_cron_remision(): void {
+  $state = \Drupal::state();
+  $lastRun = (int) $state->get('jaraba_verifactu.cron_remision_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  // Throttle: at least 60 seconds between remision cron runs.
+  if (($now - $lastRun) < 60) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_verifactu\Service\VeriFactuRemisionService $remisionService */
+    $remisionService = \Drupal::service('jaraba_verifactu.remision_service');
+    $batchesCreated = $remisionService->processQueue();
+
+    if ($batchesCreated > 0) {
+      \Drupal::logger('jaraba_verifactu')->info(
+        'ECA-VF-003: Cron created @count remision batches.',
+        ['@count' => $batchesCreated]
+      );
+    }
+
+    $state->set('jaraba_verifactu.cron_remision_last', $now);
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'ECA-VF-003: Cron remision error: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * ECA-VF-004: Daily chain integrity verification.
+ *
+ * Runs once per day (after 03:00 UTC). Verifies the SHA-256 hash chain
+ * for each tenant. Logs CHAIN_BREAK events and sends email alerts on failure.
+ */
+function _jaraba_verifactu_cron_chain_verify(): void {
+  $state = \Drupal::state();
+  $lastRun = (int) $state->get('jaraba_verifactu.cron_chain_verify_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  // Run once per day. Check if last run was before today's 03:00 UTC.
+  $configuredTime = \Drupal::config('jaraba_verifactu.settings')
+    ->get('daily_integrity_check_time') ?: '03:00';
+  [$checkHour, $checkMinute] = array_map('intval', explode(':', $configuredTime));
+
+  $todayCheck = gmmktime($checkHour, $checkMinute, 0, (int) gmdate('n'), (int) gmdate('j'), (int) gmdate('Y'));
+  if ($now < $todayCheck || $lastRun >= $todayCheck) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_verifactu\Service\VeriFactuHashService $hashService */
+    $hashService = \Drupal::service('jaraba_verifactu.hash_service');
+
+    /** @var \Drupal\jaraba_verifactu\Service\VeriFactuEventLogService $eventLogService */
+    $eventLogService = \Drupal::service('jaraba_verifactu.event_log_service');
+
+    // Get all tenants with VeriFactu configs.
+    $tenantIds = _jaraba_verifactu_get_active_tenant_ids();
+
+    foreach ($tenantIds as $tenantId) {
+      $result = $hashService->verifyChainIntegrity($tenantId);
+
+      if ($result->isValid) {
+        $eventLogService->logEvent('INTEGRITY_CHECK', $tenantId, NULL, [
+          'status' => 'valid',
+          'total_records' => $result->totalRecords,
+          'verification_time_ms' => $result->verificationTimeMs,
+        ]);
+      }
+      else {
+        $eventLogService->logEvent('CHAIN_BREAK', $tenantId, $result->breakAtRecordId, [
+          'status' => 'broken',
+          'expected_hash' => $result->expectedHash,
+          'actual_hash' => $result->actualHash,
+          'error_message' => $result->errorMessage,
+        ]);
+
+        // Send email alert to tenant admin.
+        _jaraba_verifactu_send_chain_break_alert($tenantId, $result);
+
+        \Drupal::logger('jaraba_verifactu')->critical(
+          'ECA-VF-004: Chain break detected for tenant @tenant at record @record.',
+          [
+            '@tenant' => $tenantId,
+            '@record' => $result->breakAtRecordId ?? 'unknown',
+          ]
+        );
+      }
+    }
+
+    $state->set('jaraba_verifactu.cron_chain_verify_last', $now);
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'ECA-VF-004: Chain verification error: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * ECA-VF-005: Weekly certificate expiry alerts.
+ *
+ * Checks every Monday for certificates expiring within 30 days.
+ * Sends email notifications to tenant admins.
+ */
+function _jaraba_verifactu_cron_cert_alerts(): void {
+  $state = \Drupal::state();
+  $lastRun = (int) $state->get('jaraba_verifactu.cron_cert_check_last', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  // Run weekly: at least 6 days (518400s) between checks.
+  if (($now - $lastRun) < 518400) {
+    return;
+  }
+
+  // Only on Mondays (day 1).
+  if ((int) gmdate('N', $now) !== 1) {
+    return;
+  }
+
+  try {
+    if (!\Drupal::hasService('ecosistema_jaraba_core.certificate_manager')) {
+      return;
+    }
+
+    /** @var \Drupal\ecosistema_jaraba_core\Service\CertificateManagerService $certManager */
+    $certManager = \Drupal::service('ecosistema_jaraba_core.certificate_manager');
+
+    /** @var \Drupal\jaraba_verifactu\Service\VeriFactuEventLogService $eventLogService */
+    $eventLogService = \Drupal::service('jaraba_verifactu.event_log_service');
+
+    $tenantIds = _jaraba_verifactu_get_active_tenant_ids();
+
+    foreach ($tenantIds as $tenantId) {
+      $validation = $certManager->validateCertificate($tenantId);
+      if ($validation === NULL) {
+        continue;
+      }
+
+      $result = $validation->toArray();
+      $daysRemaining = $result['days_until_expiry'] ?? 999;
+
+      if ($daysRemaining <= 0) {
+        // Certificate expired — disable automatic remision.
+        $eventLogService->logEvent('CERT_EXPIRED', $tenantId, NULL, [
+          'days_until_expiry' => $daysRemaining,
+          'expires_at' => $result['expires_at'] ?? '',
+        ]);
+        _jaraba_verifactu_send_cert_alert($tenantId, 'expired', $daysRemaining);
+
+        \Drupal::logger('jaraba_verifactu')->critical(
+          'ECA-VF-005: Certificate EXPIRED for tenant @tenant.',
+          ['@tenant' => $tenantId]
+        );
+      }
+      elseif ($daysRemaining <= 7) {
+        // Urgent: less than 7 days.
+        $eventLogService->logEvent('CERT_EXPIRING', $tenantId, NULL, [
+          'days_until_expiry' => $daysRemaining,
+          'urgency' => 'critical',
+        ]);
+        _jaraba_verifactu_send_cert_alert($tenantId, 'critical', $daysRemaining);
+      }
+      elseif ($daysRemaining <= 30) {
+        // Warning: less than 30 days.
+        $eventLogService->logEvent('CERT_EXPIRING', $tenantId, NULL, [
+          'days_until_expiry' => $daysRemaining,
+          'urgency' => 'warning',
+        ]);
+        _jaraba_verifactu_send_cert_alert($tenantId, 'warning', $daysRemaining);
+      }
+    }
+
+    $state->set('jaraba_verifactu.cron_cert_check_last', $now);
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'ECA-VF-005: Certificate check error: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+// ===========================================================================
+// HELPER FUNCTIONS
+// ===========================================================================
+
+/**
+ * Checks if a tenant has VeriFactu enabled.
+ *
+ * @param int $tenantId
+ *   The tenant ID.
+ *
+ * @return bool
+ *   TRUE if the tenant has a VeriFactu config with modo_verifactu enabled.
+ */
+function _jaraba_verifactu_tenant_enabled(int $tenantId): bool {
+  $config = _jaraba_verifactu_load_tenant_config($tenantId);
+  if ($config === NULL) {
+    return FALSE;
+  }
+  return (bool) ($config->get('modo_verifactu')->value ?? FALSE);
+}
+
+/**
+ * Loads the VeriFactu tenant config entity for a tenant.
+ *
+ * @param int $tenantId
+ *   The tenant ID.
+ *
+ * @return \Drupal\Core\Entity\EntityInterface|null
+ *   The tenant config entity, or NULL if not found.
+ */
+function _jaraba_verifactu_load_tenant_config(int $tenantId): ?EntityInterface {
+  try {
+    $ids = \Drupal::entityTypeManager()
+      ->getStorage('verifactu_tenant_config')
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('tenant_id', $tenantId)
+      ->range(0, 1)
+      ->execute();
+
+    if (empty($ids)) {
+      return NULL;
+    }
+
+    return \Drupal::entityTypeManager()
+      ->getStorage('verifactu_tenant_config')
+      ->load(reset($ids));
+  }
+  catch (\Throwable) {
+    return NULL;
+  }
+}
+
+/**
+ * Gets all tenant IDs that have active VeriFactu configuration.
+ *
+ * @return array
+ *   Array of tenant IDs.
+ */
+function _jaraba_verifactu_get_active_tenant_ids(): array {
+  try {
+    $ids = \Drupal::entityTypeManager()
+      ->getStorage('verifactu_tenant_config')
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('modo_verifactu', TRUE)
+      ->execute();
+
+    if (empty($ids)) {
+      return [];
+    }
+
+    $tenantIds = [];
+    $configs = \Drupal::entityTypeManager()
+      ->getStorage('verifactu_tenant_config')
+      ->loadMultiple($ids);
+
+    foreach ($configs as $config) {
+      $tid = (int) ($config->get('tenant_id')->target_id ?? 0);
+      if ($tid > 0) {
+        $tenantIds[] = $tid;
+      }
+    }
+
+    return array_unique($tenantIds);
+  }
+  catch (\Throwable) {
+    return [];
+  }
+}
+
+/**
+ * Sends an email alert when a chain break is detected.
+ *
+ * @param int $tenantId
+ *   The tenant ID.
+ * @param object $result
+ *   The ChainIntegrityResult.
+ */
+function _jaraba_verifactu_send_chain_break_alert(int $tenantId, object $result): void {
+  try {
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $mailManager->mail(
+      'jaraba_verifactu',
+      'chain_break_alert',
+      _jaraba_verifactu_get_tenant_admin_email($tenantId),
+      'es',
+      [
+        'tenant_id' => $tenantId,
+        'break_at_record_id' => $result->breakAtRecordId ?? NULL,
+        'expected_hash' => $result->expectedHash ?? '',
+        'actual_hash' => $result->actualHash ?? '',
+      ],
+    );
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'Failed to send chain break alert for tenant @tenant: @error',
+      ['@tenant' => $tenantId, '@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Sends a certificate expiry alert email.
+ *
+ * @param int $tenantId
+ *   The tenant ID.
+ * @param string $urgency
+ *   The urgency level: 'warning', 'critical', or 'expired'.
+ * @param int $daysRemaining
+ *   Days until certificate expires (negative if already expired).
+ */
+function _jaraba_verifactu_send_cert_alert(int $tenantId, string $urgency, int $daysRemaining): void {
+  try {
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $mailManager->mail(
+      'jaraba_verifactu',
+      'cert_expiry_alert',
+      _jaraba_verifactu_get_tenant_admin_email($tenantId),
+      'es',
+      [
+        'tenant_id' => $tenantId,
+        'urgency' => $urgency,
+        'days_remaining' => $daysRemaining,
+      ],
+    );
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_verifactu')->error(
+      'Failed to send cert alert for tenant @tenant: @error',
+      ['@tenant' => $tenantId, '@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Gets the admin email address for a tenant.
+ *
+ * @param int $tenantId
+ *   The tenant ID.
+ *
+ * @return string
+ *   Admin email address, or site default email as fallback.
+ */
+function _jaraba_verifactu_get_tenant_admin_email(int $tenantId): string {
+  try {
+    $config = _jaraba_verifactu_load_tenant_config($tenantId);
+    if ($config && $config->hasField('notification_email')) {
+      $email = $config->get('notification_email')->value ?? '';
+      if ($email !== '') {
+        return $email;
+      }
+    }
+  }
+  catch (\Throwable) {
+    // Fall through to default.
+  }
+
+  return \Drupal::config('system.site')->get('mail') ?: 'admin@example.com';
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Prepares email messages for VeriFactu alerts.
+ */
+function jaraba_verifactu_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'chain_break_alert':
+      $message['subject'] = t('[URGENTE] VeriFactu: Rotura de cadena hash detectada (Tenant @tenant)', [
+        '@tenant' => $params['tenant_id'] ?? '',
+      ]);
+      $message['body'][] = t('Se ha detectado una rotura en la cadena hash SHA-256 del sistema VeriFactu.');
+      $message['body'][] = t('Tenant ID: @tenant', ['@tenant' => $params['tenant_id'] ?? '']);
+      if (!empty($params['break_at_record_id'])) {
+        $message['body'][] = t('Registro afectado: #@record', ['@record' => $params['break_at_record_id']]);
+      }
+      $message['body'][] = t('Hash esperado: @expected', ['@expected' => substr($params['expected_hash'] ?? '', 0, 32) . '...']);
+      $message['body'][] = t('Hash encontrado: @actual', ['@actual' => substr($params['actual_hash'] ?? '', 0, 32) . '...']);
+      $message['body'][] = '';
+      $message['body'][] = t('Accion requerida: Verifique la integridad de los registros inmediatamente.');
+      break;
+
+    case 'cert_expiry_alert':
+      $urgency = $params['urgency'] ?? 'warning';
+      $days = $params['days_remaining'] ?? 0;
+
+      if ($urgency === 'expired') {
+        $message['subject'] = t('[CRITICO] VeriFactu: Certificado digital CADUCADO (Tenant @tenant)', [
+          '@tenant' => $params['tenant_id'] ?? '',
+        ]);
+        $message['body'][] = t('El certificado digital de firma ha caducado. La remision automatica a la AEAT ha sido suspendida.');
+      }
+      elseif ($urgency === 'critical') {
+        $message['subject'] = t('[URGENTE] VeriFactu: Certificado caduca en @days dias (Tenant @tenant)', [
+          '@days' => $days,
+          '@tenant' => $params['tenant_id'] ?? '',
+        ]);
+        $message['body'][] = t('Su certificado digital caduca en @days dias. Renuevelo inmediatamente para evitar interrupciones en la remision a la AEAT.', [
+          '@days' => $days,
+        ]);
+      }
+      else {
+        $message['subject'] = t('VeriFactu: Certificado caduca en @days dias (Tenant @tenant)', [
+          '@days' => $days,
+          '@tenant' => $params['tenant_id'] ?? '',
+        ]);
+        $message['body'][] = t('Su certificado digital caduca en @days dias. Planifique su renovacion.', [
+          '@days' => $days,
+        ]);
+      }
+      $message['body'][] = '';
+      $message['body'][] = t('Tenant ID: @tenant', ['@tenant' => $params['tenant_id'] ?? '']);
+      break;
+  }
+}
