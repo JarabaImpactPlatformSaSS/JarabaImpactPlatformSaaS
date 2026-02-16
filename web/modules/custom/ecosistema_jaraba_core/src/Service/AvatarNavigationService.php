@@ -281,6 +281,8 @@ class AvatarNavigationService {
       ],
       'legal_professional' => [
         ['id' => 'search', 'label' => 'Búsqueda', 'route' => 'jaraba_legal.search', 'icon_category' => 'legal', 'icon_name' => 'search-legal'],
+        ['id' => 'expedientes', 'label' => 'Expedientes', 'route' => 'jaraba_legal_cases.dashboard', 'icon_category' => 'legal', 'icon_name' => 'briefcase'],
+        ['id' => 'agenda', 'label' => 'Agenda', 'route' => 'jaraba_legal_calendar.dashboard', 'icon_category' => 'legal', 'icon_name' => 'calendar-legal'],
         ['id' => 'dashboard', 'label' => 'Dashboard', 'route' => 'jaraba_legal.dashboard', 'icon_category' => 'analytics', 'icon_name' => 'dashboard'],
         ['id' => 'alerts', 'label' => 'Alertas', 'route' => 'jaraba_legal.dashboard', 'icon_category' => 'legal', 'icon_name' => 'alert-bell'],
         ['id' => 'eu_sources', 'label' => 'Fuentes UE', 'route' => 'jaraba_legal.search', 'icon_category' => 'legal', 'icon_name' => 'eu-flag'],
