@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-16
-**Versión:** 39.0.0 (Documentation Update — 5 Modules Added to Registry)
+**Versión:** 40.0.0 (Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -926,7 +926,7 @@
 │   ├── Hooks: hook_cron (BOE sync diario) + hook_mail (alertas)        │
 │   └── Estado: ✅ Producción (Specs 178/178b, Feb 2026)                 │
 │                                                                         │
-│   📦 jaraba_legal_intelligence 📋 (Legal Intelligence Hub — Avanzado)   │
+│   📦 jaraba_legal_intelligence ✅ (Legal Intelligence Hub — Clase Mundial)│
 │   ├── Evolución de jaraba_legal_knowledge: inteligencia jurídica 360°  │
 │   ├── 5 Content Entities: LegalResolution (35+ campos),                │
 │   │   LegalSource, LegalAlert, LegalDigest, LegalSearchLog            │
@@ -941,16 +941,25 @@
 │   │   embeddings → Qdrant → citation graph                            │
 │   ├── Qdrant: 2 collections (legal_intelligence 3072D nacional +      │
 │   │   legal_intelligence_eu 1024D multilingüe)                        │
-│   ├── 7 Services: LegalSearchService, LegalNlpPipelineService,        │
+│   ├── 10 Services: LegalSearchService, LegalNlpPipelineService,       │
 │   │   LegalAlertService, LegalDigestService, LegalCitationService,    │
-│   │   LegalDashboardService, LegalSeoService                          │
+│   │   LegalCopilotBridgeService, LegalMergeRankService,              │
+│   │   LegalDashboardService, LegalSeoService + LegalCopilotAgent     │
+│   ├── Elevacion Clase Mundial (14 fases):                              │
+│   │   JarabaLexFeatureGateService, JarabaLexEmailSequenceService,    │
+│   │   JarabaLexCrossVerticalBridgeService, JarabaLexHealthScoreService│
+│   │   JarabaLexJourneyProgressionService, JarabaLexJourneyDefinition │
+│   ├── Copilot Agent: LegalCopilotAgent 6 modos (search, analysis,    │
+│   │   alerts, citations, eu, faq) + detectMode() + LEGAL-RAG-001     │
+│   ├── Feature Gating: 9 FreemiumVerticalLimit (3 features × 3 plans) │
+│   ├── 5 MJML Email Sequences (SEQ_LEX_001-005)                        │
+│   ├── 3 Funnel Definitions (Search, Upgrade, Citation)                │
 │   ├── Python FastAPI: NLP (spaCy + legal NER), /api/nlp/process       │
 │   ├── Merge & Rank: EU primacy boost (+0.05) + recency boost (+0.02)  │
 │   ├── Seguridad: AES-256-GCM cifrado, aislamiento tenant Qdrant      │
 │   ├── Frontend: 3 controllers, 6 templates, 8 parciales, 6 JS, 12 SCSS│
 │   ├── Tests: 7 PHPUnit suites                                         │
-│   ├── Inversión: 530-685h / 23,850-30,825 EUR (10 fases)             │
-│   └── Estado: ✅ Producción (Vertical JarabaLex, Docs 178/178A/178B)  │
+│   └── Estado: ✅ Clase Mundial (50 archivos, Plan Elevacion v1 14/14) │
 │                                                                         │
 │   📦 jaraba_tenant_export ✅ (Tenant Data Export + Daily Backup)          │
 │   ├── GDPR Art. 20 Portabilidad de Datos — Self-service tenant export  │
@@ -1564,6 +1573,19 @@
 │   │  application_helper: Cover letter + follow-up templates         │  │
 │   │  faq: Preguntas frecuentes empleo España                        │  │
 │   │  DI: @ai.provider + @tenant_brand_voice + @observability        │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   COPILOT JARABALEX (6 modos):                                         │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  LegalCopilotAgent (extiende BaseAgent)                         │  │
+│   │  legal_search: Búsqueda guiada jurisprudencia + normativa       │  │
+│   │  legal_analysis: Análisis resoluciones + líneas jurisprudenciales│  │
+│   │  legal_alerts: Configuración alertas inteligentes               │  │
+│   │  legal_citations: Inserción citas en expedientes (4 formatos)   │  │
+│   │  legal_eu: Derecho europeo EUR-Lex/CURIA/HUDOC/EDPB            │  │
+│   │  faq: Preguntas frecuentes JarabaLex                            │  │
+│   │  DI: @ai.provider + @tenant_brand_voice + @observability        │  │
+│   │  Regla: LEGAL-RAG-001 (disclaimer + citas verificables)         │  │
 │   └─────────────────────────────────────────────────────────────────┘  │
 │                                                                         │
 │   PROVEEDORES IA SOPORTADOS:                                            │
@@ -2255,7 +2277,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Empleabilidad** | 10/10 | ✅ Clase Mundial | EmployabilityFeatureGateService, EmployabilityEmailSequenceService, EmployabilityCrossVerticalBridgeService, EmployabilityJourneyProgressionService, EmployabilityHealthScoreService, EmployabilityCopilotAgent, CopilotApiController, TemplateLoaderService | 34+ archivos |
 | **Emprendimiento** | 6/6 + v2 (7 gaps) | ✅ Clase Mundial (Paridad) | EmprendimientoFeatureGateService, EmprendimientoExperimentService, EmprendimientoHealthScoreService, EmprendimientoJourneyProgressionService, EmprendimientoEmailSequenceService, EmprendimientoCopilotAgent, EmprendimientoCrossVerticalBridgeService | 25+ archivos |
 | **Andalucía +ei** | 12/12 | ✅ Clase Mundial | AndaluciaEiFeatureGateService, AndaluciaEiEmailSequenceService, AndaluciaEiCrossVerticalBridgeService, AndaluciaEiJourneyProgressionService, AndaluciaEiHealthScoreService, AndaluciaEiExperimentService | 43 archivos |
-| **JarabaLex** | Elevación | ✅ Vertical Independiente | Config entities (vertical + 3 features + 3 plans + 9 FreemiumVerticalLimit), page--legal.html.twig, CSS custom properties, FeatureAccessService billing | 18 nuevos + 11 modificados |
+| **JarabaLex** | 14/14 | ✅ Clase Mundial | JarabaLexFeatureGateService, JarabaLexEmailSequenceService, JarabaLexCrossVerticalBridgeService, JarabaLexJourneyProgressionService, JarabaLexHealthScoreService, LegalCopilotAgent, JarabaLexJourneyDefinition, LegalCopilotBridgeService | 50 archivos |
 
 **Empleabilidad (10 Fases):**
 1. Clean Page Templates (Zero Region + FAB)
@@ -2291,6 +2313,22 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 10. Upgrade Triggers + CRM (milestones 25h/50h/75h/100h, pipeline atencion→insercion→baja)
 11. A/B Testing Framework (8 eventos conversión, 4 scopes)
 12. Embudo Público → Registro → Ventas (insert hook, conversion tracking, dashboard enriquecido)
+
+**JarabaLex (14 Fases):**
+1. Landing Page (SCSS modifier + GrapesJS thumbnail)
+2. Zero-Region Consolidation (body classes via hook_preprocess_html)
+3. Modal CRUD (citation modal, alert confirm, dialog.ajax)
+4. SCSS Compliance + Design Tokens (vertical_jarabalex navy/gold)
+5. Feature Gating (JarabaLexFeatureGateService + 9 FreemiumVerticalLimit)
+6. Upgrade Triggers (5 legal trigger types + fire() + copilot upsell)
+7. Email Sequences (5 MJML templates SEQ_LEX_001-005)
+8. CRM Integration (ensure_crm_contact + sync_crm_event pipeline)
+9. Cross-Vertical Bridges (4: emprendimiento, empleabilidad, fiscal, formacion)
+10. Journey Definition (3 avatars: profesional_juridico, gestor_fiscal, investigador_legal)
+11. AI Journey Progression Proactiva (7 reglas: inactividad, bookmarks, alertas, citas, upgrade, fiscal, UE)
+12. Health Scores + KPIs (5 dimensiones + 8 KPIs verticales)
+13. LegalCopilotAgent (6 modos, AgentInterface completo, LEGAL-RAG-001)
+14. Avatar Navigation (legal_professional) + 3 Funnel Definitions
 
 ### 12.4 Dependabot Security Posture (2026-02-14)
 
@@ -2517,7 +2555,8 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
+| 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 39.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 40.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 
