@@ -20,6 +20,7 @@ class TenantExportRecordEntityTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'options',
     'flexible_permissions',
     'group',
     'views',

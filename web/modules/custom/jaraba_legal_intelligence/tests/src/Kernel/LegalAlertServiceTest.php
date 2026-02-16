@@ -232,10 +232,10 @@ class LegalAlertServiceTest extends KernelTestBase {
     $this->assertContains($activeAlert->id(), array_values($activeIds));
     $this->assertNotContains($inactiveAlert->id(), array_values($activeIds));
 
-    // Query inactive alerts.
+    // Query inactive alerts (use integer 0 for SQLite boolean compatibility).
     $inactiveIds = $alertStorage->getQuery()
       ->accessCheck(FALSE)
-      ->condition('is_active', FALSE)
+      ->condition('is_active', 0)
       ->execute();
 
     $this->assertCount(1, $inactiveIds, 'Should find exactly one inactive alert.');
