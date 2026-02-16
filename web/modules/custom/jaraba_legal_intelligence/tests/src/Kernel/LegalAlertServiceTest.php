@@ -8,6 +8,7 @@ use Drupal\jaraba_legal_intelligence\Entity\LegalAlert;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Drupal\jaraba_legal_intelligence\Service\LegalAlertService;
 use Drupal\KernelTests\KernelTestBase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Kernel tests for the LegalAlertService and LegalAlert entity.
@@ -34,6 +35,21 @@ class LegalAlertServiceTest extends KernelTestBase {
     'datetime',
     'jaraba_legal_intelligence',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container): void {
+    parent::register($container);
+    // Provide stub definitions for external services not available in the
+    // isolated Kernel test environment (ai contrib module, ecosistema_jaraba_core).
+    if (!$container->hasDefinition('ai.provider')) {
+      $container->register('ai.provider', \stdClass::class);
+    }
+    if (!$container->hasDefinition('ecosistema_jaraba_core.tenant_context')) {
+      $container->register('ecosistema_jaraba_core.tenant_context', \stdClass::class);
+    }
+  }
 
   /**
    * {@inheritdoc}

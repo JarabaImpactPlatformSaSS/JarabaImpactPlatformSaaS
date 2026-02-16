@@ -8,6 +8,7 @@ use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Drupal\jaraba_legal_intelligence\Entity\LegalSource;
 use Drupal\jaraba_legal_intelligence\Service\LegalIngestionService;
 use Drupal\KernelTests\KernelTestBase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Kernel tests for the Legal Ingestion pipeline.
@@ -34,6 +35,19 @@ class LegalIngestionTest extends KernelTestBase {
     'datetime',
     'jaraba_legal_intelligence',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container): void {
+    parent::register($container);
+    if (!$container->hasDefinition('ai.provider')) {
+      $container->register('ai.provider', \stdClass::class);
+    }
+    if (!$container->hasDefinition('ecosistema_jaraba_core.tenant_context')) {
+      $container->register('ecosistema_jaraba_core.tenant_context', \stdClass::class);
+    }
+  }
 
   /**
    * {@inheritdoc}
