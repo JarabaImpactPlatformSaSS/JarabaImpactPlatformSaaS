@@ -101,8 +101,8 @@ jobs:
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
-            mkdir -p ~/backups
-            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > ~/backups/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz || {
+            mkdir -p ~/backups/pre_deploy
+            /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > ~/backups/pre_deploy/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz || {
               echo "⚠️ Drush sql-dump falló. Intentando mysqldump directo..."
               # Fallback: mysqldump directo sin bootstrap de Drupal
               # Buscar credenciales en settings.local.php (producción) primero, luego settings.php
@@ -114,7 +114,7 @@ jobs:
               DBUSER=$(grep "'username'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
               DBPASS=$(grep "'password'" "$SETTINGS_FILE" | head -1 | grep -o "'[^']*'" | tail -1 | tr -d "'")
               if [ -n "$DBNAME" ] && [ -n "$DBUSER" ]; then
-                mysqldump -u"$DBUSER" -p"$DBPASS" "$DBNAME" | gzip > ~/backups/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz
+                mysqldump -u"$DBUSER" -p"$DBPASS" "$DBNAME" | gzip > ~/backups/pre_deploy/db_pre_deploy_$(date +%Y%m%d_%H%M%S).sql.gz
                 echo "✅ Backup realizado con mysqldump directo"
               else
                 echo "⚠️ No se pudo extraer credenciales BD. Continuando sin backup."
@@ -642,6 +642,6 @@ jobs:
           echo ""
           echo "📋 Rollback steps:"
           echo "  1. SSH into IONOS: ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }}"
-          echo "  2. Restore DB: gunzip -c ~/backups/db_pre_deploy_*.sql.gz | mysql"
+          echo "  2. Restore DB: gunzip -c ~/backups/pre_deploy/db_pre_deploy_*.sql.gz | mysql"
           echo "  3. Revert code: cd ~/JarabaImpactPlatformSaaS && git reset --hard HEAD~1"
           echo "  4. Rebuild: composer install && drush cr"

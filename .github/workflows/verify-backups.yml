@@ -19,7 +19,8 @@ on:
 env:
   IONOS_HOST: 'access834313033.webspace-data.io'
   IONOS_USER: 'u101456434'
-  BACKUP_DIR: '~/backups'
+  BACKUP_DIR_DAILY: '~/backups/daily'
+  BACKUP_DIR_PRE_DEPLOY: '~/backups/pre_deploy'
   # Tamaño mínimo aceptable para un backup SQL (1KB)
   MIN_BACKUP_SIZE: 1024
   # Máximo de horas sin backup antes de alertar
@@ -51,16 +52,16 @@ jobs:
 
           # Obtener listado de backups con tamaño y fecha
           BACKUP_LIST=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
-            if [ -d ~/backups ]; then
+            if [ -d ~/backups/daily ] || [ -d ~/backups/pre_deploy ]; then
               # Listar backups ordenados por fecha (más reciente primero)
-              # Detect both db_pre_deploy_* and db_daily_* backups
-              ls -lt ~/backups/db_pre_deploy_*.sql.gz ~/backups/db_daily_*.sql.gz 2>/dev/null | head -5
+              # Detect both daily and pre-deploy backups in their subdirectories
+              ls -lt ~/backups/pre_deploy/db_pre_deploy_*.sql.gz ~/backups/daily/db_daily_*.sql.gz 2>/dev/null | head -5
               echo "---SEPARATOR---"
               # Contar total de backups (pre-deploy + daily)
-              TOTAL=$(ls ~/backups/db_pre_deploy_*.sql.gz ~/backups/db_daily_*.sql.gz 2>/dev/null | wc -l)
+              TOTAL=$(ls ~/backups/pre_deploy/db_pre_deploy_*.sql.gz ~/backups/daily/db_daily_*.sql.gz 2>/dev/null | wc -l)
               echo "TOTAL_BACKUPS=$TOTAL"
               # Info del backup más reciente (any type)
-              LATEST=$(ls -t ~/backups/db_pre_deploy_*.sql.gz ~/backups/db_daily_*.sql.gz 2>/dev/null | head -1)
+              LATEST=$(ls -t ~/backups/pre_deploy/db_pre_deploy_*.sql.gz ~/backups/daily/db_daily_*.sql.gz 2>/dev/null | head -1)
               if [ -n "$LATEST" ]; then
                 SIZE=$(stat -c %s "$LATEST" 2>/dev/null || echo "0")
                 MODIFIED=$(stat -c %Y "$LATEST" 2>/dev/null || echo "0")
@@ -102,7 +103,7 @@ jobs:
 
           if [ "$TOTAL" -eq 0 ] || [ "$LATEST_FILE" = "NONE" ]; then
             STATUS="critical"
-            ISSUES="No se encontraron backups en $BACKUP_DIR"
+            ISSUES="No se encontraron backups en ~/backups/daily/ ni ~/backups/pre_deploy/"
           elif [ "$LATEST_SIZE" -lt ${{ env.MIN_BACKUP_SIZE }} ]; then
             STATUS="warning"
             ISSUES="Backup más reciente tiene tamaño sospechoso: ${LATEST_SIZE} bytes"

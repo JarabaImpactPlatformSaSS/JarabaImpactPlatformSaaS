@@ -7,11 +7,12 @@
 # Flujo: SSH → Backup → Verificación → Rotación → Notificación
 #
 # Naming: db_daily_{YYYYMMDD_HHMMSS}.sql.gz
+# Directorio: ~/backups/daily/ (separado de pre_deploy para GoodSync)
 # Retención:
 #   - Diarios < 30 días: todos se mantienen
 #   - 30-84 días: solo lunes (semanal)
 #   - > 84 días: se eliminan
-#   - Pre-deploy > 30 días: se eliminan
+#   - Pre-deploy > 30 días: se eliminan (en ~/backups/pre_deploy/)
 # ==============================================
 
 name: Jaraba SaaS - Daily Backup
@@ -33,7 +34,7 @@ env:
   IONOS_HOST: 'access834313033.webspace-data.io'
   IONOS_USER: 'u101456434'
   SITE_DIR: '~/JarabaImpactPlatformSaaS'
-  BACKUP_DIR: '~/backups'
+  BACKUP_DIR: '~/backups/daily'
   RETENTION_DAILY_DAYS: 30
   RETENTION_WEEKLY_DAYS: 84
 
@@ -56,6 +57,31 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Migrate legacy backups to subdirectories
+        run: |
+          echo "🔄 Checking for legacy backups in ~/backups/ (flat)..."
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'MEOF'
+            mkdir -p ~/backups/daily ~/backups/pre_deploy
+            MOVED=0
+            # Move daily backups from flat directory
+            for F in ~/backups/db_daily_*.sql.gz; do
+              [ -e "$F" ] || continue
+              mv "$F" ~/backups/daily/
+              MOVED=$((MOVED + 1))
+            done
+            # Move pre-deploy backups from flat directory
+            for F in ~/backups/db_pre_deploy_*.sql.gz; do
+              [ -e "$F" ] || continue
+              mv "$F" ~/backups/pre_deploy/
+              MOVED=$((MOVED + 1))
+            done
+            if [ "$MOVED" -gt 0 ]; then
+              echo "Migrated $MOVED backup(s) to subdirectories"
+            else
+              echo "No legacy backups to migrate"
+            fi
+          MEOF
+
       - name: Create daily backup
         id: backup
         run: |
@@ -63,9 +89,9 @@ jobs:
 
           BACKUP_RESULT=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
-            mkdir -p ~/backups
+            mkdir -p ~/backups/daily
             BACKUP_FILE="db_daily_$(date +%Y%m%d_%H%M%S).sql.gz"
-            BACKUP_PATH="$HOME/backups/$BACKUP_FILE"
+            BACKUP_PATH="$HOME/backups/daily/$BACKUP_FILE"
 
             # Try drush sql-dump first
             /usr/bin/php8.4-cli vendor/bin/drush.php sql-dump --gzip > "$BACKUP_PATH" 2>/dev/null
@@ -131,7 +157,7 @@ jobs:
           echo "🔍 Verifying backup integrity..."
 
           VERIFY_RESULT=$(ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'VEOF'
-            BACKUP_FILE=$(ls -t ~/backups/db_daily_*.sql.gz 2>/dev/null | head -1)
+            BACKUP_FILE=$(ls -t ~/backups/daily/db_daily_*.sql.gz 2>/dev/null | head -1)
 
             if [ -z "$BACKUP_FILE" ]; then
               echo "INTEGRITY=missing"
@@ -177,12 +203,12 @@ jobs:
           echo "🔄 Rotating old backups..."
 
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'REOF'
-            cd ~/backups
             NOW=$(date +%s)
             DELETED=0
             KEPT=0
 
-            # Process daily backups
+            # Process daily backups in ~/backups/daily/
+            cd ~/backups/daily 2>/dev/null || true
             for FILE in db_daily_*.sql.gz; do
               [ -e "$FILE" ] || continue
 
@@ -209,7 +235,8 @@ jobs:
               fi
             done
 
-            # Process pre-deploy backups > 30 days
+            # Process pre-deploy backups > 30 days in ~/backups/pre_deploy/
+            cd ~/backups/pre_deploy 2>/dev/null || true
             for FILE in db_pre_deploy_*.sql.gz; do
               [ -e "$FILE" ] || continue
 
@@ -227,8 +254,10 @@ jobs:
 
             echo ""
             echo "Rotation complete: $DELETED deleted, $KEPT kept"
-            echo "Current backups:"
-            ls -lh ~/backups/db_*.sql.gz 2>/dev/null | wc -l
+            echo "Current daily backups:"
+            ls -lh ~/backups/daily/db_daily_*.sql.gz 2>/dev/null | wc -l
+            echo "Current pre-deploy backups:"
+            ls -lh ~/backups/pre_deploy/db_pre_deploy_*.sql.gz 2>/dev/null | wc -l
           REOF
 
       - name: Report success
