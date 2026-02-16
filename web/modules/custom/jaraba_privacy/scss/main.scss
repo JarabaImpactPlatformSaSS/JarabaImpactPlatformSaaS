@@ -1,0 +1,17 @@
+// =============================================================================
+// JARABA PRIVACY — ARCHIVO PRINCIPAL DE COMPILACIÓN SCSS
+// =============================================================================
+// DIRECTRIZ: Solo @use, nunca @import. Cada parcial declara sus propias
+// dependencias.
+//
+// Compilación:
+// npx sass scss/main.scss:css/jaraba-privacy.css --style=compressed --no-source-map
+// =============================================================================
+
+@use 'variables-privacy';
+@use 'privacy-dashboard';
+@use 'cookie-banner';
+@use 'dpa-status';
+@use 'arco-pol';
+@use 'breach-alerts';
+@use 'privacy-responsive';

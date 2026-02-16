@@ -1,0 +1,56 @@
+// =============================================================================
+// DPA STATUS — SCSS
+// =============================================================================
+// Estilos del widget de estado DPA en el dashboard.
+// =============================================================================
+
+@use 'variables-privacy' as *;
+
+.dpa-status__info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dpa-status__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &--active {
+    background: var(--ej-privacy-success-light, #{$privacy-success-light-fallback});
+    color: var(--ej-privacy-dpa-active, #{$privacy-dpa-active-fallback});
+  }
+
+  &--pending,
+  &--pending_signature {
+    background: var(--ej-privacy-warning-light, #{$privacy-warning-light-fallback});
+    color: var(--ej-privacy-dpa-pending, #{$privacy-dpa-pending-fallback});
+  }
+
+  &--expired,
+  &--superseded {
+    background: var(--ej-privacy-danger-light, #{$privacy-danger-light-fallback});
+    color: var(--ej-privacy-dpa-expired, #{$privacy-dpa-expired-fallback});
+  }
+}
+
+.dpa-status__version {
+  font-family: $privacy-font-mono;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.dpa-status__date {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.dpa-status__empty {
+  color: var(--ej-privacy-warning, #{$privacy-warning-fallback});
+  font-weight: 500;
+}

@@ -1,31 +1,103 @@
-/**
- * @file
- * Estilos del dashboard legal.
- */
+// =============================================================================
+// LEGAL DASHBOARD — SCSS
+// =============================================================================
+// Layout y estilos para el dashboard de compliance legal.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$legal-*}.
+// BEM: .jaraba-legal-dashboard, .legal-dashboard__*
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-legal' as *;
+
+// ---------------------------------------------------------------------------
+// DASHBOARD LAYOUT
+// ---------------------------------------------------------------------------
 
 .jaraba-legal-dashboard {
-  padding: 1.5rem;
+  padding: $legal-card-padding;
 }
 
 .legal-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.legal-dashboard__header h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-legal-primary, #{$legal-primary-fallback});
 }
 
 .legal-dashboard__subtitle {
-  color: #666;
-  font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ej-color-text-secondary, #6B7280);
 }
+
+// ---------------------------------------------------------------------------
+// DASHBOARD GRID
+// ---------------------------------------------------------------------------
 
 .legal-dashboard__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $legal-dashboard-gap;
 }
 
 .legal-dashboard__card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--ej-color-surface, #FFFFFF);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: $legal-card-radius;
+  padding: $legal-card-padding;
+  box-shadow: 0 1px 3px color-mix(in srgb, #000000 10%, transparent);
+}
+
+.legal-dashboard__card h3 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+// ---------------------------------------------------------------------------
+// BADGES DE ESTADO GENERALES
+// ---------------------------------------------------------------------------
+
+.legal-dashboard__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &--success {
+    background: var(--ej-legal-success-light, #{$legal-success-light-fallback});
+    color: var(--ej-legal-success, #{$legal-success-fallback});
+  }
+
+  &--warning {
+    background: var(--ej-legal-warning-light, #{$legal-warning-light-fallback});
+    color: var(--ej-legal-warning, #{$legal-warning-fallback});
+  }
+
+  &--danger {
+    background: var(--ej-legal-danger-light, #{$legal-danger-light-fallback});
+    color: var(--ej-legal-danger, #{$legal-danger-fallback});
+  }
+
+  &--info {
+    background: var(--ej-legal-info-light, #{$legal-info-light-fallback});
+    color: var(--ej-legal-info, #{$legal-info-fallback});
+  }
 }

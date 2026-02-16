@@ -1,0 +1,183 @@
+// =============================================================================
+// COOKIE BANNER — SCSS
+// =============================================================================
+// Banner de consentimiento de cookies LSSI-CE / ePrivacy.
+//
+// DIRECTRIZ: BEM, color-mix(), var(--ej-*), mobile-first.
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-privacy' as *;
+
+// ---------------------------------------------------------------------------
+// BANNER BASE
+// ---------------------------------------------------------------------------
+
+.jaraba-cookie-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: $privacy-banner-z-index;
+  background: var(--ej-color-surface, #FFFFFF);
+  box-shadow: 0 -4px 20px color-mix(in srgb, #000000 15%, transparent);
+  padding: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+
+  &--bottom-bar {
+    bottom: 0;
+    border-top: 1px solid var(--ej-color-border, #E5E7EB);
+  }
+
+  &--top-bar {
+    top: 0;
+    border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  }
+
+  &--center-modal {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    width: calc(100% - 2rem);
+    border-radius: $privacy-card-radius;
+    border: 1px solid var(--ej-color-border, #E5E7EB);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CONTAINER
+// ---------------------------------------------------------------------------
+
+.jaraba-cookie-banner__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// ---------------------------------------------------------------------------
+// CONTENT
+// ---------------------------------------------------------------------------
+
+.jaraba-cookie-banner__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.jaraba-cookie-banner__description {
+  margin: 0 0 1rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// CATEGORÍAS
+// ---------------------------------------------------------------------------
+
+.jaraba-cookie-banner__categories {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--ej-color-background, #F9FAFB);
+  border-radius: 6px;
+}
+
+.jaraba-cookie-banner__category {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.jaraba-cookie-banner__category-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.jaraba-cookie-banner__checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+}
+
+.jaraba-cookie-banner__category-required {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  background: var(--ej-color-background, #F3F4F6);
+  border-radius: 3px;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.jaraba-cookie-banner__category-description {
+  margin: 0.25rem 0 0 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// ACCIONES
+// ---------------------------------------------------------------------------
+
+.jaraba-cookie-banner__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.jaraba-cookie-banner__btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  &--accept-all {
+    background: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+    color: #FFFFFF;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
+    }
+  }
+
+  &--reject-all {
+    background: var(--ej-color-background, #F3F4F6);
+    color: var(--ej-color-text-primary, #1F2937);
+    border: 1px solid var(--ej-color-border, #E5E7EB);
+
+    &:hover {
+      background: var(--ej-color-border, #E5E7EB);
+    }
+  }
+
+  &--customize {
+    background: transparent;
+    color: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+    text-decoration: underline;
+
+    &:hover {
+      color: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
+    }
+  }
+
+  &--save {
+    background: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+    color: #FFFFFF;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-privacy-primary, #{$privacy-primary-fallback}) 85%, #000000);
+    }
+  }
+}

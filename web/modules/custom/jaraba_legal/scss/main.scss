@@ -1,12 +1,17 @@
-/**
- * @file
- * Jaraba Legal — Main SCSS entry point.
- *
- * Importa todos los parciales del módulo legal.
- * Compilar con: sass scss/main.scss css/jaraba-legal.css
- */
+// =============================================================================
+// JARABA LEGAL — ARCHIVO PRINCIPAL DE COMPILACIÓN SCSS
+// =============================================================================
+// DIRECTRIZ: Solo @use, nunca @import. Cada parcial declara sus propias
+// dependencias.
+//
+// Compilación:
+// npx sass scss/main.scss:css/jaraba-legal.css --style=compressed --no-source-map
+// =============================================================================
 
-@import 'legal-dashboard';
-@import 'tos-modal';
-@import 'sla-metrics';
-@import 'whistleblower';
+@use 'variables-legal';
+@use 'legal-dashboard';
+@use 'tos-status';
+@use 'sla-metrics';
+@use 'aup-violations';
+@use 'offboarding-timeline';
+@use 'legal-responsive';

@@ -591,6 +591,24 @@ back-to-top:
     - core/once
 
 # ---------------------------------------------------------------------------
+# COMPLIANCE PANEL UNIFICADO (Stack Compliance Legal N1 — FASE 12)
+# ---------------------------------------------------------------------------
+# Panel cross-modulo que agrega KPIs de jaraba_privacy, jaraba_legal, jaraba_dr
+# con score global, grados A-F y alertas por umbral.
+
+compliance-panel:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/compliance-panel.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
 # STACK CUMPLIMIENTO FISCAL (FASE 0)
 # ---------------------------------------------------------------------------
 # Estilos compartidos para el dashboard fiscal unificado y parciales

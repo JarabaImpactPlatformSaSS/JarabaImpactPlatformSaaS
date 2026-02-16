@@ -1,30 +1,57 @@
 {#
 /**
  * @file
- * Template para la pagina de estado publica.
+ * Template para la página de estado pública de la plataforma.
  *
  * Variables:
- * - services: Lista de servicios con su estado.
+ * - overall_status: Estado global (operational, degraded, partial_outage,
+ *   major_outage, maintenance).
+ * - services: Lista de servicios con su estado actual.
  * - active_incidents: Incidentes activos actuales.
- * - recent_incidents: Incidentes recientes resueltos.
- * - uptime_metrics: Metricas de uptime.
- * - last_updated: Timestamp de ultima actualizacion.
- * - refresh_seconds: Intervalo de auto-refresco.
+ * - recent_incidents: Incidentes recientes resueltos (últimos 90 días).
+ * - uptime: Métricas de uptime (percentage, total_downtime_minutes).
+ * - last_updated: Timestamp de última actualización.
+ * - refresh_seconds: Intervalo de auto-refresco en segundos.
+ *
+ * DIRECTRIZ: Clases BEM, diseño limpio y mínimo, sin {{ page.* }}.
  */
 #}
-<div class="jaraba-dr-status-page" data-refresh-seconds="{{ refresh_seconds }}">
+<div class="status-page" data-auto-refresh="{{ refresh_seconds|default(30) }}">
+  {# Encabezado #}
   <div class="status-page__header">
     <h1>{{ 'Estado de los servicios'|t }}</h1>
     <p class="status-page__updated">
-      {{ 'Ultima actualizacion:'|t }} {{ last_updated|date('d/m/Y H:i:s') }}
+      {{ 'Última actualización:'|t }} {{ last_updated|date('d/m/Y H:i:s') }}
     </p>
+    <div class="status-page__refresh-indicator">
+      <span class="status-page__refresh-dot"></span>
+      <span class="status-page__refresh-counter">
+        {{ 'Actualización automática activa'|t }}
+      </span>
+    </div>
   </div>
 
   {# Estado global #}
   <div class="status-page__global">
-    {% if active_incidents|length > 0 %}
+    {% if overall_status == 'operational' %}
+      <div class="status-page__global-status status-page__global-status--operational">
+        {{ 'Todos los sistemas operativos'|t }}
+      </div>
+    {% elseif overall_status == 'degraded' %}
       <div class="status-page__global-status status-page__global-status--degraded">
-        {{ 'Algunos servicios presentan incidencias'|t }}
+        {{ 'Rendimiento degradado en algunos servicios'|t }}
+      </div>
+    {% elseif overall_status == 'partial_outage' %}
+      <div class="status-page__global-status status-page__global-status--partial_outage">
+        {{ 'Interrupción parcial del servicio'|t }}
+      </div>
+    {% elseif overall_status == 'major_outage' %}
+      <div class="status-page__global-status status-page__global-status--major_outage">
+        {{ 'Interrupción mayor del servicio'|t }}
+      </div>
+    {% elseif overall_status == 'maintenance' %}
+      <div class="status-page__global-status status-page__global-status--maintenance">
+        {{ 'Mantenimiento programado en curso'|t }}
       </div>
     {% else %}
       <div class="status-page__global-status status-page__global-status--operational">
@@ -33,43 +60,89 @@
     {% endif %}
   </div>
 
-  {# Lista de servicios #}
-  <div class="status-page__services">
+  {# Lista de componentes / servicios #}
+  <div class="status-page__components">
     {% if services %}
-      {% for service in services %}
-        <div class="status-page__service status-page__service--{{ service.status }}">
-          <span class="status-page__service-name">{{ service.name }}</span>
-          <span class="status-page__service-status">{{ service.status_label }}</span>
+      {% for service_id, service in services %}
+        <div class="status-page__component" data-service-id="{{ service_id }}">
+          <span class="status-page__component-name">{{ service.name }}</span>
+          <div>
+            {% if uptime and uptime.percentage is defined %}
+              <span class="status-page__component-uptime">
+                {{ uptime.percentage }}%
+              </span>
+            {% endif %}
+            <span class="status-page__badge status-page__badge--{{ service.status }}">
+              {% if service.status == 'operational' %}
+                {{ 'Operativo'|t }}
+              {% elseif service.status == 'degraded' %}
+                {{ 'Degradado'|t }}
+              {% elseif service.status == 'partial_outage' %}
+                {{ 'Interrupción parcial'|t }}
+              {% elseif service.status == 'major_outage' %}
+                {{ 'Interrupción mayor'|t }}
+              {% elseif service.status == 'maintenance' %}
+                {{ 'Mantenimiento'|t }}
+              {% else %}
+                {{ service.status }}
+              {% endif %}
+            </span>
+          </div>
         </div>
       {% endfor %}
     {% else %}
-      <p class="status-page__empty">{{ 'No hay informacion de servicios disponible.'|t }}</p>
+      <p class="status-page__empty">{{ 'No hay información de servicios disponible.'|t }}</p>
     {% endif %}
   </div>
 
+  {# Barra de uptime (90 días) #}
+  {% if uptime %}
+    <div class="status-page__uptime-section">
+      <div class="status-page__uptime-bar">
+        <div class="status-page__uptime-segment status-page__uptime-segment--operational"
+             style="width: {{ uptime.percentage }}%">
+        </div>
+        {% if uptime.percentage < 100 %}
+          <div class="status-page__uptime-segment status-page__uptime-segment--major_outage"
+               style="width: {{ 100 - uptime.percentage }}%">
+          </div>
+        {% endif %}
+      </div>
+      <div class="status-page__uptime-legend">
+        <span>{{ 'Hace 90 días'|t }}</span>
+        <span>{{ uptime.percentage }}% {{ 'uptime'|t }}</span>
+        <span>{{ 'Hoy'|t }}</span>
+      </div>
+    </div>
+  {% endif %}
+
   {# Incidentes activos #}
   {% if active_incidents|length > 0 %}
-    <div class="status-page__active-incidents">
+    <div class="status-page__incidents">
       <h2>{{ 'Incidentes activos'|t }}</h2>
       {% for incident in active_incidents %}
         <div class="status-page__incident status-page__incident--{{ incident.severity }}">
-          <h3>{{ incident.title }}</h3>
-          <p>{{ incident.description }}</p>
-          <span class="status-page__incident-time">{{ incident.started_at }}</span>
+          <h3 class="status-page__incident-title">{{ incident.title }}</h3>
+          <p class="status-page__incident-description">{{ incident.description }}</p>
+          <span class="status-page__incident-time">
+            {{ incident.started_at|date('d/m/Y H:i') }}
+          </span>
         </div>
       {% endfor %}
     </div>
   {% endif %}
 
-  {# Incidentes recientes #}
+  {# Incidentes recientes (últimos 90 días) #}
   {% if recent_incidents|length > 0 %}
-    <div class="status-page__recent-incidents">
-      <h2>{{ 'Incidentes recientes'|t }}</h2>
+    <div class="status-page__incidents">
+      <h2>{{ 'Historial de incidentes (últimos 90 días)'|t }}</h2>
       {% for incident in recent_incidents %}
         <div class="status-page__incident status-page__incident--resolved">
-          <h3>{{ incident.title }}</h3>
-          <p>{{ incident.resolution }}</p>
-          <span class="status-page__incident-time">{{ incident.resolved_at }}</span>
+          <h3 class="status-page__incident-title">{{ incident.title }}</h3>
+          <p class="status-page__incident-description">{{ incident.description }}</p>
+          <span class="status-page__incident-time">
+            {{ 'Resuelto:'|t }} {{ incident.resolved_at|date('d/m/Y H:i') }}
+          </span>
         </div>
       {% endfor %}
     </div>

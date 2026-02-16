@@ -1,0 +1,82 @@
+// =============================================================================
+// ARCO-POL — SCSS
+// =============================================================================
+// Estilos del widget de solicitudes ARCO-POL en el dashboard.
+// =============================================================================
+
+@use 'variables-privacy' as *;
+
+.arco-pol-requests__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.arco-pol-requests__item {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--ej-color-border, #E5E7EB);
+  background: var(--ej-color-background, #F9FAFB);
+
+  &--pending_verification,
+  &--received {
+    border-left-color: var(--ej-privacy-pending, #{$privacy-pending-fallback});
+  }
+
+  &--in_progress {
+    border-left-color: var(--ej-privacy-in-progress, #{$privacy-in-progress-fallback});
+  }
+
+  &--completed {
+    border-left-color: var(--ej-privacy-completed, #{$privacy-completed-fallback});
+  }
+
+  &--expired {
+    border-left-color: var(--ej-privacy-expired, #{$privacy-expired-fallback});
+  }
+}
+
+.arco-pol-requests__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.arco-pol-requests__type {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-privacy-primary-light, #{$privacy-primary-light-fallback});
+  color: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+}
+
+.arco-pol-requests__status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-color-background, #F3F4F6);
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.arco-pol-requests__requester {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.arco-pol-requests__deadline {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-top: 0.25rem;
+}
+
+.arco-pol-requests__empty {
+  color: var(--ej-color-text-secondary, #6B7280);
+  font-style: italic;
+}

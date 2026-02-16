@@ -1,21 +1,67 @@
 {#
 /**
  * @file
- * Partial: estado de los backups.
+ * Partial: estado de verificación de backups.
+ *
+ * Variables:
+ * - backup_status: Array de verificaciones recientes, cada una con:
+ *   - backup_type: Tipo de backup (database, files, config, full).
+ *   - backup_path: Ruta al archivo.
+ *   - status: Estado (verified, failed, corrupted).
+ *   - checksum_actual: Hash SHA-256 calculado.
+ *   - file_size_formatted: Tamaño formateado.
+ *   - verified_at: Timestamp de verificación.
+ *
+ * DIRECTRIZ: Clases BEM backup-status__*, sin {{ page.* }}.
  */
 #}
 <div class="backup-status">
-  <h3>{{ 'Estado de backups'|t }}</h3>
+  <div class="backup-status__header">
+    <h3>{{ 'Estado de backups'|t }}</h3>
+  </div>
+
   {% if backup_status %}
     {% for backup in backup_status %}
-      <div class="backup-status__item backup-status__item--{{ backup.status }}">
-        <span class="backup-status__type">{{ backup.type_label }}</span>
-        <span class="backup-status__path">{{ backup.path }}</span>
-        <span class="backup-status__result">{{ backup.status_label }}</span>
-        <span class="backup-status__size">{{ backup.size }}</span>
+      {% set card_status = backup.status == 'verified' ? 'passed' : (backup.status == 'corrupted' ? 'failed' : 'pending') %}
+      <div class="backup-status__card backup-status__card--{{ card_status }}"
+           data-status="{{ card_status }}">
+        <div class="backup-status__type">{{ backup.backup_type }}</div>
+
+        {# Badge de estado #}
+        <span class="backup-status__badge backup-status__badge--{{ card_status }}">
+          {% if card_status == 'passed' %}
+            {{ 'Verificado'|t }}
+          {% elseif card_status == 'failed' %}
+            {{ 'Fallido'|t }}
+          {% else %}
+            <span class="backup-status__icon backup-status__icon--pulse"></span>
+            {{ 'Pendiente'|t }}
+          {% endif %}
+        </span>
+
+        {# Checksum #}
+        {% if backup.checksum_actual %}
+          <div class="backup-status__checksum">
+            SHA-256: {{ backup.checksum_actual|slice(0, 16) }}...
+          </div>
+        {% endif %}
+
+        {# Tamaño #}
+        {% if backup.file_size_formatted %}
+          <div class="backup-status__size">{{ backup.file_size_formatted }}</div>
+        {% endif %}
+
+        {# Timestamp de verificación #}
+        {% if backup.verified_at %}
+          <div class="backup-status__timestamp">
+            {{ 'Verificado:'|t }} {{ backup.verified_at|date('d/m/Y H:i:s') }}
+          </div>
+        {% endif %}
       </div>
     {% endfor %}
   {% else %}
-    <p class="backup-status__empty">{{ 'No hay verificaciones de backup disponibles.'|t }}</p>
+    <p class="backup-status__empty">
+      {{ 'No hay verificaciones de backup disponibles.'|t }}
+    </p>
   {% endif %}
 </div>

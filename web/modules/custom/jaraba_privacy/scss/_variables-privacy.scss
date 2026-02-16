@@ -1,0 +1,53 @@
+// =============================================================================
+// VARIABLES DE PRIVACIDAD — MÓDULO JARABA PRIVACY
+// =============================================================================
+// Tokens de diseño específicos del stack de privacidad RGPD.
+//
+// DIRECTRIZ: Dart Sass moderno (@use, nunca @import).
+// DIRECTRIZ: color-mix() en lugar de rgba(), color.adjust() en lugar
+//            de darken()/lighten().
+// DIRECTRIZ: var(--ej-*) con fallback #{$privacy-*}.
+// =============================================================================
+
+@use 'sass:color';
+
+// ---------------------------------------------------------------------------
+// COLORES PRIVACIDAD (GDPR branding)
+// ---------------------------------------------------------------------------
+
+$privacy-primary-fallback: #1E40AF !default;
+$privacy-primary-light-fallback: #EFF6FF !default;
+$privacy-success-fallback: #059669 !default;
+$privacy-success-light-fallback: #ECFDF5 !default;
+$privacy-warning-fallback: #D97706 !default;
+$privacy-warning-light-fallback: #FFFBEB !default;
+$privacy-danger-fallback: #DC2626 !default;
+$privacy-danger-light-fallback: #FEF2F2 !default;
+$privacy-info-fallback: #0891B2 !default;
+$privacy-info-light-fallback: #ECFEFF !default;
+
+// Estados ARCO-POL
+$privacy-pending-fallback: #F59E0B !default;
+$privacy-in-progress-fallback: #3B82F6 !default;
+$privacy-completed-fallback: #10B981 !default;
+$privacy-expired-fallback: #EF4444 !default;
+
+// Severidad de brechas
+$privacy-severity-low-fallback: #6B7280 !default;
+$privacy-severity-medium-fallback: #F59E0B !default;
+$privacy-severity-high-fallback: #EA580C !default;
+$privacy-severity-critical-fallback: #DC2626 !default;
+
+// DPA estados
+$privacy-dpa-active-fallback: #059669 !default;
+$privacy-dpa-pending-fallback: #F59E0B !default;
+$privacy-dpa-expired-fallback: #DC2626 !default;
+
+// Tipografía
+$privacy-font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, Monaco, monospace !default;
+
+// Dimensiones
+$privacy-dashboard-gap: 1.5rem !default;
+$privacy-card-radius: 8px !default;
+$privacy-card-padding: 1.5rem !default;
+$privacy-banner-z-index: 9999 !default;

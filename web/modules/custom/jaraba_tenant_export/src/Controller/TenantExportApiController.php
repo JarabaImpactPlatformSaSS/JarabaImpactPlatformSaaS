@@ -59,7 +59,9 @@ class TenantExportApiController extends ControllerBase {
     }
 
     $groupId = (int) $tenant->id();
-    $tenantEntityId = (int) ($tenant->get('tenant_entity_id')->target_id ?? $tenant->id());
+    $tenantEntityId = $tenant->hasField('tenant_entity_id')
+      ? (int) ($tenant->get('tenant_entity_id')->target_id ?? $tenant->id())
+      : (int) $tenant->id();
     $userId = (int) $this->currentUser()->id();
 
     $result = $this->exportService->requestExport($groupId, $tenantEntityId, $userId, $type, $sections);

@@ -1796,6 +1796,30 @@ ecosistema_jaraba_core.admin.settings.apikeys.revoke:
   methods: [POST]
 
 # ---------------------------------------------------------------------------
+# COMPLIANCE PANEL UNIFICADO (Stack Compliance Legal N1 — FASE 12)
+# ---------------------------------------------------------------------------
+
+# Dashboard unificado de compliance legal: Privacy + Legal + DR.
+ecosistema_jaraba_core.compliance.panel:
+  path: '/admin/jaraba/compliance'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\CompliancePanelController::dashboard'
+    _title: 'Compliance Panel'
+  requirements:
+    _permission: 'view platform analytics'
+  options:
+    _admin_route: TRUE
+
+# API: Obtener KPIs de compliance en tiempo real.
+ecosistema_jaraba_core.api.compliance.overview:
+  path: '/api/v1/compliance/overview'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\CompliancePanelController::apiOverview'
+  requirements:
+    _permission: 'view platform analytics'
+  methods: [GET]
+
+# ---------------------------------------------------------------------------
 # FISCAL COMPLIANCE DASHBOARD (FASE 11)
 # ---------------------------------------------------------------------------
 

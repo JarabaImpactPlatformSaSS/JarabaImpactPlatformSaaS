@@ -1,0 +1,70 @@
+// =============================================================================
+// PRIVACY DASHBOARD — SCSS
+// =============================================================================
+// Layout y estilos para el dashboard de privacidad GDPR.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$privacy-*}.
+// BEM: .jaraba-privacy-dashboard, .privacy-dashboard__*
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables-privacy' as *;
+
+// ---------------------------------------------------------------------------
+// DASHBOARD LAYOUT
+// ---------------------------------------------------------------------------
+
+.jaraba-privacy-dashboard {
+  padding: $privacy-card-padding;
+}
+
+.privacy-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.privacy-dashboard__header h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ej-privacy-primary, #{$privacy-primary-fallback});
+}
+
+.privacy-dashboard__subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+// ---------------------------------------------------------------------------
+// DASHBOARD GRID
+// ---------------------------------------------------------------------------
+
+.privacy-dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $privacy-dashboard-gap;
+}
+
+.privacy-dashboard__section {
+  background: var(--ej-color-surface, #FFFFFF);
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+  border-radius: $privacy-card-radius;
+  padding: $privacy-card-padding;
+  box-shadow: 0 1px 3px color-mix(in srgb, #000000 10%, transparent);
+}
+
+.privacy-dashboard__section h3 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}

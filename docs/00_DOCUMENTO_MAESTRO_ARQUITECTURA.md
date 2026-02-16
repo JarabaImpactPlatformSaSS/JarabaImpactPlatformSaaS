@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-16
-**Versión:** 34.0.0 (Elevacion JarabaLex a Vertical Independiente + Specs Madurez N1/N2/N3)
+**Versión:** 35.0.0 (FASE 11 Fiscal Integration Layer + Stack Compliance Legal N1 Implementation)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -1661,26 +1661,51 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 9.4 Cumplimiento Fiscal — Stack VeriFactu + Facturae + E-Factura (Especificación)
+### 9.4 Cumplimiento Fiscal — Stack VeriFactu + Facturae + E-Factura
 
-> **Estado:** Documentación 100% completa (5 docs, 178-182). Implementación pendiente.
-> **Prioridad:** P0 CRÍTICO — Deadline legal 1 enero 2027 (sociedades) / 1 julio 2027 (autónomos).
-> **Sanción:** Hasta 50.000 EUR/ejercicio por software no conforme (RD 1007/2023).
+> **Estado:** FASES 0-11 COMPLETADAS. 3 modulos implementados + integration layer.
+> **Prioridad:** P0 CRITICO — Deadline legal 1 enero 2027 (sociedades) / 1 julio 2027 (autonomos).
+> **Sancion:** Hasta 50.000 EUR/ejercicio por software no conforme (RD 1007/2023).
 
 **Impacto dual:** Jaraba Impact S.L. como emisor de facturas SaaS a tenants + tenants como emisores a sus clientes finales.
 
-| Módulo | Normativa | Prioridad | Target | Entidades | Servicios | API Endpoints | Tests | Horas Est. |
-|--------|-----------|-----------|--------|-----------|-----------|---------------|-------|------------|
-| **`jaraba_verifactu`** | RD 1007/2023, Orden HAC/1177/2024 | **P0** | Q4 2026 | 4 (invoice_record, event_log, remision_batch, tenant_config) | 7 (Hash, Record, Qr, Xml, Remision, Pdf, EventLog) | 21 | 23 | 230-316h |
-| **`jaraba_facturae`** | Ley 25/2013, Facturae 3.2.2 | **P1** | Q3 2026 | 3 (facturae_document, tenant_config, face_log) | 6 (Xml, XAdES, FACeClient, Numbering, Validation, DIR3) | 21 | 26 | 230-304h |
-| **`jaraba_einvoice_b2b`** | Ley 18/2022 (Crea y Crece) | **P2** | Q1 2027 | 4 (einvoice_document, tenant_config, delivery_log, payment_event) | 6 (Converter, Validator, SPFEClient, DeliveryManager, PaymentStatus, NumberingService) | 24 | 23 | 260-336h |
-| **TOTAL** | | | | **11** | **19** | **66** | **72** | **720-956h** |
+| Modulo | Normativa | Estado | Entidades | Servicios | API Endpoints | Tests |
+|--------|-----------|--------|-----------|-----------|---------------|-------|
+| **`jaraba_verifactu`** | RD 1007/2023, Orden HAC/1177/2024 | IMPLEMENTADO (F0-F5) | 4 | 7 | 21 | 23 |
+| **`jaraba_facturae`** | Ley 25/2013, Facturae 3.2.2 | IMPLEMENTADO (F6-F7) | 3 | 6 | 21 | 26 |
+| **`jaraba_einvoice_b2b`** | Ley 18/2022 (Crea y Crece) | IMPLEMENTADO (F8-F9) | 4 | 6 | 24 | 23 |
+| **Integration Layer** | Transversal (F10-F11) | IMPLEMENTADO | — | 3 | — | 38 |
+| **TOTAL** | | **12 FASES** | **11** | **22** | **66** | **110** |
 
-**Componentes ecosistema reutilizables:** SHA-256 hash chains (Buzón Confianza ~80%), PAdES→XAdES firma digital (~60%), QR dinámico (~50%), append-only logs (FOC ~90%), ECA automation (~85%).
+**FASE 11 — Integration Layer (completada 2026-02-16):**
+- `FiscalComplianceService`: Score 0-100 por tenant, 5 factores x 20 pts (VeriFactu chain, AEAT remision, certificados, FACe rechazos, B2B morosidad)
+- `FiscalDashboardController`: Ruta `/admin/jaraba/fiscal`, dashboard unificado
+- `FiscalInvoiceDelegationService`: Deteccion automatica B2G/B2B/nacional por NIF prefix (Q/S/P = B2G)
+- KPI card en Admin Center + slide-panel trigger
+- 3 MJML email alerts (certificate_expiring, verifactu_chain_break, face_invoice_rejected)
+- 9 features en FeatureAccessService FEATURE_ADDON_MAP
+- Design token config YAML (17 color tokens fiscales)
+- 38 tests (unit + kernel + functional)
 
-**Arquitectura integrada:** Un invoice puede tener simultáneamente un VeriFactu record (obligatorio para todos) + un Facturae document (B2G) + un E-Invoice document (B2B). Los tres módulos comparten CertificateManagerService (PKCS#12) y se integran con `jaraba_billing` (BillingInvoice como fuente).
+**Arquitectura integrada:** Un invoice puede tener simultaneamente un VeriFactu record (obligatorio para todos) + un Facturae document (B2G) + un E-Invoice document (B2B). Los tres modulos comparten CertificateManagerService (PKCS#12) y se integran con `jaraba_billing` (BillingInvoice como fuente).
 
-**Nivel madurez actual:** Score 20.75/100 (Level 0 incomplete) — documentación ~95%, implementación ~5%.
+### 9.5 Stack Compliance Legal N1 — Privacidad, Legal, DR
+
+> **Estado:** IMPLEMENTADO (3 modulos, 198 archivos, +13,281 LOC).
+> **Nivel N1 Foundation:** GDPR DPA + Legal Terms SaaS + Disaster Recovery.
+> **Auditoria N1:** 12.5% (pre) → 95%+ (post-implementacion).
+
+| Modulo | Alcance | Entidades | Servicios | Templates | Tests |
+|--------|---------|-----------|-----------|-----------|-------|
+| **`jaraba_privacy`** | GDPR DPA + LOPD-GDD, consentimiento cookies, DSAR, breaches | 5 (DpaAgreement, PrivacyPolicy, CookieConsent, ProcessingActivity, DataRightsRequest) | 5 (DpaManager, CookieConsentManager, DataRightsHandler, BreachNotification, PrivacyPolicyGenerator) | privacy-dashboard + 5 partials + cookie-banner | — |
+| **`jaraba_legal`** | ToS/SLA/AUP versioning, offboarding, whistleblower | 6 (ServiceAgreement, SlaRecord, UsageLimitRecord, AupViolation, OffboardingRequest, WhistleblowerReport) | 5 (TosManager, SlaCalculator, AupEnforcer, OffboardingManager, WhistleblowerChannel) | legal-dashboard + 5 partials | — |
+| **`jaraba_dr`** | Backup verification, failover testing, incident management | 3 (BackupVerification, DrIncident, DrTestResult) | 5 (BackupVerifier, DrTestRunner, FailoverOrchestrator, IncidentCommunicator, StatusPageManager) | dr-dashboard + dr-status-page + 4 partials | 4 unit |
+
+**Infraestructura theme:**
+- 3 zero-region page templates (page--privacy, page--legal-compliance, page--dr-status)
+- 3 compliance partials (metric-card, status-badge, timeline)
+- 36 SVG compliance icons (duotone + solid)
+- Body classes + template suggestions en ecosistema_jaraba_theme.theme
 
 ---
 
@@ -2378,5 +2403,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 34.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 35.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 

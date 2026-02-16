@@ -1,0 +1,181 @@
+{#
+/**
+ * @file
+ * Compliance Panel Unificado — Stack Compliance Legal N1 FASE 12.
+ *
+ * Panel cross-modulo que agrega KPIs de jaraba_privacy, jaraba_legal
+ * y jaraba_dr en una vista unificada con score global y alertas.
+ *
+ * Variables:
+ *   - score: int (0-100) — Puntuacion global de compliance.
+ *   - grade: string (A-F) — Grado calculado.
+ *   - kpis: array — 9 KPIs agrupados por modulo (key, label, value, status).
+ *   - alerts: array — Alertas ordenadas por severidad (type, module, kpi, message, value).
+ *   - modules: array — Estado de modulos satelite (key, label, installed).
+ *
+ * BEM structure:
+ *   .compliance-panel
+ *     .compliance-panel__header
+ *     .compliance-panel__score
+ *     .compliance-panel__modules
+ *     .compliance-panel__kpis
+ *     .compliance-panel__alerts
+ */
+#}
+
+{# Grade-to-CSS modifier mapping #}
+{% set grade_modifier = {
+  'A': 'excellent',
+  'B': 'good',
+  'C': 'acceptable',
+  'D': 'warning',
+  'F': 'critical',
+} %}
+
+{# Alert type labels #}
+{% set alert_labels = {
+  'critical': 'Critico'|t,
+  'warning': 'Alerta'|t,
+} %}
+
+{# Module labels #}
+{% set module_labels = {
+  'jaraba_privacy': 'Privacidad y RGPD'|t,
+  'jaraba_legal': 'Legal y Contratos'|t,
+  'jaraba_dr': 'Continuidad (DR)'|t,
+} %}
+
+<div class="compliance-panel" data-compliance-score="{{ score }}">
+
+  {# ===== HEADER ===== #}
+  <div class="compliance-panel__header">
+    <div class="compliance-panel__header-content">
+      <h1 class="compliance-panel__title">
+        {% trans %}Panel de Compliance Unificado{% endtrans %}
+      </h1>
+      <p class="compliance-panel__subtitle">
+        {% trans %}Vision consolidada del cumplimiento normativo: privacidad, legal y continuidad de negocio{% endtrans %}
+      </p>
+    </div>
+    <div class="compliance-panel__header-actions">
+      <button class="compliance-panel__refresh-btn" id="compliance-panel-refresh" type="button">
+        <span class="compliance-panel__refresh-icon" aria-hidden="true"></span>
+        {% trans %}Actualizar{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# ===== GLOBAL SCORE ===== #}
+  <div class="compliance-panel__score compliance-panel__score--{{ grade_modifier[grade]|default('critical') }}">
+    <div class="compliance-panel__score-ring">
+      <span class="compliance-panel__score-value" id="compliance-panel-score">{{ score }}</span>
+      <span class="compliance-panel__score-unit">/ 100</span>
+    </div>
+    <div class="compliance-panel__score-meta">
+      <span class="compliance-panel__grade compliance-panel__grade--{{ grade_modifier[grade]|default('critical') }}" id="compliance-panel-grade">
+        {{ grade }}
+      </span>
+      <span class="compliance-panel__grade-label">
+        {% if grade == 'A' %}
+          {% trans %}Excelente{% endtrans %}
+        {% elseif grade == 'B' %}
+          {% trans %}Bueno{% endtrans %}
+        {% elseif grade == 'C' %}
+          {% trans %}Aceptable{% endtrans %}
+        {% elseif grade == 'D' %}
+          {% trans %}Necesita mejoras{% endtrans %}
+        {% else %}
+          {% trans %}Critico{% endtrans %}
+        {% endif %}
+      </span>
+    </div>
+    <div class="compliance-panel__score-bar">
+      <div class="compliance-panel__score-fill" style="width: {{ score }}%"></div>
+    </div>
+  </div>
+
+  {# ===== MODULE STATUS ===== #}
+  <div class="compliance-panel__modules">
+    <h2 class="compliance-panel__section-title">
+      {% trans %}Modulos del Stack{% endtrans %}
+    </h2>
+    <div class="compliance-panel__modules-grid">
+      {% for mod in modules %}
+        <div class="compliance-panel__module compliance-panel__module--{{ mod.installed ? 'active' : 'inactive' }}">
+          <span class="compliance-panel__module-indicator"></span>
+          <span class="compliance-panel__module-name">
+            {{ module_labels[mod.key]|default(mod.label) }}
+          </span>
+          <span class="compliance-panel__module-status">
+            {{ mod.installed ? 'Activo'|t : 'No instalado'|t }}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ===== KPIs GRID 3x3 ===== #}
+  <div class="compliance-panel__kpis">
+    <h2 class="compliance-panel__section-title">
+      {% trans %}Indicadores Clave de Compliance{% endtrans %}
+    </h2>
+    <div class="compliance-panel__kpis-grid" id="compliance-panel-kpis">
+      {% for kpi in kpis %}
+        <div class="compliance-panel__kpi compliance-panel__kpi--{{ kpi.status }}"
+             data-kpi-key="{{ kpi.key }}">
+          <div class="compliance-panel__kpi-header">
+            <span class="compliance-panel__kpi-module compliance-panel__kpi-module--{{ kpi.module }}">
+              {{ module_labels[kpi.module]|default(kpi.module) }}
+            </span>
+          </div>
+          <div class="compliance-panel__kpi-body">
+            {% if kpi.status == 'not_available' %}
+              <span class="compliance-panel__kpi-value compliance-panel__kpi-value--na">—</span>
+            {% else %}
+              <span class="compliance-panel__kpi-value">{{ kpi.value }}%</span>
+            {% endif %}
+            <span class="compliance-panel__kpi-label">{{ kpi.label }}</span>
+          </div>
+          <div class="compliance-panel__kpi-indicator compliance-panel__kpi-indicator--{{ kpi.status }}"></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ===== ALERTS ===== #}
+  <div class="compliance-panel__alerts">
+    <div class="compliance-panel__alerts-header">
+      <h2 class="compliance-panel__section-title">
+        {% trans %}Alertas de Compliance{% endtrans %}
+      </h2>
+      {% if alerts|length > 0 %}
+        <span class="compliance-panel__alerts-count">{{ alerts|length }}</span>
+      {% endif %}
+    </div>
+
+    <div class="compliance-panel__alerts-list" id="compliance-panel-alerts">
+      {% if alerts is empty %}
+        <div class="compliance-panel__alerts-empty">
+          <span class="compliance-panel__alerts-empty-icon" aria-hidden="true"></span>
+          <p>{% trans %}No hay alertas de compliance activas. Todos los indicadores dentro de umbrales.{% endtrans %}</p>
+        </div>
+      {% else %}
+        {% for alert in alerts %}
+          <div class="compliance-panel__alert compliance-panel__alert--{{ alert.type }}">
+            <span class="compliance-panel__alert-badge compliance-panel__alert-badge--{{ alert.type }}">
+              {{ alert_labels[alert.type]|default(alert.type) }}
+            </span>
+            <div class="compliance-panel__alert-content">
+              <span class="compliance-panel__alert-module">
+                {{ module_labels[alert.module]|default(alert.module) }}
+              </span>
+              <span class="compliance-panel__alert-message">{{ alert.message }}</span>
+            </div>
+            <span class="compliance-panel__alert-value">{{ alert.value }}%</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+</div>

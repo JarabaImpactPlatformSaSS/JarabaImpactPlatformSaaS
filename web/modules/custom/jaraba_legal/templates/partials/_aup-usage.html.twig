@@ -1,0 +1,69 @@
+{#
+/**
+ * @file
+ * Partial: Uso de recursos y estado AUP.
+ *
+ * Muestra barras de progreso por tipo de recurso (API calls, storage, users),
+ * badge de violaciones y porcentaje de uso.
+ *
+ * Variables:
+ * - aup_usage: Array de registros de uso con limit_type, current_usage,
+ *   limit_value, percentage, exceeded, near_limit.
+ */
+#}
+<div class="aup-usage">
+  {% if aup_usage is not empty %}
+    {# Barras de uso por recurso #}
+    {% for limit in aup_usage %}
+      {% set bar_modifier = 'safe' %}
+      {% if limit.exceeded %}
+        {% set bar_modifier = 'exceeded' %}
+      {% elseif limit.near_limit %}
+        {% set bar_modifier = 'warning' %}
+      {% endif %}
+
+      {% set type_labels = {
+        'api_calls': 'Llamadas API'|t,
+        'storage_mb': 'Almacenamiento (MB)'|t,
+        'bandwidth_mb': 'Ancho de banda (MB)'|t,
+        'users': 'Usuarios'|t,
+        'pages': 'Paginas'|t,
+        'products': 'Productos'|t
+      } %}
+
+      <div class="aup-usage__bar-container" data-usage-type="{{ limit.limit_type }}">
+        <div class="aup-usage__bar-label">
+          <span class="aup-usage__bar-name">
+            {{ type_labels[limit.limit_type]|default(limit.limit_type) }}
+          </span>
+          <span class="aup-usage__bar-value">
+            {{ limit.current_usage }} / {{ limit.limit_value }} ({{ limit.percentage }}%)
+          </span>
+        </div>
+        <div class="aup-usage__bar">
+          <div class="aup-usage__bar-fill aup-usage__bar-fill--{{ bar_modifier }}"
+               style="width: {{ [limit.percentage, 100]|min }}%">
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    {# Badge de violaciones #}
+    {% set violation_count = 0 %}
+    {% for limit in aup_usage %}
+      {% if limit.exceeded %}
+        {% set violation_count = violation_count + 1 %}
+      {% endif %}
+    {% endfor %}
+
+    {% if violation_count > 0 %}
+      <div class="aup-usage__violation-count">
+        {{ '@count recurso(s) excedido(s)'|t({'@count': violation_count}) }}
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="aup-violations__empty">
+      {{ 'No hay datos de uso disponibles. Se inicializaran automaticamente.'|t }}
+    </p>
+  {% endif %}
+</div>

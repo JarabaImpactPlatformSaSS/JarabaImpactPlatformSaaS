@@ -4,7 +4,17 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 51.0.0 (Plan Implementacion Stack Compliance Legal N1)
+**Versión:** 52.0.0 (FASE 11 Fiscal Integration Layer + Stack Compliance Legal N1 Implementation)
+
+> **🔧 FASE 11 FISCAL INTEGRATION LAYER + STACK COMPLIANCE LEGAL N1 IMPLEMENTADOS** (2026-02-16)
+> - **FASE 11 Fiscal Integration Layer:** FiscalComplianceService (score 0-100, 5 factores × 20 pts), FiscalDashboardController (zero-region, KPIs, feature gating), FiscalInvoiceDelegationService (NIF prefix B2G/B2B detection), MJML alertas fiscales, design tokens --ej-fiscal-*, 38 PHPUnit tests, 3 servicios integrados
+> - **Stack Compliance Legal N1 — 3 Módulos, 198 archivos, +13,281 LOC:**
+>   - `jaraba_privacy`: GDPR DPA Templates + LOPD-GDD. 5 Content Entities + 5 Services + 10 API endpoints
+>   - `jaraba_legal`: Legal Terms SaaS. 6 Content Entities + 5 Services + 12 API endpoints
+>   - `jaraba_dr`: Disaster Recovery Plan. 3 Content Entities + 5 Services + 8 API endpoints
+> - **VeriFactu Stack Fiscal Completo:** FASES 0-11 todas IMPLEMENTADAS (jaraba_verifactu + jaraba_facturae + jaraba_einvoice_b2b + ecosistema_jaraba_core integration layer)
+> - **Módulos custom:** 69 (+32 desde última contabilización). **Aprendizajes:** 86. **Madurez:** 4.9/5.0
+> - **Directrices v36.0.0, Arquitectura v35.0.0**
 
 > **⚖️ PLAN IMPLEMENTACION STACK COMPLIANCE LEGAL N1 — 3 MODULOS, 14 ENTIDADES, 30 API ENDPOINTS** (2026-02-16)
 > - **Plan de Implementacion:** 24 secciones, 13 fases (F0-F12), 91-118h / 4,095-5,310 EUR
@@ -1180,22 +1190,22 @@
 | **Documentos de planificación** | 15 |
 | **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 85 |
+| **Aprendizajes documentados** | 86 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
 | **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
 | **Landing pages verticales** | 6 (empleo, talento, emprender, comercio, instituciones, jarabalex) |
 | **Plantillas disponibles** | 4 |
-| **Módulos custom** | 37 (9 Marketing AI + 10 Platform Services v3 + 3 Módulos 20260201 + jaraba_tenant_export) |
-| **Módulos con package.json** | 18 (compilación Dart Sass estandarizada) |
+| **Módulos custom** | 69 (incluye 3 fiscal: verifactu/facturae/einvoice_b2b + 3 compliance legal: privacy/legal/dr + legal_intelligence) |
+| **Módulos con package.json** | 30 (compilación Dart Sass estandarizada) |
 | **Unit test files Marketing AI** | 50 (100% cobertura servicios across 8 módulos) |
-| **Page templates Twig** | 19 (front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, bmc, hipotesis, experimentos-gestion, insights, legal, funding, tenant-export, fiscal) |
+| **Page templates Twig** | 41 (theme: front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, empleabilidad, emprendimiento, andalucia-ei, fiscal, legal, privacy, dr-status, legal-compliance, admin-center, auth, user, comercio-marketplace, heatmap-analytics, canvas-editor, page-builder, site-builder, integrations, customer-success, credentials, interactive, skills, i18n, verify, revisions, mi-cuenta, ayuda, my-certifications + 10 módulos) |
 | **Bloques Page Builder** | 67 (45 base + 22 premium) |
 | **Docs Page Builder** | 20 (160-179) |
 | **Compliance controles** | 25+ (SOC 2, ISO 27001, ENS, GDPR) + GDPR Drush commands |
 | **Skills AI verticales** | 30 (7+7+6+5+5 por vertical) |
 | **Monitoring alertas** | 24 reglas Prometheus (14 base + 10 scaling F10) + 5 recording rules |
-| **Email templates MJML** | 40 transaccionales (auth 5, billing 7, marketplace 6, empleabilidad 10, emprendimiento 11 + base) |
+| **Email templates MJML** | 49 transaccionales (auth 5, billing 7, marketplace 6, empleabilidad 10, emprendimiento 11, fiscal 3, compliance 6 + base) |
 | **Stripe precios** | 48 (6 productos × 4 tiers × 2 intervalos) |
 | **Go-live scripts** | 4 (preflight, validation, rollback + restore_tenant F10) |
 | **Security CI scans** | Daily (Trivy + ZAP + composer/npm audit) |
@@ -1208,8 +1218,8 @@
 
 ## Nivel de Madurez Arquitectónica
 
-> **Estado actual:** Nivel 4.5 de 5 (reducido por 7 hallazgos críticos pendientes — auditoría integral 2026-02-13)
-> **Estado:** REMEDIACIÓN EN CURSO — 3 fases planificadas (8 semanas)
+> **Estado actual:** Nivel 4.9 de 5 (elevada tras resolver 23/65 hallazgos + Stack Fiscal VeriFactu FASES 0-11 + Compliance Legal N1 implementados)
+> **Estado:** PRODUCCIÓN — Stack fiscal y compliance legal operativos
 > 
 > Ver [Arquitectura Adaptativa](./arquitectura/2026-01-09_2239_arquitectura-adaptativa.md) para detalles.
 
@@ -1242,6 +1252,8 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-16 | **52.0.0** | 🔧 **FASE 11 Fiscal Integration Layer + Stack Compliance Legal N1 IMPLEMENTADOS:** FASE 11 completada — FiscalComplianceService (score 0-100, 5 factores × 20 pts), FiscalDashboardController (zero-region, KPIs, feature gating), FiscalInvoiceDelegationService (NIF prefix B2G/B2B), MJML alertas fiscales, design tokens --ej-fiscal-*, 38 PHPUnit tests. Stack VeriFactu FASES 0-11 todas IMPLEMENTADAS. Stack Compliance Legal N1: 3 módulos nuevos (jaraba_privacy GDPR/DPA 5 entities + 5 services, jaraba_legal ToS/SLA 6 entities + 5 services, jaraba_dr Disaster Recovery 3 entities + 5 services). 198 archivos, +13,281 LOC. 69 módulos custom totales, 30 con package.json, 49 MJML templates, 41 page templates theme. Contabilización actualizada de estadísticas reales del proyecto. Directrices v36.0.0, Arquitectura v35.0.0. 86 aprendizajes |
+| 2026-02-16 | **51.0.0** | ⚖️ **Plan Implementacion Stack Compliance Legal N1:** 24 secciones, 13 fases (F0-F12), 91-118h / 4,095-5,310 EUR. 3 módulos planificados (jaraba_privacy, jaraba_legal, jaraba_dr). 14 entidades, 15 servicios, 30 API endpoints. 20 directrices cumplidas. Correspondencia tabla 40+ filas. Auditoria N1 target 12.5% → 95%+ |
 | 2026-02-16 | **50.0.0** | ⚖️ **Elevacion JarabaLex a Vertical Independiente:** `jaraba_legal_intelligence` elevado de sub-feature ServiciosConecta a vertical independiente JarabaLex. 16 config entities (1 vertical + 3 features + 3 SaaS plans + 9 FreemiumVerticalLimit). page--legal.html.twig + CSS custom properties --ej-legal-* + billing FEATURE_ADDON_MAP. Docs 178/178A/178B metadata actualizada. 18 nuevos + 11 modificados. 5 reglas VERTICAL-ELEV-001 a 005. Aprendizaje #85. Directrices v34.0.0, Arquitectura v34.0.0. 85 aprendizajes |
 | 2026-02-16 | **49.0.0** | 📋 **Specs Madurez N1/N2/N3 + Backup Separation:** 21 documentos técnicos (docs 183-203) organizados en 3 niveles de madurez. N1 Foundation (GDPR DPA, Legal Terms, DR Plan — audit NOT READY). N2 Growth Ready (AI Agents, Mobile, Multi-Agent, Predictive Analytics, Multi-Region, STO/PIIL, EU Funding, Connector SDK — audit 15.6%). N3 Enterprise (SOC 2, ISO 27001, ENS, HA 99.99%, SLA, SSO/SCIM, Data Governance — audit 10.4%). Plan fiscal v1 creado. Separación backups daily/pre_deploy para GoodSync (78 migrados). Sección 7.4e nueva. 6 aprendizajes faltantes añadidos a §7.6. Directrices v33.0.0, Arquitectura v33.0.0. 84 aprendizajes |
 | 2026-02-16 | **48.0.0** | 📦 **Tenant Export + Daily Backup — Portabilidad GDPR Art. 20:** Módulo `jaraba_tenant_export` implementado. TenantExportRecord entity (17 campos, 4 índices DB). TenantDataCollectorService (6 grupos datos). TenantExportService (ZIP async Queue API, rate limiting, StreamedResponse SHA-256, audit logging). 2 QueueWorkers (export + cleanup). 6 API REST endpoints /api/v1/tenant-export/*. Página frontend /tenant/export Zero-Region + 6 partials + JS dashboard polling. SCSS BEM + 6 SVG icons (export, archive, schedule). daily-backup.yml GitHub Actions (cron 03:00 UTC, rotación inteligente, Slack alertas). verify-backups.yml actualizado para db_daily_*. 3 Drush commands. 8 test suites. Plan implementación + Aprendizaje #83. Directrices v32.0.0, Arquitectura v32.0.0. 83 aprendizajes |

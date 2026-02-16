@@ -1,33 +1,199 @@
-/**
- * @file
- * Estilos de las métricas SLA.
- */
+// =============================================================================
+// SLA METRICS — SCSS
+// =============================================================================
+// Estilos del widget de metricas SLA: uptime, downtime, creditos.
+//
+// DIRECTRIZ: @use (nunca @import), color-mix() (nunca rgba()),
+//            var(--ej-*) con fallback #{$legal-*}.
+// BEM: .sla-metrics, .sla-metrics__*
+// =============================================================================
 
-.sla-status {
-  h3 {
-    margin-top: 0;
-    color: #333;
+@use 'sass:color';
+@use 'variables-legal' as *;
+
+// ---------------------------------------------------------------------------
+// CONTENEDOR PRINCIPAL
+// ---------------------------------------------------------------------------
+
+.sla-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.sla-metrics__item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--ej-color-background, #F9FAFB);
+  border-radius: 6px;
+  border: 1px solid var(--ej-color-border, #E5E7EB);
+}
+
+.sla-metrics__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-color-text-secondary, #6B7280);
+  margin-bottom: 0.25rem;
+}
+
+.sla-metrics__value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: $legal-font-mono;
+  color: var(--ej-color-text-primary, #1F2937);
+
+  &--compliant {
+    color: var(--ej-legal-sla-compliant, #{$legal-sla-compliant-fallback});
   }
 
-  &__meter {
-    height: 8px;
-    background: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 0.5rem 0;
-
-    &-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.3s ease;
-
-      &--met {
-        background: #4caf50;
-      }
-
-      &--breach {
-        background: #f44336;
-      }
-    }
+  &--at-risk {
+    color: var(--ej-legal-sla-at-risk, #{$legal-sla-at-risk-fallback});
   }
+
+  &--breached {
+    color: var(--ej-legal-sla-breached, #{$legal-sla-breached-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// INDICADOR CIRCULAR (gauge via conic-gradient)
+// ---------------------------------------------------------------------------
+
+.sla-metrics__gauge {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  background: conic-gradient(
+    var(--ej-legal-sla-compliant, #{$legal-sla-compliant-fallback}) var(--sla-percentage, 0%),
+    var(--ej-color-border, #E5E7EB) var(--sla-percentage, 0%)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--ej-color-surface, #FFFFFF);
+  }
+
+  &--at-risk {
+    background: conic-gradient(
+      var(--ej-legal-sla-at-risk, #{$legal-sla-at-risk-fallback}) var(--sla-percentage, 0%),
+      var(--ej-color-border, #E5E7EB) var(--sla-percentage, 0%)
+    );
+  }
+
+  &--breached {
+    background: conic-gradient(
+      var(--ej-legal-sla-breached, #{$legal-sla-breached-fallback}) var(--sla-percentage, 0%),
+      var(--ej-color-border, #E5E7EB) var(--sla-percentage, 0%)
+    );
+  }
+}
+
+.sla-metrics__gauge-text {
+  position: relative;
+  z-index: 1;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: $legal-font-mono;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+// ---------------------------------------------------------------------------
+// BARRA DE PROGRESO LINEAL
+// ---------------------------------------------------------------------------
+
+.sla-metrics__bar {
+  height: 8px;
+  background: var(--ej-color-border, #E5E7EB);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.sla-metrics__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 300ms ease;
+
+  &--compliant {
+    background: var(--ej-legal-sla-compliant, #{$legal-sla-compliant-fallback});
+  }
+
+  &--at-risk {
+    background: var(--ej-legal-sla-at-risk, #{$legal-sla-at-risk-fallback});
+  }
+
+  &--breached {
+    background: var(--ej-legal-sla-breached, #{$legal-sla-breached-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TABLA DE HISTORIAL
+// ---------------------------------------------------------------------------
+
+.sla-metrics__history {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  margin-top: 1rem;
+}
+
+.sla-metrics__history th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: var(--ej-color-text-secondary, #6B7280);
+  border-bottom: 2px solid var(--ej-color-border, #E5E7EB);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sla-metrics__history td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--ej-color-border, #E5E7EB);
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.sla-metrics__history tr:last-child td {
+  border-bottom: none;
+}
+
+// ---------------------------------------------------------------------------
+// CREDITOS SLA
+// ---------------------------------------------------------------------------
+
+.sla-metrics__credit {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+
+  &--none {
+    background: var(--ej-legal-success-light, #{$legal-success-light-fallback});
+    color: var(--ej-legal-success, #{$legal-success-fallback});
+  }
+
+  &--applied {
+    background: var(--ej-legal-warning-light, #{$legal-warning-light-fallback});
+    color: var(--ej-legal-warning, #{$legal-warning-fallback});
+  }
+}
+
+.sla-metrics__empty {
+  color: var(--ej-color-text-secondary, #6B7280);
+  font-style: italic;
 }

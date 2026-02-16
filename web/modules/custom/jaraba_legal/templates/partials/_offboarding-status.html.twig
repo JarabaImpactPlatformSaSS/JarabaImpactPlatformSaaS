@@ -1,0 +1,118 @@
+{#
+/**
+ * @file
+ * Partial: Estado del proceso de offboarding.
+ *
+ * Muestra un timeline vertical con los pasos del offboarding.
+ * Solo se muestra cuando hay un offboarding activo.
+ *
+ * Variables:
+ * - offboarding_status: Array con status, grace_period_end, reason,
+ *   grace_remaining_days, can_cancel, export_available, deletion_certificate_hash.
+ */
+#}
+<div class="offboarding-status">
+  {% if offboarding_status %}
+    {% set current_status = offboarding_status.status|default('none') %}
+
+    {# Definir los pasos del timeline #}
+    {% set steps = [
+      {
+        'id': 'grace_period',
+        'title': 'Periodo de gracia'|t,
+        'description': 'El tenant puede cancelar el offboarding durante este periodo.'|t
+      },
+      {
+        'id': 'export_pending',
+        'title': 'Exportacion de datos'|t,
+        'description': 'Los datos del tenant se preparan para descarga.'|t
+      },
+      {
+        'id': 'export_complete',
+        'title': 'Exportacion completada'|t,
+        'description': 'Los datos estan disponibles para descarga.'|t
+      },
+      {
+        'id': 'data_deletion',
+        'title': 'Eliminacion de datos'|t,
+        'description': 'Los datos del tenant se eliminan de forma certificada.'|t
+      },
+      {
+        'id': 'completed',
+        'title': 'Completado'|t,
+        'description': 'El proceso de offboarding ha finalizado.'|t
+      }
+    ] %}
+
+    {# Orden de estados para determinar progreso #}
+    {% set status_order = ['grace_period', 'export_pending', 'export_complete', 'data_deletion', 'completed'] %}
+    {% set current_index = -1 %}
+    {% for i, status_id in status_order %}
+      {% if status_id == current_status %}
+        {% set current_index = i %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="offboarding-timeline">
+      {% for step in steps %}
+        {% set step_index = loop.index0 %}
+
+        {% if current_status == 'cancelled' %}
+          {% set step_state = 'cancelled' %}
+        {% elseif step_index < current_index %}
+          {% set step_state = 'completed' %}
+        {% elseif step_index == current_index %}
+          {% set step_state = 'active' %}
+        {% else %}
+          {% set step_state = 'pending' %}
+        {% endif %}
+
+        <div class="offboarding-timeline__step offboarding-timeline__step--{{ step_state }}">
+          <div class="offboarding-timeline__icon">
+            {% if step_state == 'completed' %}
+              &#10003;
+            {% else %}
+              {{ loop.index }}
+            {% endif %}
+          </div>
+
+          <div class="offboarding-timeline__content">
+            <h4 class="offboarding-timeline__title">{{ step.title }}</h4>
+            <p class="offboarding-timeline__description">{{ step.description }}</p>
+
+            {# Info adicional segun el paso #}
+            {% if step.id == 'grace_period' and current_status == 'grace_period' %}
+              {% if offboarding_status.grace_remaining_days is defined %}
+                <span class="offboarding-timeline__status offboarding-timeline__status--grace">
+                  {{ '@days dias restantes'|t({'@days': offboarding_status.grace_remaining_days}) }}
+                </span>
+              {% endif %}
+              {% if offboarding_status.grace_period_end_human is defined %}
+                <span class="offboarding-timeline__date">
+                  {{ 'Vence: @date'|t({'@date': offboarding_status.grace_period_end_human}) }}
+                </span>
+              {% endif %}
+            {% endif %}
+
+            {% if step.id == 'completed' and offboarding_status.deletion_certificate_hash %}
+              <span class="offboarding-timeline__status offboarding-timeline__status--completed">
+                {{ 'Hash: @hash'|t({'@hash': offboarding_status.deletion_certificate_hash[:16] ~ '...'}) }}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Motivo del offboarding #}
+    {% if offboarding_status.reason %}
+      <p class="offboarding-timeline__reason">
+        <strong>{{ 'Motivo:'|t }}</strong> {{ offboarding_status.reason }}
+      </p>
+    {% endif %}
+  {% else %}
+    <p class="offboarding-timeline__empty">
+      {{ 'No hay proceso de offboarding activo para este tenant.'|t }}
+    </p>
+  {% endif %}
+</div>

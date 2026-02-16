@@ -61,3 +61,80 @@ jaraba_dr.backup_verification.settings:
     _title: 'Backup Verifications'
   requirements:
     _permission: 'administer dr'
+
+# =============================================================================
+# API REST ENDPOINTS -- 8 endpoints para integracion externa
+# =============================================================================
+
+# GET /api/v1/dr/status -- Estado general publico (sin autenticacion)
+jaraba_dr.api.status:
+  path: '/api/v1/dr/status'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::getStatus'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+# GET /api/v1/dr/services -- Estado de servicios monitorizados
+jaraba_dr.api.services:
+  path: '/api/v1/dr/services'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::getServicesStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'access dr api'
+
+# GET /api/v1/dr/incidents -- Listado de incidentes activos
+jaraba_dr.api.incidents:
+  path: '/api/v1/dr/incidents'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::getIncidents'
+  methods: [GET]
+  requirements:
+    _permission: 'access dr api'
+
+# GET /api/v1/dr/incidents/{id} -- Detalle de un incidente
+jaraba_dr.api.incident_detail:
+  path: '/api/v1/dr/incidents/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::getIncidentDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'access dr api'
+    id: '\d+'
+
+# POST /api/v1/dr/backups/verify -- Verificar integridad de backup
+jaraba_dr.api.backups_verify:
+  path: '/api/v1/dr/backups/verify'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::verifyBackup'
+  methods: [POST]
+  requirements:
+    _permission: 'access dr api'
+
+# GET /api/v1/dr/tests -- Historial de tests DR
+jaraba_dr.api.tests:
+  path: '/api/v1/dr/tests'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::getTestHistory'
+  methods: [GET]
+  requirements:
+    _permission: 'access dr api'
+
+# POST /api/v1/dr/tests/run -- Ejecutar un test DR
+jaraba_dr.api.tests_run:
+  path: '/api/v1/dr/tests/run'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::runTest'
+  methods: [POST]
+  requirements:
+    _permission: 'execute dr tests'
+
+# GET /api/v1/dr/metrics -- Metricas agregadas de DR
+jaraba_dr.api.metrics:
+  path: '/api/v1/dr/metrics'
+  defaults:
+    _controller: '\Drupal\jaraba_dr\Controller\DrApiController::getMetrics'
+  methods: [GET]
+  requirements:
+    _permission: 'access dr api'

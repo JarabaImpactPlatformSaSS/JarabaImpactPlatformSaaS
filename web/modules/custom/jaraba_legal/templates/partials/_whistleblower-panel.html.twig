@@ -1,0 +1,124 @@
+{#
+/**
+ * @file
+ * Partial: Panel del canal de denuncias.
+ *
+ * Incluye el formulario de reporte anonimo, la consulta de estado
+ * por codigo de seguimiento y la tabla de reportes recientes
+ * (solo visible para el responsable del canal).
+ *
+ * Variables:
+ * - whistleblower_stats: Estadisticas del canal (total, by_status, by_severity).
+ * - is_handler: Boolean indicando si el usuario es responsable del canal.
+ */
+#}
+<div class="whistleblower-panel">
+  {# Formulario de reporte anonimo #}
+  <div class="whistleblower-panel__section">
+    <h4 class="whistleblower-panel__section-title">{{ 'Enviar reporte'|t }}</h4>
+    <p class="whistleblower-panel__notice">
+      {{ 'Este canal es anonimo y confidencial. Su identidad no sera revelada.'|t }}
+    </p>
+
+    <form class="whistleblower-panel__report-form">
+      <div class="whistleblower-panel__field">
+        <label for="wb-category">{{ 'Categoria'|t }}</label>
+        <select id="wb-category" name="category" required>
+          <option value="">{{ '-- Seleccione --'|t }}</option>
+          <option value="fraud">{{ 'Fraude'|t }}</option>
+          <option value="corruption">{{ 'Corrupcion'|t }}</option>
+          <option value="harassment">{{ 'Acoso'|t }}</option>
+          <option value="data_breach">{{ 'Brecha de datos'|t }}</option>
+          <option value="discrimination">{{ 'Discriminacion'|t }}</option>
+          <option value="safety">{{ 'Seguridad laboral'|t }}</option>
+          <option value="environmental">{{ 'Medioambiental'|t }}</option>
+          <option value="other">{{ 'Otro'|t }}</option>
+        </select>
+      </div>
+
+      <div class="whistleblower-panel__field">
+        <label for="wb-description">{{ 'Descripcion'|t }}</label>
+        <textarea id="wb-description" name="description" rows="5" required
+                  placeholder="{{ 'Describa los hechos con el mayor detalle posible...'|t }}"></textarea>
+      </div>
+
+      <div class="whistleblower-panel__field">
+        <label for="wb-severity">{{ 'Severidad'|t }}</label>
+        <select id="wb-severity" name="severity">
+          <option value="low">{{ 'Baja'|t }}</option>
+          <option value="medium" selected>{{ 'Media'|t }}</option>
+          <option value="high">{{ 'Alta'|t }}</option>
+          <option value="critical">{{ 'Critica'|t }}</option>
+        </select>
+      </div>
+
+      <button type="submit" class="tos-status__accept-btn">
+        {{ 'Enviar reporte'|t }}
+      </button>
+    </form>
+
+    {# Contenedor de resultado tras enviar #}
+    <div class="whistleblower-panel__result" hidden></div>
+  </div>
+
+  {# Consulta de estado por codigo de seguimiento #}
+  <div class="whistleblower-panel__section">
+    <h4 class="whistleblower-panel__section-title">{{ 'Consultar estado'|t }}</h4>
+
+    <form class="whistleblower-panel__status-form">
+      <div class="whistleblower-panel__field">
+        <label for="wb-tracking-code">{{ 'Codigo de seguimiento'|t }}</label>
+        <input type="text" id="wb-tracking-code" name="tracking_code"
+               placeholder="WB-XXXXXXXX-XXXX" required>
+      </div>
+
+      <button type="submit" class="tos-status__accept-btn">
+        {{ 'Consultar estado'|t }}
+      </button>
+    </form>
+
+    {# Contenedor de resultado de consulta #}
+    <div class="whistleblower-panel__status-result" hidden></div>
+  </div>
+
+  {# Tabla de reportes recientes (solo para el responsable del canal) #}
+  {% if is_handler and whistleblower_stats %}
+    <div class="whistleblower-panel__section">
+      <h4 class="whistleblower-panel__section-title">{{ 'Estadisticas del canal'|t }}</h4>
+
+      <div class="sla-metrics">
+        <div class="sla-metrics__item">
+          <span class="sla-metrics__label">{{ 'Total'|t }}</span>
+          <span class="sla-metrics__value">{{ whistleblower_stats.total|default(0) }}</span>
+        </div>
+        <div class="sla-metrics__item">
+          <span class="sla-metrics__label">{{ 'Abiertos'|t }}</span>
+          <span class="sla-metrics__value">{{ whistleblower_stats.open_count|default(0) }}</span>
+        </div>
+        <div class="sla-metrics__item">
+          <span class="sla-metrics__label">{{ 'Cerrados'|t }}</span>
+          <span class="sla-metrics__value">{{ whistleblower_stats.closed_count|default(0) }}</span>
+        </div>
+      </div>
+
+      {% if whistleblower_stats.by_severity is defined %}
+        <table class="sla-metrics__history">
+          <thead>
+            <tr>
+              <th>{{ 'Severidad'|t }}</th>
+              <th>{{ 'Cantidad'|t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for severity, count in whistleblower_stats.by_severity %}
+              <tr>
+                <td>{{ severity }}</td>
+                <td>{{ count }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

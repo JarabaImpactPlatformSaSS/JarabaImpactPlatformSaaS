@@ -1,0 +1,105 @@
+{#
+/**
+ * @file
+ * Partial: Estado de aceptacion de Terms of Service.
+ *
+ * Muestra la version activa del ToS, el estado de aceptacion
+ * y el boton/modal para aceptar si esta pendiente.
+ *
+ * Variables:
+ * - tos_status: Array con claves accepted, active_version, accepted_version, accepted_at.
+ * - tos_pending: Boolean indicando si hay aceptacion pendiente.
+ */
+#}
+<div class="tos-status" {% if tos_pending %}data-tos-pending="true"{% endif %}>
+  {% if tos_status %}
+    <div class="tos-status__info">
+      {# Badge de estado #}
+      {% if tos_status.accepted %}
+        <span class="tos-status__badge tos-status__badge--accepted">
+          {{ 'Aceptado'|t }}
+        </span>
+      {% elseif tos_status.active_version %}
+        <span class="tos-status__badge tos-status__badge--pending">
+          {{ 'Pendiente de aceptacion'|t }}
+        </span>
+      {% else %}
+        <span class="tos-status__badge tos-status__badge--expired">
+          {{ 'Sin version activa'|t }}
+        </span>
+      {% endif %}
+
+      {# Version #}
+      {% if tos_status.active_version %}
+        <span class="tos-status__version">v{{ tos_status.active_version }}</span>
+      {% endif %}
+
+      {# Fecha de aceptacion #}
+      {% if tos_status.accepted_at %}
+        <span class="tos-status__date">
+          {{ 'Aceptado el'|t }} {{ tos_status.accepted_at|date('d/m/Y') }}
+        </span>
+      {% endif %}
+    </div>
+
+    {# Boton de aceptacion si esta pendiente #}
+    {% if not tos_status.accepted and tos_status.active_version %}
+      <button type="button" class="tos-status__accept-btn" data-action="open-tos-modal">
+        {{ 'Aceptar Terms of Service'|t }}
+      </button>
+    {% endif %}
+
+    {# Enlace al historial #}
+    <a href="#" class="tos-status__history-link">
+      {{ 'Ver historial de versiones'|t }}
+    </a>
+  {% else %}
+    <p class="tos-status__empty">
+      {{ 'No hay Terms of Service configurados para este tenant.'|t }}
+    </p>
+  {% endif %}
+
+  {# Modal de aceptacion ToS #}
+  {% if tos_pending %}
+    <div class="tos-status__modal">
+      <div class="tos-status__modal-content">
+        <h3 class="tos-status__modal-title">
+          {{ 'Aceptacion de Terms of Service'|t }}
+        </h3>
+
+        <div class="tos-status__modal-body">
+          {{ 'Cargando contenido del ToS...'|t }}
+        </div>
+
+        <form class="tos-status__modal-form">
+          <div class="tos-status__modal-field">
+            <label for="tos-signer-name">{{ 'Nombre completo'|t }}</label>
+            <input type="text" id="tos-signer-name" name="signer_name" required
+                   placeholder="{{ 'Nombre del firmante'|t }}">
+          </div>
+
+          <div class="tos-status__modal-field">
+            <label for="tos-signer-role">{{ 'Cargo / Rol'|t }}</label>
+            <input type="text" id="tos-signer-role" name="signer_role" required
+                   placeholder="{{ 'Administrador, CEO, CTO...'|t }}">
+          </div>
+
+          <div class="tos-status__modal-checkbox">
+            <input type="checkbox" id="tos-accept-check" name="tos_accept">
+            <label for="tos-accept-check">
+              {{ 'He leido y acepto los Terms of Service'|t }}
+            </label>
+          </div>
+
+          <div class="tos-status__modal-error"></div>
+
+          <div class="tos-status__modal-actions">
+            <button type="submit" class="tos-status__accept-btn" disabled>
+              {{ 'Aceptar ToS'|t }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+</div>

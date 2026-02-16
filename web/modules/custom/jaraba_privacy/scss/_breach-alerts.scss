@@ -1,0 +1,98 @@
+// =============================================================================
+// BREACH ALERTS — SCSS
+// =============================================================================
+// Estilos del widget de alertas de brechas en el dashboard.
+// =============================================================================
+
+@use 'variables-privacy' as *;
+
+.breach-alerts__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.breach-alerts__item {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--ej-color-border, #E5E7EB);
+  background: var(--ej-color-background, #F9FAFB);
+
+  &--low {
+    border-left-color: var(--ej-privacy-severity-low, #{$privacy-severity-low-fallback});
+  }
+
+  &--medium {
+    border-left-color: var(--ej-privacy-severity-medium, #{$privacy-severity-medium-fallback});
+  }
+
+  &--high {
+    border-left-color: var(--ej-privacy-severity-high, #{$privacy-severity-high-fallback});
+  }
+
+  &--critical {
+    border-left-color: var(--ej-privacy-severity-critical, #{$privacy-severity-critical-fallback});
+    background: var(--ej-privacy-danger-light, #{$privacy-danger-light-fallback});
+  }
+}
+
+.breach-alerts__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.breach-alerts__severity {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+}
+
+.breach-alerts__item--low .breach-alerts__severity {
+  background: color-mix(in srgb, #{$privacy-severity-low-fallback} 15%, transparent);
+  color: var(--ej-privacy-severity-low, #{$privacy-severity-low-fallback});
+}
+
+.breach-alerts__item--medium .breach-alerts__severity {
+  background: color-mix(in srgb, #{$privacy-severity-medium-fallback} 15%, transparent);
+  color: var(--ej-privacy-severity-medium, #{$privacy-severity-medium-fallback});
+}
+
+.breach-alerts__item--high .breach-alerts__severity {
+  background: color-mix(in srgb, #{$privacy-severity-high-fallback} 15%, transparent);
+  color: var(--ej-privacy-severity-high, #{$privacy-severity-high-fallback});
+}
+
+.breach-alerts__item--critical .breach-alerts__severity {
+  background: color-mix(in srgb, #{$privacy-severity-critical-fallback} 15%, transparent);
+  color: var(--ej-privacy-severity-critical, #{$privacy-severity-critical-fallback});
+}
+
+.breach-alerts__status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-color-background, #F3F4F6);
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.breach-alerts__title {
+  margin: 0.25rem 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ej-color-text-primary, #1F2937);
+}
+
+.breach-alerts__deadline {
+  font-size: 0.8125rem;
+  color: var(--ej-color-text-secondary, #6B7280);
+}
+
+.breach-alerts__empty {
+  color: var(--ej-privacy-success, #{$privacy-success-fallback});
+  font-style: italic;
+}
