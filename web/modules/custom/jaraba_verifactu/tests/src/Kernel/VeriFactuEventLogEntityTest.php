@@ -22,6 +22,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
     'datetime',
     'flexible_permissions',
     'group',
+    'jaraba_billing',
     'jaraba_verifactu',
   ];
 
@@ -31,6 +32,8 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
   public function register(ContainerBuilder $container): void {
     parent::register($container);
     $container->register('ecosistema_jaraba_core.certificate_manager')
+      ->setSynthetic(TRUE);
+    $container->register('jaraba_foc.stripe_connect')
       ->setSynthetic(TRUE);
   }
 
@@ -59,7 +62,7 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
       'description' => 'Alta record created for invoice VF-2026-001',
       'record_id' => 42,
       'actor_id' => 'system',
-      'details_json' => json_encode(['invoice_number' => 'VF-2026-001']),
+      'details' => json_encode(['invoice_number' => 'VF-2026-001']),
       'hash_event' => str_repeat('e', 64),
     ]);
     $event->save();
@@ -134,13 +137,13 @@ class VeriFactuEventLogEntityTest extends KernelTestBase {
       'tenant_id' => 1,
       'event_type' => 'RECORD_CREATE',
       'severity' => 'info',
-      'details_json' => json_encode($details),
+      'details' => json_encode($details),
       'hash_event' => str_repeat('g', 64),
     ]);
     $event->save();
 
     $loaded = $storage->load($event->id());
-    $decoded = json_decode($loaded->get('details_json')->value, TRUE);
+    $decoded = json_decode($loaded->get('details')->value, TRUE);
     $this->assertSame('VF-2026-001', $decoded['invoice_number']);
     $this->assertSame('value', $decoded['nested']['key']);
   }
