@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v4.0
 
-**Fecha:** 2026-02-15
-**Versión:** 31.0.0 (Legal Intelligence Hub — Inteligencia Jurídica Avanzada, 3 Docs Especificación + Plan Implementación)
+**Fecha:** 2026-02-16
+**Versión:** 32.0.0 (Tenant Export + Daily Backup — Portabilidad GDPR Art. 20 + Backup Automatizado Diario)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -952,6 +952,28 @@
 │   ├── Inversión: 530-685h / 23,850-30,825 EUR (10 fases)             │
 │   └── Estado: 📋 Planificado (Docs 178/178A/178B + Plan, Feb 2026)    │
 │                                                                         │
+│   📦 jaraba_tenant_export ✅ (Tenant Data Export + Daily Backup)          │
+│   ├── GDPR Art. 20 Portabilidad de Datos — Self-service tenant export  │
+│   ├── 1 Content Entity: TenantExportRecord (17 campos, 4 DB indexes)  │
+│   │   status: queued/collecting/packaging/completed/failed/expired     │
+│   ├── TenantDataCollectorService: 6 grupos datos (core, analytics,     │
+│   │   knowledge, operational, vertical, files) con graceful degradation│
+│   ├── TenantExportService: ZIP async via Queue API, rate limiting,     │
+│   │   StreamedResponse download, SHA-256 hash, audit logging           │
+│   ├── QueueWorkers: TenantExportWorker (cron 55s, 3 retries) +        │
+│   │   TenantExportCleanupWorker (cron 30s, expires 48h)               │
+│   ├── API REST: 6 endpoints /api/v1/tenant-export/*                    │
+│   │   (request, status, download, cancel, history, sections)           │
+│   ├── Frontend: /tenant/export Zero-Region page + 6 partials Twig     │
+│   ├── SCSS BEM + JS dashboard (polling progreso 3s) + 6 SVG icons     │
+│   ├── daily-backup.yml: GitHub Actions cron 03:00 UTC, rotación        │
+│   │   inteligente (diarios <30d, semanales 30-84d), Slack alertas     │
+│   ├── Drush: tenant-export:backup, tenant-export:cleanup,              │
+│   │   tenant-export:status                                             │
+│   ├── Tests: 8 suites (3 Unit + 3 Kernel + 2 Functional)             │
+│   ├── Permisos: 6 (request/view own/download/view all/admin/backup)   │
+│   └── Estado: ✅ Producción (Feb 2026)                                  │
+│                                                                         │
 │   📦 jaraba_funding ✅ (Funding Intelligence — Subvenciones)             │
 │   ├── 4 Content Entities: FundingCall, FundingSubscription,            │
 │   │   FundingMatch, FundingAlert                                        │
@@ -1630,6 +1652,9 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 │   • drush gdpr:export {uid}     → Art. 15 Acceso (JSON)                │
 │   • drush gdpr:anonymize {uid}  → Art. 17 Olvido (hash replacement)    │
 │   • drush gdpr:report           → Informe compliance general           │
+│   • /tenant/export (self-service) → Art. 20 Portabilidad (ZIP)         │
+│   │   jaraba_tenant_export: 6 secciones datos, async Queue API,        │
+│   │   descarga ZIP con manifest JSON + CSV + archivos originales       │
 │   • Playbook: SECURITY_INCIDENT_RESPONSE_PLAYBOOK.md                   │
 │   • AEPD notificación: 72h (GDPR Art. 33)                              │
 │                                                                         │
@@ -1882,7 +1907,41 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 10.7 Testing Infrastructure
+### 10.7 Backup Automatizado Diario (Daily Backup)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    DAILY BACKUP SYSTEM                                   │
+│              .github/workflows/daily-backup.yml                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   TRIGGER: Cron diario 03:00 UTC (05:00 CET) + workflow_dispatch       │
+│                                                                         │
+│   PROCESO:                                                              │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │  1. SSH → IONOS via webfactory/ssh-agent@v0.9.0                 │  │
+│   │  2. drush sql-dump --gzip (fallback: mysqldump)                 │  │
+│   │  3. Verificación integridad: gzip -t                            │  │
+│   │  4. Naming: db_daily_{YYYYMMDD_HHMMSS}.sql.gz                  │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   DIRECTORIOS (separados para GoodSync):                              │
+│   • ~/backups/daily/       → Backups automáticos diarios               │
+│   • ~/backups/pre_deploy/  → Backups pre-deploy (deploy.yml)           │
+│                                                                         │
+│   ROTACIÓN INTELIGENTE:                                                │
+│   • Diarios < 30 días: se mantienen todos                              │
+│   • 30-84 días: solo lunes (semanal)                                   │
+│   • > 84 días: se eliminan                                             │
+│   • Pre-deploy > 30 días: se eliminan                                  │
+│                                                                         │
+│   ALERTAS: Slack via SLACK_WEBHOOK si falla                            │
+│   VERIFICACIÓN: verify-backups.yml busca en ambos subdirectorios       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 10.8 Testing Infrastructure
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -2245,5 +2304,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 31.0.0 | **Fecha:** 2026-02-15 | **Autor:** IA Asistente
+> **Versión:** 32.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 
