@@ -1,0 +1,6 @@
+name: 'Commerce update test'
+type: module
+description: 'Module for testing extension updates to configuration.'
+package: Testing
+dependencies:
+  - commerce:commerce_store

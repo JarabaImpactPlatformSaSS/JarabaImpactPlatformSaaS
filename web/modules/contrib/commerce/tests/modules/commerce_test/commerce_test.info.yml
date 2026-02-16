@@ -1,0 +1,6 @@
+name: Commerce Test
+type: module
+description: Contains various non-specific things needed in tests.
+package: Testing
+dependencies:
+  - commerce:commerce_store
