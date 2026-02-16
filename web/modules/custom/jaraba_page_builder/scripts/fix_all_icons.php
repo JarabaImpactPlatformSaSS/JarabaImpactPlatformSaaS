@@ -80,15 +80,15 @@ foreach ($files as $file) {
   foreach ($icon_map as $invalid => $valid) {
     // Buscar patrones como icon: "rocket" o icon: 'rocket' o icon: rocket
     $patterns = [
-      "/icon:\s*[\"']$invalid[\"']/",
-      "/icon:\s*$invalid\s*$/m"
+      "/icon:\s*[\"']{$invalid}[\"']/",
+      "/icon:\s*{$invalid}\s*$/m"
     ];
     
     foreach ($patterns as $pattern) {
       if (preg_match($pattern, $content)) {
         $content = preg_replace(
-          "/icon:\s*[\"']?$invalid[\"']?/",
-          "icon: \"$valid\"",
+          "/icon:\s*[\"']?{$invalid}[\"']?/",
+          "icon: \"{$valid}\"",
           $content,
           -1,
           $count

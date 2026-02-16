@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-16
-**Versión:** 32.0.0 (Tenant Export + Daily Backup — Portabilidad GDPR Art. 20 + Backup Automatizado Diario)
+**Versión:** 33.0.0 (Specs Madurez N1/N2/N3 — 21 Documentos Técnicos 183-203 + Backup Separation)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -1985,7 +1985,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 10.7 Email System (MJML Templates)
+### 10.9 Email System (MJML Templates)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -2218,7 +2218,55 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 **Relación con jaraba_legal_knowledge:** El nuevo módulo `jaraba_legal_intelligence` extiende las capacidades de `jaraba_legal_knowledge` (4 entidades, 10 servicios, colección Qdrant `jaraba_knowledge`). Estrategia de convivencia: jaraba_legal_knowledge se mantiene como módulo ligero para RAG normativo básico (BOE, fiscal); jaraba_legal_intelligence añade resoluciones judiciales, fuentes europeas, NLP avanzado y dashboard profesional.
 
-### 12.4 Referencias
+### 12.7 Especificación Niveles de Madurez N1/N2/N3 (2026-02-16)
+
+21 documentos técnicos especificando capacidades organizados por nivel de madurez plataforma, más 3 auditorías de readiness y 1 plan de implementación fiscal:
+
+**Nivel 1 — Foundation/Compliance (docs 183-185):**
+
+| Doc | Título | Área |
+|-----|--------|------|
+| **183** | GDPR DPA Templates — Plantillas legales multi-tenant RGPD/LOPD-GDD | Legal/Compliance |
+| **184** | Legal Terms SaaS — TdS, SLA, AUP, Licencia de Datos, Offboarding | Legal |
+| **185** | Disaster Recovery Plan — Continuidad de Negocio y Recuperación ante Desastres | DR/BCP |
+| **201** | Auditoría N1 Claude Code Readiness | **NOT READY — 12 gaps críticos** |
+
+**Nivel 2 — Growth Ready (docs 186-193):**
+
+| Doc | Título | Área |
+|-----|--------|------|
+| **186** | AI Autonomous Agents — Ejecución autónoma con guardrails de seguridad | AI |
+| **187** | Native Mobile App — iOS/Android con Capacitor | Mobile |
+| **188** | Multi-Agent Orchestration — Agentes especializados con memoria compartida | AI |
+| **189** | Predictive Analytics — Churn, Lead Scoring, Forecasting, Anomaly Detection | Analytics |
+| **190** | Multi-Region Operations — Fiscalidad multi-país, multi-currency, data residency | Infrastructure |
+| **191** | STO/PIIL Integration — Servicio Telemático de Orientación + Programas PIIL | Integrations |
+| **192** | European Funding Module — Fondos europeos, subvenciones, convocatorias | Funding |
+| **193** | Connector SDK — SDK para conectores, certificación y marketplace | Platform |
+| **202** | Auditoría N2 Claude Code Readiness | **Score Global: 15.6%** |
+
+**Nivel 3 — Enterprise Class (docs 194-200):**
+
+| Doc | Título | Área |
+|-----|--------|------|
+| **194** | SOC 2 Type II Readiness — Preparación con evidencia automatizada | Security |
+| **195** | ISO 27001 SGSI — Sistema de Gestión de Seguridad de la Información | Security |
+| **196** | ENS Compliance — Esquema Nacional de Seguridad (RD 311/2022) | Security |
+| **197** | High Availability Multi-Region — 99.99% Galera Cluster + zero-downtime | Infrastructure |
+| **198** | SLA Management — Gestión formal SLAs, status page y postmortems | Operations |
+| **199** | SSO SAML/SCIM — Single Sign-On enterprise SAML 2.0, SCIM 2.0, MFA | Security/Identity |
+| **200** | Data Governance — Clasificación, retención, lineage y KMS | Data |
+| **203** | Auditoría N3 Claude Code Readiness | **Score Global: 10.4%** |
+
+**Plan de implementación fiscal:**
+
+| Doc | Título |
+|-----|--------|
+| **Plan** | Plan Implementación Stack Cumplimiento Fiscal v1 — `jaraba_verifactu` + `jaraba_facturae` + `jaraba_einvoice_b2b` (107KB, 720-956h) |
+
+**Separación directorios backup:** `~/backups/daily/` (automáticos diarios) y `~/backups/pre_deploy/` (pre-deploy) separados para configuración GoodSync. Paso de migración one-time añadido a `daily-backup.yml`.
+
+### 12.8 Referencias
 
 | Documento | Ubicación |
 |-----------|-----------|
@@ -2286,6 +2334,29 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Especificación Legal Intelligence Hub EU Sources** ⭐ | `docs/tecnicos/20260215a-178A_Legal_Intelligence_Hub_EU_Sources_v1_Claude.md` |
 | **Especificación Legal Intelligence Hub Implementation** ⭐ | `docs/tecnicos/20260215a-178B_Legal_Intelligence_Hub_Implementation_v1_Claude.md` |
 | **Plan Implementación Legal Intelligence Hub v1** ⭐ | `docs/implementacion/20260215-Plan_Implementacion_Legal_Intelligence_Hub_v1.md` |
+| **Plan Implementación Stack Fiscal v1** ⭐ | `docs/implementacion/20260216-Plan_Implementacion_Stack_Cumplimiento_Fiscal_v1.md` |
+| **GDPR DPA Templates (Doc 183)** ⭐ | `docs/tecnicos/20260216a-183_Platform_GDPR_DPA_Templates_v1_Claude.md` |
+| **Legal Terms SaaS (Doc 184)** ⭐ | `docs/tecnicos/20260216a-184_Platform_Legal_Terms_v1_Claude.md` |
+| **Disaster Recovery Plan (Doc 185)** ⭐ | `docs/tecnicos/20260216a-185_Platform_Disaster_Recovery_v1_Claude.md` |
+| **AI Autonomous Agents (Doc 186)** ⭐ | `docs/tecnicos/20260216b-186_Platform_AI_Autonomous_Agents_v1_Claude.md` |
+| **Native Mobile App (Doc 187)** ⭐ | `docs/tecnicos/20260216b-187_Platform_Native_Mobile_v1_Claude.md` |
+| **Multi-Agent Orchestration (Doc 188)** ⭐ | `docs/tecnicos/20260216b-188_Platform_Multi_Agent_Orchestration_v1_Claude.md` |
+| **Predictive Analytics (Doc 189)** ⭐ | `docs/tecnicos/20260216b-189_Platform_Predictive_Analytics_v1_Claude.md` |
+| **Multi-Region Operations (Doc 190)** ⭐ | `docs/tecnicos/20260216b-190_Platform_Multi_Region_v1_Claude.md` |
+| **STO/PIIL Integration (Doc 191)** ⭐ | `docs/tecnicos/20260216b-191_Platform_STO_PIIL_Integration_v1_Claude.md` |
+| **European Funding Module (Doc 192)** ⭐ | `docs/tecnicos/20260216b-192_Platform_European_Funding_v1_Claude.md` |
+| **Connector SDK (Doc 193)** ⭐ | `docs/tecnicos/20260216b-193_Platform_Connector_SDK_v1_Claude.md` |
+| **SOC 2 Type II Readiness (Doc 194)** ⭐ | `docs/tecnicos/20260216c-194_Platform_SOC2_Type_II_Readiness_v1_Claude.md` |
+| **ISO 27001 SGSI (Doc 195)** ⭐ | `docs/tecnicos/20260216c-195_Platform_ISO_27001_SGSI_v1_Claude.md` |
+| **ENS Compliance (Doc 196)** ⭐ | `docs/tecnicos/20260216c-196_Platform_ENS_Compliance_v1_Claude.md` |
+| **HA Multi-Region (Doc 197)** ⭐ | `docs/tecnicos/20260216c-197_Platform_HA_Multi_Region_v1_Claude.md` |
+| **SLA Management (Doc 198)** ⭐ | `docs/tecnicos/20260216c-198_Platform_SLA_Management_v1_Claude.md` |
+| **SSO SAML/SCIM (Doc 199)** ⭐ | `docs/tecnicos/20260216c-199_Platform_SSO_SAML_SCIM_v1_Claude.md` |
+| **Data Governance (Doc 200)** ⭐ | `docs/tecnicos/20260216c-200_Platform_Data_Governance_v1_Claude.md` |
+| **Auditoría N1 Readiness (Doc 201)** ⭐ | `docs/tecnicos/20260216a-201_Auditoria_N1_ClaudeCode_Readiness_v1_Claude.md` |
+| **Auditoría N2 Readiness (Doc 202)** ⭐ | `docs/tecnicos/20260216b-202_Auditoria_N2_ClaudeCode_Readiness_v1_Claude.md` |
+| **Auditoría N3 Readiness (Doc 203)** ⭐ | `docs/tecnicos/20260216c-203_Auditoria_N3_ClaudeCode_Readiness_v1_Claude.md` |
+| **Aprendizajes Tenant Export + Backup** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_tenant_export_backup_automatizado.md` |
 
 ---
 
@@ -2304,5 +2375,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 32.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 33.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 
