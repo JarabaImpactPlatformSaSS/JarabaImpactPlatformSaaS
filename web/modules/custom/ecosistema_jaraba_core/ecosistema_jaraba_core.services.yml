@@ -1012,6 +1012,21 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
 
   # ===========================================
+  # CERTIFICATE MANAGER — STACK FISCAL (FASE 0)
+  # ===========================================
+
+  # Servicio centralizado de gestion de certificados digitales PKCS#12.
+  # Compartido por jaraba_verifactu, jaraba_facturae y jaraba_einvoice_b2b.
+  # Almacena en private://certificates/{tenant_id}/ con lock para concurrencia.
+  ecosistema_jaraba_core.certificate_manager:
+    class: Drupal\ecosistema_jaraba_core\Service\CertificateManagerService
+    arguments:
+      - '@file_system'
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@lock'
+
+  # ===========================================
   # ANDALUCÍA +EI HEALTH SCORES & KPIS (Plan Elevación Andalucía +ei v1 — Fase 8)
   # ===========================================
 
