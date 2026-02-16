@@ -28,6 +28,7 @@ class EInvoiceServiceRegistrationTest extends KernelTestBase {
     'system',
     'user',
     'field',
+    'options',
     'jaraba_einvoice_b2b',
   ];
 
