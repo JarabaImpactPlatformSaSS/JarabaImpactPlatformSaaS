@@ -21,6 +21,9 @@ class EInvoicePaymentEventEntityTest extends KernelTestBase {
     'user',
     'field',
     'options',
+    'datetime',
+    'flexible_permissions',
+    'group',
     'jaraba_einvoice_b2b',
   ];
 

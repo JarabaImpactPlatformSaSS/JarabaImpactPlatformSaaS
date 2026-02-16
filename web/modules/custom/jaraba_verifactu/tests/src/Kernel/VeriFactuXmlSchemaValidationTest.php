@@ -21,6 +21,9 @@ class VeriFactuXmlSchemaValidationTest extends KernelTestBase {
     'user',
     'field',
     'options',
+    'datetime',
+    'flexible_permissions',
+    'group',
     'jaraba_verifactu',
   ];
 
