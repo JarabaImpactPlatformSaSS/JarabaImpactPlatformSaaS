@@ -592,6 +592,15 @@ class TemplateRegistryService
      */
     protected function getTemplateIcon(array $template): string
     {
+        // Preferir PNG preview_image cuando esté disponible.
+        if (!empty($template['preview_image'])) {
+            $label = htmlspecialchars($template['label'] ?? '', ENT_QUOTES, 'UTF-8');
+            $src = htmlspecialchars($template['preview_image'], ENT_QUOTES, 'UTF-8');
+            return '<img src="' . $src . '" alt="' . $label . '" '
+                . 'width="120" height="80" loading="lazy" '
+                . 'style="border-radius:6px; object-fit:cover; width:100%; height:auto;" />';
+        }
+
         $category = $template['category'] ?? 'content';
         $iconName = self::CATEGORIES[$category]['icon'] ?? 'document';
 

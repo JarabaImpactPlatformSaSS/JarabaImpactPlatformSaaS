@@ -4,7 +4,17 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 50.0.0 (Elevacion JarabaLex a Vertical Independiente + Specs Madurez N1/N2/N3)
+**Versión:** 51.0.0 (Plan Implementacion Stack Compliance Legal N1)
+
+> **⚖️ PLAN IMPLEMENTACION STACK COMPLIANCE LEGAL N1 — 3 MODULOS, 14 ENTIDADES, 30 API ENDPOINTS** (2026-02-16)
+> - **Plan de Implementacion:** 24 secciones, 13 fases (F0-F12), 91-118h / 4,095-5,310 EUR
+> - **Modulo `jaraba_privacy`:** GDPR DPA Templates + LOPD-GDD. 5 Content Entities (DpaAgreement, PrivacyPolicy, CookieConsent, ProcessingActivity, DataRightsRequest + SecurityBreach). 5 Services (DpaManager, CookieConsentManager, DataRightsProcessor, BreachNotification, GdprReportGenerator). 10 API REST endpoints. Hook preprocess_html body class `page-privacy`
+> - **Modulo `jaraba_legal`:** Legal Terms SaaS. 6 Content Entities (LegalDocument, SlaDefinition, SlaCredit, OffboardingRequest, WhistleblowerReport, LegalAcceptance). 5 Services (TosManager, SlaCalculator, OffboardingOrchestrator, WhistleblowerManager, LegalDocumentRenderer). 12 API REST endpoints. Hook preprocess_html body class `page-legal-terms`
+> - **Modulo `jaraba_dr`:** Disaster Recovery Plan. 3 Content Entities (DrTestResult, BackupRecord, DrCommunicationLog). 5 Services (BackupVerifier, FailoverOrchestrator, DrTestRunner, DrCommunicationService, DrReportGenerator). 8 API REST endpoints. Hook preprocess_html body class `page-disaster-recovery`
+> - **Compliance:** 20 directrices cumplidas (i18n, SCSS Federated Design Tokens, Dart Sass, zero-region, hook_preprocess_html, modals CRUD, Field UI+Views, config desde UI, parciales Twig, seguridad, comentarios 3D, iconos SVG duotone categoria `legal/`, hooks no ECA, API envelope, tenant_id entity_reference, AccessControlHandler, DB indexes)
+> - **Correspondencia:** Tabla 40+ filas mapeando secciones del plan a docs 183/184/185/201
+> - **Auditoria N1 target:** 12.5% (v1) → 95%+ (post-implementacion)
+> - **Plan:** [20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md](./implementacion/20260216-Plan_Implementacion_Stack_Compliance_Legal_N1_v1.md)
 
 > **📋 SPECS MADUREZ N1/N2/N3 — 21 DOCUMENTOS TÉCNICOS 183-203 + BACKUP SEPARATION** (2026-02-16)
 > - **21 documentos técnicos** de especificación organizados en 3 niveles de madurez plataforma
