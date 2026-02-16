@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroConecta Thumbnail Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        .thumbnail-wrapper {
+            width: 600px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .thumbnail-wrapper::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -28px;
+            left: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #556B2F;
+        }
+
+        .thumbnail-wrapper .pb-section {
+            /* Scale down for thumbnail */
+            transform-origin: top left;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🌾 AgroConecta - Thumbnail Generator</h1>
+    <p class="instructions">Cada sección se renderiza con los estilos de producción. Usa la captura del navegador para
+        guardar cada una como PNG.</p>
+
+    <!-- 1. HERO -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-hero" id="agroconecta-hero">
+        <section class="pb-section pb-section--hero pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__hero-content">
+                    <span class="pb-section__eyebrow">AgroConecta</span>
+                    <h2 class="pb-section__title">Del campo a tu mesa, sin intermediarios</h2>
+                    <p class="pb-section__subtitle">Conecta directamente con productores locales y accede a productos
+                        frescos, orgánicos y de temporada.</p>
+                    <div class="pb-section__actions">
+                        <a href="#" class="pb-section__cta pb-section__cta--primary">Ver productos</a>
+                        <a href="#" class="pb-section__cta pb-section__cta--secondary">Conocer productores</a>
+                    </div>
+                </div>
+                <div class="pb-section__media">
+                    <div class="pb-section__img-placeholder" aria-hidden="true">🌱</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 2. FEATURES -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-features" id="agroconecta-features">
+        <section class="pb-section pb-section--features pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <span class="pb-section__eyebrow">Servicios</span>
+                    <h2 class="pb-section__title">Herramientas para el productor moderno</h2>
+                    <p class="pb-section__subtitle">Tecnología al servicio del campo para optimizar cosechas y conectar
+                        con compradores.</p>
+                </div>
+                <div class="pb-section__features-grid">
+                    <div class="pb-section__feature-card">
+                        <div class="pb-section__feature-icon">🌱</div>
+                        <h3 class="pb-section__feature-title">Control de cosechas</h3>
+                        <p class="pb-section__feature-desc">Monitoriza tus cultivos, planifica temporadas y registra
+                            rendimientos por parcela.</p>
+                    </div>
+                    <div class="pb-section__feature-card">
+                        <div class="pb-section__feature-icon">📦</div>
+                        <h3 class="pb-section__feature-title">Venta directa</h3>
+                        <p class="pb-section__feature-desc">Vende directamente a restaurantes, tiendas y consumidores
+                            sin intermediarios.</p>
+                    </div>
+                    <div class="pb-section__feature-card">
+                        <div class="pb-section__feature-icon">🌿</div>
+                        <h3 class="pb-section__feature-title">Certificación eco</h3>
+                        <p class="pb-section__feature-desc">Gestiona tus certificaciones orgánicas y muestra la
+                            trazabilidad de cada producto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 3. CONTENT -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-content" id="agroconecta-content">
+        <section class="pb-section pb-section--content pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__text">
+                    <span class="pb-section__eyebrow">Origen</span>
+                    <h2 class="pb-section__title">Certificación y Origen</h2>
+                    <p class="pb-section__subtitle">Cada producto cuenta su historia: desde qué parcela viene, cuándo
+                        fue cosechado y qué certificaciones cumple.</p>
+                    <p class="pb-section__description">Nuestro sistema de trazabilidad permite a los consumidores
+                        conocer el origen exacto de cada alimento, generando confianza y valor añadido para los
+                        productores.</p>
+                    <div class="pb-section__actions">
+                        <a href="#" class="pb-section__cta pb-section__cta--primary">Saber más</a>
+                    </div>
+                </div>
+                <div class="pb-section__media">
+                    <div class="pb-section__img-placeholder" aria-hidden="true">🏷️</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 4. CTA -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-cta" id="agroconecta-cta">
+        <section class="pb-section pb-section--cta pb-section--agroconecta">
+            <div class="pb-section__container">
+                <h2 class="pb-section__title">¿Listo para comer fresco y local?</h2>
+                <p class="pb-section__subtitle">Conecta con productores de tu zona y recibe alimentos frescos
+                    directamente del campo. Sin intermediarios, sin esperas.</p>
+                <div class="pb-section__actions">
+                    <a href="#" class="pb-section__cta pb-section__cta--primary">Hacer mi pedido</a>
+                    <a href="#" class="pb-section__cta pb-section__cta--secondary">Ver productores</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 5. STATS -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-stats" id="agroconecta-stats">
+        <section class="pb-section pb-section--stats pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <h2 class="pb-section__title">Nuestro impacto en el campo</h2>
+                    <p class="pb-section__subtitle">Datos que reflejan el crecimiento de la comunidad AgroConecta.</p>
+                </div>
+                <div class="pb-section__stats-row">
+                    <div class="pb-section__stat">
+                        <span class="pb-section__stat-number">+320</span>
+                        <span class="pb-section__stat-label">Productores activos</span>
+                    </div>
+                    <div class="pb-section__stat">
+                        <span class="pb-section__stat-number">45 Ton</span>
+                        <span class="pb-section__stat-label">Cosecha mensual</span>
+                    </div>
+                    <div class="pb-section__stat">
+                        <span class="pb-section__stat-number">+8K</span>
+                        <span class="pb-section__stat-label">Compradores directos</span>
+                    </div>
+                    <div class="pb-section__stat">
+                        <span class="pb-section__stat-number">100%</span>
+                        <span class="pb-section__stat-label">Trazabilidad</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 6. TESTIMONIALS -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-testimonials" id="agroconecta-testimonials">
+        <section class="pb-section pb-section--testimonials pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <span class="pb-section__eyebrow">Testimonios</span>
+                    <h2 class="pb-section__title">Historias desde el campo</h2>
+                    <p class="pb-section__subtitle">Productores reales comparten su experiencia con AgroConecta.</p>
+                </div>
+                <div class="pb-section__testimonials-grid">
+                    <div class="pb-section__testimonial">
+                        <p class="pb-section__testimonial-quote">Gracias a AgroConecta puedo vender mis hortalizas
+                            directamente a familias de la ciudad. Mis ingresos han mejorado un 40%.</p>
+                        <div class="pb-section__testimonial-author">
+                            <div class="pb-section__testimonial-avatar">PG</div>
+                            <div>
+                                <div class="pb-section__testimonial-name">Pedro García</div>
+                                <div class="pb-section__testimonial-role">Productor hortícola, Jaén</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pb-section__testimonial">
+                        <p class="pb-section__testimonial-quote">La plataforma me permite mostrar el origen de mis
+                            productos y las certificaciones orgánicas. Los compradores valoran la transparencia.</p>
+                        <div class="pb-section__testimonial-author">
+                            <div class="pb-section__testimonial-avatar">IM</div>
+                            <div>
+                                <div class="pb-section__testimonial-name">Isabel Moreno</div>
+                                <div class="pb-section__testimonial-role">Productora de aceite, Córdoba</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pb-section__testimonial">
+                        <p class="pb-section__testimonial-quote">Antes dependía de intermediarios. Ahora gestiono mis
+                            pedidos directamente y mis productos llegan frescos.</p>
+                        <div class="pb-section__testimonial-author">
+                            <div class="pb-section__testimonial-avatar">MT</div>
+                            <div>
+                                <div class="pb-section__testimonial-name">Manuel Torres</div>
+                                <div class="pb-section__testimonial-role">Agricultor de frutas, Granada</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 7. PRICING -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-pricing" id="agroconecta-pricing">
+        <section class="pb-section pb-section--pricing pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <span class="pb-section__eyebrow">Suscripciones</span>
+                    <h2 class="pb-section__title">Elige tu caja de productos frescos</h2>
+                    <p class="pb-section__subtitle">Recibe productos de temporada directamente del productor cada
+                        semana.</p>
+                </div>
+                <div class="pb-section__pricing-grid">
+                    <div class="pb-section__pricing-card">
+                        <h3 class="pb-section__pricing-name">Caja Huerta</h3>
+                        <div class="pb-section__pricing-price">19€</div>
+                        <div class="pb-section__pricing-period">/semana</div>
+                        <ul class="pb-section__pricing-features">
+                            <li>5 kg de verduras</li>
+                            <li>Productos de temporada</li>
+                            <li>Entrega semanal</li>
+                        </ul>
+                        <a href="#" class="pb-section__cta pb-section__cta--primary">Suscribirse</a>
+                    </div>
+                    <div class="pb-section__pricing-card pb-section__pricing-card--featured">
+                        <span class="pb-section__pricing-badge">Más popular</span>
+                        <h3 class="pb-section__pricing-name">Caja Familiar</h3>
+                        <div class="pb-section__pricing-price">35€</div>
+                        <div class="pb-section__pricing-period">/semana</div>
+                        <ul class="pb-section__pricing-features">
+                            <li>10 kg verduras y fruta</li>
+                            <li>Recetas incluidas</li>
+                            <li>Entrega flexible</li>
+                            <li>Productos orgánicos</li>
+                        </ul>
+                        <a href="#" class="pb-section__cta pb-section__cta--primary">Probar ahora</a>
+                    </div>
+                    <div class="pb-section__pricing-card">
+                        <h3 class="pb-section__pricing-name">Caja Gourmet</h3>
+                        <div class="pb-section__pricing-price">55€</div>
+                        <div class="pb-section__pricing-period">/semana</div>
+                        <ul class="pb-section__pricing-features">
+                            <li>Todo en Familiar</li>
+                            <li>Quesos artesanales</li>
+                            <li>Aceite de oliva</li>
+                            <li>Productos premium</li>
+                        </ul>
+                        <a href="#" class="pb-section__cta pb-section__cta--primary">Contactar</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 8. FAQ -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-faq" id="agroconecta-faq">
+        <section class="pb-section pb-section--faq pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <span class="pb-section__eyebrow">FAQ</span>
+                    <h2 class="pb-section__title">Preguntas frecuentes</h2>
+                    <p class="pb-section__subtitle">Resolvemos las dudas más comunes sobre el servicio AgroConecta.</p>
+                </div>
+                <div class="pb-section__faq-list">
+                    <details class="pb-section__faq-item" open>
+                        <summary>¿Cómo funciona la entrega?</summary>
+                        <div class="pb-section__faq-answer">Los productos se entregan directamente desde la finca del
+                            productor a tu domicilio en un máximo de 24 horas desde la cosecha.</div>
+                    </details>
+                    <details class="pb-section__faq-item">
+                        <summary>¿Los productos son orgánicos?</summary>
+                        <div class="pb-section__faq-answer">Todos nuestros productores cuentan con certificaciones
+                            verificables que puedes consultar en cada ficha de producto.</div>
+                    </details>
+                    <details class="pb-section__faq-item">
+                        <summary>¿Puedo cancelar mi suscripción?</summary>
+                        <div class="pb-section__faq-answer">Sí, puedes cancelar en cualquier momento sin penalización.
+                        </div>
+                    </details>
+                    <details class="pb-section__faq-item">
+                        <summary>¿Cuál es la zona de cobertura?</summary>
+                        <div class="pb-section__faq-answer">Actualmente cubrimos toda la Península Ibérica con entregas
+                            en 24-48h.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 9. GALLERY -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-gallery" id="agroconecta-gallery">
+        <section class="pb-section pb-section--gallery pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <span class="pb-section__eyebrow">Galería</span>
+                    <h2 class="pb-section__title">Nuestros campos</h2>
+                    <p class="pb-section__subtitle">Imágenes de las parcelas y productos de nuestros productores.</p>
+                </div>
+                <div class="pb-section__gallery-grid">
+                    <figure class="pb-section__gallery-item">
+                        <div class="pb-section__img-placeholder">🌾</div>
+                        <figcaption>Campos de cereales</figcaption>
+                    </figure>
+                    <figure class="pb-section__gallery-item">
+                        <div class="pb-section__img-placeholder">🍅</div>
+                        <figcaption>Huerto de tomates</figcaption>
+                    </figure>
+                    <figure class="pb-section__gallery-item">
+                        <div class="pb-section__img-placeholder">🫒</div>
+                        <figcaption>Olivares</figcaption>
+                    </figure>
+                    <figure class="pb-section__gallery-item">
+                        <div class="pb-section__img-placeholder">🍊</div>
+                        <figcaption>Naranjos</figcaption>
+                    </figure>
+                    <figure class="pb-section__gallery-item">
+                        <div class="pb-section__img-placeholder">🥬</div>
+                        <figcaption>Verduras frescas</figcaption>
+                    </figure>
+                    <figure class="pb-section__gallery-item">
+                        <div class="pb-section__img-placeholder">🍇</div>
+                        <figcaption>Viñedos</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 10. MAP -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-map" id="agroconecta-map">
+        <section class="pb-section pb-section--map pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__map-embed">
+                    <div
+                        style="display:flex; align-items:center; justify-content:center; width:100%; min-height:280px; background: #e8f5e9; color: #556B2F; font-size: 2rem;">
+                        📍 Mapa de Productores</div>
+                </div>
+                <div class="pb-section__contact-info">
+                    <h2 class="pb-section__title" style="font-size:1.5rem;">Encuéntranos</h2>
+                    <div class="pb-section__contact-item">
+                        <div class="pb-section__contact-icon">📍</div>
+                        <div>
+                            <div class="pb-section__contact-label">Dirección</div>
+                            <div class="pb-section__contact-value">Calle del Campo 42, Jaén</div>
+                        </div>
+                    </div>
+                    <div class="pb-section__contact-item">
+                        <div class="pb-section__contact-icon">📞</div>
+                        <div>
+                            <div class="pb-section__contact-label">Teléfono</div>
+                            <div class="pb-section__contact-value">+34 953 XX XX XX</div>
+                        </div>
+                    </div>
+                    <div class="pb-section__contact-item">
+                        <div class="pb-section__contact-icon">✉️</div>
+                        <div>
+                            <div class="pb-section__contact-label">Email</div>
+                            <div class="pb-section__contact-value"><a href="#">info@agroconecta.es</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 11. SOCIAL PROOF -->
+    <div class="thumbnail-wrapper" data-label="agroconecta-social-proof" id="agroconecta-social-proof">
+        <section class="pb-section pb-section--social-proof pb-section--agroconecta">
+            <div class="pb-section__container">
+                <div class="pb-section__header">
+                    <span class="pb-section__eyebrow">Confían en nosotros</span>
+                    <h2 class="pb-section__title">Nuestros aliados</h2>
+                    <p class="pb-section__subtitle">Instituciones y empresas que apoyan la agricultura local y
+                        sostenible.</p>
+                </div>
+                <div class="pb-section__logos-grid">
+                    <div class="pb-section__logo">
+                        <div class="pb-section__logo-placeholder">BioAndalucía</div>
+                    </div>
+                    <div class="pb-section__logo">
+                        <div class="pb-section__logo-placeholder">CAAE</div>
+                    </div>
+                    <div class="pb-section__logo">
+                        <div class="pb-section__logo-placeholder">Junta Andalucía</div>
+                    </div>
+                    <div class="pb-section__logo">
+                        <div class="pb-section__logo-placeholder">DOP Jaén</div>
+                    </div>
+                    <div class="pb-section__logo">
+                        <div class="pb-section__logo-placeholder">EcoHuerta</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body>
+
+</html>
