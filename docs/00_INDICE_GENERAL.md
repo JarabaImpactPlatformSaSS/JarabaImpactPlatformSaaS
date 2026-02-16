@@ -4,7 +4,13 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 54.0.0 (Kernel Test CI Fix Campaign — 61→0 Errors + Compliance Stub Cleanup)
+**Versión:** 55.0.0 (Documentation Update — Zero-Region Rules + Module Registry)
+
+> **📖 DOCUMENTATION UPDATE v39.0.0 — ZERO-REGION RULES + MODULE REGISTRY + APRENDIZAJE** (2026-02-16)
+> - **Directrices v39.0.0:** Nueva seccion 5.8.4 con 3 reglas ZERO-REGION-001/002/003 documentando patron critico: variables via hook_preprocess_page() (NO controller), prohibicion de entity objects como non-# keys en render arrays, drupalSettings via $variables['#attached'] en preprocess
+> - **Arquitectura v39.0.0:** 5 modulos añadidos al registro seccion 7.1 (jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService) con descripciones completas de entidades, servicios, endpoints y estado
+> - **Aprendizaje #88:** `2026-02-16_zero_region_template_pattern.md` — Patron zero-region template (causa raiz error 500, solucion 3 hooks, drupalSettings attachment)
+> - **Directrices v39.0.0, Arquitectura v39.0.0, Indice v55.0.0**
 
 > **🧪 KERNEL TEST CI FIX CAMPAIGN — 61→0 ERRORS, 7 COMMITS, PRODUCCION BUG FIX** (2026-02-16)
 > - **Campana de correccion CI:** 7 commits iterativos redujeron errores de Kernel tests de 61 a 0 en el workflow "Jaraba SaaS - Deploy to IONOS"
