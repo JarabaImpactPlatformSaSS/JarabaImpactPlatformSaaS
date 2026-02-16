@@ -59,9 +59,12 @@ class LegalSitemapController extends ControllerBase implements ContainerInjectio
    *   Factoria de configuracion para posibles ajustes del sitemap.
    */
   public function __construct(
-    protected EntityTypeManagerInterface $entityTypeManager,
-    protected ConfigFactoryInterface $configFactory,
-  ) {}
+    EntityTypeManagerInterface $entityTypeManager,
+    ConfigFactoryInterface $configFactory,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->configFactory = $configFactory;
+  }
 
   /**
    * {@inheritdoc}

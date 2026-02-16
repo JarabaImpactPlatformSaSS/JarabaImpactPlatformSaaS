@@ -38,7 +38,7 @@ class FundingAdminController extends ControllerBase {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected EntityTypeManagerInterface $entityTypeManager;
+  protected $entityTypeManager;
 
   /**
    * El servicio de estado.

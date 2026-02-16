@@ -17,7 +17,7 @@ class TenantExportCommands extends DrushCommands {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected TenantExportService $exportService,
-    protected LoggerInterface $logger,
+    protected ?LoggerInterface $logger,
   ) {
     parent::__construct();
   }

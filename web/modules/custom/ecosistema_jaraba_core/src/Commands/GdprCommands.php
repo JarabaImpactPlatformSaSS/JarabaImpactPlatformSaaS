@@ -27,9 +27,9 @@ class GdprCommands extends DrushCommands {
   /**
    * The logger.
    *
-   * @var \Psr\Log\LoggerInterface
+   * @var \Psr\Log\LoggerInterface|null
    */
-  protected $logger;
+  protected ?\Psr\Log\LoggerInterface $logger;
 
   /**
    * The audit log service.

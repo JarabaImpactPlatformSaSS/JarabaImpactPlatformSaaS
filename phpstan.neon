@@ -1,0 +1,27 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 5
+
+  paths:
+    - web/modules/custom
+
+  excludePaths:
+    - '*/tests/fixtures/*.php'
+    # Contrib-like module with missing Google AI dependencies.
+    - web/modules/custom/ai_provider_google_gemini
+
+  ignoreErrors:
+    # new static() is a best practice in Drupal.
+    - "#^Unsafe usage of new static#"
+    # Common in Drupal modules that mix DI with procedural code.
+    - "#Drupal calls should be avoided in classes, use dependency injection instead#"
+    # PHP 8 promoted constructor properties get native types but
+    # ControllerBase/FormBase/DrushCommands parent declares them without.
+    - identifier: property.extraNativeType
+    - identifier: property.missingNativeType
+
+  reportUnmatchedIgnoredErrors: false
+
+  tmpDir: phpstan-tmp

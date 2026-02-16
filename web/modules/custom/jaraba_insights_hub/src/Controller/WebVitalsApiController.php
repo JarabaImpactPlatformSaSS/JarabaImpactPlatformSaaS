@@ -58,7 +58,7 @@ class WebVitalsApiController extends ControllerBase {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected ConfigFactoryInterface $configFactory;
+  protected $configFactory;
 
   /**
    * {@inheritdoc}

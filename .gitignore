@@ -57,6 +57,7 @@ NUL
 # ----- BUILD / CACHE -----
 .cache
 .sass-cache
+phpstan-tmp
 *.css.map
 # PERF-03: Minified JS build output (regenerated with npm run build:js)
 web/themes/custom/ecosistema_jaraba_theme/js/dist/

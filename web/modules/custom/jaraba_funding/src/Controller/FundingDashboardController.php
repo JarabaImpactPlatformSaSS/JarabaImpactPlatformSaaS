@@ -47,14 +47,14 @@ class FundingDashboardController extends ControllerBase {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected EntityTypeManagerInterface $entityTypeManager;
+  protected $entityTypeManager;
 
   /**
    * El usuario actual.
    *
    * @var \Drupal\Core\Session\AccountProxyInterface
    */
-  protected AccountProxyInterface $currentUser;
+  protected $currentUser;
 
   /**
    * El servicio de cache de funding.
