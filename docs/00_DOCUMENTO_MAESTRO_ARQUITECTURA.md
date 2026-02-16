@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-16
-**Versión:** 35.0.0 (FASE 11 Fiscal Integration Layer + Stack Compliance Legal N1 Implementation)
+**Versión:** 38.0.0 (Kernel Test CI Fix Campaign — 61→0 Errors + Production Bug Fix verifactu)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -1697,14 +1697,28 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 | Modulo | Alcance | Entidades | Servicios | Templates | Tests |
 |--------|---------|-----------|-----------|-----------|-------|
-| **`jaraba_privacy`** | GDPR DPA + LOPD-GDD, consentimiento cookies, DSAR, breaches | 5 (DpaAgreement, PrivacyPolicy, CookieConsent, ProcessingActivity, DataRightsRequest) | 5 (DpaManager, CookieConsentManager, DataRightsHandler, BreachNotification, PrivacyPolicyGenerator) | privacy-dashboard + 5 partials + cookie-banner | — |
-| **`jaraba_legal`** | ToS/SLA/AUP versioning, offboarding, whistleblower | 6 (ServiceAgreement, SlaRecord, UsageLimitRecord, AupViolation, OffboardingRequest, WhistleblowerReport) | 5 (TosManager, SlaCalculator, AupEnforcer, OffboardingManager, WhistleblowerChannel) | legal-dashboard + 5 partials | — |
+| **`jaraba_privacy`** | GDPR DPA + LOPD-GDD, consentimiento cookies, DSAR, breaches | 5 (DpaAgreement, PrivacyPolicy, CookieConsent, ProcessingActivity, DataRightsRequest) | 5 (DpaManager, CookieConsentManager, DataRightsHandler, BreachNotification, PrivacyPolicyGenerator) | privacy-dashboard + 5 partials + cookie-banner | 4 unit |
+| **`jaraba_legal`** | ToS/SLA/AUP versioning, offboarding, whistleblower | 6 (ServiceAgreement, SlaRecord, UsageLimitRecord, AupViolation, OffboardingRequest, WhistleblowerReport) | 5 (TosManager, SlaCalculator, AupEnforcer, OffboardingManager, WhistleblowerChannel) + LegalApiController (12 endpoints) | legal-dashboard + 5 partials + whistleblower-form | 4 unit |
 | **`jaraba_dr`** | Backup verification, failover testing, incident management | 3 (BackupVerification, DrIncident, DrTestResult) | 5 (BackupVerifier, DrTestRunner, FailoverOrchestrator, IncidentCommunicator, StatusPageManager) | dr-dashboard + dr-status-page + 4 partials | 4 unit |
+
+**Gap-filling completado (commit e16d3e28):** Servicios con logica de produccion completa (+16,035 LOC):
+- `jaraba_dr`: 5 servicios con logica real (verificacion backups, ejecucion DR tests, failover orquestacion, comunicacion incidentes, gestion status page)
+- `jaraba_legal`: 5 servicios con logica real + LegalApiController (12 REST endpoints: ToS 3, SLA 2, AUP 2, Offboarding 3, Whistleblower 2 publicos)
+- `jaraba_privacy`: JS behaviors (cookie-banner, dpa-signature, privacy-dashboard) + 8 SCSS partials + 4 unit tests
+
+**ComplianceAggregatorService** (ecosistema_jaraba_core):
+- Servicio transversal que agrega KPIs de los 3 modulos compliance en un dashboard unificado
+- 9 KPIs (3 por modulo): dpa_coverage, arco_pol_sla, cookie_consent_rate, tos_acceptance_rate, sla_compliance, aup_violations, backup_health, dr_test_coverage, status_page_uptime
+- Score global 0-100 ponderado con grade A-F
+- Alertas automaticas: critico <50%, warning <80%
+- Inyeccion condicional: modulos no instalados reportan 'not_available' (NULL guard pattern)
+- **CompliancePanelController**: Ruta `/admin/jaraba/compliance`, auto-refresh AJAX 60s, API endpoint `/api/v1/compliance/overview`
 
 **Infraestructura theme:**
 - 3 zero-region page templates (page--privacy, page--legal-compliance, page--dr-status)
 - 3 compliance partials (metric-card, status-badge, timeline)
 - 36 SVG compliance icons (duotone + solid)
+- 24 SCSS partials (8 por modulo: variables, main, dashboard, responsive + 4 componentes)
 - Body classes + template suggestions en ecosistema_jaraba_theme.theme
 
 ---
@@ -2132,7 +2146,7 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 ### 12.1 Métricas de la Auditoría Integral
 
-La auditoría integral del 2026-02-13 analizó la plataforma desde 15 disciplinas simultáneas, cubriendo 62 módulos custom, 268 Content Entities y ~769 rutas API.
+La auditoría integral del 2026-02-13 analizó la plataforma desde 15 disciplinas simultáneas, cubriendo 69 módulos custom (actualizado 2026-02-16), 268+ Content Entities y ~769 rutas API.
 
 | Dimensión | Hallazgos | Críticos | Altos | Medios | Bajos |
 |-----------|-----------|----------|-------|--------|-------|
@@ -2292,7 +2306,28 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 **Separación directorios backup:** `~/backups/daily/` (automáticos diarios) y `~/backups/pre_deploy/` (pre-deploy) separados para configuración GoodSync. Paso de migración one-time añadido a `daily-backup.yml`.
 
-### 12.8 Referencias
+### 12.8 CI Testing Infrastructure (2026-02-16)
+
+**Estado:** 2,039 tests pasando (1,895 Unit + 144 Kernel), 0 errores, 0 fallos.
+
+**Workflow:** "Jaraba SaaS - Deploy to IONOS" ejecuta PHPUnit Unit y Kernel tests en cada push a main. SQLite para Kernel tests (phpunit.xml).
+
+**Patrones Kernel Test establecidos (7 commits, 61→0 errores):**
+
+| Patron | Regla | Descripcion |
+|--------|-------|-------------|
+| **Module dependencies** | KERNEL-DEP-001 | KernelTestBase `$modules` DEBE incluir todos los modulos que proveen field types: `options` (list_string), `datetime` (datetime), `flexible_permissions` + `group` (entity_reference→group), `file` (entity_reference→file) |
+| **Synthetic services** | KERNEL-SYNTH-001 | Dependencias de modulos no cargados → `register(ContainerBuilder)` con `setSynthetic(TRUE)` + `setUp()` con `createMock()`. Usado para: `ecosistema_jaraba_core.certificate_manager`, `jaraba_foc.stripe_connect` |
+| **Entity reference targets** | KERNEL-EREF-001 | Entity references a entidades inexistentes se descartan silenciosamente en save(). Tests DEBEN crear entity target primero |
+| **Timestamp tolerance** | KERNEL-TIME-001 | `time() - 1` / `time() + 1` para evitar flaky tests por race conditions en CI |
+| **SQLite decimals** | KERNEL-DECIMAL-001 | SQLite retorna `'1210'` no `'1210.00'`. Usar `assertEqualsWithDelta($expected, (float)$value, 0.001)` |
+| **UID 1 super admin** | KERNEL-UID1-001 | Drupal uid=1 bypasses ALL access checks. Tests de permisos DEBEN crear uid=1 placeholder en setUp() |
+
+**Bug de produccion descubierto y corregido:** `jaraba_verifactu.module` referenciaba campo `modo_verifactu` (no existe) en vez de `is_active` en funciones helper de tenant. Detectado por Kernel tests que instalaban el entity schema real.
+
+**Distribucion test files:** 233 Unit + 38 Kernel + 28 Functional = 299 archivos test en 69 modulos custom.
+
+### 12.9 Referencias
 
 | Documento | Ubicación |
 |-----------|-----------|
@@ -2385,6 +2420,8 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Aprendizajes Tenant Export + Backup** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_tenant_export_backup_automatizado.md` |
 | **Plan Elevacion JarabaLex Vertical Independiente** ⭐ | `docs/implementacion/20260216-Elevacion_JarabaLex_Vertical_Independiente_v1.md` |
 | **Aprendizajes Elevacion JarabaLex** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_jarabalex_elevacion_vertical_independiente.md` |
+| **Aprendizajes FASE 11 + Compliance Legal N1** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_fase11_fiscal_integration_compliance_legal_n1.md` |
+| **Aprendizajes Gap-filling + ComplianceAggregator** ⭐ | `docs/tecnicos/aprendizajes/2026-02-16_gap_filling_compliance_aggregator.md` |
 
 ---
 
@@ -2403,5 +2440,5 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
-> **Versión:** 35.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 36.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
 

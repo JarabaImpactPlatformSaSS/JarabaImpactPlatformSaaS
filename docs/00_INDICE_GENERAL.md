@@ -4,17 +4,26 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-16
-**Versión:** 52.0.0 (FASE 11 Fiscal Integration Layer + Stack Compliance Legal N1 Implementation)
+**Versión:** 54.0.0 (Kernel Test CI Fix Campaign — 61→0 Errors + Compliance Stub Cleanup)
 
-> **🔧 FASE 11 FISCAL INTEGRATION LAYER + STACK COMPLIANCE LEGAL N1 IMPLEMENTADOS** (2026-02-16)
-> - **FASE 11 Fiscal Integration Layer:** FiscalComplianceService (score 0-100, 5 factores × 20 pts), FiscalDashboardController (zero-region, KPIs, feature gating), FiscalInvoiceDelegationService (NIF prefix B2G/B2B detection), MJML alertas fiscales, design tokens --ej-fiscal-*, 38 PHPUnit tests, 3 servicios integrados
-> - **Stack Compliance Legal N1 — 3 Módulos, 198 archivos, +13,281 LOC:**
->   - `jaraba_privacy`: GDPR DPA Templates + LOPD-GDD. 5 Content Entities + 5 Services + 10 API endpoints
->   - `jaraba_legal`: Legal Terms SaaS. 6 Content Entities + 5 Services + 12 API endpoints
->   - `jaraba_dr`: Disaster Recovery Plan. 3 Content Entities + 5 Services + 8 API endpoints
-> - **VeriFactu Stack Fiscal Completo:** FASES 0-11 todas IMPLEMENTADAS (jaraba_verifactu + jaraba_facturae + jaraba_einvoice_b2b + ecosistema_jaraba_core integration layer)
-> - **Módulos custom:** 69 (+32 desde última contabilización). **Aprendizajes:** 86. **Madurez:** 4.9/5.0
-> - **Directrices v36.0.0, Arquitectura v35.0.0**
+> **🧪 KERNEL TEST CI FIX CAMPAIGN — 61→0 ERRORS, 7 COMMITS, PRODUCCION BUG FIX** (2026-02-16)
+> - **Campana de correccion CI:** 7 commits iterativos redujeron errores de Kernel tests de 61 a 0 en el workflow "Jaraba SaaS - Deploy to IONOS"
+> - **Bug de produccion corregido:** `jaraba_verifactu.module` referenciaba campo inexistente `modo_verifactu` (correcto: `is_active`) en funciones helper `_jaraba_verifactu_tenant_enabled()` y `_jaraba_verifactu_get_active_tenant_ids()`
+> - **Patrones Kernel test establecidos:** Synthetic services pattern para dependencias externas (certificate_manager, stripe_connect), modulos minimos (options, datetime, flexible_permissions, group), entity_reference requiere target entity real, timestamps con tolerancia ±1s
+> - **Cleanup compliance stubs:** 11 archivos placeholder eliminados (JS/SCSS/Twig) de jaraba_legal + jaraba_dr, library dependencies actualizadas (drupal.dialog.ajax → drupalSettings)
+> - **Tests finales:** 1,895 Unit + 144 Kernel = 2,039 tests pasando, 0 errores, 0 fallos
+> - **Directrices v38.0.0, Arquitectura v38.0.0, Indice v54.0.0**
+> - **Aprendizajes:** 87. **Reglas nuevas:** KERNEL-DEP-001, KERNEL-SYNTH-001, KERNEL-EREF-001, KERNEL-TIME-001
+
+> **🔧 GAP-FILLING COMPLIANCE STACK + COMPLIANCEAGGREGATORSERVICE** (2026-02-16)
+> - **Gap-filling completado:** Servicios compliance con lógica de producción completa (+16,035 LOC, 97 archivos):
+>   - `jaraba_dr`: 5 servicios implementados + rutas API + ECA hooks + JS interactivo + 4 unit tests
+>   - `jaraba_legal`: 5 servicios + LegalApiController (12 REST endpoints) + JS behaviors + 4 unit tests
+>   - `jaraba_privacy`: JS behaviors (cookie-banner, dpa-signature, privacy-dashboard) + 8 SCSS + 4 unit tests
+> - **ComplianceAggregatorService** (ecosistema_jaraba_core): 9 KPIs cross-module, score global 0-100, grade A-F, alertas critico/warning. CompliancePanelController `/admin/jaraba/compliance` + API `/api/v1/compliance/overview`
+> - **Tenant Export fix:** Error 500 en /tenant/export resuelto (zero-region template + hook_preprocess_page)
+> - **N1 Foundation 95%+:** docs 183/184/185 todos IMPLEMENTADOS. **Aprendizajes:** 87. **Madurez:** 4.9/5.0
+> - **Directrices v37.0.0, Arquitectura v36.0.0**
 
 > **⚖️ PLAN IMPLEMENTACION STACK COMPLIANCE LEGAL N1 — 3 MODULOS, 14 ENTIDADES, 30 API ENDPOINTS** (2026-02-16)
 > - **Plan de Implementacion:** 24 secciones, 13 fases (F0-F12), 91-118h / 4,095-5,310 EUR
@@ -986,10 +995,10 @@
 
 | Doc | Título | Área | Estado |
 |-----|--------|------|--------|
-| 183 | GDPR DPA Templates — Plantillas legales multi-tenant RGPD/LOPD-GDD | Legal/Compliance | ⬜ Spec |
-| 184 | Legal Terms SaaS — TdS, SLA, AUP, Licencia, Offboarding | Legal | ⬜ Spec |
-| 185 | Disaster Recovery Plan — Continuidad de Negocio y DR | DR/BCP | ⬜ Spec |
-| 201 | Auditoría N1 Claude Code Readiness | Audit | ❌ NOT READY (12 gaps) |
+| 183 | GDPR DPA Templates — `jaraba_privacy` | Legal/Compliance | ✅ Implementado (5 entities, 5 services, 4 tests) |
+| 184 | Legal Terms SaaS — `jaraba_legal` | Legal | ✅ Implementado (6 entities, 5 services + LegalApiController 12 endpoints, 4 tests) |
+| 185 | Disaster Recovery Plan — `jaraba_dr` | DR/BCP | ✅ Implementado (3 entities, 5 services, 4 tests) |
+| 201 | Auditoría N1 Claude Code Readiness | Audit | ✅ 95%+ (ComplianceAggregatorService: 9 KPIs, score 0-100) |
 
 **Nivel 2 — Growth Ready (docs 186-193):**
 
@@ -1190,7 +1199,7 @@
 | **Documentos de planificación** | 15 |
 | **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 86 |
+| **Aprendizajes documentados** | 87 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
 | **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
@@ -1252,6 +1261,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-16 | **53.0.0** | 🔧 **Gap-filling Compliance Stack + ComplianceAggregatorService:** Servicios compliance con lógica de producción completa (+16,035 LOC, 97 archivos). jaraba_dr 5 servicios + API + 4 tests. jaraba_legal 5 servicios + LegalApiController (12 endpoints) + 4 tests. jaraba_privacy JS + SCSS + 4 tests. ComplianceAggregatorService: 9 KPIs cross-module (3 por módulo), score 0-100, grade A-F, alertas automáticas. CompliancePanelController `/admin/jaraba/compliance` + API. Tenant export fix (zero-region + hook_preprocess_page). Sección 7.4e docs 183-185 actualizados a IMPLEMENTADO. 13 test files nuevos. Directrices v37.0.0, Arquitectura v36.0.0. 87 aprendizajes |
 | 2026-02-16 | **52.0.0** | 🔧 **FASE 11 Fiscal Integration Layer + Stack Compliance Legal N1 IMPLEMENTADOS:** FASE 11 completada — FiscalComplianceService (score 0-100, 5 factores × 20 pts), FiscalDashboardController (zero-region, KPIs, feature gating), FiscalInvoiceDelegationService (NIF prefix B2G/B2B), MJML alertas fiscales, design tokens --ej-fiscal-*, 38 PHPUnit tests. Stack VeriFactu FASES 0-11 todas IMPLEMENTADAS. Stack Compliance Legal N1: 3 módulos nuevos (jaraba_privacy GDPR/DPA 5 entities + 5 services, jaraba_legal ToS/SLA 6 entities + 5 services, jaraba_dr Disaster Recovery 3 entities + 5 services). 198 archivos, +13,281 LOC. 69 módulos custom totales, 30 con package.json, 49 MJML templates, 41 page templates theme. Contabilización actualizada de estadísticas reales del proyecto. Directrices v36.0.0, Arquitectura v35.0.0. 86 aprendizajes |
 | 2026-02-16 | **51.0.0** | ⚖️ **Plan Implementacion Stack Compliance Legal N1:** 24 secciones, 13 fases (F0-F12), 91-118h / 4,095-5,310 EUR. 3 módulos planificados (jaraba_privacy, jaraba_legal, jaraba_dr). 14 entidades, 15 servicios, 30 API endpoints. 20 directrices cumplidas. Correspondencia tabla 40+ filas. Auditoria N1 target 12.5% → 95%+ |
 | 2026-02-16 | **50.0.0** | ⚖️ **Elevacion JarabaLex a Vertical Independiente:** `jaraba_legal_intelligence` elevado de sub-feature ServiciosConecta a vertical independiente JarabaLex. 16 config entities (1 vertical + 3 features + 3 SaaS plans + 9 FreemiumVerticalLimit). page--legal.html.twig + CSS custom properties --ej-legal-* + billing FEATURE_ADDON_MAP. Docs 178/178A/178B metadata actualizada. 18 nuevos + 11 modificados. 5 reglas VERTICAL-ELEV-001 a 005. Aprendizaje #85. Directrices v34.0.0, Arquitectura v34.0.0. 85 aprendizajes |
