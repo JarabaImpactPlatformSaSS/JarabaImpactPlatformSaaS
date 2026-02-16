@@ -40,12 +40,8 @@ class LegalResolutionEntityTest extends KernelTestBase {
    */
   public function register(ContainerBuilder $container): void {
     parent::register($container);
-    if (!$container->hasDefinition('ai.provider')) {
-      $container->register('ai.provider', \stdClass::class);
-    }
-    if (!$container->hasDefinition('ecosistema_jaraba_core.tenant_context')) {
-      $container->register('ecosistema_jaraba_core.tenant_context', \stdClass::class);
-    }
+    $container->register('ai.provider')->setSynthetic(TRUE);
+    $container->register('ecosistema_jaraba_core.tenant_context')->setSynthetic(TRUE);
   }
 
   /**
@@ -53,6 +49,15 @@ class LegalResolutionEntityTest extends KernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    $this->container->set('ai.provider', new \stdClass());
+    $this->container->set(
+      'ecosistema_jaraba_core.tenant_context',
+      $this->getMockBuilder('Drupal\ecosistema_jaraba_core\Service\TenantContextService')
+        ->disableOriginalConstructor()
+        ->getMock()
+    );
+
     $this->installEntitySchema('user');
     $this->installEntitySchema('legal_resolution');
     $this->installConfig(['jaraba_legal_intelligence']);
