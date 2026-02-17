@@ -1,0 +1,85 @@
+services:
+  logger.channel.jaraba_agents:
+    parent: logger.channel_base
+    arguments: ['jaraba_agents']
+
+  jaraba_agents.orchestrator:
+    class: Drupal\jaraba_agents\Service\AgentOrchestratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@jaraba_agents.guardrails'
+      - '@jaraba_agents.metrics'
+      - '@jaraba_agents.approval_manager'
+
+  jaraba_agents.guardrails:
+    class: Drupal\jaraba_agents\Service\GuardrailsEnforcerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@config.factory'
+
+  jaraba_agents.metrics:
+    class: Drupal\jaraba_agents\Service\AgentMetricsCollectorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+
+  jaraba_agents.approval_manager:
+    class: Drupal\jaraba_agents\Service\ApprovalManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+
+  jaraba_agents.enrollment_agent:
+    class: Drupal\jaraba_agents\Service\EnrollmentAgentService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_agents.planning_agent:
+    class: Drupal\jaraba_agents\Service\PlanningAgentService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_agents.support_agent:
+    class: Drupal\jaraba_agents\Service\SupportAgentService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_agents.agent_router:
+    class: Drupal\jaraba_agents\Service\AgentRouterService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_agents.handoff_manager:
+    class: Drupal\jaraba_agents\Service\HandoffManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+
+  jaraba_agents.shared_memory:
+    class: Drupal\jaraba_agents\Service\SharedMemoryService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+
+  jaraba_agents.conversation_manager:
+    class: Drupal\jaraba_agents\Service\ConversationManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_agents.observer:
+    class: Drupal\jaraba_agents\Service\AgentObserverService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'

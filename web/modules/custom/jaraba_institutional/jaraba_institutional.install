@@ -1,0 +1,118 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Instalacion del modulo jaraba_institutional.
+ *
+ * Estructura: Creacion de vocabularios taxonomicos y terminos iniciales
+ *             para tipos de programa y resultados de empleo.
+ * Logica: Patron INSTALL-TAXONOMY-001 — Verificacion de existencia antes
+ *         de crear vocabularios y terminos para evitar duplicados.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Implements hook_install().
+ *
+ * Estructura: Crea vocabularios 'program_type' y 'employment_outcome' con
+ *             sus terminos iniciales.
+ * Logica: Verifica existencia de cada vocabulario antes de crearlo
+ *         (patron INSTALL-TAXONOMY-001). Los terminos se crean en orden
+ *         con peso incremental para mantener ordenacion consistente.
+ */
+function jaraba_institutional_install(): void {
+  // --- Vocabulario: program_type ---
+  // Estructura: Tipos de programa institucional (STO, PIIL, FUNDAE, FSE+, Otro).
+  _jaraba_institutional_ensure_vocabulary('program_type', 'Tipo de Programa');
+
+  $program_types = [
+    'STO (Servicio Telematico de Orientacion)',
+    'PIIL (Programa de Itinerarios Integrados Laborales)',
+    'FUNDAE (Fundacion Estatal para la Formacion en el Empleo)',
+    'FSE+ (Fondo Social Europeo Plus)',
+    'Otro',
+  ];
+
+  foreach ($program_types as $weight => $name) {
+    _jaraba_institutional_ensure_term('program_type', $name, $weight);
+  }
+
+  // --- Vocabulario: employment_outcome ---
+  // Estructura: Resultados de empleo para seguimiento de participantes.
+  _jaraba_institutional_ensure_vocabulary('employment_outcome', 'Resultado de Empleo');
+
+  $outcomes = [
+    'Empleado por cuenta ajena',
+    'Empleado por cuenta propia',
+    'En formacion',
+    'Desempleado',
+  ];
+
+  foreach ($outcomes as $weight => $name) {
+    _jaraba_institutional_ensure_term('employment_outcome', $name, $weight);
+  }
+
+  \Drupal::logger('jaraba_institutional')->notice(
+    'Modulo jaraba_institutional instalado: vocabularios y terminos creados.'
+  );
+}
+
+/**
+ * Asegura la existencia de un vocabulario taxonomico.
+ *
+ * Estructura: Crea el vocabulario si no existe previamente.
+ * Logica: Patron INSTALL-TAXONOMY-001 — evita errores por duplicado.
+ *
+ * @param string $vid
+ *   Identificador del vocabulario.
+ * @param string $name
+ *   Nombre legible del vocabulario.
+ */
+function _jaraba_institutional_ensure_vocabulary(string $vid, string $name): void {
+  $vocabulary = Vocabulary::load($vid);
+  if ($vocabulary === NULL) {
+    $vocabulary = Vocabulary::create([
+      'vid' => $vid,
+      'name' => $name,
+    ]);
+    $vocabulary->save();
+    \Drupal::logger('jaraba_institutional')->info(
+      'Vocabulario creado: @name (@vid)',
+      ['@name' => $name, '@vid' => $vid]
+    );
+  }
+}
+
+/**
+ * Asegura la existencia de un termino taxonomico dentro de un vocabulario.
+ *
+ * Estructura: Crea el termino si no existe previamente en el vocabulario.
+ * Logica: Busca por nombre y vid para evitar duplicados.
+ *
+ * @param string $vid
+ *   Identificador del vocabulario padre.
+ * @param string $name
+ *   Nombre del termino.
+ * @param int $weight
+ *   Peso para ordenacion.
+ */
+function _jaraba_institutional_ensure_term(string $vid, string $name, int $weight): void {
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $existing = $storage->loadByProperties([
+    'vid' => $vid,
+    'name' => $name,
+  ]);
+
+  if (empty($existing)) {
+    $term = Term::create([
+      'vid' => $vid,
+      'name' => $name,
+      'weight' => $weight,
+    ]);
+    $term->save();
+  }
+}

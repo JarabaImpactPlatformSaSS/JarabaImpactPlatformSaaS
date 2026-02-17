@@ -1,0 +1,20 @@
+{# Tarjeta de programa institucional. #}
+<article class="program-card program-card--{{ program.status|default('draft') }}">
+  <div class="program-card__header">
+    <span class="program-card__type program-card__type--{{ program.program_type|default('sto') }}">{{ program.program_type|upper }}</span>
+    <span class="program-card__status">{{ program.status|default('')|t }}</span>
+  </div>
+  <h3 class="program-card__name">{{ program.name|default('') }}</h3>
+  <div class="program-card__meta">
+    <span class="program-card__code">{{ program.program_code|default('') }}</span>
+    <span class="program-card__entity">{{ program.funding_entity|default('') }}</span>
+  </div>
+  <div class="program-card__footer">
+    {% if program.budget_total %}
+      <span class="program-card__budget">{{ program.budget_total|number_format(2, ',', '.') }} €</span>
+    {% endif %}
+    {% if program.participants_actual is defined %}
+      <span class="program-card__participants">{{ program.participants_actual }}/{{ program.participants_target|default('—') }} {{ 'participantes'|t }}</span>
+    {% endif %}
+  </div>
+</article>

@@ -1,0 +1,35 @@
+{#
+ # Tarjeta de resena reutilizable.
+ #
+ # Variables:
+ #   - review: ReviewServicios entity (or array with rating, title, comment, author_name, created)
+ #}
+<article class="servicios-review-card">
+  <div class="servicios-review-card__header">
+    <div class="servicios-review-card__rating">
+      {% for i in 1..5 %}
+        <span class="servicios-review-card__star{{ i <= (review.rating|default(0)) ? ' servicios-review-card__star--filled' : '' }}">★</span>
+      {% endfor %}
+    </div>
+    <time class="servicios-review-card__date" datetime="{{ review.created|default('')|date('Y-m-d') }}">
+      {{ review.created|default('')|date('d/m/Y') }}
+    </time>
+  </div>
+
+  {% if review.title|default('') %}
+    <h4 class="servicios-review-card__title">{{ review.title }}</h4>
+  {% endif %}
+
+  <p class="servicios-review-card__comment">{{ review.comment|default('') }}</p>
+
+  <footer class="servicios-review-card__footer">
+    <span class="servicios-review-card__author">{{ review.author_name|default('') }}</span>
+  </footer>
+
+  {% if review.provider_response|default('') %}
+    <div class="servicios-review-card__response">
+      <strong>{% trans %}Provider response:{% endtrans %}</strong>
+      <p>{{ review.provider_response }}</p>
+    </div>
+  {% endif %}
+</article>

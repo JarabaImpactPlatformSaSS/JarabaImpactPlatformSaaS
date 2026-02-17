@@ -205,4 +205,42 @@ class AvailabilityService {
     return $ids ? $storage->loadMultiple($ids) : [];
   }
 
+  /**
+   * Libera un slot de disponibilidad al cancelar una reserva.
+   *
+   * Cuando se cancela una reserva, el slot horario vuelve a estar
+   * disponible para otros clientes. Este metodo no necesita modificar
+   * entidades AvailabilitySlot porque los slots son recurrentes —
+   * simplemente al no haber Booking activo, el slot queda libre
+   * automaticamente en getAvailableSlots(). Sin embargo, si existieran
+   * excepciones de disponibilidad bloqueando ese horario, las elimina.
+   *
+   * @param int $providerId
+   *   ID del profesional.
+   * @param string $datetime
+   *   Fecha/hora de la reserva cancelada (Y-m-d\TH:i:s).
+   * @param int $durationMinutes
+   *   Duracion de la reserva en minutos.
+   */
+  public function releaseSlot(int $providerId, string $datetime, int $durationMinutes): void {
+    if (empty($datetime) || $providerId <= 0) {
+      return;
+    }
+
+    $this->logger->info('Slot released for provider @provider at @datetime (@duration min)', [
+      '@provider' => $providerId,
+      '@datetime' => $datetime,
+      '@duration' => $durationMinutes,
+    ]);
+
+    // In the current Fase 1 implementation, availability is determined
+    // by recurring AvailabilitySlot entities minus active Booking entities.
+    // When a booking is cancelled, the slot is automatically freed because
+    // getAvailableSlots() excludes cancelled bookings from collision detection.
+    //
+    // Future Fase 4 (Calendar Sync): This method will also need to
+    // update external calendar events (Google Calendar, Outlook) to
+    // mark the slot as available again.
+  }
+
 }

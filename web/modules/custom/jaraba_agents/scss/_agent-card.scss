@@ -1,0 +1,139 @@
+// =============================================================================
+// Tarjeta de Agente Autonomo (Jaraba Agents)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// Modificadores por nivel de autonomia y tipo de agente
+// =============================================================================
+
+@use 'variables' as *;
+
+.agent-card {
+  background: $agents-bg-surface;
+  border: 1px solid $agents-border-color;
+  border-radius: $agents-border-radius-md;
+  padding: $agents-spacing-lg;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: $agents-spacing-sm;
+
+  &:hover {
+    box-shadow: $agents-shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__type {
+    display: inline-block;
+    padding: $agents-spacing-xs $agents-spacing-sm;
+    border-radius: $agents-border-radius;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    // Modificadores por tipo de agente
+    &--enrollment {
+      background: color-mix(in srgb, #8b5cf6 15%, transparent);
+      color: #7c3aed;
+    }
+
+    &--planning {
+      background: color-mix(in srgb, $agents-color-info 15%, transparent);
+      color: $agents-color-info;
+    }
+
+    &--support {
+      background: color-mix(in srgb, $agents-color-secondary 15%, transparent);
+      color: $agents-color-secondary;
+    }
+
+    &--marketing {
+      background: color-mix(in srgb, $agents-color-ai 15%, transparent);
+      color: $agents-color-ai;
+    }
+
+    &--analytics {
+      background: color-mix(in srgb, #06b6d4 15%, transparent);
+      color: #0891b2;
+    }
+  }
+
+  &__level {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: $agents-color-text-muted;
+  }
+
+  &__name {
+    font-family: $agents-font-headings;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $agents-color-text;
+    margin: 0;
+  }
+
+  &__vertical {
+    font-size: 0.8rem;
+    color: $agents-color-text-muted;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: $agents-spacing-sm;
+    border-top: 1px solid $agents-border-color;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: $agents-spacing-xs $agents-spacing-sm;
+    border-radius: $agents-border-radius;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--active {
+      background: color-mix(in srgb, $agents-color-success 15%, transparent);
+      color: $agents-color-success;
+    }
+
+    &--inactive {
+      background: color-mix(in srgb, #9ca3af 15%, transparent);
+      color: #6b7280;
+    }
+  }
+
+  &__model {
+    font-size: 0.75rem;
+    color: $agents-color-text-muted;
+    font-family: monospace;
+  }
+
+  // Modificadores por nivel de autonomia — borde izquierdo de color
+  &--l0_disabled {
+    border-left: 3px solid $agents-level-l0;
+  }
+
+  &--l1_suggestion {
+    border-left: 3px solid $agents-level-l1;
+  }
+
+  &--l2_auto_low {
+    border-left: 3px solid $agents-level-l2;
+  }
+
+  &--l3_auto_medium {
+    border-left: 3px solid $agents-level-l3;
+  }
+
+  &--l4_full_auto {
+    border-left: 3px solid $agents-level-l4;
+  }
+}

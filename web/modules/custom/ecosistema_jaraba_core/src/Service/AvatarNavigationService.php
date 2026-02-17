@@ -49,6 +49,9 @@ class AvatarNavigationService {
     'mentor' => 'Mentor',
     // Plan Elevacion JarabaLex v1 — Fase 12.
     'legal_professional' => 'Profesional Juridico',
+    // Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 12.
+    'profesional' => 'Profesional de Servicios',
+    'cliente_servicios' => 'Cliente de Servicios',
     'tenant_admin' => 'Administrador',
     'admin' => 'Administrador',
     'anonymous' => 'Visitante',
@@ -265,18 +268,34 @@ class AvatarNavigationService {
         ['id' => 'marketplace', 'label' => 'Marketplace', 'route' => 'jaraba_agroconecta.marketplace', 'icon_category' => 'commerce', 'icon_name' => 'store'],
         ['id' => 'customer_dashboard', 'label' => 'Mis Pedidos', 'route' => 'jaraba_agroconecta.customer.dashboard', 'icon_category' => 'commerce', 'icon_name' => 'shopping-bag'],
         ['id' => 'customer_favorites', 'label' => 'Favoritos', 'route' => 'jaraba_agroconecta.customer.favorites', 'icon_category' => 'ui', 'icon_name' => 'heart'],
+        // ComercioConecta buyer portal — Plan Elevacion v1.
+        ['id' => 'cc_account', 'label' => 'Mi Cuenta', 'route' => 'jaraba_comercio_conecta.customer_portal', 'icon_category' => 'user', 'icon_name' => 'user'],
+        ['id' => 'cc_orders', 'label' => 'Mis Pedidos', 'route' => 'jaraba_comercio_conecta.customer_portal.orders', 'icon_category' => 'commerce', 'icon_name' => 'receipt'],
+        ['id' => 'cc_wishlist', 'label' => 'Favoritos', 'route' => 'jaraba_comercio_conecta.customer_portal.wishlist', 'icon_category' => 'actions', 'icon_name' => 'heart'],
       ],
       'merchant' => [
         ['id' => 'portal', 'label' => 'Mi comercio', 'route' => 'jaraba_comercio_conecta.merchant_portal', 'icon_category' => 'commerce', 'icon_name' => 'store'],
         ['id' => 'products', 'label' => 'Productos', 'route' => 'jaraba_comercio_conecta.merchant_portal.products', 'icon_category' => 'commerce', 'icon_name' => 'shopping-bag'],
         ['id' => 'stock', 'label' => 'Stock', 'route' => 'jaraba_comercio_conecta.merchant_portal.stock', 'icon_category' => 'commerce', 'icon_name' => 'barcode'],
         ['id' => 'analytics', 'label' => 'Analíticas', 'route' => 'jaraba_comercio_conecta.merchant_portal.analytics', 'icon_category' => 'analytics', 'icon_name' => 'chart-bar'],
+        // ComercioConecta merchant portal — Plan Elevacion v1.
+        ['id' => 'orders', 'label' => 'Pedidos', 'route' => 'jaraba_comercio_conecta.merchant_portal.orders', 'icon_category' => 'commerce', 'icon_name' => 'receipt'],
+        ['id' => 'promotions', 'label' => 'Promociones', 'route' => 'jaraba_comercio_conecta.merchant_portal.promotions', 'icon_category' => 'commerce', 'icon_name' => 'tag'],
+        ['id' => 'profile', 'label' => 'Perfil Comercio', 'route' => 'jaraba_comercio_conecta.merchant_portal.profile', 'icon_category' => 'user', 'icon_name' => 'store'],
       ],
       'service_provider' => [
         ['id' => 'portal', 'label' => 'Mi servicio', 'route' => 'jaraba_servicios_conecta.provider_portal', 'icon_category' => 'business', 'icon_name' => 'company'],
         ['id' => 'offerings', 'label' => 'Servicios', 'route' => 'jaraba_servicios_conecta.provider_portal.offerings', 'icon_category' => 'ui', 'icon_name' => 'settings'],
         ['id' => 'bookings', 'label' => 'Reservas', 'route' => 'jaraba_servicios_conecta.provider_portal.bookings', 'icon_category' => 'ui', 'icon_name' => 'calendar'],
         ['id' => 'calendar', 'label' => 'Calendario', 'route' => 'jaraba_servicios_conecta.provider_portal.calendar', 'icon_category' => 'ui', 'icon_name' => 'clock'],
+      ],
+      // Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 12.
+      'profesional' => [
+        ['id' => 'dashboard', 'label' => 'Dashboard', 'route' => 'jaraba_servicios_conecta.provider_portal', 'icon_category' => 'analytics', 'icon_name' => 'dashboard'],
+        ['id' => 'servicios', 'label' => 'Servicios', 'route' => 'jaraba_servicios_conecta.provider_portal.offerings', 'icon_category' => 'business', 'icon_name' => 'briefcase'],
+        ['id' => 'reservas', 'label' => 'Reservas', 'route' => 'jaraba_servicios_conecta.provider_portal.bookings', 'icon_category' => 'ui', 'icon_name' => 'calendar'],
+        ['id' => 'calendario', 'label' => 'Calendario', 'route' => 'jaraba_servicios_conecta.provider_portal.calendar', 'icon_category' => 'ui', 'icon_name' => 'calendar'],
+        ['id' => 'perfil', 'label' => 'Perfil', 'route' => 'jaraba_servicios_conecta.provider_portal.profile', 'icon_category' => 'ui', 'icon_name' => 'user'],
       ],
       'student' => [
         ['id' => 'my_courses', 'label' => 'Mis cursos', 'route' => 'jaraba_lms.my_learning', 'icon_category' => 'ui', 'icon_name' => 'book'],
@@ -312,6 +331,7 @@ class AvatarNavigationService {
         ['id' => 'emprender', 'label' => 'Emprender', 'route' => 'ecosistema_jaraba_core.landing_emprender', 'icon_category' => 'verticals', 'icon_name' => 'rocket'],
         ['id' => 'comercio', 'label' => 'Comercio', 'route' => 'ecosistema_jaraba_core.landing_comercio', 'icon_category' => 'commerce', 'icon_name' => 'store'],
         ['id' => 'agroconecta', 'label' => 'AgroConecta', 'route' => 'ecosistema_jaraba_core.landing.agroconecta', 'icon_category' => 'commerce', 'icon_name' => 'leaf'],
+        ['id' => 'jarabalex', 'label' => 'JarabaLex', 'route' => 'ecosistema_jaraba_core.landing.jarabalex', 'icon_category' => 'legal', 'icon_name' => 'gavel'],
         ['id' => 'courses', 'label' => 'Cursos', 'route' => 'jaraba_lms.catalog', 'icon_category' => 'ui', 'icon_name' => 'book'],
         ['id' => 'register', 'label' => 'Registrarse', 'route' => 'user.register', 'icon_category' => 'ui', 'icon_name' => 'user'],
       ],

@@ -84,6 +84,19 @@ legal.dashboard:
     - core/drupalSettings
     - core/once
 
+# Lead Magnet: Diagnostico Legal Gratuito (Fase 0 Clase Mundial).
+legal.diagnostico:
+  version: VERSION
+  css:
+    theme:
+      css/legal-intelligence.css: {}
+  js:
+    js/legal-diagnostico.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 # Dashboard admin: metricas, estado fuentes, acciones sync.
 legal.admin:
   version: VERSION

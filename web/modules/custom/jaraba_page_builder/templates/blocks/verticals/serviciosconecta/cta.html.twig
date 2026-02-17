@@ -4,9 +4,12 @@
  # Type: cta
  #
  # Banner con gradient, titulo, subtitle y 2 CTAs (primary + secondary)
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--cta pb-section--serviciosconecta"
-         aria-label="{{ title|default('Solicitar Presupuesto')|t }}">
+<section class="pb-section pb-section--cta pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Solicitar Presupuesto')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <h2 class="pb-section__title">{{ title|default('¿Necesitas un profesional de confianza?')|t }}</h2>
     <p class="pb-section__subtitle">{{ subtitle|default('Conecta con expertos verificados en consultoría, asesoría legal, contabilidad y más. Solicita presupuesto sin compromiso.')|t }}</p>

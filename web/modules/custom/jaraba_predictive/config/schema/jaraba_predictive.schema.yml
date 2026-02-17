@@ -1,0 +1,67 @@
+jaraba_predictive.settings:
+  type: config_object
+  label: 'Configuracion del modulo Jaraba Predictive'
+  mapping:
+    alert_threshold:
+      type: integer
+      label: 'Umbral de alerta de riesgo (0-100)'
+    model_version:
+      type: string
+      label: 'Version del modelo predictivo activo'
+    python_enabled:
+      type: boolean
+      label: 'Habilitar motor Python para modelos ML'
+    python_path:
+      type: string
+      label: 'Ruta al binario de Python 3'
+    scripts_path:
+      type: string
+      label: 'Ruta a los scripts de Python'
+    feature_cache_ttl:
+      type: integer
+      label: 'TTL de cache de features (segundos)'
+    churn_weights:
+      type: mapping
+      label: 'Pesos del modelo de churn heuristico'
+      mapping:
+        inactivity:
+          type: float
+          label: 'Peso de inactividad'
+        payment_failures:
+          type: float
+          label: 'Peso de fallos de pago'
+        support_tickets:
+          type: float
+          label: 'Peso de tickets de soporte'
+        feature_adoption:
+          type: float
+          label: 'Peso de adopcion de funcionalidades'
+        contract_age:
+          type: float
+          label: 'Peso de antiguedad del contrato'
+    lead_scoring:
+      type: mapping
+      label: 'Pesos del modelo de lead scoring'
+      mapping:
+        engagement_weight:
+          type: float
+          label: 'Peso de engagement'
+        activation_weight:
+          type: float
+          label: 'Peso de activacion'
+        intent_weight:
+          type: float
+          label: 'Peso de intencionalidad'
+    forecast:
+      type: mapping
+      label: 'Configuracion de forecasting'
+      mapping:
+        default_period:
+          type: string
+          label: 'Periodo por defecto'
+        confidence_interval:
+          type: float
+          label: 'Intervalo de confianza'
+        min_data_points:
+          type: integer
+          label: 'Minimo de puntos de datos'

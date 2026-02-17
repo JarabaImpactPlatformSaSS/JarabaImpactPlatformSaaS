@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * @file
+ * Modulo principal de Multi-Region (N2 Growth Ready).
+ *
+ * Estructura: Define hooks de tema, preproceso y automatizaciones para
+ *   la gestion multi-pais, multi-currency y compliance fiscal.
+ *
+ * Logica: Este modulo es de configuracion administrativa. NO tiene
+ *   dashboard de tenant. Las rutas son de admin y API REST.
+ *
+ * Sintaxis: Hooks estandar de Drupal 10/11 con strict_types activado.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Estructura: Registra templates parciales del modulo multi-region.
+ *   Al ser un modulo administrativo, no requiere template zero-region.
+ *
+ * Logica: Retorna array vacio; los templates se registraran cuando
+ *   se implementen vistas parciales de configuracion regional.
+ */
+function jaraba_multiregion_theme(): array {
+  return [];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Anade clases CSS al <body> segun la ruta activa.
+ *
+ * Logica: Detecta rutas de Multi-Region para anadir clases que permiten
+ *   estilos especificos por pagina. Las clases en <body> SOLO funcionan
+ *   desde hook_preprocess_html, NO desde templates (LEGAL-BODY-001).
+ *
+ * Sintaxis: str_starts_with() requiere PHP 8.0+.
+ */
+function jaraba_multiregion_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+  if (str_starts_with($route_name, 'jaraba_multiregion.')) {
+    $variables['attributes']['class'][] = 'page-multiregion';
+    $variables['attributes']['class'][] = 'n2-growth-ready';
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Estructura: Automatizacion al crear entidades de TenantRegion.
+ *
+ * Logica: Al crear una region de tenant, registra la jurisdiccion
+ *   configurada en el log del modulo para auditoria de compliance.
+ */
+function jaraba_multiregion_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'tenant_region') {
+    $jurisdiction = $entity->get('legal_jurisdiction')->value ?? '';
+    \Drupal::logger('jaraba_multiregion')->info('Region @jurisdiction configurada.', [
+      '@jurisdiction' => $jurisdiction,
+    ]);
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Estructura: Detecta cambios criticos en configuracion regional.
+ *
+ * Logica: Cuando los campos legal_jurisdiction o data_region cambian
+ *   en una entidad TenantRegion, registra los cambios en el log
+ *   del modulo. Estos cambios son criticos para compliance y GDPR.
+ *
+ * Sintaxis: Acceso a $entity->original para comparar valores previos.
+ */
+function jaraba_multiregion_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'tenant_region') {
+    $original = $entity->original ?? NULL;
+    if ($original) {
+      $changes = [];
+      if ($entity->get('legal_jurisdiction')->value !== $original->get('legal_jurisdiction')->value) {
+        $changes[] = 'jurisdiccion';
+      }
+      if ($entity->get('data_region')->value !== $original->get('data_region')->value) {
+        $changes[] = 'data region';
+      }
+      if (!empty($changes)) {
+        \Drupal::logger('jaraba_multiregion')->info('Region actualizada: cambios en @changes.', [
+          '@changes' => implode(', ', $changes),
+        ]);
+      }
+    }
+  }
+}

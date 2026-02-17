@@ -1,0 +1,211 @@
+@use 'variables' as *;
+
+// Region Admin — BEM
+// Estilos administrativos para configuracion de regiones por tenant.
+// Colores via var(--ej-*) con fallback, color-mix() para variantes.
+
+.region-admin {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $multiregion-spacing-md;
+
+  @include respond-to(md) {
+    padding: $multiregion-spacing-lg;
+  }
+
+  // =========================================================================
+  // BLOQUE: Cabecera de seccion
+  // =========================================================================
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $multiregion-spacing-xl;
+    flex-wrap: wrap;
+    gap: $multiregion-spacing-md;
+  }
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.9375rem;
+    color: var(--ej-color-text-muted, #6b7280);
+    margin: $multiregion-spacing-xs 0 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $multiregion-spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  // =========================================================================
+  // BLOQUE: Grid de tarjetas de jurisdiccion
+  // =========================================================================
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $multiregion-spacing-md;
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  // =========================================================================
+  // BLOQUE: Tarjeta individual de jurisdiccion
+  // =========================================================================
+
+  &__card {
+    background: var(--ej-bg-surface, #FFFFFF);
+    border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+    border-radius: var(--ej-border-radius-lg, 14px);
+    padding: $multiregion-spacing-lg;
+    transition: box-shadow 0.2s, border-color 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+      border-color: color-mix(in srgb, var(--ej-color-corporate, #233D63) 20%, transparent);
+    }
+  }
+
+  &__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $multiregion-spacing-md;
+  }
+
+  &__card-jurisdiction {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+  }
+
+  &__card-code {
+    font-family: var(--ej-font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    color: var(--ej-color-corporate, #233D63);
+    padding: 2px 8px;
+    border-radius: $multiregion-radius-sm;
+  }
+
+  &__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: $multiregion-spacing-sm;
+    font-size: 0.875rem;
+    color: var(--ej-color-text-body, #374151);
+  }
+
+  &__card-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__card-label {
+    font-weight: 500;
+    color: var(--ej-color-text-muted, #6b7280);
+  }
+
+  &__card-value {
+    font-weight: 600;
+  }
+
+  // =========================================================================
+  // BLOQUE: Badges de estado de compliance y VIES
+  // =========================================================================
+
+  &__badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--valid {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+      color: var(--ej-color-success, #10B981);
+    }
+
+    &--invalid {
+      background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent);
+      color: var(--ej-color-danger, #EF4444);
+    }
+
+    &--pending {
+      background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+      color: var(--ej-color-warning, #F59E0B);
+    }
+  }
+
+  // =========================================================================
+  // BLOQUE: Indicadores de data region
+  // =========================================================================
+
+  &__data-region {
+    display: inline-flex;
+    align-items: center;
+    gap: $multiregion-spacing-xs;
+    font-size: 0.8125rem;
+    font-weight: 500;
+
+    &--eu-west {
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--eu-central {
+      color: var(--ej-color-corporate, #233D63);
+    }
+
+    &--us-east {
+      color: var(--ej-color-impulse, #FF8C42);
+    }
+
+    &--latam {
+      color: var(--ej-color-earth, #556B2F);
+    }
+  }
+
+  &__data-region-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  // =========================================================================
+  // BLOQUE: Estado vacio
+  // =========================================================================
+
+  &__empty {
+    text-align: center;
+    padding: $multiregion-spacing-xl;
+    color: var(--ej-color-text-muted, #6b7280);
+    font-size: 0.9375rem;
+  }
+}
+
+// Full width override para paginas multiregion.
+.page-multiregion {
+  .layout-content {
+    max-width: 100%;
+    padding: 0;
+  }
+}

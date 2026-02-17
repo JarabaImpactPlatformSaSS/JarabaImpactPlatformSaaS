@@ -1,0 +1,36 @@
+administer multiregion:
+  title: 'Administrar Multi-Region'
+  description: 'Acceso completo a configuracion y datos del modulo multi-region.'
+  restrict access: true
+
+access multiregion:
+  title: 'Acceder a la Configuracion Multi-Region'
+  description: 'Ver la configuracion de regiones, monedas y jurisdicciones.'
+
+access multiregion api:
+  title: 'Acceder a la API Multi-Region'
+  description: 'Acceso a los endpoints REST del modulo multi-region.'
+
+manage regions:
+  title: 'Gestionar Regiones'
+  description: 'Crear, editar y eliminar configuraciones regionales por tenant.'
+
+manage tax rules:
+  title: 'Gestionar Reglas Fiscales'
+  description: 'Crear, editar y eliminar reglas de IVA por jurisdiccion.'
+
+view tax rules:
+  title: 'Ver Reglas Fiscales'
+  description: 'Ver las reglas fiscales configuradas por jurisdiccion.'
+
+manage currency rates:
+  title: 'Gestionar Tipos de Cambio'
+  description: 'Crear, editar y eliminar tipos de cambio de monedas.'
+
+view currency rates:
+  title: 'Ver Tipos de Cambio'
+  description: 'Ver los tipos de cambio configurados.'
+
+validate vies:
+  title: 'Validar Numeros de IVA via VIES'
+  description: 'Realizar validaciones de numeros de IVA intracomunitarios contra el servicio VIES.'

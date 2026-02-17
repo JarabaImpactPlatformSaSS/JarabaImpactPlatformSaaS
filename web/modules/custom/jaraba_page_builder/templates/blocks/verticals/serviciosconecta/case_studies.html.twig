@@ -1,0 +1,119 @@
+{#
+ # Template: ServiciosConecta - Casos de Exito
+ # Category: serviciosconecta
+ # Type: case_studies
+ #
+ # Success case studies con before/after, testimonial y KPIs
+ # Premium: staggered animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--case-studies pb-section--serviciosconecta jaraba-block jaraba-block--premium jaraba-block--serviciosconecta-case-studies"
+         aria-label="{{ title|default('Casos de Exito')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <div class="pb-section__header-icon" aria-hidden="true">
+        {{ jaraba_icon('actions', 'target', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+      </div>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Casos de Éxito')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Historias de éxito reales')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Descubre cómo nuestros profesionales han transformado negocios y resuelto retos complejos.')|t }}</p>
+    </div>
+
+    <div class="pb-section__cases-grid">
+      {% set default_cases = [
+        {
+          title: 'Reestructuración fiscal que ahorró un 35%',
+          client_name: 'Marta Gómez',
+          client_role: 'CEO, Grupo Innovatech',
+          quote: 'El equipo de asesores identificó oportunidades de ahorro que nuestro departamento interno no había detectado en años.',
+          before: 'Carga fiscal desoptimizada con pérdida de deducciones aplicables.',
+          after: 'Estructura fiscal eficiente con un 35% de ahorro anual verificado.',
+          kpi_label: 'Ahorro fiscal',
+          kpi_value: '35%'
+        },
+        {
+          title: 'Consultoría estratégica para expansión internacional',
+          client_name: 'Javier Ruiz',
+          client_role: 'Director General, ExportaPlus',
+          quote: 'Gracias al plan de internacionalización, abrimos 3 nuevos mercados en menos de un año.',
+          before: 'Operaciones limitadas al mercado nacional sin estrategia de expansión.',
+          after: 'Presencia activa en 3 mercados europeos con facturación internacional del 40%.',
+          kpi_label: 'Nuevos mercados',
+          kpi_value: '3'
+        },
+        {
+          title: 'Auditoría legal que previno sanciones',
+          client_name: 'Ana Beltrán',
+          client_role: 'Directora Jurídica, Constructora Beltrán',
+          quote: 'La auditoría preventiva nos evitó potenciales sanciones y nos puso al día con toda la normativa vigente.',
+          before: 'Incumplimientos normativos no detectados con riesgo de sanciones.',
+          after: 'Cumplimiento normativo al 100% con sistema de alertas preventivas implementado.',
+          kpi_label: 'Cumplimiento',
+          kpi_value: '100%'
+        }
+      ] %}
+      {% set items = cases|default(default_cases) %}
+      {% for case_study in items %}
+        <article class="pb-section__case-card"
+                 data-effect="fade-up"
+                 data-delay="{{ loop.index0 * 150 }}">
+          {# Case header with KPI #}
+          <div class="pb-section__case-header">
+            {% if case_study.image|default('') %}
+              <img src="{{ case_study.image }}" alt="{{ case_study.title|default('')|striptags }}" class="pb-section__case-image" loading="lazy" />
+            {% endif %}
+            <div class="pb-section__case-kpi">
+              <span class="pb-section__case-kpi-value">{{ case_study.kpi_value|default('--') }}</span>
+              <span class="pb-section__case-kpi-label">{{ case_study.kpi_label|default('Resultado')|t }}</span>
+            </div>
+          </div>
+
+          {# Case title #}
+          <h3 class="pb-section__case-title">{{ case_study.title|default('Caso de éxito')|t }}</h3>
+
+          {# Before / After #}
+          <div class="pb-section__case-comparison">
+            <div class="pb-section__case-before">
+              <div class="pb-section__case-comparison-label">
+                {{ jaraba_icon('actions', 'close', { variant: 'duotone', size: '16px', color: 'danger' }) }}
+                <strong>{% trans %}Antes{% endtrans %}</strong>
+              </div>
+              <p>{{ case_study.before|default('Situación inicial del cliente.')|t }}</p>
+            </div>
+            <div class="pb-section__case-after">
+              <div class="pb-section__case-comparison-label">
+                {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '16px', color: 'success' }) }}
+                <strong>{% trans %}Después{% endtrans %}</strong>
+              </div>
+              <p>{{ case_study.after|default('Resultado tras la intervención profesional.')|t }}</p>
+            </div>
+          </div>
+
+          {# Testimonial quote #}
+          <blockquote class="pb-section__case-quote">
+            <div class="pb-section__case-quote-icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'chat', { variant: 'duotone', size: '20px', color: 'primary' }) }}
+            </div>
+            <p>{{ case_study.quote|default('Gran experiencia profesional.')|t }}</p>
+            <footer class="pb-section__case-author">
+              <cite>
+                <span class="pb-section__case-author-name">{{ case_study.client_name|default('Cliente')|t }}</span>
+                <span class="pb-section__case-author-role">{{ case_study.client_role|default('Empresa')|t }}</span>
+              </cite>
+            </footer>
+          </blockquote>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if cta_text|default('') and cta_url|default('') %}
+      <div class="pb-section__actions" data-effect="fade-up" data-delay="600">
+        <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary">
+          {{ cta_text|t }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>

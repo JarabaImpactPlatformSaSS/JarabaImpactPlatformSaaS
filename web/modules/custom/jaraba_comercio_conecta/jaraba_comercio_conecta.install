@@ -137,3 +137,66 @@ function _jaraba_comercio_conecta_create_initial_attributes(): void {
     $weight++;
   }
 }
+
+/**
+ * Install F6 entity types: orders, cart, returns, coupons, abandoned carts.
+ *
+ * Lógica: Las entidades Content Entity se crean automáticamente al instalar
+ *   el módulo, pero en sitios donde el módulo ya estaba instalado antes
+ *   de añadir estas entidades, necesitamos instalar los esquemas manualmente.
+ */
+function jaraba_comercio_conecta_update_10002(): void {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_types = [
+    // F6: Orders, Cart, Returns, Coupons
+    'comercio_order',
+    'comercio_order_item',
+    'comercio_suborder',
+    'comercio_cart',
+    'comercio_cart_item',
+    'comercio_return_request',
+    'comercio_coupon',
+    'comercio_coupon_redemption',
+    'comercio_abandoned_cart',
+    // F7: Customer Profile, Wishlist
+    'customer_profile_retail',
+    'comercio_wishlist',
+    'comercio_wishlist_item',
+  ];
+
+  foreach ($entity_types as $entity_type_id) {
+    if (!$update_manager->getEntityType($entity_type_id)) {
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+      if ($entity_type) {
+        $update_manager->installEntityType($entity_type);
+        \Drupal::logger('jaraba_comercio_conecta')->info('Installed entity type: @type', ['@type' => $entity_type_id]);
+      }
+    }
+  }
+}
+
+/**
+ * Create comercioconecta_feature_usage table for FeatureGateService.
+ */
+function jaraba_comercio_conecta_update_10001(): void {
+  $schema = \Drupal::database()->schema();
+  if (!$schema->tableExists('comercioconecta_feature_usage')) {
+    $schema->createTable('comercioconecta_feature_usage', [
+      'description' => 'Tracking de uso de features del vertical ComercioConecta.',
+      'fields' => [
+        'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+        'user_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+        'feature_key' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+        'usage_date' => ['type' => 'varchar', 'length' => 10, 'not null' => TRUE],
+        'usage_count' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'user_feature_date' => ['user_id', 'feature_key', 'usage_date'],
+        'feature_date' => ['feature_key', 'usage_date'],
+      ],
+    ]);
+  }
+}

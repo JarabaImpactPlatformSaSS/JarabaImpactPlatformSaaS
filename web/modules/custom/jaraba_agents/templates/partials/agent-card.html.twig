@@ -1,0 +1,17 @@
+{# Tarjeta de agente autonomo. #}
+<article class="agent-card agent-card--{{ agent.autonomy_level|default('l1_suggestion') }}">
+  <div class="agent-card__header">
+    <span class="agent-card__type agent-card__type--{{ agent.agent_type|default('support') }}">{{ agent.agent_type|default('')|t }}</span>
+    <span class="agent-card__level">{{ agent.autonomy_level|default('')|upper }}</span>
+  </div>
+  <h3 class="agent-card__name">{{ agent.name|default('') }}</h3>
+  {% if agent.vertical %}
+    <span class="agent-card__vertical">{{ agent.vertical|t }}</span>
+  {% endif %}
+  <div class="agent-card__footer">
+    <span class="agent-card__status agent-card__status--{{ agent.is_active ? 'active' : 'inactive' }}">
+      {{ agent.is_active ? 'Activo'|t : 'Inactivo'|t }}
+    </span>
+    <span class="agent-card__model">{{ agent.llm_model|default('') }}</span>
+  </div>
+</article>

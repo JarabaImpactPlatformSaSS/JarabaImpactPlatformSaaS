@@ -1,0 +1,10 @@
+// =============================================================================
+// Jaraba Predictive — Entry point SCSS
+// N2 Growth Ready — Modelos Predictivos (Churn, Lead Scoring, Forecasting)
+// @use only (Dart Sass ^1.71.0, no @import)
+// =============================================================================
+
+@use 'variables' as *;
+@use 'predictions-dashboard';
+@use 'prediction-card';
+@use 'risk-gauge';

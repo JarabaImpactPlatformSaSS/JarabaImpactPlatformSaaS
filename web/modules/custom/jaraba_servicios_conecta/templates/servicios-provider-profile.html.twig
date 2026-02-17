@@ -1,0 +1,29 @@
+{#
+ # Formulario de edicion del perfil profesional.
+ #
+ # Variables:
+ #   - provider: ProviderProfile entity
+ #   - form: Drupal form render array
+ #   - completeness_score: int (0-100)
+ #}
+{{ attach_library('jaraba_servicios_conecta/provider-portal') }}
+
+<div class="servicios-profile">
+  <div class="servicios-profile__header">
+    <h2 class="servicios-profile__title">{% trans %}Professional Profile{% endtrans %}</h2>
+    {% if completeness_score < 100 %}
+      <div class="servicios-profile__completeness">
+        <div class="servicios-profile__progress-bar">
+          <div class="servicios-profile__progress-fill" style="width: {{ completeness_score }}%"></div>
+        </div>
+        <span class="servicios-profile__progress-text">
+          {% trans %}Profile completeness: {{ completeness_score }}%{% endtrans %}
+        </span>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if form %}
+    {{ form }}
+  {% endif %}
+</div>

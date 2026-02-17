@@ -1,0 +1,38 @@
+{#
+ # legal-cases-dashboard.html.twig — Dashboard de Expedientes Juridicos.
+ # Zero-region: datos inyectados via drupalSettings.jarabaLegalCases.
+ #
+ # Variables:
+ #  - cases: array — Lista de expedientes.
+ #  - stats: array — Estadisticas del dashboard.
+ #  - filters: array — Filtros disponibles.
+ #}
+<div class="legal-cases-dashboard">
+  <div class="legal-cases-dashboard__header">
+    <h2>{{ 'Expedientes'|t }}</h2>
+    <div class="legal-cases-dashboard__actions">
+      <button class="ej-btn ej-btn--primary" data-cases-action="new-case">
+        {{ 'Nuevo Expediente'|t }}
+      </button>
+      <button class="ej-btn ej-btn--secondary" data-cases-action="new-inquiry">
+        {{ 'Nueva Consulta'|t }}
+      </button>
+    </div>
+  </div>
+
+  <div class="legal-cases-dashboard__stats" data-cases-stats>
+    {# Stats se inyectan via JS desde drupalSettings #}
+  </div>
+
+  <div class="legal-cases-dashboard__filters">
+    <button class="ej-case-filter active" data-cases-filter="all">{{ 'Todos'|t }}</button>
+    <button class="ej-case-filter" data-cases-filter="open">{{ 'Abiertos'|t }}</button>
+    <button class="ej-case-filter" data-cases-filter="in_progress">{{ 'En Curso'|t }}</button>
+    <button class="ej-case-filter" data-cases-filter="pending_review">{{ 'Revision'|t }}</button>
+    <button class="ej-case-filter" data-cases-filter="closed">{{ 'Cerrados'|t }}</button>
+  </div>
+
+  <div class="legal-cases-dashboard__grid" data-cases-grid>
+    {# Case cards se renderizan via JS #}
+  </div>
+</div>

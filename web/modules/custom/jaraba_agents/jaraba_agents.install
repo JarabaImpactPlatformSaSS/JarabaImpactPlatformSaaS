@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Instalacion del modulo jaraba_agents.
+ *
+ * Estructura: Hook de instalacion para vocabularios taxonomicos y terminos iniciales.
+ * Logica: Patron INSTALL-TAXONOMY-001 — Creacion de vocabularios agent_type y
+ *         autonomy_level con terminos semilla necesarios para la operacion del modulo.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Implements hook_install().
+ *
+ * Estructura: Crea vocabularios taxonomicos y terminos iniciales.
+ * Logica: Patron INSTALL-TAXONOMY-001 — Los vocabularios se crean solo si no existen;
+ *         los terminos se crean para cada vocabulario con pesos secuenciales.
+ */
+function jaraba_agents_install(): void {
+  // -------------------------------------------------------------------
+  // Vocabulario: agent_type — Tipos de agente disponibles.
+  // -------------------------------------------------------------------
+  if (!Vocabulary::load('agent_type')) {
+    Vocabulary::create([
+      'vid' => 'agent_type',
+      'name' => 'Tipo de agente',
+      'description' => 'Clasificacion de agentes autonomos por funcion.',
+    ])->save();
+  }
+
+  $agent_types = [
+    'Enrollment',
+    'Planning',
+    'Support',
+    'Marketing',
+    'Analytics',
+  ];
+
+  foreach ($agent_types as $weight => $term_name) {
+    Term::create([
+      'vid' => 'agent_type',
+      'name' => $term_name,
+      'weight' => $weight,
+    ])->save();
+  }
+
+  // -------------------------------------------------------------------
+  // Vocabulario: autonomy_level — Niveles de autonomia de agentes.
+  // -------------------------------------------------------------------
+  if (!Vocabulary::load('autonomy_level')) {
+    Vocabulary::create([
+      'vid' => 'autonomy_level',
+      'name' => 'Nivel de autonomia',
+      'description' => 'Escala de autonomia para agentes IA (L0 a L4).',
+    ])->save();
+  }
+
+  $autonomy_levels = [
+    'L0 Informativo',
+    'L1 Sugerencia',
+    'L2 Semi-autonomo',
+    'L3 Supervisado',
+    'L4 Autonomo completo',
+  ];
+
+  foreach ($autonomy_levels as $weight => $term_name) {
+    Term::create([
+      'vid' => 'autonomy_level',
+      'name' => $term_name,
+      'weight' => $weight,
+    ])->save();
+  }
+
+  \Drupal::logger('jaraba_agents')->notice(
+    'Modulo jaraba_agents instalado: vocabularios agent_type y autonomy_level creados con terminos iniciales.'
+  );
+}

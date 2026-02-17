@@ -4,6 +4,7 @@ namespace Drupal\jaraba_servicios_conecta\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Database\Connection;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -29,6 +30,11 @@ class ProviderService {
   protected AccountProxyInterface $currentUser;
 
   /**
+   * La conexion a base de datos.
+   */
+  protected Connection $database;
+
+  /**
    * El logger.
    */
   protected LoggerInterface $logger;
@@ -39,10 +45,12 @@ class ProviderService {
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     AccountProxyInterface $current_user,
+    Connection $database,
     LoggerInterface $logger,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
+    $this->database = $database;
     $this->logger = $logger;
   }
 
@@ -164,26 +172,24 @@ class ProviderService {
    *   Lista de ciudades únicas.
    */
   public function getActiveCities(): array {
-    $storage = $this->entityTypeManager->getStorage('provider_profile');
-    $ids = $storage->getQuery()
-      ->accessCheck(TRUE)
-      ->condition('is_active', TRUE)
-      ->condition('verification_status', 'approved')
-      ->execute();
+    try {
+      $results = $this->database->select('provider_profile', 'p')
+        ->fields('p', ['address_city'])
+        ->distinct()
+        ->condition('p.is_active', 1)
+        ->condition('p.verification_status', 'approved')
+        ->isNotNull('p.address_city')
+        ->condition('p.address_city', '', '<>')
+        ->orderBy('p.address_city', 'ASC')
+        ->execute()
+        ->fetchCol();
 
-    $cities = [];
-    if ($ids) {
-      $providers = $storage->loadMultiple($ids);
-      foreach ($providers as $provider) {
-        $city = $provider->get('address_city')->value;
-        if ($city && !in_array($city, $cities)) {
-          $cities[] = $city;
-        }
-      }
-      sort($cities);
+      return $results ?: [];
     }
-
-    return $cities;
+    catch (\Exception $e) {
+      $this->logger->error('Error fetching active cities: @error', ['@error' => $e->getMessage()]);
+      return [];
+    }
   }
 
 }

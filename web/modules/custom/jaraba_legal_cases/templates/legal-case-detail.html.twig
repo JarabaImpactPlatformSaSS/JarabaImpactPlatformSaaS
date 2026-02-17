@@ -1,0 +1,34 @@
+{#
+ # legal-case-detail.html.twig — Detalle de Expediente Juridico.
+ # Zero-region: datos inyectados via drupalSettings.jarabaLegalCases.
+ #
+ # Variables:
+ #  - case_entity: object|null — Entidad del expediente.
+ #  - activities: array — Actividad reciente del caso.
+ #  - stats: array — Metricas del expediente.
+ #}
+<div class="legal-case-detail">
+  <div class="legal-case-detail__header" data-case-header>
+    {# Titulo, numero de caso, estado y acciones se inyectan via JS #}
+  </div>
+
+  <div class="legal-case-detail__body">
+    <div class="legal-case-detail__info" data-case-info>
+      {# Informacion del caso: tipo, prioridad, cliente, abogado asignado #}
+    </div>
+
+    <div class="legal-case-detail__timeline" data-case-timeline>
+      {# Timeline de actividad del expediente #}
+    </div>
+  </div>
+
+  <div class="legal-case-detail__sidebar">
+    <div class="legal-case-detail__deadlines" data-case-deadlines>
+      {# Plazos vinculados al expediente #}
+    </div>
+
+    <div class="legal-case-detail__documents" data-case-documents>
+      {# Documentos del vault vinculados #}
+    </div>
+  </div>
+</div>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @file
  * Módulo principal de ComercioConecta.
@@ -87,6 +89,104 @@ function jaraba_comercio_conecta_theme(): array {
         'period' => '30d',
       ],
       'template' => 'comercio-merchant-analytics',
+    ],
+    // F6: Pagina de checkout
+    'comercio_checkout' => [
+      'variables' => [
+        'cart' => NULL,
+        'items' => [],
+        'empty' => TRUE,
+        'subtotal' => 0,
+        'discount' => 0,
+        'shipping' => 0,
+        'total' => 0,
+      ],
+      'template' => 'comercio-checkout',
+    ],
+    // F6: Confirmacion de pedido
+    'comercio_checkout_confirmation' => [
+      'variables' => [
+        'order' => NULL,
+        'order_number' => '',
+        'total' => 0,
+        'status' => '',
+        'payment_status' => '',
+      ],
+      'template' => 'comercio-checkout-confirmation',
+    ],
+    // F6: Mis pedidos (listado cliente)
+    'comercio_my_orders' => [
+      'variables' => [
+        'orders' => [],
+        'total' => 0,
+        'page' => 0,
+        'total_pages' => 0,
+      ],
+      'template' => 'comercio-my-orders',
+    ],
+    // F6: Detalle de pedido
+    'comercio_order_detail' => [
+      'variables' => [
+        'order' => NULL,
+        'items' => [],
+        'order_number' => '',
+        'status' => '',
+        'payment_status' => '',
+        'subtotal' => 0,
+        'tax_amount' => 0,
+        'shipping_cost' => 0,
+        'discount_amount' => 0,
+        'total' => 0,
+        'tracking_number' => '',
+      ],
+      'template' => 'comercio-order-detail',
+    ],
+    // F7: Dashboard del consumidor
+    'comercio_customer_dashboard' => [
+      'variables' => [
+        'profile' => NULL,
+        'recent_orders' => [],
+        'stats' => [],
+        'wishlist_count' => 0,
+      ],
+      'template' => 'comercio-customer-dashboard',
+    ],
+    // F7: Wishlist del consumidor
+    'comercio_customer_wishlist' => [
+      'variables' => [
+        'wishlist' => NULL,
+        'items' => [],
+        'empty' => TRUE,
+      ],
+      'template' => 'comercio-customer-wishlist',
+    ],
+    // F7: Pedidos recibidos del comerciante
+    'comercio_merchant_orders' => [
+      'variables' => [
+        'merchant' => NULL,
+        'orders' => [],
+        'total' => 0,
+        'page' => 0,
+        'total_pages' => 0,
+      ],
+      'template' => 'comercio-merchant-orders',
+    ],
+    // F7: Pagos y comisiones del comerciante
+    'comercio_merchant_payments' => [
+      'variables' => [
+        'merchant' => NULL,
+        'summary' => [],
+        'recent_payouts' => [],
+        'monthly_revenue' => [],
+      ],
+      'template' => 'comercio-merchant-payments',
+    ],
+    // F7: Configuracion del comercio
+    'comercio_merchant_settings' => [
+      'variables' => [
+        'merchant' => NULL,
+      ],
+      'template' => 'comercio-merchant-settings',
     ],
   ];
 }
@@ -229,49 +329,14 @@ function jaraba_comercio_conecta_cron(): void {
 
   $state->set('jaraba_comercio_conecta.cron_last_run', $now);
 
-  // Detectar carritos abandonados (>1h sin modificar) y enviar recordatorio.
-  // Guard: comercio_cart entity aún no implementada.
+  // Detectar carritos abandonados y enviar emails de recuperación via CartRecoveryService.
   if (\Drupal::entityTypeManager()->hasDefinition('comercio_cart')) {
     try {
-      $cart_storage = \Drupal::entityTypeManager()->getStorage('comercio_cart');
-      $one_hour_ago = $now - 3600;
-      $abandoned_ids = $cart_storage->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('status', 'active')
-        ->condition('changed', $one_hour_ago, '<')
-        ->execute();
-
-      if (!empty($abandoned_ids)) {
-        $carts = $cart_storage->loadMultiple($abandoned_ids);
-        foreach ($carts as $cart) {
-          try {
-            $uid = $cart->get('uid')->target_id ?? NULL;
-            if ($uid) {
-              $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
-              if ($user && $user->getEmail()) {
-                \Drupal::service('plugin.manager.mail')->mail(
-                  'jaraba_comercio_conecta',
-                  'abandoned_cart_reminder',
-                  $user->getEmail(),
-                  $user->getPreferredLangcode(),
-                  [
-                    'customer_name' => $user->getDisplayName(),
-                    'cart_id' => $cart->id(),
-                  ]
-                );
-                // Marcar el carrito como notificado para no enviar duplicados.
-                $cart->set('status', 'abandoned_notified');
-                $cart->save();
-              }
-            }
-          }
-          catch (\Exception $e) {
-            \Drupal::logger('jaraba_comercio_conecta')->error('Error procesando carrito abandonado @id: @e', [
-              '@id' => $cart->id(),
-              '@e' => $e->getMessage(),
-            ]);
-          }
-        }
+      $container = \Drupal::getContainer();
+      if ($container && $container->has('jaraba_comercio_conecta.cart_recovery')) {
+        /** @var \Drupal\jaraba_comercio_conecta\Service\CartRecoveryService $recovery_service */
+        $recovery_service = $container->get('jaraba_comercio_conecta.cart_recovery');
+        $recovery_service->detectAbandonedCarts();
       }
     }
     catch (\Exception $e) {
@@ -400,6 +465,32 @@ function jaraba_comercio_conecta_mail(string $key, array &$message, array $param
       $message['body'][] = t('Hola @name,', ['@name' => $params['customer_name'] ?? 'Cliente']);
       $message['body'][] = t('Tienes productos esperándote en tu carrito de compra. Completa tu pedido antes de que se agoten.');
       break;
+
+    case 'order_confirmed':
+      $message['subject'] = t('Pedido @number confirmado', ['@number' => $params['order_number'] ?? '']);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['customer_name'] ?? 'Cliente']);
+      $message['body'][] = t('Tu pedido @number ha sido confirmado y esta siendo preparado.', ['@number' => $params['order_number'] ?? '']);
+      $message['body'][] = t('Total: @total EUR', ['@total' => $params['total'] ?? '0']);
+      break;
+
+    case 'order_shipped':
+      $message['subject'] = t('Tu pedido @number ha sido enviado', ['@number' => $params['order_number'] ?? '']);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['customer_name'] ?? 'Cliente']);
+      $message['body'][] = t('Tu pedido @number esta en camino.', ['@number' => $params['order_number'] ?? '']);
+      if (!empty($params['tracking_number'])) {
+        $message['body'][] = t('Numero de seguimiento: @tracking', ['@tracking' => $params['tracking_number']]);
+      }
+      break;
+
+    case 'merchant_new_order':
+      $message['subject'] = t('Nuevo pedido recibido: @number', ['@number' => $params['order_number'] ?? '']);
+      $message['body'][] = t('Hola @name,', ['@name' => $params['merchant_name'] ?? 'Comerciante']);
+      $message['body'][] = t('Has recibido un nuevo pedido @number por @total EUR.', [
+        '@number' => $params['order_number'] ?? '',
+        '@total' => $params['total'] ?? '0',
+      ]);
+      $message['body'][] = t('Accede a tu panel de comerciante para gestionar el pedido.');
+      break;
   }
 
   // Footer común para todos los correos del módulo.
@@ -407,6 +498,137 @@ function jaraba_comercio_conecta_mail(string $key, array &$message, array $param
     $message['body'][] = '';
     $message['body'][] = '---';
     $message['body'][] = t('Jaraba Impact Platform - ComercioConecta');
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Añade clases CSS al <body> según la ruta activa
+ *   del vertical ComercioConecta.
+ *
+ * Lógica: Mapea cada ruta del módulo a una clase CSS específica
+ *   para permitir estilos granulares por página. Además añade
+ *   la clase común 'vertical-comercioconecta' que identifica
+ *   todas las páginas del vertical.
+ */
+function jaraba_comercio_conecta_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === NULL) {
+    return;
+  }
+
+  $route_classes = [
+    'jaraba_comercio_conecta.marketplace' => 'page-comercio-marketplace',
+    'jaraba_comercio_conecta.marketplace.product' => 'page-comercio-product',
+    'jaraba_comercio_conecta.marketplace.merchant' => 'page-comercio-merchant',
+    'jaraba_comercio_conecta.merchant_portal' => 'page-comercio-merchant',
+    'jaraba_comercio_conecta.merchant_portal.products' => 'page-comercio-merchant-products',
+    'jaraba_comercio_conecta.merchant_portal.stock' => 'page-comercio-merchant-stock',
+    'jaraba_comercio_conecta.merchant_portal.analytics' => 'page-comercio-merchant-analytics',
+    'jaraba_comercio_conecta.merchant_portal.profile' => 'page-comercio-merchant-profile',
+    'jaraba_comercio_conecta.merchant_portal.product_add' => 'page-comercio-merchant-products',
+    // F6: Checkout y pedidos
+    'jaraba_comercio_conecta.checkout' => 'page-comercio-checkout',
+    'jaraba_comercio_conecta.checkout.confirmation' => 'page-comercio-checkout',
+    'jaraba_comercio_conecta.my_orders' => 'page-comercio-my-orders',
+    'jaraba_comercio_conecta.my_orders.detail' => 'page-comercio-order-detail',
+    // F7: Customer Portal
+    'jaraba_comercio_conecta.customer_portal' => 'page-comercio-customer',
+    'jaraba_comercio_conecta.customer_portal.wishlist' => 'page-comercio-customer-wishlist',
+    'jaraba_comercio_conecta.customer_portal.profile' => 'page-comercio-customer-profile',
+    // F7: Merchant Portal (ampliacion)
+    'jaraba_comercio_conecta.merchant_portal.orders' => 'page-comercio-merchant-orders',
+    'jaraba_comercio_conecta.merchant_portal.payments' => 'page-comercio-merchant-payments',
+    'jaraba_comercio_conecta.merchant_portal.settings' => 'page-comercio-merchant-settings',
+  ];
+
+  if (isset($route_classes[$route])) {
+    $variables['attributes']['class'][] = $route_classes[$route];
+    $variables['attributes']['class'][] = 'vertical-comercioconecta';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Estructura: Redirige todas las rutas frontend de ComercioConecta
+ *   al template page--comercio-marketplace.html.twig (zero-region).
+ *
+ * Lógica: Directriz ZERO-REGION-001. Si la ruta actual pertenece
+ *   al módulo, añade la sugerencia 'page__comercio_marketplace'
+ *   para que Drupal utilice el template zero-region del vertical.
+ */
+function jaraba_comercio_conecta_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (str_starts_with($route_name, 'jaraba_comercio_conecta.')) {
+    $suggestions[] = 'page__comercio_marketplace';
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Estructura: Inyecta variables en el template zero-region del vertical.
+ *
+ * Lógica: ZERO-REGION-001 — Variables inyectadas SOLO aquí, NUNCA
+ *   desde el controller. Proporciona clean_content, clean_messages,
+ *   copilot_context, theme_settings y avatar_nav a los templates
+ *   del vertical ComercioConecta.
+ */
+function jaraba_comercio_conecta_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (!str_starts_with($route_name, 'jaraba_comercio_conecta.')) {
+    return;
+  }
+
+  // Inyectar clean_content desde el page render array.
+  $variables['clean_content'] = $variables['page']['content'] ?? [];
+
+  // Inyectar mensajes del sistema (highlighted region).
+  $variables['clean_messages'] = $variables['page']['highlighted'] ?? [];
+
+  // Copilot context: contexto enriquecido para copiloto IA.
+  try {
+    $container = \Drupal::getContainer();
+    if ($container && $container->has('ecosistema_jaraba_core.copilot_context')) {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\CopilotContextService $copilot_service */
+      $copilot_service = $container->get('ecosistema_jaraba_core.copilot_context');
+      $variables['copilot_context'] = $copilot_service->getContext();
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_comercio_conecta')->warning(
+      'No se pudo obtener copilot_context: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+  }
+
+  // Theme settings desde la configuración del tema activo.
+  try {
+    $active_theme = \Drupal::theme()->getActiveTheme()->getName();
+    $variables['theme_settings'] = \Drupal::config($active_theme . '.settings')->getRawData() ?? [];
+  }
+  catch (\Exception $e) {
+    $variables['theme_settings'] = [];
+  }
+
+  // Avatar navigation: navegación contextual por avatar del ecosistema.
+  try {
+    $container = \Drupal::getContainer();
+    if ($container && $container->has('ecosistema_jaraba_core.avatar_navigation')) {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\AvatarNavigationService $avatar_service */
+      $avatar_service = $container->get('ecosistema_jaraba_core.avatar_navigation');
+      $variables['avatar_nav'] = $avatar_service->getNavigation();
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_comercio_conecta')->warning(
+      'No se pudo obtener avatar_nav: @msg',
+      ['@msg' => $e->getMessage()]
+    );
   }
 }
 

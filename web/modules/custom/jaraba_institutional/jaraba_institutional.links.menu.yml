@@ -1,0 +1,5 @@
+jaraba_institutional.admin:
+  title: 'Programas Institucionales'
+  parent: system.admin_structure
+  route_name: entity.institutional_program.collection
+  weight: 36

@@ -1,0 +1,42 @@
+{#
+ # legal-calendar-dashboard.html.twig — Agenda Juridica y Tributaria.
+ # Zero-region: datos inyectados via drupalSettings.jarabaLegalCalendar.
+ #
+ # Variables:
+ #  - deadlines: array — Plazos proximos.
+ #  - hearings: array — Vistas judiciales programadas.
+ #  - connections: array — Calendarios sincronizados.
+ #}
+<div class="legal-calendar-dashboard">
+  <div class="legal-calendar-dashboard__header">
+    <h2>{{ 'Agenda Juridica'|t }}</h2>
+    <div class="legal-calendar-dashboard__actions">
+      <button class="ej-btn ej-btn--primary" data-calendar-action="new-deadline">
+        {{ 'Nuevo Plazo'|t }}
+      </button>
+      <button class="ej-btn ej-btn--secondary" data-calendar-action="new-hearing">
+        {{ 'Nueva Vista'|t }}
+      </button>
+    </div>
+  </div>
+
+  <div class="legal-calendar-dashboard__sync" data-calendar-sync>
+    {# Boton de sincronizacion Google/Microsoft #}
+  </div>
+
+  <div class="legal-calendar-dashboard__sections">
+    <section class="legal-calendar-dashboard__deadlines">
+      <h3>{{ 'Plazos Proximos'|t }}</h3>
+      <div data-deadline-grid>
+        {# Deadline cards se renderizan via JS #}
+      </div>
+    </section>
+
+    <section class="legal-calendar-dashboard__hearings">
+      <h3>{{ 'Vistas Judiciales'|t }}</h3>
+      <div data-hearing-grid>
+        {# Hearing cards se renderizan via JS #}
+      </div>
+    </section>
+  </div>
+</div>

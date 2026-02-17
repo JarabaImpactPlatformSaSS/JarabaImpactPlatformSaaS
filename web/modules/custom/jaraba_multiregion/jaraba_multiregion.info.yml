@@ -1,0 +1,12 @@
+name: 'Jaraba Multi-Region'
+type: module
+description: 'Expansion multi-pais con multi-currency, calculo de IVA por jurisdiccion, validacion VIES y data residency por tenant.'
+package: 'JarabaLex'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:options
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+configure: jaraba_multiregion.settings

@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * page--jarabalex.html.twig — Landing page JarabaLex.
+ *
+ * Template zero-region para /jarabalex y rutas del vertical legal.
+ * Layout full-width mobile-first con parciales reutilizables.
+ *
+ * ARQUITECTURA:
+ * - Sin {{ page.* }} = Sin bloques/regiones de Drupal
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - Variables CSS var(--ej-legal-*)
+ * - Body class 'page-jarabalex' via hook_preprocess_html()
+ *
+ * Plan Elevacion JarabaLex Clase Mundial v1 — Fase 0.
+ *
+ * @see ecosistema_jaraba_theme.theme para preprocess
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_core/global') }}
+{{ attach_library('ecosistema_jaraba_theme/landing-sections') }}
+{{ attach_library('ecosistema_jaraba_theme/progressive-profiling') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER — Partial reutilizable con menu movil #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan,
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+
+  {# DRUPAL MESSAGES #}
+  {% if clean_messages %}
+    <div class="jarabalex-messages">
+      {{ clean_messages }}
+    </div>
+  {% endif %}
+
+  {# MAIN CONTENT — Landing vertical legal #}
+  <main id="main-content" class="jarabalex-main">
+
+    {# CONTROLLER CONTENT — Rendered by VerticalLandingController::jarabalex() #}
+    {% if clean_content %}
+      <div class="jarabalex-main__content">
+        {{ clean_content }}
+      </div>
+    {% endif %}
+
+  </main>
+
+  {# FOOTER — Partial configurable desde UI #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo,
+    footer_copyright: footer_copyright,
+    theme_settings: theme_settings
+  } %}
+
+  {# FAB COPILOTO — Asesor Legal Contextual #}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'legal_copilot',
+    avatar_type: 'legal_advisor',
+    fab_color: 'var(--ej-legal-primary, #1E3A5F)',
+    greeting: '¡Hola! Soy tu asistente legal. Puedo ayudarte con búsquedas de jurisprudencia, legislación, alertas normativas y citaciones cruzadas. ¿En qué puedo asistirte?'|t
+  } %}
+
+  {# Drupal Required Placeholders #}
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+
+</body>
+</html>

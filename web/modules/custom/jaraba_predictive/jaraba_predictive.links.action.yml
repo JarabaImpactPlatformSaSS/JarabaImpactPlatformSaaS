@@ -1,0 +1,5 @@
+entity.lead_score.add_form:
+  title: 'Crear puntuacion de lead'
+  route_name: entity.lead_score.add_form
+  appears_on:
+    - entity.lead_score.collection

@@ -1,0 +1,39 @@
+services:
+  logger.channel.jaraba_multiregion:
+    parent: logger.channel_base
+    arguments: ['jaraba_multiregion']
+
+  jaraba_multiregion.region_manager:
+    class: Drupal\jaraba_multiregion\Service\RegionManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_multiregion'
+
+  jaraba_multiregion.tax_calculator:
+    class: Drupal\jaraba_multiregion\Service\TaxCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_multiregion.region_manager'
+      - '@logger.channel.jaraba_multiregion'
+
+  jaraba_multiregion.vies_validator:
+    class: Drupal\jaraba_multiregion\Service\ViesValidatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_multiregion'
+
+  jaraba_multiregion.currency_converter:
+    class: Drupal\jaraba_multiregion\Service\CurrencyConverterService
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_multiregion'
+
+  jaraba_multiregion.regional_compliance:
+    class: Drupal\jaraba_multiregion\Service\RegionalComplianceService
+    arguments:
+      - '@jaraba_multiregion.region_manager'
+      - '@jaraba_multiregion.tax_calculator'
+      - '@logger.channel.jaraba_multiregion'

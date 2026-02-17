@@ -1,0 +1,13 @@
+institutional.main:
+  version: VERSION
+  css:
+    theme:
+      css/jaraba-institutional.css: {}
+  js:
+    js/institutional-dashboard.js:
+      attributes:
+        defer: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

@@ -15,6 +15,10 @@ fields_schema:
       type: string
       title: 'Subtitulo'
       maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 50
     description:
       type: string
       title: 'Descripcion'
@@ -22,6 +26,10 @@ fields_schema:
     image:
       type: string
       title: 'Imagen'
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
       format: image
     cta_text:
       type: string
@@ -31,17 +39,29 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-cta.png'
 weight: 14
 preview_data:
-  title: 'Agregar al Carrito'
-  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
-  description: 'Descripcion de ejemplo para la seccion seccion de conversion.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  title: 'Listo para impulsar tu tienda?'
+  subtitle: 'Unete a cientos de comercios que ya venden mas con ComercioConecta. Empieza gratis, sin compromiso.'
+  eyebrow: 'Empieza Ahora'
+  cta_text: 'Empieza gratis'
+  cta_url: '/comercio/registro'
+  cta_secondary_text: 'Ver demo'
+  cta_secondary_url: '/comercio/demo'

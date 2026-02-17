@@ -1,0 +1,98 @@
+<?php
+
+/**
+ * @file
+ * Instalacion y actualizacion del modulo Multi-Region (N2 Growth Ready).
+ *
+ * Estructura: Define hooks de instalacion y desinstalacion.
+ *
+ * Logica: La instalacion crea el vocabulario de taxonomia tax_jurisdiction
+ *   y los terminos iniciales con los estados miembros de la UE principales.
+ *
+ * Sintaxis: Funciones auxiliares con prefijo _ para logica interna.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ *
+ * Logica: Crea las jurisdicciones fiscales iniciales como terminos de
+ *   taxonomia para que las reglas de IVA puedan configurarse desde
+ *   el primer momento. Los terminos se crean solo si el vocabulario
+ *   esta vacio (INSTALL-TAXONOMY-001).
+ */
+function jaraba_multiregion_install(): void {
+  _jaraba_multiregion_create_jurisdictions();
+  \Drupal::messenger()->addStatus(t('Multi-Region instalado correctamente. Jurisdicciones UE iniciales creadas.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Logica: Elimina la configuracion del modulo al desinstalar.
+ */
+function jaraba_multiregion_uninstall(): void {
+  \Drupal::configFactory()->getEditable('jaraba_multiregion.settings')->delete();
+}
+
+/**
+ * Crea las jurisdicciones fiscales iniciales de la UE.
+ *
+ * Estructura: Funcion auxiliar interna (prefijo _) que gestiona la creacion
+ *   del vocabulario tax_jurisdiction y sus terminos iniciales.
+ *
+ * Logica: Crea un listado de estados miembros de la UE como terminos de
+ *   taxonomia. Idempotente: solo crea si el vocabulario esta vacio
+ *   (INSTALL-TAXONOMY-001). Los codigos ISO se incluyen en el nombre
+ *   para referencia rapida en formularios de administracion.
+ *
+ * Sintaxis: Uso de sprintf() para formato consistente de nombres.
+ */
+function _jaraba_multiregion_create_jurisdictions(): void {
+  $vocabulary = 'tax_jurisdiction';
+
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    $vocab = $vocab_storage->create([
+      'vid' => $vocabulary,
+      'name' => t('Jurisdiccion Fiscal'),
+      'description' => t('Jurisdicciones fiscales para configuracion multi-region.'),
+    ]);
+    $vocab->save();
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $existing = $term_storage->getQuery()
+    ->condition('vid', $vocabulary)
+    ->range(0, 1)
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($existing)) {
+    return;
+  }
+
+  $jurisdictions = [
+    'ES' => ['name' => 'Espana', 'weight' => 0],
+    'PT' => ['name' => 'Portugal', 'weight' => 1],
+    'FR' => ['name' => 'Francia', 'weight' => 2],
+    'IT' => ['name' => 'Italia', 'weight' => 3],
+    'DE' => ['name' => 'Alemania', 'weight' => 4],
+    'NL' => ['name' => 'Paises Bajos', 'weight' => 5],
+    'BE' => ['name' => 'Belgica', 'weight' => 6],
+    'IE' => ['name' => 'Irlanda', 'weight' => 7],
+    'AT' => ['name' => 'Austria', 'weight' => 8],
+    'PL' => ['name' => 'Polonia', 'weight' => 9],
+  ];
+
+  foreach ($jurisdictions as $code => $info) {
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => sprintf('%s (%s)', $info['name'], $code),
+      'weight' => $info['weight'],
+    ]);
+    $term->save();
+  }
+}

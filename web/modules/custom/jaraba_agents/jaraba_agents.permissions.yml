@@ -1,0 +1,39 @@
+administer agents:
+  title: 'Administrar modulo de agentes IA'
+  restrict access: true
+
+access agents:
+  title: 'Acceder al dashboard de agentes'
+
+access agents api:
+  title: 'Acceder a API REST de agentes'
+
+configure agents:
+  title: 'Configurar agentes autonomos'
+
+view agents:
+  title: 'Ver configuracion de agentes'
+
+execute agents:
+  title: 'Ejecutar agentes'
+
+view executions:
+  title: 'Ver ejecuciones de agentes'
+
+manage approvals:
+  title: 'Gestionar aprobaciones de agentes'
+
+view approvals:
+  title: 'Ver aprobaciones pendientes'
+
+view metrics:
+  title: 'Ver metricas de agentes'
+
+view conversations:
+  title: 'Ver conversaciones de agentes'
+
+manage conversations:
+  title: 'Gestionar conversaciones de agentes'
+
+view handoffs:
+  title: 'Ver transferencias entre agentes'

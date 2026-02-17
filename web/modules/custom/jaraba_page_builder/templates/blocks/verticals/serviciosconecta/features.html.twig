@@ -4,25 +4,39 @@
  # Type: features
  #
  # Header centrado + grid de 3 feature cards (icono + titulo + descripcion)
+ # Premium: staggered animations, jaraba_icon system, configurable columns
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--features pb-section--serviciosconecta"
-         aria-label="{{ title|default('Ventajas del Servicio')|t }}">
+<section class="pb-section pb-section--features pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Ventajas del Servicio')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Ventajas')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Todo lo que necesitas de un servicio profesional')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Herramientas y garantías diseñadas para que contrates con total confianza.')|t }}</p>
     </div>
-    <div class="pb-section__features-grid">
+    <div class="pb-section__features-grid pb-section__features-grid--{{ columns|default(3) }}-cols">
       {% set default_features = [
-        { icon: '&#128101;', title: 'Profesionales verificados', desc: 'Todos los profesionales pasan por un proceso de verificación de credenciales y experiencia.' },
-        { icon: '&#128196;', title: 'Presupuestos claros', desc: 'Recibe presupuestos detallados y transparentes antes de contratar cualquier servicio.' },
-        { icon: '&#11088;', title: 'Valoraciones reales', desc: 'Consulta opiniones verificadas de otros clientes antes de tomar tu decisión.' }
+        { icon: 'users', title: 'Profesionales verificados', desc: 'Todos los profesionales pasan por un proceso de verificación de credenciales y experiencia.' },
+        { icon: 'document', title: 'Presupuestos claros', desc: 'Recibe presupuestos detallados y transparentes antes de contratar cualquier servicio.' },
+        { icon: 'star', title: 'Valoraciones reales', desc: 'Consulta opiniones verificadas de otros clientes antes de tomar tu decisión.' }
       ] %}
       {% set items = features|default(default_features) %}
+      {% set icon_map = {
+        'users': { category: 'user', name: 'users' },
+        'document': { category: 'ui', name: 'document' },
+        'star': { category: 'ui', name: 'star' }
+      } %}
       {% for feature in items %}
-        <div class="pb-section__feature-card">
-          <div class="pb-section__feature-icon" aria-hidden="true">{{ feature.icon|default('&#9733;')|raw }}</div>
+        <div class="pb-section__feature-card"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__feature-icon" aria-hidden="true">
+            {% set icon_info = icon_map[feature.icon|default('star')]|default({ category: 'ui', name: 'star' }) %}
+            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'primary' }) }}
+          </div>
           <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
           <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>
         </div>

@@ -1187,3 +1187,146 @@ services:
     arguments:
       - '@state'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # COMERCIOCONECTA FEATURE GATE (Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 1)
+  # ===========================================
+
+  # Feature gating por plan para el vertical ComercioConecta.
+  # Verifica limites de uso (products, flash_offers_active,
+  # copilot_uses_per_month, qr_codes, seo_local_audit,
+  # analytics_advanced, pos_integration)
+  # consultando FreemiumVerticalLimit y tabla comercioconecta_feature_usage.
+  ecosistema_jaraba_core.comercioconecta_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\ComercioConectaFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 14: Email Sequences.
+  ecosistema_jaraba_core.comercioconecta_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\ComercioConectaEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # COMERCIOCONECTA CROSS-VERTICAL BRIDGE (Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 15)
+  # ===========================================
+
+  # Bridges contextuales hacia emprendimiento, fiscal, formacion,
+  # empleabilidad y agroconecta.
+  ecosistema_jaraba_core.comercioconecta_cross_vertical_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\ComercioConectaCrossVerticalBridgeService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # COMERCIOCONECTA JOURNEY PROGRESSION (Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 16)
+  # ===========================================
+
+  # Reglas proactivas de progresion para comerciantes y compradores.
+  ecosistema_jaraba_core.comercioconecta_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\ComercioConectaJourneyProgressionService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # COMERCIOCONECTA HEALTH SCORE (Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 16)
+  # ===========================================
+
+  # Calcula salud del comerciante (5 dimensiones, 8 KPIs).
+  ecosistema_jaraba_core.comercioconecta_health_score:
+    class: Drupal\ecosistema_jaraba_core\Service\ComercioConectaHealthScoreService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # COMERCIOCONECTA EXPERIMENT SERVICE (Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 17)
+  # ===========================================
+
+  # A/B testing para checkout CTA, product cards, pricing, hero copy, flash offers.
+  ecosistema_jaraba_core.comercioconecta_experiment:
+    class: Drupal\ecosistema_jaraba_core\Service\ComercioConectaExperimentService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # SERVICIOSCONECTA FEATURE GATE (Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 0)
+  # ===========================================
+
+  # Feature gating por plan para el vertical ServiciosConecta.
+  # Verifica limites de uso (services, bookings_per_month,
+  # calendar_sync, buzon_confianza, firma_digital, ai_triage,
+  # video_conferencing, analytics_dashboard)
+  # consultando FreemiumVerticalLimit y tabla serviciosconecta_feature_usage.
+  ecosistema_jaraba_core.serviciosconecta_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # SERVICIOSCONECTA COPILOT BRIDGE (Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 2)
+  # ===========================================
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 2: CopilotBridge.
+  ecosistema_jaraba_core.serviciosconecta_copilot_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 7: Email Sequences.
+  ecosistema_jaraba_core.serviciosconecta_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 8: CrossVerticalBridge.
+  ecosistema_jaraba_core.serviciosconecta_cross_vertical_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaCrossVerticalBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 9: Journey Progression.
+  ecosistema_jaraba_core.serviciosconecta_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaJourneyProgressionService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 10: Health Score.
+  ecosistema_jaraba_core.serviciosconecta_health_score:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaHealthScoreService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 11: Copilot Agent.
+  ecosistema_jaraba_core.serviciosconecta_copilot_agent:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaCopilotAgent
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 12: Experiment Service.
+  ecosistema_jaraba_core.serviciosconecta_experiment:
+    class: Drupal\ecosistema_jaraba_core\Service\ServiciosConectaExperimentService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'

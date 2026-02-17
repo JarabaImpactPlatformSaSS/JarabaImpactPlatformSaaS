@@ -1,0 +1,289 @@
+// =============================================================================
+// ComercioConecta — Orders Styles
+//
+// DIRECTRIZ: BEM naming, mobile-first, var(--ej-*, fallback).
+// Cubre: comercio-orders (mis pedidos), comercio-order-detail
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Mis Pedidos — Listado
+// ---------------------------------------------------------------------------
+.comercio-orders {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__title {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    margin-bottom: $space-xl;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $space-3xl $space-lg;
+
+    p {
+      color: $comercio-text-muted;
+      margin-bottom: $space-xl;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  &__card {
+    display: block;
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-md;
+    padding: $space-md $space-lg;
+    text-decoration: none;
+    color: $comercio-text;
+    transition: all $transition-fast;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      border-color: var(--ej-color-comercio, $comercio-primary);
+    }
+  }
+
+  &__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-sm;
+  }
+
+  &__number {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--draft { background: $comercio-border; color: $comercio-text-muted; }
+    &--pending { background: color-mix(in srgb, $comercio-warning 15%, $comercio-surface); color: $comercio-warning; }
+    &--confirmed { background: color-mix(in srgb, $comercio-success 15%, $comercio-surface); color: $comercio-success; }
+    &--processing { background: color-mix(in srgb, var(--ej-color-comercio, $comercio-primary) 15%, $comercio-surface); color: var(--ej-color-comercio, $comercio-primary); }
+    &--shipped { background: color-mix(in srgb, #3B82F6 15%, $comercio-surface); color: #3B82F6; }
+    &--delivered { background: color-mix(in srgb, $comercio-success 15%, $comercio-surface); color: color.scale($comercio-success, $lightness: -20%); }
+    &--cancelled { background: color-mix(in srgb, $comercio-danger 15%, $comercio-surface); color: $comercio-danger; }
+    &--refunded { background: color-mix(in srgb, $comercio-text-muted 15%, $comercio-surface); color: $comercio-text-muted; }
+  }
+
+  &__card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__total {
+    font-weight: 700;
+    font-size: 1.0625rem;
+  }
+
+  &__date {
+    font-size: 0.875rem;
+    color: $comercio-text-muted;
+  }
+
+  // --- Paginación ---
+  &__pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: $space-md;
+    margin-top: $space-xl;
+    padding-top: $space-lg;
+    border-top: 1px solid $comercio-border;
+  }
+
+  &__pager-info {
+    font-size: 0.875rem;
+    color: $comercio-text-muted;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Detalle de Pedido
+// ---------------------------------------------------------------------------
+.comercio-order-detail {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    margin-bottom: $space-xl;
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 1.5rem;
+      margin: $space-sm 0;
+    }
+  }
+
+  &__back {
+    font-size: 0.875rem;
+    color: var(--ej-color-comercio, $comercio-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__badges {
+    display: flex;
+    gap: $space-sm;
+    flex-wrap: wrap;
+  }
+
+  // Reutiliza las clases de status de .comercio-orders
+  &__status,
+  &__payment {
+    display: inline-block;
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__status {
+    &--draft { background: $comercio-border; color: $comercio-text-muted; }
+    &--pending { background: color-mix(in srgb, $comercio-warning 15%, $comercio-surface); color: $comercio-warning; }
+    &--confirmed { background: color-mix(in srgb, $comercio-success 15%, $comercio-surface); color: $comercio-success; }
+    &--processing { background: color-mix(in srgb, var(--ej-color-comercio, $comercio-primary) 15%, $comercio-surface); color: var(--ej-color-comercio, $comercio-primary); }
+    &--shipped { background: color-mix(in srgb, #3B82F6 15%, $comercio-surface); color: #3B82F6; }
+    &--delivered { background: color-mix(in srgb, $comercio-success 15%, $comercio-surface); color: color.scale($comercio-success, $lightness: -20%); }
+    &--cancelled { background: color-mix(in srgb, $comercio-danger 15%, $comercio-surface); color: $comercio-danger; }
+    &--refunded { background: color-mix(in srgb, $comercio-text-muted 15%, $comercio-surface); color: $comercio-text-muted; }
+  }
+
+  &__payment {
+    &--pending { background: color-mix(in srgb, $comercio-warning 15%, $comercio-surface); color: $comercio-warning; }
+    &--paid { background: color-mix(in srgb, $comercio-success 15%, $comercio-surface); color: $comercio-success; }
+    &--refunded { background: color-mix(in srgb, $comercio-text-muted 15%, $comercio-surface); color: $comercio-text-muted; }
+    &--failed { background: color-mix(in srgb, $comercio-danger 15%, $comercio-surface); color: $comercio-danger; }
+  }
+
+  // --- Seguimiento ---
+  &__tracking {
+    background: color-mix(in srgb, #3B82F6 8%, $comercio-surface);
+    border: 1px solid color-mix(in srgb, #3B82F6 20%, transparent);
+    border-radius: $radius-md;
+    padding: $space-md;
+    margin-bottom: $space-xl;
+    font-size: 0.9375rem;
+  }
+
+  // --- Tabla de items ---
+  &__items {
+    margin-bottom: $space-xl;
+
+    h2 {
+      font-family: $font-heading;
+      font-size: 1.125rem;
+      margin-bottom: $space-md;
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $comercio-text-muted;
+      padding: $space-sm $space-md;
+      border-bottom: 2px solid $comercio-border;
+    }
+
+    td {
+      padding: $space-md;
+      border-bottom: 1px solid $comercio-border;
+      font-size: 0.9375rem;
+    }
+
+    @media (max-width: $bp-md) {
+      display: block;
+
+      thead { display: none; }
+
+      tbody,
+      tr,
+      td {
+        display: block;
+      }
+
+      tr {
+        padding: $space-md 0;
+        border-bottom: 1px solid $comercio-border;
+      }
+
+      td {
+        padding: $space-xs $space-md;
+        border: 0;
+
+        &::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: $comercio-text-muted;
+          text-transform: uppercase;
+          margin-bottom: 2px;
+        }
+      }
+    }
+  }
+
+  // --- Totales ---
+  &__totals {
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-lg;
+    padding: $space-lg;
+    max-width: 400px;
+    margin-left: auto;
+  }
+
+  &__totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-sm 0;
+    font-size: 0.9375rem;
+
+    &--discount span:last-child {
+      color: $comercio-success;
+      font-weight: 500;
+    }
+
+    &--total {
+      border-top: 2px solid $comercio-border;
+      margin-top: $space-sm;
+      padding-top: $space-md;
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+  }
+}

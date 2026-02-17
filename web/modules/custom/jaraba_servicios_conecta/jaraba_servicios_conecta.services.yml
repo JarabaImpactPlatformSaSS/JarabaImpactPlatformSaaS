@@ -17,6 +17,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
+      - '@database'
       - '@logger.channel.jaraba_servicios_conecta'
 
   # =====================================================================
@@ -44,4 +45,17 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@datetime.time'
+      - '@logger.channel.jaraba_servicios_conecta'
+
+  # =====================================================================
+  # ReviewService: Lógica de reseñas de profesionales
+  # Responsabilidad: envío, moderación, consulta de reseñas y recálculo
+  #   de ratings desnormalizados en ProviderProfile
+  # Relaciones: consume ReviewServicios, Booking, ProviderProfile
+  # =====================================================================
+  jaraba_servicios_conecta.review:
+    class: Drupal\jaraba_servicios_conecta\Service\ReviewService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
       - '@logger.channel.jaraba_servicios_conecta'

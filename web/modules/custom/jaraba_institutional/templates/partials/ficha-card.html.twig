@@ -1,0 +1,16 @@
+{# Tarjeta de ficha STO. #}
+<article class="ficha-card ficha-card--{{ ficha.ficha_type|default('initial') }}">
+  <div class="ficha-card__header">
+    <span class="ficha-card__number">{{ ficha.ficha_number|default('') }}</span>
+    <span class="ficha-card__type">{{ ficha.ficha_type|default('')|t }}</span>
+    {% if ficha.ai_generated %}
+      <span class="ficha-card__ai-badge">{{ 'IA'|t }}</span>
+    {% endif %}
+  </div>
+  <div class="ficha-card__signature">
+    <span class="ficha-card__signature-status ficha-card__signature-status--{{ ficha.signature_status|default('pending') }}">
+      {{ ficha.signature_status|default('pending')|t }}
+    </span>
+  </div>
+  <time class="ficha-card__date">{{ ficha.created|default('') }}</time>
+</article>

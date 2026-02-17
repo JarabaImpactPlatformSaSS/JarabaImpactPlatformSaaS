@@ -84,6 +84,39 @@ function jaraba_servicios_conecta_theme(): array {
       ],
       'template' => 'servicios-provider-calendar',
     ],
+    // Listado de reservas del profesional
+    'servicios_provider_bookings' => [
+      'variables' => [
+        'provider' => NULL,
+        'bookings' => [],
+        'pending_count' => 0,
+        'confirmed_count' => 0,
+        'completed_count' => 0,
+        'cancelled_count' => 0,
+        'current_tab' => 'all',
+      ],
+      'template' => 'servicios-provider-bookings',
+    ],
+    // Formulario de edicion de perfil profesional
+    'servicios_provider_profile' => [
+      'variables' => [
+        'provider' => NULL,
+        'form' => NULL,
+        'completeness_score' => 0,
+      ],
+      'template' => 'servicios-provider-profile',
+    ],
+    // Formulario de reserva publica
+    'servicios_booking_form' => [
+      'variables' => [
+        'offering' => NULL,
+        'provider' => NULL,
+        'available_dates' => [],
+        'available_slots' => [],
+        'form' => NULL,
+      ],
+      'template' => 'servicios-booking-form',
+    ],
   ];
 }
 
@@ -114,6 +147,105 @@ function jaraba_servicios_conecta_preprocess_html(array &$variables): void {
   if (isset($route_classes[$route_name])) {
     $variables['attributes']['class'][] = $route_classes[$route_name];
     $variables['attributes']['class'][] = 'page--servicios';
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Inyecta variables zero-region para las paginas de ServiciosConecta.
+ * Siguiendo el patron de los verticales de clase mundial, todas las
+ * variables de contenido se pasan via preprocess, NO via controller.
+ */
+function jaraba_servicios_conecta_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  // Solo actuar en rutas de ServiciosConecta.
+  if (!str_starts_with($route_name, 'jaraba_servicios_conecta.')) {
+    return;
+  }
+
+  // Variables zero-region comunes.
+  $variables['vertical_key'] = 'serviciosconecta';
+  $variables['site_name'] = \Drupal::config('system.site')->get('name');
+  $variables['site_slogan'] = \Drupal::config('system.site')->get('slogan');
+  $variables['logged_in'] = \Drupal::currentUser()->isAuthenticated();
+
+  // Theme settings del tema activo.
+  $active_theme = \Drupal::theme()->getActiveTheme()->getName();
+  $theme_settings = \Drupal::config($active_theme . '.settings')->getRawData();
+  $variables['theme_settings'] = $theme_settings;
+
+  // Footer copyright.
+  $variables['footer_copyright'] = $theme_settings['footer_copyright'] ?? '© ' . date('Y') . ' Jaraba Impact Platform';
+
+  // Datos del profesional actual si autenticado.
+  $variables['current_provider'] = NULL;
+  $variables['provider_stats'] = [];
+
+  if (\Drupal::currentUser()->isAuthenticated()) {
+    try {
+      $providerService = \Drupal::service('jaraba_servicios_conecta.provider');
+      $provider = $providerService->getCurrentUserProvider();
+      if ($provider) {
+        $variables['current_provider'] = $provider;
+        $variables['provider_stats'] = [
+          'display_name' => $provider->get('display_name')->value ?? '',
+          'average_rating' => (float) ($provider->get('average_rating')->value ?? 0),
+          'total_reviews' => (int) ($provider->get('total_reviews')->value ?? 0),
+          'verification_status' => $provider->get('verification_status')->value ?? 'pending',
+        ];
+      }
+    }
+    catch (\Exception $e) {
+      // Provider service not available — continue without provider data.
+    }
+  }
+
+  // Extraer clean_content del render array principal.
+  if (isset($variables['page']['content'])) {
+    $variables['clean_content'] = $variables['page']['content'];
+  }
+
+  // Mensajes del sistema.
+  if (isset($variables['page']['highlighted'])) {
+    $variables['clean_messages'] = $variables['page']['highlighted'];
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Sugiere templates de pagina especificos para rutas de ServiciosConecta.
+ * Esto permite usar page--servicios-marketplace.html.twig y
+ * page--servicios-dashboard.html.twig en el tema.
+ */
+function jaraba_servicios_conecta_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  // Rutas del marketplace publico → page--servicios-marketplace.
+  $marketplace_routes = [
+    'jaraba_servicios_conecta.marketplace',
+    'jaraba_servicios_conecta.marketplace.provider',
+    'jaraba_servicios_conecta.marketplace.booking',
+  ];
+
+  if (in_array($route_name, $marketplace_routes, TRUE)) {
+    $suggestions[] = 'page__servicios_marketplace';
+  }
+
+  // Rutas del portal del profesional → page--servicios-dashboard.
+  $dashboard_routes = [
+    'jaraba_servicios_conecta.provider_portal',
+    'jaraba_servicios_conecta.provider_portal.offerings',
+    'jaraba_servicios_conecta.provider_portal.offering_add',
+    'jaraba_servicios_conecta.provider_portal.bookings',
+    'jaraba_servicios_conecta.provider_portal.calendar',
+    'jaraba_servicios_conecta.provider_portal.profile',
+  ];
+
+  if (in_array($route_name, $dashboard_routes, TRUE)) {
+    $suggestions[] = 'page__servicios_dashboard';
   }
 }
 

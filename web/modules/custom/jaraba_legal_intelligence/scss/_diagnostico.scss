@@ -1,0 +1,151 @@
+// _diagnostico.scss — Estilos del Lead Magnet: Diagnostico Legal Gratuito.
+// Plan Elevacion JarabaLex Clase Mundial v1 — Fase 0.
+
+.legal-diagnostico {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-xl, 2rem) var(--ej-spacing-md, 1rem);
+
+  &__hero {
+    text-align: center;
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Libre Baskerville', serif);
+    color: var(--ej-legal-primary, #1E3A5F);
+    font-size: 2rem;
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__subtitle {
+    color: var(--ej-legal-secondary, #8B7355);
+    font-size: 1.125rem;
+  }
+}
+
+.legal-diagnostico-form {
+  background: var(--ej-bg-surface, #ffffff);
+  border-radius: var(--ej-border-radius-lg, 14px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--ej-legal-primary, #1E3A5F) 8%, transparent);
+
+  &__field {
+    margin-bottom: var(--ej-spacing-md, 1rem);
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: var(--ej-legal-primary, #1E3A5F);
+      margin-bottom: var(--ej-spacing-xs, 0.25rem);
+    }
+
+    .required {
+      color: var(--ej-color-danger, #E53935);
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.625rem 0.75rem;
+      border: 1px solid var(--ej-border-color, #d1d5db);
+      border-radius: var(--ej-border-radius, 8px);
+      font-size: 0.9375rem;
+      transition: border-color 0.15s ease;
+
+      &:focus {
+        outline: none;
+        border-color: var(--ej-legal-primary, #1E3A5F);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-legal-primary, #1E3A5F) 12%, transparent);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  }
+
+  &__actions {
+    margin-top: var(--ej-spacing-lg, 1.5rem);
+    text-align: center;
+  }
+}
+
+.legal-diagnostico-result {
+  margin-top: var(--ej-spacing-xl, 2rem);
+  background: var(--ej-bg-surface, #ffffff);
+  border-radius: var(--ej-border-radius-lg, 14px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--ej-legal-primary, #1E3A5F) 8%, transparent);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+
+    h2 {
+      color: var(--ej-legal-primary, #1E3A5F);
+      font-family: var(--ej-font-heading, 'Libre Baskerville', serif);
+    }
+  }
+
+  &__score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid var(--ej-legal-accent, #B8860B);
+
+    &.score--high { border-color: var(--ej-color-success, #43A047); }
+    &.score--medium { border-color: var(--ej-color-warning, #FB8C00); }
+    &.score--low { border-color: var(--ej-color-danger, #E53935); }
+  }
+
+  &__score-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-legal-primary, #1E3A5F);
+  }
+
+  &__score-label {
+    font-size: 0.75rem;
+    color: var(--ej-legal-secondary, #8B7355);
+    text-transform: uppercase;
+  }
+
+  &__summary {
+    margin-bottom: var(--ej-spacing-md, 1rem);
+    color: var(--ej-text-primary, #1f2937);
+    line-height: 1.6;
+  }
+
+  &__recommendations {
+    h3 {
+      color: var(--ej-legal-primary, #1E3A5F);
+      margin-bottom: var(--ej-spacing-sm, 0.5rem);
+    }
+
+    ul {
+      padding-left: 1.25rem;
+
+      li {
+        margin-bottom: var(--ej-spacing-xs, 0.25rem);
+        line-height: 1.5;
+      }
+    }
+  }
+
+  &__cta {
+    margin-top: var(--ej-spacing-lg, 1.5rem);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    align-items: center;
+  }
+}

@@ -1,0 +1,45 @@
+{#
+ # _legal-diagnostico-form.html.twig — Formulario del diagnostico legal.
+ #}
+<form class="legal-diagnostico-form" data-diagnostico-form>
+  <div class="legal-diagnostico-form__field">
+    <label for="area-legal">{% trans %}Area legal{% endtrans %} <span class="required">*</span></label>
+    <select id="area-legal" name="area_legal" required>
+      <option value="">{% trans %}Selecciona un area{% endtrans %}</option>
+      <option value="civil">{% trans %}Derecho Civil{% endtrans %}</option>
+      <option value="penal">{% trans %}Derecho Penal{% endtrans %}</option>
+      <option value="laboral">{% trans %}Derecho Laboral{% endtrans %}</option>
+      <option value="mercantil">{% trans %}Derecho Mercantil{% endtrans %}</option>
+      <option value="administrativo">{% trans %}Derecho Administrativo{% endtrans %}</option>
+      <option value="familia">{% trans %}Derecho de Familia{% endtrans %}</option>
+    </select>
+  </div>
+
+  <div class="legal-diagnostico-form__field">
+    <label for="situacion">{% trans %}Describe tu situacion{% endtrans %} <span class="required">*</span></label>
+    <textarea id="situacion" name="situacion" rows="4" required
+      placeholder="{{ 'Explica brevemente los hechos relevantes de tu caso...'|t }}"></textarea>
+  </div>
+
+  <div class="legal-diagnostico-form__field">
+    <label for="urgencia">{% trans %}Nivel de urgencia{% endtrans %}</label>
+    <select id="urgencia" name="urgencia">
+      <option value="baja">{% trans %}Baja — Informativo{% endtrans %}</option>
+      <option value="media" selected>{% trans %}Media — Necesito orientacion{% endtrans %}</option>
+      <option value="alta">{% trans %}Alta — Tengo plazos proximos{% endtrans %}</option>
+      <option value="critica">{% trans %}Critica — Requiere accion inmediata{% endtrans %}</option>
+    </select>
+  </div>
+
+  <div class="legal-diagnostico-form__field">
+    <label for="email">{% trans %}Email (opcional, para recibir el diagnostico completo){% endtrans %}</label>
+    <input type="email" id="email" name="email"
+      placeholder="{{ 'tu@email.com'|t }}">
+  </div>
+
+  <div class="legal-diagnostico-form__actions">
+    <button type="submit" class="ej-btn ej-btn--primary ej-btn--lg">
+      {% trans %}Obtener Diagnostico Gratuito{% endtrans %}
+    </button>
+  </div>
+</form>

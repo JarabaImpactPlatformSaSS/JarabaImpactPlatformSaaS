@@ -1,12 +1,16 @@
 {#
- # Template: ComercioConecta - Reseñas de Clientes
+ # Template: ComercioConecta - Resenas de Clientes
  # Category: comercioconecta
  # Type: testimonials
  #
  # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
+ # Premium: animations, jaraba_icon system, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--testimonials pb-section--comercioconecta"
-         aria-label="{{ title|default('Lo que dicen nuestros clientes')|t }}">
+<section class="pb-section pb-section--testimonials pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Lo que dicen nuestros clientes')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
@@ -15,13 +19,18 @@
     </div>
     <div class="pb-section__testimonials-grid">
       {% set default_testimonials = [
-        { quote: 'Desde que uso ComercioConecta, mis ventas online han crecido un 60%. La plataforma es intuitiva y mis clientes la adoran.', name: 'María López', role: 'Propietaria, Tienda Moda Sol', initials: 'ML' },
-        { quote: 'El catálogo digital me permite mostrar todos mis productos con fotos profesionales. Ha sido un cambio total para mi negocio.', name: 'Carlos Ruiz', role: 'Gerente, Electrónica CR', initials: 'CR' },
-        { quote: 'La gestión de pedidos es fantástica. Ya no pierdo ventas por desorganización y mis clientes reciben sus productos a tiempo.', name: 'Ana Martín', role: 'Dueña, Delicias Ana', initials: 'AM' }
+        { quote: 'Desde que uso ComercioConecta, mis ventas online han crecido un 60%. La plataforma es intuitiva y mis clientes la adoran.', name: 'Maria Lopez', role: 'Propietaria, Tienda Moda Sol', initials: 'ML' },
+        { quote: 'El catalogo digital me permite mostrar todos mis productos con fotos profesionales. Ha sido un cambio total para mi negocio.', name: 'Carlos Ruiz', role: 'Gerente, Electronica CR', initials: 'CR' },
+        { quote: 'La gestion de pedidos es fantastica. Ya no pierdo ventas por desorganizacion y mis clientes reciben sus productos a tiempo.', name: 'Ana Martin', role: 'Duena, Delicias Ana', initials: 'AM' }
       ] %}
       {% set items = testimonials|default(default_testimonials) %}
       {% for testimonial in items %}
-        <div class="pb-section__testimonial">
+        <div class="pb-section__testimonial"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__testimonial-quote-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'quote', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
           <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
           <div class="pb-section__testimonial-author">
             <div class="pb-section__testimonial-avatar">

@@ -1,0 +1,169 @@
+{#
+ # Template: Configuracion del comercio ComercioConecta.
+ # Variables:
+ #   - merchant: Entidad MerchantProfile con datos del comercio.
+ #}
+
+<div class="comercio-merchant-settings">
+
+  <header class="comercio-merchant-settings__header container">
+    <h1 class="comercio-merchant-settings__title">{{ 'Configuracion del Comercio'|t }}</h1>
+    <p class="comercio-merchant-settings__subtitle">
+      {{ 'Gestiona los datos y preferencias de tu comercio.'|t }}
+    </p>
+  </header>
+
+  <div class="comercio-merchant-settings__sections container">
+
+    {# === Datos Fiscales === #}
+    <section class="comercio-merchant-settings__card" aria-label="{{ 'Datos Fiscales'|t }}">
+      <div class="comercio-merchant-settings__card-header">
+        <h2 class="comercio-merchant-settings__card-title">{{ 'Datos Fiscales'|t }}</h2>
+        <button class="comercio-btn comercio-btn--small comercio-btn--outline"
+                data-slide-panel="editar-datos-fiscales"
+                data-slide-panel-url="/mi-comercio/perfil"
+                data-slide-panel-title="{{ 'Editar Datos Fiscales'|t }}">
+          {{ 'Editar'|t }}
+        </button>
+      </div>
+      <div class="comercio-merchant-settings__card-body">
+        <dl class="comercio-merchant-settings__data-list">
+          <div class="comercio-merchant-settings__data-item">
+            <dt class="comercio-merchant-settings__data-label">{{ 'NIF/CIF'|t }}</dt>
+            <dd class="comercio-merchant-settings__data-value">
+              {{ merchant.get('tax_id').value|default('No configurado'|t) }}
+            </dd>
+          </div>
+          <div class="comercio-merchant-settings__data-item">
+            <dt class="comercio-merchant-settings__data-label">{{ 'Razon Social'|t }}</dt>
+            <dd class="comercio-merchant-settings__data-value">
+              {{ merchant.get('legal_name').value|default('No configurado'|t) }}
+            </dd>
+          </div>
+          <div class="comercio-merchant-settings__data-item">
+            <dt class="comercio-merchant-settings__data-label">{{ 'Nombre Comercial'|t }}</dt>
+            <dd class="comercio-merchant-settings__data-value">
+              {{ merchant.get('business_name').value|default('No configurado'|t) }}
+            </dd>
+          </div>
+          <div class="comercio-merchant-settings__data-item">
+            <dt class="comercio-merchant-settings__data-label">{{ 'Direccion Fiscal'|t }}</dt>
+            <dd class="comercio-merchant-settings__data-value">
+              {{ merchant.get('address').value|default('No configurado'|t) }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    {# === Horarios === #}
+    <section class="comercio-merchant-settings__card" aria-label="{{ 'Horarios'|t }}">
+      <div class="comercio-merchant-settings__card-header">
+        <h2 class="comercio-merchant-settings__card-title">{{ 'Horarios de Apertura'|t }}</h2>
+        <button class="comercio-btn comercio-btn--small comercio-btn--outline"
+                data-slide-panel="editar-horarios"
+                data-slide-panel-url="/mi-comercio/perfil"
+                data-slide-panel-title="{{ 'Editar Horarios'|t }}">
+          {{ 'Editar'|t }}
+        </button>
+      </div>
+      <div class="comercio-merchant-settings__card-body">
+        {% set days = {
+          'monday': 'Lunes'|t,
+          'tuesday': 'Martes'|t,
+          'wednesday': 'Miercoles'|t,
+          'thursday': 'Jueves'|t,
+          'friday': 'Viernes'|t,
+          'saturday': 'Sabado'|t,
+          'sunday': 'Domingo'|t,
+        } %}
+        <div class="comercio-merchant-settings__schedule">
+          {% for day_key, day_label in days %}
+            <div class="comercio-merchant-settings__schedule-row">
+              <span class="comercio-merchant-settings__schedule-day">{{ day_label }}</span>
+              <span class="comercio-merchant-settings__schedule-hours">
+                {{ merchant.get('schedule_' ~ day_key).value|default('Cerrado'|t) }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    {# === Zonas de Envio === #}
+    <section class="comercio-merchant-settings__card" aria-label="{{ 'Zonas de Envio'|t }}">
+      <div class="comercio-merchant-settings__card-header">
+        <h2 class="comercio-merchant-settings__card-title">{{ 'Zonas de Envio'|t }}</h2>
+        <button class="comercio-btn comercio-btn--small comercio-btn--outline"
+                data-slide-panel="editar-envio"
+                data-slide-panel-url="/mi-comercio/perfil"
+                data-slide-panel-title="{{ 'Editar Zonas de Envio'|t }}">
+          {{ 'Editar'|t }}
+        </button>
+      </div>
+      <div class="comercio-merchant-settings__card-body">
+        <div class="comercio-merchant-settings__shipping-info">
+          <p class="comercio-merchant-settings__shipping-text">
+            {{ 'Configura las zonas donde realizas envios y las tarifas aplicables.'|t }}
+          </p>
+          <div class="comercio-merchant-settings__shipping-zones">
+            {% if merchant.get('shipping_zones').value %}
+              <span class="comercio-badge comercio-badge--success">{{ 'Zonas configuradas'|t }}</span>
+            {% else %}
+              <span class="comercio-badge comercio-badge--warning">{{ 'Sin configurar'|t }}</span>
+              <p class="comercio-merchant-settings__hint">
+                {{ 'Define al menos una zona de envio para que los clientes puedan recibir tus productos.'|t }}
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# === Click & Collect === #}
+    <section class="comercio-merchant-settings__card" aria-label="{{ 'Click and Collect'|t }}">
+      <div class="comercio-merchant-settings__card-header">
+        <h2 class="comercio-merchant-settings__card-title">{{ 'Click & Collect'|t }}</h2>
+        <button class="comercio-btn comercio-btn--small comercio-btn--outline"
+                data-slide-panel="editar-click-collect"
+                data-slide-panel-url="/mi-comercio/perfil"
+                data-slide-panel-title="{{ 'Editar Click and Collect'|t }}">
+          {{ 'Editar'|t }}
+        </button>
+      </div>
+      <div class="comercio-merchant-settings__card-body">
+        <div class="comercio-merchant-settings__collect-info">
+          <p class="comercio-merchant-settings__collect-text">
+            {{ 'Permite a los clientes comprar online y recoger en tu tienda.'|t }}
+          </p>
+          <div class="comercio-merchant-settings__collect-status">
+            {% if merchant.get('click_collect_enabled').value %}
+              <span class="comercio-badge comercio-badge--success">{{ 'Activado'|t }}</span>
+              <dl class="comercio-merchant-settings__data-list">
+                <div class="comercio-merchant-settings__data-item">
+                  <dt class="comercio-merchant-settings__data-label">{{ 'Tiempo de preparacion'|t }}</dt>
+                  <dd class="comercio-merchant-settings__data-value">
+                    {{ merchant.get('collect_preparation_time').value|default('30') }} {{ 'minutos'|t }}
+                  </dd>
+                </div>
+                <div class="comercio-merchant-settings__data-item">
+                  <dt class="comercio-merchant-settings__data-label">{{ 'Punto de recogida'|t }}</dt>
+                  <dd class="comercio-merchant-settings__data-value">
+                    {{ merchant.get('collect_location').value|default(merchant.get('address').value|default('Direccion del comercio'|t)) }}
+                  </dd>
+                </div>
+              </dl>
+            {% else %}
+              <span class="comercio-badge comercio-badge--secondary">{{ 'Desactivado'|t }}</span>
+              <p class="comercio-merchant-settings__hint">
+                {{ 'Activa Click & Collect para ofrecer recogida en tienda a tus clientes.'|t }}
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</div>

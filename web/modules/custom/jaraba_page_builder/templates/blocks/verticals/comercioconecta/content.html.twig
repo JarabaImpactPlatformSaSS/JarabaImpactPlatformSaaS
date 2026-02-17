@@ -4,30 +4,41 @@
  # Type: content
  #
  # Grid 2 columnas: texto + media
+ # Premium: animations, parallax media, background image, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--content pb-section--comercioconecta"
-         aria-label="{{ title|default('Sobre Tu Tienda')|t }}">
+<section class="pb-section pb-section--content pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Sobre Tu Tienda')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__text">
-      <span class="pb-section__eyebrow">{{ eyebrow|default('Tu Tienda')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Conecta con tus clientes donde estén')|t }}</h2>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Contenido')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Conecta con tus clientes donde esten')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Presenta tus productos y servicios con una experiencia digital que refleja la calidad de tu comercio.')|t }}</p>
       {% if description %}
         <div class="pb-section__description">{{ description|safe_html }}</div>
       {% else %}
-        <div class="pb-section__description">{{ 'Desde catálogos interactivos hasta sistemas de pedidos, ofrecemos las herramientas que tu comercio necesita para crecer en la era digital.'|t }}</div>
+        <div class="pb-section__description">{{ 'Desde catalogos interactivos hasta sistemas de pedidos, ofrecemos las herramientas que tu comercio necesita para crecer en la era digital.'|t }}</div>
       {% endif %}
-      {% if cta_text and cta_url %}
-        <div class="pb-section__actions">
+      <div class="pb-section__actions">
+        {% if cta_text and cta_url %}
           <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary">{{ cta_text }}</a>
-        </div>
-      {% endif %}
+        {% endif %}
+        {% if cta_secondary_text is defined %}
+          <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+            {{ cta_secondary_text }}
+          </a>
+        {% endif %}
+      </div>
     </div>
-    <div class="pb-section__media">
+    <div class="pb-section__media" data-parallax="0.3">
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#128717;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

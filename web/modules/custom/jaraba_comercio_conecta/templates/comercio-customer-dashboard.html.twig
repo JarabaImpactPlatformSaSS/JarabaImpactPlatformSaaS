@@ -1,0 +1,117 @@
+{#
+ # Template: Dashboard del cliente ComercioConecta.
+ # Variables:
+ #   - profile: Entidad CustomerProfile del usuario actual.
+ #   - recent_orders: Array de pedidos recientes con id, order_number, status, total, created.
+ #   - stats: Array con total_orders, total_spent, loyalty_points.
+ #   - wishlist_count: Numero de items en la wishlist.
+ #}
+
+<div class="comercio-customer-dashboard">
+
+  {# === Header del dashboard === #}
+  <header class="comercio-customer-dashboard__header">
+    <div class="comercio-customer-dashboard__header-inner container">
+      <div class="comercio-customer-dashboard__welcome">
+        <h1 class="comercio-customer-dashboard__title">{{ 'Mi Cuenta'|t }}</h1>
+        {% if profile %}
+          <p class="comercio-customer-dashboard__greeting">
+            {{ 'Hola, @name'|t({'@name': profile.get('display_name').value|default('Cliente')}) }}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {# === Stats Cards === #}
+  <section class="comercio-customer-stats container" aria-label="{{ 'Resumen de actividad'|t }}">
+    <div class="comercio-customer-stats__grid">
+
+      <div class="comercio-customer-stats__card">
+        <span class="comercio-customer-stats__card-value">{{ stats.total_orders|default(0) }}</span>
+        <span class="comercio-customer-stats__card-label">{{ 'Pedidos'|t }}</span>
+      </div>
+
+      <div class="comercio-customer-stats__card">
+        <span class="comercio-customer-stats__card-value">{{ stats.total_spent|default(0)|number_format(2, ',', '.') }} &euro;</span>
+        <span class="comercio-customer-stats__card-label">{{ 'Total Gastado'|t }}</span>
+      </div>
+
+      <div class="comercio-customer-stats__card">
+        <span class="comercio-customer-stats__card-value">{{ stats.loyalty_points|default(0) }}</span>
+        <span class="comercio-customer-stats__card-label">{{ 'Puntos Fidelidad'|t }}</span>
+      </div>
+
+      <div class="comercio-customer-stats__card">
+        <span class="comercio-customer-stats__card-value">{{ wishlist_count|default(0) }}</span>
+        <span class="comercio-customer-stats__card-label">{{ 'Favoritos'|t }}</span>
+      </div>
+
+    </div>
+  </section>
+
+  {# === Pedidos recientes === #}
+  <section class="comercio-customer-dashboard__orders container" aria-label="{{ 'Pedidos recientes'|t }}">
+    <h2 class="comercio-section-title">{{ 'Pedidos Recientes'|t }}</h2>
+
+    {% if recent_orders is not empty %}
+      <div class="comercio-customer-dashboard__orders-list">
+        {% for order in recent_orders %}
+          {% set status_labels = {
+            'draft': 'Borrador'|t,
+            'pending': 'Pendiente'|t,
+            'confirmed': 'Confirmado'|t,
+            'processing': 'En preparacion'|t,
+            'shipped': 'Enviado'|t,
+            'delivered': 'Entregado'|t,
+            'cancelled': 'Cancelado'|t,
+            'refunded': 'Reembolsado'|t,
+          } %}
+          <a href="/mis-pedidos/{{ order.id }}" class="comercio-customer-dashboard__order-card">
+            <div class="comercio-customer-dashboard__order-header">
+              <span class="comercio-customer-dashboard__order-number">{{ order.order_number }}</span>
+              <span class="comercio-customer-dashboard__order-status comercio-customer-dashboard__order-status--{{ order.status }}">
+                {{ status_labels[order.status] ?? order.status }}
+              </span>
+            </div>
+            <div class="comercio-customer-dashboard__order-body">
+              <span class="comercio-customer-dashboard__order-total">{{ order.total|number_format(2, ',', '.') }} EUR</span>
+              <span class="comercio-customer-dashboard__order-date">{{ order.created|date('d/m/Y') }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="comercio-customer-dashboard__empty">
+        <p>{{ 'Aun no tienes pedidos. Explora nuestro marketplace para encontrar productos locales.'|t }}</p>
+        <a href="/comercio-local" class="btn btn--primary">{{ 'Explorar marketplace'|t }}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  {# === Enlaces rapidos === #}
+  <section class="comercio-customer-dashboard__quick-links container" aria-label="{{ 'Accesos rapidos'|t }}">
+    <h2 class="comercio-section-title">{{ 'Accesos Rapidos'|t }}</h2>
+    <div class="comercio-customer-dashboard__links-grid">
+
+      <a href="/mis-pedidos" class="comercio-customer-dashboard__link-card">
+        <span class="comercio-customer-dashboard__link-icon">&#128230;</span>
+        <span class="comercio-customer-dashboard__link-label">{{ 'Mis Pedidos'|t }}</span>
+        <span class="comercio-customer-dashboard__link-count">{{ stats.total_orders|default(0) }}</span>
+      </a>
+
+      <a href="/mi-cuenta/wishlist" class="comercio-customer-dashboard__link-card">
+        <span class="comercio-customer-dashboard__link-icon">&#9829;</span>
+        <span class="comercio-customer-dashboard__link-label">{{ 'Mi Wishlist'|t }}</span>
+        <span class="comercio-customer-dashboard__link-count">{{ wishlist_count|default(0) }}</span>
+      </a>
+
+      <a href="/mi-cuenta/perfil" class="comercio-customer-dashboard__link-card">
+        <span class="comercio-customer-dashboard__link-icon">&#128100;</span>
+        <span class="comercio-customer-dashboard__link-label">{{ 'Mi Perfil'|t }}</span>
+      </a>
+
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,34 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_merchant_activation
+label: 'ComercioConecta - Activacion Comerciante'
+description: 'Embudo de activacion desde perfil completo hasta upgrade de plan.'
+vertical: comercioconecta
+steps:
+  -
+    id: profile_complete
+    label: 'Perfil Completo'
+    event: profile_completed
+    conditions: 'entity_type:merchant_profile'
+  -
+    id: first_sale
+    label: 'Primera Venta'
+    event: order_completed
+    conditions: 'role:merchant'
+  -
+    id: first_review
+    label: 'Primera Resena'
+    event: review_received
+    conditions: 'entity_type:review_retail'
+  -
+    id: pos_connected
+    label: 'TPV Conectado'
+    event: pos_integration_completed
+    conditions: 'vertical:comercioconecta'
+  -
+    id: plan_upgrade
+    label: 'Upgrade de Plan'
+    event: plan_upgraded
+    conditions: 'vertical:comercioconecta'
+weight: 1

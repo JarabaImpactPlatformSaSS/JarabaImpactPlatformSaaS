@@ -70,6 +70,15 @@ class FeatureAccessService {
     'einvoice_documents' => 'jaraba_einvoice_b2b',
     'einvoice_ubl_generate' => 'jaraba_einvoice_b2b',
     'einvoice_payment_tracking' => 'jaraba_einvoice_b2b',
+    // ServiciosConecta v1 — Fase 1.
+    'serviciosconecta' => [
+      'calendar_sync',
+      'buzon_confianza',
+      'firma_digital',
+      'ai_triage',
+      'video_conferencing',
+      'analytics_dashboard',
+    ],
   ];
 
   public function __construct(

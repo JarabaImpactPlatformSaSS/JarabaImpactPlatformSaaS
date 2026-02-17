@@ -1,0 +1,99 @@
+{#
+ # Tarjeta de forecast.
+ #
+ # Variables:
+ #   - forecast: objeto Forecast con campos:
+ #       metric_type, predicted_value, confidence_lower, confidence_upper,
+ #       period_label, data_points_count, trend_direction, current_value, id
+ #}
+{% set metric = forecast.metric_type|default('mrr') %}
+{% set predicted = forecast.predicted_value|default(0) %}
+{% set lower = forecast.confidence_lower|default(0) %}
+{% set upper = forecast.confidence_upper|default(0) %}
+{% set trend = forecast.trend_direction|default('neutral') %}
+{% set current = forecast.current_value|default(0) %}
+
+{# Determine if metric is currency or count #}
+{% set is_currency = metric in ['mrr', 'arr'] %}
+
+<article class="prediction-card prediction-card--forecast">
+  <div class="prediction-card__header">
+    <span class="prediction-card__badge prediction-card__badge--{{ metric }}">
+      {{ metric|upper }}
+    </span>
+    <div class="prediction-card__trend prediction-card__trend--{{ trend }}">
+      {% if trend == 'up' %}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+          <polyline points="17 6 23 6 23 12"/>
+        </svg>
+      {% elseif trend == 'down' %}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+          <polyline points="17 18 23 18 23 12"/>
+        </svg>
+      {% else %}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="prediction-card__body">
+    {# Predicted value #}
+    <div class="prediction-card__forecast-value">
+      {% if is_currency %}
+        <span class="prediction-card__currency">EUR</span>
+      {% endif %}
+      <span class="prediction-card__score-value prediction-card__score-value--large">
+        {{ is_currency ? predicted|number_format(0, ',', '.') : predicted|number_format(0, ',', '.') }}
+      </span>
+    </div>
+
+    {# Confidence interval #}
+    <div class="prediction-card__confidence-interval">
+      <span class="prediction-card__interval-label">{{ 'Intervalo de confianza'|t }}</span>
+      <span class="prediction-card__interval-range">
+        {% if is_currency %}
+          {{ lower|number_format(0, ',', '.') }} EUR — {{ upper|number_format(0, ',', '.') }} EUR
+        {% else %}
+          {{ lower|number_format(0, ',', '.') }} — {{ upper|number_format(0, ',', '.') }}
+        {% endif %}
+      </span>
+    </div>
+
+    {# Period #}
+    {% if forecast.period_label %}
+      <div class="prediction-card__meta">
+        <span class="prediction-card__meta-label">{{ 'Periodo'|t }}</span>
+        <span class="prediction-card__meta-value">{{ forecast.period_label }}</span>
+      </div>
+    {% endif %}
+
+    {# Data points #}
+    <div class="prediction-card__meta">
+      <span class="prediction-card__meta-label">{{ 'Puntos de datos'|t }}</span>
+      <span class="prediction-card__meta-value">{{ forecast.data_points_count|default(0) }}</span>
+    </div>
+
+    {# Trend comparison #}
+    {% if current > 0 %}
+      {% set change_pct = ((predicted - current) / current * 100)|round(1) %}
+      <div class="prediction-card__trend-comparison prediction-card__trend-comparison--{{ trend }}">
+        <span class="prediction-card__trend-arrow">
+          {{ trend == 'up' ? '+' : (trend == 'down' ? '' : '') }}{{ change_pct }}%
+        </span>
+        <span class="prediction-card__trend-vs">{{ 'vs actual'|t }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="prediction-card__footer">
+    <a href="{{ path('jaraba_predictive.forecast.view', {'forecast': forecast.id|default(0)}) }}"
+       class="prediction-card__action prediction-card__action--view">
+      {{ 'Ver Detalles'|t }}
+    </a>
+  </div>
+</article>

@@ -1,0 +1,28 @@
+jaraba_agents.settings:
+  type: config_object
+  label: 'Configuracion del modulo Jaraba Agents'
+  mapping:
+    default_autonomy_level:
+      type: string
+      label: 'Nivel de autonomia por defecto'
+    default_llm_model:
+      type: string
+      label: 'Modelo LLM por defecto'
+    default_temperature:
+      type: float
+      label: 'Temperatura por defecto para inferencia'
+    max_actions_per_run:
+      type: integer
+      label: 'Maximo de acciones por ejecucion'
+    approval_expiry_hours:
+      type: integer
+      label: 'Horas de expiracion de aprobaciones'
+    guardrails_enabled:
+      type: boolean
+      label: 'Guardrails habilitados'
+    token_budget_per_execution:
+      type: integer
+      label: 'Presupuesto de tokens por ejecucion'
+    cost_alert_threshold:
+      type: float
+      label: 'Umbral de alerta de costo (USD)'

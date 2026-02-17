@@ -1,0 +1,133 @@
+{#
+ # Template: ServiciosConecta - Widget de Reservas
+ # Category: serviciosconecta
+ # Type: booking_widget
+ #
+ # Embeddable booking preview con calendario, lista de servicios y CTA
+ # Premium: animations, jaraba_icon system, Schema.org ProfessionalService
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--booking-widget pb-section--serviciosconecta jaraba-block jaraba-block--premium jaraba-block--serviciosconecta-booking-widget"
+         aria-label="{{ title|default('Widget de Reservas')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+
+  {# Schema.org JSON-LD: ProfessionalService #}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "{{ provider_name|default('ServiciosConecta')|e('js') }}",
+    "description": "{{ subtitle|default('Reserva tu cita con profesionales verificados.')|e('js') }}",
+    {% if provider_specialty|default('') %}
+    "knowsAbout": "{{ provider_specialty|e('js') }}",
+    {% endif %}
+    {% if phone|default('') %}
+    "telephone": "{{ phone|e('js') }}",
+    {% endif %}
+    {% if email|default('') %}
+    "email": "{{ email|e('js') }}",
+    {% endif %}
+    "url": "{{ cta_url|default('#')|e('js') }}"
+  }
+  </script>
+
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Reservas Online')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Reserva tu cita')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Selecciona el servicio que necesitas y agenda tu cita en minutos.')|t }}</p>
+    </div>
+
+    <div class="pb-section__booking-layout">
+      {# Provider info card #}
+      <div class="pb-section__booking-provider" data-effect="fade-up" data-delay="100">
+        <div class="pb-section__booking-provider-header">
+          <div class="pb-section__booking-provider-icon" aria-hidden="true">
+            {{ jaraba_icon('user', 'users', { variant: 'duotone', size: '40px', color: 'primary' }) }}
+          </div>
+          <div>
+            <h3 class="pb-section__booking-provider-name">{{ provider_name|default('Tu Profesional')|t }}</h3>
+            <p class="pb-section__booking-provider-specialty">{{ provider_specialty|default('Servicios Profesionales')|t }}</p>
+          </div>
+        </div>
+
+        {# Contact info #}
+        {% if phone|default('') or email|default('') %}
+          <div class="pb-section__booking-contact">
+            {% if phone|default('') %}
+              <div class="pb-section__booking-contact-item">
+                <span aria-hidden="true">{{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '16px', color: 'primary' }) }}</span>
+                <a href="tel:{{ phone }}">{{ phone }}</a>
+              </div>
+            {% endif %}
+            {% if email|default('') %}
+              <div class="pb-section__booking-contact-item">
+                <span aria-hidden="true">{{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '16px', color: 'primary' }) }}</span>
+                <a href="mailto:{{ email }}">{{ email }}</a>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {# Calendar preview #}
+      <div class="pb-section__booking-calendar" data-effect="fade-up" data-delay="200">
+        <div class="pb-section__booking-calendar-header">
+          <span aria-hidden="true">{{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '24px', color: 'primary' }) }}</span>
+          <h3>{% trans %}Selecciona fecha{% endtrans %}</h3>
+        </div>
+        <div class="pb-section__booking-calendar-grid" aria-label="{% trans %}Vista previa de calendario{% endtrans %}">
+          <div class="pb-section__booking-calendar-days">
+            {% set days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] %}
+            {% for day in days %}
+              <span class="pb-section__booking-day-label">{{ day }}</span>
+            {% endfor %}
+          </div>
+          <div class="pb-section__booking-calendar-slots">
+            {% for i in 1..28 %}
+              <span class="pb-section__booking-day{{ i == 15 ? ' pb-section__booking-day--selected' : '' }}{{ i in [6, 7, 13, 14, 20, 21, 27, 28] ? ' pb-section__booking-day--weekend' : '' }}">{{ i }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      {# Services list #}
+      <div class="pb-section__booking-services" data-effect="fade-up" data-delay="300">
+        <div class="pb-section__booking-services-header">
+          <span aria-hidden="true">{{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '24px', color: 'primary' }) }}</span>
+          <h3>{% trans %}Servicios disponibles{% endtrans %}</h3>
+        </div>
+        {% set default_services = [
+          { name: 'Consulta inicial', duration: '60 min', price: '45€' },
+          { name: 'Asesoría completa', duration: '90 min', price: '80€' },
+          { name: 'Revisión de documentos', duration: '45 min', price: '35€' },
+          { name: 'Seguimiento mensual', duration: '30 min', price: '25€' }
+        ] %}
+        {% set items = services|default(default_services) %}
+        <ul class="pb-section__booking-services-list">
+          {% for service in items %}
+            <li class="pb-section__booking-service-item">
+              <div class="pb-section__booking-service-info">
+                <span class="pb-section__booking-service-name">{{ service.name|default('Servicio')|t }}</span>
+                <span class="pb-section__booking-service-duration">
+                  {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '14px' }) }}
+                  {{ service.duration|default('60 min') }}
+                </span>
+              </div>
+              <span class="pb-section__booking-service-price">{{ service.price|default('--') }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    {# CTA #}
+    <div class="pb-section__actions" data-effect="fade-up" data-delay="400">
+      <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+        {{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '18px' }) }}
+        {{ cta_text|default('Reservar ahora')|t }}
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,8 @@
+default_autonomy_level: l1_suggestion
+default_llm_model: 'gemini-2.0-flash'
+default_temperature: 0.30
+max_actions_per_run: 10
+approval_expiry_hours: 24
+guardrails_enabled: true
+token_budget_per_execution: 10000
+cost_alert_threshold: 5.00

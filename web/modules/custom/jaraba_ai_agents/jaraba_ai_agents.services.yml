@@ -227,6 +227,17 @@ services:
       - '@jaraba_ai_agents.observability'
       - '@logger.channel.jaraba_ai_agents'
 
+  # JarabaLex Copilot Agent — Asistente juridico IA (F11 Clase Mundial)
+  jaraba_ai_agents.jarabalex_copilot:
+    class: Drupal\jaraba_ai_agents\Agent\JarabaLexCopilotAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@ecosistema_jaraba_core.unified_prompt_builder'
+
   # MultiModal Bridge — Preparacion voz + imagen
   jaraba_ai_agents.multimodal_bridge:
     class: Drupal\jaraba_ai_agents\Service\MultiModalBridgeService

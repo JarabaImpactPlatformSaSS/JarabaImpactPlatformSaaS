@@ -34,3 +34,35 @@ jaraba_comercio_conecta.merchant_profile.settings:
   route_name: jaraba_comercio_conecta.merchant_profile.settings
   parent: system.admin_structure
   weight: 83
+
+# F6: Pedidos en Structure
+jaraba_comercio_conecta.order_retail.settings:
+  title: 'Pedidos Comercio'
+  description: 'Configuracion de la entidad Pedido Retail de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.order_retail.settings
+  parent: system.admin_structure
+  weight: 84
+
+# F6: Devoluciones en Structure
+jaraba_comercio_conecta.return_request.settings:
+  title: 'Devoluciones Comercio'
+  description: 'Configuracion de Solicitudes de Devolucion de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.return_request.settings
+  parent: system.admin_structure
+  weight: 85
+
+# F6: Cupones en Structure
+jaraba_comercio_conecta.coupon_retail.settings:
+  title: 'Cupones Comercio'
+  description: 'Configuracion de Cupones de Descuento de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.coupon_retail.settings
+  parent: system.admin_structure
+  weight: 86
+
+# F7: Perfiles de consumidor en Structure
+jaraba_comercio_conecta.customer_profile_retail.settings:
+  title: 'Perfiles Consumidor'
+  description: 'Configuracion de Perfiles de Consumidor de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.customer_profile_retail.settings
+  parent: system.admin_structure
+  weight: 87

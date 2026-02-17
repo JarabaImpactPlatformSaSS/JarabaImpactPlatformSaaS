@@ -1,0 +1,39 @@
+services:
+  logger.channel.jaraba_institutional:
+    parent: logger.channel_base
+    arguments: ['jaraba_institutional']
+
+  jaraba_institutional.program_manager:
+    class: Drupal\jaraba_institutional\Service\ProgramManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_institutional'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_institutional.participant_tracker:
+    class: Drupal\jaraba_institutional\Service\ParticipantTrackerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_institutional'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_institutional.sto_generator:
+    class: Drupal\jaraba_institutional\Service\StoFichaGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_institutional'
+      - '@jaraba_institutional.participant_tracker'
+
+  jaraba_institutional.fundae_reporter:
+    class: Drupal\jaraba_institutional\Service\FundaeReporterService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_institutional'
+      - '@jaraba_institutional.participant_tracker'
+
+  jaraba_institutional.fse_reporter:
+    class: Drupal\jaraba_institutional\Service\FseReporterService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_institutional'
+      - '@jaraba_institutional.participant_tracker'

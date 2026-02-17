@@ -1,0 +1,37 @@
+{#
+ # Tarjeta de reserva reutilizable.
+ #
+ # Variables:
+ #   - booking: Booking entity
+ #}
+<article class="servicios-booking-card servicios-booking-card--{{ booking.get('status').value|default('pending') }}">
+  <div class="servicios-booking-card__header">
+    <span class="servicios-booking-card__status servicios-booking-card__status--{{ booking.get('status').value|default('pending') }}">
+      {{ booking.get('status').value|default('pending')|capitalize }}
+    </span>
+    <span class="servicios-booking-card__id">#{{ booking.id() }}</span>
+  </div>
+
+  <div class="servicios-booking-card__body">
+    <div class="servicios-booking-card__datetime">
+      {{ jaraba_icon('ui', 'building', { variant: 'duotone', size: '16px' }) }}
+      <time datetime="{{ booking.get('booking_date').value|default('') }}">
+        {{ booking.get('booking_date').value|default('')|date('d/m/Y H:i') }}
+      </time>
+    </div>
+
+    {% if booking.get('duration_minutes').value %}
+      <div class="servicios-booking-card__duration">
+        {{ booking.get('duration_minutes').value }} {% trans %}min{% endtrans %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="servicios-booking-card__actions">
+    {% if booking.get('status').value == 'pending_confirmation' %}
+      <a href="/admin/content/booking/{{ booking.id() }}/edit" class="servicios-booking-card__action servicios-booking-card__action--confirm" data-dialog-type="modal" data-dialog-options='{"width":480}'>
+        {% trans %}Confirm{% endtrans %}
+      </a>
+    {% endif %}
+  </div>
+</article>

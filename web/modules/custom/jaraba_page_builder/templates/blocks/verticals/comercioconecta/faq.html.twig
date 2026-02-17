@@ -1,30 +1,41 @@
 {#
- # Template: ComercioConecta - Envío y Devoluciones
+ # Template: ComercioConecta - Envio y Devoluciones
  # Category: comercioconecta
  # Type: faq
  #
  # Header + accordion con <details>/<summary>
+ # Premium: animations, jaraba_icon system, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--faq pb-section--comercioconecta"
-         aria-label="{{ title|default('Preguntas frecuentes')|t }}">
+<section class="pb-section pb-section--faq pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Preguntas frecuentes')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Preguntas frecuentes')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre envíos, devoluciones y más.')|t }}</p>
+      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre envios, devoluciones y mas.')|t }}</p>
     </div>
     <div class="pb-section__faq-list">
       {% set default_faqs = [
-        { question: '¿Cuánto tarda el envío?', answer: 'Los envíos estándar tardan entre 2-5 días laborables. Ofrecemos envío express en 24h para pedidos urgentes.' },
-        { question: '¿Puedo devolver un producto?', answer: 'Sí, tienes 30 días desde la recepción para devolver cualquier producto en su estado original. El proceso es sencillo desde tu panel.' },
-        { question: '¿Cómo gestiono mi inventario?', answer: 'Desde el panel de control puedes añadir, editar y gestionar todo tu catálogo de productos con stock en tiempo real.' },
-        { question: '¿Hay costes de envío?', answer: 'El envío es gratuito para pedidos superiores a 50€. Para importes menores, el coste de envío se calcula automáticamente.' },
-        { question: '¿Puedo personalizar mi tienda?', answer: 'Por supuesto. Personaliza colores, logotipo, tipografía y la disposición de tu tienda para que refleje la identidad de tu marca.' }
+        { question: 'Cuanto tarda el envio?', answer: 'Los envios estandar tardan entre 2-5 dias laborables. Ofrecemos envio express en 24h para pedidos urgentes.' },
+        { question: 'Puedo devolver un producto?', answer: 'Si, tienes 30 dias desde la recepcion para devolver cualquier producto en su estado original. El proceso es sencillo desde tu panel.' },
+        { question: 'Como gestiono mi inventario?', answer: 'Desde el panel de control puedes anadir, editar y gestionar todo tu catalogo de productos con stock en tiempo real.' },
+        { question: 'Hay costes de envio?', answer: 'El envio es gratuito para pedidos superiores a 50 euros. Para importes menores, el coste de envio se calcula automaticamente.' },
+        { question: 'Puedo personalizar mi tienda?', answer: 'Por supuesto. Personaliza colores, logotipo, tipografia y la disposicion de tu tienda para que refleje la identidad de tu marca.' }
       ] %}
       {% set items = faqs|default(default_faqs) %}
       {% for faq in items %}
-        <details class="pb-section__faq-item">
-          <summary>{{ faq.question|default('Pregunta')|t }}</summary>
+        <details class="pb-section__faq-item"
+                 data-effect="fade-up"
+                 data-delay="{{ loop.index0 * 80 }}">
+          <summary>
+            <span class="pb-section__faq-icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'help-circle', { variant: 'duotone', size: '20px', color: 'primary' }) }}
+            </span>
+            {{ faq.question|default('Pregunta')|t }}
+          </summary>
           <div class="pb-section__faq-answer">
             {{ faq.answer|default('Respuesta.')|t }}
           </div>

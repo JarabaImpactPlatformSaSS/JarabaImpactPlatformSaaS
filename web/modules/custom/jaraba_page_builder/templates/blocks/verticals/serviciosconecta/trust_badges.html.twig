@@ -1,0 +1,80 @@
+{#
+ # Template: ServiciosConecta - Sellos de Confianza
+ # Category: serviciosconecta
+ # Type: trust_badges
+ #
+ # Trust/credential badges (verificacion, certificacion, seguro, firma digital)
+ # Premium: staggered animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--trust-badges pb-section--serviciosconecta jaraba-block jaraba-block--premium jaraba-block--serviciosconecta-trust-badges"
+         aria-label="{{ title|default('Sellos de Confianza')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <div class="pb-section__header-icon" aria-hidden="true">
+        {{ jaraba_icon('actions', 'lock', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+      </div>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Confianza')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Garantías que nos avalan')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Contamos con las certificaciones y sellos de calidad más exigentes del sector.')|t }}</p>
+    </div>
+
+    <div class="pb-section__trust-grid">
+      {% set default_badges = [
+        { icon: 'verified', title: 'Profesionales Verificados', description: 'Cada profesional pasa un riguroso proceso de verificación de identidad, titulaciones y colegiación activa.' },
+        { icon: 'certified', title: 'Certificación de Calidad', description: 'Nuestra plataforma cumple con los estándares ISO 27001 de seguridad de la información y protección de datos.' },
+        { icon: 'insured', title: 'Seguro de Responsabilidad', description: 'Todos los servicios contratados están cubiertos por un seguro de responsabilidad civil profesional.' },
+        { icon: 'digital', title: 'Firma Digital Avanzada', description: 'Documentos y contratos firmados con certificado digital cualificado conforme al reglamento eIDAS.' }
+      ] %}
+      {% set items = badges|default(default_badges) %}
+      {% set badge_icon_map = {
+        'verified': { category: 'actions', name: 'check' },
+        'certified': { category: 'business', name: 'achievement' },
+        'insured': { category: 'actions', name: 'lock' },
+        'digital': { category: 'ui', name: 'document' }
+      } %}
+      {% for badge in items %}
+        <div class="pb-section__trust-badge"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__trust-badge-icon" aria-hidden="true">
+            {% set badge_icon = badge_icon_map[badge.icon|default('verified')]|default({ category: 'actions', name: 'check' }) %}
+            {{ jaraba_icon(badge_icon.category, badge_icon.name, { variant: 'duotone', size: '40px', color: 'primary' }) }}
+          </div>
+          <h3 class="pb-section__trust-badge-title">{{ badge.title|default('Sello de Confianza')|t }}</h3>
+          <p class="pb-section__trust-badge-desc">{{ badge.description|default('Descripción del sello de confianza.')|t }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Trust summary bar #}
+    <div class="pb-section__trust-summary" data-effect="fade-up" data-delay="500">
+      <div class="pb-section__trust-summary-item">
+        {{ jaraba_icon('actions', 'lock', { variant: 'duotone', size: '20px', color: 'success' }) }}
+        <span>{% trans %}Pagos 100% seguros{% endtrans %}</span>
+      </div>
+      <div class="pb-section__trust-summary-item">
+        {{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '20px', color: 'success' }) }}
+        <span>{% trans %}Contratos legales{% endtrans %}</span>
+      </div>
+      <div class="pb-section__trust-summary-item">
+        {{ jaraba_icon('user', 'users', { variant: 'duotone', size: '20px', color: 'success' }) }}
+        <span>{% trans %}Soporte dedicado{% endtrans %}</span>
+      </div>
+      <div class="pb-section__trust-summary-item">
+        {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '20px', color: 'success' }) }}
+        <span>{% trans %}Garantía de satisfacción{% endtrans %}</span>
+      </div>
+    </div>
+
+    {% if cta_text|default('') and cta_url|default('') %}
+      <div class="pb-section__actions" data-effect="fade-up" data-delay="600">
+        <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary">
+          {{ cta_text|t }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>

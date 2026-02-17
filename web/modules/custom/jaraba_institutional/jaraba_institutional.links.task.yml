@@ -1,0 +1,40 @@
+# ============================================================================
+# Pestanas (tabs) del modulo jaraba_institutional
+# Estructura: Tabs principales para entidades y configuracion
+# ============================================================================
+
+jaraba_institutional.programs_tab:
+  title: 'Programas'
+  route_name: entity.institutional_program.collection
+  base_route: entity.institutional_program.collection
+  weight: 46
+
+jaraba_institutional.participants_tab:
+  title: 'Participantes'
+  route_name: entity.program_participant.collection
+  base_route: entity.institutional_program.collection
+  weight: 47
+
+jaraba_institutional.fichas_tab:
+  title: 'Fichas STO'
+  route_name: entity.sto_ficha.collection
+  base_route: entity.institutional_program.collection
+  weight: 48
+
+jaraba_institutional.institutional_program.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_institutional.institutional_program.settings
+  base_route: entity.institutional_program.collection
+  weight: 49
+
+jaraba_institutional.program_participant.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_institutional.program_participant.settings
+  base_route: entity.program_participant.collection
+  weight: 49
+
+jaraba_institutional.sto_ficha.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_institutional.sto_ficha.settings
+  base_route: entity.sto_ficha.collection
+  weight: 49

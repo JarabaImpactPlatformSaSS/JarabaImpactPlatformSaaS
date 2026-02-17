@@ -15,6 +15,10 @@ fields_schema:
       type: string
       title: 'Subtitulo'
       maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 50
     description:
       type: string
       title: 'Descripcion'
@@ -23,6 +27,26 @@ fields_schema:
       type: string
       title: 'Imagen'
       format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    map_embed:
+      type: string
+      title: 'Codigo embed del mapa'
+      format: html
+    address:
+      type: string
+      title: 'Direccion'
+      maxLength: 200
+    phone:
+      type: string
+      title: 'Telefono'
+      maxLength: 30
+    email:
+      type: string
+      title: 'Email'
+      format: email
     cta_text:
       type: string
       title: 'Texto del Boton'
@@ -31,17 +55,30 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-map.png'
 weight: 18
 preview_data:
-  title: 'Ubicaciones de Tienda'
-  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
-  description: 'Descripcion de ejemplo para la seccion ubicacion y cobertura.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  title: 'Visitanos'
+  subtitle: 'Estamos aqui para atenderte.'
+  eyebrow: 'Ubicacion'
+  address: 'Calle Principal 123, Tu Ciudad'
+  phone: '+34 600 000 000'
+  email: 'info@tutienda.com'
+  cta_text: 'Como llegar'
+  cta_url: '/comercio/ubicacion'

@@ -192,3 +192,13 @@ jaraba_servicios_conecta.api.availability:
   requirements:
     _permission: 'access content'
     provider_profile: '\d+'
+
+# --- Configuracion del Vertical ServiciosConecta ---
+
+jaraba_servicios_conecta.settings:
+  path: '/admin/config/jaraba/servicios-conecta'
+  defaults:
+    _form: '\Drupal\jaraba_servicios_conecta\Form\ServiciosConectaSettingsForm'
+    _title: 'Configuracion ServiciosConecta'
+  requirements:
+    _permission: 'administer site configuration'

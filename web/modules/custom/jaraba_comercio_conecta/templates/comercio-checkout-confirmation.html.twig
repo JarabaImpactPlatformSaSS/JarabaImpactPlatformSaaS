@@ -1,0 +1,41 @@
+{#
+ # Template: Confirmacion de pedido ComercioConecta.
+ # Variables:
+ #   - order: Entidad pedido.
+ #   - order_number: Numero de pedido.
+ #   - total: Importe total.
+ #   - status: Estado del pedido.
+ #   - payment_status: Estado del pago.
+ #}
+
+<div class="comercio-confirmation">
+  <div class="comercio-confirmation__icon">
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+      <circle cx="32" cy="32" r="30" stroke="var(--ej-color-comercio, #FF8C42)" stroke-width="2"/>
+      <path d="M20 32l8 8 16-16" stroke="var(--ej-color-comercio, #FF8C42)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <h1 class="comercio-confirmation__title">{{ 'Pedido confirmado'|t }}</h1>
+  <p class="comercio-confirmation__number">{{ 'Numero de pedido'|t }}: <strong>{{ order_number }}</strong></p>
+
+  <div class="comercio-confirmation__details">
+    <div class="comercio-confirmation__detail">
+      <span class="comercio-confirmation__label">{{ 'Total'|t }}</span>
+      <span class="comercio-confirmation__value">{{ total|number_format(2, ',', '.') }} EUR</span>
+    </div>
+    <div class="comercio-confirmation__detail">
+      <span class="comercio-confirmation__label">{{ 'Estado'|t }}</span>
+      <span class="comercio-confirmation__value comercio-confirmation__status--{{ status }}">
+        {% if status == 'confirmed' %}{{ 'Confirmado'|t }}
+        {% elseif status == 'pending' %}{{ 'Pendiente de pago'|t }}
+        {% else %}{{ status }}{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <div class="comercio-confirmation__actions">
+    <a href="/mis-pedidos" class="btn btn--primary">{{ 'Ver mis pedidos'|t }}</a>
+    <a href="/comercio-local" class="btn btn--secondary">{{ 'Seguir comprando'|t }}</a>
+  </div>
+</div>

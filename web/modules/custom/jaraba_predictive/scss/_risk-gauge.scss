@@ -1,0 +1,92 @@
+// =============================================================================
+// Gauge circular de riesgo (Jaraba Predictive)
+// Directriz: BEM, color-mix(), animacion CSS para stroke-dashoffset
+// =============================================================================
+
+@use 'variables' as *;
+
+.risk-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $pred-spacing-xs;
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: $pred-spacing-sm auto;
+
+  &__svg {
+    width: 120px;
+    height: 120px;
+  }
+
+  &__track {
+    stroke: color-mix(in srgb, $pred-border-color 50%, transparent);
+  }
+
+  &__circle {
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &__value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: $pred-font-headings;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $pred-color-text;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    color: $pred-color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  // ── Color variants matching risk levels ─────────────────────────
+  &--low &__circle {
+    stroke: $pred-risk-low;
+  }
+
+  &--low &__value {
+    color: $pred-risk-low;
+  }
+
+  &--medium &__circle {
+    stroke: $pred-risk-medium;
+  }
+
+  &--medium &__value {
+    color: $pred-risk-medium;
+  }
+
+  &--high &__circle {
+    stroke: $pred-risk-high;
+  }
+
+  &--high &__value {
+    color: $pred-risk-high;
+  }
+
+  &--critical &__circle {
+    stroke: $pred-risk-critical;
+  }
+
+  &--critical &__value {
+    color: $pred-risk-critical;
+  }
+}
+
+// ── Load animation ────────────────────────────────────────────────
+@keyframes risk-gauge-fill {
+  from {
+    stroke-dashoffset: 326.73;
+  }
+}

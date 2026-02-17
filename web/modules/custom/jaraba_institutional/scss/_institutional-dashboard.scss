@@ -1,0 +1,222 @@
+// Estilos del dashboard de Programas Institucionales.
+// BEM naming — color-mix() en lugar de rgba() (Dart Sass ^1.71.0).
+
+@use 'variables' as *;
+
+// --- Dashboard layout ---
+
+.institutional-dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: $institutional-spacing-xl;
+  font-family: var(--ej-font-family-base, system-ui, -apple-system, sans-serif);
+  color: $institutional-color-text;
+}
+
+.institutional-dashboard__header {
+  padding: $institutional-spacing-xl;
+  margin-block-end: $institutional-spacing-xl;
+  background: color-mix(in srgb, $institutional-color-primary 8%, $institutional-color-bg);
+  border-radius: $institutional-border-radius;
+  border-inline-start: 4px solid $institutional-color-primary;
+}
+
+.institutional-dashboard__title {
+  margin: 0 0 $institutional-spacing-sm;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $institutional-color-primary;
+  line-height: 1.2;
+}
+
+.institutional-dashboard__subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: $institutional-color-text-muted;
+}
+
+// --- Stats cards grid ---
+
+.institutional-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $institutional-spacing-md;
+  margin-block-end: $institutional-spacing-xl;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.institutional-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $institutional-spacing-lg;
+  background: $institutional-color-bg;
+  border-radius: $institutional-border-radius;
+  box-shadow: $institutional-shadow;
+  text-align: center;
+  transition: box-shadow $institutional-transition;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, $institutional-color-primary 15%, transparent);
+  }
+}
+
+.institutional-stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.institutional-stat-card__label {
+  margin-block-start: $institutional-spacing-sm;
+  font-size: 0.875rem;
+  color: $institutional-color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Variantes de color por tipo de stat card.
+.institutional-stat-card--programs .institutional-stat-card__value {
+  color: $institutional-color-primary;
+}
+
+.institutional-stat-card--active .institutional-stat-card__value {
+  color: $institutional-color-success;
+}
+
+.institutional-stat-card--participants .institutional-stat-card__value {
+  color: $institutional-color-accent;
+}
+
+.institutional-stat-card--insertion .institutional-stat-card__value {
+  color: $institutional-color-earth;
+}
+
+// --- Section titles ---
+
+.institutional-dashboard__section-title {
+  margin: 0 0 $institutional-spacing-md;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $institutional-color-text;
+}
+
+// --- Programs grid ---
+
+.institutional-dashboard__programs {
+  margin-block-end: $institutional-spacing-xl;
+}
+
+.institutional-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $institutional-spacing-md;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// --- Empty state ---
+
+.institutional-dashboard__empty {
+  grid-column: 1 / -1;
+  padding: $institutional-spacing-xl;
+  text-align: center;
+  color: $institutional-color-text-muted;
+  font-style: italic;
+  background: $institutional-color-surface;
+  border-radius: $institutional-border-radius;
+}
+
+// --- Participant table styles ---
+
+.participant-row {
+  transition: background-color $institutional-transition;
+
+  &:hover {
+    background-color: color-mix(in srgb, $institutional-color-accent 5%, $institutional-color-bg);
+  }
+}
+
+.participant-row__name {
+  font-weight: 600;
+}
+
+.participant-row__hours {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.participant-status {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.participant-status--active {
+  background: color-mix(in srgb, $institutional-color-success 15%, $institutional-color-bg);
+  color: $institutional-color-success;
+}
+
+.participant-status--completed {
+  background: color-mix(in srgb, $institutional-color-accent 15%, $institutional-color-bg);
+  color: $institutional-color-accent;
+}
+
+.participant-status--dropped {
+  background: color-mix(in srgb, $institutional-color-warning 15%, $institutional-color-bg);
+  color: $institutional-color-warning;
+}
+
+.participant-status--inactive {
+  background: color-mix(in srgb, $institutional-color-text-muted 15%, $institutional-color-bg);
+  color: $institutional-color-text-muted;
+}
+
+// --- Status badges para listado admin ---
+
+.institutional-status {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.institutional-status--neutral {
+  background: color-mix(in srgb, $institutional-color-text-muted 12%, $institutional-color-bg);
+  color: $institutional-color-text-muted;
+}
+
+.institutional-status--success {
+  background: color-mix(in srgb, $institutional-color-success 12%, $institutional-color-bg);
+  color: $institutional-color-success;
+}
+
+.institutional-status--warning {
+  background: color-mix(in srgb, $institutional-color-warning 12%, $institutional-color-bg);
+  color: $institutional-color-warning;
+}
+
+.institutional-status--info {
+  background: color-mix(in srgb, $institutional-color-accent 12%, $institutional-color-bg);
+  color: $institutional-color-accent;
+}
+
+.institutional-status--muted {
+  background: color-mix(in srgb, $institutional-color-text-muted 8%, $institutional-color-bg);
+  color: $institutional-color-text-muted;
+}

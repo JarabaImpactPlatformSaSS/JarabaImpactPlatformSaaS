@@ -1,0 +1,109 @@
+@use 'variables' as *;
+
+// Opportunity Card — BEM
+.opportunity-card {
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  border-radius: var(--ej-border-radius-lg, 14px);
+  padding: $funding-spacing-lg;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: $funding-spacing-sm;
+    margin-bottom: $funding-spacing-md;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &--open {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+      color: var(--ej-color-success, #10B981);
+    }
+
+    &--upcoming {
+      background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+      color: var(--ej-color-warning, #F59E0B);
+    }
+
+    &--closed {
+      background: color-mix(in srgb, var(--ej-color-text-muted, #6b7280) 10%, transparent);
+      color: var(--ej-color-text-muted, #6b7280);
+    }
+
+    &--resolved {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $funding-spacing-xs;
+    margin-bottom: $funding-spacing-md;
+    font-size: 0.875rem;
+    color: var(--ej-color-text-muted, #6b7280);
+  }
+
+  &__amount {
+    font-weight: 600;
+    color: var(--ej-color-impulse, #FF8C42);
+  }
+
+  &__actions {
+    display: flex;
+    gap: $funding-spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  &__action {
+    padding: $funding-spacing-xs $funding-spacing-md;
+    border: 1px solid var(--ej-color-corporate, #233D63);
+    border-radius: var(--ej-border-radius-md, 8px);
+    background: none;
+    color: var(--ej-color-corporate, #233D63);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover {
+      background: var(--ej-color-corporate, #233D63);
+      color: #ffffff;
+    }
+
+    &--primary {
+      background: var(--ej-color-impulse, #FF8C42);
+      border-color: var(--ej-color-impulse, #FF8C42);
+      color: #ffffff;
+
+      &:hover {
+        background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, black);
+        border-color: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, black);
+      }
+    }
+  }
+}

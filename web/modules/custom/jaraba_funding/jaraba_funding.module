@@ -1,156 +1,211 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * @file
- * Funding Intelligence module — Inteligencia de subvenciones con matching IA.
+ * Modulo principal de Fondos Europeos y Subvenciones (N2 Growth Ready).
+ *
+ * Estructura: Define hooks de tema, preproceso, sugerencias de template
+ *   y automatizaciones para la gestion de convocatorias, solicitudes
+ *   y memorias tecnicas del vertical JarabaLex.
+ *
+ * Logica: Implementa el patron zero-region con 3 hooks obligatorios
+ *   (hook_theme, hook_theme_suggestions_page_alter, hook_preprocess_page).
+ *   Las variables se inyectan SOLO desde hook_preprocess_page(),
+ *   NUNCA desde el controller (ZERO-REGION-001).
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
 
 /**
- * Implements hook_help().
+ * Implements hook_theme().
+ *
+ * Estructura: Registra el template zero-region del dashboard y parciales.
+ *   Cada template tiene sus variables documentadas con tipo y proposito.
+ *
+ * Logica: El template page__funding se renderiza via el sistema de
+ *   sugerencias de Drupal, no directamente desde el controller.
  */
-function jaraba_funding_help(string $route_name, RouteMatchInterface $route_match): string {
-  if ($route_name === 'help.page.jaraba_funding') {
-    return '<p>' . t('Provides funding intelligence with AI matching, alerts and copilot for the Ecosistema Jaraba.') . '</p>';
-  }
-  return '';
+function jaraba_funding_theme(): array {
+  return [
+    'page__funding' => [
+      'variables' => [
+        'opportunities' => [],
+        'applications' => [],
+        'stats' => [],
+        'copilot_context' => NULL,
+      ],
+    ],
+    'funding_opportunity_card' => [
+      'template' => 'partials/opportunity-card',
+      'variables' => [
+        'opportunity' => NULL,
+      ],
+    ],
+    'funding_application_status' => [
+      'template' => 'partials/application-status',
+      'variables' => [
+        'application' => NULL,
+      ],
+    ],
+    'funding_report_card' => [
+      'template' => 'partials/report-card',
+      'variables' => [
+        'report' => NULL,
+      ],
+    ],
+  ];
 }
 
 /**
- * Implements hook_cron().
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Estructura: Anade sugerencia de template para la ruta del dashboard.
+ *
+ * Logica: Cuando la ruta activa es jaraba_funding.dashboard, se sugiere
+ *   el template page__funding que es un zero-region template sin
+ *   regiones ni bloques de Drupal.
  */
-function jaraba_funding_cron(): void {
-  $time = \Drupal::time()->getRequestTime();
-  _jaraba_funding_bdns_sync($time);
-  _jaraba_funding_alerts_check($time);
-}
-
-/**
- * Syncs BDNS data (rate limited via State API, 12h interval, 03:00-05:00 UTC).
- */
-function _jaraba_funding_bdns_sync(int $time): void {
-  $state = \Drupal::state();
-  $config = \Drupal::config('jaraba_funding.settings');
-  $intervalHours = (int) ($config->get('sync_interval_hours') ?? 12);
-  $lastRun = (int) ($state->get('jaraba_funding.bdns_last_sync') ?? 0);
-  $hoursSinceLastRun = ($time - $lastRun) / 3600;
-
-  if ($hoursSinceLastRun < $intervalHours) {
-    return;
-  }
-
-  $currentHour = (int) date('G', $time);
-  if ($currentHour < 3 || $currentHour > 4) {
-    return;
-  }
-
-  try {
-    /** @var \Drupal\jaraba_funding\Service\BdnsSyncService $sync */
-    $sync = \Drupal::service('jaraba_funding.bdns_sync');
-    $sync->syncDaily();
-    $state->set('jaraba_funding.bdns_last_sync', $time);
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_funding')->error('BDNS sync failed: @msg', ['@msg' => $e->getMessage()]);
-  }
-}
-
-/**
- * Checks funding alerts (rate limited via State API, 24h interval).
- */
-function _jaraba_funding_alerts_check(int $time): void {
-  $state = \Drupal::state();
-  $lastRun = (int) ($state->get('jaraba_funding.alerts_last_check') ?? 0);
-  $hoursSinceLastRun = ($time - $lastRun) / 3600;
-
-  if ($hoursSinceLastRun < 24) {
-    return;
-  }
-
-  try {
-    /** @var \Drupal\jaraba_funding\Service\FundingAlertService $alertService */
-    $alertService = \Drupal::service('jaraba_funding.alert_service');
-    $alertService->processAlerts();
-    $state->set('jaraba_funding.alerts_last_check', $time);
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_funding')->error('Funding alerts check failed: @msg', ['@msg' => $e->getMessage()]);
-  }
-}
-
-/**
- * Implements hook_mail().
- */
-function jaraba_funding_mail(string $key, array &$message, array $params): void {
-  switch ($key) {
-    case 'funding_alert':
-      $message['subject'] = $params['subject'] ?? t('Nueva Convocatoria Matching - Ecosistema Jaraba');
-      $message['body'][] = $params['body'] ?? '';
-      break;
-
-    case 'funding_deadline':
-      $message['subject'] = $params['subject'] ?? t('Recordatorio de Plazo de Subvencion - Ecosistema Jaraba');
-      $message['body'][] = $params['body'] ?? '';
-      break;
-
-    case 'funding_digest':
-      $message['subject'] = $params['subject'] ?? t('Resumen Periodico de Subvenciones - Ecosistema Jaraba');
-      $message['body'][] = $params['body'] ?? '';
-      break;
+function jaraba_funding_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route = \Drupal::routeMatch()->getRouteName() ?? '';
+  if ($route === 'jaraba_funding.dashboard') {
+    $suggestions[] = 'page__funding';
   }
 }
 
 /**
  * Implements hook_preprocess_html().
+ *
+ * Estructura: Anade clases CSS al <body> segun la ruta activa.
+ *
+ * Logica: Detecta rutas de Funding para anadir clases que permiten
+ *   estilos especificos por pagina. IMPORTANTE: Las clases en <body>
+ *   SOLO funcionan desde hook_preprocess_html, NO desde templates
+ *   (LEGAL-BODY-001).
  */
 function jaraba_funding_preprocess_html(array &$variables): void {
-  $route = \Drupal::routeMatch()->getRouteName();
-  if ($route === 'jaraba_funding.dashboard') {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (str_starts_with($route_name, 'jaraba_funding.')) {
     $variables['attributes']['class'][] = 'page-funding';
+    $variables['attributes']['class'][] = 'n2-growth-ready';
+  }
+
+  if ($route_name === 'jaraba_funding.dashboard') {
     $variables['attributes']['class'][] = 'full-width-layout';
   }
 }
 
 /**
- * Implements hook_theme().
+ * Implements hook_preprocess_page().
+ *
+ * Estructura: Inyecta variables en el template zero-region del dashboard.
+ *
+ * Logica: ZERO-REGION-001 — Variables inyectadas SOLO aqui, NUNCA
+ *   desde el controller. ZERO-REGION-003 — drupalSettings via
+ *   $variables['#attached']['drupalSettings'].
  */
-function jaraba_funding_theme(): array {
-  return [
-    'page__funding' => [
-      'template' => 'page--funding',
-      'base hook' => 'page',
-    ],
-    'funding_match_card' => [
-      'template' => 'funding-match-card',
-      'variables' => [
-        'match' => NULL,
-        'call' => NULL,
-        'score' => 0,
-        'breakdown' => [],
-      ],
-    ],
-    'funding_header' => [
-      'template' => 'partials/_funding-header',
-      'variables' => ['tenant' => NULL],
-    ],
-    'funding_search_panel' => [
-      'template' => 'partials/_funding-search-panel',
-      'variables' => ['filters' => [], 'results' => []],
-    ],
-    'funding_matches_panel' => [
-      'template' => 'partials/_funding-matches-panel',
-      'variables' => ['matches' => []],
-    ],
-    'funding_calendar_panel' => [
-      'template' => 'partials/_funding-calendar-panel',
-      'variables' => ['deadlines' => []],
-    ],
-    'funding_copilot_widget' => [
-      'template' => 'partials/_funding-copilot-widget',
-      'variables' => ['enabled' => TRUE],
-    ],
-  ];
+function jaraba_funding_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if ($route_name === 'jaraba_funding.dashboard') {
+    try {
+      /** @var \Drupal\jaraba_funding\Service\OpportunityTrackerService $tracker */
+      $tracker = \Drupal::service('jaraba_funding.opportunity_tracker');
+      $opportunities_result = $tracker->getActiveOpportunities();
+
+      /** @var \Drupal\jaraba_funding\Service\ApplicationManagerService $appManager */
+      $appManager = \Drupal::service('jaraba_funding.application_manager');
+      $applications_result = $appManager->getRecentApplications();
+      $stats = $appManager->getDashboardStats();
+
+      $opportunities_data = [];
+      foreach ($opportunities_result['opportunities'] as $opp) {
+        $opportunities_data[] = [
+          'id' => (int) $opp->id(),
+          'name' => $opp->get('name')->value ?? '',
+          'funding_body' => $opp->get('funding_body')->value ?? '',
+          'program' => $opp->get('program')->value ?? '',
+          'max_amount' => $opp->get('max_amount')->value ?? '',
+          'deadline' => $opp->get('deadline')->value ?? '',
+          'status' => $opp->get('status')->value ?? '',
+          'url' => $opp->get('url')->uri ?? '',
+        ];
+      }
+
+      $applications_data = [];
+      foreach ($applications_result['applications'] as $app) {
+        $applications_data[] = [
+          'id' => (int) $app->id(),
+          'application_number' => $app->get('application_number')->value ?? '',
+          'status' => $app->get('status')->value ?? '',
+          'amount_requested' => $app->get('amount_requested')->value ?? '',
+          'amount_approved' => $app->get('amount_approved')->value ?? '',
+          'next_deadline' => $app->get('next_deadline')->value ?? '',
+        ];
+      }
+
+      $variables['opportunities'] = $opportunities_data;
+      $variables['applications'] = $applications_data;
+      $variables['stats'] = $stats;
+
+      $variables['#attached']['drupalSettings']['jarabaFunding'] = [
+        'opportunities' => $opportunities_data,
+        'applications' => $applications_data,
+        'stats' => $stats,
+        'apiBase' => '/api/v1/funding',
+      ];
+      $variables['#attached']['library'][] = 'jaraba_funding/funding.main';
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_funding')->error('Error en preprocess dashboard: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+      $variables['opportunities'] = [];
+      $variables['applications'] = [];
+      $variables['stats'] = [];
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Estructura: Automatizacion al crear entidades de Funding.
+ *
+ * Logica: Al crear una solicitud (FundingApplication), registra
+ *   la actividad en el log del modulo.
+ */
+function jaraba_funding_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'funding_application') {
+    $number = $entity->get('application_number')->value ?? '';
+    \Drupal::logger('jaraba_funding')->info('Solicitud @number creada.', [
+      '@number' => $number,
+    ]);
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Estructura: Detecta cambios de estado en solicitudes.
+ *
+ * Logica: Cuando el campo 'status' cambia en una FundingApplication,
+ *   registra la transicion en el log del modulo.
+ */
+function jaraba_funding_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'funding_application') {
+    $original = $entity->original ?? NULL;
+    if ($original && $entity->get('status')->value !== $original->get('status')->value) {
+      $old = $original->get('status')->value;
+      $new = $entity->get('status')->value;
+      $number = $entity->get('application_number')->value ?? '';
+      \Drupal::logger('jaraba_funding')->info('Solicitud @number: estado cambiado de "@old" a "@new".', [
+        '@number' => $number,
+        '@old' => $old,
+        '@new' => $new,
+      ]);
+    }
+  }
 }

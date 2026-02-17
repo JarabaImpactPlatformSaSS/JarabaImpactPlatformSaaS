@@ -4,9 +4,12 @@
  # Type: content
  #
  # Grid 2 columnas: texto + media
+ # Premium: animations, parallax media, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--content pb-section--serviciosconecta"
-         aria-label="{{ title|default('Servicios de Confianza')|t }}">
+<section class="pb-section pb-section--content pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Servicios de Confianza')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__text">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Servicios')|t }}</span>
@@ -23,11 +26,13 @@
         </div>
       {% endif %}
     </div>
-    <div class="pb-section__media">
+    <div class="pb-section__media" data-parallax="0.3">
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#128188;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

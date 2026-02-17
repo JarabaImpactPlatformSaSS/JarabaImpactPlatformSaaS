@@ -4,9 +4,12 @@
  # Type: gallery
  #
  # Header + grid responsive de imagenes con hover overlay
+ # Premium: staggered animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--gallery pb-section--serviciosconecta"
-         aria-label="{{ title|default('Portafolio de Proyectos')|t }}">
+<section class="pb-section pb-section--gallery pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Portafolio de Proyectos')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Portafolio')|t }}</span>
@@ -24,11 +27,15 @@
       ] %}
       {% set items = gallery|default(default_gallery) %}
       {% for item in items %}
-        <figure class="pb-section__gallery-item">
+        <figure class="pb-section__gallery-item"
+                data-effect="fade-up"
+                data-delay="{{ loop.index0 * 100 }}">
           {% if item.src|default('') %}
             <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
           {% else %}
-            <div class="pb-section__img-placeholder" aria-hidden="true">&#128188;</div>
+            <div class="pb-section__img-placeholder" aria-hidden="true">
+              {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            </div>
           {% endif %}
           {% if item.caption|default('') %}
             <figcaption>{{ item.caption|t }}</figcaption>

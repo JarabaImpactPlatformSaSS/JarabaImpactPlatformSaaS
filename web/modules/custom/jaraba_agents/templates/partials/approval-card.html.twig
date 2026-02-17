@@ -1,0 +1,18 @@
+{# Tarjeta de aprobacion pendiente. #}
+<article class="approval-card approval-card--{{ approval.risk_assessment|default('medium') }}">
+  <div class="approval-card__header">
+    <span class="approval-card__risk approval-card__risk--{{ approval.risk_assessment|default('medium') }}">
+      {{ approval.risk_assessment|default('medium')|t }}
+    </span>
+    <span class="approval-card__status">{{ approval.status|default('pending')|t }}</span>
+  </div>
+  <p class="approval-card__description">{{ approval.action_description|default('') }}</p>
+  {% if approval.reasoning %}
+    <p class="approval-card__reasoning">{{ approval.reasoning }}</p>
+  {% endif %}
+  <div class="approval-card__footer">
+    {% if approval.expires_at %}
+      <time class="approval-card__expires">{{ 'Expira:'|t }} {{ approval.expires_at }}</time>
+    {% endif %}
+  </div>
+</article>

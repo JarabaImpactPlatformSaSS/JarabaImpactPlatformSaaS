@@ -1,4 +1,8 @@
-@use 'variables';
+// Jaraba Funding — Entry point SCSS
+// N2 Growth Ready — Fondos Europeos y Subvenciones
+// @use only (Dart Sass ^1.71.0, no @import)
+
+@use 'variables' as *;
 @use 'funding-dashboard';
-@use 'funding-calendar';
-@use 'funding-copilot';
+@use 'opportunity-card';
+@use 'application-status';

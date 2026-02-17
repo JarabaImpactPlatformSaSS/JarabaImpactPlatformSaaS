@@ -1,0 +1,39 @@
+{#
+ # Parcial: Tarjeta de memoria tecnica.
+ #
+ # Variables:
+ #   - report: array con id, title, report_type, status, ai_generated.
+ #}
+<div class="report-card">
+  <div class="report-card__header">
+    <h4 class="report-card__title">{{ report.title }}</h4>
+    {% if report.ai_generated %}
+      <span class="report-card__ai-badge">{{ 'IA'|t }}</span>
+    {% endif %}
+  </div>
+  <div class="report-card__meta">
+    <span class="report-card__type">
+      {% if report.report_type == 'initial' %}
+        {{ 'Memoria inicial'|t }}
+      {% elseif report.report_type == 'progress' %}
+        {{ 'Informe de progreso'|t }}
+      {% elseif report.report_type == 'final' %}
+        {{ 'Memoria final'|t }}
+      {% elseif report.report_type == 'justification' %}
+        {{ 'Justificacion'|t }}
+      {% endif %}
+    </span>
+    {% set status_class = 'report-card__status--' ~ report.status %}
+    <span class="report-card__status {{ status_class }}">
+      {% if report.status == 'draft' %}
+        {{ 'Borrador'|t }}
+      {% elseif report.status == 'review' %}
+        {{ 'En revision'|t }}
+      {% elseif report.status == 'approved' %}
+        {{ 'Aprobada'|t }}
+      {% elseif report.status == 'submitted' %}
+        {{ 'Presentada'|t }}
+      {% endif %}
+    </span>
+  </div>
+</div>

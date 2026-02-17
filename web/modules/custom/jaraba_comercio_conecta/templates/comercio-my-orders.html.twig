@@ -1,0 +1,58 @@
+{#
+ # Template: Listado de pedidos del cliente ComercioConecta.
+ # Variables:
+ #   - orders: Array de pedidos con id, order_number, status, total, created.
+ #   - total: Total de pedidos.
+ #   - page: Pagina actual.
+ #   - total_pages: Total de paginas.
+ #}
+
+<div class="comercio-orders">
+  <h1 class="comercio-orders__title">{{ 'Mis Pedidos'|t }}</h1>
+
+  {% if orders is empty %}
+    <div class="comercio-orders__empty">
+      <p>{{ 'Aun no tienes pedidos.'|t }}</p>
+      <a href="/comercio-local" class="btn btn--primary">{{ 'Explorar marketplace'|t }}</a>
+    </div>
+  {% else %}
+    <div class="comercio-orders__list">
+      {% for order in orders %}
+        {% set status_labels = {
+          'draft': 'Borrador'|t,
+          'pending': 'Pendiente'|t,
+          'confirmed': 'Confirmado'|t,
+          'processing': 'En preparacion'|t,
+          'shipped': 'Enviado'|t,
+          'delivered': 'Entregado'|t,
+          'cancelled': 'Cancelado'|t,
+          'refunded': 'Reembolsado'|t,
+        } %}
+        <a href="/mis-pedidos/{{ order.id }}" class="comercio-orders__card">
+          <div class="comercio-orders__card-header">
+            <span class="comercio-orders__number">{{ order.order_number }}</span>
+            <span class="comercio-orders__status comercio-orders__status--{{ order.status }}">
+              {{ status_labels[order.status] ?? order.status }}
+            </span>
+          </div>
+          <div class="comercio-orders__card-body">
+            <span class="comercio-orders__total">{{ order.total|number_format(2, ',', '.') }} EUR</span>
+            <span class="comercio-orders__date">{{ order.created|date('d/m/Y') }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+      <div class="comercio-orders__pager">
+        {% if page > 0 %}
+          <a href="?page={{ page - 1 }}" class="btn btn--secondary">{{ 'Anterior'|t }}</a>
+        {% endif %}
+        <span class="comercio-orders__pager-info">{{ 'Pagina @current de @total'|t({'@current': page + 1, '@total': total_pages}) }}</span>
+        {% if page < total_pages - 1 %}
+          <a href="?page={{ page + 1 }}" class="btn btn--secondary">{{ 'Siguiente'|t }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+</div>

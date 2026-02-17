@@ -1,30 +1,38 @@
 {#
- # Template: ComercioConecta - Catálogo de Productos
+ # Template: ComercioConecta - Catalogo de Productos
  # Category: comercioconecta
  # Type: features
  #
- # Header centrado + grid de 3 feature cards (icono + título + descripción)
+ # Header centrado + grid de 3 feature cards (icono + titulo + descripcion)
+ # Premium: staggered animations, jaraba_icon system, configurable columns
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--features pb-section--comercioconecta"
-         aria-label="{{ title|default('Nuestros Servicios')|t }}">
+<section class="pb-section pb-section--features pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestros Servicios')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
-      <span class="pb-section__eyebrow">{{ eyebrow|default('Servicios')|t }}</span>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Funcionalidades')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Todo lo que tu comercio necesita')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Herramientas diseñadas para potenciar la gestión y ventas de tu negocio.')|t }}</p>
+      <p class="pb-section__subtitle">{{ subtitle|default('Herramientas disenadas para potenciar la gestion y ventas de tu negocio.')|t }}</p>
     </div>
-    <div class="pb-section__features-grid">
+    <div class="pb-section__features-grid pb-section__features-grid--{{ columns|default(3) }}-cols">
       {% set default_features = [
-        { icon: '&#128722;', title: 'Catálogo digital', desc: 'Muestra tus productos con fotos, precios y descripciones actualizadas en tiempo real.' },
-        { icon: '&#128200;', title: 'Gestión de ventas', desc: 'Lleva el control de tus pedidos, inventario y facturación desde un solo lugar.' },
-        { icon: '&#128241;', title: 'Presencia online', desc: 'Tu tienda visible en internet con un perfil profesional y atractivo.' }
+        { icon: 'catalog', title: 'Catalogo digital', desc: 'Muestra tus productos con fotos, precios y descripciones actualizadas en tiempo real.' },
+        { icon: 'sales', title: 'Gestion de ventas', desc: 'Lleva el control de tus pedidos, inventario y facturacion desde un solo lugar.' },
+        { icon: 'presence', title: 'Presencia online', desc: 'Tu tienda visible en internet con un perfil profesional y atractivo.' }
       ] %}
       {% set items = features|default(default_features) %}
       {% for feature in items %}
-        <div class="pb-section__feature-card">
-          <div class="pb-section__feature-icon" aria-hidden="true">{{ feature.icon|default('&#9733;')|raw }}</div>
-          <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
-          <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>
+        <div class="pb-section__feature-card"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__feature-icon" aria-hidden="true">
+            {{ jaraba_icon('commerce', feature.icon|default('features'), { variant: 'duotone', size: '32px', color: 'primary' }) }}
+          </div>
+          <h3 class="pb-section__feature-title">{{ feature.title|default('Caracteristica')|t }}</h3>
+          <p class="pb-section__feature-desc">{{ feature.desc|default('Descripcion de la caracteristica.')|t }}</p>
         </div>
       {% endfor %}
     </div>

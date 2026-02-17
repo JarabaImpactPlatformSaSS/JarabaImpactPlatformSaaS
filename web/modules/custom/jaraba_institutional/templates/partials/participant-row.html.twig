@@ -1,0 +1,12 @@
+{# Fila de participante en tabla. #}
+<tr class="participant-row participant-row--{{ participant.status|default('active') }}">
+  <td class="participant-row__name">{{ participant.user_name|default('') }}</td>
+  <td class="participant-row__enrollment">{{ participant.enrollment_date|default('') }}</td>
+  <td class="participant-row__status">
+    <span class="participant-status participant-status--{{ participant.status|default('active') }}">
+      {{ participant.status|default('')|t }}
+    </span>
+  </td>
+  <td class="participant-row__outcome">{{ participant.employment_outcome|default('—')|t }}</td>
+  <td class="participant-row__hours">{{ participant.hours_orientation|default(0) }}h + {{ participant.hours_training|default(0) }}h</td>
+</tr>

@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * legal-diagnostico.html.twig — Lead Magnet: Diagnostico Legal Gratuito.
+ *
+ * Plan Elevacion JarabaLex Clase Mundial v1 — Fase 0.
+ * Formulario interactivo que genera un diagnostico automatizado.
+ */
+#}
+<div class="legal-diagnostico">
+  <div class="legal-diagnostico__hero">
+    <h1 class="legal-diagnostico__title">
+      {% trans %}Diagnostico Legal Gratuito{% endtrans %}
+    </h1>
+    <p class="legal-diagnostico__subtitle">
+      {% trans %}Analiza tu situacion juridica en 2 minutos y recibe recomendaciones personalizadas.{% endtrans %}
+    </p>
+  </div>
+
+  <div class="legal-diagnostico__form-wrapper">
+    {% include '@jaraba_legal_intelligence/partials/_legal-diagnostico-form.html.twig' %}
+  </div>
+
+  <div class="legal-diagnostico__result-wrapper" data-diagnostico-result style="display: none;">
+    {% include '@jaraba_legal_intelligence/partials/_legal-diagnostico-result.html.twig' %}
+  </div>
+</div>

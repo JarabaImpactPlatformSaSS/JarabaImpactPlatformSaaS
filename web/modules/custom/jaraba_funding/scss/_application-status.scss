@@ -1,0 +1,85 @@
+@use 'variables' as *;
+
+// Application Status Row — BEM
+.application-status {
+  display: flex;
+  align-items: center;
+  gap: $funding-spacing-md;
+  padding: $funding-spacing-md $funding-spacing-lg;
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+  border-radius: var(--ej-border-radius-md, 8px);
+  flex-wrap: wrap;
+
+  @include respond-to('tablet') {
+    flex-wrap: nowrap;
+  }
+
+  &__ref {
+    flex-shrink: 0;
+  }
+
+  &__number {
+    font-family: var(--ej-font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, #233D63);
+  }
+
+  &__details {
+    flex: 1;
+    display: flex;
+    gap: $funding-spacing-md;
+    flex-wrap: wrap;
+    font-size: 0.8125rem;
+    color: var(--ej-color-text-muted, #6b7280);
+  }
+
+  &__approved {
+    font-weight: 600;
+    color: var(--ej-color-success, #10B981);
+  }
+
+  &__badge-wrapper {
+    flex-shrink: 0;
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--draft {
+      background: color-mix(in srgb, var(--ej-color-text-muted, #6b7280) 10%, transparent);
+      color: var(--ej-color-text-muted, #6b7280);
+    }
+
+    &--submitted {
+      background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+      color: var(--ej-color-warning, #F59E0B);
+    }
+
+    &--approved {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+      color: var(--ej-color-success, #10B981);
+    }
+
+    &--rejected {
+      background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent);
+      color: var(--ej-color-danger, #EF4444);
+    }
+
+    &--justifying {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--closed {
+      background: color-mix(in srgb, var(--ej-color-earth, #556B2F) 10%, transparent);
+      color: var(--ej-color-earth, #556B2F);
+    }
+  }
+}

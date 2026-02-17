@@ -1,0 +1,135 @@
+{#
+ # Template: Pagos y comisiones del comerciante ComercioConecta.
+ # Variables:
+ #   - merchant: Entidad MerchantProfile.
+ #   - summary: Array con total_revenue, total_commissions, total_paid, pending_amount.
+ #   - recent_payouts: Array de pagos con order_number, amount, commission, net, status, created.
+ #   - monthly_revenue: Array de datos mensuales para grafico.
+ #}
+
+<div class="comercio-merchant-payments">
+
+  <header class="comercio-merchant-payments__header container">
+    <h1 class="comercio-merchant-payments__title">{{ 'Pagos y Comisiones'|t }}</h1>
+  </header>
+
+  {# === Resumen financiero === #}
+  <section class="comercio-merchant-payments__summary container" aria-label="{{ 'Resumen financiero'|t }}">
+    <div class="comercio-merchant-payments__summary-grid">
+
+      <div class="comercio-merchant-payments__summary-card">
+        <span class="comercio-merchant-payments__summary-value">
+          {{ summary.total_revenue|default(0)|number_format(2, ',', '.') }} &euro;
+        </span>
+        <span class="comercio-merchant-payments__summary-label">{{ 'Ingresos Totales'|t }}</span>
+      </div>
+
+      <div class="comercio-merchant-payments__summary-card comercio-merchant-payments__summary-card--warning">
+        <span class="comercio-merchant-payments__summary-value">
+          {{ summary.total_commissions|default(0)|number_format(2, ',', '.') }} &euro;
+        </span>
+        <span class="comercio-merchant-payments__summary-label">{{ 'Comisiones'|t }}</span>
+      </div>
+
+      <div class="comercio-merchant-payments__summary-card comercio-merchant-payments__summary-card--success">
+        <span class="comercio-merchant-payments__summary-value">
+          {{ summary.total_paid|default(0)|number_format(2, ',', '.') }} &euro;
+        </span>
+        <span class="comercio-merchant-payments__summary-label">{{ 'Pagos Recibidos'|t }}</span>
+      </div>
+
+      <div class="comercio-merchant-payments__summary-card comercio-merchant-payments__summary-card--info">
+        <span class="comercio-merchant-payments__summary-value">
+          {{ summary.pending_amount|default(0)|number_format(2, ',', '.') }} &euro;
+        </span>
+        <span class="comercio-merchant-payments__summary-label">{{ 'Pendiente'|t }}</span>
+      </div>
+
+    </div>
+  </section>
+
+  {# === Tabla de pagos recientes === #}
+  <section class="comercio-merchant-payments__payouts container" aria-label="{{ 'Pagos recientes'|t }}">
+    <h2 class="comercio-section-title">{{ 'Pagos Recientes'|t }}</h2>
+
+    {% if recent_payouts is not empty %}
+      <div class="comercio-table-responsive">
+        <table class="comercio-table">
+          <thead>
+            <tr>
+              <th>{{ 'Pedido'|t }}</th>
+              <th>{{ 'Importe'|t }}</th>
+              <th>{{ 'Comision'|t }}</th>
+              <th>{{ 'Neto'|t }}</th>
+              <th>{{ 'Estado'|t }}</th>
+              <th>{{ 'Fecha'|t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for payout in recent_payouts %}
+              {% set payout_status_labels = {
+                'pending': 'Pendiente'|t,
+                'processing': 'Procesando'|t,
+                'paid': 'Pagado'|t,
+                'failed': 'Fallido'|t,
+              } %}
+              <tr class="comercio-merchant-payments__row">
+                <td class="comercio-merchant-payments__cell">
+                  {{ payout.order_number|default('—') }}
+                </td>
+                <td class="comercio-merchant-payments__cell">
+                  {{ payout.amount|default(0)|number_format(2, ',', '.') }} EUR
+                </td>
+                <td class="comercio-merchant-payments__cell">
+                  {{ payout.commission|default(0)|number_format(2, ',', '.') }} EUR
+                </td>
+                <td class="comercio-merchant-payments__cell">
+                  <strong>{{ payout.net|default(0)|number_format(2, ',', '.') }} EUR</strong>
+                </td>
+                <td class="comercio-merchant-payments__cell">
+                  <span class="comercio-badge comercio-badge--payout-{{ payout.status }}">
+                    {{ payout_status_labels[payout.status] ?? payout.status }}
+                  </span>
+                </td>
+                <td class="comercio-merchant-payments__cell">
+                  {{ payout.created|date('d/m/Y') }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="comercio-merchant-payments__empty">
+        <p>{{ 'Aun no tienes pagos registrados. Los pagos apareceran aqui cuando se procesen tus ventas.'|t }}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  {# === Grafico de ingresos mensuales === #}
+  <section class="comercio-merchant-payments__chart container" aria-label="{{ 'Ingresos mensuales'|t }}">
+    <h2 class="comercio-section-title">{{ 'Ingresos Mensuales'|t }}</h2>
+    <div class="comercio-merchant-payments__chart-wrapper"
+         data-chart="monthly-revenue"
+         data-chart-data="{{ monthly_revenue|json_encode }}">
+      <div class="comercio-merchant-payments__chart-placeholder">
+        <p>{{ 'Grafico de ingresos mensuales'|t }}</p>
+        {% if monthly_revenue is not empty %}
+          <div class="comercio-merchant-payments__chart-bars">
+            {% for month in monthly_revenue %}
+              <div class="comercio-merchant-payments__chart-bar-group">
+                <span class="comercio-merchant-payments__chart-bar-label">{{ month.label|default('') }}</span>
+                <span class="comercio-merchant-payments__chart-bar-value">
+                  {{ month.revenue|default(0)|number_format(2, ',', '.') }} &euro;
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="comercio-merchant-payments__chart-empty">{{ 'Sin datos suficientes para mostrar el grafico.'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+</div>

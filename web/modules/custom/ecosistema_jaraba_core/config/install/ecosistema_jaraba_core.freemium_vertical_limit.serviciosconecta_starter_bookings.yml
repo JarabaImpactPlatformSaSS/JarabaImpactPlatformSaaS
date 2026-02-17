@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_bookings
+label: 'ServiciosConecta Starter: Reservas'
+vertical: serviciosconecta
+plan: starter
+feature_key: bookings_per_month
+limit_value: 50
+description: 'Maximo 50 reservas al mes en plan Starter ServiciosConecta.'
+upgrade_message: 'Has alcanzado el limite de 50 reservas mensuales. Actualiza a Profesional para reservas ilimitadas.'
+expected_conversion: 0.30
+weight: 203
+status: true

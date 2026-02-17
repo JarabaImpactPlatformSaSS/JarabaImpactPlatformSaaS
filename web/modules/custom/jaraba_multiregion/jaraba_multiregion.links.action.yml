@@ -1,0 +1,17 @@
+jaraba_multiregion.region_add:
+  title: 'Crear region'
+  route_name: entity.tenant_region.add_form
+  appears_on:
+    - entity.tenant_region.collection
+
+jaraba_multiregion.tax_rule_add:
+  title: 'Crear regla fiscal'
+  route_name: entity.tax_rule.add_form
+  appears_on:
+    - entity.tax_rule.collection
+
+jaraba_multiregion.currency_rate_add:
+  title: 'Crear tipo de cambio'
+  route_name: entity.currency_rate.add_form
+  appears_on:
+    - entity.currency_rate.collection

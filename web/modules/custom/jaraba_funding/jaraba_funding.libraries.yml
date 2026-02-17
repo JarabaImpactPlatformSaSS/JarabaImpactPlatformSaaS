@@ -1,7 +1,4 @@
-# Librerias del modulo Funding Intelligence
-
-# Dashboard principal de subvenciones
-funding-dashboard:
+funding.main:
   version: VERSION
   css:
     theme:
@@ -12,22 +9,4 @@ funding-dashboard:
     - core/drupal
     - core/drupalSettings
     - core/once
-
-# Calendario de plazos
-funding-calendar:
-  version: VERSION
-  js:
-    js/funding-calendar.js: {}
-  dependencies:
-    - jaraba_funding/funding-dashboard
-
-# Copilot de subvenciones
-funding-copilot:
-  version: VERSION
-  js:
-    js/funding-copilot.js: {}
-  dependencies:
-    - core/drupal
-    - core/drupalSettings
-    - core/once
-    - jaraba_funding/funding-dashboard
+    - core/drupal.dialog.ajax

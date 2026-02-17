@@ -1,0 +1,164 @@
+# ============================================
+# CONFIGURACION DE ENTIDADES — Listados Admin
+# ============================================
+
+jaraba_multiregion.tenant_region.settings:
+  path: '/admin/structure/tenant-regions'
+  defaults:
+    _entity_list: 'tenant_region'
+    _title: 'Regiones por Tenant'
+  requirements:
+    _permission: 'administer multiregion'
+
+jaraba_multiregion.tax_rule.settings:
+  path: '/admin/structure/tax-rules'
+  defaults:
+    _entity_list: 'tax_rule'
+    _title: 'Reglas Fiscales'
+  requirements:
+    _permission: 'administer multiregion'
+
+jaraba_multiregion.currency_rate.settings:
+  path: '/admin/structure/currency-rates'
+  defaults:
+    _entity_list: 'currency_rate'
+    _title: 'Tipos de Cambio'
+  requirements:
+    _permission: 'administer multiregion'
+
+# ============================================
+# ADMIN — Configuracion General
+# ============================================
+
+jaraba_multiregion.settings:
+  path: '/admin/config/jaraba/regions'
+  defaults:
+    _form: '\Drupal\jaraba_multiregion\Form\RegionSettingsForm'
+    _title: 'Configuracion Multi-Region'
+  requirements:
+    _permission: 'administer multiregion'
+
+# ============================================
+# API REST — Regiones
+# ============================================
+
+jaraba_multiregion.api.region.show:
+  path: '/api/v1/regions/current'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::showCurrentRegion'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+jaraba_multiregion.api.region.update:
+  path: '/api/v1/regions/current'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::updateCurrentRegion'
+  requirements:
+    _permission: 'manage regions'
+  methods: [PATCH]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+# ============================================
+# API REST — Calculo de IVA / Tax Rules
+# ============================================
+
+jaraba_multiregion.api.tax.calculate:
+  path: '/api/v1/tax/calculate'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::calculateTax'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+jaraba_multiregion.api.tax.rules:
+  path: '/api/v1/tax/rules'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::listTaxRules'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+jaraba_multiregion.api.tax.store:
+  path: '/api/v1/tax/rules'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::storeTaxRule'
+  requirements:
+    _permission: 'manage tax rules'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+# ============================================
+# API REST — Validacion VIES
+# ============================================
+
+jaraba_multiregion.api.vies.validate:
+  path: '/api/v1/vies/validate'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::validateVies'
+  requirements:
+    _permission: 'manage regions'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+jaraba_multiregion.api.vies.history:
+  path: '/api/v1/vies/history'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::viesHistory'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+# ============================================
+# API REST — Conversion de Moneda
+# ============================================
+
+jaraba_multiregion.api.currency.convert:
+  path: '/api/v1/currency/convert'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::convertCurrency'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [POST]
+  options:
+    _auth: ['basic_auth', 'cookie']
+
+jaraba_multiregion.api.currency.rates:
+  path: '/api/v1/currency/rates'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::listCurrencyRates'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE
+
+# ============================================
+# API REST — Compliance Regional
+# ============================================
+
+jaraba_multiregion.api.compliance.check:
+  path: '/api/v1/regions/compliance'
+  defaults:
+    _controller: '\Drupal\jaraba_multiregion\Controller\MultiRegionApiController::checkCompliance'
+  requirements:
+    _permission: 'access multiregion api'
+  methods: [GET]
+  options:
+    _auth: ['basic_auth', 'cookie']
+    no_cache: TRUE

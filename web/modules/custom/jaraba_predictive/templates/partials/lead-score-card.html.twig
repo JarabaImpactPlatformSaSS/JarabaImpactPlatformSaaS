@@ -1,0 +1,84 @@
+{#
+ # Tarjeta de puntuacion de lead.
+ #
+ # Variables:
+ #   - score: objeto LeadScore con campos:
+ #       qualification, total_score, engagement_score, activation_score,
+ #       intent_score, model_version, organization_name, id
+ #}
+{% set qualification = score.qualification|default('cold') %}
+{% set total = score.total_score|default(0) %}
+{% set engagement = score.engagement_score|default(0) %}
+{% set activation = score.activation_score|default(0) %}
+{% set intent = score.intent_score|default(0) %}
+
+<article class="prediction-card prediction-card--lead prediction-card--{{ qualification }}">
+  <div class="prediction-card__header">
+    <span class="prediction-card__badge prediction-card__badge--{{ qualification }}">
+      {% if qualification == 'sales_ready' %}
+        {{ 'Sales Ready'|t }}
+      {% else %}
+        {{ qualification|capitalize|t }}
+      {% endif %}
+    </span>
+    <div class="prediction-card__score">
+      <span class="prediction-card__score-value">{{ total }}</span>
+      <span class="prediction-card__score-unit">pts</span>
+    </div>
+  </div>
+
+  <div class="prediction-card__body">
+    <h3 class="prediction-card__name">{{ score.organization_name|default('') }}</h3>
+
+    {# Score breakdown bars #}
+    <div class="prediction-card__breakdown">
+      <div class="prediction-card__breakdown-row">
+        <span class="prediction-card__breakdown-label">{{ 'Engagement'|t }}</span>
+        <div class="prediction-card__meter-track">
+          <div class="prediction-card__meter-fill prediction-card__meter-fill--engagement"
+               style="width: {{ engagement }}%;"
+               data-score="{{ engagement }}"></div>
+        </div>
+        <span class="prediction-card__breakdown-value">{{ engagement }}</span>
+      </div>
+      <div class="prediction-card__breakdown-row">
+        <span class="prediction-card__breakdown-label">{{ 'Activacion'|t }}</span>
+        <div class="prediction-card__meter-track">
+          <div class="prediction-card__meter-fill prediction-card__meter-fill--activation"
+               style="width: {{ activation }}%;"
+               data-score="{{ activation }}"></div>
+        </div>
+        <span class="prediction-card__breakdown-value">{{ activation }}</span>
+      </div>
+      <div class="prediction-card__breakdown-row">
+        <span class="prediction-card__breakdown-label">{{ 'Intent'|t }}</span>
+        <div class="prediction-card__meter-track">
+          <div class="prediction-card__meter-fill prediction-card__meter-fill--intent"
+               style="width: {{ intent }}%;"
+               data-score="{{ intent }}"></div>
+        </div>
+        <span class="prediction-card__breakdown-value">{{ intent }}</span>
+      </div>
+    </div>
+
+    {# Model version #}
+    {% if score.model_version %}
+      <div class="prediction-card__meta">
+        <span class="prediction-card__meta-label">{{ 'Modelo'|t }}</span>
+        <span class="prediction-card__meta-value prediction-card__meta-value--mono">v{{ score.model_version }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="prediction-card__footer">
+    <a href="{{ path('jaraba_predictive.lead_score.view', {'lead_score': score.id|default(0)}) }}"
+       class="prediction-card__action prediction-card__action--view">
+      {{ 'Ver Detalles'|t }}
+    </a>
+    <button class="prediction-card__action prediction-card__action--convert"
+            data-score-id="{{ score.id|default(0) }}"
+            data-action="convert-lead">
+      {{ 'Convertir Lead'|t }}
+    </button>
+  </div>
+</article>

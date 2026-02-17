@@ -1,1 +1,17 @@
-# Enlaces de accion del modulo Funding Intelligence
+jaraba_funding.opportunity_add:
+  title: 'Crear convocatoria'
+  route_name: entity.funding_opportunity.add_form
+  appears_on:
+    - entity.funding_opportunity.collection
+
+jaraba_funding.application_add:
+  title: 'Crear solicitud'
+  route_name: entity.funding_application.add_form
+  appears_on:
+    - entity.funding_application.collection
+
+jaraba_funding.report_add:
+  title: 'Crear memoria tecnica'
+  route_name: entity.technical_report.add_form
+  appears_on:
+    - entity.technical_report.collection

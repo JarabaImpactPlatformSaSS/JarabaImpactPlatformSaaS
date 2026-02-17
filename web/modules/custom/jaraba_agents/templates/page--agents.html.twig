@@ -1,0 +1,63 @@
+{#
+ # Template zero-region para el dashboard de Agentes Autonomos.
+ #
+ # Variables:
+ #   - agents: array de agentes configurados
+ #   - executions: array de ejecuciones recientes
+ #   - approvals: array de aprobaciones pendientes
+ #   - stats: estadisticas del dashboard
+ #   - copilot_context: contexto para el copilot (nullable)
+ #}
+{{ attach_library('jaraba_agents/agents.main') }}
+
+<div class="agents-dashboard" data-module="jaraba-agents">
+  <header class="agents-dashboard__header">
+    <h1 class="agents-dashboard__title">{{ 'Agentes Autonomos'|t }}</h1>
+    <p class="agents-dashboard__subtitle">{{ 'Orquestacion IA — Agentes, ejecuciones y aprobaciones'|t }}</p>
+  </header>
+
+  {# Stats cards #}
+  <section class="agents-dashboard__stats">
+    <div class="agents-stat-card agents-stat-card--total">
+      <span class="agents-stat-card__value">{{ stats.total_agents|default(0) }}</span>
+      <span class="agents-stat-card__label">{{ 'Agentes'|t }}</span>
+    </div>
+    <div class="agents-stat-card agents-stat-card--active">
+      <span class="agents-stat-card__value">{{ stats.active_agents|default(0) }}</span>
+      <span class="agents-stat-card__label">{{ 'Activos'|t }}</span>
+    </div>
+    <div class="agents-stat-card agents-stat-card--executions">
+      <span class="agents-stat-card__value">{{ stats.total_executions_today|default(0) }}</span>
+      <span class="agents-stat-card__label">{{ 'Ejecuciones hoy'|t }}</span>
+    </div>
+    <div class="agents-stat-card agents-stat-card--approvals">
+      <span class="agents-stat-card__value">{{ stats.pending_approvals|default(0) }}</span>
+      <span class="agents-stat-card__label">{{ 'Aprobaciones pendientes'|t }}</span>
+    </div>
+  </section>
+
+  {# Agents grid #}
+  <section class="agents-dashboard__agents">
+    <h2 class="agents-dashboard__section-title">{{ 'Agentes configurados'|t }}</h2>
+    <div class="agents-grid">
+      {% for agent in agents %}
+        {% include '@jaraba_agents/partials/agent-card.html.twig' with {'agent': agent} only %}
+      {% endfor %}
+      {% if agents is empty %}
+        <p class="agents-dashboard__empty">{{ 'No hay agentes configurados.'|t }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  {# Pending approvals #}
+  {% if approvals is not empty %}
+  <section class="agents-dashboard__approvals">
+    <h2 class="agents-dashboard__section-title">{{ 'Aprobaciones pendientes'|t }}</h2>
+    <div class="approvals-grid">
+      {% for approval in approvals %}
+        {% include '@jaraba_agents/partials/approval-card.html.twig' with {'approval': approval} only %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>

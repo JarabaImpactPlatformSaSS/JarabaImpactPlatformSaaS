@@ -15,6 +15,10 @@ fields_schema:
       type: string
       title: 'Subtitulo'
       maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 50
     description:
       type: string
       title: 'Descripcion'
@@ -22,6 +26,10 @@ fields_schema:
     image:
       type: string
       title: 'Imagen'
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
       format: image
     cta_text:
       type: string
@@ -31,17 +39,38 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
+    faqs:
+      type: array
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            maxLength: 200
+          answer:
+            type: string
+            maxLength: 1000
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-faq.png'
 weight: 20
 preview_data:
-  title: 'Envio y Devoluciones'
-  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
-  description: 'Descripcion de ejemplo para la seccion preguntas frecuentes.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  title: 'Preguntas frecuentes'
+  subtitle: 'Resolvemos tus dudas sobre envios, devoluciones y mas.'
+  eyebrow: 'FAQ'
+  cta_text: 'Contactar soporte'
+  cta_url: '/comercio/soporte'

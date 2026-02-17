@@ -59,6 +59,9 @@ class AvatarDetectionService {
     '/talento' => ['recruiter', 'empleabilidad'],
     '/emprendimiento' => ['entrepreneur', 'emprendimiento'],
     '/comercio' => ['producer', 'comercio'],
+    '/servicios' => ['profesional', 'serviciosconecta'],
+    '/serviciosconecta' => ['profesional', 'serviciosconecta'],
+    '/mi-servicio' => ['profesional', 'serviciosconecta'],
   ];
 
   /**
@@ -90,6 +93,8 @@ class AvatarDetectionService {
     'comercio' => 'producer',
     'mentor' => 'mentor',
     'institution' => 'institution',
+    'profesional' => 'profesional',
+    'cliente_servicios' => 'cliente_servicios',
   ];
 
   /**
@@ -102,6 +107,8 @@ class AvatarDetectionService {
     'producer' => 'comercio',
     'mentor' => 'empleabilidad',
     'institution' => 'instituciones',
+    'profesional' => 'serviciosconecta',
+    'cliente_servicios' => 'serviciosconecta',
   ];
 
   /**

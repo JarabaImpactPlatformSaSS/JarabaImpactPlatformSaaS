@@ -1,9 +1,8 @@
-// Funding Intelligence — Design Tokens
-// Uses CSS Custom Properties with fallbacks from the Ecosistema Jaraba design system.
-// @see docs/arquitectura/design-system-tokens.md
+// Jaraba Funding — Variables locales y mixins.
+// NUNCA definir $ej-* variables aqui — Federated Design Tokens.
+// Solo definimos variables de layout locales y breakpoints.
 
-// No SCSS variables for colors — all via var(--ej-*)
-// Spacing
+// Spacing local (no overrideable via UI — puramente estructural)
 $funding-spacing-xs: 0.25rem;
 $funding-spacing-sm: 0.5rem;
 $funding-spacing-md: 1rem;
@@ -16,6 +15,7 @@ $funding-bp-tablet: 768px;
 $funding-bp-desktop: 1024px;
 $funding-bp-wide: 1280px;
 
+// Mixin responsive mobile-first
 @mixin respond-to($breakpoint) {
   @if $breakpoint == 'tablet' {
     @media (min-width: $funding-bp-tablet) { @content; }

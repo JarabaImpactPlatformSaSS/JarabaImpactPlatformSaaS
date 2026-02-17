@@ -196,3 +196,235 @@ jaraba_comercio_conecta.api.merchants.nearby:
   methods: [GET]
   requirements:
     _permission: 'access content'
+
+# --- Settings Routes F6: Orders, Returns, Coupons ---
+
+jaraba_comercio_conecta.order_retail.settings:
+  path: '/admin/structure/comercio-orders'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\OrderRetailSettingsForm'
+    _title: 'Configuracion Pedidos Comercio'
+  requirements:
+    _permission: 'manage comercio orders'
+
+jaraba_comercio_conecta.return_request.settings:
+  path: '/admin/structure/comercio-returns'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\ReturnRequestSettingsForm'
+    _title: 'Configuracion Devoluciones Comercio'
+  requirements:
+    _permission: 'manage comercio returns'
+
+jaraba_comercio_conecta.coupon_retail.settings:
+  path: '/admin/structure/comercio-coupons'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\CouponRetailSettingsForm'
+    _title: 'Configuracion Cupones Comercio'
+  requirements:
+    _permission: 'manage comercio coupons'
+
+# --- Rutas Frontend F6: Checkout ---
+
+jaraba_comercio_conecta.checkout:
+  path: '/comercio-local/checkout'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CheckoutController::checkoutPage'
+    _title: 'Finalizar Compra'
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.checkout.process:
+  path: '/comercio-local/checkout/payment'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CheckoutController::processPayment'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.checkout.confirmation:
+  path: '/comercio-local/checkout/confirmacion/{order_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CheckoutController::confirmationPage'
+    _title: 'Pedido Confirmado'
+  requirements:
+    _permission: 'access content'
+    order_id: '\d+'
+
+jaraba_comercio_conecta.webhook.stripe:
+  path: '/api/v1/comercio/webhook/stripe'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CheckoutController::webhookStripe'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# --- Rutas Frontend F6: Pedidos del cliente ---
+
+jaraba_comercio_conecta.my_orders:
+  path: '/mis-pedidos'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\OrderController::myOrders'
+    _title: 'Mis Pedidos'
+  requirements:
+    _permission: 'view own comercio orders'
+
+jaraba_comercio_conecta.my_orders.detail:
+  path: '/mis-pedidos/{order_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\OrderController::orderDetail'
+    _title: 'Detalle del Pedido'
+  requirements:
+    _permission: 'view own comercio orders'
+    order_id: '\d+'
+
+# --- API REST F6: Orders ---
+
+jaraba_comercio_conecta.api.orders:
+  path: '/api/v1/comercio/orders'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\OrderController::apiListOrders'
+  methods: [GET]
+  requirements:
+    _permission: 'view own comercio orders'
+
+jaraba_comercio_conecta.api.orders.detail:
+  path: '/api/v1/comercio/orders/{order_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\OrderController::apiGetOrder'
+  methods: [GET]
+  requirements:
+    _permission: 'view own comercio orders'
+    order_id: '\d+'
+
+jaraba_comercio_conecta.api.orders.status:
+  path: '/api/v1/comercio/orders/{order_id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\OrderController::apiUpdateStatus'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage merchant orders'
+    order_id: '\d+'
+
+# --- API REST F6: Cart ---
+
+jaraba_comercio_conecta.api.cart:
+  path: '/api/v1/comercio/cart'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CartApiController::getCart'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.api.cart.add:
+  path: '/api/v1/comercio/cart/add'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CartApiController::addItem'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.api.cart.remove:
+  path: '/api/v1/comercio/cart/remove/{item_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CartApiController::removeItem'
+  methods: [DELETE]
+  requirements:
+    _permission: 'access content'
+    item_id: '\d+'
+
+jaraba_comercio_conecta.api.cart.update:
+  path: '/api/v1/comercio/cart/update/{item_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CartApiController::updateQuantity'
+  methods: [PATCH]
+  requirements:
+    _permission: 'access content'
+    item_id: '\d+'
+
+jaraba_comercio_conecta.api.cart.coupon:
+  path: '/api/v1/comercio/cart/coupon'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CartApiController::applyCoupon'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+
+# --- Settings Route F7: Customer Profile ---
+
+jaraba_comercio_conecta.customer_profile_retail.settings:
+  path: '/admin/structure/comercio-customer-profiles'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\CustomerProfileSettingsForm'
+    _title: 'Configuracion Perfiles Consumidor'
+  requirements:
+    _permission: 'administer customer profiles'
+
+# --- Rutas Frontend F7: Customer Portal ---
+
+jaraba_comercio_conecta.customer_portal:
+  path: '/mi-cuenta'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CustomerPortalController::dashboard'
+    _title: 'Mi Cuenta'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_comercio_conecta.customer_portal.wishlist:
+  path: '/mi-cuenta/wishlist'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CustomerPortalController::wishlist'
+    _title: 'Mi Lista de Deseos'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_comercio_conecta.customer_portal.profile:
+  path: '/mi-cuenta/perfil'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CustomerPortalController::profile'
+    _title: 'Mi Perfil'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# --- Rutas Frontend F7: Merchant Portal (ampliacion) ---
+
+jaraba_comercio_conecta.merchant_portal.orders:
+  path: '/mi-comercio/pedidos'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::merchantOrders'
+    _title: 'Pedidos Recibidos'
+  requirements:
+    _permission: 'manage merchant orders'
+
+jaraba_comercio_conecta.merchant_portal.payments:
+  path: '/mi-comercio/pagos'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::merchantPayments'
+    _title: 'Pagos y Comisiones'
+  requirements:
+    _permission: 'edit own merchant profile'
+
+jaraba_comercio_conecta.merchant_portal.settings:
+  path: '/mi-comercio/configuracion'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\MerchantPortalController::merchantSettings'
+    _title: 'Configuracion del Comercio'
+  requirements:
+    _permission: 'edit own merchant profile'
+
+# --- API REST F7: Wishlist ---
+
+jaraba_comercio_conecta.api.wishlist.add:
+  path: '/api/v1/comercio/wishlist/add'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CustomerPortalController::apiAddToWishlist'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_comercio_conecta.api.wishlist.remove:
+  path: '/api/v1/comercio/wishlist/remove'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CustomerPortalController::apiRemoveFromWishlist'
+  methods: [DELETE]
+  requirements:
+    _user_is_logged_in: 'TRUE'

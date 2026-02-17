@@ -4,7 +4,19 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-17
-**Versión:** 58.0.0 (Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium)
+**Versión:** 59.0.0 (JarabaLex Legal Practice Platform Completa — FASE A2-C3 + Diagnostico + CopilotAgent + 15 tests)
+
+> **⚖️ JARABALEX LEGAL PRACTICE PLATFORM COMPLETA — FASE A2-C3 + DIAGNOSTICO + COPILOTAGENT + 15 TESTS** (2026-02-17)
+> - **6 modulos nuevos implementados:** `jaraba_legal_calendar` (FASE A2: DeadlineCalculator LEC 130.2, HearingService), `jaraba_legal_billing` (FASE B1: TimeTracking, LegalInvoicing, cronometro JS), `jaraba_legal_vault` (FASE B2: VaultStorage hash chain SHA-256, AuditLog append-only), `jaraba_legal_lexnet` (FASE B3: LexnetSync, API LexNET), `jaraba_legal_templates` (FASE C1: TemplateManager merge fields, GrapesJS 11 bloques legales), integracion expedientes-intelligence (FASE A3)
+> - **Diagnostico Lead Magnet:** LegalLandingController con analisis basado en reglas para 6 areas legales (civil, penal, laboral, mercantil, administrativo, familia), legal-diagnostico.html.twig + JS fetch API + SCSS BEM
+> - **JarabaLexCopilotAgent:** 6 modos especializados (legal_search, legal_analysis, legal_alerts, case_assistant, document_drafter, legal_advisor), deteccion por keywords, temperaturas individuales, LEGAL-RAG-001, soft upsell
+> - **4 dashboard templates Twig:** legal-cases-dashboard, legal-case-detail, legal-calendar-dashboard, legal-vault-dashboard
+> - **4 SCSS compilados:** jaraba_legal_billing (6732B), jaraba_legal_lexnet (3368B), jaraba_legal_templates (5601B), jaraba_legal_vault (3282B)
+> - **15 test files PHPUnit nuevos:** 5 Unit ecosistema_jaraba_core (FeatureGate, JourneyProgression, HealthScore, EmailSequence, CrossVerticalBridge) + 4 agent/journey/functional/kernel + 6 modulos satelite (CaseManager, DeadlineCalculator, TimeTracking, VaultAuditLog, LexnetSync, TemplateManager). 53 PHP lint OK
+> - **3 funnel definitions:** jarabalex_acquisition, jarabalex_activation, jarabalex_monetization
+> - **Avatar nav:** jarabalex anadido a navegacion anonima
+> - **73 modulos custom** (69 + 4 nuevos: billing, lexnet, templates, vault)
+> - **Directrices v43.0.0, Arquitectura v43.0.0, Indice v59.0.0**
 
 > **🌱 PLAN ELEVACION AGROCONECTA CLASE MUNDIAL v1 — 14 FASES + 11 PB PREMIUM** (2026-02-17)
 > - **14 fases implementadas:** FeatureGate (CUMULATIVE/MONTHLY/BINARY) + 12 FreemiumVerticalLimit + 8 UpgradeTrigger types + CopilotBridge + body classes + page--agroconecta.html.twig zero-region + SCSS compliance (95 rgba→color-mix en 16 ficheros) + design token nature_green + 6 MJML emails (SEQ_AGRO_001-006) + CrossVerticalBridge (4 bridges) + JourneyProgression (10 reglas: 8 productor + 2 consumidor) + HealthScore (5 dimensiones + 8 KPIs) + Experiment (4 A/B tests) + Avatar nav (buyer+producer) + 4 FunnelDefinitions + QA integral (52 ficheros, 0 errores)
@@ -1233,16 +1245,16 @@
 | **Documentos de planificación** | 15 |
 | **Documentos de arquitectura** | 27 (26 base + scaling-horizontal-guide) |
 | **Documentos de lógica** | 5 |
-| **Aprendizajes documentados** | 87 |
+| **Aprendizajes documentados** | 92 |
 | **URLs frontend verificadas** | 17 (100% diseño premium) |
 | **Servicios IA implementados** | 7 (QueryLogger, ContentGrounding, CopilotContext, parseMarkdown + F11: BrandVoiceTrainer, PromptExperiment, MultiModalBridge) |
 | **Iconos SVG creados** | 12+ con versiones duotone |
 | **Landing pages verticales** | 6 (empleo, talento, emprender, comercio, instituciones, jarabalex) |
 | **Plantillas disponibles** | 4 |
-| **Módulos custom** | 69 (incluye 3 fiscal: verifactu/facturae/einvoice_b2b + 3 compliance legal: privacy/legal/dr + legal_intelligence) |
+| **Módulos custom** | 73 (incluye 3 fiscal: verifactu/facturae/einvoice_b2b + 3 compliance legal: privacy/legal/dr + 7 JarabaLex: legal_intelligence/cases/calendar/billing/vault/lexnet/templates) |
 | **Módulos con package.json** | 30 (compilación Dart Sass estandarizada) |
 | **Unit test files Marketing AI** | 50 (100% cobertura servicios across 8 módulos) |
-| **Page templates Twig** | 41 (theme: front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, empleabilidad, emprendimiento, andalucia-ei, fiscal, legal, privacy, dr-status, legal-compliance, admin-center, auth, user, comercio-marketplace, heatmap-analytics, canvas-editor, page-builder, site-builder, integrations, customer-success, credentials, interactive, skills, i18n, verify, revisions, mi-cuenta, ayuda, my-certifications + 10 módulos) |
+| **Page templates Twig** | 42 (theme: front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, empleabilidad, emprendimiento, andalucia-ei, fiscal, legal, legal-cases, legal-case-detail, jarabalex, privacy, dr-status, legal-compliance, admin-center, auth, user, comercio-marketplace, heatmap-analytics, canvas-editor, page-builder, site-builder, integrations, customer-success, credentials, interactive, skills, i18n, verify, revisions, mi-cuenta, ayuda, my-certifications + 10 módulos) |
 | **Bloques Page Builder** | 67 (45 base + 22 premium) |
 | **Docs Page Builder** | 20 (160-179) |
 | **Compliance controles** | 25+ (SOC 2, ISO 27001, ENS, GDPR) + GDPR Drush commands |
@@ -1295,6 +1307,7 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-17 | **59.0.0** | ⚖️ **JarabaLex Legal Practice Platform Completa — FASE A2-C3 + Diagnostico + CopilotAgent + 15 tests:** 6 modulos nuevos JarabaLex (calendar, billing, vault, lexnet, templates, integracion). Diagnostico Lead Magnet (LegalLandingController 6 areas). JarabaLexCopilotAgent 6 modos. 4 dashboard Twig + 4 SCSS compilados. 15 test files (53 PHP lint OK). 3 funnel definitions. Avatar nav anonimo. 73 modulos custom. Aprendizaje #92. Directrices v43.0.0, Arquitectura v43.0.0 |
 | 2026-02-17 | **58.0.0** | 🌱 **Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium:** AgroConecta elevado a Clase Mundial (5o vertical). 14 fases: FeatureGate (CUMULATIVE/MONTHLY/BINARY) + 12 FreemiumVerticalLimit + 8 UpgradeTrigger types + CopilotBridge + body classes + zero-region + 95 rgba→color-mix (16 SCSS) + design token nature_green + 6 MJML (SEQ_AGRO_001-006) + CrossVertical (4 bridges) + Journey (10 reglas) + Health (5 dim + 8 KPIs) + Experiment (4 A/B) + Avatar (buyer+producer) + 4 Funnels + QA (52 ficheros 0 errores). 11 PB premium: jaraba_icon, data-effect, schema.org (FAQ JSON-LD, LocalBusiness, AggregateRating), lightbox, counters, pricing toggle, countdown timer. 7 servicios nuevos. 18 agentes paralelos. 6 reglas nuevas (PARALLEL-ELEV-001, SCSS-COLORMIX-001, PB-PREMIUM-001, FEATUREGATE-TYPES-001, QA-PARALLEL-001, PB-BATCH-001). Directrices v42.0.0, Arquitectura v42.0.0. 91 aprendizajes |
 | 2026-02-16 | **57.0.0** | ⚖️ **FASE A1 jaraba_legal_cases — Legal Practice Platform:** Modulo pivote JarabaLex implementado. 4 Content Entities (ClientCase 22 campos auto EXP-YYYY-NNNN, CaseActivity append-only 11 campos, ClientInquiry 17 campos auto CON-YYYY-NNNN, InquiryTriage 13 campos). 4 Services + 3 Controllers + 11 API REST endpoints. 2 zero-region templates + 3 Twig partials + 6 SCSS BEM + 4 SVG icons + JS behavior. 47 ficheros, 22 PHP lint OK, drush en exitoso. Taxonomia legal_area (12 terminos). Theme modificado (prefijo + 2 suggestions). 6 reglas nuevas (ENTITY-AUTONUMBER-001, ENTITY-APPEND-001, THEME-SUGGEST-001, SCSS-BUILD-001, INSTALL-TAXONOMY-001, ENTITY-FK-001). Directrices v41.0.0, Arquitectura v41.0.0. 90 aprendizajes |
 | 2026-02-16 | **56.0.0** | ⚖️ **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** 14 fases implementadas para elevar jaraba_legal_intelligence a vertical clase mundial. FeatureGateService + UpgradeTriggers + LegalCopilotBridge + preprocess_html body classes + page template zero-region + SCSS compliance + design tokens + 6 MJML emails (SEQ_LEX_001-006) + cross-vertical bridges + journey progression (7 reglas proactivas) + health score (5 dimensiones + 8 KPIs) + experiments (8 eventos conversion) + avatar navigation (4 items legal_professional) + 3 funnel definitions + QA integral. LegalCopilotAgent 6 modos con AgentInterface completo. 3 reglas nuevas (LEGAL-RAG-001, LEGAL-GATE-001, LEGAL-BODY-001). Directrices v40.0.0, Arquitectura v40.0.0. 89 aprendizajes |

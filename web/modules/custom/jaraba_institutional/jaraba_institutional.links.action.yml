@@ -1,0 +1,22 @@
+# ============================================================================
+# Enlaces de accion del modulo jaraba_institutional
+# Estructura: Acciones para crear/inscribir/generar entidades
+# ============================================================================
+
+jaraba_institutional.program_add:
+  title: 'Crear programa'
+  route_name: entity.institutional_program.add_form
+  appears_on:
+    - entity.institutional_program.collection
+
+jaraba_institutional.participant_add:
+  title: 'Inscribir participante'
+  route_name: entity.program_participant.add_form
+  appears_on:
+    - entity.program_participant.collection
+
+jaraba_institutional.ficha_add:
+  title: 'Generar ficha STO'
+  route_name: entity.sto_ficha.add_form
+  appears_on:
+    - entity.sto_ficha.collection

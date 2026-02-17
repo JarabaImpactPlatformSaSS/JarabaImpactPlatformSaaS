@@ -4,38 +4,52 @@
  # Type: map
  #
  # Grid 2 cols: mapa embed + info de contacto lateral
+ # Premium: animations, jaraba_icon system, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--map pb-section--comercioconecta"
-         aria-label="{{ title|default('Encuéntranos')|t }}">
+<section class="pb-section pb-section--map pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Encuentranos')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
-    <div class="pb-section__map-embed">
+    <div class="pb-section__map-embed" data-parallax="0.3">
       {% if map_embed|default('') %}
         {{ map_embed|raw }}
       {% else %}
-        <span>{{ 'Mapa de ubicación — inserta tu código de mapa aquí'|t }}</span>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+          <span>{{ 'Mapa de ubicacion — inserta tu codigo de mapa aqui'|t }}</span>
+        </div>
       {% endif %}
     </div>
     <div class="pb-section__contact-info">
-      <h2 class="pb-section__title">{{ title|default('Visítanos')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Estamos aquí para atenderte.')|t }}</p>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Ubicacion')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Visitanos')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Estamos aqui para atenderte.')|t }}</p>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#128205;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+        </div>
         <div>
-          <div class="pb-section__contact-label">{{ 'Dirección'|t }}</div>
+          <div class="pb-section__contact-label">{{ 'Direccion'|t }}</div>
           <div class="pb-section__contact-value">{{ address|default('Calle Principal 123, Tu Ciudad')|t }}</div>
         </div>
       </div>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#128222;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+        </div>
         <div>
-          <div class="pb-section__contact-label">{{ 'Teléfono'|t }}</div>
+          <div class="pb-section__contact-label">{{ 'Telefono'|t }}</div>
           <div class="pb-section__contact-value">
             <a href="tel:{{ phone|default('+34 600 000 000') }}">{{ phone|default('+34 600 000 000') }}</a>
           </div>
         </div>
       </div>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#9993;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+        </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Email'|t }}</div>
           <div class="pb-section__contact-value">

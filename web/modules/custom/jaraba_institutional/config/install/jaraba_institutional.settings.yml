@@ -1,0 +1,8 @@
+default_program_type: sto
+sto_ficha_prefix: 'STO'
+sto_ficha_year_format: 'Y'
+fundae_entity_code: ''
+fse_entity_code: ''
+auto_generate_ficha_number: true
+pdf_template: 'sae_standard'
+signature_provider: 'pades'

@@ -1,0 +1,188 @@
+@use 'variables' as *;
+
+// Tax Rules — BEM
+// Estilos administrativos para tabla de reglas fiscales y badges de compliance.
+// Colores via var(--ej-*) con fallback, color-mix() para variantes.
+
+.tax-rules {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $multiregion-spacing-md;
+
+  @include respond-to(md) {
+    padding: $multiregion-spacing-lg;
+  }
+
+  // =========================================================================
+  // BLOQUE: Cabecera de seccion
+  // =========================================================================
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $multiregion-spacing-xl;
+    flex-wrap: wrap;
+    gap: $multiregion-spacing-md;
+  }
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, #233D63);
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    margin: 0;
+  }
+
+  // =========================================================================
+  // BLOQUE: Tabla de reglas fiscales
+  // =========================================================================
+
+  &__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--ej-bg-surface, #FFFFFF);
+    border: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+    border-radius: var(--ej-border-radius-lg, 14px);
+    overflow: hidden;
+  }
+
+  &__table-head {
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 4%, transparent);
+  }
+
+  &__table-th {
+    padding: $multiregion-spacing-sm $multiregion-spacing-md;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-color-text-muted, #6b7280);
+    border-bottom: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
+  }
+
+  &__table-td {
+    padding: $multiregion-spacing-sm $multiregion-spacing-md;
+    font-size: 0.875rem;
+    color: var(--ej-color-text-body, #374151);
+    border-bottom: 1px solid color-mix(in srgb, var(--ej-color-corporate, #233D63) 6%, transparent);
+  }
+
+  &__table-row {
+    transition: background 0.15s;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 2%, transparent);
+    }
+
+    &:last-child .tax-rules__table-td {
+      border-bottom: none;
+    }
+  }
+
+  // =========================================================================
+  // BLOQUE: Celda de tipos impositivos
+  // =========================================================================
+
+  &__rate {
+    font-family: var(--ej-font-mono, 'JetBrains Mono', monospace);
+    font-weight: 600;
+    font-size: 0.875rem;
+
+    &--standard {
+      color: var(--ej-color-corporate, #233D63);
+    }
+
+    &--reduced {
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--empty {
+      color: var(--ej-color-text-muted, #6b7280);
+    }
+  }
+
+  // =========================================================================
+  // BLOQUE: Badge de pertenencia UE
+  // =========================================================================
+
+  &__eu-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--member {
+      background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--non-member {
+      background: color-mix(in srgb, var(--ej-color-text-muted, #6b7280) 10%, transparent);
+      color: var(--ej-color-text-muted, #6b7280);
+    }
+  }
+
+  // =========================================================================
+  // BLOQUE: Badge de compliance / vigencia
+  // =========================================================================
+
+  &__compliance-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--active {
+      background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
+      color: var(--ej-color-success, #10B981);
+    }
+
+    &--expired {
+      background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 10%, transparent);
+      color: var(--ej-color-danger, #EF4444);
+    }
+
+    &--upcoming {
+      background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 10%, transparent);
+      color: var(--ej-color-warning, #F59E0B);
+    }
+  }
+
+  // =========================================================================
+  // BLOQUE: Codigo de pais con flag
+  // =========================================================================
+
+  &__country {
+    display: inline-flex;
+    align-items: center;
+    gap: $multiregion-spacing-xs;
+  }
+
+  &__country-code {
+    font-family: var(--ej-font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 8%, transparent);
+    color: var(--ej-color-corporate, #233D63);
+    padding: 2px 6px;
+    border-radius: $multiregion-radius-sm;
+  }
+
+  // =========================================================================
+  // BLOQUE: Estado vacio
+  // =========================================================================
+
+  &__empty {
+    text-align: center;
+    padding: $multiregion-spacing-xl;
+    color: var(--ej-color-text-muted, #6b7280);
+    font-size: 0.9375rem;
+  }
+}

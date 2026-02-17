@@ -1,0 +1,40 @@
+# -------------------------------------------------------------------
+# Estructura: Pestanas locales del modulo jaraba_predictive
+# Logica: Navegacion entre entidades y configuracion
+# -------------------------------------------------------------------
+
+jaraba_predictive.churn_tab:
+  title: 'Churn'
+  route_name: entity.churn_prediction.collection
+  base_route: entity.churn_prediction.collection
+  weight: 49
+
+jaraba_predictive.leads_tab:
+  title: 'Leads'
+  route_name: entity.lead_score.collection
+  base_route: entity.churn_prediction.collection
+  weight: 50
+
+jaraba_predictive.forecasts_tab:
+  title: 'Forecasts'
+  route_name: entity.forecast.collection
+  base_route: entity.churn_prediction.collection
+  weight: 51
+
+jaraba_predictive.churn_prediction.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_predictive.churn_prediction.settings
+  base_route: entity.churn_prediction.collection
+  weight: 100
+
+jaraba_predictive.lead_score.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_predictive.lead_score.settings
+  base_route: entity.lead_score.collection
+  weight: 100
+
+jaraba_predictive.forecast.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_predictive.forecast.settings
+  base_route: entity.forecast.collection
+  weight: 100

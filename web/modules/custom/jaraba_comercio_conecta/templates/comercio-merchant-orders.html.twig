@@ -1,0 +1,106 @@
+{#
+ # Template: Listado de pedidos recibidos por el comerciante ComercioConecta.
+ # Variables:
+ #   - merchant: Entidad MerchantProfile.
+ #   - orders: Array de pedidos con id, order_number, customer_name, total, status, payment_status, created.
+ #   - total: Total de pedidos.
+ #   - page: Pagina actual.
+ #   - total_pages: Total de paginas.
+ #}
+
+<div class="comercio-merchant-orders">
+
+  <header class="comercio-merchant-orders__header container">
+    <div class="comercio-merchant-orders__header-inner">
+      <h1 class="comercio-merchant-orders__title">{{ 'Pedidos Recibidos'|t }}</h1>
+      <span class="comercio-merchant-orders__count">
+        {{ 'Total: @count pedidos'|t({'@count': total|default(0)}) }}
+      </span>
+    </div>
+  </header>
+
+  {% if orders is empty %}
+    <div class="comercio-merchant-orders__empty container">
+      <p>{{ 'Aun no has recibido pedidos. Los pedidos apareceran aqui cuando los clientes compren tus productos.'|t }}</p>
+    </div>
+  {% else %}
+    <div class="comercio-merchant-orders__table-wrapper container">
+      <div class="comercio-table-responsive">
+        <table class="comercio-table">
+          <thead>
+            <tr>
+              <th>{{ 'Pedido'|t }}</th>
+              <th>{{ 'Cliente'|t }}</th>
+              <th>{{ 'Total'|t }}</th>
+              <th>{{ 'Estado'|t }}</th>
+              <th>{{ 'Pago'|t }}</th>
+              <th>{{ 'Fecha'|t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+              {% set status_labels = {
+                'draft': 'Borrador'|t,
+                'pending': 'Pendiente'|t,
+                'confirmed': 'Confirmado'|t,
+                'processing': 'En preparacion'|t,
+                'shipped': 'Enviado'|t,
+                'delivered': 'Entregado'|t,
+                'cancelled': 'Cancelado'|t,
+                'refunded': 'Reembolsado'|t,
+              } %}
+              {% set payment_labels = {
+                'pending': 'Pendiente'|t,
+                'paid': 'Pagado'|t,
+                'failed': 'Fallido'|t,
+                'refunded': 'Reembolsado'|t,
+              } %}
+              <tr class="comercio-merchant-orders__row">
+                <td class="comercio-merchant-orders__cell">
+                  <a href="/mi-comercio/pedidos/{{ order.id }}" class="comercio-merchant-orders__link">
+                    {{ order.order_number }}
+                  </a>
+                </td>
+                <td class="comercio-merchant-orders__cell">
+                  {{ order.customer_name|default('—') }}
+                </td>
+                <td class="comercio-merchant-orders__cell">
+                  <strong>{{ order.total|number_format(2, ',', '.') }} EUR</strong>
+                </td>
+                <td class="comercio-merchant-orders__cell">
+                  <span class="comercio-badge comercio-badge--{{ order.status }}">
+                    {{ status_labels[order.status] ?? order.status }}
+                  </span>
+                </td>
+                <td class="comercio-merchant-orders__cell">
+                  <span class="comercio-badge comercio-badge--payment-{{ order.payment_status }}">
+                    {{ payment_labels[order.payment_status] ?? order.payment_status }}
+                  </span>
+                </td>
+                <td class="comercio-merchant-orders__cell">
+                  {{ order.created|date('d/m/Y H:i') }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {# === Paginacion === #}
+    {% if total_pages > 1 %}
+      <div class="comercio-merchant-orders__pager container">
+        {% if page > 0 %}
+          <a href="?page={{ page - 1 }}" class="btn btn--secondary">{{ 'Anterior'|t }}</a>
+        {% endif %}
+        <span class="comercio-merchant-orders__pager-info">
+          {{ 'Pagina @current de @total'|t({'@current': page + 1, '@total': total_pages}) }}
+        </span>
+        {% if page < total_pages - 1 %}
+          <a href="?page={{ page + 1 }}" class="btn btn--secondary">{{ 'Siguiente'|t }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+</div>

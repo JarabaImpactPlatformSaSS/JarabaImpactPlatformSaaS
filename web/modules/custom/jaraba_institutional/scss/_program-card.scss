@@ -1,0 +1,152 @@
+// Estilos de la tarjeta de programa institucional.
+// BEM naming con modificadores por estado y tipo de programa.
+
+@use 'variables' as *;
+
+.program-card {
+  display: flex;
+  flex-direction: column;
+  padding: $institutional-spacing-lg;
+  background: $institutional-color-bg;
+  border-radius: $institutional-border-radius;
+  box-shadow: $institutional-shadow;
+  border-top: 3px solid $institutional-color-text-muted;
+  cursor: pointer;
+  transition:
+    box-shadow $institutional-transition,
+    transform $institutional-transition;
+
+  &:hover {
+    box-shadow: 0 4px 16px color-mix(in srgb, $institutional-color-primary 18%, transparent);
+    transform: translateY(-2px);
+  }
+
+  // --- Modificadores de estado ---
+
+  &--draft {
+    border-top-color: $institutional-color-text-muted;
+  }
+
+  &--active {
+    border-top-color: $institutional-color-success;
+  }
+
+  &--reporting {
+    border-top-color: $institutional-color-warning;
+  }
+
+  &--closed {
+    border-top-color: $institutional-color-accent;
+  }
+
+  &--audited {
+    border-top-color: $institutional-color-text-muted;
+    opacity: 0.85;
+  }
+}
+
+// --- Header ---
+
+.program-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-end: $institutional-spacing-sm;
+}
+
+.program-card__type {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, $institutional-color-primary 12%, $institutional-color-bg);
+  color: $institutional-color-primary;
+
+  // Variantes por tipo de programa.
+  &--sto {
+    background: color-mix(in srgb, $institutional-color-primary 12%, $institutional-color-bg);
+    color: $institutional-color-primary;
+  }
+
+  &--piil {
+    background: color-mix(in srgb, $institutional-color-accent 12%, $institutional-color-bg);
+    color: $institutional-color-accent;
+  }
+
+  &--fundae {
+    background: color-mix(in srgb, $institutional-color-earth 12%, $institutional-color-bg);
+    color: $institutional-color-earth;
+  }
+
+  &--fse_plus {
+    background: color-mix(in srgb, $institutional-color-warning 12%, $institutional-color-bg);
+    color: $institutional-color-warning;
+  }
+}
+
+.program-card__status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: $institutional-color-text-muted;
+}
+
+// --- Name ---
+
+.program-card__name {
+  margin: 0 0 $institutional-spacing-sm;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: $institutional-color-text;
+}
+
+// --- Meta ---
+
+.program-card__meta {
+  display: flex;
+  gap: $institutional-spacing-md;
+  margin-block-end: $institutional-spacing-md;
+  font-size: 0.8125rem;
+  color: $institutional-color-text-muted;
+}
+
+.program-card__code {
+  font-family: var(--ej-font-family-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  background: $institutional-color-surface;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+}
+
+.program-card__entity {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// --- Footer ---
+
+.program-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-start: auto;
+  padding-block-start: $institutional-spacing-sm;
+  border-top: 1px solid color-mix(in srgb, $institutional-color-text-muted 15%, $institutional-color-bg);
+  font-size: 0.8125rem;
+}
+
+.program-card__budget {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: $institutional-color-primary;
+}
+
+.program-card__participants {
+  color: $institutional-color-text-muted;
+  font-variant-numeric: tabular-nums;
+}

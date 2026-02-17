@@ -16,13 +16,22 @@
  * - /mi-comercio/productos (Listado productos comerciante)
  * - /mi-comercio/analiticas (Analytics comerciante)
  *
+ * Variables inyectadas desde hook_preprocess_page__comercio_marketplace():
+ * - clean_content: Render array del controlador (system_main)
+ * - clean_messages: Render array de mensajes del sistema
+ * - copilot_context: Contexto del CopilotContextService
+ * - theme_settings: Configuración del tema
+ * - site_name, site_slogan, logo, footer_copyright
+ * - avatar_nav: Navegación contextual por rol/avatar
+ *
  * DIRECTRICES:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Nuclear #11: Full-width layout
+ * - P4-AI-001: Copilot FAB en toda ruta autenticada del vertical
+ * - Directriz ZERO-REGION-001: No usar page.content
  * - SIN regiones sidebar (sidebar_first, sidebar_second)
  * - Layout full-width para marketplace y dashboards
  * - Mantiene header/footer via parciales
- * - Usa clean_content en lugar de page.content
- * - Usa clean_messages en lugar de page.highlighted
- * - Breadcrumb eliminado (Zero Region Policy)
  * - Color primario: Naranja impulso (#FF8C42)
  */
 #}
@@ -68,10 +77,21 @@
      FOOTER - Incluido desde parcial reutilizable
      ============================================= #}
   {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
-    'site_name': site_name
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
   } only %}
 
-  {# Copiloto IA (FAB) #}
-  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' only %}
+  {# =============================================
+     COPILOT FAB - Asistente IA contextual
+     Directriz P4-AI-001: Disponible en todas las
+     rutas autenticadas del vertical ComercioConecta.
+     ============================================= #}
+  {% if logged_in %}
+    {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+      'context': copilot_context|default({})
+    } only %}
+  {% endif %}
 
 </div>

@@ -1,0 +1,34 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_merchant_acquisition
+label: 'ComercioConecta - Adquisicion Comerciante'
+description: 'Embudo de adquisicion de nuevos comerciantes desde landing hasta primera publicacion.'
+vertical: comercioconecta
+steps:
+  -
+    id: landing_visit
+    label: 'Visita Landing'
+    event: page_view
+    conditions: 'path:/comercioconecta'
+  -
+    id: guia_download
+    label: 'Descarga Guia'
+    event: lead_magnet_download
+    conditions: 'vertical:comercioconecta'
+  -
+    id: registration
+    label: 'Registro'
+    event: user_register
+    conditions: 'vertical:comercioconecta'
+  -
+    id: first_product_upload
+    label: 'Primer Producto Subido'
+    event: product_created
+    conditions: 'entity_type:product_retail'
+  -
+    id: first_product_published
+    label: 'Primer Producto Publicado'
+    event: product_published
+    conditions: 'entity_type:product_retail,status:active'
+weight: 0

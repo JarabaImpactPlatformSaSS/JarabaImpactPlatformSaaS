@@ -30,3 +30,38 @@ jaraba_comercio_conecta.merchant_profile.collection:
   route_name: entity.merchant_profile.collection
   base_route: system.admin_content
   weight: 53
+
+# F6: Tab Pedidos en admin/content
+jaraba_comercio_conecta.order_retail.collection:
+  title: 'Pedidos Comercio'
+  route_name: entity.order_retail.collection
+  base_route: system.admin_content
+  weight: 54
+
+# F6: Tab Devoluciones en admin/content
+jaraba_comercio_conecta.return_request.collection:
+  title: 'Devoluciones'
+  route_name: entity.return_request.collection
+  base_route: system.admin_content
+  weight: 55
+
+# F6: Tab Cupones en admin/content
+jaraba_comercio_conecta.coupon_retail.collection:
+  title: 'Cupones'
+  route_name: entity.coupon_retail.collection
+  base_route: system.admin_content
+  weight: 56
+
+# F6: Tab Carritos Abandonados en admin/content
+jaraba_comercio_conecta.abandoned_cart.collection:
+  title: 'Carritos Abandonados'
+  route_name: entity.abandoned_cart.collection
+  base_route: system.admin_content
+  weight: 57
+
+# F7: Tab Perfiles Consumidor en admin/content
+jaraba_comercio_conecta.customer_profile_retail.collection:
+  title: 'Perfiles Consumidor'
+  route_name: entity.customer_profile_retail.collection
+  base_route: system.admin_content
+  weight: 58

@@ -1,58 +1,103 @@
 {#
-/**
- * @file
- * Template for the Funding Intelligence dashboard page.
- *
- * Zero-region frontend page for funding calls, matches and calendar.
- *
- * Variables:
- * - page: The page render array from the controller.
- *
- * @see jaraba_funding_theme()
- */
-#}
-{% extends "@claro/layout/page.html.twig" %}
+ # Pagina zero-region del dashboard de Fondos y Subvenciones.
+ #
+ # Estructura: Template limpio sin regiones ni bloques de Drupal.
+ #   Incluye parciales del tema para header/footer y parciales
+ #   propios del modulo para cards de convocatorias y solicitudes.
+ #
+ # Variables (inyectadas via hook_preprocess_page):
+ #   - opportunities: array de datos de convocatorias.
+ #   - applications: array de datos de solicitudes.
+ #   - stats: estadisticas del dashboard.
+ #   - copilot_context: contexto para el copilot IA (nullable).
+ #}
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' %}
 
-{% block content %}
-  <div class="ej-funding">
-    {# Header #}
-    <div class="ej-funding__header">
-      <h1 class="ej-funding__title">{{ 'Inteligencia de Subvenciones'|t }}</h1>
-    </div>
+<main class="funding-dashboard" role="main">
+  <div class="funding-dashboard__container">
 
-    {# Tabs #}
-    <nav class="ej-funding__tabs" role="tablist">
-      <button class="ej-funding__tab ej-funding__tab--active" data-tab="calls" role="tab" aria-selected="true">
-        {{ 'Convocatorias'|t }}
-      </button>
-      <button class="ej-funding__tab" data-tab="matches" role="tab" aria-selected="false">
-        {{ 'Mis Matches'|t }}
-      </button>
-      <button class="ej-funding__tab" data-tab="calendar" role="tab" aria-selected="false">
-        {{ 'Calendario'|t }}
-      </button>
-    </nav>
+    {# Cabecera del dashboard #}
+    <header class="funding-dashboard__header">
+      <h1 class="funding-dashboard__title">{{ 'Fondos y Subvenciones'|t }}</h1>
+      <div class="funding-dashboard__actions">
+        <a href="/admin/content/funding-opportunities/add"
+           class="use-ajax funding-dashboard__btn funding-dashboard__btn--primary"
+           data-dialog-type="modal"
+           data-dialog-options='{"width": 800, "title": "{{ 'Crear convocatoria'|t }}"}'>
+          {{ 'Nueva convocatoria'|t }}
+        </a>
+        <a href="/admin/content/funding-applications/add"
+           class="use-ajax funding-dashboard__btn funding-dashboard__btn--secondary"
+           data-dialog-type="modal"
+           data-dialog-options='{"width": 800, "title": "{{ 'Crear solicitud'|t }}"}'>
+          {{ 'Nueva solicitud'|t }}
+        </a>
+      </div>
+    </header>
 
-    {# Panels #}
-    <div class="funding-panel funding-panel--calls" style="display: block;" role="tabpanel">
-      {% include '@jaraba_funding/partials/_funding-search-panel.html.twig' %}
-    </div>
+    {# KPIs #}
+    {% if stats %}
+    <section class="funding-dashboard__stats">
+      <div class="funding-stats__grid">
+        <div class="funding-stats__card">
+          <span class="funding-stats__value">{{ stats.total_applications|default(0) }}</span>
+          <span class="funding-stats__label">{{ 'Solicitudes totales'|t }}</span>
+        </div>
+        <div class="funding-stats__card">
+          <span class="funding-stats__value">{{ stats.by_status.approved|default(0) }}</span>
+          <span class="funding-stats__label">{{ 'Aprobadas'|t }}</span>
+        </div>
+        <div class="funding-stats__card">
+          <span class="funding-stats__value">{{ stats.by_status.submitted|default(0) }}</span>
+          <span class="funding-stats__label">{{ 'Presentadas'|t }}</span>
+        </div>
+        <div class="funding-stats__card">
+          <span class="funding-stats__value">{{ stats.by_status.draft|default(0) }}</span>
+          <span class="funding-stats__label">{{ 'En borrador'|t }}</span>
+        </div>
+      </div>
+    </section>
+    {% endif %}
 
-    <div class="funding-panel funding-panel--matches" style="display: none;" role="tabpanel">
-      {% include '@jaraba_funding/partials/_funding-matches-panel.html.twig' %}
-    </div>
+    {# Convocatorias activas #}
+    <section class="funding-dashboard__opportunities">
+      <h2 class="funding-dashboard__section-title">{{ 'Convocatorias abiertas'|t }}</h2>
+      {% if opportunities is not empty %}
+        <div class="funding-dashboard__grid">
+          {% for opportunity in opportunities %}
+            {% include '@jaraba_funding/partials/opportunity-card.html.twig' with {
+              opportunity: opportunity,
+            } only %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="funding-dashboard__empty">{{ 'No hay convocatorias abiertas en este momento.'|t }}</p>
+      {% endif %}
+    </section>
 
-    <div class="funding-panel funding-panel--calendar" style="display: none;" role="tabpanel">
-      {% include '@jaraba_funding/partials/_funding-calendar-panel.html.twig' %}
-    </div>
+    {# Solicitudes recientes #}
+    <section class="funding-dashboard__applications">
+      <h2 class="funding-dashboard__section-title">{{ 'Solicitudes recientes'|t }}</h2>
+      {% if applications is not empty %}
+        <div class="funding-dashboard__list">
+          {% for application in applications %}
+            {% include '@jaraba_funding/partials/application-status.html.twig' with {
+              application: application,
+            } only %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="funding-dashboard__empty">{{ 'No hay solicitudes registradas.'|t }}</p>
+      {% endif %}
+    </section>
 
-    {# Copilot Widget #}
-    <div class="ej-funding__copilot-trigger">
-      <button class="ej-funding__copilot-btn" aria-label="{{ 'Abrir Copilot de Subvenciones'|t }}">
-        <span class="ej-funding__copilot-icon">&#128172;</span>
-      </button>
-    </div>
-
-    {{ page.content }}
   </div>
-{% endblock %}
+</main>
+
+{% if copilot_context %}
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    context: copilot_context,
+  } only %}
+{% endif %}
+
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}

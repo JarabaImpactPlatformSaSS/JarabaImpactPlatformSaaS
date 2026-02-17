@@ -4,8 +4,11 @@ namespace Drupal\jaraba_comercio_conecta\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_comercio_conecta\Service\MerchantDashboardService;
+use Drupal\jaraba_comercio_conecta\Service\MerchantPayoutService;
+use Drupal\jaraba_comercio_conecta\Service\OrderRetailService;
 use Drupal\jaraba_comercio_conecta\Service\ProductRetailService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -28,10 +31,16 @@ class MerchantPortalController extends ControllerBase {
    *   Servicio del dashboard del comerciante.
    * @param \Drupal\jaraba_comercio_conecta\Service\ProductRetailService $productService
    *   Servicio de productos retail.
+   * @param \Drupal\jaraba_comercio_conecta\Service\OrderRetailService $orderService
+   *   Servicio de pedidos retail.
+   * @param \Drupal\jaraba_comercio_conecta\Service\MerchantPayoutService $payoutService
+   *   Servicio de pagos y comisiones del comerciante.
    */
   public function __construct(
     protected MerchantDashboardService $dashboardService,
     protected ProductRetailService $productService,
+    protected OrderRetailService $orderService,
+    protected MerchantPayoutService $payoutService,
   ) {}
 
   /**
@@ -41,6 +50,8 @@ class MerchantPortalController extends ControllerBase {
     return new static(
       $container->get('jaraba_comercio_conecta.merchant_dashboard'),
       $container->get('jaraba_comercio_conecta.product_retail'),
+      $container->get('jaraba_comercio_conecta.order_retail'),
+      $container->get('jaraba_comercio_conecta.merchant_payout'),
     );
   }
 
@@ -237,6 +248,153 @@ class MerchantPortalController extends ControllerBase {
     }
 
     return $this->entityFormBuilder()->getForm($merchant, 'edit');
+  }
+
+  /**
+   * Listado de pedidos recibidos por el comerciante.
+   *
+   * Estructura: Muestra tabla de pedidos (suborders) asignados al
+   *   comerciante con numero de pedido, cliente, total, estado,
+   *   estado de pago y fecha. Incluye paginacion.
+   *
+   * Logica: Obtiene el perfil del comerciante actual, carga los
+   *   suborders via OrderRetailService::getMerchantOrders() y
+   *   serializa los datos para el template.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   Objeto request con parametro page en query string.
+   *
+   * @return array
+   *   Render array con #theme 'comercio_merchant_orders'.
+   */
+  public function merchantOrders(Request $request): array {
+    $merchant = $this->dashboardService->getCurrentMerchantProfile();
+
+    if (!$merchant) {
+      throw new AccessDeniedHttpException($this->t('No tienes un perfil de comerciante asociado.'));
+    }
+
+    $page = max(0, (int) $request->query->get('page', 0));
+    $result = $this->orderService->getMerchantOrders((int) $merchant->id(), $page);
+
+    $orders = [];
+    foreach ($result['suborders'] as $suborder) {
+      $orders[] = [
+        'id' => (int) $suborder->id(),
+        'order_number' => $suborder->get('order_number')->value,
+        'customer_name' => $suborder->get('customer_name')->value ?? '',
+        'total' => (float) $suborder->get('total')->value,
+        'status' => $suborder->get('status')->value,
+        'payment_status' => $suborder->get('payment_status')->value,
+        'created' => $suborder->get('created')->value,
+      ];
+    }
+
+    return [
+      '#theme' => 'comercio_merchant_orders',
+      '#merchant' => $merchant,
+      '#orders' => $orders,
+      '#total' => $result['total'],
+      '#page' => $result['page'],
+      '#total_pages' => $result['total_pages'],
+      '#attached' => [
+        'library' => [
+          'jaraba_comercio_conecta/merchant-portal',
+        ],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => [
+          'merchant_profile:' . $merchant->id(),
+          'suborder_retail_list',
+        ],
+        'max-age' => 60,
+      ],
+    ];
+  }
+
+  /**
+   * Historial de pagos y comisiones del comerciante.
+   *
+   * Estructura: Muestra tarjetas resumen (ingresos totales, comisiones,
+   *   pagos recibidos, pendiente), tabla de pagos recientes y
+   *   placeholder para grafico de ingresos mensuales.
+   *
+   * Logica: Obtiene el perfil del comerciante, carga resumen financiero
+   *   y pagos recientes via MerchantPayoutService. Calcula totales
+   *   acumulados de ingresos, comisiones y netos.
+   *
+   * @return array
+   *   Render array con #theme 'comercio_merchant_payments'.
+   */
+  public function merchantPayments(): array {
+    $merchant = $this->dashboardService->getCurrentMerchantProfile();
+
+    if (!$merchant) {
+      throw new AccessDeniedHttpException($this->t('No tienes un perfil de comerciante asociado.'));
+    }
+
+    $summary = $this->payoutService->getPayoutSummary((int) $merchant->id());
+    $recent_payouts = $this->payoutService->getRecentPayouts((int) $merchant->id());
+    $monthly_revenue = $this->payoutService->getMonthlyRevenue((int) $merchant->id());
+
+    return [
+      '#theme' => 'comercio_merchant_payments',
+      '#merchant' => $merchant,
+      '#summary' => $summary,
+      '#recent_payouts' => $recent_payouts,
+      '#monthly_revenue' => $monthly_revenue,
+      '#attached' => [
+        'library' => [
+          'jaraba_comercio_conecta/merchant-portal',
+        ],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => [
+          'merchant_profile:' . $merchant->id(),
+          'merchant_payout_list',
+        ],
+        'max-age' => 300,
+      ],
+    ];
+  }
+
+  /**
+   * Pagina de configuracion del comercio.
+   *
+   * Estructura: Muestra secciones de configuracion del comercio:
+   *   datos fiscales (NIF/CIF, razon social), horarios de apertura,
+   *   zonas de envio y configuracion de Click & Collect.
+   *
+   * Logica: Carga el perfil del comerciante actual y renderiza
+   *   el template con los datos de configuracion. Cada seccion
+   *   es una tarjeta independiente con contenido editable.
+   *
+   * @return array
+   *   Render array con #theme 'comercio_merchant_settings'.
+   */
+  public function merchantSettings(): array {
+    $merchant = $this->dashboardService->getCurrentMerchantProfile();
+
+    if (!$merchant) {
+      throw new AccessDeniedHttpException($this->t('No tienes un perfil de comerciante asociado.'));
+    }
+
+    return [
+      '#theme' => 'comercio_merchant_settings',
+      '#merchant' => $merchant,
+      '#attached' => [
+        'library' => [
+          'jaraba_comercio_conecta/merchant-portal',
+        ],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['merchant_profile:' . $merchant->id()],
+        'max-age' => 0,
+      ],
+    ];
   }
 
 }

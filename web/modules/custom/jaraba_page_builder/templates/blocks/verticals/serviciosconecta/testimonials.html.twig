@@ -4,9 +4,12 @@
  # Type: testimonials
  #
  # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
+ # Premium: staggered animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--testimonials pb-section--serviciosconecta"
-         aria-label="{{ title|default('Casos de Exito')|t }}">
+<section class="pb-section pb-section--testimonials pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Casos de Exito')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
@@ -21,7 +24,12 @@
       ] %}
       {% set items = testimonials|default(default_testimonials) %}
       {% for testimonial in items %}
-        <div class="pb-section__testimonial">
+        <div class="pb-section__testimonial"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__testimonial-quote-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'chat', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
           <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
           <div class="pb-section__testimonial-author">
             <div class="pb-section__testimonial-avatar">

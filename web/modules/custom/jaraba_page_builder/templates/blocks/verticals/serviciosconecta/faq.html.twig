@@ -4,11 +4,17 @@
  # Type: faq
  #
  # Header + accordion con <details>/<summary>
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--faq pb-section--serviciosconecta"
-         aria-label="{{ title|default('Preguntas frecuentes')|t }}">
+<section class="pb-section pb-section--faq pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Preguntas frecuentes')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
+      <div class="pb-section__header-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'help', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+      </div>
       <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Preguntas frecuentes')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre nuestra plataforma de servicios profesionales.')|t }}</p>
@@ -23,7 +29,9 @@
       ] %}
       {% set items = faqs|default(default_faqs) %}
       {% for faq in items %}
-        <details class="pb-section__faq-item">
+        <details class="pb-section__faq-item"
+                 data-effect="fade-up"
+                 data-delay="{{ loop.index0 * 100 }}">
           <summary>{{ faq.question|default('Pregunta')|t }}</summary>
           <div class="pb-section__faq-answer">
             {{ faq.answer|default('Respuesta.')|t }}

@@ -1,0 +1,454 @@
+// =============================================================================
+// Tarjeta de Prediccion (Jaraba Predictive)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// Modificadores por nivel de riesgo y cualificacion de lead
+// =============================================================================
+
+@use 'variables' as *;
+
+.prediction-card {
+  background: $pred-bg-surface;
+  border: 1px solid $pred-border-color;
+  border-radius: $pred-card-radius;
+  padding: $pred-spacing-lg;
+  transition: box-shadow $pred-transition-normal, transform $pred-transition-normal, border-color $pred-transition-normal;
+  display: flex;
+  flex-direction: column;
+  gap: $pred-spacing-sm;
+
+  &:hover {
+    box-shadow: $pred-card-shadow-hover;
+    transform: translateY(-3px);
+  }
+
+  // ── Header ──────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  // ── Badge ───────────────────────────────────────────────────────
+  &__badge {
+    display: inline-block;
+    padding: $pred-spacing-xs $pred-spacing-sm;
+    border-radius: $pred-border-radius;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    // Risk level modifiers
+    &--low {
+      background: color-mix(in srgb, $pred-risk-low 15%, transparent);
+      color: $pred-risk-low;
+    }
+
+    &--medium {
+      background: color-mix(in srgb, $pred-risk-medium 15%, transparent);
+      color: $pred-risk-medium;
+    }
+
+    &--high {
+      background: color-mix(in srgb, $pred-risk-high 15%, transparent);
+      color: $pred-risk-high;
+    }
+
+    &--critical {
+      background: color-mix(in srgb, $pred-risk-critical 15%, transparent);
+      color: $pred-risk-critical;
+    }
+
+    // Lead qualification modifiers
+    &--cold {
+      background: color-mix(in srgb, $pred-lead-cold 15%, transparent);
+      color: $pred-lead-cold;
+    }
+
+    &--warm {
+      background: color-mix(in srgb, $pred-lead-warm 15%, transparent);
+      color: $pred-lead-warm;
+    }
+
+    &--hot {
+      background: color-mix(in srgb, $pred-lead-hot 15%, transparent);
+      color: $pred-lead-hot;
+    }
+
+    &--sales_ready {
+      background: color-mix(in srgb, $pred-lead-sales-ready 15%, transparent);
+      color: $pred-lead-sales-ready;
+    }
+
+    // Forecast metric modifiers
+    &--mrr {
+      background: color-mix(in srgb, $pred-metric-mrr 15%, transparent);
+      color: $pred-metric-mrr;
+    }
+
+    &--arr {
+      background: color-mix(in srgb, $pred-metric-arr 15%, transparent);
+      color: $pred-metric-arr;
+    }
+
+    &--tenants {
+      background: color-mix(in srgb, $pred-metric-tenants 15%, transparent);
+      color: $pred-metric-tenants;
+    }
+
+    &--users {
+      background: color-mix(in srgb, $pred-metric-users 15%, transparent);
+      color: $pred-metric-users;
+    }
+  }
+
+  // ── Score ───────────────────────────────────────────────────────
+  &__score {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  &__score-value {
+    font-family: $pred-font-headings;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: $pred-color-text;
+    font-variant-numeric: tabular-nums;
+
+    &--large {
+      font-size: 2rem;
+    }
+  }
+
+  &__score-unit {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $pred-color-text-muted;
+  }
+
+  &__currency {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $pred-color-text-muted;
+    margin-right: $pred-spacing-xs;
+  }
+
+  // ── Body ────────────────────────────────────────────────────────
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $pred-spacing-sm;
+  }
+
+  &__name {
+    font-family: $pred-font-headings;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: $pred-color-text;
+    margin: 0;
+  }
+
+  // ── Meter / Progress bar ────────────────────────────────────────
+  &__meter {
+    display: flex;
+    align-items: center;
+    gap: $pred-spacing-sm;
+  }
+
+  &__meter-label {
+    font-size: 0.75rem;
+    color: $pred-color-text-muted;
+    min-width: 70px;
+  }
+
+  &__meter-track {
+    flex: 1;
+    height: 6px;
+    background: color-mix(in srgb, $pred-color-border 40%, transparent);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  &__meter-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, $pred-color-secondary, $pred-color-primary);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &--engagement {
+      background: linear-gradient(90deg, #818CF8, #6366F1);
+    }
+
+    &--activation {
+      background: linear-gradient(90deg, #34D399, #059669);
+    }
+
+    &--intent {
+      background: linear-gradient(90deg, #FBBF24, #D97706);
+    }
+  }
+
+  &__meter-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $pred-color-text;
+    min-width: 36px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ── Factors list ────────────────────────────────────────────────
+  &__factors {
+    list-style: none;
+    margin: $pred-spacing-xs 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $pred-spacing-xs;
+  }
+
+  &__factor {
+    font-size: 0.8rem;
+    color: $pred-color-text-muted;
+    padding-left: $pred-spacing-md;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.45em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $pred-color-secondary;
+    }
+  }
+
+  // ── Meta info ───────────────────────────────────────────────────
+  &__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    padding: $pred-spacing-xs 0;
+  }
+
+  &__meta-label {
+    color: $pred-color-text-muted;
+  }
+
+  &__meta-value {
+    color: $pred-color-text;
+    font-weight: 600;
+
+    &--mono {
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+  }
+
+  // ── Breakdown rows (Lead Scoring) ───────────────────────────────
+  &__breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: $pred-spacing-sm;
+    margin: $pred-spacing-sm 0;
+  }
+
+  &__breakdown-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 30px;
+    align-items: center;
+    gap: $pred-spacing-sm;
+  }
+
+  &__breakdown-label {
+    font-size: 0.75rem;
+    color: $pred-color-text-muted;
+    font-weight: 500;
+  }
+
+  &__breakdown-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $pred-color-text;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ── Forecast value ──────────────────────────────────────────────
+  &__forecast-value {
+    display: flex;
+    align-items: baseline;
+    gap: $pred-spacing-xs;
+    margin: $pred-spacing-xs 0;
+  }
+
+  &__confidence-interval {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: $pred-spacing-sm;
+    background: color-mix(in srgb, $pred-color-primary 4%, transparent);
+    border-radius: $pred-border-radius;
+    font-size: 0.8rem;
+  }
+
+  &__interval-label {
+    font-size: 0.7rem;
+    color: $pred-color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+  }
+
+  &__interval-range {
+    font-weight: 600;
+    color: $pred-color-text;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ── Trend ───────────────────────────────────────────────────────
+  &__trend {
+    display: flex;
+    align-items: center;
+
+    &--up {
+      color: $pred-color-success;
+    }
+
+    &--down {
+      color: $pred-risk-critical;
+    }
+
+    &--neutral {
+      color: $pred-color-text-muted;
+    }
+  }
+
+  &__trend-comparison {
+    display: flex;
+    align-items: center;
+    gap: $pred-spacing-xs;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    &--up {
+      color: $pred-color-success;
+    }
+
+    &--down {
+      color: $pred-risk-critical;
+    }
+
+    &--neutral {
+      color: $pred-color-text-muted;
+    }
+  }
+
+  &__trend-arrow {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__trend-vs {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: $pred-color-text-muted;
+  }
+
+  // ── Footer / Actions ────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $pred-spacing-sm;
+    margin-top: auto;
+    padding-top: $pred-spacing-sm;
+    border-top: 1px solid $pred-border-color;
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    padding: $pred-spacing-xs $pred-spacing-sm;
+    border-radius: $pred-border-radius;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: none;
+    text-decoration: none;
+    transition: all $pred-transition-fast;
+
+    &--view {
+      color: $pred-color-primary;
+
+      &:hover {
+        background: color-mix(in srgb, $pred-color-primary 8%, transparent);
+      }
+    }
+
+    &--retain {
+      color: $pred-risk-high;
+      border-color: color-mix(in srgb, $pred-risk-high 30%, transparent);
+
+      &:hover {
+        background: color-mix(in srgb, $pred-risk-high 8%, transparent);
+        border-color: $pred-risk-high;
+      }
+    }
+
+    &--convert {
+      color: $pred-lead-sales-ready;
+      border-color: color-mix(in srgb, $pred-lead-sales-ready 30%, transparent);
+
+      &:hover {
+        background: color-mix(in srgb, $pred-lead-sales-ready 8%, transparent);
+        border-color: $pred-lead-sales-ready;
+      }
+    }
+  }
+
+  // ── Card modifiers by risk level (left border accent) ───────────
+  &--low {
+    border-left: 3px solid $pred-risk-low;
+  }
+
+  &--medium {
+    border-left: 3px solid $pred-risk-medium;
+  }
+
+  &--high {
+    border-left: 3px solid $pred-risk-high;
+  }
+
+  &--critical {
+    border-left: 3px solid $pred-risk-critical;
+  }
+
+  // ── Card modifiers by lead qualification ────────────────────────
+  &--cold {
+    border-left: 3px solid $pred-lead-cold;
+  }
+
+  &--warm {
+    border-left: 3px solid $pred-lead-warm;
+  }
+
+  &--hot {
+    border-left: 3px solid $pred-lead-hot;
+  }
+
+  &--sales_ready {
+    border-left: 3px solid $pred-lead-sales-ready;
+  }
+
+  // ── Forecast card modifier ──────────────────────────────────────
+  &--forecast {
+    border-left: 3px solid $pred-color-primary;
+  }
+}

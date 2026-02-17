@@ -1,0 +1,30 @@
+administer institutional:
+  title: 'Administrar modulo de programas institucionales'
+  restrict access: true
+
+access institutional:
+  title: 'Acceder a programas institucionales'
+
+access institutional api:
+  title: 'Acceder a API REST de programas institucionales'
+
+manage programs:
+  title: 'Gestionar programas institucionales'
+
+view programs:
+  title: 'Ver programas institucionales'
+
+manage participants:
+  title: 'Gestionar participantes de programas'
+
+view participants:
+  title: 'Ver participantes de programas'
+
+generate sto fichas:
+  title: 'Generar fichas tecnicas STO'
+
+view sto fichas:
+  title: 'Ver fichas tecnicas STO'
+
+generate reports:
+  title: 'Generar informes FUNDAE/FSE+'

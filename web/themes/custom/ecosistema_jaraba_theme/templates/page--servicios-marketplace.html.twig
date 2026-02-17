@@ -1,0 +1,48 @@
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+<body{{ attributes.addClass('page-wrapper--clean', 'page--servicios', 'page--servicios-marketplace') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    theme_settings: theme_settings|default({}),
+    logged_in: logged_in|default(false),
+    site_name: site_name|default('Jaraba'),
+  } %}
+
+  <main id="main-content" class="main-content main-content--full servicios-marketplace-main">
+    {% if clean_messages is not empty %}
+      <div class="messages-container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {% if clean_content is not empty %}
+      {{ clean_content }}
+    {% endif %}
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    theme_settings: theme_settings|default({}),
+    footer_copyright: footer_copyright|default(''),
+  } %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'serviciosconecta_copilot',
+    avatar_type: logged_in ? 'cliente_servicios' : 'general',
+    fab_color: 'var(--ej-color-innovation, #00A9A5)',
+    is_expanded: false,
+  } %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

@@ -1,0 +1,5 @@
+jaraba_predictive.admin:
+  title: 'Predicciones'
+  parent: system.admin_content
+  route_name: entity.churn_prediction.collection
+  weight: 38

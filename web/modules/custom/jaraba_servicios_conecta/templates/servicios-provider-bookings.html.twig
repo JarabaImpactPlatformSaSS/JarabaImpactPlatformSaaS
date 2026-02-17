@@ -1,0 +1,51 @@
+{#
+ # Listado de reservas del profesional con tabs por estado.
+ #
+ # Variables:
+ #   - provider: ProviderProfile entity
+ #   - bookings: array de Booking entities
+ #   - pending_count: int
+ #   - confirmed_count: int
+ #   - completed_count: int
+ #   - cancelled_count: int
+ #   - current_tab: string (all|pending|confirmed|completed|cancelled)
+ #}
+{{ attach_library('jaraba_servicios_conecta/provider-portal') }}
+
+<div class="servicios-bookings">
+  <div class="servicios-bookings__header">
+    <h2 class="servicios-bookings__title">{% trans %}My Bookings{% endtrans %}</h2>
+  </div>
+
+  <nav class="servicios-bookings__tabs" aria-label="{% trans %}Booking filters{% endtrans %}">
+    <a href="?tab=all" class="servicios-bookings__tab{{ current_tab == 'all' ? ' is-active' : '' }}">
+      {% trans %}All{% endtrans %}
+    </a>
+    <a href="?tab=pending" class="servicios-bookings__tab{{ current_tab == 'pending' ? ' is-active' : '' }}">
+      {% trans %}Pending{% endtrans %} <span class="servicios-bookings__count">{{ pending_count }}</span>
+    </a>
+    <a href="?tab=confirmed" class="servicios-bookings__tab{{ current_tab == 'confirmed' ? ' is-active' : '' }}">
+      {% trans %}Confirmed{% endtrans %} <span class="servicios-bookings__count">{{ confirmed_count }}</span>
+    </a>
+    <a href="?tab=completed" class="servicios-bookings__tab{{ current_tab == 'completed' ? ' is-active' : '' }}">
+      {% trans %}Completed{% endtrans %} <span class="servicios-bookings__count">{{ completed_count }}</span>
+    </a>
+    <a href="?tab=cancelled" class="servicios-bookings__tab{{ current_tab == 'cancelled' ? ' is-active' : '' }}">
+      {% trans %}Cancelled{% endtrans %} <span class="servicios-bookings__count">{{ cancelled_count }}</span>
+    </a>
+  </nav>
+
+  <div class="servicios-bookings__list">
+    {% if bookings is empty %}
+      <div class="servicios-bookings__empty">
+        <p>{% trans %}No bookings found for this filter.{% endtrans %}</p>
+      </div>
+    {% else %}
+      {% for booking in bookings %}
+        {% include '@jaraba_servicios_conecta/partials/booking-card.html.twig' with {
+          booking: booking,
+        } only %}
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
