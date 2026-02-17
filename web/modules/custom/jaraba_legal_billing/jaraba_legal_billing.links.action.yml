@@ -1,0 +1,25 @@
+# =============================================================================
+# Botones de accion (+ Anadir) en las paginas de coleccion admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Boton "Crear Factura" en la coleccion de facturas
+jaraba_legal_billing.legal_invoice.add:
+  title: 'Crear Factura'
+  route_name: entity.legal_invoice.add_form
+  appears_on:
+    - entity.legal_invoice.collection
+
+# Boton "Crear Presupuesto" en la coleccion de presupuestos
+jaraba_legal_billing.quote.add:
+  title: 'Crear Presupuesto'
+  route_name: entity.quote.add_form
+  appears_on:
+    - entity.quote.collection
+
+# Boton "Registrar Tiempo" en la coleccion de tiempo
+jaraba_legal_billing.time_entry.add:
+  title: 'Registrar Tiempo'
+  route_name: entity.time_entry.add_form
+  appears_on:
+    - entity.time_entry.collection

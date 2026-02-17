@@ -1,0 +1,20 @@
+# =============================================================================
+# Enlaces de menu en /admin/structure para Legal Vault (JarabaLex FASE B1+B2)
+# Cada entidad tiene su entrada en el menu de estructura de Drupal
+# =============================================================================
+
+# Documentos Seguros en Structure
+jaraba_legal_vault.secure_document.settings:
+  title: 'Documentos Seguros'
+  description: 'Configuracion de la entidad Documento Seguro de JarabaLex Vault.'
+  route_name: jaraba_legal_vault.secure_document.settings
+  parent: system.admin_structure
+  weight: 95
+
+# Solicitudes de Documentos en Structure
+jaraba_legal_vault.document_request.settings:
+  title: 'Solicitudes de Documentos'
+  description: 'Configuracion de la entidad Solicitud de Documento de JarabaLex Vault.'
+  route_name: jaraba_legal_vault.document_request.settings
+  parent: system.admin_structure
+  weight: 96

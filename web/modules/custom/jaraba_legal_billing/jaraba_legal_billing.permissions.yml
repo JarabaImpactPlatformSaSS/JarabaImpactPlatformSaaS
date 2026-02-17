@@ -1,0 +1,41 @@
+# =============================================================================
+# Permisos del modulo Legal Billing (JarabaLex FASE B3)
+# Estructura: permisos por funcionalidad de facturacion y control de tiempo
+# Logica: control granular de acceso para abogados, administradores y clientes
+# =============================================================================
+
+# --- Acceso general ---
+access billing:
+  title: 'Acceder a facturacion legal'
+  description: 'Acceso basico al modulo de facturacion y visualizacion del dashboard.'
+
+access billing api:
+  title: 'Acceder a la API de facturacion'
+  description: 'Acceso a los endpoints REST de facturacion legal.'
+
+# --- Control de tiempo ---
+manage time entries:
+  title: 'Gestionar registros de tiempo'
+  description: 'Crear, editar y eliminar registros de tiempo en expedientes.'
+
+# --- Facturas ---
+manage invoices:
+  title: 'Gestionar facturas'
+  description: 'Crear, editar, emitir y gestionar facturas legales.'
+  restrict access: true
+
+# --- Presupuestos ---
+manage quotes:
+  title: 'Gestionar presupuestos'
+  description: 'Crear, editar, enviar y gestionar presupuestos de servicios legales.'
+
+# --- Catalogo de servicios ---
+manage service catalog:
+  title: 'Gestionar catalogo de servicios'
+  description: 'Crear y editar servicios del catalogo de prestaciones legales.'
+
+# --- Administracion ---
+administer billing:
+  title: 'Administrar facturacion legal'
+  description: 'Acceso completo a la configuracion y administracion de facturacion.'
+  restrict access: true

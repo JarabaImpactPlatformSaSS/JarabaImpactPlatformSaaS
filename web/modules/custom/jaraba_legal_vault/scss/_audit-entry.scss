@@ -1,0 +1,48 @@
+// =============================================================================
+// Entrada de Auditoria (JarabaLex FASE B1)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// =============================================================================
+
+.ej-audit-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-sm, 0.5rem) 0;
+  border-bottom: 1px solid var(--ej-border-color-light, #F0F0F0);
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: var(--ej-text-secondary, #666);
+  }
+
+  &--created &__icon { color: var(--ej-color-success, #43A047); }
+  &--shared &__icon { color: var(--ej-color-info, #1976D2); }
+  &--revoked &__icon { color: var(--ej-color-danger, #E53935); }
+  &--deleted &__icon { color: var(--ej-color-danger, #E53935); }
+  &--downloaded &__icon { color: var(--ej-vault-primary, #2E7D32); }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__action {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+  }
+
+  &__actor {
+    font-size: 0.8rem;
+    color: var(--ej-text-secondary, #666);
+  }
+
+  &__time {
+    font-size: 0.75rem;
+    color: var(--ej-text-tertiary, #999);
+    white-space: nowrap;
+  }
+}

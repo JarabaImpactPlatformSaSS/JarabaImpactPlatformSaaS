@@ -1,0 +1,20 @@
+{#
+ # quote-card.html.twig — Tarjeta de presupuesto BEM.
+ # Variables: quote (array serializado).
+ #}
+{% set status = quote.status|default('draft') %}
+<article class="ej-quote-card ej-quote-card--{{ status }}">
+  <div class="ej-quote-card__header">
+    <span class="ej-quote-card__number">{{ quote.quote_number }}</span>
+    <span class="ej-quote-card__badge ej-quote-card__badge--{{ status }}">{{ status }}</span>
+  </div>
+  <h4 class="ej-quote-card__title">{{ quote.title }}</h4>
+  <div class="ej-quote-card__client">{{ quote.client_name }}</div>
+  <div class="ej-quote-card__meta">
+    <span class="ej-quote-card__total">{{ quote.total|number_format(2, ',', '.') }} EUR</span>
+    <span class="ej-quote-card__valid">{{ 'Valido hasta'|t }}: {{ quote.valid_until }}</span>
+  </div>
+  {% if quote.ai_generated %}
+    <div class="ej-quote-card__ai-badge">{{ 'IA'|t }}</div>
+  {% endif %}
+</article>

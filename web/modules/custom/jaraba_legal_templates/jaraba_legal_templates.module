@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * @file
+ * jaraba_legal_templates.module — Plantillas y Generacion de Documentos.
+ *
+ * Estructura: Hooks de modulo para el sistema de plantillas juridicas.
+ * Logica: hook_theme, hook_preprocess_html, hook_preprocess_page.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_legal_templates_theme(): array {
+  return [
+    'jaraba_legal_templates_dashboard' => [
+      'variables' => [],
+      'template' => 'partials/templates-dashboard',
+    ],
+    'jaraba_legal_templates_template_card' => [
+      'variables' => [
+        'template' => NULL,
+      ],
+      'template' => 'partials/template-card',
+    ],
+    'jaraba_legal_templates_document_card' => [
+      'variables' => [
+        'document' => NULL,
+      ],
+      'template' => 'partials/document-card',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * LEGAL-BODY-001: body classes solo desde hook_preprocess_html.
+ */
+function jaraba_legal_templates_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route && str_starts_with($route, 'jaraba_legal_templates.')) {
+    $variables['attributes']['class'][] = 'page--legal-templates';
+    if ($route === 'jaraba_legal_templates.dashboard') {
+      $variables['attributes']['class'][] = 'page--legal-templates-dashboard';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * ZERO-REGION-001: Inyecta datos via drupalSettings para el dashboard.
+ */
+function jaraba_legal_templates_preprocess_page(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'jaraba_legal_templates.dashboard') {
+    return;
+  }
+
+  $variables['#attached']['library'][] = 'jaraba_legal_templates/global';
+  $variables['#attached']['library'][] = 'jaraba_legal_templates/dashboard';
+
+  try {
+    /** @var \Drupal\jaraba_legal_templates\Service\TemplateManagerService $templateManager */
+    $templateManager = \Drupal::service('jaraba_legal_templates.template_manager');
+    $systemTemplates = $templateManager->getSystemTemplates();
+
+    $config = \Drupal::config('jaraba_legal_templates.settings');
+
+    $variables['#attached']['drupalSettings']['jarabaLegalTemplates'] = [
+      'apiBase' => '/api/v1/legal/templates',
+      'documentsApiBase' => '/api/v1/legal/documents',
+      'systemTemplates' => $systemTemplates,
+      'aiDraftingEnabled' => (bool) $config->get('ai_drafting_enabled'),
+      'defaultAiModel' => $config->get('default_ai_model') ?? 'gemini-2.0-flash',
+    ];
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_templates')->error('Dashboard data error: @msg', ['@msg' => $e->getMessage()]);
+    $variables['#attached']['drupalSettings']['jarabaLegalTemplates'] = [
+      'apiBase' => '/api/v1/legal/templates',
+      'documentsApiBase' => '/api/v1/legal/documents',
+      'systemTemplates' => [],
+      'aiDraftingEnabled' => FALSE,
+      'defaultAiModel' => 'gemini-2.0-flash',
+    ];
+  }
+}

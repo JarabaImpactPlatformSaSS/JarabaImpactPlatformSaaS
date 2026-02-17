@@ -1,0 +1,20 @@
+{#
+ # lexnet-dashboard.html.twig — Dashboard de LexNET.
+ # Zero-region: datos inyectados via drupalSettings.jarabaLegalLexnet.
+ #}
+<div class="legal-lexnet-dashboard">
+  <div class="legal-lexnet-dashboard__header">
+    <h2>{{ 'LexNET — Comunicaciones Judiciales'|t }}</h2>
+  </div>
+
+  <div class="legal-lexnet-dashboard__stats" data-lexnet-stats></div>
+
+  <div class="legal-lexnet-dashboard__filters">
+    <button class="ej-lexnet-filter active" data-lexnet-filter="all">{{ 'Todos'|t }}</button>
+    <button class="ej-lexnet-filter" data-lexnet-filter="pending">{{ 'Pendientes'|t }}</button>
+    <button class="ej-lexnet-filter" data-lexnet-filter="read">{{ 'Leidos'|t }}</button>
+    <button class="ej-lexnet-filter" data-lexnet-filter="linked">{{ 'Vinculados'|t }}</button>
+  </div>
+
+  <div class="legal-lexnet-dashboard__grid" data-lexnet-grid></div>
+</div>

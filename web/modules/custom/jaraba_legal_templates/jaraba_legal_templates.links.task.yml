@@ -1,0 +1,18 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Legal Templates (JarabaLex FASE C2)
+# Cada entidad aparece como una pestana en la seccion de contenido
+# =============================================================================
+
+# Tab Plantillas en admin/content
+jaraba_legal_templates.legal_template.collection:
+  title: 'Plantillas'
+  route_name: entity.legal_template.collection
+  base_route: system.admin_content
+  weight: 72
+
+# Tab Documentos Generados en admin/content
+jaraba_legal_templates.generated_document.collection:
+  title: 'Documentos Generados'
+  route_name: entity.generated_document.collection
+  base_route: system.admin_content
+  weight: 73

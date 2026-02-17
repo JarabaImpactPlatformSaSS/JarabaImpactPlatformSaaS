@@ -1,0 +1,62 @@
+# Schema de configuracion del modulo Legal Templates (JarabaLex FASE C2).
+# Define la estructura de datos para validacion de YAML config.
+
+jaraba_legal_templates.settings:
+  type: config_object
+  label: 'Legal Templates settings'
+  mapping:
+    default_ai_model:
+      type: string
+      label: 'Default AI model for document drafting (e.g. gemini-2.0-flash)'
+    ai_drafting_enabled:
+      type: boolean
+      label: 'Enable AI-assisted document drafting'
+    max_merge_fields:
+      type: integer
+      label: 'Maximum merge fields per template'
+    default_generation_mode:
+      type: string
+      label: 'Default generation mode (template_only, ai_assisted, ai_full)'
+    limits:
+      type: mapping
+      label: 'Plan-based limits'
+      mapping:
+        starter:
+          type: mapping
+          label: 'Starter plan limits'
+          mapping:
+            max_templates:
+              type: integer
+              label: 'Maximum templates (0 = unlimited)'
+            max_documents_per_month:
+              type: integer
+              label: 'Maximum documents generated per month (0 = unlimited)'
+            ai_drafting_allowed:
+              type: boolean
+              label: 'AI drafting allowed'
+        pro:
+          type: mapping
+          label: 'Pro plan limits'
+          mapping:
+            max_templates:
+              type: integer
+              label: 'Maximum templates (0 = unlimited)'
+            max_documents_per_month:
+              type: integer
+              label: 'Maximum documents generated per month (0 = unlimited)'
+            ai_drafting_allowed:
+              type: boolean
+              label: 'AI drafting allowed'
+        enterprise:
+          type: mapping
+          label: 'Enterprise plan limits'
+          mapping:
+            max_templates:
+              type: integer
+              label: 'Maximum templates (0 = unlimited)'
+            max_documents_per_month:
+              type: integer
+              label: 'Maximum documents generated per month (0 = unlimited)'
+            ai_drafting_allowed:
+              type: boolean
+              label: 'AI drafting allowed'

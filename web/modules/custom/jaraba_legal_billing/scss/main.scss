@@ -1,0 +1,11 @@
+// =============================================================================
+// Main SCSS del modulo Legal Billing (JarabaLex FASE B3)
+// Directriz: Dart Sass moderno con @use (no @import)
+// Compilacion: npm run build → css/jaraba-legal-billing.css
+// =============================================================================
+
+@use 'variables';
+@use 'billing-dashboard';
+@use 'invoice-card';
+@use 'quote-card';
+@use 'time-entry';

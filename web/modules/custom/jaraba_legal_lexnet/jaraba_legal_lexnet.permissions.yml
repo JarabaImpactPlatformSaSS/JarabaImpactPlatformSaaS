@@ -1,0 +1,31 @@
+# =============================================================================
+# Permisos del modulo Legal LexNET (JarabaLex FASE C1)
+# Estructura: permisos por funcionalidad de integracion LexNET
+# Logica: control granular de acceso para notificaciones, envios y API
+# =============================================================================
+
+# --- Acceso basico ---
+access lexnet:
+  title: 'Acceder a LexNET'
+  description: 'Ver el dashboard y las notificaciones de LexNET.'
+
+# --- Acceso API ---
+access lexnet api:
+  title: 'Acceder a la API de LexNET'
+  description: 'Acceso a los endpoints REST de la integracion LexNET.'
+
+# --- Notificaciones ---
+manage lexnet notifications:
+  title: 'Gestionar notificaciones LexNET'
+  description: 'Leer, vincular y archivar notificaciones judiciales recibidas via LexNET.'
+
+# --- Envios ---
+manage lexnet submissions:
+  title: 'Gestionar envios LexNET'
+  description: 'Crear, enviar y consultar el estado de escritos presentados via LexNET.'
+
+# --- Admin ---
+administer lexnet:
+  title: 'Administrar integracion LexNET'
+  description: 'Acceso a la configuracion global de la integracion LexNET: certificados, API y polling.'
+  restrict access: true

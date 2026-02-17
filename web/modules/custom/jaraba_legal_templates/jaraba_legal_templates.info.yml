@@ -1,0 +1,14 @@
+name: 'Jaraba Legal Templates'
+type: module
+description: 'Plantillas juridicas y generacion de documentos con IA. Motor de merge-fields, drafting asistido y vault de documentos generados. FASE C2 JarabaLex.'
+package: 'JarabaLex'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:views
+  - drupal:field_ui
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_legal_cases:jaraba_legal_cases
+configure: jaraba_legal_templates.legal_template.settings

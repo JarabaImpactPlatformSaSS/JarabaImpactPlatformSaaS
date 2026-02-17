@@ -1,0 +1,10 @@
+// =============================================================================
+// Main SCSS del modulo Legal Vault (JarabaLex FASE B1+B2)
+// Directriz: Dart Sass moderno con @use (no @import)
+// Compilacion: npm run build → css/jaraba-legal-vault.css
+// =============================================================================
+
+@use 'variables';
+@use 'vault-dashboard';
+@use 'document-card';
+@use 'audit-entry';

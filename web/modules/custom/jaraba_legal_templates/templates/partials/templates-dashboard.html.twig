@@ -1,0 +1,35 @@
+{#
+ # templates-dashboard.html.twig — Dashboard de Plantillas y Documentos.
+ #
+ # Estructura: BEM con prefijo ej-. Contenido inyectado via JS/drupalSettings.
+ # Logica: Renderiza shell; datos cargados en ZERO-REGION-001.
+ #}
+<div class="legal-templates-dashboard">
+  <div class="ej-templates-header">
+    <h2 class="ej-templates-header__title">{{ 'Plantillas y Documentos'|t }}</h2>
+    <div class="ej-templates-header__actions">
+      <button class="ej-btn ej-btn--primary" data-templates-action="new-template">
+        {{ 'Nueva Plantilla'|t }}
+      </button>
+      <button class="ej-btn ej-btn--secondary" data-templates-action="generate">
+        {{ 'Generar Documento'|t }}
+      </button>
+    </div>
+  </div>
+
+  <div class="ej-templates-filters">
+    <button class="ej-filter-chip ej-filter-chip--active" data-templates-filter="all">{{ 'Todas'|t }}</button>
+    <button class="ej-filter-chip" data-templates-filter="demanda">{{ 'Demandas'|t }}</button>
+    <button class="ej-filter-chip" data-templates-filter="contestacion">{{ 'Contestaciones'|t }}</button>
+    <button class="ej-filter-chip" data-templates-filter="recurso">{{ 'Recursos'|t }}</button>
+    <button class="ej-filter-chip" data-templates-filter="contrato">{{ 'Contratos'|t }}</button>
+    <button class="ej-filter-chip" data-templates-filter="escrito">{{ 'Escritos'|t }}</button>
+  </div>
+
+  <div class="ej-templates-grid" data-templates-list></div>
+
+  <div class="ej-documents-section">
+    <h3 class="ej-documents-section__title">{{ 'Documentos Generados Recientes'|t }}</h3>
+    <div class="ej-documents-list" data-documents-list></div>
+  </div>
+</div>

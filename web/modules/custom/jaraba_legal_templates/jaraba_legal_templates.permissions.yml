@@ -1,0 +1,32 @@
+# =============================================================================
+# Permisos del modulo Legal Templates (JarabaLex FASE C2)
+# Estructura: permisos por funcionalidad de plantillas y generacion de documentos
+# Logica: control granular para abogados, revisores y administradores
+# =============================================================================
+
+# --- Acceso general ---
+access legal templates:
+  title: 'Acceder a plantillas juridicas'
+  description: 'Ver el listado de plantillas disponibles y documentos generados.'
+
+# --- API ---
+access legal templates api:
+  title: 'Acceder a la API de plantillas'
+  description: 'Consumir los endpoints REST de plantillas y documentos generados.'
+
+# --- Gestion ---
+manage legal templates:
+  title: 'Gestionar plantillas juridicas'
+  description: 'Crear, editar y eliminar plantillas juridicas y documentos generados.'
+  restrict access: true
+
+# --- Generacion ---
+generate legal documents:
+  title: 'Generar documentos desde plantillas'
+  description: 'Ejecutar la generacion de documentos a partir de plantillas con merge-fields e IA.'
+
+# --- Admin ---
+administer legal templates:
+  title: 'Administrar configuracion de plantillas'
+  description: 'Acceso a la configuracion global del modulo Legal Templates.'
+  restrict access: true

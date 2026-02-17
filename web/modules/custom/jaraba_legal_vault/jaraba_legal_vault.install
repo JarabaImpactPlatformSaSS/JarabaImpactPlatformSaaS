@@ -1,0 +1,95 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Instalacion y actualizacion del modulo Legal Vault (JarabaLex FASE B1+B2).
+ *
+ * Estructura: Define hooks de instalacion y configuracion por defecto.
+ *
+ * Logica: La instalacion crea la configuracion por defecto del vault
+ *   y el vocabulario de taxonomia para categorias documentales.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_legal_vault_install(): void {
+  _jaraba_legal_vault_create_document_categories();
+  _jaraba_legal_vault_set_default_config();
+
+  \Drupal::messenger()->addStatus(t('Legal Vault (JarabaLex) instalado correctamente. Categorias documentales y configuracion creadas.'));
+}
+
+/**
+ * Crea las categorias documentales iniciales.
+ */
+function _jaraba_legal_vault_create_document_categories(): void {
+  $vocabulary = 'document_category';
+
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    $vocab = $vocab_storage->create([
+      'vid' => $vocabulary,
+      'name' => t('Categoria Documental'),
+      'description' => t('Categorias para clasificar documentos en la boveda segura.'),
+    ]);
+    $vocab->save();
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $existing = $term_storage->getQuery()
+    ->condition('vid', $vocabulary)
+    ->range(0, 1)
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($existing)) {
+    return;
+  }
+
+  $categories = [
+    'Escritos Procesales' => 0,
+    'Contratos' => 1,
+    'Documentos de Identidad' => 2,
+    'Documentos Fiscales' => 3,
+    'Resoluciones Judiciales' => 4,
+    'Notificaciones' => 5,
+    'Dictamenes e Informes' => 6,
+    'Poderes y Autorizaciones' => 7,
+    'Documentacion Mercantil' => 8,
+    'Documentacion Laboral' => 9,
+    'Correspondencia' => 10,
+    'Otros' => 11,
+  ];
+
+  foreach ($categories as $name => $weight) {
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $name,
+      'weight' => $weight,
+    ]);
+    $term->save();
+  }
+}
+
+/**
+ * Establece la configuracion por defecto del vault.
+ */
+function _jaraba_legal_vault_set_default_config(): void {
+  \Drupal::configFactory()->getEditable('jaraba_legal_vault.settings')
+    ->set('storage_backend', 'local')
+    ->set('encryption_algorithm', 'aes-256-gcm')
+    ->set('max_file_size_mb', 50)
+    ->set('allowed_extensions', 'pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif,zip,odt,ods')
+    ->set('share_token_expiry_hours', 720)
+    ->set('require_auth_for_shares', TRUE)
+    ->set('limits.starter.max_documents', 50)
+    ->set('limits.starter.max_storage_mb', 500)
+    ->set('limits.pro.max_documents', 500)
+    ->set('limits.pro.max_storage_mb', 5000)
+    ->set('limits.enterprise.max_documents', 0)
+    ->set('limits.enterprise.max_storage_mb', 0)
+    ->save();
+}

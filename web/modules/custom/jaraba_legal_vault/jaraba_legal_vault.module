@@ -1,0 +1,203 @@
+<?php
+
+/**
+ * @file
+ * Modulo principal de Legal Vault (JarabaLex FASE B1+B2).
+ *
+ * Estructura: Define hooks de tema, preproceso y automatizaciones para
+ *   la boveda documental segura del vertical JarabaLex.
+ *
+ * Logica: Patron de automatizacion por codigo (no ECA). Cada hook
+ *   verifica tipo de entidad para evitar conflictos.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Estructura: Registra templates Twig del modulo.
+ */
+function jaraba_legal_vault_theme(): array {
+  return [
+    'legal_vault_dashboard' => [
+      'variables' => [
+        'documents' => [],
+        'stats' => [],
+        'filters' => [],
+      ],
+    ],
+    'legal_document_card' => [
+      'template' => 'partials/document-card',
+      'variables' => [
+        'document' => NULL,
+      ],
+    ],
+    'legal_audit_entry' => [
+      'template' => 'partials/audit-entry',
+      'variables' => [
+        'entry' => NULL,
+      ],
+    ],
+    'legal_request_card' => [
+      'template' => 'partials/request-card',
+      'variables' => [
+        'request' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Anade clases CSS al <body> para paginas de vault.
+ * Logica: LEGAL-BODY-001 — Solo desde hook_preprocess_html.
+ */
+function jaraba_legal_vault_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  $map = [
+    'jaraba_legal_vault.dashboard' => [
+      'page-legal-vault',
+      'dashboard-page',
+      'full-width-layout',
+    ],
+  ];
+
+  if (isset($map[$route_name])) {
+    foreach ($map[$route_name] as $class) {
+      $variables['attributes']['class'][] = $class;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Estructura: Inyecta variables en template zero-region del vault.
+ * Logica: ZERO-REGION-003 — Variables y drupalSettings aqui, no en controller.
+ */
+function jaraba_legal_vault_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if ($route_name === 'jaraba_legal_vault.dashboard') {
+    try {
+      /** @var \Drupal\jaraba_legal_vault\Service\DocumentVaultService $service */
+      $service = \Drupal::service('jaraba_legal_vault.document_vault');
+      $result = $service->listDocuments([], 20, 0);
+
+      $documents_data = [];
+      foreach ($result['documents'] as $doc) {
+        $owner = $doc->get('owner_id')->entity;
+        $documents_data[] = [
+          'id' => (int) $doc->id(),
+          'uuid' => $doc->uuid(),
+          'title' => $doc->get('title')->value ?? '',
+          'original_filename' => $doc->get('original_filename')->value ?? '',
+          'mime_type' => $doc->get('mime_type')->value ?? '',
+          'file_size' => (int) ($doc->get('file_size')->value ?? 0),
+          'version' => (int) ($doc->get('version')->value ?? 1),
+          'is_signed' => (bool) $doc->get('is_signed')->value,
+          'status' => $doc->get('status')->value ?? '',
+          'owner' => $owner ? $owner->getDisplayName() : '',
+          'created' => $doc->get('created')->value,
+        ];
+      }
+
+      // Stats basicos.
+      $stats = _jaraba_legal_vault_get_stats();
+
+      $variables['vault_documents'] = $documents_data;
+      $variables['vault_stats'] = $stats;
+
+      $variables['#attached']['drupalSettings']['jarabaLegalVault'] = [
+        'documents' => $documents_data,
+        'stats' => $stats,
+        'apiBase' => '/api/v1/vault',
+      ];
+      $variables['#attached']['library'][] = 'jaraba_legal_vault/dashboard';
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_legal_vault')->error('Error en preprocess vault dashboard: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+      $variables['vault_documents'] = [];
+      $variables['vault_stats'] = [];
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Logica: Al crear un SecureDocument vinculado a expediente, registra
+ *   actividad 'document_uploaded' en el timeline del expediente.
+ */
+function jaraba_legal_vault_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'secure_document') {
+    $case_id = $entity->get('case_id')->target_id;
+    if ($case_id) {
+      try {
+        /** @var \Drupal\jaraba_legal_cases\Service\ActivityLoggerService $logger */
+        $logger = \Drupal::service('jaraba_legal_cases.activity_logger');
+        $case = \Drupal::entityTypeManager()->getStorage('client_case')->load($case_id);
+        if ($case) {
+          $filename = $entity->get('original_filename')->value ?? '';
+          $logger->log($case, 'document_uploaded', sprintf('Documento "%s" subido a la boveda.', $filename), [], TRUE);
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_legal_vault')->error('Error registrando actividad de upload: @msg', [
+          '@msg' => $e->getMessage(),
+        ]);
+      }
+    }
+  }
+}
+
+/**
+ * Obtiene estadisticas basicas de la boveda.
+ *
+ * @return array
+ *   KPIs: total_documents, total_active, total_shared, total_storage_mb.
+ */
+function _jaraba_legal_vault_get_stats(): array {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('secure_document');
+
+    $total = (int) $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 'deleted', '<>')
+      ->count()
+      ->execute();
+
+    $active = (int) $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 'active')
+      ->count()
+      ->execute();
+
+    $accessStorage = \Drupal::entityTypeManager()->getStorage('document_access');
+    $shared = (int) $accessStorage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('is_revoked', FALSE)
+      ->count()
+      ->execute();
+
+    return [
+      'total_documents' => $total,
+      'total_active' => $active,
+      'total_shared' => $shared,
+    ];
+  }
+  catch (\Exception $e) {
+    return [
+      'total_documents' => 0,
+      'total_active' => 0,
+      'total_shared' => 0,
+    ];
+  }
+}

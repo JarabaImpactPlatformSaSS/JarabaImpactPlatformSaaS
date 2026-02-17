@@ -1,0 +1,69 @@
+// =============================================================================
+// Tarjeta de Notificacion LexNET (JarabaLex FASE C1)
+// =============================================================================
+
+.ej-lexnet-notification {
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #E0E0E0);
+  border-radius: var(--ej-border-radius-md, 10px);
+  padding: var(--ej-spacing-md, 1rem);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-lexnet-primary, #1A237E) 10%, transparent);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ej-lexnet-primary, #1A237E);
+  }
+
+  &__badge {
+    padding: 0.15rem 0.6rem;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    &--pending { background: color-mix(in srgb, var(--ej-lexnet-pending, #FB8C00) 15%, transparent); color: var(--ej-lexnet-pending, #FB8C00); }
+    &--read { background: color-mix(in srgb, var(--ej-lexnet-read, #1976D2) 15%, transparent); color: var(--ej-lexnet-read, #1976D2); }
+    &--linked { background: color-mix(in srgb, var(--ej-lexnet-linked, #43A047) 15%, transparent); color: var(--ej-lexnet-linked, #43A047); }
+    &--archived { background: color-mix(in srgb, var(--ej-lexnet-archived, #78909C) 15%, transparent); color: var(--ej-lexnet-archived, #78909C); }
+  }
+
+  &__subject {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-legal-primary, #1E3A5F);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--ej-text-secondary, #666);
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--ej-spacing-sm, 0.5rem);
+    padding-top: var(--ej-spacing-sm, 0.5rem);
+    border-top: 1px solid var(--ej-border-color, #E0E0E0);
+    font-size: 0.8rem;
+    color: var(--ej-text-tertiary, #999);
+  }
+
+  &--pending {
+    border-left: 3px solid var(--ej-lexnet-pending, #FB8C00);
+  }
+}

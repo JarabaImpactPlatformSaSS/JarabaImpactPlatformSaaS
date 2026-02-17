@@ -1,0 +1,33 @@
+{#
+/**
+ * @file
+ * audit-entry.html.twig — Entrada de log de auditoria.
+ *
+ * Parcial reutilizable con BEM .ej-audit-entry.
+ *
+ * @param entry: array con datos de la entrada de auditoria
+ */
+#}
+{% if entry %}
+<div class="ej-audit-entry ej-audit-entry--{{ entry.action|default('viewed') }}">
+  <div class="ej-audit-entry__icon">
+    {% set action_icons = {
+      'created': 'plus-circle',
+      'viewed': 'eye',
+      'downloaded': 'download',
+      'shared': 'share',
+      'signed': 'check-circle',
+      'revoked': 'x-circle',
+      'deleted': 'trash',
+    } %}
+    <svg class="ej-icon" aria-hidden="true"><use href="#icon-{{ action_icons[entry.action]|default('file') }}"></use></svg>
+  </div>
+  <div class="ej-audit-entry__content">
+    <span class="ej-audit-entry__action">{{ entry.action|default('')|t }}</span>
+    <span class="ej-audit-entry__actor">{{ entry.actor|default('Sistema') }}</span>
+  </div>
+  <time class="ej-audit-entry__time" datetime="{{ entry.created_iso|default('') }}">
+    {{ entry.created_formatted|default('') }}
+  </time>
+</div>
+{% endif %}

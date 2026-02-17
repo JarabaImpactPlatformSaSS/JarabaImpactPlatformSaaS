@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * jaraba_legal_lexnet.install — Instalacion del modulo Legal LexNET.
+ *
+ * Estructura: hook_install para inicializar estado.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_legal_lexnet_install(): void {
+  // Inicializar estado de ultimo sync.
+  \Drupal::state()->set('jaraba_legal_lexnet.last_sync', 0);
+}

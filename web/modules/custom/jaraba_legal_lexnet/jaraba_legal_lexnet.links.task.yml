@@ -1,0 +1,18 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Legal LexNET (JarabaLex FASE C1)
+# Cada entidad aparece como una pestana en la seccion de contenido
+# =============================================================================
+
+# Tab Notificaciones LexNET en admin/content
+jaraba_legal_lexnet.lexnet_notification.collection:
+  title: 'Notificaciones LexNET'
+  route_name: entity.lexnet_notification.collection
+  base_route: system.admin_content
+  weight: 72
+
+# Tab Envios LexNET en admin/content
+jaraba_legal_lexnet.lexnet_submission.collection:
+  title: 'Envios LexNET'
+  route_name: entity.lexnet_submission.collection
+  base_route: system.admin_content
+  weight: 73

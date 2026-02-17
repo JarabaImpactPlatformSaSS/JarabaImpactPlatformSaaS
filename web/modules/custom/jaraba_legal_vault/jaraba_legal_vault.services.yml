@@ -1,0 +1,60 @@
+services:
+  # =====================================================================
+  # Canal de log dedicado para Legal Vault (JarabaLex FASE B1+B2)
+  # =====================================================================
+  logger.channel.jaraba_legal_vault:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_vault']
+
+  # =====================================================================
+  # VaultEncryptionService: Cifrado envelope AES-256-GCM
+  # Responsabilidad: generar DEK, wrap/unwrap con KEK, re-cifrar para
+  #   destinatarios. Primitivas libsodium.
+  # =====================================================================
+  jaraba_legal_vault.encryption:
+    class: Drupal\jaraba_legal_vault\Service\VaultEncryptionService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_vault'
+
+  # =====================================================================
+  # VaultAuditLogService: Auditoria inmutable con hash chain SHA-256
+  # Responsabilidad: registrar acciones, verificar integridad de cadena,
+  #   obtener trail de auditoria por documento.
+  # =====================================================================
+  jaraba_legal_vault.audit_log:
+    class: Drupal\jaraba_legal_vault\Service\VaultAuditLogService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@request_stack'
+      - '@logger.channel.jaraba_legal_vault'
+
+  # =====================================================================
+  # DocumentVaultService: CRUD de documentos cifrados
+  # Responsabilidad: almacenar, recuperar, versionar y soft-delete docs.
+  # Relaciones: usa VaultEncryptionService para cifrado, AuditLog para registro.
+  # =====================================================================
+  jaraba_legal_vault.document_vault:
+    class: Drupal\jaraba_legal_vault\Service\DocumentVaultService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_legal_vault.encryption'
+      - '@jaraba_legal_vault.audit_log'
+      - '@file_system'
+      - '@logger.channel.jaraba_legal_vault'
+
+  # =====================================================================
+  # DocumentAccessService: Control de acceso granular y comparticion
+  # Responsabilidad: compartir documentos, revocar accesos, validar tokens,
+  #   re-cifrar DEK para destinatarios.
+  # =====================================================================
+  jaraba_legal_vault.document_access:
+    class: Drupal\jaraba_legal_vault\Service\DocumentAccessService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_legal_vault.encryption'
+      - '@jaraba_legal_vault.audit_log'
+      - '@logger.channel.jaraba_legal_vault'

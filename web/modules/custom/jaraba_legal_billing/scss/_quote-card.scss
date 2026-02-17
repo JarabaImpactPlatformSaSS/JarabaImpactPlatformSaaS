@@ -1,0 +1,83 @@
+// =============================================================================
+// Tarjeta de Presupuesto (JarabaLex FASE B3)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// =============================================================================
+
+.ej-quote-card {
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #E0E0E0);
+  border-radius: var(--ej-border-radius-md, 10px);
+  padding: var(--ej-spacing-md, 1rem);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-billing-primary, #1565C0) 10%, transparent);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__number {
+    font-weight: 600;
+    font-family: var(--ej-font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.9rem;
+  }
+
+  &__badge {
+    padding: 0.15rem 0.6rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--draft { background: color-mix(in srgb, var(--ej-billing-draft, #78909C) 15%, transparent); color: var(--ej-billing-draft, #78909C); }
+    &--sent { background: color-mix(in srgb, var(--ej-billing-info, #1976D2) 15%, transparent); color: var(--ej-billing-info, #1976D2); }
+    &--viewed { background: color-mix(in srgb, var(--ej-billing-warning, #FB8C00) 15%, transparent); color: var(--ej-billing-warning, #FB8C00); }
+    &--accepted { background: color-mix(in srgb, var(--ej-billing-success, #43A047) 15%, transparent); color: var(--ej-billing-success, #43A047); }
+    &--rejected { background: color-mix(in srgb, var(--ej-billing-danger, #E53935) 15%, transparent); color: var(--ej-billing-danger, #E53935); }
+    &--expired { background: color-mix(in srgb, var(--ej-billing-draft, #78909C) 15%, transparent); color: var(--ej-billing-draft, #78909C); }
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-legal-primary, #1E3A5F);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__client {
+    font-size: 0.85rem;
+    color: var(--ej-text-secondary, #666);
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+  }
+
+  &__total {
+    font-weight: 700;
+    color: var(--ej-billing-primary, #1565C0);
+  }
+
+  &__valid {
+    color: var(--ej-text-tertiary, #999);
+  }
+
+  &__ai-badge {
+    display: inline-block;
+    margin-top: var(--ej-spacing-xs, 0.25rem);
+    padding: 0.1rem 0.5rem;
+    background: color-mix(in srgb, #9C27B0 15%, transparent);
+    color: #9C27B0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 100px;
+  }
+}

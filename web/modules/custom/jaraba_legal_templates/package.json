@@ -1,0 +1,14 @@
+{
+  "name": "jaraba-legal-templates",
+  "version": "1.0.0",
+  "description": "SCSS del modulo Legal Templates - Plantillas juridicas y generacion de documentos JarabaLex FASE C2",
+  "private": true,
+  "scripts": {
+    "build": "sass scss/main.scss:css/jaraba-legal-templates.css --style=compressed --no-source-map",
+    "build:all": "npm run build",
+    "watch": "sass --watch scss/main.scss:css/jaraba-legal-templates.css --style=compressed"
+  },
+  "devDependencies": {
+    "sass": "^1.97.3"
+  }
+}

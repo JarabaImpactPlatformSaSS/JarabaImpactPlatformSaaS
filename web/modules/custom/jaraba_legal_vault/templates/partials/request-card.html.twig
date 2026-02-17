@@ -1,0 +1,33 @@
+{#
+/**
+ * @file
+ * request-card.html.twig — Tarjeta de solicitud de documento.
+ *
+ * Parcial reutilizable con BEM .ej-request-card (FASE B2 portal).
+ *
+ * @param request: array con datos de la solicitud
+ */
+#}
+{% if request %}
+<article class="ej-request-card ej-request-card--{{ request.status|default('pending') }}">
+  <div class="ej-request-card__header">
+    <span class="ej-badge ej-badge--{{ request.status|default('pending') }}">
+      {{ request.status|default('pending')|t }}
+    </span>
+    {% if request.is_required %}
+      <span class="ej-badge ej-badge--danger">{{ 'Obligatorio'|t }}</span>
+    {% endif %}
+  </div>
+  <h3 class="ej-request-card__title">{{ request.title }}</h3>
+  {% if request.instructions %}
+    <p class="ej-request-card__instructions">{{ request.instructions }}</p>
+  {% endif %}
+  <div class="ej-request-card__footer">
+    {% if request.deadline %}
+      <span class="ej-request-card__deadline">
+        {{ 'Fecha limite:'|t }} {{ request.deadline }}
+      </span>
+    {% endif %}
+  </div>
+</article>
+{% endif %}

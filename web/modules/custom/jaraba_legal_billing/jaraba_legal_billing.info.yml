@@ -1,0 +1,14 @@
+name: 'Jaraba Legal Billing'
+type: module
+description: 'Facturacion legal, control de tiempo, presupuestos y catalogo de servicios. Modulo de facturacion del vertical JarabaLex (FASE B3).'
+package: 'JarabaLex'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:views
+  - drupal:field_ui
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - jaraba_legal_cases:jaraba_legal_cases
+configure: jaraba_legal_billing.billing.settings

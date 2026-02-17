@@ -1,0 +1,42 @@
+{#
+ # document-card.html.twig — Tarjeta de documento generado.
+ #
+ # Variables:
+ #   - document: objeto serializado de GeneratedDocument.
+ #}
+{% if document %}
+<article class="ej-document-card ej-document-card--{{ document.status|default('draft') }}">
+  <div class="ej-document-card__header">
+    {% set mode_labels = {
+      'template_only': 'Plantilla',
+      'ai_assisted': 'IA Asistida',
+      'ai_full': 'IA Completa',
+    } %}
+    <span class="ej-document-card__mode">{{ mode_labels[document.generation_mode]|default('Plantilla') }}</span>
+    {% set status_labels = {
+      'draft': 'Borrador',
+      'reviewing': 'En Revision',
+      'approved': 'Aprobado',
+      'finalized': 'Finalizado',
+    } %}
+    <span class="ej-document-card__status ej-document-card__status--{{ document.status|default('draft') }}">
+      {{ status_labels[document.status]|default('Borrador') }}
+    </span>
+  </div>
+  <h4 class="ej-document-card__title">{{ document.title|default('') }}</h4>
+  <div class="ej-document-card__meta">
+    {% if document.ai_model_version %}
+      <span class="ej-document-card__ai-model">{{ document.ai_model_version }}</span>
+    {% endif %}
+    <span class="ej-document-card__date">{{ document.created|default('') }}</span>
+  </div>
+  <div class="ej-document-card__actions">
+    <button class="ej-btn ej-btn--sm ej-btn--outline" data-document-action="view" data-document-uuid="{{ document.uuid }}">
+      {{ 'Ver'|t }}
+    </button>
+    <button class="ej-btn ej-btn--sm ej-btn--outline" data-document-action="edit" data-document-uuid="{{ document.uuid }}">
+      {{ 'Editar'|t }}
+    </button>
+  </div>
+</article>
+{% endif %}

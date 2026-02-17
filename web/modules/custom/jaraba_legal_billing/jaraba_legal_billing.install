@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * jaraba_legal_billing.install — Instalacion y actualizaciones del modulo.
+ *
+ * Estructura: hook_install para crear taxonomias y config por defecto.
+ * Logica: Crea vocabulario 'service_category' con categorias iniciales.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_legal_billing_install(): void {
+  // Crear vocabulario de categorias de servicios si no existe.
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load('service_category')) {
+    $vocab_storage->create([
+      'vid' => 'service_category',
+      'name' => 'Categorias de Servicios Juridicos',
+      'description' => 'Categorias para el catalogo de servicios legales.',
+    ])->save();
+  }
+
+  // Crear terminos iniciales.
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $categories = [
+    'Derecho Civil',
+    'Derecho Penal',
+    'Derecho Laboral',
+    'Derecho Mercantil',
+    'Derecho Administrativo',
+    'Derecho Fiscal y Tributario',
+    'Derecho de Familia',
+    'Derecho Inmobiliario',
+    'Propiedad Intelectual',
+    'Derecho de Extranjeria',
+    'Derecho Concursal',
+    'Compliance y Proteccion de Datos',
+  ];
+
+  foreach ($categories as $weight => $name) {
+    $existing = $term_storage->loadByProperties([
+      'vid' => 'service_category',
+      'name' => $name,
+    ]);
+    if (empty($existing)) {
+      $term_storage->create([
+        'vid' => 'service_category',
+        'name' => $name,
+        'weight' => $weight,
+      ])->save();
+    }
+  }
+}

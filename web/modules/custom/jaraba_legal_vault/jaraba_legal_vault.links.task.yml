@@ -1,0 +1,18 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Legal Vault (JarabaLex FASE B1+B2)
+# Cada entidad aparece como una pestana en la seccion de contenido
+# =============================================================================
+
+# Tab Documentos Seguros en admin/content
+jaraba_legal_vault.secure_document.collection:
+  title: 'Documentos Seguros'
+  route_name: entity.secure_document.collection
+  base_route: system.admin_content
+  weight: 75
+
+# Tab Solicitudes en admin/content
+jaraba_legal_vault.document_request.collection:
+  title: 'Solicitudes de Documentos'
+  route_name: entity.document_request.collection
+  base_route: system.admin_content
+  weight: 76

@@ -1,0 +1,49 @@
+# =============================================================================
+# Servicios del modulo Legal Billing (JarabaLex FASE B3)
+# Estructura: Services DI para facturacion, tiempo, presupuestos y Stripe
+# =============================================================================
+
+services:
+
+  logger.channel.jaraba_legal_billing:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_billing']
+
+  jaraba_legal_billing.time_tracker:
+    class: Drupal\jaraba_legal_billing\Service\TimeTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_billing'
+
+  jaraba_legal_billing.invoice_manager:
+    class: Drupal\jaraba_legal_billing\Service\InvoiceManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@config.factory'
+      - '@jaraba_legal_billing.time_tracker'
+      - '@logger.channel.jaraba_legal_billing'
+
+  jaraba_legal_billing.stripe_invoice:
+    class: Drupal\jaraba_legal_billing\Service\StripeInvoiceService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_billing'
+
+  jaraba_legal_billing.quote_manager:
+    class: Drupal\jaraba_legal_billing\Service\QuoteManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@config.factory'
+      - '@jaraba_legal_billing.invoice_manager'
+      - '@logger.channel.jaraba_legal_billing'
+
+  jaraba_legal_billing.quote_estimator:
+    class: Drupal\jaraba_legal_billing\Service\QuoteEstimatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_billing'

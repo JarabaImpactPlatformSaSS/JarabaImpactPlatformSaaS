@@ -1,0 +1,21 @@
+# =============================================================================
+# Configuracion por defecto del modulo Legal Vault (JarabaLex FASE B1+B2)
+# Se instala automaticamente con el modulo. Valores editables en admin.
+# =============================================================================
+
+storage_backend: 'local'
+encryption_algorithm: 'aes-256-gcm'
+max_file_size_mb: 50
+allowed_extensions: 'pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,jpg,jpeg,png,gif,zip,rar,txt,csv,xml'
+share_token_expiry_hours: 168
+require_auth_for_shares: false
+limits:
+  starter:
+    max_documents: 100
+    max_storage_mb: 500
+  pro:
+    max_documents: 1000
+    max_storage_mb: 5000
+  enterprise:
+    max_documents: 0
+    max_storage_mb: 0

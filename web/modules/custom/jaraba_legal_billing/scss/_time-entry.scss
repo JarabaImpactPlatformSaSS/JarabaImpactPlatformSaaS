@@ -1,0 +1,52 @@
+// =============================================================================
+// Entrada de Tiempo (JarabaLex FASE B3)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// =============================================================================
+
+.ej-time-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-sm, 0.5rem) 0;
+  border-bottom: 1px solid var(--ej-border-color-light, #F0F0F0);
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: var(--ej-billing-primary, #1565C0);
+  }
+
+  &--non-billable &__icon {
+    color: var(--ej-text-tertiary, #999);
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__description {
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  &__case {
+    font-size: 0.8rem;
+    color: var(--ej-text-secondary, #666);
+  }
+
+  &__duration {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ej-billing-primary, #1565C0);
+    white-space: nowrap;
+  }
+
+  &__rate {
+    font-size: 0.75rem;
+    color: var(--ej-text-tertiary, #999);
+    white-space: nowrap;
+  }
+}

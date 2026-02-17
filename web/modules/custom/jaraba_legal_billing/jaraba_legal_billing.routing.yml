@@ -1,0 +1,311 @@
+# =============================================================================
+# Rutas del modulo Legal Billing (JarabaLex FASE B3)
+# Estructura: settings (Field UI), frontend zero-region y API REST
+# =============================================================================
+
+# --- Settings Routes (Field UI) ---
+
+jaraba_legal_billing.billing.settings:
+  path: '/admin/structure/billing'
+  defaults:
+    _form: '\Drupal\jaraba_legal_billing\Form\BillingSettingsForm'
+    _title: 'Configuracion de Facturacion'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_legal_billing.invoice.settings:
+  path: '/admin/structure/billing/invoices'
+  defaults:
+    _form: '\Drupal\jaraba_legal_billing\Form\BillingSettingsForm'
+    _title: 'Configuracion de Facturas'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_legal_billing.quote.settings:
+  path: '/admin/structure/billing/quotes'
+  defaults:
+    _form: '\Drupal\jaraba_legal_billing\Form\BillingSettingsForm'
+    _title: 'Configuracion de Presupuestos'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_legal_billing.time_entry.settings:
+  path: '/admin/structure/billing/time-entries'
+  defaults:
+    _form: '\Drupal\jaraba_legal_billing\Form\BillingSettingsForm'
+    _title: 'Configuracion de Control de Tiempo'
+  requirements:
+    _permission: 'administer billing'
+
+# --- Frontend Zero-Region ---
+
+jaraba_legal_billing.dashboard:
+  path: '/legal/billing'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingDashboardController::dashboard'
+    _title: 'Facturacion Legal'
+  requirements:
+    _permission: 'access billing'
+
+# --- API REST — Time Entries ---
+
+jaraba_legal_billing.api.time.store:
+  path: '/api/v1/legal/billing/time-entries'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::storeTimeEntry'
+  methods: [POST]
+  requirements:
+    _permission: 'manage time entries'
+
+jaraba_legal_billing.api.time.list:
+  path: '/api/v1/legal/billing/time-entries'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::listTimeEntries'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+
+jaraba_legal_billing.api.time.detail:
+  path: '/api/v1/legal/billing/time-entries/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::timeEntryDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.time.update:
+  path: '/api/v1/legal/billing/time-entries/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::updateTimeEntry'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage time entries'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.time.delete:
+  path: '/api/v1/legal/billing/time-entries/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::deleteTimeEntry'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage time entries'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Invoices ---
+
+jaraba_legal_billing.api.invoices.store:
+  path: '/api/v1/legal/billing/invoices'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::storeInvoice'
+  methods: [POST]
+  requirements:
+    _permission: 'manage invoices'
+
+jaraba_legal_billing.api.invoices.from_quote:
+  path: '/api/v1/legal/billing/invoices/from-quote/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::invoiceFromQuote'
+  methods: [POST]
+  requirements:
+    _permission: 'manage invoices'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.list:
+  path: '/api/v1/legal/billing/invoices'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::listInvoices'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+
+jaraba_legal_billing.api.invoices.detail:
+  path: '/api/v1/legal/billing/invoices/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::invoiceDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.update:
+  path: '/api/v1/legal/billing/invoices/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::updateInvoice'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage invoices'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.issue:
+  path: '/api/v1/legal/billing/invoices/{uuid}/issue'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::issueInvoice'
+  methods: [POST]
+  requirements:
+    _permission: 'manage invoices'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.send:
+  path: '/api/v1/legal/billing/invoices/{uuid}/send'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::sendInvoice'
+  methods: [POST]
+  requirements:
+    _permission: 'manage invoices'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.mark_paid:
+  path: '/api/v1/legal/billing/invoices/{uuid}/mark-paid'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::markPaid'
+  methods: [POST]
+  requirements:
+    _permission: 'manage invoices'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.pdf:
+  path: '/api/v1/legal/billing/invoices/{uuid}/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::invoicePdf'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.invoices.credit_note:
+  path: '/api/v1/legal/billing/invoices/{uuid}/credit-note'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::createCreditNote'
+  methods: [POST]
+  requirements:
+    _permission: 'manage invoices'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Stripe Webhook ---
+
+jaraba_legal_billing.api.webhooks.stripe:
+  path: '/api/v1/legal/billing/webhooks/stripe'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\BillingApiController::stripeWebhook'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# --- API REST — Quotes ---
+
+jaraba_legal_billing.api.quotes.store:
+  path: '/api/v1/legal/billing/quotes'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::store'
+  methods: [POST]
+  requirements:
+    _permission: 'manage quotes'
+
+jaraba_legal_billing.api.quotes.generate:
+  path: '/api/v1/legal/billing/quotes/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::generate'
+  methods: [POST]
+  requirements:
+    _permission: 'manage quotes'
+
+jaraba_legal_billing.api.quotes.list:
+  path: '/api/v1/legal/billing/quotes'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::listQuotes'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+
+jaraba_legal_billing.api.quotes.detail:
+  path: '/api/v1/legal/billing/quotes/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::detail'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.quotes.update:
+  path: '/api/v1/legal/billing/quotes/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::update'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage quotes'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.quotes.send:
+  path: '/api/v1/legal/billing/quotes/{uuid}/send'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::sendQuote'
+  methods: [POST]
+  requirements:
+    _permission: 'manage quotes'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.quotes.duplicate:
+  path: '/api/v1/legal/billing/quotes/{uuid}/duplicate'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::duplicateQuote'
+  methods: [POST]
+  requirements:
+    _permission: 'manage quotes'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_billing.api.quotes.pdf:
+  path: '/api/v1/legal/billing/quotes/{uuid}/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::quotePdf'
+  methods: [GET]
+  requirements:
+    _permission: 'access billing api'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Quote Portal (token-based, public) ---
+
+jaraba_legal_billing.api.quotes.portal.view:
+  path: '/api/v1/legal/billing/quotes/view/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::portalView'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_billing.api.quotes.portal.accept:
+  path: '/api/v1/legal/billing/quotes/view/{token}/accept'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::portalAccept'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_billing.api.quotes.portal.reject:
+  path: '/api/v1/legal/billing/quotes/view/{token}/reject'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::portalReject'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_billing.api.quotes.portal.negotiate:
+  path: '/api/v1/legal/billing/quotes/view/{token}/negotiate'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::portalNegotiate'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_billing.api.quotes.portal.pdf:
+  path: '/api/v1/legal/billing/quotes/view/{token}/pdf'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_billing\Controller\QuoteApiController::portalPdf'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'

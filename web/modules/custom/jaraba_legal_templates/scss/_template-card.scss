@@ -1,0 +1,72 @@
+// =============================================================================
+// _template-card.scss — Tarjeta de plantilla juridica
+// Directriz: BEM con ej- prefix
+// =============================================================================
+
+@use 'variables';
+
+.ej-template-card {
+  background: var(--ej-templates-surface);
+  border: 1px solid var(--ej-templates-border);
+  border-radius: var(--ej-templates-radius);
+  padding: 1rem;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px #{color-mix(in srgb, #000 8%, transparent)};
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  &__type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: var(--ej-templates-primary);
+  }
+
+  &__badge {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+
+    &--system {
+      background: var(--ej-templates-primary-light);
+      color: var(--ej-templates-primary);
+    }
+  }
+
+  &__name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ej-templates-text);
+    margin: 0 0 0.5rem;
+    line-height: 1.3;
+  }
+
+  &__meta {
+    font-size: 0.8125rem;
+    color: var(--ej-templates-text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  // Variantes por tipo de plantilla.
+  &--demanda { border-left: 3px solid var(--ej-templates-type-demanda); }
+  &--contestacion { border-left: 3px solid var(--ej-templates-type-contestacion); }
+  &--recurso { border-left: 3px solid var(--ej-templates-type-recurso); }
+  &--contrato { border-left: 3px solid var(--ej-templates-type-contrato); }
+  &--escrito { border-left: 3px solid var(--ej-templates-type-escrito); }
+  &--dictamen { border-left: 3px solid var(--ej-templates-type-dictamen); }
+}

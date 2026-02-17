@@ -326,6 +326,7 @@ grapesjs-canvas:
     js/grapesjs-jaraba-thumbnails.js: {}
     js/grapesjs-jaraba-icons.js: {}
     js/grapesjs-jaraba-blocks.js: {}
+    js/grapesjs-jaraba-legal-blocks.js: {}
     js/grapesjs-jaraba-command-palette.js: {}
     js/grapesjs-jaraba-partials.js: {}
     js/grapesjs-jaraba-ai.js: {}

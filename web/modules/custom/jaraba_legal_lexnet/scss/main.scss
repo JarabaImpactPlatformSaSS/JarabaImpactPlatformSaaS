@@ -1,0 +1,9 @@
+// =============================================================================
+// Main SCSS del modulo Legal LexNET (JarabaLex FASE C1)
+// Directriz: Dart Sass moderno con @use (no @import)
+// Compilacion: npm run build → css/jaraba-legal-lexnet.css
+// =============================================================================
+
+@use 'variables';
+@use 'lexnet-dashboard';
+@use 'notification-card';

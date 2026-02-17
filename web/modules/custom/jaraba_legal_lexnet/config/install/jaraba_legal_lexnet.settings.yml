@@ -1,0 +1,7 @@
+# =============================================================================
+# Configuracion por defecto del modulo Legal LexNET (JarabaLex FASE C1)
+# =============================================================================
+
+cert_path: ''
+api_url: 'https://lexnet.justicia.es/api/v1'
+polling_interval: 15

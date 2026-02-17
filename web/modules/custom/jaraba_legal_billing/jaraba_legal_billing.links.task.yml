@@ -1,0 +1,25 @@
+# =============================================================================
+# Tabs en /admin/content para entidades de Legal Billing (JarabaLex FASE B3)
+# Cada entidad aparece como una pestana en la seccion de contenido
+# =============================================================================
+
+# Tab Facturas en admin/content
+jaraba_legal_billing.legal_invoice.collection:
+  title: 'Facturas'
+  route_name: entity.legal_invoice.collection
+  base_route: system.admin_content
+  weight: 75
+
+# Tab Presupuestos en admin/content
+jaraba_legal_billing.quote.collection:
+  title: 'Presupuestos'
+  route_name: entity.quote.collection
+  base_route: system.admin_content
+  weight: 76
+
+# Tab Tiempo en admin/content
+jaraba_legal_billing.time_entry.collection:
+  title: 'Control de Tiempo'
+  route_name: entity.time_entry.collection
+  base_route: system.admin_content
+  weight: 77
