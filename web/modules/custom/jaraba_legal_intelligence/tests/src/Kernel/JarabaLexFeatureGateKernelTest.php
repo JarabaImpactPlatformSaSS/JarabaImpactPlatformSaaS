@@ -110,7 +110,8 @@ class JarabaLexFeatureGateKernelTest extends KernelTestBase {
    * Tests that the legal_citation_graph table schema is declared.
    */
   public function testSchemaDeclaresLegalCitationGraph(): void {
-    // Verify the schema is declared via hook_schema().
+    // Load the .install file which declares hook_schema().
+    $this->container->get('module_handler')->loadInclude('jaraba_legal_intelligence', 'install');
     $schema = jaraba_legal_intelligence_schema();
     $this->assertArrayHasKey('legal_citation_graph', $schema, 'hook_schema() must declare legal_citation_graph table.');
     $this->assertArrayHasKey('fields', $schema['legal_citation_graph']);
