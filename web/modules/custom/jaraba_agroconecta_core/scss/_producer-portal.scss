@@ -12,7 +12,7 @@ $producer-text-muted: var(--color-text-muted, #6c757d);
 $producer-border: var(--color-border, #e0e0e0);
 $producer-radius: var(--radius-md, 12px);
 $producer-radius-sm: var(--radius-sm, 8px);
-$producer-shadow: var(--shadow-card, 0 2px 12px rgba(0, 0, 0, 0.06));
+$producer-shadow: var(--shadow-card, 0 2px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent));
 $producer-gap: var(--spacing-lg, 24px);
 
 .producer-portal {
@@ -200,7 +200,7 @@ $producer-gap: var(--spacing-lg, 24px);
         padding: 12px 0;
         font-size: 14px;
         align-items: center;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #2D3436) 4%, transparent);
     }
 
     // Full table
@@ -308,7 +308,7 @@ $producer-gap: var(--spacing-lg, 24px);
         gap: 12px;
         align-items: center;
         padding: 10px 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #2D3436) 4%, transparent);
     }
 
     &__top-rank {
@@ -317,7 +317,7 @@ $producer-gap: var(--spacing-lg, 24px);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(45, 122, 58, 0.1);
+        background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 10%, transparent);
         color: $producer-primary;
         border-radius: 50%;
         font-weight: 700;
@@ -401,7 +401,7 @@ $producer-gap: var(--spacing-lg, 24px);
         justify-content: space-between;
         padding: 8px 0;
         font-size: 14px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #2D3436) 4%, transparent);
 
         &--total {
             font-weight: 700;
@@ -424,7 +424,7 @@ $producer-gap: var(--spacing-lg, 24px);
         justify-content: space-between;
         padding: 6px 0;
         font-size: 13px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #2D3436) 4%, transparent);
     }
 
     &__back {

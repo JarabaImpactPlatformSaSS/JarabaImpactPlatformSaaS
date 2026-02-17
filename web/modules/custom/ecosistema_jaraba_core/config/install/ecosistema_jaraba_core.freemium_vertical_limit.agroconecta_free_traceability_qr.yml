@@ -1,0 +1,11 @@
+id: agroconecta_free_traceability_qr
+label: 'AgroConecta Free: Trazabilidad QR'
+vertical: agroconecta
+plan: free
+feature_key: traceability_qr
+limit_value: 0
+description: 'Trazabilidad QR no disponible en plan gratuito AgroConecta.'
+upgrade_message: 'La trazabilidad QR genera confianza en tus clientes. Disponible desde Starter.'
+expected_conversion: 0.30
+weight: 0
+status: true

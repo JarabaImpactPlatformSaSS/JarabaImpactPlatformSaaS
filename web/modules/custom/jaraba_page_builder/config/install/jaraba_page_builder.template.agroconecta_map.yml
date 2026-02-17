@@ -23,6 +23,22 @@ fields_schema:
       type: string
       title: 'Imagen'
       format: image
+    map_embed:
+      type: string
+      title: 'Codigo de Mapa'
+      format: html
+    address:
+      type: string
+      title: 'Direccion'
+      maxLength: 200
+    phone:
+      type: string
+      title: 'Telefono'
+      maxLength: 30
+    email:
+      type: string
+      title: 'Email'
+      format: email
     cta_text:
       type: string
       title: 'Texto del Boton'
@@ -31,13 +47,29 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    working_hours:
+      type: array
+      items:
+        type: object
+        properties:
+          days:
+            type: string
+            maxLength: 50
+          open:
+            type: string
+            maxLength: 10
+          close:
+            type: string
+            maxLength: 10
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-map.png'
 weight: 7
 preview_data:
   title: 'Ubicacion de la Finca'

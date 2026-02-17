@@ -1,0 +1,10 @@
+id: agroconecta_monetization
+label: 'AgroConecta: Monetizacion'
+vertical: agroconecta
+steps:
+  - { key: limit_reached, label: 'Limite Alcanzado', event: agro_upgrade_modal }
+  - { key: checkout_started, label: 'Checkout Iniciado', event: agro_checkout_started }
+  - { key: payment_completed, label: 'Pago Completado', event: agro_upgrade_completed }
+conversion_window_hours: 72
+is_active: true
+status: true

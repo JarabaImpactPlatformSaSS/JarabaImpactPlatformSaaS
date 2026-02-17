@@ -4,15 +4,37 @@
  # Type: pricing
  #
  # Header + 3 pricing cards
+ # Premium: animations, annual/monthly toggle, jaraba_icon checkmarks, featured ribbon
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--pricing pb-section--agroconecta"
-         aria-label="{{ title|default('Nuestras Cajas')|t }}">
+<section class="pb-section pb-section--pricing pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestras Cajas')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Suscripciones')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Elige tu caja de productos frescos')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Recibe productos de temporada directamente del productor cada semana.')|t }}</p>
     </div>
+    {% if show_toggle|default(false) %}
+      <div class="pb-section__pricing-toggle" role="radiogroup" aria-label="{{ 'Frecuencia de pago'|t }}">
+        <button type="button"
+                class="pb-section__pricing-toggle-btn pb-section__pricing-toggle-btn--active"
+                data-pricing-period="weekly"
+                aria-pressed="true">
+          {{ toggle_label_weekly|default('Semanal')|t }}
+        </button>
+        <button type="button"
+                class="pb-section__pricing-toggle-btn"
+                data-pricing-period="monthly"
+                aria-pressed="false">
+          {{ toggle_label_monthly|default('Mensual')|t }}
+          {% if toggle_discount|default('') %}
+            <span class="pb-section__pricing-toggle-discount">{{ toggle_discount }}</span>
+          {% endif %}
+        </button>
+      </div>
+    {% endif %}
     <div class="pb-section__pricing-grid">
       {% set default_plans = [
         { name: 'Caja Huerta', price: '19€', period: '/semana', featured: false, cta: 'Suscribirse', features: ['5 kg de verduras', 'Productos de temporada', 'Entrega semanal'] },
@@ -21,7 +43,15 @@
       ] %}
       {% set items = plans|default(default_plans) %}
       {% for plan in items %}
-        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}">
+        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}"
+             aria-label="{{ 'Plan @name por @price @period'|t({'@name': plan.name|default('Plan'), '@price': plan.price|default('0€'), '@period': plan.period|default('/semana')}) }}"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 150 }}">
+          {% if plan.featured|default(false) %}
+            <div class="pb-section__pricing-ribbon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'star', { variant: 'filled', size: '14px', color: 'warning' }) }}
+            </div>
+          {% endif %}
           {% if plan.badge|default('') %}
             <span class="pb-section__pricing-badge">{{ plan.badge|t }}</span>
           {% endif %}
@@ -30,7 +60,10 @@
           <div class="pb-section__pricing-period">{{ plan.period|default('/semana')|t }}</div>
           <ul class="pb-section__pricing-features">
             {% for feature in plan.features|default([]) %}
-              <li>{{ feature|t }}</li>
+              <li>
+                <span class="pb-section__pricing-check" aria-hidden="true">{{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}</span>
+                {{ feature|t }}
+              </li>
             {% endfor %}
           </ul>
           <a href="{{ plan.url|default('#') }}" class="pb-section__cta pb-section__cta--primary">

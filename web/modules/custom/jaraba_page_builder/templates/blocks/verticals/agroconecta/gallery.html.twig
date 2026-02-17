@@ -3,17 +3,20 @@
  # Category: agroconecta
  # Type: gallery
  #
- # Header + grid responsive de imágenes
+ # Header + grid responsive de imágenes con lightbox
+ # Premium: masonry layout, lightbox, staggered animations, lazy loading, hover overlay
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--gallery pb-section--agroconecta"
-         aria-label="{{ title|default('Galería de la Finca')|t }}">
+<section class="pb-section pb-section--gallery pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Galería de la Finca')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Galería')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Del campo a tu mesa')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Imágenes reales de nuestros cultivos, cosechas y procesos de producción.')|t }}</p>
     </div>
-    <div class="pb-section__gallery-grid">
+    <div class="pb-section__gallery-grid pb-section__gallery-grid--{{ layout|default('grid') }}">
       {% set default_gallery = [
         { alt: 'Cosecha 1', caption: 'Cosecha de temporada' },
         { alt: 'Cosecha 2', caption: 'Huerta orgánica' },
@@ -24,11 +27,18 @@
       ] %}
       {% set items = gallery|default(default_gallery) %}
       {% for item in items %}
-        <figure class="pb-section__gallery-item">
+        <figure class="pb-section__gallery-item"
+                data-effect="fade-up"
+                data-delay="{{ loop.index0 * 100 }}">
           {% if item.src|default('') %}
-            <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
+            <a href="{{ item.src }}" data-lightbox="agroconecta-gallery" data-title="{{ item.caption|default('') }}">
+              <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" decoding="async" />
+              <div class="pb-section__gallery-overlay">
+                {{ jaraba_icon('ui', 'zoom-in', { variant: 'duotone', size: '24px', color: 'white' }) }}
+              </div>
+            </a>
           {% else %}
-            <div class="pb-section__img-placeholder" aria-hidden="true">&#127806;</div>
+            <div class="pb-section__img-placeholder" aria-hidden="true">{{ jaraba_icon('ui', 'seedling', { variant: 'duotone', size: '48px', color: 'primary' }) }}</div>
           {% endif %}
           {% if item.caption|default('') %}
             <figcaption>{{ item.caption|t }}</figcaption>

@@ -30,15 +30,15 @@
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
-    box-shadow: 0 4px 20px rgba(46, 125, 50, 0.35),
-        0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--ej-agro-primary, #2e7d32) 35%, transparent),
+        0 2px 6px color-mix(in srgb, var(--ej-color-text, #2D3436) 10%, transparent);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 0.3s ease;
     animation: agro-sales-pulse 2s ease-in-out 3;
 
     &:hover {
         transform: scale(1.08);
-        box-shadow: 0 6px 28px rgba(46, 125, 50, 0.45);
+        box-shadow: 0 6px 28px color-mix(in srgb, var(--ej-agro-primary, #2e7d32) 45%, transparent);
     }
 
     &--open {
@@ -68,11 +68,11 @@
 
     0%,
     100% {
-        box-shadow: 0 4px 20px rgba(46, 125, 50, 0.35);
+        box-shadow: 0 4px 20px color-mix(in srgb, var(--ej-agro-primary, #2e7d32) 35%, transparent);
     }
 
     50% {
-        box-shadow: 0 4px 30px rgba(46, 125, 50, 0.6), 0 0 0 8px rgba(46, 125, 50, 0.12);
+        box-shadow: 0 4px 30px color-mix(in srgb, var(--ej-agro-primary, #2e7d32) 60%, transparent), 0 0 0 8px color-mix(in srgb, var(--ej-agro-primary, #2e7d32) 12%, transparent);
     }
 }
 
@@ -87,8 +87,8 @@
     max-height: 580px;
     background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-radius-xl, 16px);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.14),
-        0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 48px color-mix(in srgb, var(--ej-color-text, #2D3436) 14%, transparent),
+        0 2px 8px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent);
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -154,7 +154,7 @@
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.12);
+        background: color-mix(in srgb, #fff 12%, transparent);
         border: none;
         color: var(--ej-color-white, #fff);
         font-size: 1rem;
@@ -165,7 +165,7 @@
         transition: background 0.2s ease;
 
         &:hover {
-            background: rgba(255, 255, 255, 0.24);
+            background: color-mix(in srgb, #fff 24%, transparent);
         }
     }
 

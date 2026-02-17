@@ -4,9 +4,13 @@
  # Type: content
  #
  # Grid 2 columnas: texto + media
+ # Premium: entrance animation, configurable layout direction, background image on media, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ # - layout: 'left' (default) or 'right' to toggle text/media position
  #}
-<section class="pb-section pb-section--content pb-section--agroconecta"
-         aria-label="{{ title|default('Nuestro Origen')|t }}">
+<section class="pb-section pb-section--content pb-section--content--{{ layout|default('left') }} pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestro Origen')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__text">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Origen')|t }}</span>
@@ -23,11 +27,14 @@
         </div>
       {% endif %}
     </div>
-    <div class="pb-section__media">
+    <div class="pb-section__media"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#127806;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'seedling', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

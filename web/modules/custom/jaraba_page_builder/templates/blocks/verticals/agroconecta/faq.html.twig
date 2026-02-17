@@ -4,9 +4,42 @@
  # Type: faq
  #
  # Header + accordion con <details>/<summary>
+ # Premium: animations, FAQ schema JSON-LD, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--faq pb-section--agroconecta"
-         aria-label="{{ title|default('Preguntas frecuentes')|t }}">
+{% set default_faqs = [
+  { question: '¿Los productos son orgánicos?', answer: 'Todos nuestros productores cuentan con certificación ecológica verificada. Puedes consultar los sellos de cada producto en su ficha.' },
+  { question: '¿Cómo se garantiza la frescura?', answer: 'Los productos se cosechan bajo pedido y se entregan en un máximo de 48 horas, asegurando la máxima frescura.' },
+  { question: '¿Puedo visitar la finca?', answer: 'Sí, muchos de nuestros productores ofrecen visitas guiadas. Consulta la disponibilidad en el perfil de cada productor.' },
+  { question: '¿Cuál es la zona de entrega?', answer: 'Cubrimos toda la provincia y zonas limítrofes. Introduce tu código postal para verificar la cobertura.' },
+  { question: '¿Cómo me hago productor en AgroConecta?', answer: 'Puedes registrarte como productor desde la plataforma. Verificaremos tu explotación y certificaciones antes de activar tu perfil.' }
+] %}
+{% set items = faqs|default(default_faqs) %}
+
+{% if items is not empty %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for faq in items %}
+    {
+      "@type": "Question",
+      "name": "{{ faq.question|default('Pregunta')|e('js') }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ faq.answer|default('Respuesta.')|e('js') }}"
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+
+<section class="pb-section pb-section--faq pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Preguntas frecuentes')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
@@ -14,17 +47,14 @@
       <p class="pb-section__subtitle">{{ subtitle|default('Todo lo que necesitas saber sobre nuestros productos y productores.')|t }}</p>
     </div>
     <div class="pb-section__faq-list">
-      {% set default_faqs = [
-        { question: '¿Los productos son orgánicos?', answer: 'Todos nuestros productores cuentan con certificación ecológica verificada. Puedes consultar los sellos de cada producto en su ficha.' },
-        { question: '¿Cómo se garantiza la frescura?', answer: 'Los productos se cosechan bajo pedido y se entregan en un máximo de 48 horas, asegurando la máxima frescura.' },
-        { question: '¿Puedo visitar la finca?', answer: 'Sí, muchos de nuestros productores ofrecen visitas guiadas. Consulta la disponibilidad en el perfil de cada productor.' },
-        { question: '¿Cuál es la zona de entrega?', answer: 'Cubrimos toda la provincia y zonas limítrofes. Introduce tu código postal para verificar la cobertura.' },
-        { question: '¿Cómo me hago productor en AgroConecta?', answer: 'Puedes registrarte como productor desde la plataforma. Verificaremos tu explotación y certificaciones antes de activar tu perfil.' }
-      ] %}
-      {% set items = faqs|default(default_faqs) %}
       {% for faq in items %}
-        <details class="pb-section__faq-item">
-          <summary>{{ faq.question|default('Pregunta')|t }}</summary>
+        <details class="pb-section__faq-item"
+                 data-effect="fade-up"
+                 data-delay="{{ loop.index0 * 100 }}">
+          <summary>
+            <span class="pb-section__faq-question">{{ faq.question|default('Pregunta')|t }}</span>
+            <span class="pb-section__faq-icon" aria-hidden="true">{{ jaraba_icon('ui', 'chevron-down', { size: '20px' }) }}</span>
+          </summary>
           <div class="pb-section__faq-answer">
             {{ faq.answer|default('Respuesta.')|t }}
           </div>

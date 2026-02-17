@@ -183,6 +183,8 @@ class FeatureAccessService {
       'credentials_advanced' => 'Credentials Avanzado (Stacks + Portabilidad)',
       // Plan Elevación JarabaLex v1 — Fase 4.
       'jaraba_legal_intelligence' => 'JarabaLex Inteligencia Legal',
+      // Plan Elevación AgroConecta Clase Mundial v1 — Fase 0.
+      'jaraba_agroconecta_core' => 'AgroConecta Marketplace',
     ];
 
     $activeAddons = $this->getActiveAddons($tenantId);

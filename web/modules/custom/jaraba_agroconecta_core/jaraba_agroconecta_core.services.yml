@@ -10,6 +10,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.factory'
+      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
   jaraba_agroconecta.producer_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProducerProfileService
@@ -32,6 +33,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.factory'
+      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
   jaraba_agroconecta.stripe_payment_service:
     class: Drupal\jaraba_agroconecta_core\Service\StripePaymentService
@@ -40,6 +42,7 @@ services:
       - '@entity_type.manager'
       - '@logger.factory'
       - '@config.factory'
+      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
   jaraba_agroconecta.producer_dashboard_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProducerDashboardService
@@ -116,6 +119,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@jaraba_ai_agents.producer_copilot_agent'
+      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # Fase 9: Demand Forecaster (Doc 67 §4.4)
 
@@ -178,3 +182,11 @@ services:
     class: Drupal\jaraba_agroconecta_core\Service\PartnerDocumentService
     arguments:
       - '@entity_type.manager'
+
+  # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 2: CopilotBridge
+  jaraba_agroconecta.copilot_bridge:
+    class: Drupal\jaraba_agroconecta_core\Service\AgroConectaCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@logger.channel.jaraba_agroconecta_core'

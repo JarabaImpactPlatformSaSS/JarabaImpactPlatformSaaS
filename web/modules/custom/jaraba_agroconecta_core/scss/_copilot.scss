@@ -24,15 +24,15 @@
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    box-shadow: 0 4px 16px rgba(45, 106, 79, 0.3),
-        0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 30%, transparent),
+        0 2px 4px color-mix(in srgb, var(--ej-color-text, #2D3436) 10%, transparent);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 0.3s ease;
 
     &:hover {
         transform: scale(1.08);
-        box-shadow: 0 6px 24px rgba(45, 106, 79, 0.4),
-            0 3px 6px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 24px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 40%, transparent),
+            0 3px 6px color-mix(in srgb, var(--ej-color-text, #2D3436) 15%, transparent);
     }
 
     &:active {
@@ -72,8 +72,8 @@
     max-height: 560px;
     background: var(--ej-color-surface, #fff);
     border-radius: var(--ej-radius-xl, 16px);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12),
-        0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 40px color-mix(in srgb, var(--ej-color-text, #2D3436) 12%, transparent),
+        0 2px 8px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent);
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -129,7 +129,7 @@
         width: 28px;
         height: 28px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
+        background: color-mix(in srgb, #fff 10%, transparent);
         border: none;
         color: #fff;
         font-size: 0.9rem;
@@ -140,7 +140,7 @@
         transition: background 0.2s ease;
 
         &:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: color-mix(in srgb, #fff 20%, transparent);
         }
     }
 
@@ -204,7 +204,7 @@
         }
 
         code {
-            background: rgba(0, 0, 0, 0.08);
+            background: color-mix(in srgb, var(--ej-color-text, #2D3436) 8%, transparent);
             padding: 1px 4px;
             border-radius: 3px;
             font-size: 0.85em;
@@ -269,7 +269,7 @@
         &:hover {
             border-color: var(--ej-color-primary, #2d6a4f);
             color: var(--ej-color-primary, #2d6a4f);
-            background: rgba(45, 106, 79, 0.04);
+            background: color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 4%, transparent);
         }
     }
 

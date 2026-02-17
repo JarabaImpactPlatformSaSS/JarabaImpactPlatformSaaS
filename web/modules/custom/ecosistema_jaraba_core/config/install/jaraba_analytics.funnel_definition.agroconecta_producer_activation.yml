@@ -1,0 +1,12 @@
+id: agroconecta_producer_activation
+label: 'AgroConecta: Activacion Productor'
+vertical: agroconecta
+steps:
+  - { key: registration, label: 'Registro', event: agro_registration }
+  - { key: first_product, label: 'Primer Producto', event: agro_product_created }
+  - { key: first_photo, label: 'Primera Foto', event: agro_photo_uploaded }
+  - { key: first_order_received, label: 'Primer Pedido', event: agro_order_received }
+  - { key: first_sale_completed, label: 'Primera Venta', event: agro_order_completed }
+conversion_window_hours: 336
+is_active: true
+status: true

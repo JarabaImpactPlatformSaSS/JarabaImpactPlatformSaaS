@@ -31,13 +31,29 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    gallery:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 150
+          caption:
+            type: string
+            maxLength: 200
   required:
     - title
 plans_required:
-  - professional
+  - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-gallery.png'
 weight: 5
 preview_data:
   title: 'Linea del Tiempo Cosecha'

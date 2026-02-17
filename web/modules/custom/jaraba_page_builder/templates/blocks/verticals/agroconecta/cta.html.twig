@@ -4,12 +4,36 @@
  # Type: cta
  #
  # Banner con gradient, título, subtitle y 2 CTAs
+ # Premium: animations, background image, countdown timer, design tokens
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--cta pb-section--agroconecta"
-         aria-label="{{ title|default('Pide directamente al productor')|t }}">
+<section class="pb-section pb-section--cta pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Pide directamente al productor')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}'); background-size: cover; background-position: center;"{% endif %}>
   <div class="pb-section__container">
     <h2 class="pb-section__title">{{ title|default('¿Listo para comer fresco y local?')|t }}</h2>
     <p class="pb-section__subtitle">{{ subtitle|default('Conecta con productores de tu zona y recibe alimentos frescos directamente del campo. Sin intermediarios, sin esperas.')|t }}</p>
+    {% if countdown_date|default('') %}
+      <div class="pb-section__countdown" data-countdown="{{ countdown_date }}" aria-label="{{ 'Cuenta regresiva'|t }}">
+        <div class="pb-section__countdown-slot">
+          <span class="pb-section__countdown-value" data-countdown-days>00</span>
+          <span class="pb-section__countdown-label">{{ 'Días'|t }}</span>
+        </div>
+        <div class="pb-section__countdown-slot">
+          <span class="pb-section__countdown-value" data-countdown-hours>00</span>
+          <span class="pb-section__countdown-label">{{ 'Horas'|t }}</span>
+        </div>
+        <div class="pb-section__countdown-slot">
+          <span class="pb-section__countdown-value" data-countdown-minutes>00</span>
+          <span class="pb-section__countdown-label">{{ 'Min'|t }}</span>
+        </div>
+        <div class="pb-section__countdown-slot">
+          <span class="pb-section__countdown-value" data-countdown-seconds>00</span>
+          <span class="pb-section__countdown-label">{{ 'Seg'|t }}</span>
+        </div>
+      </div>
+    {% endif %}
     <div class="pb-section__actions">
       <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
         {{ cta_text|default('Hacer mi pedido')|t }}

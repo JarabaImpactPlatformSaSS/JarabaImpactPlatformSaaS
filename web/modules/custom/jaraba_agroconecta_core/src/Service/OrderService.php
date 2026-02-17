@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
 use Drupal\jaraba_agroconecta_core\Entity\OrderAgro;
 use Psr\Log\LoggerInterface;
 
@@ -15,6 +16,7 @@ use Psr\Log\LoggerInterface;
  * PROPÓSITO:
  * Centraliza la creación, transición de estados y consulta de pedidos.
  * Crea automáticamente sub-pedidos (SuborderAgro) agrupados por productor.
+ * Integra FeatureGateService para verificar limites de pedidos por plan.
  *
  * FLUJO:
  * 1. Cart items → createOrderFromCart() → OrderAgro + OrderItemAgro[] + SuborderAgro[]
@@ -46,6 +48,7 @@ class OrderService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected AccountInterface $currentUser,
         protected LoggerInterface $logger,
+        protected AgroConectaFeatureGateService $featureGate,
     ) {
     }
 
@@ -64,6 +67,19 @@ class OrderService
     public function createOrderFromCart(array $cartItems, array $customerData): ?OrderAgro
     {
         try {
+            // Verificar limites de pedidos por productor (cada productor tiene su gate).
+            $producerIds = array_unique(array_column($cartItems, 'producer_id'));
+            foreach ($producerIds as $producerId) {
+                $gateResult = $this->featureGate->checkAndFire((int) $producerId, 'orders_per_month');
+                if (!$gateResult->isAllowed()) {
+                    $this->logger->warning('Pedido denegado: productor @id alcanzo limite de pedidos mensuales.', [
+                        '@id' => $producerId,
+                    ]);
+                    // Registramos pero no bloqueamos — el limite es del productor, no del comprador.
+                    // El productor recibira notificacion de upgrade.
+                }
+            }
+
             $orderStorage = $this->entityTypeManager->getStorage('order_agro');
             $itemStorage = $this->entityTypeManager->getStorage('order_item_agro');
             $suborderStorage = $this->entityTypeManager->getStorage('suborder_agro');
@@ -134,8 +150,11 @@ class OrderService
                 }
 
                 // Actualizar subtotal del sub-pedido y calcular comisión.
+                // Calcular comision segun plan del productor via FeatureGate.
+                $commissionRate = $this->featureGate->getCommissionRate((int) $producerId);
                 $suborder->set('subtotal', $suborderSubtotal);
-                $suborder->calculateCommission(5.00);
+                $suborder->set('commission_rate', $commissionRate);
+                $suborder->calculateCommission($commissionRate);
                 $suborder->save();
 
                 $subtotal += $suborderSubtotal;

@@ -1,0 +1,11 @@
+id: agroconecta_free_analytics_advanced
+label: 'AgroConecta Free: Analytics Avanzados'
+vertical: agroconecta
+plan: free
+feature_key: analytics_advanced
+limit_value: 0
+description: 'Analytics avanzados no disponibles en plan gratuito AgroConecta.'
+upgrade_message: 'Los analytics avanzados te ayudan a tomar mejores decisiones. Disponible en Profesional.'
+expected_conversion: 0.18
+weight: 0
+status: true

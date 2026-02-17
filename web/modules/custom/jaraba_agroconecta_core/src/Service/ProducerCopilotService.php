@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agroconecta_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
 use Drupal\jaraba_ai_agents\Agent\ProducerCopilotAgent;
 
 /**
@@ -15,6 +16,7 @@ use Drupal\jaraba_ai_agents\Agent\ProducerCopilotAgent;
  * - Gestiona el ciclo de vida de conversaciones y mensajes.
  * - Enriquece el contexto con datos reales de entidades Drupal.
  * - Detecta intents para enrutar acciones al agente.
+ * - Verifica limites de uso del copilot via FeatureGateService.
  *
  * INTEGRACIÓN:
  * Delega toda la generación de contenido IA al ProducerCopilotAgent
@@ -27,6 +29,7 @@ class ProducerCopilotService
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
         protected ProducerCopilotAgent $copilotAgent,
+        protected AgroConectaFeatureGateService $featureGate,
     ) {
     }
 
@@ -39,6 +42,16 @@ class ProducerCopilotService
      */
     public function generateDescription(int $productId, ?string $tenantId = NULL): array
     {
+        // Verificar limite de usos del copilot.
+        $userId = (int) \Drupal::currentUser()->id();
+        $gateResult = $this->featureGate->checkAndFire($userId, 'copilot_uses_per_month');
+        if (!$gateResult->isAllowed()) {
+            return [
+                'error' => 'copilot_limit_reached',
+                'gate_result' => $gateResult->toArray(),
+            ];
+        }
+
         $product = $this->entityTypeManager->getStorage('product_agro')->load($productId);
         if (!$product) {
             return ['error' => 'Producto no encontrado'];
@@ -57,6 +70,9 @@ class ProducerCopilotService
         $result = $this->copilotAgent->execute('generate_description', $context);
 
         // Enriquecer resultado con metadatos de la entidad.
+        // Registrar uso del copilot.
+        $this->featureGate->recordUsage($userId, 'copilot_uses_per_month');
+
         $result['product_id'] = $productId;
         if (isset($result['routing'])) {
             $result['model'] = $result['routing']['model'] ?? 'unknown';
@@ -70,6 +86,16 @@ class ProducerCopilotService
      */
     public function suggestPrice(int $productId, ?string $tenantId = NULL): array
     {
+        // Verificar limite de usos del copilot.
+        $userId = (int) \Drupal::currentUser()->id();
+        $gateResult = $this->featureGate->checkAndFire($userId, 'copilot_uses_per_month');
+        if (!$gateResult->isAllowed()) {
+            return [
+                'error' => 'copilot_limit_reached',
+                'gate_result' => $gateResult->toArray(),
+            ];
+        }
+
         $product = $this->entityTypeManager->getStorage('product_agro')->load($productId);
         if (!$product) {
             return ['error' => 'Producto no encontrado'];
@@ -93,6 +119,9 @@ class ProducerCopilotService
         ];
 
         $result = $this->copilotAgent->execute('suggest_price', $context);
+        // Registrar uso del copilot.
+        $this->featureGate->recordUsage($userId, 'copilot_uses_per_month');
+
         $result['product_id'] = $productId;
 
         // Agregar datos de mercado al resultado.
@@ -113,6 +142,16 @@ class ProducerCopilotService
      */
     public function respondToReview(int $reviewId, ?string $tenantId = NULL): array
     {
+        // Verificar limite de usos del copilot.
+        $userId = (int) \Drupal::currentUser()->id();
+        $gateResult = $this->featureGate->checkAndFire($userId, 'copilot_uses_per_month');
+        if (!$gateResult->isAllowed()) {
+            return [
+                'error' => 'copilot_limit_reached',
+                'gate_result' => $gateResult->toArray(),
+            ];
+        }
+
         try {
             $review = $this->entityTypeManager->getStorage('review_agro')->load($reviewId);
         } catch (\Exception $e) {
@@ -133,6 +172,10 @@ class ProducerCopilotService
         ];
 
         $result = $this->copilotAgent->execute('respond_review', $context);
+
+        // Registrar uso del copilot.
+        $this->featureGate->recordUsage($userId, 'copilot_uses_per_month');
+
         $result['review_id'] = $reviewId;
 
         return $result;
@@ -147,6 +190,16 @@ class ProducerCopilotService
      */
     public function chat(int $producerId, string $message, ?int $conversationId = NULL, ?string $tenantId = NULL): array
     {
+        // Verificar limite de usos del copilot.
+        $userId = (int) \Drupal::currentUser()->id();
+        $gateResult = $this->featureGate->checkAndFire($userId, 'copilot_uses_per_month');
+        if (!$gateResult->isAllowed()) {
+            return [
+                'error' => 'copilot_limit_reached',
+                'gate_result' => $gateResult->toArray(),
+            ];
+        }
+
         $convStorage = $this->entityTypeManager->getStorage('copilot_conversation_agro');
         $msgStorage = $this->entityTypeManager->getStorage('copilot_message_agro');
 
@@ -220,6 +273,9 @@ class ProducerCopilotService
             'uid' => \Drupal::currentUser()->id(),
         ]);
         $assistantMsg->save();
+
+        // Registrar uso del copilot.
+        $this->featureGate->recordUsage($userId, 'copilot_uses_per_month');
 
         // Actualizar contadores de conversación.
         $msgCount = (int) ($conversation->get('message_count')->value ?? 0);

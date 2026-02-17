@@ -31,13 +31,26 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    faqs:
+      type: array
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            maxLength: 200
+          answer:
+            type: string
+            maxLength: 1000
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-faq.png'
 weight: 9
 preview_data:
   title: 'Certificacion Organica'

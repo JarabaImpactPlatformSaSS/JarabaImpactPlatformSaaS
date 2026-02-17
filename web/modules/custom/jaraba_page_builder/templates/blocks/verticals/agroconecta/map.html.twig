@@ -4,9 +4,14 @@
  # Type: map
  #
  # Grid 2 cols: mapa embed + info de contacto lateral
+ # Premium: jaraba_icon system, entrance animations, working hours, LocalBusiness microdata
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--map pb-section--agroconecta"
-         aria-label="{{ title|default('Ubicación de la Finca')|t }}">
+<section class="pb-section pb-section--map pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Ubicación de la Finca')|t }}"
+         data-effect="fade-up"
+         itemscope
+         itemtype="https://schema.org/LocalBusiness">
   <div class="pb-section__container">
     <div class="pb-section__map-embed">
       {% if map_embed|default('') %}
@@ -16,33 +21,54 @@
       {% endif %}
     </div>
     <div class="pb-section__contact-info">
-      <h2 class="pb-section__title">{{ title|default('Visita nuestra finca')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Te invitamos a conocer de dónde vienen tus alimentos.')|t }}</p>
-      <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#128205;</div>
+      <h2 class="pb-section__title" itemprop="name">{{ title|default('Visita nuestra finca')|t }}</h2>
+      <p class="pb-section__subtitle" itemprop="description">{{ subtitle|default('Te invitamos a conocer de dónde vienen tus alimentos.')|t }}</p>
+      <div class="pb-section__contact-item" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+        </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Ubicación'|t }}</div>
-          <div class="pb-section__contact-value">{{ address|default('Camino Rural km 5, Tu Comarca')|t }}</div>
+          <div class="pb-section__contact-value" itemprop="streetAddress">{{ address|default('Camino Rural km 5, Tu Comarca')|t }}</div>
         </div>
       </div>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#128222;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+        </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Teléfono'|t }}</div>
           <div class="pb-section__contact-value">
-            <a href="tel:{{ phone|default('+34 600 000 000') }}">{{ phone|default('+34 600 000 000') }}</a>
+            <a href="tel:{{ phone|default('+34 600 000 000') }}" itemprop="telephone">{{ phone|default('+34 600 000 000') }}</a>
           </div>
         </div>
       </div>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#9993;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+        </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Email'|t }}</div>
           <div class="pb-section__contact-value">
-            <a href="mailto:{{ email|default('info@tufinca.com') }}">{{ email|default('info@tufinca.com') }}</a>
+            <a href="mailto:{{ email|default('info@tufinca.com') }}" itemprop="email">{{ email|default('info@tufinca.com') }}</a>
           </div>
         </div>
       </div>
+      {% if working_hours|default([]) %}
+        <div class="pb-section__working-hours" itemprop="openingHoursSpecification" itemscope itemtype="https://schema.org/OpeningHoursSpecification">
+          <div class="pb-section__contact-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
+          <div>
+            <div class="pb-section__contact-label">{{ 'Horario'|t }}</div>
+            {% for hours in working_hours %}
+              <div class="pb-section__contact-value">
+                <span itemprop="dayOfWeek">{{ hours.days|default('')|t }}</span>: <span itemprop="opens">{{ hours.open|default('') }}</span> - <span itemprop="closes">{{ hours.close|default('') }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>

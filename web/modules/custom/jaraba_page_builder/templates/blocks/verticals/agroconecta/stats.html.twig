@@ -4,9 +4,14 @@
  # Type: stats
  #
  # Header + fila de 4 stat counters
+ # Premium: animated counters, entrance animation, prefix/suffix support
+ # - data-counter on number elements triggers count-up animation
+ # - data-counter-duration controls animation speed (ms)
  #}
-<section class="pb-section pb-section--stats pb-section--agroconecta"
-         aria-label="{{ title|default('Impacto en Cifras')|t }}">
+<section class="pb-section pb-section--stats pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Impacto en Cifras')|t }}"
+         data-effect="fade-up"
+         data-counter-duration="2000">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <h2 class="pb-section__title">{{ title|default('Nuestro impacto en el campo')|t }}</h2>
@@ -22,7 +27,9 @@
       {% set items = stats|default(default_stats) %}
       {% for stat in items %}
         <div class="pb-section__stat">
-          <span class="pb-section__stat-number">{{ stat.number|default('0') }}</span>
+          <span class="pb-section__stat-number">
+            {{ stat.prefix|default('') }}<span class="pb-section__stat-number" data-counter="{{ stat.number|default('0') }}" data-target="{{ stat.number|default('0')|replace({'+': '', '.': '', 'K': '000', 'k': '000'}) }}">0</span>{{ stat.suffix|default('') }}
+          </span>
           <span class="pb-section__stat-label">{{ stat.label|default('Métrica')|t }}</span>
         </div>
       {% endfor %}

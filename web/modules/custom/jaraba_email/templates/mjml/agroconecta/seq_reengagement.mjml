@@ -1,0 +1,67 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .stat-box { background-color: #fff7ed; border: 1px solid #FF8C42; border-radius: 8px; padding: 16px; text-align: center; margin: 8px 0; }
+      .stat-number { font-size: 28px; font-weight: bold; color: #FF8C42; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#556B2F" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ t('AgroConecta') }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#556B2F" padding-bottom="8px">
+          {{ t('&iexcl;Te echamos de menos!') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Hace {{ inactive_days }} d&iacute;as que no actualizas tus productos. Mientras tanto, la demanda en tu zona ha crecido:') }}</p>
+        </mj-text>
+        <mj-text>
+          <div class="stat-box">
+            <div class="stat-number">{{ demand_searches }}</div>
+            <p>{{ t('b&uacute;squedas de consumidores en tu zona esta semana') }}</p>
+          </div>
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Los productores activos esta semana han recibido una media de <strong>{{ avg_orders }} pedidos</strong>. No te quedes fuera de temporada.') }}</p>
+        </mj-text>
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          {{ t('Actualizar mis productos') }}
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280" align="center">
+          {{ t('Si necesitas ayuda, nuestro copiloto IA puede sugerirte qu&eacute; publicar seg&uacute;n la demanda actual.') }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">{{ t('Cancelar suscripci&oacute;n') }}</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">{{ t('Pol&iacute;tica de privacidad') }}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

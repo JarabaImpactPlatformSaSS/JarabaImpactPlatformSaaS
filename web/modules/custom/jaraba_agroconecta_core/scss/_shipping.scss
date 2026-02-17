@@ -44,12 +44,12 @@
 
         &:hover {
             border-color: var(--ej-color-primary, #2d6a4f);
-            background: rgba(45, 106, 79, 0.02);
+            background: color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 2%, transparent);
         }
 
         &--selected {
             border-color: var(--ej-color-primary, #2d6a4f);
-            background: rgba(45, 106, 79, 0.04);
+            background: color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 4%, transparent);
             box-shadow: 0 0 0 1px var(--ej-color-primary, #2d6a4f);
         }
 
@@ -220,12 +220,12 @@
 
         &--completed::before {
             background: var(--ej-color-primary, #2d6a4f);
-            box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.15);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 15%, transparent);
         }
 
         &--current::before {
             background: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 4px color-mix(in srgb, #3b82f6 20%, transparent);
             animation: agro-pulse 2s ease-in-out infinite;
         }
     }
@@ -267,8 +267,8 @@
 }
 
 @keyframes agro-pulse {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
-    50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.1); }
+    0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, #3b82f6 20%, transparent); }
+    50% { box-shadow: 0 0 0 8px color-mix(in srgb, #3b82f6 10%, transparent); }
 }
 
 // === SHIPPING ZONES (Admin) ===
@@ -288,7 +288,7 @@
         transition: box-shadow 0.2s ease;
 
         &:hover {
-            box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+            box-shadow: var(--ej-shadow-md, 0 4px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 8%, transparent));
         }
     }
 
