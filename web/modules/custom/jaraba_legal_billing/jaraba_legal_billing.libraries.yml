@@ -1,0 +1,26 @@
+# =============================================================================
+# Libraries del modulo Legal Billing (JarabaLex FASE B3)
+# Cada library se carga en la pagina que la necesita via attach_library()
+# Directriz: CSS compilado desde SCSS, JS con Drupal behaviors y once()
+# =============================================================================
+
+# Library global: estilos base del modulo, se carga en todas las paginas billing
+global:
+  version: 1.0
+  css:
+    theme:
+      css/jaraba-legal-billing.css: { minified: true }
+  dependencies:
+    - ecosistema_jaraba_core/global
+
+# Dashboard: listado de facturas, KPIs, filtros, control de tiempo
+dashboard:
+  version: 1.0
+  js:
+    js/legal-billing-dashboard.js: { minified: false }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.dialog.ajax
+    - jaraba_legal_billing/global

@@ -1,0 +1,20 @@
+# =============================================================================
+# Enlaces de menu en /admin/structure para Legal Templates (JarabaLex FASE C2)
+# Cada entidad tiene su entrada en el menu de estructura de Drupal
+# =============================================================================
+
+# Plantillas en Structure
+jaraba_legal_templates.legal_template.settings:
+  title: 'Plantillas Juridicas'
+  description: 'Configuracion de la entidad Plantilla Juridica de JarabaLex.'
+  route_name: jaraba_legal_templates.legal_template.settings
+  parent: system.admin_structure
+  weight: 92
+
+# Documentos Generados en Structure
+jaraba_legal_templates.generated_document.settings:
+  title: 'Documentos Generados'
+  description: 'Configuracion de la entidad Documento Generado de JarabaLex.'
+  route_name: jaraba_legal_templates.generated_document.settings
+  parent: system.admin_structure
+  weight: 93

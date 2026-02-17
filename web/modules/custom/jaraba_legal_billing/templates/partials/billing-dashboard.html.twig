@@ -1,0 +1,25 @@
+{#
+ # billing-dashboard.html.twig — Dashboard de facturacion.
+ # Zero-region: datos inyectados via drupalSettings.jarabaLegalBilling.
+ #}
+<div class="legal-billing-dashboard">
+  <div class="legal-billing-dashboard__header">
+    <h2>{{ 'Facturacion Legal'|t }}</h2>
+  </div>
+
+  <div class="legal-billing-dashboard__stats" data-billing-stats>
+    {# Stats se inyectan via JS desde drupalSettings #}
+  </div>
+
+  <div class="legal-billing-dashboard__filters">
+    <button class="ej-billing-filter active" data-billing-filter="all">{{ 'Todos'|t }}</button>
+    <button class="ej-billing-filter" data-billing-filter="draft">{{ 'Borrador'|t }}</button>
+    <button class="ej-billing-filter" data-billing-filter="issued">{{ 'Emitidas'|t }}</button>
+    <button class="ej-billing-filter" data-billing-filter="paid">{{ 'Pagadas'|t }}</button>
+    <button class="ej-billing-filter" data-billing-filter="overdue">{{ 'Vencidas'|t }}</button>
+  </div>
+
+  <div class="legal-billing-dashboard__grid" data-billing-grid>
+    {# Invoice cards se renderizan via JS #}
+  </div>
+</div>

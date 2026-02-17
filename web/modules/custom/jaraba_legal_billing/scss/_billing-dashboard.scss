@@ -1,0 +1,55 @@
+// =============================================================================
+// Dashboard de Facturacion (JarabaLex FASE B3)
+// Directriz: Dart Sass, color-mix(), var(--ej-*), BEM
+// =============================================================================
+
+.legal-billing-dashboard {
+  background: var(--ej-bg-surface, #FFFFFF);
+  border-radius: var(--ej-border-radius-lg, 14px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-lg, 1.5rem);
+    color: var(--ej-billing-primary, #1565C0);
+    font-family: var(--ej-font-heading, 'Libre Baskerville', serif);
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+    margin-bottom: var(--ej-spacing-xl, 2rem);
+  }
+
+  &__filters {
+    display: flex;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-bottom: var(--ej-spacing-md, 1rem);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--ej-spacing-md, 1rem);
+  }
+}
+
+.ej-billing-filter {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--ej-border-color, #E0E0E0);
+  border-radius: var(--ej-border-radius-sm, 6px);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+
+  &.active,
+  &:hover {
+    background: var(--ej-billing-primary, #1565C0);
+    color: #FFFFFF;
+    border-color: var(--ej-billing-primary, #1565C0);
+  }
+}

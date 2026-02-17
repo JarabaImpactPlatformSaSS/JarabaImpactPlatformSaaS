@@ -1,0 +1,33 @@
+# =============================================================================
+# Servicios del modulo Legal LexNET (JarabaLex FASE C1)
+# Estructura: Services DI para integracion CGPJ LexNET
+# =============================================================================
+
+services:
+
+  logger.channel.jaraba_legal_lexnet:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_lexnet']
+
+  jaraba_legal_lexnet.client:
+    class: Drupal\jaraba_legal_lexnet\Service\LexnetApiClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_lexnet'
+
+  jaraba_legal_lexnet.sync:
+    class: Drupal\jaraba_legal_lexnet\Service\LexnetSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_legal_lexnet.client'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_lexnet'
+
+  jaraba_legal_lexnet.submission:
+    class: Drupal\jaraba_legal_lexnet\Service\LexnetSubmissionService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_legal_lexnet.client'
+      - '@current_user'
+      - '@logger.channel.jaraba_legal_lexnet'

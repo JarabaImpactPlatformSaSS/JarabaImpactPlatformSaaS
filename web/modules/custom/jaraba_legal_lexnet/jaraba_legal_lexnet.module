@@ -1,0 +1,117 @@
+<?php
+
+/**
+ * @file
+ * jaraba_legal_lexnet.module — Integracion LexNET JarabaLex.
+ *
+ * Estructura: Hooks de modulo para comunicaciones judiciales LexNET.
+ * Logica: hook_theme, hook_preprocess_html, hook_preprocess_page, hook_cron.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_legal_lexnet_theme(): array {
+  return [
+    'jaraba_legal_lexnet_dashboard' => [
+      'variables' => [],
+      'template' => 'partials/lexnet-dashboard',
+    ],
+    'jaraba_legal_lexnet_notification_card' => [
+      'variables' => [
+        'notification' => NULL,
+      ],
+      'template' => 'partials/notification-card',
+    ],
+    'jaraba_legal_lexnet_submission_row' => [
+      'variables' => [
+        'submission' => NULL,
+      ],
+      'template' => 'partials/submission-row',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * LEGAL-BODY-001: body classes solo desde hook_preprocess_html.
+ */
+function jaraba_legal_lexnet_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route && str_starts_with($route, 'jaraba_legal_lexnet.')) {
+    $variables['attributes']['class'][] = 'page--legal-lexnet';
+    if ($route === 'jaraba_legal_lexnet.dashboard') {
+      $variables['attributes']['class'][] = 'page--legal-lexnet-dashboard';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * ZERO-REGION-001: Inyecta datos via drupalSettings para el dashboard.
+ */
+function jaraba_legal_lexnet_preprocess_page(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'jaraba_legal_lexnet.dashboard') {
+    return;
+  }
+
+  $variables['#attached']['library'][] = 'jaraba_legal_lexnet/global';
+  $variables['#attached']['library'][] = 'jaraba_legal_lexnet/dashboard';
+
+  try {
+    /** @var \Drupal\jaraba_legal_lexnet\Service\LexnetSyncService $syncService */
+    $syncService = \Drupal::service('jaraba_legal_lexnet.sync');
+    $notifications = $syncService->listNotifications([], 10, 0);
+
+    $variables['#attached']['drupalSettings']['jarabaLegalLexnet'] = [
+      'apiBase' => '/api/v1/legal/lexnet',
+      'recentNotifications' => $notifications['items'] ?? [],
+      'totalNotifications' => $notifications['total'] ?? 0,
+    ];
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_lexnet')->error('Dashboard data error: @msg', ['@msg' => $e->getMessage()]);
+    $variables['#attached']['drupalSettings']['jarabaLegalLexnet'] = [
+      'apiBase' => '/api/v1/legal/lexnet',
+      'recentNotifications' => [],
+      'totalNotifications' => 0,
+    ];
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Polling automatico de notificaciones LexNET segun intervalo configurado.
+ */
+function jaraba_legal_lexnet_cron(): void {
+  $config = \Drupal::config('jaraba_legal_lexnet.settings');
+  $pollingInterval = (int) ($config->get('polling_interval') ?? 15);
+
+  $state = \Drupal::state();
+  $lastSync = (int) ($state->get('jaraba_legal_lexnet.last_sync') ?? 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  if (($now - $lastSync) < ($pollingInterval * 60)) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_legal_lexnet\Service\LexnetSyncService $syncService */
+    $syncService = \Drupal::service('jaraba_legal_lexnet.sync');
+    $result = $syncService->fetchNotifications();
+    $state->set('jaraba_legal_lexnet.last_sync', $now);
+
+    \Drupal::logger('jaraba_legal_lexnet')->info('Cron sync completed: @count new notifications.', [
+      '@count' => $result['count'] ?? 0,
+    ]);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_lexnet')->error('Cron sync error: @msg', ['@msg' => $e->getMessage()]);
+  }
+}

@@ -9,12 +9,14 @@ use Drupal\jaraba_ai_agents\Agent\BaseAgent;
 /**
  * Agente Copilot dedicado para el vertical JarabaLex.
  *
- * Extiende BaseAgent con 6 modos especializados:
+ * Extiende BaseAgent con 8 modos especializados:
  * - legal_search: Busqueda guiada de jurisprudencia
  * - legal_analysis: Analisis de resoluciones y doctrina
  * - legal_alerts: Configuracion de alertas inteligentes
  * - legal_citations: Insercion de citas en expedientes
  * - legal_eu: Derecho europeo y primacia UE
+ * - case_assistant: Asistente contextual de expedientes
+ * - document_drafter: Redaccion de escritos juridicos
  * - faq: Preguntas frecuentes sobre la plataforma
  *
  * Cada modo tiene su propio system prompt, temperatura y deteccion
@@ -67,6 +69,20 @@ class LegalCopilotAgent extends BaseAgent {
       'icon_category' => 'legal',
       'icon_name' => 'eu-flag',
     ],
+    'case_assistant' => [
+      'label' => 'Asistente de Expedientes',
+      'description' => 'Asistente contextual para gestion de expedientes y casos',
+      'keywords' => ['expediente', 'caso', 'estado', 'resumen del caso', 'que falta', 'plazos', 'pendiente', 'actuaciones', 'historial'],
+      'icon_category' => 'legal',
+      'icon_name' => 'briefcase',
+    ],
+    'document_drafter' => [
+      'label' => 'Redaccion de Escritos',
+      'description' => 'Redaccion asistida de escritos y documentos juridicos',
+      'keywords' => ['redactar', 'escrito', 'demanda', 'contestacion', 'recurso', 'borrador', 'plantilla', 'documento', 'modelo'],
+      'icon_category' => 'legal',
+      'icon_name' => 'document-legal',
+    ],
     'faq' => [
       'label' => 'Ayuda',
       'description' => 'Preguntas frecuentes sobre la plataforma',
@@ -101,6 +117,18 @@ class LegalCopilotAgent extends BaseAgent {
       . 'Explica primacia del derecho UE, efecto directo, transposicion de directivas y su impacto en el ordenamiento espanol. '
       . 'Cita siempre ECLI, numeros CELEX y asuntos.',
 
+    'case_assistant' => 'Eres un asistente contextual de expedientes juridicos. Analizas el estado completo del caso: '
+      . 'hechos, partes, plazos, documentos, citas y actividad reciente. '
+      . 'Sugiere acciones pendientes, detecta plazos proximos y documentos faltantes. '
+      . 'Resume el estado del expediente de forma estructurada. '
+      . 'Si hay jurisprudencia vinculada, indicala. No inventes datos: trabaja solo con lo proporcionado.',
+
+    'document_drafter' => 'Eres un redactor juridico experto. Generas borradores de escritos procesales '
+      . '(demandas, contestaciones, recursos, escritos) profesionales y bien estructurados. '
+      . 'Insertas citas de jurisprudencia donde proceda, usando formato legal formal. '
+      . 'Adaptas el formato al tipo de procedimiento y jurisdiccion. '
+      . 'IMPORTANTE: Incluye disclaimer indicando que el borrador requiere revision profesional antes de presentacion.',
+
     'faq' => 'Eres el asistente de ayuda de JarabaLex. Responde preguntas sobre la plataforma, planes, funcionalidades '
       . 'y limites. Se conciso y util. Si el usuario pregunta por algo fuera de la plataforma, redirige amablemente.',
   ];
@@ -123,7 +151,7 @@ class LegalCopilotAgent extends BaseAgent {
    * {@inheritdoc}
    */
   public function getDescription(): string {
-    return 'Asistente IA especializado en busqueda juridica, analisis de resoluciones, alertas inteligentes, citas legales y derecho europeo.';
+    return 'Asistente IA especializado en busqueda juridica, analisis de resoluciones, alertas inteligentes, citas legales, derecho europeo, asistencia de expedientes y redaccion de escritos.';
   }
 
   /**
@@ -166,6 +194,20 @@ class LegalCopilotAgent extends BaseAgent {
         'optional' => ['eu_source', 'date_range'],
         'complexity' => 'high',
       ],
+      'case_assistant' => [
+        'label' => 'Asistente del Expediente',
+        'description' => 'Analiza el estado del caso y sugiere acciones pendientes',
+        'requires' => ['case_id'],
+        'optional' => ['query'],
+        'complexity' => 'medium',
+      ],
+      'document_drafter' => [
+        'label' => 'Redactor de Escritos',
+        'description' => 'Genera borradores de escritos procesales',
+        'requires' => ['case_id', 'document_type'],
+        'optional' => ['template_id', 'instructions'],
+        'complexity' => 'high',
+      ],
       'faq' => [
         'label' => 'Ayuda Plataforma',
         'description' => 'Preguntas frecuentes sobre JarabaLex',
@@ -184,8 +226,20 @@ class LegalCopilotAgent extends BaseAgent {
 
     $mode = array_key_exists($action, self::MODES) ? $action : $this->detectMode($context['query'] ?? $action);
     $userMessage = $context['query'] ?? $context['question'] ?? '';
-    $systemPrompt = $this->buildModePrompt($mode, $userMessage);
+
+    // Para modos contextuales, cargar datos del expediente.
+    $caseContext = NULL;
+    if (in_array($mode, ['case_assistant', 'document_drafter'], TRUE) && !empty($context['case_id'])) {
+      $caseContext = $this->loadCaseContext((int) $context['case_id']);
+    }
+
+    $systemPrompt = $this->buildModePrompt($mode, $userMessage, $caseContext);
     $temperature = $this->getModeTemperature($mode);
+
+    // Para document_drafter, enriquecer con tipo de documento y plantilla.
+    if ($mode === 'document_drafter') {
+      $userMessage = $this->enrichDrafterMessage($userMessage, $context, $caseContext);
+    }
 
     $result = $this->callAiApi($systemPrompt, [
       'temperature' => $temperature,
@@ -200,6 +254,7 @@ class LegalCopilotAgent extends BaseAgent {
         'mode_label' => self::MODES[$mode]['label'] ?? $mode,
         'temperature' => $temperature,
         'tokens_used' => $result['tokens_used'] ?? 0,
+        'case_id' => $context['case_id'] ?? NULL,
       ],
     ];
   }
@@ -249,17 +304,24 @@ class LegalCopilotAgent extends BaseAgent {
    *   Modo del copiloto.
    * @param string|null $userMessage
    *   Mensaje del usuario para contexto RAG.
+   * @param array|null $caseContext
+   *   Datos del expediente para modos contextuales.
    *
    * @return string
    *   System prompt completo.
    */
-  public function buildModePrompt(string $mode, ?string $userMessage = NULL): string {
+  public function buildModePrompt(string $mode, ?string $userMessage = NULL, ?array $caseContext = NULL): string {
     $prompt = self::MODE_PROMPTS[$mode] ?? self::MODE_PROMPTS['legal_search'];
 
     // Brand voice del tenant.
     $brandVoice = $this->getBrandVoicePrompt();
     if ($brandVoice) {
       $prompt .= "\n\nVOZ DE MARCA: " . $brandVoice;
+    }
+
+    // Contexto del expediente para modos contextuales.
+    if ($caseContext && in_array($mode, ['case_assistant', 'document_drafter'], TRUE)) {
+      $prompt .= "\n\nDATOS DEL EXPEDIENTE:\n" . $this->formatCaseContext($caseContext);
     }
 
     // Contexto RAG legal.
@@ -289,6 +351,8 @@ class LegalCopilotAgent extends BaseAgent {
       'legal_alerts' => 0.3,
       'legal_citations' => 0.2,
       'legal_eu' => 0.4,
+      'case_assistant' => 0.4,
+      'document_drafter' => 0.3,
       'faq' => 0.3,
     ];
 
@@ -306,6 +370,16 @@ class LegalCopilotAgent extends BaseAgent {
    */
   public function getSuggestions(string $currentRoute): array {
     $suggestions = match (TRUE) {
+      str_contains($currentRoute, 'legal_cases.') => [
+        ['label' => 'Resumen del expediente', 'action' => 'case_assistant'],
+        ['label' => 'Plazos pendientes', 'action' => 'case_assistant'],
+        ['label' => 'Redactar escrito', 'action' => 'document_drafter'],
+      ],
+      str_contains($currentRoute, 'legal_templates.') => [
+        ['label' => 'Redactar desde plantilla', 'action' => 'document_drafter'],
+        ['label' => 'Ver plantillas similares', 'action' => 'search'],
+        ['label' => 'Ayuda', 'action' => 'help'],
+      ],
       str_contains($currentRoute, 'legal.search') => [
         ['label' => 'Buscar jurisprudencia', 'action' => 'search'],
         ['label' => 'Filtrar por fuente', 'action' => 'filter'],
@@ -399,6 +473,159 @@ class LegalCopilotAgent extends BaseAgent {
    */
   public function getAvailableModes(): array {
     return self::MODES;
+  }
+
+  /**
+   * Carga el contexto completo de un expediente para modos contextuales.
+   *
+   * @param int $caseId
+   *   ID del expediente.
+   *
+   * @return array|null
+   *   Datos del expediente o NULL si no se encuentra.
+   */
+  protected function loadCaseContext(int $caseId): ?array {
+    try {
+      $entityTypeManager = \Drupal::entityTypeManager();
+      $case = $entityTypeManager->getStorage('client_case')->load($caseId);
+      if (!$case) {
+        return NULL;
+      }
+
+      $context = [
+        'id' => (int) $case->id(),
+        'title' => $case->get('title')->value ?? '',
+        'status' => $case->get('status')->value ?? '',
+        'case_number' => $case->get('case_number')->value ?? '',
+      ];
+
+      // Cargar citas vinculadas.
+      if ($entityTypeManager->hasDefinition('legal_citation')) {
+        $citationIds = $entityTypeManager->getStorage('legal_citation')
+          ->getQuery()
+          ->condition('case_id', $caseId)
+          ->accessCheck(FALSE)
+          ->range(0, 20)
+          ->execute();
+
+        $citations = [];
+        foreach ($entityTypeManager->getStorage('legal_citation')->loadMultiple($citationIds) as $c) {
+          $citations[] = $c->get('citation_text')->value ?? '';
+        }
+        $context['citations'] = $citations;
+      }
+
+      // Cargar actividad reciente via activity_logger si existe.
+      if (\Drupal::hasService('jaraba_legal_cases.activity_logger')) {
+        $logger = \Drupal::service('jaraba_legal_cases.activity_logger');
+        if (method_exists($logger, 'getRecentActivity')) {
+          $context['recent_activity'] = $logger->getRecentActivity($caseId, 10);
+        }
+      }
+
+      // Cargar plazos del calendario vinculados.
+      if ($entityTypeManager->hasDefinition('legal_deadline')) {
+        $deadlineIds = $entityTypeManager->getStorage('legal_deadline')
+          ->getQuery()
+          ->condition('case_id', $caseId)
+          ->condition('status', 'completed', '<>')
+          ->accessCheck(FALSE)
+          ->sort('deadline_date', 'ASC')
+          ->range(0, 10)
+          ->execute();
+
+        $deadlines = [];
+        foreach ($entityTypeManager->getStorage('legal_deadline')->loadMultiple($deadlineIds) as $d) {
+          $deadlines[] = [
+            'title' => $d->get('title')->value ?? '',
+            'date' => $d->get('deadline_date')->value ?? '',
+            'type' => $d->get('deadline_type')->value ?? '',
+          ];
+        }
+        $context['deadlines'] = $deadlines;
+      }
+
+      return $context;
+    }
+    catch (\Exception $e) {
+      return NULL;
+    }
+  }
+
+  /**
+   * Formatea el contexto del expediente como texto para el prompt.
+   */
+  protected function formatCaseContext(array $caseContext): string {
+    $lines = [];
+    $lines[] = "Expediente: {$caseContext['title']} ({$caseContext['case_number']})";
+    $lines[] = "Estado: {$caseContext['status']}";
+
+    if (!empty($caseContext['deadlines'])) {
+      $lines[] = "\nPLAZOS PENDIENTES:";
+      foreach ($caseContext['deadlines'] as $d) {
+        $lines[] = "- {$d['title']} ({$d['type']}) — Fecha: {$d['date']}";
+      }
+    }
+
+    if (!empty($caseContext['citations'])) {
+      $lines[] = "\nCITAS JURIDICAS VINCULADAS:";
+      foreach ($caseContext['citations'] as $citation) {
+        $lines[] = "- {$citation}";
+      }
+    }
+
+    if (!empty($caseContext['recent_activity'])) {
+      $lines[] = "\nACTIVIDAD RECIENTE:";
+      foreach ($caseContext['recent_activity'] as $activity) {
+        $label = is_array($activity) ? ($activity['description'] ?? json_encode($activity)) : (string) $activity;
+        $lines[] = "- {$label}";
+      }
+    }
+
+    return implode("\n", $lines);
+  }
+
+  /**
+   * Enriquece el mensaje del usuario para el modo document_drafter.
+   */
+  protected function enrichDrafterMessage(string $userMessage, array $context, ?array $caseContext): string {
+    $parts = [$userMessage];
+
+    if (!empty($context['document_type'])) {
+      $parts[] = "Tipo de documento solicitado: {$context['document_type']}";
+    }
+
+    if (!empty($context['instructions'])) {
+      $parts[] = "Instrucciones adicionales: {$context['instructions']}";
+    }
+
+    // Si hay template_id, cargar instrucciones de la plantilla.
+    if (!empty($context['template_id'])) {
+      try {
+        $template = \Drupal::entityTypeManager()
+          ->getStorage('legal_template')
+          ->load((int) $context['template_id']);
+        if ($template) {
+          $aiInstructions = $template->get('ai_instructions')->value ?? '';
+          if ($aiInstructions) {
+            $parts[] = "Instrucciones de la plantilla: {$aiInstructions}";
+          }
+          $templateBody = $template->get('template_body')->value ?? '';
+          if ($templateBody) {
+            $parts[] = "Plantilla base:\n{$templateBody}";
+          }
+        }
+      }
+      catch (\Exception $e) {
+        // Continue without template context.
+      }
+    }
+
+    if ($caseContext) {
+      $parts[] = "Expediente vinculado: {$caseContext['title']} (#{$caseContext['case_number']})";
+    }
+
+    return implode("\n\n", $parts);
   }
 
 }

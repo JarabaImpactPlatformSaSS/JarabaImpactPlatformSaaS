@@ -1,0 +1,15 @@
+// =============================================================================
+// Variables de Design Tokens para Legal Billing (JarabaLex FASE B3)
+// Directriz: CSS Custom Properties con --ej-billing-* namespace
+// =============================================================================
+
+:root {
+  --ej-billing-primary: #1565C0;
+  --ej-billing-success: #43A047;
+  --ej-billing-warning: #FB8C00;
+  --ej-billing-danger: #E53935;
+  --ej-billing-info: #1976D2;
+  --ej-billing-paid: #2E7D32;
+  --ej-billing-overdue: #C62828;
+  --ej-billing-draft: #78909C;
+}

@@ -1,0 +1,232 @@
+# =============================================================================
+# Rutas del modulo Legal Vault (JarabaLex FASE B1+B2)
+# Estructura: settings (Field UI), frontend zero-region y API REST
+# =============================================================================
+
+# --- Settings Routes (Field UI) ---
+
+jaraba_legal_vault.secure_document.settings:
+  path: '/admin/structure/vault-documents'
+  defaults:
+    _form: '\Drupal\jaraba_legal_vault\Form\VaultSettingsForm'
+    _title: 'Configuracion Documentos Seguros'
+  requirements:
+    _permission: 'administer vault'
+
+jaraba_legal_vault.document_request.settings:
+  path: '/admin/structure/document-requests'
+  defaults:
+    _form: '\Drupal\jaraba_legal_vault\Form\VaultSettingsForm'
+    _title: 'Configuracion Solicitudes de Documentos'
+  requirements:
+    _permission: 'administer vault'
+
+# --- Frontend Zero-Region ---
+
+jaraba_legal_vault.dashboard:
+  path: '/legal/vault'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultDashboardController::dashboard'
+    _title: 'Boveda Documental'
+  requirements:
+    _permission: 'access vault'
+
+# --- API REST — Documentos Seguros ---
+
+jaraba_legal_vault.api.documents.list:
+  path: '/api/v1/vault/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::listDocuments'
+  methods: [GET]
+  requirements:
+    _permission: 'access vault api'
+
+jaraba_legal_vault.api.documents.store:
+  path: '/api/v1/vault/documents'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::store'
+  methods: [POST]
+  requirements:
+    _permission: 'manage vault documents'
+
+jaraba_legal_vault.api.documents.detail:
+  path: '/api/v1/vault/documents/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::detail'
+  methods: [GET]
+  requirements:
+    _permission: 'access vault api'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_vault.api.documents.delete:
+  path: '/api/v1/vault/documents/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::delete'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage vault documents'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_vault.api.documents.versions.store:
+  path: '/api/v1/vault/documents/{uuid}/versions'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::storeVersion'
+  methods: [POST]
+  requirements:
+    _permission: 'manage vault documents'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_vault.api.documents.versions.list:
+  path: '/api/v1/vault/documents/{uuid}/versions'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::listVersions'
+  methods: [GET]
+  requirements:
+    _permission: 'access vault api'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Comparticion ---
+
+jaraba_legal_vault.api.documents.share:
+  path: '/api/v1/vault/documents/{uuid}/share'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::share'
+  methods: [POST]
+  requirements:
+    _permission: 'manage document access'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_vault.api.documents.access.list:
+  path: '/api/v1/vault/documents/{uuid}/access'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::listAccess'
+  methods: [GET]
+  requirements:
+    _permission: 'manage document access'
+    uuid: '[a-f0-9\-]+'
+
+jaraba_legal_vault.api.access.revoke:
+  path: '/api/v1/vault/access/{id}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::revokeAccess'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage document access'
+    id: '\d+'
+
+jaraba_legal_vault.api.access.revoke_all:
+  path: '/api/v1/vault/documents/{uuid}/access/all'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::revokeAllAccess'
+  methods: [DELETE]
+  requirements:
+    _permission: 'manage document access'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Auditoria ---
+
+jaraba_legal_vault.api.documents.audit:
+  path: '/api/v1/vault/documents/{uuid}/audit'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::audit'
+  methods: [GET]
+  requirements:
+    _permission: 'access vault api'
+    uuid: '[a-f0-9\-]+'
+
+# --- API REST — Documentos compartidos y acceso por token ---
+
+jaraba_legal_vault.api.shared:
+  path: '/api/v1/vault/shared'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::sharedWithMe'
+  methods: [GET]
+  requirements:
+    _permission: 'access vault api'
+
+jaraba_legal_vault.api.access.token:
+  path: '/api/v1/vault/access/token/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::accessByToken'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+# --- API REST — Exportacion RGPD ---
+
+jaraba_legal_vault.api.export:
+  path: '/api/v1/vault/export'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\VaultApiController::export'
+  methods: [GET]
+  requirements:
+    _permission: 'access vault api'
+
+# --- API REST — Portal Cliente (token-based, FASE B2) ---
+
+jaraba_legal_vault.api.portal.overview:
+  path: '/api/v1/portal/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::overview'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_vault.api.portal.requests:
+  path: '/api/v1/portal/{token}/requests'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::listRequests'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_vault.api.portal.requests.upload:
+  path: '/api/v1/portal/{token}/requests/{id}/upload'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::uploadDocument'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+    id: '\d+'
+
+jaraba_legal_vault.api.portal.deliveries:
+  path: '/api/v1/portal/{token}/deliveries'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::listDeliveries'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+
+jaraba_legal_vault.api.portal.deliveries.download:
+  path: '/api/v1/portal/{token}/deliveries/{id}/download'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::download'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+    id: '\d+'
+
+jaraba_legal_vault.api.portal.deliveries.acknowledge:
+  path: '/api/v1/portal/{token}/deliveries/{id}/acknowledge'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::acknowledge'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'
+    id: '\d+'
+
+jaraba_legal_vault.api.portal.activity:
+  path: '/api/v1/portal/{token}/activity'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_vault\Controller\PortalApiController::activity'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-zA-Z0-9]+'

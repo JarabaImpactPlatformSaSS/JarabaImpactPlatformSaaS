@@ -1,0 +1,139 @@
+// =============================================================================
+// _legal-blocks.scss — Estilos de bloques JarabaLex para Canvas Editor
+// Directriz: BEM con jaraba-legal- prefix, design tokens --ej-legal-*
+// =============================================================================
+
+// --- Legal Hero ---
+.jaraba-legal-hero {
+  &__btn {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+// --- Legal Services ---
+.jaraba-legal-services {
+  &__card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1);
+    }
+  }
+}
+
+// --- Legal Team ---
+.jaraba-legal-team {
+  &__card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1);
+    }
+  }
+}
+
+// --- Legal Pricing ---
+.jaraba-legal-pricing {
+  &__plan {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &--featured {
+      &:hover {
+        box-shadow: 0 12px 40px rgba(30, 58, 95, 0.3);
+      }
+    }
+  }
+}
+
+// --- Legal FAQ ---
+.jaraba-legal-faq {
+  &__item {
+    transition: background 0.15s ease;
+
+    &[open] {
+      background: var(--ej-legal-surface, #f5f3ef);
+    }
+
+    summary {
+      &::marker {
+        color: var(--ej-legal-accent, #c8a96e);
+      }
+    }
+  }
+}
+
+// --- Legal Testimonials ---
+.jaraba-legal-testimonials {
+  &__card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(30, 58, 95, 0.08);
+    }
+  }
+}
+
+// --- Legal Contact Form ---
+.jaraba-legal-contact {
+  &__form {
+    input,
+    select,
+    textarea {
+      transition: border-color 0.15s ease;
+
+      &:focus {
+        border-color: var(--ej-legal-primary, #1e3a5f);
+      }
+    }
+
+    button[type='submit'] {
+      transition: background 0.15s ease, transform 0.15s ease;
+
+      &:hover {
+        background: #162d4a;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// --- Legal CTA ---
+.jaraba-legal-cta {
+  a {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+// --- Lead Magnet ---
+.jaraba-legal-lead-magnet {
+  a {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(200, 169, 110, 0.4);
+    }
+  }
+}
+
+// --- GrapesJS Block Panel Styling ---
+.gjs-block-legal {
+  border-left: 3px solid var(--ej-legal-accent, #c8a96e);
+}

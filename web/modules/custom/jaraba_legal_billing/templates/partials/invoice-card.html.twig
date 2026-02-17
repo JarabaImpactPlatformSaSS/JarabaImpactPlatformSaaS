@@ -1,0 +1,20 @@
+{#
+ # invoice-card.html.twig — Tarjeta de factura BEM.
+ # Variables: invoice (array serializado).
+ #}
+{% set status = invoice.status|default('draft') %}
+<article class="ej-invoice-card ej-invoice-card--{{ status }}">
+  <div class="ej-invoice-card__header">
+    <span class="ej-invoice-card__number">{{ invoice.invoice_number }}</span>
+    <span class="ej-invoice-card__badge ej-invoice-card__badge--{{ status }}">{{ status }}</span>
+  </div>
+  <h4 class="ej-invoice-card__client">{{ invoice.client_name }}</h4>
+  <div class="ej-invoice-card__meta">
+    <span class="ej-invoice-card__amount">{{ invoice.total|number_format(2, ',', '.') }} EUR</span>
+    <span class="ej-invoice-card__date">{{ invoice.issue_date }}</span>
+  </div>
+  <div class="ej-invoice-card__footer">
+    <span class="ej-invoice-card__due">{{ 'Vence'|t }}: {{ invoice.due_date }}</span>
+    <span class="ej-invoice-card__method">{{ invoice.payment_method }}</span>
+  </div>
+</article>

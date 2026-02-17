@@ -1,0 +1,20 @@
+# =============================================================================
+# Enlaces de menu en /admin/structure para Legal LexNET (JarabaLex FASE C1)
+# Cada entidad tiene su entrada en el menu de estructura de Drupal
+# =============================================================================
+
+# Notificaciones LexNET en Structure
+jaraba_legal_lexnet.lexnet_notification.settings:
+  title: 'Notificaciones LexNET'
+  description: 'Configuracion de la entidad Notificacion LexNET de JarabaLex.'
+  route_name: jaraba_legal_lexnet.lexnet_notification.settings
+  parent: system.admin_structure
+  weight: 92
+
+# Envios LexNET en Structure
+jaraba_legal_lexnet.lexnet_submission.settings:
+  title: 'Envios LexNET'
+  description: 'Configuracion de la entidad Envio LexNET de JarabaLex.'
+  route_name: jaraba_legal_lexnet.lexnet_submission.settings
+  parent: system.admin_structure
+  weight: 93

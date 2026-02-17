@@ -1,0 +1,18 @@
+# =============================================================================
+# Botones de accion (+ Anadir) en las paginas de coleccion admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Boton "Crear Notificacion" en la coleccion de notificaciones
+jaraba_legal_lexnet.lexnet_notification.add:
+  title: 'Crear Notificacion LexNET'
+  route_name: entity.lexnet_notification.add_form
+  appears_on:
+    - entity.lexnet_notification.collection
+
+# Boton "Crear Envio" en la coleccion de envios
+jaraba_legal_lexnet.lexnet_submission.add:
+  title: 'Crear Envio LexNET'
+  route_name: entity.lexnet_submission.add_form
+  appears_on:
+    - entity.lexnet_submission.collection

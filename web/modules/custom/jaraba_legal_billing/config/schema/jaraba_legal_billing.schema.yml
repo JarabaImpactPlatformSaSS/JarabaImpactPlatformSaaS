@@ -1,0 +1,65 @@
+# Schema de configuracion del modulo Legal Billing (JarabaLex FASE B3).
+# Define la estructura de datos para validacion de YAML config.
+
+jaraba_legal_billing.settings:
+  type: config_object
+  label: 'Legal Billing settings'
+  mapping:
+    default_invoice_prefix:
+      type: string
+      label: 'Default invoice number prefix (e.g. FAC)'
+    default_quote_prefix:
+      type: string
+      label: 'Default quote number prefix (e.g. PRES)'
+    default_credit_note_prefix:
+      type: string
+      label: 'Default credit note number prefix (e.g. NC)'
+    default_tax_rate:
+      type: float
+      label: 'Default tax rate (IVA) percentage (e.g. 21.00)'
+    default_irpf_rate:
+      type: float
+      label: 'Default IRPF retention rate percentage (e.g. 15.00)'
+    stripe_enabled:
+      type: boolean
+      label: 'Enable Stripe integration for payments'
+    stripe_webhook_secret:
+      type: string
+      label: 'Stripe webhook secret'
+    ai_estimator_enabled:
+      type: boolean
+      label: 'Enable AI-powered quote estimation'
+    limits:
+      type: mapping
+      label: 'Plan-based limits'
+      mapping:
+        starter:
+          type: mapping
+          label: 'Starter plan limits'
+          mapping:
+            max_invoices_per_month:
+              type: integer
+              label: 'Maximum invoices per month (0 = unlimited)'
+            max_quotes_per_month:
+              type: integer
+              label: 'Maximum quotes per month (0 = unlimited)'
+        pro:
+          type: mapping
+          label: 'Pro plan limits'
+          mapping:
+            max_invoices_per_month:
+              type: integer
+              label: 'Maximum invoices per month (0 = unlimited)'
+            max_quotes_per_month:
+              type: integer
+              label: 'Maximum quotes per month (0 = unlimited)'
+        enterprise:
+          type: mapping
+          label: 'Enterprise plan limits'
+          mapping:
+            max_invoices_per_month:
+              type: integer
+              label: 'Maximum invoices per month (0 = unlimited)'
+            max_quotes_per_month:
+              type: integer
+              label: 'Maximum quotes per month (0 = unlimited)'

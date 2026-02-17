@@ -1,0 +1,105 @@
+# =============================================================================
+# Rutas del modulo Legal LexNET (JarabaLex FASE C1)
+# Estructura: settings (Field UI), frontend zero-region y API REST
+# =============================================================================
+
+# --- Settings Routes (Field UI) ---
+
+jaraba_legal_lexnet.lexnet_notification.settings:
+  path: '/admin/structure/lexnet-notifications'
+  defaults:
+    _form: '\Drupal\jaraba_legal_lexnet\Form\LexnetSettingsForm'
+    _title: 'Configuracion Notificaciones LexNET'
+  requirements:
+    _permission: 'administer lexnet'
+
+jaraba_legal_lexnet.lexnet_submission.settings:
+  path: '/admin/structure/lexnet-submissions'
+  defaults:
+    _form: '\Drupal\jaraba_legal_lexnet\Form\LexnetSettingsForm'
+    _title: 'Configuracion Envios LexNET'
+  requirements:
+    _permission: 'administer lexnet'
+
+# --- Frontend Zero-Region ---
+
+jaraba_legal_lexnet.dashboard:
+  path: '/legal/lexnet'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetDashboardController::dashboard'
+    _title: 'LexNET — Comunicaciones Judiciales'
+  requirements:
+    _permission: 'access lexnet'
+
+# --- API REST — Notificaciones ---
+
+jaraba_legal_lexnet.api.notifications.list:
+  path: '/api/v1/legal/lexnet/notifications'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::listNotifications'
+  methods: [GET]
+  requirements:
+    _permission: 'access lexnet api'
+
+jaraba_legal_lexnet.api.sync:
+  path: '/api/v1/legal/lexnet/sync'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::forceSync'
+  methods: [POST]
+  requirements:
+    _permission: 'manage lexnet notifications'
+
+jaraba_legal_lexnet.api.notifications.link:
+  path: '/api/v1/legal/lexnet/notifications/{id}/link/{case_uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::linkToCase'
+  methods: [POST]
+  requirements:
+    _permission: 'manage lexnet notifications'
+    id: '\d+'
+    case_uuid: '[a-f0-9\-]+'
+
+jaraba_legal_lexnet.api.notifications.acknowledge:
+  path: '/api/v1/legal/lexnet/notifications/{id}/acknowledge'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::acknowledge'
+  methods: [POST]
+  requirements:
+    _permission: 'manage lexnet notifications'
+    id: '\d+'
+
+# --- API REST — Presentaciones ---
+
+jaraba_legal_lexnet.api.submissions.store:
+  path: '/api/v1/legal/lexnet/submissions'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::storeSubmission'
+  methods: [POST]
+  requirements:
+    _permission: 'manage lexnet submissions'
+
+jaraba_legal_lexnet.api.submissions.list:
+  path: '/api/v1/legal/lexnet/submissions'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::listSubmissions'
+  methods: [GET]
+  requirements:
+    _permission: 'access lexnet api'
+
+jaraba_legal_lexnet.api.submissions.submit:
+  path: '/api/v1/legal/lexnet/submissions/{id}/submit'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::submitToLexnet'
+  methods: [POST]
+  requirements:
+    _permission: 'manage lexnet submissions'
+    id: '\d+'
+
+jaraba_legal_lexnet.api.submissions.status:
+  path: '/api/v1/legal/lexnet/submissions/{id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_lexnet\Controller\LexnetApiController::checkStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'access lexnet api'
+    id: '\d+'

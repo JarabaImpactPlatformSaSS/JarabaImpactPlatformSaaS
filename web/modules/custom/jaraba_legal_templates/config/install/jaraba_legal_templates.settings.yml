@@ -1,0 +1,21 @@
+# =============================================================================
+# Configuracion por defecto — Legal Templates (JarabaLex FASE C2)
+# =============================================================================
+
+# --- Generacion con IA ---
+ai_drafting_enabled: false
+default_ai_model: 'gemini-2.0-flash'
+ai_temperature: 0.3
+ai_max_citations: 20
+
+# --- Limites por plan ---
+plan_limits:
+  starter:
+    max_templates: 10
+    ai_generations_per_month: 25
+  professional:
+    max_templates: 100
+    ai_generations_per_month: 250
+  enterprise:
+    max_templates: -1
+    ai_generations_per_month: -1

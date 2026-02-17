@@ -1,0 +1,16 @@
+# Schema de configuracion del modulo Legal LexNET (JarabaLex FASE C1).
+# Define la estructura de datos para validacion de YAML config.
+
+jaraba_legal_lexnet.settings:
+  type: config_object
+  label: 'Legal LexNET settings'
+  mapping:
+    cert_path:
+      type: string
+      label: 'Path to the LexNET client certificate (.p12 or .pem)'
+    api_url:
+      type: string
+      label: 'LexNET API base URL (e.g. https://lexnet.justicia.es/api/v1)'
+    polling_interval:
+      type: integer
+      label: 'Polling interval in minutes for new notifications (default 15)'

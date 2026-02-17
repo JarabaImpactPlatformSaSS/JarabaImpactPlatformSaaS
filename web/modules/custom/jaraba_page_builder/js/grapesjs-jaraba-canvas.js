@@ -388,6 +388,7 @@
 
             // Ejecutar plugins registrados de forma segura
             this.loadPlugin('jaraba-blocks');
+            this.loadPlugin('jaraba-legal-blocks');
             this.loadPlugin('jaraba-seo');
             this.loadPlugin('jaraba-ai');
             this.loadPlugin('jaraba-partials');

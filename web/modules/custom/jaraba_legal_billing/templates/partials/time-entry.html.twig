@@ -1,0 +1,22 @@
+{#
+ # time-entry.html.twig — Entrada de tiempo BEM.
+ # Variables: entry (array serializado).
+ #}
+{% set billable = entry.is_billable|default(true) %}
+<div class="ej-time-entry {{ billable ? 'ej-time-entry--billable' : 'ej-time-entry--non-billable' }}">
+  <div class="ej-time-entry__icon">
+    {# SVG clock icon #}
+  </div>
+  <div class="ej-time-entry__content">
+    <span class="ej-time-entry__description">{{ entry.description }}</span>
+    <span class="ej-time-entry__case">{{ entry.date }}</span>
+  </div>
+  <div class="ej-time-entry__duration">
+    {{ (entry.duration_minutes / 60)|number_format(1) }}h
+  </div>
+  {% if entry.billing_rate %}
+    <div class="ej-time-entry__rate">
+      {{ entry.billing_rate|number_format(2, ',', '.') }} EUR/h
+    </div>
+  {% endif %}
+</div>

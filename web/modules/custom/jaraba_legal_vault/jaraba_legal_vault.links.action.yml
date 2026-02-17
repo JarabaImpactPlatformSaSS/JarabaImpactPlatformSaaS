@@ -1,0 +1,18 @@
+# =============================================================================
+# Botones de accion (+ Anadir) en las paginas de coleccion admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Boton "Subir Documento" en la coleccion de documentos seguros
+jaraba_legal_vault.secure_document.add:
+  title: 'Subir Documento'
+  route_name: entity.secure_document.add_form
+  appears_on:
+    - entity.secure_document.collection
+
+# Boton "Crear Solicitud" en la coleccion de solicitudes
+jaraba_legal_vault.document_request.add:
+  title: 'Crear Solicitud'
+  route_name: entity.document_request.add_form
+  appears_on:
+    - entity.document_request.collection

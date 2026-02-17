@@ -1,0 +1,61 @@
+// =============================================================================
+// Tarjeta de Documento Seguro (JarabaLex FASE B1)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// =============================================================================
+
+.ej-document-card {
+  background: var(--ej-bg-surface, #FFFFFF);
+  border: 1px solid var(--ej-border-color, #E0E0E0);
+  border-radius: var(--ej-border-radius-md, 10px);
+  padding: var(--ej-spacing-md, 1rem);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-vault-primary, #2E7D32) 10%, transparent);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--ej-spacing-sm, 0.5rem);
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    color: var(--ej-vault-primary, #2E7D32);
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-legal-primary, #1E3A5F);
+    margin: 0 0 var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--ej-text-secondary, #666);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, 0.5rem);
+    margin-top: var(--ej-spacing-sm, 0.5rem);
+    padding-top: var(--ej-spacing-sm, 0.5rem);
+    border-top: 1px solid var(--ej-border-color, #E0E0E0);
+    font-size: 0.8rem;
+  }
+
+  &--deleted {
+    opacity: 0.5;
+  }
+
+  &--archived {
+    border-left: 3px solid var(--ej-color-warning, #FB8C00);
+  }
+}

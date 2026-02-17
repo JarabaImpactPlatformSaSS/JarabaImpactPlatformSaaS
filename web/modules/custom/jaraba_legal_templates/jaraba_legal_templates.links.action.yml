@@ -1,0 +1,18 @@
+# =============================================================================
+# Botones de accion (+ Anadir) en las paginas de coleccion admin
+# Aparecen como botones primarios en la parte superior de cada listado
+# =============================================================================
+
+# Boton "Crear Plantilla" en la coleccion de plantillas
+jaraba_legal_templates.legal_template.add:
+  title: 'Crear Plantilla'
+  route_name: entity.legal_template.add_form
+  appears_on:
+    - entity.legal_template.collection
+
+# Boton "Crear Documento" en la coleccion de documentos generados
+jaraba_legal_templates.generated_document.add:
+  title: 'Crear Documento'
+  route_name: entity.generated_document.add_form
+  appears_on:
+    - entity.generated_document.collection

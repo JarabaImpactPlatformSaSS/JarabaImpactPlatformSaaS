@@ -1,0 +1,76 @@
+# =============================================================================
+# Rutas del modulo Legal Templates (JarabaLex FASE C2)
+# =============================================================================
+
+# --- Settings Routes (Field UI) ---
+
+jaraba_legal_templates.legal_template.settings:
+  path: '/admin/structure/legal-templates'
+  defaults:
+    _form: '\Drupal\jaraba_legal_templates\Form\TemplateSettingsForm'
+    _title: 'Configuracion Plantillas Juridicas'
+  requirements:
+    _permission: 'administer legal templates'
+
+jaraba_legal_templates.generated_document.settings:
+  path: '/admin/structure/generated-documents'
+  defaults:
+    _form: '\Drupal\jaraba_legal_templates\Form\TemplateSettingsForm'
+    _title: 'Configuracion Documentos Generados'
+  requirements:
+    _permission: 'administer legal templates'
+
+# --- Frontend Zero-Region ---
+
+jaraba_legal_templates.dashboard:
+  path: '/legal/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_templates\Controller\TemplatesDashboardController::dashboard'
+    _title: 'Plantillas y Documentos'
+  requirements:
+    _permission: 'access legal templates'
+
+# --- API REST — Templates ---
+
+jaraba_legal_templates.api.templates.list:
+  path: '/api/v1/legal/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_templates\Controller\TemplatesApiController::listTemplates'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal templates api'
+
+jaraba_legal_templates.api.templates.store:
+  path: '/api/v1/legal/templates'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_templates\Controller\TemplatesApiController::store'
+  methods: [POST]
+  requirements:
+    _permission: 'manage legal templates'
+
+# --- API REST — Document Generation ---
+
+jaraba_legal_templates.api.documents.generate:
+  path: '/api/v1/legal/documents/generate'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_templates\Controller\TemplatesApiController::generate'
+  methods: [POST]
+  requirements:
+    _permission: 'generate legal documents'
+
+jaraba_legal_templates.api.documents.generate_ai:
+  path: '/api/v1/legal/documents/generate-ai'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_templates\Controller\TemplatesApiController::generateAi'
+  methods: [POST]
+  requirements:
+    _permission: 'generate legal documents'
+
+jaraba_legal_templates.api.documents.detail:
+  path: '/api/v1/legal/documents/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_templates\Controller\TemplatesApiController::documentDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'access legal templates api'
+    uuid: '[a-f0-9\-]+'

@@ -1,0 +1,22 @@
+{#
+ # notification-card.html.twig — Tarjeta de notificacion LexNET BEM.
+ #}
+{% set status = notification.status|default('pending') %}
+{% set type = notification.notification_type|default('notificacion_electronica') %}
+<article class="ej-lexnet-notification ej-lexnet-notification--{{ status }}">
+  <div class="ej-lexnet-notification__header">
+    <span class="ej-lexnet-notification__type">{{ type }}</span>
+    <span class="ej-lexnet-notification__badge ej-lexnet-notification__badge--{{ status }}">{{ status }}</span>
+  </div>
+  <h4 class="ej-lexnet-notification__subject">{{ notification.subject }}</h4>
+  <div class="ej-lexnet-notification__meta">
+    <span class="ej-lexnet-notification__court">{{ notification.court }}</span>
+    <span class="ej-lexnet-notification__procedure">{{ notification.procedure_number }}</span>
+  </div>
+  <div class="ej-lexnet-notification__footer">
+    <span class="ej-lexnet-notification__received">{{ notification.received_at }}</span>
+    {% if notification.computed_deadline %}
+      <span class="ej-lexnet-notification__deadline">{{ 'Plazo'|t }}: {{ notification.computed_deadline }}</span>
+    {% endif %}
+  </div>
+</article>

@@ -1,0 +1,23 @@
+# =============================================================================
+# Configuracion por defecto del modulo Legal Billing (JarabaLex FASE B3)
+# Se instala automaticamente con el modulo.
+# =============================================================================
+
+default_invoice_prefix: 'FAC'
+default_quote_prefix: 'PRES'
+default_credit_note_prefix: 'NC'
+default_tax_rate: '21.00'
+default_irpf_rate: '15.00'
+stripe_enabled: false
+stripe_webhook_secret: ''
+ai_estimator_enabled: false
+limits:
+  starter:
+    max_invoices_per_month: 10
+    max_quotes_per_month: 5
+  pro:
+    max_invoices_per_month: 100
+    max_quotes_per_month: 50
+  enterprise:
+    max_invoices_per_month: 0
+    max_quotes_per_month: 0

@@ -1,0 +1,31 @@
+# =============================================================================
+# Servicios del modulo Legal Templates (JarabaLex FASE C2)
+# =============================================================================
+
+services:
+
+  logger.channel.jaraba_legal_templates:
+    parent: logger.channel_base
+    arguments: ['jaraba_legal_templates']
+
+  jaraba_legal_templates.template_manager:
+    class: Drupal\jaraba_legal_templates\Service\TemplateManagerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_legal_templates'
+
+  jaraba_legal_templates.document_generator:
+    class: Drupal\jaraba_legal_templates\Service\DocumentGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_legal_templates.template_manager'
+      - '@jaraba_legal_templates.ai_drafter'
+      - '@logger.channel.jaraba_legal_templates'
+
+  jaraba_legal_templates.ai_drafter:
+    class: Drupal\jaraba_legal_templates\Service\AiDraftingService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_templates'

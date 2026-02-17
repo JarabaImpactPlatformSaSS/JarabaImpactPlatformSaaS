@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @file
+ * jaraba_legal_templates.install — Setup del modulo Legal Templates.
+ *
+ * Estructura: Crea vocabulario de taxonomia para tipos de plantilla.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_legal_templates_install(): void {
+  // Crear vocabulario template_jurisdiction si no existe.
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  $vocabs = [
+    'template_jurisdiction' => [
+      'name' => 'Jurisdiccion de Plantilla',
+      'terms' => [
+        'Civil',
+        'Penal',
+        'Contencioso-Administrativo',
+        'Social / Laboral',
+        'Mercantil',
+        'Familia',
+        'Tributario',
+        'Constitucional',
+      ],
+    ],
+  ];
+
+  foreach ($vocabs as $vid => $info) {
+    $vocabStorage = $entityTypeManager->getStorage('taxonomy_vocabulary');
+    if (!$vocabStorage->load($vid)) {
+      $vocabStorage->create([
+        'vid' => $vid,
+        'name' => $info['name'],
+        'description' => 'Auto-creado por jaraba_legal_templates.',
+      ])->save();
+
+      $termStorage = $entityTypeManager->getStorage('taxonomy_term');
+      foreach ($info['terms'] as $weight => $termName) {
+        $termStorage->create([
+          'vid' => $vid,
+          'name' => $termName,
+          'weight' => $weight,
+        ])->save();
+      }
+
+      \Drupal::logger('jaraba_legal_templates')->info('Vocabulary @vid created with @count terms.', [
+        '@vid' => $vid,
+        '@count' => count($info['terms']),
+      ]);
+    }
+  }
+}

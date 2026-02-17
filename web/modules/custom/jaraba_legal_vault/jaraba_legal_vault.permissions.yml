@@ -1,0 +1,37 @@
+# =============================================================================
+# Permisos del modulo Legal Vault (JarabaLex FASE B1+B2)
+# Estructura: permisos por funcionalidad de boveda documental segura
+# Logica: control granular de acceso para documentos, comparticion y portal
+# =============================================================================
+
+# --- Boveda ---
+access vault:
+  title: 'Acceder a la boveda documental'
+  description: 'Ver documentos en la boveda y acceder al dashboard de documentos.'
+
+access vault api:
+  title: 'Acceder a la API de la boveda'
+  description: 'Consumir los endpoints REST de la boveda documental.'
+
+manage vault documents:
+  title: 'Gestionar documentos de la boveda'
+  description: 'Crear, editar y eliminar documentos en la boveda.'
+  restrict access: true
+
+# --- Acceso y comparticion ---
+manage document access:
+  title: 'Gestionar acceso a documentos'
+  description: 'Compartir documentos, revocar accesos y gestionar tokens.'
+  restrict access: true
+
+# --- Portal de cliente ---
+manage portal:
+  title: 'Gestionar portal de cliente'
+  description: 'Administrar solicitudes de documentos, entregas y portal de cliente.'
+  restrict access: true
+
+# --- Admin ---
+administer vault:
+  title: 'Administrar configuracion de la boveda'
+  description: 'Acceso a la configuracion global del modulo Legal Vault.'
+  restrict access: true

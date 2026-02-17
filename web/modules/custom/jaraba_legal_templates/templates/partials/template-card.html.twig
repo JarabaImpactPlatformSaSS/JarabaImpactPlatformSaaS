@@ -1,0 +1,28 @@
+{#
+ # template-card.html.twig — Tarjeta de plantilla juridica.
+ #
+ # Variables:
+ #   - template: objeto serializado de LegalTemplate.
+ #}
+{% if template %}
+<article class="ej-template-card ej-template-card--{{ template.template_type|default('escrito') }}">
+  <div class="ej-template-card__header">
+    <span class="ej-template-card__type">{{ template.template_type|default('')|capitalize }}</span>
+    {% if template.is_system %}
+      <span class="ej-template-card__badge ej-template-card__badge--system">{{ 'Sistema'|t }}</span>
+    {% endif %}
+  </div>
+  <h4 class="ej-template-card__name">{{ template.name|default('') }}</h4>
+  <div class="ej-template-card__meta">
+    <span class="ej-template-card__usage">{{ template.usage_count|default(0) }} {{ 'usos'|t }}</span>
+  </div>
+  <div class="ej-template-card__actions">
+    <button class="ej-btn ej-btn--sm ej-btn--outline" data-template-action="preview" data-template-id="{{ template.id }}">
+      {{ 'Vista previa'|t }}
+    </button>
+    <button class="ej-btn ej-btn--sm ej-btn--primary" data-template-action="generate" data-template-id="{{ template.id }}">
+      {{ 'Generar'|t }}
+    </button>
+  </div>
+</article>
+{% endif %}

@@ -1,0 +1,26 @@
+# =============================================================================
+# Libraries del modulo Legal Vault (JarabaLex FASE B1+B2)
+# Cada library se carga en la pagina que la necesita via attach_library()
+# Directriz: CSS compilado desde SCSS, JS con Drupal behaviors y once()
+# =============================================================================
+
+# Library global: estilos base del modulo, se carga en todas las paginas vault
+global:
+  version: 1.0
+  css:
+    theme:
+      css/jaraba-legal-vault.css: { minified: true }
+  dependencies:
+    - ecosistema_jaraba_core/global
+
+# Dashboard: boveda documental, KPIs, filtros
+dashboard:
+  version: 1.0
+  js:
+    js/vault-dashboard.js: { minified: false }
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.dialog.ajax
+    - jaraba_legal_vault/global

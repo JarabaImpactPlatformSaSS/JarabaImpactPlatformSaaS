@@ -1,0 +1,28 @@
+# =============================================================================
+# Enlaces de menu en /admin/structure para Legal Billing (JarabaLex FASE B3)
+# Cada entidad principal tiene su entrada en el menu de estructura de Drupal
+# =============================================================================
+
+# Facturas en Structure
+jaraba_legal_billing.invoice.settings:
+  title: 'Facturas Legales'
+  description: 'Configuracion de la entidad Factura Legal de JarabaLex.'
+  route_name: jaraba_legal_billing.invoice.settings
+  parent: system.admin_structure
+  weight: 92
+
+# Presupuestos en Structure
+jaraba_legal_billing.quote.settings:
+  title: 'Presupuestos Legales'
+  description: 'Configuracion de la entidad Presupuesto Legal de JarabaLex.'
+  route_name: jaraba_legal_billing.quote.settings
+  parent: system.admin_structure
+  weight: 93
+
+# Control de Tiempo en Structure
+jaraba_legal_billing.time_entry.settings:
+  title: 'Control de Tiempo'
+  description: 'Configuracion de la entidad Registro de Tiempo de JarabaLex.'
+  route_name: jaraba_legal_billing.time_entry.settings
+  parent: system.admin_structure
+  weight: 94
