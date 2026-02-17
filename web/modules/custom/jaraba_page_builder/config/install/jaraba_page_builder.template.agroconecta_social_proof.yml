@@ -31,13 +31,53 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    logos:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 150
+    reviews:
+      type: array
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+            maxLength: 500
+          author:
+            type: string
+            maxLength: 100
+          role:
+            type: string
+            maxLength: 100
+    badges:
+      type: array
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          src:
+            type: string
+            format: image
+          label:
+            type: string
+            maxLength: 100
   required:
     - title
 plans_required:
-  - professional
+  - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-social-proof.png'
 weight: 10
 preview_data:
   title: 'Resenas de Compradores'

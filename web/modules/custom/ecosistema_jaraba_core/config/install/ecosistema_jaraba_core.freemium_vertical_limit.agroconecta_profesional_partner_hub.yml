@@ -1,0 +1,11 @@
+id: agroconecta_profesional_partner_hub
+label: 'AgroConecta Profesional: Hub B2B'
+vertical: agroconecta
+plan: profesional
+feature_key: partner_hub
+limit_value: -1
+description: 'Hub B2B ilimitado en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0
+status: true

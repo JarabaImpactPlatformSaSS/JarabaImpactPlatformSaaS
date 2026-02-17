@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
 use Drupal\jaraba_agroconecta_core\Entity\OrderAgro;
 use Drupal\jaraba_foc\Service\StripeConnectService;
 use Psr\Log\LoggerInterface;
@@ -16,11 +17,12 @@ use Psr\Log\LoggerInterface;
  * PROPÓSITO:
  * Wrapper sobre jaraba_foc.stripe_connect para operaciones específicas
  * del marketplace: PaymentIntents, Transfers por sub-pedido, y Refunds.
+ * Integra FeatureGateService para comisiones dinamicas por plan.
  *
  * MODELO:
  * - PaymentIntent: Cobro único al cliente por el total del pedido
  * - Transfers: Distribución posterior a cada productor (Separate Charges & Transfers)
- * - Platform retains: commission_amount de cada sub-pedido
+ * - Platform retains: commission_amount de cada sub-pedido (segun plan del productor)
  *
  * @see \Drupal\jaraba_foc\Service\StripeConnectService
  */
@@ -35,6 +37,7 @@ class StripePaymentService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerInterface $logger,
         protected ConfigFactoryInterface $configFactory,
+        protected AgroConectaFeatureGateService $featureGate,
     ) {
     }
 

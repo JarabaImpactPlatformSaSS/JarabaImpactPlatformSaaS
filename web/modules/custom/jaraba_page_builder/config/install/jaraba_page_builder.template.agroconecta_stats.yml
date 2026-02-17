@@ -31,13 +31,26 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    stats:
+      type: array
+      items:
+        type: object
+        properties:
+          number:
+            type: string
+            maxLength: 20
+          label:
+            type: string
+            maxLength: 100
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-stats.png'
 weight: 8
 preview_data:
   title: 'Metricas de Impacto'

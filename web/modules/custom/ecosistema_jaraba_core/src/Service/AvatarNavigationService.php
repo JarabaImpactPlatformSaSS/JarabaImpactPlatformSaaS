@@ -42,6 +42,7 @@ class AvatarNavigationService {
     'recruiter' => 'Empleador',
     'entrepreneur' => 'Emprendedor',
     'producer' => 'Productor',
+    'buyer' => 'Comprador',
     'merchant' => 'Comerciante',
     'service_provider' => 'Proveedor',
     'student' => 'Estudiante',
@@ -254,7 +255,16 @@ class AvatarNavigationService {
       'producer' => [
         ['id' => 'company', 'label' => 'Mi empresa', 'route' => 'jaraba_job_board.my_company', 'icon_category' => 'business', 'icon_name' => 'company'],
         ['id' => 'marketplace', 'label' => 'Marketplace', 'route' => 'jaraba_agroconecta.marketplace', 'icon_category' => 'commerce', 'icon_name' => 'store'],
+        ['id' => 'producer_dashboard', 'label' => 'Mi Tienda', 'route' => 'jaraba_agroconecta.producer.dashboard', 'icon_category' => 'commerce', 'icon_name' => 'store'],
+        ['id' => 'producer_orders', 'label' => 'Pedidos', 'route' => 'jaraba_agroconecta.producer.orders', 'icon_category' => 'commerce', 'icon_name' => 'shopping-bag'],
+        ['id' => 'producer_products', 'label' => 'Productos', 'route' => 'jaraba_agroconecta.producer.products', 'icon_category' => 'commerce', 'icon_name' => 'barcode'],
+        ['id' => 'producer_settings', 'label' => 'Configuracion', 'route' => 'jaraba_agroconecta.producer.settings', 'icon_category' => 'ui', 'icon_name' => 'settings'],
         ['id' => 'training', 'label' => 'Formación', 'route' => 'jaraba_lms.my_learning', 'icon_category' => 'ui', 'icon_name' => 'book'],
+      ],
+      'buyer' => [
+        ['id' => 'marketplace', 'label' => 'Marketplace', 'route' => 'jaraba_agroconecta.marketplace', 'icon_category' => 'commerce', 'icon_name' => 'store'],
+        ['id' => 'customer_dashboard', 'label' => 'Mis Pedidos', 'route' => 'jaraba_agroconecta.customer.dashboard', 'icon_category' => 'commerce', 'icon_name' => 'shopping-bag'],
+        ['id' => 'customer_favorites', 'label' => 'Favoritos', 'route' => 'jaraba_agroconecta.customer.favorites', 'icon_category' => 'ui', 'icon_name' => 'heart'],
       ],
       'merchant' => [
         ['id' => 'portal', 'label' => 'Mi comercio', 'route' => 'jaraba_comercio_conecta.merchant_portal', 'icon_category' => 'commerce', 'icon_name' => 'store'],
@@ -301,6 +311,7 @@ class AvatarNavigationService {
         ['id' => 'empleo', 'label' => 'Empleo', 'route' => 'ecosistema_jaraba_core.landing_empleo', 'icon_category' => 'verticals', 'icon_name' => 'briefcase'],
         ['id' => 'emprender', 'label' => 'Emprender', 'route' => 'ecosistema_jaraba_core.landing_emprender', 'icon_category' => 'verticals', 'icon_name' => 'rocket'],
         ['id' => 'comercio', 'label' => 'Comercio', 'route' => 'ecosistema_jaraba_core.landing_comercio', 'icon_category' => 'commerce', 'icon_name' => 'store'],
+        ['id' => 'agroconecta', 'label' => 'AgroConecta', 'route' => 'ecosistema_jaraba_core.landing.agroconecta', 'icon_category' => 'commerce', 'icon_name' => 'leaf'],
         ['id' => 'courses', 'label' => 'Cursos', 'route' => 'jaraba_lms.catalog', 'icon_category' => 'ui', 'icon_name' => 'book'],
         ['id' => 'register', 'label' => 'Registrarse', 'route' => 'user.register', 'icon_category' => 'ui', 'icon_name' => 'user'],
       ],

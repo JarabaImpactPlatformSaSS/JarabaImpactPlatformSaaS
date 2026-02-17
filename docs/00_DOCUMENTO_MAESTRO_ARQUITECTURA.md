@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v4.0
 
-**Fecha:** 2026-02-16
-**Versión:** 41.0.0 (FASE A1 jaraba_legal_cases — 4 Content Entities + 11 API endpoints)
+**Fecha:** 2026-02-17
+**Versión:** 42.0.0 (Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -506,31 +506,45 @@
 │   ├── Facebook, Instagram, TikTok, Pinterest                            │
 │   └── Estado: 🔄 Desarrollo                                             │
 │                                                                         │
-│   📦 jaraba_agroconecta_core ✅ (Vertical AgroConecta + Copilots)        │
-│   ├── 20 Content Entities, 6 Controllers, 17 Services, 15 Forms        │
+│   📦 jaraba_agroconecta_core ✅ (Vertical AgroConecta — Clase Mundial)    │
+│   ├── 20 Content Entities, 6 Controllers, 18 Services, 15 Forms        │
 │   ├── Fases 1-3: Commerce Core + Orders + Producer/Customer Portal     │
 │   ├── Sprint AC6-1: QR Dashboard (QrService, qr-dashboard.js)          │
 │   ├── Sprint AC6-2: Partner Document Hub B2B (Doc 82)                  │
 │   │   ├── PartnerRelationship + ProductDocument + DocumentDownloadLog  │
-│   │   ├── PartnerDocumentService: 12+ métodos (CRUD, magic link, CSV)  │
-│   │   ├── 17 API endpoints: 9 productor + 8 portal público (token)     │
+│   │   ├── PartnerDocumentService: 12+ metodos (CRUD, magic link, CSV)  │
+│   │   ├── 17 API endpoints: 9 productor + 8 portal publico (token)     │
 │   │   └── Frontend: _partner-hub.scss, partner-hub.js, 2 Twig          │
 │   ├── Fase 9: Producer Copilot (Doc 67)                                │
-│   │   ├── DemandForecasterService: Predicción demanda histórico+season │
+│   │   ├── DemandForecasterService: Prediccion demanda historico+season │
 │   │   ├── MarketSpyService: Inteligencia competitiva                   │
 │   │   └── CopilotConversationInterface + CopilotMessageInterface       │
 │   ├── Fase 10: Sales Agent (Doc 68)                                    │
-│   │   ├── CrossSellEngine: Motor venta cruzada por categoría           │
-│   │   ├── CartRecoveryService: Secuencia recuperación (1h/24h/72h/7d)  │
+│   │   ├── CrossSellEngine: Motor venta cruzada por categoria           │
+│   │   ├── CartRecoveryService: Secuencia recuperacion (1h/24h/72h/7d)  │
 │   │   ├── WhatsAppApiService: WhatsApp Business API webhooks           │
-│   │   └── SalesAgentService: Integración con jaraba_ai_agents          │
-│   ├── Patrón: Clean Twig pages + var(--ej-*) + hook_preprocess_html    │
-│   └── Estado: ✅ Producción (Copilots completados, ~900h total)        │
+│   │   └── SalesAgentService: Integracion con jaraba_ai_agents          │
+│   ├── Elevacion Clase Mundial (14 fases):                              │
+│   │   ├── FASE 0: AgroConectaFeatureGateService + 12 FreemiumLimits   │
+│   │   ├── FASE 1: 8 UpgradeTrigger types (agro_products, orders...)   │
+│   │   ├── FASE 2: AgroConectaCopilotBridgeService                     │
+│   │   ├── FASE 3-4: Body classes + page--agroconecta.html.twig        │
+│   │   ├── FASE 5-6: 95 rgba→color-mix, design token nature_green     │
+│   │   ├── FASE 7: 6 MJML email sequences (SEQ_AGRO_001-006)          │
+│   │   ├── FASE 8: AgroConectaCrossVerticalBridgeService (4 bridges)   │
+│   │   ├── FASE 9: JourneyProgressionService (10 reglas proactivas)    │
+│   │   ├── FASE 10: HealthScoreService (5 dim + 8 KPIs)               │
+│   │   ├── FASE 11: ExperimentService (4 A/B tests)                    │
+│   │   ├── FASE 12: Avatar nav (buyer+producer) + 4 Funnel Defs       │
+│   │   └── FASE 13: QA integral (52 ficheros, 0 errores)              │
+│   ├── Page Builder: 11 templates premium (jaraba_icon, schema.org)    │
+│   ├── Patron: Zero-region + var(--ej-*) + hook_preprocess_html        │
+│   └── Estado: ✅ Clase Mundial (14/14 fases + PB premium)             │
 │                                                                         │
 │   📦 jaraba_agroconecta_traceability 📋                                 │
 │   ├── Entidades: AgroBatch, TraceEvent, TraceCertificate, AgroQR       │
 │   ├── Hash Anchoring: SHA-256 → OpenTimestamps/Polygon                  │
-│   ├── QR Dinámico: Analytics + lead capture                             │
+│   ├── QR Dinamico: Analytics + lead capture                             │
 │   └── Estado: 📋 Planificado (Fase 5)                                   │
 │                                                                         │
 │   📦 jaraba_agroconecta_ai ✅ (Completado en core + ai_agents)           │
@@ -540,7 +554,7 @@
 │   │   └── Implementado en jaraba_agroconecta_core + ai_agents (Fase 10)│
 │   ├── RAG: CopilotConversationInterface, CopilotMessageInterface       │
 │   │   └── Interfaces unificadas en ecosistema_jaraba_core              │
-│   └── Estado: ✅ Completado (Fases 9-10 en módulos existentes)          │
+│   └── Estado: ✅ Completado (Fases 9-10 en modulos existentes)          │
 │                                                                         │
 │   📦 jaraba_servicios_conecta ✅ (Vertical ServiciosConecta)              │
 │   ├── 5 Content Entities, 3 Controllers, 4 Services, 2 Taxonomías     │
@@ -2292,7 +2306,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | IA/ML | 5.0 | **5.0** | Agentes, RAG, guardrails implementados |
 | **Promedio** | **4.5** | **4.9** | **23/65 hallazgos resueltos (7 Críticos + 8 Altos + 8 Medios)** |
 
-### 12.3 Elevación Verticales a Clase Mundial (2026-02-15)
+### 12.3 Elevación Verticales a Clase Mundial (2026-02-17)
 
 | Vertical | Fases | Estado | Servicios Nuevos | Archivos |
 |----------|-------|--------|-----------------|----------|
@@ -2300,6 +2314,7 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 | **Emprendimiento** | 6/6 + v2 (7 gaps) | ✅ Clase Mundial (Paridad) | EmprendimientoFeatureGateService, EmprendimientoExperimentService, EmprendimientoHealthScoreService, EmprendimientoJourneyProgressionService, EmprendimientoEmailSequenceService, EmprendimientoCopilotAgent, EmprendimientoCrossVerticalBridgeService | 25+ archivos |
 | **Andalucía +ei** | 12/12 | ✅ Clase Mundial | AndaluciaEiFeatureGateService, AndaluciaEiEmailSequenceService, AndaluciaEiCrossVerticalBridgeService, AndaluciaEiJourneyProgressionService, AndaluciaEiHealthScoreService, AndaluciaEiExperimentService | 43 archivos |
 | **JarabaLex** | 14/14 | ✅ Clase Mundial | JarabaLexFeatureGateService, JarabaLexEmailSequenceService, JarabaLexCrossVerticalBridgeService, JarabaLexJourneyProgressionService, JarabaLexHealthScoreService, LegalCopilotAgent, JarabaLexJourneyDefinition, LegalCopilotBridgeService | 50 archivos |
+| **AgroConecta** | 14/14 | ✅ Clase Mundial | AgroConectaFeatureGateService, AgroConectaEmailSequenceService, AgroConectaCrossVerticalBridgeService, AgroConectaJourneyProgressionService, AgroConectaHealthScoreService, AgroConectaExperimentService, AgroConectaCopilotBridgeService | 60+ archivos |
 
 **Empleabilidad (10 Fases):**
 1. Clean Page Templates (Zero Region + FAB)
@@ -2351,6 +2366,22 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 12. Health Scores + KPIs (5 dimensiones + 8 KPIs verticales)
 13. LegalCopilotAgent (6 modos, AgentInterface completo, LEGAL-RAG-001)
 14. Avatar Navigation (legal_professional) + 3 Funnel Definitions
+
+**AgroConecta (14 Fases + Page Builder Premium):**
+1. FeatureGateService (CUMULATIVE/MONTHLY/BINARY) + 12 FreemiumVerticalLimit configs (4 features x 3 planes)
+2. UpgradeTrigger types (8 nuevos: agro_products, orders, copilot, photos, traceability, partner_hub, analytics, demand_forecaster)
+3. AgroConectaCopilotBridgeService (context productor + soft suggestions + market insights)
+4. Body classes consolidation (hook_preprocess_html + page--clean-layout)
+5. Zero-region page--agroconecta.html.twig + Copilot FAB + hook_preprocess_page clean_content
+6. SCSS compliance (95 rgba→color-mix en 16 ficheros) + design token vertical nature_green
+7. Email sequences MJML (6 templates SEQ_AGRO_001-006: onboarding, activacion, re-engagement, upsell starter, upsell pro, retention)
+8. CrossVerticalBridgeService (4 bridges: emprendimiento, fiscal, formacion, empleabilidad)
+9. JourneyProgressionService (10 reglas proactivas: 8 productor + 2 consumidor)
+10. HealthScoreService (5 dimensiones: catalog 25%, sales 30%, engagement 20%, copilot 10%, presence 15% + 8 KPIs)
+11. ExperimentService (4 A/B tests: checkout_cta_color, product_card_layout, pricing_page_variant, landing_hero_copy)
+12. Avatar navigation (buyer + producer deep links) + 4 Funnel Definitions (acquisition, activation, monetization, consumer_purchase)
+13. QA integral (52 ficheros, 0 errores, 18 agentes paralelos)
+14. Page Builder Premium: 11 templates (jaraba_icon, data-effect fade-up, staggered delays, FAQ JSON-LD, LocalBusiness microdata, AggregateRating, lightbox, countdown timer, pricing toggle, star ratings) + 11 YML configs (is_premium:true, animation:fade-up, plans_required, fields_schema)
 
 ### 12.4 Dependabot Security Posture (2026-02-14)
 
@@ -2577,9 +2608,10 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
+| 2026-02-17 | **42.0.0** | **Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium:** AgroConecta elevado a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (18 Services, Clase Mundial badge, 14 fases detalle). Tabla 12.3 actualizada con AgroConecta (14/14 + detalle 14 fases + PB premium). 7 servicios nuevos (FeatureGate, EmailSequence, CrossVertical, Journey, Health, Experiment, CopilotBridge). 12 FreemiumVerticalLimit + 8 UpgradeTrigger types + 4 FunnelDefinitions. 95 rgba→color-mix en 16 SCSS. 11 templates PB premium (jaraba_icon, schema.org, FAQ JSON-LD, LocalBusiness). 6 MJML email templates. Aprendizaje #91. |
 | 2026-02-16 | **41.0.0** | **FASE A1 jaraba_legal_cases — Legal Practice Platform:** Nuevo modulo jaraba_legal_cases anadido al registro seccion 7.1. 4 Content Entities (ClientCase, CaseActivity append-only, ClientInquiry, InquiryTriage). 4 Services, 3 Controllers, 11 API REST endpoints. 2 zero-region page templates. 47 ficheros. Aprendizaje #90. |
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 41.0.0 | **Fecha:** 2026-02-16 | **Autor:** IA Asistente
+> **Versión:** 42.0.0 | **Fecha:** 2026-02-17 | **Autor:** IA Asistente
 

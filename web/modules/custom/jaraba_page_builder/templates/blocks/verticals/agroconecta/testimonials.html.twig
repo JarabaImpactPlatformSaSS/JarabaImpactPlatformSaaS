@@ -4,9 +4,12 @@
  # Type: testimonials
  #
  # Header + grid de 3 quote cards
+ # Premium: animations, star ratings, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--testimonials pb-section--agroconecta"
-         aria-label="{{ title|default('Nuestros Productores')|t }}">
+<section class="pb-section pb-section--testimonials pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestros Productores')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
@@ -15,13 +18,28 @@
     </div>
     <div class="pb-section__testimonials-grid">
       {% set default_testimonials = [
-        { quote: 'Gracias a AgroConecta puedo vender mis hortalizas directamente a familias de la ciudad. Mis ingresos han mejorado un 40%.', name: 'Pedro García', role: 'Productor hortícola, Jaén', initials: 'PG' },
-        { quote: 'La plataforma me permite mostrar el origen de mis productos y las certificaciones orgánicas. Los compradores valoran la transparencia.', name: 'Isabel Moreno', role: 'Productora de aceite, Córdoba', initials: 'IM' },
-        { quote: 'Antes dependía de intermediarios. Ahora gestiono mis pedidos directamente y mis productos llegan frescos al consumidor final.', name: 'Manuel Torres', role: 'Agricultor de frutas, Granada', initials: 'MT' }
+        { quote: 'Gracias a AgroConecta puedo vender mis hortalizas directamente a familias de la ciudad. Mis ingresos han mejorado un 40%.', name: 'Pedro García', role: 'Productor hortícola, Jaén', initials: 'PG', rating: 5 },
+        { quote: 'La plataforma me permite mostrar el origen de mis productos y las certificaciones orgánicas. Los compradores valoran la transparencia.', name: 'Isabel Moreno', role: 'Productora de aceite, Córdoba', initials: 'IM', rating: 5 },
+        { quote: 'Antes dependía de intermediarios. Ahora gestiono mis pedidos directamente y mis productos llegan frescos al consumidor final.', name: 'Manuel Torres', role: 'Agricultor de frutas, Granada', initials: 'MT', rating: 4 }
       ] %}
       {% set items = testimonials|default(default_testimonials) %}
       {% for testimonial in items %}
-        <div class="pb-section__testimonial">
+        <div class="pb-section__testimonial"
+             role="article"
+             aria-label="{{ 'Testimonio de @name'|t({'@name': testimonial.name|default('Productor')}) }}"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 150 }}">
+          {% if testimonial.rating|default(5) %}
+            <div class="pb-section__testimonial-rating" aria-label="{{ testimonial.rating|default(5) }} {{ 'de 5 estrellas'|t }}">
+              {% for i in 1..5 %}
+                {% if i <= testimonial.rating|default(5) %}
+                  <span class="pb-section__star pb-section__star--filled">{{ jaraba_icon('ui', 'star', { variant: 'filled', size: '16px', color: 'warning' }) }}</span>
+                {% else %}
+                  <span class="pb-section__star">{{ jaraba_icon('ui', 'star', { variant: 'outline', size: '16px' }) }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
           <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
           <div class="pb-section__testimonial-author">
             <div class="pb-section__testimonial-avatar">

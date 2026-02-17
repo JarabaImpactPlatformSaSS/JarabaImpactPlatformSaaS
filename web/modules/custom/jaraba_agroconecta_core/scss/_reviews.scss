@@ -15,7 +15,7 @@ $review-text-muted: var(--ej-text-muted, #6c757d);
 $review-border: var(--ej-border-color, #e0e0e0);
 $review-radius: var(--ej-radius-md, 12px);
 $review-radius-sm: var(--ej-radius-sm, 8px);
-$review-shadow: var(--ej-shadow-md, 0 2px 12px rgba(0, 0, 0, 0.06));
+$review-shadow: var(--ej-shadow-md, 0 2px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent));
 $review-star-color: var(--ej-color-warning, #F59E0B);
 $review-star-empty: var(--ej-border-color, #d1d5db);
 $review-success: var(--ej-color-success, #10B981);
@@ -255,7 +255,7 @@ $review-success: var(--ej-color-success, #10B981);
         &:focus {
             outline: none;
             border-color: $review-primary;
-            box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.12);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-agro, #556B2F) 12%, transparent);
         }
     }
 
@@ -309,7 +309,7 @@ $review-success: var(--ej-color-success, #10B981);
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: rgba(16, 185, 129, 0.1);
+        background: color-mix(in srgb, var(--ej-color-success, #10B981) 10%, transparent);
         color: $review-success;
         font-size: 24px;
         margin-bottom: 8px;

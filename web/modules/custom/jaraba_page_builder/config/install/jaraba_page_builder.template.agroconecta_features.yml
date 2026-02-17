@@ -31,13 +31,28 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    features:
+      type: array
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+            maxLength: 100
+          desc:
+            type: string
+            maxLength: 300
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-features.png'
 weight: 1
 preview_data:
   title: 'Productos Organicos'

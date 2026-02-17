@@ -95,7 +95,7 @@
         &:focus {
             outline: none;
             border-color: var(--ej-color-primary, #2d6a4f);
-            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 15%, transparent);
         }
 
         &--error {
@@ -242,7 +242,7 @@
 
         &:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 20%, transparent);
         }
     }
 
@@ -305,7 +305,7 @@
     overflow: hidden;
 
     &:hover {
-        box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+        box-shadow: var(--ej-shadow-md, 0 4px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 8%, transparent));
         transform: translateY(-2px);
     }
 

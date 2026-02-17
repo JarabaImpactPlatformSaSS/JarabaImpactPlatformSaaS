@@ -46,7 +46,7 @@
 
     &:hover {
         transform: translateY(-4px);
-        box-shadow: var(--ej-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.1));
+        box-shadow: var(--ej-shadow-lg, 0 10px 25px color-mix(in srgb, var(--ej-color-text, #2D3436) 10%, transparent));
     }
 
     &__image {

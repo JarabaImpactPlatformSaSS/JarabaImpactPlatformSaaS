@@ -59,6 +59,15 @@ class UpgradeTriggerService
         'citation_blocked' => 0.35,
         'digest_blocked' => 0.25,
         'api_blocked' => 0.15,
+        // AgroConecta v1 — Fase 0+1.
+        'agro_products_limit_reached' => 0.35,
+        'agro_orders_per_month_limit_reached' => 0.30,
+        'agro_copilot_uses_per_month_limit_reached' => 0.28,
+        'agro_photos_per_product_limit_reached' => 0.20,
+        'agro_traceability_qr_limit_reached' => 0.30,
+        'agro_partner_hub_limit_reached' => 0.22,
+        'agro_analytics_advanced_limit_reached' => 0.18,
+        'agro_demand_forecaster_limit_reached' => 0.15,
     ];
 
     /**

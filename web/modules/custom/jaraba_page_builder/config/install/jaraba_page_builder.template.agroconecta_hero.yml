@@ -37,7 +37,9 @@ plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-hero.png'
 weight: 0
 preview_data:
   title: 'Escaparate del Productor'

@@ -93,7 +93,7 @@
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: var(--ej-shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.08));
+        box-shadow: var(--ej-shadow-lg, 0 8px 24px color-mix(in srgb, var(--ej-color-text, #2D3436) 8%, transparent));
     }
 
     // Glassmorphism effect

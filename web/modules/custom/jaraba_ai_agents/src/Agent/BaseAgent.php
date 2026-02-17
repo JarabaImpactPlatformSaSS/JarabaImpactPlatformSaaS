@@ -422,6 +422,7 @@ abstract class BaseAgent implements AgentInterface
             'emprendimiento' => 'Sector de emprendimiento y startups.',
             'comercio' => 'Sector de comercio electrónico y ventas.',
             'instituciones' => 'Sector institucional y B2B.',
+            'agroconecta' => 'Ecosistema digital para productores agroalimentarios. Marketplace con trazabilidad, QR phy-gitales, IA para produccion, precios y marketing.',
             'general' => 'Plataforma multi-vertical.',
         ];
 

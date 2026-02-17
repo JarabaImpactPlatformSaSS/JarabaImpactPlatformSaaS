@@ -31,13 +31,45 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    plans:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            maxLength: 100
+          price:
+            type: string
+            maxLength: 20
+          period:
+            type: string
+            maxLength: 20
+          featured:
+            type: boolean
+          badge:
+            type: string
+            maxLength: 50
+          cta:
+            type: string
+            maxLength: 50
+          url:
+            type: string
+            format: uri
+          features:
+            type: array
+            items:
+              type: string
+              maxLength: 100
   required:
     - title
 plans_required:
-  - professional
+  - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-pricing.png'
 weight: 6
 preview_data:
   title: 'Cajas de Suscripcion'

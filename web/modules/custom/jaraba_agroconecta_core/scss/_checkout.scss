@@ -51,7 +51,7 @@
         transition: box-shadow 0.2s ease;
 
         &:hover {
-            box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+            box-shadow: var(--ej-shadow-md, 0 4px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 8%, transparent));
         }
     }
 
@@ -116,7 +116,7 @@
         &:focus {
             outline: none;
             border-color: var(--ej-color-primary, #2d6a4f);
-            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 15%, transparent);
         }
 
         &::placeholder {
@@ -156,7 +156,7 @@
 
         input[type="radio"]:checked~& {
             border-color: var(--ej-color-primary, #2d6a4f);
-            background: rgba(45, 106, 79, 0.04);
+            background: color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 4%, transparent);
         }
     }
 
@@ -295,7 +295,7 @@
         color: #fff;
         font-size: 2.5rem;
         margin-bottom: var(--ej-spacing-lg, 1.5rem);
-        box-shadow: 0 8px 24px rgba(45, 106, 79, 0.3);
+        box-shadow: 0 8px 24px color-mix(in srgb, var(--ej-color-primary, #2d6a4f) 30%, transparent);
     }
 
     &__title {

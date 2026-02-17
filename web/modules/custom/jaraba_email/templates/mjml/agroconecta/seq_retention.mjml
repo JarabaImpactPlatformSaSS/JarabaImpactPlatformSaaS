@@ -1,0 +1,106 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .metric-box { background-color: #f0f5e8; border-radius: 8px; padding: 16px; text-align: center; margin: 8px 0; }
+      .metric-value { font-size: 24px; font-weight: bold; color: #556B2F; }
+      .metric-label { font-size: 12px; color: #6b7280; text-transform: uppercase; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#556B2F" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ t('AgroConecta') }}
+        </mj-text>
+        <mj-text align="center" color="#e0e7d8" font-size="13px">
+          {{ t('Tu resumen mensual') }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#556B2F" padding-bottom="8px">
+          {{ t('&iexcl;{{ months_active }} meses contigo!') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Aqu&iacute; tienes el resumen de tu actividad en AgroConecta este mes:') }}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Metricas -->
+    <mj-section background-color="#ffffff" padding="0 24px 16px">
+      <mj-column>
+        <mj-text>
+          <div class="metric-box">
+            <div class="metric-value">{{ monthly_orders }}</div>
+            <div class="metric-label">{{ t('Pedidos este mes') }}</div>
+          </div>
+        </mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text>
+          <div class="metric-box">
+            <div class="metric-value">{{ monthly_revenue }}</div>
+            <div class="metric-label">{{ t('Ingresos generados') }}</div>
+          </div>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="0 24px 16px">
+      <mj-column>
+        <mj-text>
+          <div class="metric-box">
+            <div class="metric-value">{{ avg_rating }}</div>
+            <div class="metric-label">{{ t('Valoraci&oacute;n media') }}</div>
+          </div>
+        </mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text>
+          <div class="metric-box">
+            <div class="metric-value">{{ repeat_customers }}</div>
+            <div class="metric-label">{{ t('Clientes recurrentes') }}</div>
+          </div>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="0 24px 32px">
+      <mj-column>
+        <mj-text>
+          <p>{{ t('Desde que empezaste, has acumulado <strong>{{ total_orders }} pedidos</strong> y <strong>{{ total_revenue }}</strong> en ingresos. &iexcl;Sigue as&iacute;!') }}</p>
+        </mj-text>
+        <mj-button href="{{ dashboard_url }}" align="center" padding="24px 0">
+          {{ t('Ver mi dashboard completo') }}
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">{{ t('Cancelar suscripci&oacute;n') }}</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">{{ t('Pol&iacute;tica de privacidad') }}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

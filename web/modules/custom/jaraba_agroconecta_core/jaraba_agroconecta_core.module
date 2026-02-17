@@ -183,40 +183,55 @@ function jaraba_agroconecta_core_theme(): array
  * CRÍTICO: Añade body classes para las páginas AgroConecta.
  * NUNCA usar attributes.addClass() en templates Twig.
  *
+ * Plan Elevación AgroConecta Clase Mundial v1 — Fase 3 (Body Classes Consolidation).
+ * Todas las rutas del vertical reciben:
+ *   - Su clase específica de ruta.
+ *   - 'agro-page' como clase common del vertical.
+ *   - 'page--clean-layout' para indicar layout zero-region.
+ *
  * @see /frontend-page-pattern workflow
  */
 function jaraba_agroconecta_core_preprocess_html(array &$variables): void
 {
     $route = \Drupal::routeMatch()->getRouteName();
+    if ($route === NULL) {
+        return;
+    }
 
     $routeClasses = [
-        'jaraba_agroconecta.marketplace' => ['marketplace-page', 'page-marketplace', 'agro-page'],
-        'jaraba_agroconecta.product_detail' => ['agro-product-page', 'agro-page'],
-        'jaraba_agroconecta.checkout' => ['checkout-page', 'agro-page', 'page-checkout'],
-        'jaraba_agroconecta.order_confirmation' => ['order-confirmation-page', 'agro-page'],
+        // Marketplace público
+        'jaraba_agroconecta.marketplace' => ['marketplace-page', 'page-marketplace'],
+        'jaraba_agroconecta.product_detail' => ['agro-product-page'],
+        'jaraba_agroconecta.checkout' => ['checkout-page', 'page-checkout'],
+        'jaraba_agroconecta.order_confirmation' => ['order-confirmation-page'],
         // Portal del Productor (Fase 3)
-        'jaraba_agroconecta.producer.dashboard' => ['producer-dashboard-page', 'producer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.producer.orders' => ['producer-orders-page', 'producer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.producer.order_detail' => ['producer-order-detail-page', 'producer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.producer.products' => ['producer-products-page', 'producer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.producer.payouts' => ['producer-payouts-page', 'producer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.producer.settings' => ['producer-settings-page', 'producer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.producer.dashboard' => ['producer-dashboard-page', 'producer-portal-page'],
+        'jaraba_agroconecta.producer.orders' => ['producer-orders-page', 'producer-portal-page'],
+        'jaraba_agroconecta.producer.order_detail' => ['producer-order-detail-page', 'producer-portal-page'],
+        'jaraba_agroconecta.producer.products' => ['producer-products-page', 'producer-portal-page'],
+        'jaraba_agroconecta.producer.payouts' => ['producer-payouts-page', 'producer-portal-page'],
+        'jaraba_agroconecta.producer.settings' => ['producer-settings-page', 'producer-portal-page'],
         // Portal del Cliente (Fase 3)
-        'jaraba_agroconecta.customer.dashboard' => ['customer-dashboard-page', 'customer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.customer.orders' => ['customer-orders-page', 'customer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.customer.order_detail' => ['customer-order-detail-page', 'customer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.customer.addresses' => ['customer-addresses-page', 'customer-portal-page', 'agro-page'],
-        'jaraba_agroconecta.customer.favorites' => ['customer-favorites-page', 'customer-portal-page', 'agro-page'],
+        'jaraba_agroconecta.customer.dashboard' => ['customer-dashboard-page', 'customer-portal-page'],
+        'jaraba_agroconecta.customer.orders' => ['customer-orders-page', 'customer-portal-page'],
+        'jaraba_agroconecta.customer.order_detail' => ['customer-order-detail-page', 'customer-portal-page'],
+        'jaraba_agroconecta.customer.addresses' => ['customer-addresses-page', 'customer-portal-page'],
+        'jaraba_agroconecta.customer.favorites' => ['customer-favorites-page', 'customer-portal-page'],
         // Search & Discovery (Fase 5)
-        'jaraba_agroconecta.search_page' => ['search-page', 'agro-search-page', 'agro-page'],
-        'jaraba_agroconecta.category_page' => ['category-page', 'agro-category-page', 'agro-page'],
-        'jaraba_agroconecta.collection_page' => ['collection-page', 'agro-collection-page', 'agro-page'],
+        'jaraba_agroconecta.search_page' => ['search-page', 'agro-search-page'],
+        'jaraba_agroconecta.category_page' => ['category-page', 'agro-category-page'],
+        'jaraba_agroconecta.collection_page' => ['collection-page', 'agro-collection-page'],
+        // Landing page del vertical
+        'ecosistema_jaraba_core.landing.agroconecta' => ['agroconecta-landing-page'],
     ];
 
     if (isset($routeClasses[$route])) {
         foreach ($routeClasses[$route] as $class) {
             $variables['attributes']['class'][] = $class;
         }
+        // Clases comunes del vertical: identificador + layout zero-region.
+        $variables['attributes']['class'][] = 'agro-page';
+        $variables['attributes']['class'][] = 'page--clean-layout';
     }
 }
 
@@ -421,5 +436,54 @@ function jaraba_agroconecta_core_mail(string $key, array &$message, array $param
                 $message['body'][] = t('Usa el código @code para obtener tu descuento.', ['@code' => $params['discount_code']]);
             }
             break;
+    }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Inyecta variables de página para el zero-region pattern.
+ * Plan Elevación AgroConecta Clase Mundial v1 — Fase 4
+ * Directriz ZERO-REGION-001.
+ */
+function jaraba_agroconecta_core_preprocess_page(array &$variables): void
+{
+    $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+    // Solo procesar rutas del vertical AgroConecta.
+    if (str_starts_with($route_name, 'jaraba_agroconecta.') ||
+        $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
+        // Inyectar clean_content desde el controller render array.
+        if (isset($variables['page']['content'])) {
+            $variables['clean_content'] = $variables['page']['content'];
+        }
+
+        // Contexto del vertical para templates.
+        $variables['agroconecta_context'] = [
+            'vertical' => 'agroconecta',
+            'route' => $route_name,
+        ];
+
+        // Copilot FAB habilitado para rutas con usuario autenticado.
+        $variables['copilot_enabled'] = \Drupal::currentUser()->isAuthenticated();
+    }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Redirige todas las rutas frontend de AgroConecta al template
+ * page--agroconecta.html.twig (zero-region).
+ * Plan Elevación AgroConecta Clase Mundial v1 — Fase 4
+ * Directriz ZERO-REGION-001.
+ */
+function jaraba_agroconecta_core_theme_suggestions_page_alter(array &$suggestions, array $variables): void
+{
+    $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+    // Rutas frontend del vertical (excluir rutas API).
+    if ((str_starts_with($route_name, 'jaraba_agroconecta.') && !str_contains($route_name, '.api.')) ||
+        $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
+        $suggestions[] = 'page__agroconecta';
     }
 }

@@ -1,0 +1,11 @@
+id: agroconecta_profesional_traceability_qr
+label: 'AgroConecta Profesional: Trazabilidad QR'
+vertical: agroconecta
+plan: profesional
+feature_key: traceability_qr
+limit_value: -1
+description: 'Trazabilidad QR ilimitada en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0
+status: true

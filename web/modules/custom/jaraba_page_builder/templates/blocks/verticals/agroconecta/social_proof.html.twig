@@ -3,15 +3,57 @@
  # Category: agroconecta
  # Type: social_proof
  #
- # Header "Confían en nosotros" + grid de logos
+ # Header "Confían en nosotros" + aggregate rating + grid de logos + review quotes + trust badges
+ # Premium: star ratings, review quotes, trust badges, staggered animations
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--social-proof pb-section--agroconecta"
-         aria-label="{{ title|default('Confían en nosotros')|t }}">
+<section class="pb-section pb-section--social-proof pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Confían en nosotros')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <h2 class="pb-section__title">{{ title|default('Restaurantes y tiendas que confían en nosotros')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Profesionales de la hostelería y alimentación que eligen productos de AgroConecta.')|t }}</p>
     </div>
+    {# Aggregate star rating bar #}
+    <div class="pb-section__rating-bar"
+         data-rating="{{ average_rating|default(4.8) }}"
+         data-reviews="{{ total_reviews|default(0) }}">
+      <div class="pb-section__stars" aria-label="{{ 'Valoración media: %rating% de 5'|t({'%rating%': average_rating|default(4.8)}) }}">
+        {% for i in 1..5 %}
+          {% if i <= (average_rating|default(4.8))|round(0, 'floor') %}
+            {{ jaraba_icon('ui', 'star', { variant: 'solid', size: '20px', color: 'warning' }) }}
+          {% elseif i - (average_rating|default(4.8)) < 1 %}
+            {{ jaraba_icon('ui', 'star-half', { variant: 'solid', size: '20px', color: 'warning' }) }}
+          {% else %}
+            {{ jaraba_icon('ui', 'star', { variant: 'outline', size: '20px', color: 'muted' }) }}
+          {% endif %}
+        {% endfor %}
+      </div>
+      <span class="pb-section__rating-value">{{ average_rating|default(4.8) }}</span>
+      {% if total_reviews|default(0) > 0 %}
+        <span class="pb-section__rating-count">({{ total_reviews }} {{ 'reseñas'|t }})</span>
+      {% endif %}
+    </div>
+    {# Review quotes #}
+    {% if reviews|default([]) %}
+      <div class="pb-section__reviews-grid">
+        {% for review in reviews %}
+          <blockquote class="pb-section__review"
+                      data-effect="fade-up"
+                      data-delay="{{ loop.index0 * 100 }}">
+            <p class="pb-section__review-text">"{{ review.text|default('')|t }}"</p>
+            <footer class="pb-section__review-author">
+              <cite>{{ review.author|default('Cliente')|t }}</cite>
+              {% if review.role|default('') %}
+                <span class="pb-section__review-role">{{ review.role|t }}</span>
+              {% endif %}
+            </footer>
+          </blockquote>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {# Logo grid #}
     <div class="pb-section__logos-grid">
       {% set default_logos = [
         { alt: 'Restaurante asociado 1' },
@@ -23,14 +65,36 @@
       ] %}
       {% set items = logos|default(default_logos) %}
       {% for logo in items %}
-        <div class="pb-section__logo">
+        <div class="pb-section__logo"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 80 }}">
           {% if logo.src|default('') %}
-            <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" />
+            <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" decoding="async" />
           {% else %}
             <div class="pb-section__logo-placeholder">{{ logo.alt|default('Logo')|t }}</div>
           {% endif %}
         </div>
       {% endfor %}
     </div>
+    {# Trust badges #}
+    {% if badges|default([]) %}
+      <div class="pb-section__trust-badges">
+        {% for badge in badges %}
+          <div class="pb-section__trust-badge"
+               data-effect="fade-up"
+               data-delay="{{ loop.index0 * 100 }}">
+            {% if badge.icon|default('') %}
+              {{ jaraba_icon('ui', badge.icon, { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            {% endif %}
+            {% if badge.src|default('') %}
+              <img src="{{ badge.src }}" alt="{{ badge.label|default('Badge') }}" loading="lazy" decoding="async" />
+            {% endif %}
+            {% if badge.label|default('') %}
+              <span class="pb-section__trust-badge-label">{{ badge.label|t }}</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 </section>

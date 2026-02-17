@@ -37,7 +37,9 @@ plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-cta.png'
 weight: 3
 preview_data:
   title: 'Pedido Directo'

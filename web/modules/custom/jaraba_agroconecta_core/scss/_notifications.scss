@@ -15,7 +15,7 @@ $notif-text-muted: var(--ej-text-muted, #6c757d);
 $notif-border: var(--ej-border-color, #e0e0e0);
 $notif-radius: var(--ej-radius-md, 12px);
 $notif-radius-sm: var(--ej-radius-sm, 8px);
-$notif-shadow: var(--ej-shadow-md, 0 2px 12px rgba(0, 0, 0, 0.06));
+$notif-shadow: var(--ej-shadow-md, 0 2px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent));
 $notif-danger: var(--ej-color-danger, #EF4444);
 $notif-success: var(--ej-color-success, #10B981);
 
@@ -71,7 +71,7 @@ $notif-success: var(--ej-color-success, #10B981);
         overflow-y: auto;
         background: $notif-surface;
         border-radius: $notif-radius;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 8px 32px color-mix(in srgb, var(--ej-color-text, #2D3436) 12%, transparent);
         border: 1px solid $notif-border;
         z-index: 100;
         opacity: 0;
@@ -116,7 +116,7 @@ $notif-success: var(--ej-color-success, #10B981);
         }
 
         &--unread {
-            background: rgba(85, 107, 47, 0.04);
+            background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 4%, transparent);
             border-left: 3px solid $notif-primary;
         }
     }
@@ -255,12 +255,12 @@ $notif-success: var(--ej-color-success, #10B981);
         border-radius: $notif-radius-sm;
 
         &--success {
-            background: rgba(16, 185, 129, 0.08);
+            background: color-mix(in srgb, var(--ej-color-success, #10B981) 8%, transparent);
             color: $notif-success;
         }
 
         &--error {
-            background: rgba(239, 68, 68, 0.08);
+            background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 8%, transparent);
             color: $notif-danger;
         }
     }

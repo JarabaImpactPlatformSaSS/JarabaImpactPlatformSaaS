@@ -6,13 +6,16 @@ namespace Drupal\jaraba_agroconecta_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
+use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Psr\Log\LoggerInterface;
 
 /**
  * Servicio para gestión de productos agroalimentarios.
  *
  * Proporciona métodos para consultar, filtrar y gestionar productos
- * con soporte multi-tenant.
+ * con soporte multi-tenant. Integra FeatureGateService para verificar
+ * limites de plan antes de crear productos o subir fotos.
  */
 class ProductAgroService
 {
@@ -24,7 +27,102 @@ class ProductAgroService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected AccountProxyInterface $currentUser,
         protected LoggerInterface $logger,
+        protected AgroConectaFeatureGateService $featureGate,
     ) {
+    }
+
+    /**
+     * Verifica si el usuario puede crear un nuevo producto.
+     *
+     * Consulta el FeatureGateService para verificar el limite de productos
+     * segun el plan del usuario. Si denegado, dispara upgrade trigger.
+     *
+     * @param int $userId
+     *   El ID del usuario productor.
+     *
+     * @return \Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult
+     *   Resultado de la verificacion con allowed, remaining, upgradeMessage.
+     */
+    public function canCreateProduct(int $userId): FeatureGateResult {
+        return $this->featureGate->checkAndFire($userId, 'products', [
+            'current_count' => $this->countProductsByUser($userId),
+        ]);
+    }
+
+    /**
+     * Verifica si el usuario puede subir otra foto a un producto.
+     *
+     * @param int $userId
+     *   El ID del usuario productor.
+     * @param int $productId
+     *   El ID del producto.
+     *
+     * @return \Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult
+     *   Resultado de la verificacion.
+     */
+    public function canUploadPhoto(int $userId, int $productId): FeatureGateResult {
+        $photoCount = $this->countPhotosForProduct($productId);
+        $plan = $this->featureGate->getUserPlan($userId);
+        $result = $this->featureGate->check($userId, 'photos_per_product', $plan);
+
+        // Para photos_per_product, comparamos contra fotos del producto especifico.
+        if ($result->isAllowed() && $result->limit > 0) {
+            $remaining = max(0, $result->limit - $photoCount);
+            if ($remaining <= 0) {
+                return FeatureGateResult::denied(
+                    'photos_per_product',
+                    $plan,
+                    $result->limit,
+                    $photoCount,
+                    $result->upgradeMessage ?: 'Has alcanzado el limite de fotos por producto.',
+                    $result->upgradePlan ?: 'starter',
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Cuenta los productos activos de un usuario.
+     *
+     * @param int $userId
+     *   El ID del usuario.
+     *
+     * @return int
+     *   Numero de productos activos.
+     */
+    public function countProductsByUser(int $userId): int {
+        $count = $this->entityTypeManager->getStorage('product_agro')
+            ->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('user_id', $userId)
+            ->condition('status', 1)
+            ->count()
+            ->execute();
+        return (int) $count;
+    }
+
+    /**
+     * Cuenta las fotos de un producto.
+     *
+     * @param int $productId
+     *   El ID del producto.
+     *
+     * @return int
+     *   Numero de fotos.
+     */
+    protected function countPhotosForProduct(int $productId): int {
+        try {
+            $product = $this->entityTypeManager->getStorage('product_agro')->load($productId);
+            if ($product && $product->hasField('images')) {
+                return count($product->get('images')->getValue());
+            }
+        }
+        catch (\Exception $e) {
+            // Producto no encontrado o campo no disponible.
+        }
+        return 0;
     }
 
     /**

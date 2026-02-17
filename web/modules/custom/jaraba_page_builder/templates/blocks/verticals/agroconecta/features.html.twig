@@ -4,25 +4,32 @@
  # Type: features
  #
  # Header centrado + grid de 3 feature cards
+ # Premium: staggered animations, jaraba_icon system, configurable columns
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--features pb-section--agroconecta"
-         aria-label="{{ title|default('Nuestros Servicios')|t }}">
+<section class="pb-section pb-section--features pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestros Servicios')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Servicios')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Herramientas para el productor moderno')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Tecnología al servicio del campo para optimizar cosechas y conectar con compradores.')|t }}</p>
     </div>
-    <div class="pb-section__features-grid">
+    <div class="pb-section__features-grid pb-section__features-grid--{{ columns|default(3) }}-cols">
       {% set default_features = [
-        { icon: '&#127793;', title: 'Control de cosechas', desc: 'Monitoriza tus cultivos, planifica temporadas y registra rendimientos por parcela.' },
-        { icon: '&#128230;', title: 'Venta directa', desc: 'Vende directamente a restaurantes, tiendas y consumidores sin intermediarios.' },
-        { icon: '&#127807;', title: 'Certificación eco', desc: 'Gestiona tus certificaciones orgánicas y muestra la trazabilidad de cada producto.' }
+        { icon: 'agriculture', title: 'Control de cosechas', desc: 'Monitoriza tus cultivos, planifica temporadas y registra rendimientos por parcela.' },
+        { icon: 'package', title: 'Venta directa', desc: 'Vende directamente a restaurantes, tiendas y consumidores sin intermediarios.' },
+        { icon: 'leaf', title: 'Certificación eco', desc: 'Gestiona tus certificaciones orgánicas y muestra la trazabilidad de cada producto.' }
       ] %}
       {% set items = features|default(default_features) %}
       {% for feature in items %}
-        <div class="pb-section__feature-card">
-          <div class="pb-section__feature-icon" aria-hidden="true">{{ feature.icon|default('&#9733;')|raw }}</div>
+        <div class="pb-section__feature-card"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__feature-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', feature.icon|default('star'), { variant: 'duotone', size: '32px', color: 'primary' }) }}
+          </div>
           <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
           <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>
         </div>

@@ -1131,3 +1131,59 @@ services:
       - '@entity_type.manager'
       - '@database'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # AGROCONECTA FEATURE GATE (Plan Elevación AgroConecta Clase Mundial v1 — Fase 0)
+  # ===========================================
+
+  # Feature gating por plan para el vertical AgroConecta.
+  # Verifica limites de uso (products, orders_per_month,
+  # copilot_uses_per_month, photos_per_product, commission_pct,
+  # traceability_qr, partner_hub, analytics_advanced, demand_forecaster)
+  # consultando FreemiumVerticalLimit y tabla agroconecta_feature_usage.
+  ecosistema_jaraba_core.agroconecta_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 7: Email Sequences.
+  ecosistema_jaraba_core.agroconecta_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\AgroConectaEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 8: CrossVerticalBridge.
+  ecosistema_jaraba_core.agroconecta_cross_vertical_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\AgroConectaCrossVerticalBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 9: Journey Progression.
+  ecosistema_jaraba_core.agroconecta_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\AgroConectaJourneyProgressionService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 10: Health Score.
+  ecosistema_jaraba_core.agroconecta_health_score:
+    class: Drupal\ecosistema_jaraba_core\Service\AgroConectaHealthScoreService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 11: Experiment Service.
+  ecosistema_jaraba_core.agroconecta_experiment:
+    class: Drupal\ecosistema_jaraba_core\Service\AgroConectaExperimentService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'

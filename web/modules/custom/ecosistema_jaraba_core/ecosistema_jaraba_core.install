@@ -1622,3 +1622,90 @@ function ecosistema_jaraba_core_update_9017(): string {
 
   return 'Created jarabalex_feature_usage table.';
 }
+
+/**
+ * Plan Elevación AgroConecta Clase Mundial v1 — Fase 0: Feature Gate.
+ *
+ * Crea la tabla {agroconecta_feature_usage} para tracking de uso de features
+ * e importa las 12 nuevas FreemiumVerticalLimit configs del vertical.
+ */
+function ecosistema_jaraba_core_update_9018(): string {
+  $database = \Drupal::database();
+
+  // Crear tabla de tracking si no existe.
+  if (!$database->schema()->tableExists('agroconecta_feature_usage')) {
+    $database->schema()->createTable('agroconecta_feature_usage', [
+      'description' => 'Tracking de uso de features del vertical AgroConecta.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'user_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'feature_key' => [
+          'type' => 'varchar',
+          'length' => 128,
+          'not null' => TRUE,
+        ],
+        'usage_date' => [
+          'type' => 'varchar',
+          'length' => 10,
+          'not null' => TRUE,
+        ],
+        'usage_count' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+      ],
+      'primary key' => ['id'],
+      'indexes' => [
+        'user_feature_date' => ['user_id', 'feature_key', 'usage_date'],
+        'feature_date' => ['feature_key', 'usage_date'],
+      ],
+    ]);
+  }
+
+  // Importar las nuevas FreemiumVerticalLimit configs.
+  $configPath = \Drupal::service('extension.list.module')
+    ->getPath('ecosistema_jaraba_core') . '/config/install';
+  $configFactory = \Drupal::configFactory();
+
+  $newConfigs = [
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_free_traceability_qr',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_starter_traceability_qr',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_profesional_traceability_qr',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_free_partner_hub',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_starter_partner_hub',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_profesional_partner_hub',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_free_analytics_advanced',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_starter_analytics_advanced',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_profesional_analytics_advanced',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_free_demand_forecaster',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_starter_demand_forecaster',
+    'ecosistema_jaraba_core.freemium_vertical_limit.agroconecta_profesional_demand_forecaster',
+  ];
+
+  $imported = 0;
+  foreach ($newConfigs as $configName) {
+    $yamlFile = $configPath . '/' . $configName . '.yml';
+    if (file_exists($yamlFile) && $configFactory->get($configName)->isNew()) {
+      $data = \Symfony\Component\Yaml\Yaml::parseFile($yamlFile);
+      $configFactory->getEditable($configName)->setData($data)->save();
+      $imported++;
+    }
+  }
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'Tabla agroconecta_feature_usage creada y @count FreemiumVerticalLimit configs importadas para AgroConecta.',
+    ['@count' => $imported]
+  );
+
+  return "Created agroconecta_feature_usage table and imported {$imported} FreemiumVerticalLimit configs.";
+}

@@ -11,7 +11,7 @@ $customer-text-muted: var(--color-text-muted, #6c757d);
 $customer-border: var(--color-border, #e0e0e0);
 $customer-radius: var(--radius-md, 12px);
 $customer-radius-sm: var(--radius-sm, 8px);
-$customer-shadow: var(--shadow-card, 0 2px 12px rgba(0, 0, 0, 0.06));
+$customer-shadow: var(--shadow-card, 0 2px 12px color-mix(in srgb, var(--ej-color-text, #2D3436) 6%, transparent));
 $customer-gap: var(--spacing-lg, 24px);
 
 .customer-portal {
@@ -74,8 +74,8 @@ $customer-gap: var(--spacing-lg, 24px);
         justify-content: space-between;
         align-items: center;
         padding: 16px 20px;
-        background: linear-gradient(135deg, rgba(45, 122, 58, 0.05), rgba(45, 122, 58, 0.12));
-        border: 1px solid rgba(45, 122, 58, 0.2);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--ej-color-agro, #556B2F) 5%, transparent), color-mix(in srgb, var(--ej-color-agro, #556B2F) 12%, transparent));
+        border: 1px solid color-mix(in srgb, var(--ej-color-agro, #556B2F) 20%, transparent);
         border-radius: $customer-radius;
     }
 
@@ -191,7 +191,7 @@ $customer-gap: var(--spacing-lg, 24px);
         transition: all 0.2s ease;
 
         &:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 16px color-mix(in srgb, var(--ej-color-text, #2D3436) 10%, transparent);
             transform: translateY(-1px);
         }
     }
@@ -244,7 +244,7 @@ $customer-gap: var(--spacing-lg, 24px);
         justify-content: space-between;
         align-items: center;
         padding: 12px 16px;
-        background: rgba(0, 0, 0, 0.015);
+        background: color-mix(in srgb, var(--ej-color-text, #2D3436) 1.5%, transparent);
         border-bottom: 1px solid $customer-border;
     }
 
@@ -429,7 +429,7 @@ $customer-gap: var(--spacing-lg, 24px);
         justify-content: space-between;
         align-items: center;
         padding: 12px 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #2D3436) 4%, transparent);
     }
 
     &__item-info {
@@ -473,7 +473,7 @@ $customer-gap: var(--spacing-lg, 24px);
         justify-content: space-between;
         padding: 6px 0;
         font-size: 14px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        border-bottom: 1px solid color-mix(in srgb, var(--ej-color-text, #2D3436) 4%, transparent);
 
         &--total {
             font-weight: 700;
@@ -529,7 +529,7 @@ $customer-gap: var(--spacing-lg, 24px);
             color: $customer-primary;
 
             &:hover {
-                background: rgba(45, 122, 58, 0.05);
+                background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 5%, transparent);
             }
         }
 

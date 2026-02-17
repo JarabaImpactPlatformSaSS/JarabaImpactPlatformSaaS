@@ -1,0 +1,12 @@
+id: agroconecta_producer_acquisition
+label: 'AgroConecta: Adquisicion Productor'
+vertical: agroconecta
+steps:
+  - { key: landing_visit, label: 'Visita Landing', event: agro_landing_visit }
+  - { key: guia_download, label: 'Descarga Guia', event: agro_guia_download }
+  - { key: registration, label: 'Registro', event: agro_registration }
+  - { key: first_product_upload, label: 'Primer Producto', event: agro_product_created }
+  - { key: first_product_published, label: 'Producto Publicado', event: agro_product_published }
+conversion_window_hours: 168
+is_active: true
+status: true

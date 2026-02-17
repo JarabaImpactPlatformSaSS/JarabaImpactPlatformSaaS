@@ -4,9 +4,13 @@
  # Type: hero
  #
  # Split layout: hero content (eyebrow + h2 + subtitle + CTAs) + media
+ # Premium: animations, parallax media, background image, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--hero pb-section--agroconecta"
-         aria-label="{{ title|default('Escaparate del Productor')|t }}">
+<section class="pb-section pb-section--hero pb-section--agroconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Hero AgroConecta')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__hero-content">
       <span class="pb-section__eyebrow">{{ eyebrow|default('AgroConecta')|t }}</span>
@@ -25,11 +29,13 @@
         {% endif %}
       </div>
     </div>
-    <div class="pb-section__media">
+    <div class="pb-section__media" data-parallax="0.3">
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#127793;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'seedling', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

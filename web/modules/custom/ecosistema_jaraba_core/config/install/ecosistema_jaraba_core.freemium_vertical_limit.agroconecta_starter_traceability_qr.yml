@@ -1,0 +1,11 @@
+id: agroconecta_starter_traceability_qr
+label: 'AgroConecta Starter: Trazabilidad QR'
+vertical: agroconecta
+plan: starter
+feature_key: traceability_qr
+limit_value: 5
+description: 'Maximo 5 codigos QR de trazabilidad en plan Starter AgroConecta.'
+upgrade_message: 'Has alcanzado el limite de 5 codigos QR de trazabilidad. Con Profesional tendras ilimitados.'
+expected_conversion: 0.25
+weight: 0
+status: true

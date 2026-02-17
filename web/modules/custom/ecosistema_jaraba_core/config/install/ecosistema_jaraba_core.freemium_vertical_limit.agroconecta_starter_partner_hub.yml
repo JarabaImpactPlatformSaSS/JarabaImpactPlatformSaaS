@@ -1,0 +1,11 @@
+id: agroconecta_starter_partner_hub
+label: 'AgroConecta Starter: Hub B2B'
+vertical: agroconecta
+plan: starter
+feature_key: partner_hub
+limit_value: 0
+description: 'Hub B2B no disponible en plan Starter AgroConecta.'
+upgrade_message: 'El Hub B2B abre un nuevo canal de venta mayorista. Disponible en Profesional.'
+expected_conversion: 0.22
+weight: 0
+status: true

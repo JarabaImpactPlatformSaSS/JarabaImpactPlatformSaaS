@@ -31,13 +31,35 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    testimonials:
+      type: array
+      items:
+        type: object
+        properties:
+          quote:
+            type: string
+            maxLength: 500
+          name:
+            type: string
+            maxLength: 100
+          role:
+            type: string
+            maxLength: 100
+          initials:
+            type: string
+            maxLength: 5
+          avatar:
+            type: string
+            format: image
   required:
     - title
 plans_required:
-  - professional
+  - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-testimonials.png'
 weight: 2
 preview_data:
   title: 'Historia del Productor'

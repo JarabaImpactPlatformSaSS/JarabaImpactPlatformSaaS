@@ -12,6 +12,17 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 // Mapeo de template ID a archivo de imagen.
 $template_previews = [
     'accordion_content' => 'modules/custom/jaraba_page_builder/images/previews/accordion-content.png',
+    'agroconecta_content' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-content.png',
+    'agroconecta_cta' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-cta.png',
+    'agroconecta_faq' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-faq.png',
+    'agroconecta_features' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-features.png',
+    'agroconecta_gallery' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-gallery.png',
+    'agroconecta_hero' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-hero.png',
+    'agroconecta_map' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-map.png',
+    'agroconecta_pricing' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-pricing.png',
+    'agroconecta_social_proof' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-social-proof.png',
+    'agroconecta_stats' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-stats.png',
+    'agroconecta_testimonials' => 'modules/custom/jaraba_page_builder/images/previews/agroconecta-testimonials.png',
     'alert_banner' => 'modules/custom/jaraba_page_builder/images/previews/alert-banner.png',
     'animated_background' => 'modules/custom/jaraba_page_builder/images/previews/animated-background.png',
     'animated_beam' => 'modules/custom/jaraba_page_builder/images/previews/animated-beam.png',

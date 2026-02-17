@@ -1,0 +1,17 @@
+langcode: es
+status: true
+dependencies: {  }
+id: vertical_agroconecta
+label: 'AgroConecta - Naturaleza Green'
+description: 'Paleta verde orgánica para la vertical AgroConecta'
+scope: vertical
+vertical_id: agroconecta
+plan_id: ''
+tenant_id: ''
+preset_id: nature_green
+color_tokens: '{"primary":"#2E7D32","secondary":"#556B2F","accent":"#4CAF50","background":"#FAFFF5","surface":"#F1F8E9","text":"#1B2E1B","text-muted":"#4A6741","border":"#C8E6C9","success":"#43A047","warning":"#FFA000","error":"#E53935"}'
+typography_tokens: '{"family-heading":"Outfit, system-ui, sans-serif","family-body":"Inter, system-ui, sans-serif","size-base":"1rem","weight-heading":"700"}'
+spacing_tokens: '{"unit":"0.25rem","radius-base":"10px","radius-xl":"20px"}'
+effect_tokens: '{"glass-bg":"rgba(241, 248, 233, 0.92)","glass-blur":"12px","shadow-card":"0 4px 20px rgba(46, 125, 50, 0.08)","gradient-primary":"linear-gradient(135deg, #2E7D32, #4CAF50)","animation-speed":"0.3s"}'
+component_variants: '{"header":"sticky_glass","card":"elevated","hero":"split","footer":"dark"}'
+weight: 0
