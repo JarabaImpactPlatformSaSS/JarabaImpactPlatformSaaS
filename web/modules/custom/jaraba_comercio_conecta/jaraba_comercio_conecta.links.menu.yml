@@ -66,3 +66,35 @@ jaraba_comercio_conecta.customer_profile_retail.settings:
   route_name: jaraba_comercio_conecta.customer_profile_retail.settings
   parent: system.admin_structure
   weight: 87
+
+# F8: Indice de busqueda en Structure
+jaraba_comercio_conecta.comercio_search_index.settings:
+  title: 'Indice Busqueda Comercio'
+  description: 'Configuracion del indice de busqueda de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.comercio_search_index.settings
+  parent: system.admin_structure
+  weight: 88
+
+# F8: Perfil SEO Local en Structure
+jaraba_comercio_conecta.comercio_local_business.settings:
+  title: 'Perfil SEO Local'
+  description: 'Configuracion de Perfiles SEO Local de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.comercio_local_business.settings
+  parent: system.admin_structure
+  weight: 89
+
+# F9: Ofertas Flash en Structure
+jaraba_comercio_conecta.comercio_flash_offer.settings:
+  title: 'Ofertas Flash'
+  description: 'Configuracion de Ofertas Flash de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.comercio_flash_offer.settings
+  parent: system.admin_structure
+  weight: 90
+
+# F9: Resenas en Structure
+jaraba_comercio_conecta.comercio_review.settings:
+  title: 'Resenas Comercio'
+  description: 'Configuracion de Resenas y Valoraciones de ComercioConecta.'
+  route_name: jaraba_comercio_conecta.comercio_review.settings
+  parent: system.admin_structure
+  weight: 91

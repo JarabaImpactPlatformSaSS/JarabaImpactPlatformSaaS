@@ -162,6 +162,121 @@ access comercio admin:
   description: 'Acceso al dashboard administrativo de la plataforma.'
   restrict access: true
 
+# --- Busqueda y SEO Local (F8) ---
+administer comercio search:
+  title: 'Administrar busqueda ComercioConecta'
+  description: 'Gestionar indice de busqueda, sinonimos y logs.'
+  restrict access: true
+
+view comercio search logs:
+  title: 'Ver logs de busqueda'
+  description: 'Acceder a las analiticas de busqueda.'
+
+administer comercio local seo:
+  title: 'Administrar SEO local ComercioConecta'
+  description: 'Gestionar perfiles SEO locales y entradas NAP.'
+  restrict access: true
+
+view own local business profile:
+  title: 'Ver perfil SEO local propio'
+  description: 'Ver el perfil de negocio local del comerciante.'
+
+edit own local business profile:
+  title: 'Editar perfil SEO local propio'
+  description: 'Editar el perfil de negocio local del comerciante.'
+
+# --- Flash Offers (F9) ---
+manage comercio flash offers:
+  title: 'Gestionar ofertas flash ComercioConecta'
+  description: 'Crear y gestionar ofertas relampago.'
+
+claim comercio flash offers:
+  title: 'Reclamar ofertas flash'
+  description: 'Reclamar ofertas relampago como consumidor.'
+
+# --- QR Codes (F9) ---
+manage comercio qr codes:
+  title: 'Gestionar codigos QR ComercioConecta'
+  description: 'Crear y gestionar codigos QR dinamicos.'
+
+# --- Q&A (F9) ---
+answer comercio questions:
+  title: 'Responder preguntas ComercioConecta'
+  description: 'Responder preguntas de productos como comerciante.'
+
+edit own comercio reviews:
+  title: 'Editar resenas propias'
+  description: 'Editar resenas publicadas por el usuario actual.'
+
+# --- Shipping & Logistics (F10a) ---
+manage comercio shipments:
+  title: 'Gestionar envios ComercioConecta'
+  description: 'Gestionar envios y tracking del marketplace.'
+  restrict access: true
+
+view own comercio shipments:
+  title: 'Ver envios propios'
+  description: 'Ver envios asociados al propio comerciante.'
+
+manage comercio shipping methods:
+  title: 'Gestionar metodos de envio'
+  description: 'Configurar metodos de envio del marketplace.'
+  restrict access: true
+
+manage comercio shipping zones:
+  title: 'Gestionar zonas de envio'
+  description: 'Configurar zonas de envio y tarifas.'
+  restrict access: true
+
+manage comercio carriers:
+  title: 'Gestionar transportistas'
+  description: 'Configurar integraciones con transportistas.'
+  restrict access: true
+
+# --- POS Integration (F10b) ---
+manage comercio pos:
+  title: 'Gestionar POS ComercioConecta'
+  description: 'Acceso completo a integraciones POS.'
+  restrict access: true
+
+manage own comercio pos connections:
+  title: 'Gestionar conexiones POS propias'
+  description: 'Gestionar conexiones POS del propio comerciante.'
+
+manage comercio pos sync:
+  title: 'Gestionar sincronizacion POS'
+  description: 'Ver registros de sincronizacion POS.'
+  restrict access: true
+
+manage comercio pos conflicts:
+  title: 'Gestionar conflictos POS'
+  description: 'Resolver conflictos de sincronizacion POS.'
+  restrict access: true
+
+# --- Admin Panel (F10c) ---
+manage comercio moderation:
+  title: 'Gestionar moderacion ComercioConecta'
+  description: 'Moderar productos, resenas y comerciantes.'
+  restrict access: true
+
+manage comercio incidents:
+  title: 'Gestionar incidencias ComercioConecta'
+  description: 'Gestionar tickets de incidencias.'
+  restrict access: true
+
+view own comercio incidents:
+  title: 'Ver incidencias propias'
+  description: 'Ver tickets de incidencia propios.'
+
+create comercio incidents:
+  title: 'Crear incidencias'
+  description: 'Crear tickets de incidencia.'
+
+manage comercio payouts:
+  title: 'Gestionar payouts ComercioConecta'
+  description: 'Gestionar registros de pago a comerciantes.'
+  restrict access: true
+
 # --- Configuración ---
 administer comercio settings:
   title: 'Administrar configuración ComercioConecta'

@@ -428,3 +428,195 @@ jaraba_comercio_conecta.api.wishlist.remove:
   methods: [DELETE]
   requirements:
     _user_is_logged_in: 'TRUE'
+
+# --- Settings Routes F8: Search + Local SEO ---
+
+jaraba_comercio_conecta.comercio_search_index.settings:
+  path: '/admin/structure/comercio-search-index'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\SearchIndexSettingsForm'
+    _title: 'Configuracion Indice Busqueda'
+  requirements:
+    _permission: 'administer comercio search'
+
+jaraba_comercio_conecta.comercio_local_business.settings:
+  path: '/admin/structure/comercio-local-business'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\LocalBusinessProfileSettingsForm'
+    _title: 'Configuracion Perfil SEO Local'
+  requirements:
+    _permission: 'administer comercio local seo'
+
+# --- Rutas Frontend F8: Busqueda ---
+
+jaraba_comercio_conecta.search:
+  path: '/comercio-local/buscar'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\SearchController::searchPage'
+    _title: 'Buscar en Comercio Local'
+  requirements:
+    _permission: 'access content'
+
+# --- API REST F8: Search ---
+
+jaraba_comercio_conecta.api.search:
+  path: '/api/v1/comercio/search'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\SearchController::apiSearch'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.api.search.autocomplete:
+  path: '/api/v1/comercio/search/autocomplete'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\SearchController::apiAutocomplete'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+# --- Settings Routes F9: Flash Offers, Reviews ---
+
+jaraba_comercio_conecta.comercio_flash_offer.settings:
+  path: '/admin/structure/comercio-flash-offers'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\FlashOfferSettingsForm'
+    _title: 'Configuracion Ofertas Flash'
+  requirements:
+    _permission: 'manage comercio flash offers'
+
+jaraba_comercio_conecta.comercio_review.settings:
+  path: '/admin/structure/comercio-reviews'
+  defaults:
+    _form: '\Drupal\jaraba_comercio_conecta\Form\ReviewRetailSettingsForm'
+    _title: 'Configuracion Resenas'
+  requirements:
+    _permission: 'manage comercio reviews'
+
+# --- API REST F9: Flash Offers ---
+
+jaraba_comercio_conecta.api.flash_offers:
+  path: '/api/v1/comercio/flash-offers'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::listActiveOffers'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+jaraba_comercio_conecta.api.flash_offers.claim:
+  path: '/api/v1/comercio/flash-offers/{offer_id}/claim'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::claimOffer'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    offer_id: '\d+'
+
+jaraba_comercio_conecta.api.flash_offers.redeem:
+  path: '/api/v1/comercio/flash-offers/redeem'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::redeemClaim'
+  methods: [POST]
+  requirements:
+    _permission: 'manage comercio flash offers'
+
+jaraba_comercio_conecta.api.flash_offers.stats:
+  path: '/api/v1/comercio/flash-offers/{offer_id}/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::offerStats'
+  methods: [GET]
+  requirements:
+    _permission: 'manage comercio flash offers'
+    offer_id: '\d+'
+
+# --- API REST F9: QR ---
+
+jaraba_comercio_conecta.api.qr.resolve:
+  path: '/qr/{short_code}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::resolveQr'
+  requirements:
+    _permission: 'access content'
+    short_code: '[a-zA-Z0-9]+'
+
+jaraba_comercio_conecta.api.qr.lead:
+  path: '/api/v1/comercio/qr/{qr_code_id}/lead'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::captureQrLead'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    qr_code_id: '\d+'
+
+jaraba_comercio_conecta.api.qr.stats:
+  path: '/api/v1/comercio/qr/{qr_code_id}/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::qrStats'
+  methods: [GET]
+  requirements:
+    _permission: 'manage comercio qr codes'
+    qr_code_id: '\d+'
+
+# --- API REST F9: Reviews ---
+
+jaraba_comercio_conecta.api.reviews:
+  path: '/api/v1/comercio/reviews/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::listReviews'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    entity_type: '[a-z_]+'
+    entity_id: '\d+'
+
+jaraba_comercio_conecta.api.reviews.create:
+  path: '/api/v1/comercio/reviews'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::createReview'
+  methods: [POST]
+  requirements:
+    _permission: 'submit comercio reviews'
+
+jaraba_comercio_conecta.api.reviews.helpful:
+  path: '/api/v1/comercio/reviews/{review_id}/helpful'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::markReviewHelpful'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    review_id: '\d+'
+
+# --- API REST F9: Notifications ---
+
+jaraba_comercio_conecta.api.notifications:
+  path: '/api/v1/comercio/notifications'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::notificationHistory'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_comercio_conecta.api.notifications.read:
+  path: '/api/v1/comercio/notifications/{log_id}/read'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::markNotificationRead'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    log_id: '\d+'
+
+jaraba_comercio_conecta.api.notifications.preferences:
+  path: '/api/v1/comercio/notifications/preferences'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::getPreferences'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_comercio_conecta.api.notifications.preferences.update:
+  path: '/api/v1/comercio/notifications/preferences'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\FlashOfferApiController::updatePreference'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'

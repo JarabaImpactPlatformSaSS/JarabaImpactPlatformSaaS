@@ -4,7 +4,40 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-17
-**Versión:** 59.0.0 (JarabaLex Legal Practice Platform Completa — FASE A2-C3 + Diagnostico + CopilotAgent + 15 tests)
+**Versión:** 62.0.0 (Plan Elevacion ComercioConecta Clase Mundial v1 — Sprint 1-3 completado: 42 entidades, 25 servicios, 178 PHP)
+
+> **🛒 PLAN ELEVACION COMERCIOCONECTA CLASE MUNDIAL v1 — SPRINT 1-3 COMPLETADO (42 ENTIDADES, 25 SERVICIOS)** (2026-02-17)
+> - **Sprint 1 (F1-F5, F13-F18) — Infraestructura elevacion:** ComercioConectaFeatureGateService (CUMULATIVE/MONTHLY/BINARY) + 9 FreemiumVerticalLimit + 7 UpgradeTrigger types + ComercioConectaCopilotBridgeService + body classes + page--comercio.html.twig zero-region + SCSS compliance (color-mix, var(--ej-*)) + design token comercio_conecta + 6 MJML emails (SEQ_COM_001-006) + CrossVerticalBridge (4 bridges) + JourneyProgression (8 reglas) + HealthScore (5 dim + 8 KPIs) + ExperimentService (4 A/B) + Avatar nav (merchant+consumer) + 4 FunnelDefinitions + 11 PB premium templates
+> - **Sprint 2 F6 (Orders+Checkout+Payments):** 9 entidades (OrderRetail, OrderItemRetail, SuborderRetail, Cart, CartItem, ReturnRequest, CouponRetail, CouponRedemption, AbandonedCart), 5 services (OrderRetailService, CartService, CheckoutService IVA 21% + comision 10%, StripePaymentRetailService Connect split, CartRecoveryService 24h), checkout.js + checkout.scss + orders.scss
+> - **Sprint 2 F7 (Merchant+Customer Portal):** 3 entidades (CustomerProfile, Wishlist, WishlistItem), 3 services (CustomerProfileService, WishlistService, MerchantPayoutService), customer-portal.js + merchant-portal.js + customer-portal.scss + merchant-orders.scss
+> - **Sprint 2 F8 (Search+Local SEO):** 5 entidades (SearchIndex, SearchSynonym, SearchLog, LocalBusinessProfile, NapEntry), 2 services (ComercioSearchService Haversine geo, LocalSeoService Schema.org), search.js + search.scss + comercio-search.html.twig
+> - **Sprint 2 F9 (Flash Offers+QR+Reviews+Notifications):** 11 entidades (FlashOffer, FlashOfferClaim, QrCodeRetail, QrScanEvent, QrLeadCapture, ReviewRetail, QuestionAnswer, NotificationTemplate, NotificationLog, NotificationPreference, PushSubscription), 4 services (FlashOfferService, QrRetailService A/B, ReviewRetailService, NotificationService multi-canal)
+> - **Sprint 3 F10 (Shipping+POS+Admin+Analytics):** 10 entidades (ShipmentRetail, ShippingMethodRetail, ShippingZone, CarrierConfig, PosConnection, PosSync, PosConflict, ModerationQueue, IncidentTicket, PayoutRecord), 7 services (ShippingRetailService, ClickCollectService, PosIntegrationService, ComercioAdminService, ModerationService, ComercioAnalyticsService, MerchantAnalyticsService)
+> - **Totales:** 42 Content Entities, 25 Services, 9 Controllers, 37 Forms, 42 Access Handlers, 23 List Builders, 17 templates Twig, 5 JS, 12 SCSS, 60+ rutas, 30+ permisos, 19 admin tabs
+> - **6 reglas nuevas:** ENTITY-BATCH-001, ENTITY-BATCH-INSTALL-001, CRON-SERVICE-001, COMMERCE-SPLIT-001, SEARCH-GEO-001, VERTICAL-SCALE-001
+> - **Aprendizaje #95.** Patron elevacion vertical 6a ejecucion + primer sprint commerce masivo (31 entidades nuevas F6-F10)
+> - **Directrices v46.0.0, Arquitectura v46.0.0, Indice v62.0.0**
+
+> **🏆 PLAN ELEVACION SERVICIOSCONECTA CLASE MUNDIAL v1 — 14 FASES, 26/26 PARIDAD (7o VERTICAL)** (2026-02-17)
+> - **14 fases implementadas (F0-F13):** Bug fix releaseSlot() + ProviderService refactor N+1 + ServiciosConectaSettingsForm + FeatureGateService (CUMULATIVE/MONTHLY/BINARY) + 4 FreemiumVerticalLimit + 8 UpgradeTrigger types + CopilotBridgeService + BaseAgent context + hook_preprocess_page() zero-region + hook_theme_suggestions_page_alter() + 2 page templates zero-region (marketplace + dashboard) + 3 module templates + 4 partials + SCSS compliance (5 Tailwind→var(--ej-*), rgba→color-mix, design token serviciosconecta) + ReviewService + 6 MJML emails (SEQ_SVC_001-006) + CrossVerticalBridge (4 bridges) + JourneyProgression (10 reglas: 8 profesional + 2 cliente_servicios) + HealthScore (5 dim + 8 KPIs) + CopilotAgent (6 modos) + ExperimentService (3 A/B) + Avatar nav (profesional+cliente_servicios) + 2 FunnelDefinitions + 15 PB templates (11 fix emojis→jaraba_icon + 4 premium: booking_widget, provider_spotlight, trust_badges, case_studies) + QA integral
+> - **8 servicios nuevos ecosistema_jaraba_core:** ServiciosConectaFeatureGateService, ServiciosConectaCopilotBridgeService, ServiciosConectaEmailSequenceService, ServiciosConectaCrossVerticalBridgeService, ServiciosConectaJourneyProgressionService, ServiciosConectaHealthScoreService, ServiciosConectaCopilotAgent, ServiciosConectaExperimentService
+> - **1 servicio nuevo jaraba_servicios_conecta:** ReviewService (submitReview, approveReview, recalculateAverageRating, canUserReview)
+> - **Paridad elevada:** 5/26 (19.2%) → 26/26 (100%) — 21 gaps cerrados
+> - **SaaS Plans:** Free (3 svc/10 book) → Starter 29 EUR (10/50) → Profesional 79 EUR (ilimitado) → Enterprise. Comision 10%
+> - **5 reglas nuevas:** REVIEW-EXIST-001, CONCURRENT-SERVICES-YML-001, SCSS-COMPILED-PENDING-001, ELEVATION-PATTERN-STABLE-001, SERVICIOS-COMISION-001
+> - **8 agentes paralelos** (5 wave 1 + 3 wave 2). Patron elevacion 7a ejecucion
+> - **Directrices v45.0.0, Arquitectura v45.0.0, Indice v61.0.0**
+
+> **🚀 N2 MACRO-FASE 3 GROWTH READY PLATFORM — 5 MODULOS N2 (262 FICHEROS, 18 ENTIDADES, 34 SERVICIOS)** (2026-02-17)
+> - **Plan N2 Growth Ready Platform ejecutado:** MACRO-FASE 3 completa — 5 modulos implementados/refactorizados con 262 ficheros totales
+> - **jaraba_funding v2:** Refactorizado completo — 3 nuevas entities (FundingOpportunity, FundingApplication, TechnicalReport), 5 services (ApplicationManager, BudgetAnalyzer, ImpactCalculator, OpportunityTracker, ReportGenerator), 17 rutas REST
+> - **jaraba_multiregion:** Expansion multi-pais EU — 4 entities (TenantRegion, TaxRule, CurrencyRate, ViesValidation), 5 services (RegionManager, TaxCalculator, CurrencyConverter, ViesValidator, RegionalCompliance), 14 rutas
+> - **jaraba_institutional:** Programas FSE/FUNDAE — 3 entities (InstitutionalProgram, ProgramParticipant, StoFicha), 5 services (ProgramManager, ParticipantTracker, FseReporter, FundaeReporter, StoFichaGenerator), 14 rutas
+> - **jaraba_agents + FASE 3B:** Agentes IA autonomos + orquestacion multi-agente — 5 entities (AutonomousAgent, AgentExecution, AgentApproval, AgentConversation, AgentHandoff), 12 services (Orchestrator, Router, Handoff, SharedMemory, Conversation, Observer + 3 agents + Guardrails + Approval + Metrics), 22 rutas
+> - **jaraba_predictive:** Inteligencia predictiva — 3 entities (ChurnPrediction, LeadScore, Forecast), 7 services (ChurnPredictor, LeadScorer, ForecastEngine, AnomalyDetector, PredictionBridge PHP→Python, FeatureStore, RetentionWorkflow), 13 rutas
+> - **Totales:** 18 Content Entities, 34 Services, 9 Controllers, 80 rutas REST, 16 templates Twig, 24 SCSS, 18 Access handlers, 18 ListBuilders, 20 Forms
+> - **77 modulos custom** (73 + 4 nuevos: multiregion, institutional, agents, predictive)
+> - **Directrices v44.0.0, Arquitectura v44.0.0, Indice v60.0.0**
 
 > **⚖️ JARABALEX LEGAL PRACTICE PLATFORM COMPLETA — FASE A2-C3 + DIAGNOSTICO + COPILOTAGENT + 15 TESTS** (2026-02-17)
 > - **6 modulos nuevos implementados:** `jaraba_legal_calendar` (FASE A2: DeadlineCalculator LEC 130.2, HearingService), `jaraba_legal_billing` (FASE B1: TimeTracking, LegalInvoicing, cronometro JS), `jaraba_legal_vault` (FASE B2: VaultStorage hash chain SHA-256, AuditLog append-only), `jaraba_legal_lexnet` (FASE B3: LexnetSync, API LexNET), `jaraba_legal_templates` (FASE C1: TemplateManager merge fields, GrapesJS 11 bloques legales), integracion expedientes-intelligence (FASE A3)
@@ -1006,20 +1039,21 @@
 
 18 documentos especificando Commerce Core, POS, Flash Offers, QR, Merchant/Customer Portal.
 
-### 7.4c Vertical ServiciosConecta (Docs 82-99)
+### 7.4c Vertical ServiciosConecta (Docs 82-99) — Clase Mundial ✅
 
-18 documentos especificando Services Core, Provider Profile, Booking Engine, AI Triage.
+18 documentos especificando Services Core, Provider Profile, Booking Engine, AI Triage. **Elevado a Clase Mundial** (14 fases, 26/26 paridad).
 
-| Rango | Área | Docs | Estado |
+| Rango | Area | Docs | Estado |
 |-------|------|------|--------|
-| 82-85 | Services Core, Provider Profile, Offerings, Booking | 4 | ✅ Fase 1 |
-| 86-87 | Calendar Sync, Video Conferencing | 2 | ⬜ Fase 2 |
-| 88-90 | Buzón Confianza, Firma Digital, Portal Cliente | 3 | ⬜ Fase 3 |
-| 91-93 | AI Triaje, Presupuestador, Copilot Servicios | 3 | ⬜ Fase 4 |
-| 94-96 | Dashboard Profesional, Dashboard Admin, Facturación | 3 | ⬜ Fase 5 |
-| 97-99 | Reviews, Notificaciones, API Guide | 3 | ⬜ Fase 6 |
+| 82-85 | Services Core, Provider Profile, Offerings, Booking | 4 | ✅ Fase 1 + Clase Mundial |
+| 86-87 | Calendar Sync, Video Conferencing | 2 | 🔶 Feature-gated (Starter+) |
+| 88-90 | Buzon Confianza, Firma Digital, Portal Cliente | 3 | 🔶 Feature-gated (Profesional+) |
+| 91-93 | AI Triaje, Presupuestador, Copilot Servicios | 3 | ✅ CopilotAgent 6 modos |
+| 94-96 | Dashboard Profesional, Dashboard Admin, Facturacion | 3 | ✅ HealthScore + Analytics |
+| 97-99 | Reviews, Notificaciones, API Guide | 3 | ✅ ReviewService + 6 MJML |
 
-**Plan de Implementación:** [20260209-Plan_Implementacion_ServiciosConecta_v1.md](./implementacion/20260209-Plan_Implementacion_ServiciosConecta_v1.md) ⭐
+**Plan de Implementacion:** [20260209-Plan_Implementacion_ServiciosConecta_v1.md](./implementacion/20260209-Plan_Implementacion_ServiciosConecta_v1.md) ⭐
+**Plan de Elevacion:** [20260217-Plan_Elevacion_ServiciosConecta_Clase_Mundial_v1.md](./implementacion/20260217-Plan_Elevacion_ServiciosConecta_Clase_Mundial_v1.md) ⭐
 
 ### 7.4d Compliance Fiscal (Docs 178-182)
 
@@ -1251,7 +1285,7 @@
 | **Iconos SVG creados** | 12+ con versiones duotone |
 | **Landing pages verticales** | 6 (empleo, talento, emprender, comercio, instituciones, jarabalex) |
 | **Plantillas disponibles** | 4 |
-| **Módulos custom** | 73 (incluye 3 fiscal: verifactu/facturae/einvoice_b2b + 3 compliance legal: privacy/legal/dr + 7 JarabaLex: legal_intelligence/cases/calendar/billing/vault/lexnet/templates) |
+| **Módulos custom** | 77 (incluye 3 fiscal: verifactu/facturae/einvoice_b2b + 3 compliance legal: privacy/legal/dr + 7 JarabaLex: legal_intelligence/cases/calendar/billing/vault/lexnet/templates + 4 N2: multiregion/institutional/agents/predictive) |
 | **Módulos con package.json** | 30 (compilación Dart Sass estandarizada) |
 | **Unit test files Marketing AI** | 50 (100% cobertura servicios across 8 módulos) |
 | **Page templates Twig** | 42 (theme: front, content-hub, dashboard, vertical-landing, crm, eventos, experimentos, referidos, ads, social, pixels, empleabilidad, emprendimiento, andalucia-ei, fiscal, legal, legal-cases, legal-case-detail, jarabalex, privacy, dr-status, legal-compliance, admin-center, auth, user, comercio-marketplace, heatmap-analytics, canvas-editor, page-builder, site-builder, integrations, customer-success, credentials, interactive, skills, i18n, verify, revisions, mi-cuenta, ayuda, my-certifications + 10 módulos) |
@@ -1307,6 +1341,8 @@ graph LR
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-17 | **61.0.0** | 🏆 **Plan Elevacion ServiciosConecta Clase Mundial v1 — 14 fases, 26/26 paridad (7o vertical):** ServiciosConecta elevado de 5/26 (19.2%) a 26/26 (100%). 14 fases: Bug fix releaseSlot() + SettingsForm + FeatureGate + 4 FreemiumVerticalLimit + 8 UpgradeTriggers + CopilotBridge + zero-region hooks + 2 page templates + 3 module templates + 4 partials + SCSS compliance (Tailwind→var(--ej-*), color-mix, design token) + ReviewService + 6 MJML (SEQ_SVC_001-006) + CrossVertical (4 bridges) + Journey (10 reglas) + Health (5 dim + 8 KPIs) + CopilotAgent (6 modos) + Experiment (3 A/B) + Avatar nav + 2 Funnels + 15 PB (11 fix + 4 premium). 8 servicios ecosistema_jaraba_core + ReviewService. SaaS: Free→Starter 29EUR→Profesional 79EUR→Enterprise (10% comision). 5 reglas nuevas. 8 agentes paralelos. Plan: `20260217-Plan_Elevacion_ServiciosConecta_Clase_Mundial_v1.md`. Aprendizaje #94. Directrices v45.0.0, Arquitectura v45.0.0. 94 aprendizajes |
+| 2026-02-17 | **60.0.0** | 🚀 **N2 MACRO-FASE 3 Growth Ready Platform — 5 modulos N2 (262 ficheros, 18 entidades, 34 servicios):** jaraba_funding v2 refactorizado (FundingOpportunity, FundingApplication, TechnicalReport + 5 services). jaraba_multiregion nuevo (TenantRegion, TaxRule, CurrencyRate, ViesValidation + 5 services EU). jaraba_institutional nuevo (InstitutionalProgram, ProgramParticipant, StoFicha + 5 services FSE/FUNDAE). jaraba_agents + FASE 3B multi-agente (AutonomousAgent, AgentExecution, AgentApproval, AgentConversation, AgentHandoff + 12 services Router/Handoff/SharedMemory/Observer). jaraba_predictive nuevo (ChurnPrediction, LeadScore, Forecast + 7 services PredictionBridge PHP→Python). 80 rutas REST, 16 templates, 24 SCSS. 77 modulos custom. Aprendizaje #93. Directrices v44.0.0, Arquitectura v44.0.0 |
 | 2026-02-17 | **59.0.0** | ⚖️ **JarabaLex Legal Practice Platform Completa — FASE A2-C3 + Diagnostico + CopilotAgent + 15 tests:** 6 modulos nuevos JarabaLex (calendar, billing, vault, lexnet, templates, integracion). Diagnostico Lead Magnet (LegalLandingController 6 areas). JarabaLexCopilotAgent 6 modos. 4 dashboard Twig + 4 SCSS compilados. 15 test files (53 PHP lint OK). 3 funnel definitions. Avatar nav anonimo. 73 modulos custom. Aprendizaje #92. Directrices v43.0.0, Arquitectura v43.0.0 |
 | 2026-02-17 | **58.0.0** | 🌱 **Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium:** AgroConecta elevado a Clase Mundial (5o vertical). 14 fases: FeatureGate (CUMULATIVE/MONTHLY/BINARY) + 12 FreemiumVerticalLimit + 8 UpgradeTrigger types + CopilotBridge + body classes + zero-region + 95 rgba→color-mix (16 SCSS) + design token nature_green + 6 MJML (SEQ_AGRO_001-006) + CrossVertical (4 bridges) + Journey (10 reglas) + Health (5 dim + 8 KPIs) + Experiment (4 A/B) + Avatar (buyer+producer) + 4 Funnels + QA (52 ficheros 0 errores). 11 PB premium: jaraba_icon, data-effect, schema.org (FAQ JSON-LD, LocalBusiness, AggregateRating), lightbox, counters, pricing toggle, countdown timer. 7 servicios nuevos. 18 agentes paralelos. 6 reglas nuevas (PARALLEL-ELEV-001, SCSS-COLORMIX-001, PB-PREMIUM-001, FEATUREGATE-TYPES-001, QA-PARALLEL-001, PB-BATCH-001). Directrices v42.0.0, Arquitectura v42.0.0. 91 aprendizajes |
 | 2026-02-16 | **57.0.0** | ⚖️ **FASE A1 jaraba_legal_cases — Legal Practice Platform:** Modulo pivote JarabaLex implementado. 4 Content Entities (ClientCase 22 campos auto EXP-YYYY-NNNN, CaseActivity append-only 11 campos, ClientInquiry 17 campos auto CON-YYYY-NNNN, InquiryTriage 13 campos). 4 Services + 3 Controllers + 11 API REST endpoints. 2 zero-region templates + 3 Twig partials + 6 SCSS BEM + 4 SVG icons + JS behavior. 47 ficheros, 22 PHP lint OK, drush en exitoso. Taxonomia legal_area (12 terminos). Theme modificado (prefijo + 2 suggestions). 6 reglas nuevas (ENTITY-AUTONUMBER-001, ENTITY-APPEND-001, THEME-SUGGEST-001, SCSS-BUILD-001, INSTALL-TAXONOMY-001, ENTITY-FK-001). Directrices v41.0.0, Arquitectura v41.0.0. 90 aprendizajes |

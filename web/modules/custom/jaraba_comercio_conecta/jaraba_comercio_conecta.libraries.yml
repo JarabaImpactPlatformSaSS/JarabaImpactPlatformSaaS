@@ -54,3 +54,13 @@ customer-portal:
     - core/drupal
     - core/once
     - jaraba_comercio_conecta/global
+
+# Buscador: autocompletado, navegacion por teclado
+search:
+  version: 1.0
+  js:
+    js/search.js: { minified: false }
+  dependencies:
+    - core/drupal
+    - core/once
+    - jaraba_comercio_conecta/global

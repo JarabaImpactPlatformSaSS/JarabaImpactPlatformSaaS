@@ -164,6 +164,37 @@ function jaraba_comercio_conecta_update_10002(): void {
     'customer_profile_retail',
     'comercio_wishlist',
     'comercio_wishlist_item',
+    // F8: Search + Local SEO
+    'comercio_search_index',
+    'comercio_search_synonym',
+    'comercio_search_log',
+    'comercio_local_business',
+    'comercio_nap_entry',
+    // F9: Flash Offers, QR, Reviews, Notifications
+    'comercio_flash_offer',
+    'comercio_flash_claim',
+    'comercio_qr_code',
+    'comercio_qr_scan',
+    'comercio_qr_lead',
+    'comercio_review',
+    'comercio_qa',
+    'comercio_notification_template',
+    'comercio_notification_log',
+    'comercio_notification_pref',
+    'comercio_push_subscription',
+    // F10a: Shipping & Logistics
+    'comercio_shipment',
+    'comercio_shipping_method',
+    'comercio_shipping_zone',
+    'comercio_carrier_config',
+    // F10b: POS Integration
+    'comercio_pos_connection',
+    'comercio_pos_sync',
+    'comercio_pos_conflict',
+    // F10c: Admin Panel
+    'comercio_moderation_queue',
+    'comercio_incident_ticket',
+    'comercio_payout_record',
   ];
 
   foreach ($entity_types as $entity_type_id) {
