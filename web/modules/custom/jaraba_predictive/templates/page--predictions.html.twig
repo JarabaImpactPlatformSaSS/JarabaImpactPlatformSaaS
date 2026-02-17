@@ -1,0 +1,215 @@
+{#
+ # Template zero-region para el dashboard de Modelos Predictivos.
+ #
+ # Variables:
+ #   - churn_predictions: array de predicciones de churn
+ #   - lead_scores: array de puntuaciones de leads
+ #   - forecasts: array de forecasts generados
+ #   - stats: estadisticas del dashboard
+ #}
+{{ attach_library('jaraba_predictive/predictive-dashboard') }}
+
+<div class="predictions-dashboard" data-module="jaraba-predictive">
+  {# ── Header ─────────────────────────────────────────────────────── #}
+  <header class="predictions-dashboard__header">
+    <div class="predictions-dashboard__header-text">
+      <h1 class="predictions-dashboard__title">{{ 'Modelos Predictivos'|t }}</h1>
+      <p class="predictions-dashboard__subtitle">{{ 'Inteligencia predictiva — Churn, Lead Scoring y Forecasting'|t }}</p>
+    </div>
+    <div class="predictions-dashboard__stats">
+      <div class="predictions-dashboard__stat-badge predictions-dashboard__stat-badge--churn"
+           data-stat="churn">
+        <span class="predictions-dashboard__stat-value" data-counter-target="{{ stats.churn_count|default(0) }}">{{ stats.churn_count|default(0) }}</span>
+        <span class="predictions-dashboard__stat-label">{{ 'Riesgo Churn'|t }}</span>
+      </div>
+      <div class="predictions-dashboard__stat-badge predictions-dashboard__stat-badge--leads"
+           data-stat="leads">
+        <span class="predictions-dashboard__stat-value" data-counter-target="{{ stats.lead_count|default(0) }}">{{ stats.lead_count|default(0) }}</span>
+        <span class="predictions-dashboard__stat-label">{{ 'Leads Evaluados'|t }}</span>
+      </div>
+      <div class="predictions-dashboard__stat-badge predictions-dashboard__stat-badge--forecasts"
+           data-stat="forecasts">
+        <span class="predictions-dashboard__stat-value" data-counter-target="{{ stats.forecast_count|default(0) }}">{{ stats.forecast_count|default(0) }}</span>
+        <span class="predictions-dashboard__stat-label">{{ 'Forecasts'|t }}</span>
+      </div>
+      <div class="predictions-dashboard__stat-badge predictions-dashboard__stat-badge--anomalies"
+           data-stat="anomalies">
+        <span class="predictions-dashboard__stat-value" data-counter-target="{{ stats.anomaly_count|default(0) }}">{{ stats.anomaly_count|default(0) }}</span>
+        <span class="predictions-dashboard__stat-label">{{ 'Anomalias'|t }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="predictions-dashboard__body">
+    {# ── Main content ─────────────────────────────────────────────── #}
+    <main class="predictions-dashboard__main">
+      {# Tab navigation #}
+      <nav class="predictions-dashboard__tabs" role="tablist" aria-label="{{ 'Paneles de prediccion'|t }}">
+        <button class="predictions-dashboard__tab predictions-dashboard__tab--active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-churn"
+                data-tab="churn">
+          {{ 'Churn Risk'|t }}
+          {% if stats.high_risk_count|default(0) > 0 %}
+            <span class="predictions-dashboard__tab-count predictions-dashboard__tab-count--danger">{{ stats.high_risk_count }}</span>
+          {% endif %}
+        </button>
+        <button class="predictions-dashboard__tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-leads"
+                data-tab="leads">
+          {{ 'Lead Scoring'|t }}
+          {% if stats.hot_leads_count|default(0) > 0 %}
+            <span class="predictions-dashboard__tab-count predictions-dashboard__tab-count--success">{{ stats.hot_leads_count }}</span>
+          {% endif %}
+        </button>
+        <button class="predictions-dashboard__tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-forecasts"
+                data-tab="forecasts">
+          {{ 'Forecasting'|t }}
+        </button>
+        <button class="predictions-dashboard__tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-anomalies"
+                data-tab="anomalies">
+          {{ 'Anomalias'|t }}
+        </button>
+      </nav>
+
+      {# ── Panel: Churn Risk ──────────────────────────────────────── #}
+      <section class="predictions-dashboard__panel predictions-dashboard__panel--active"
+               id="panel-churn"
+               role="tabpanel"
+               data-panel="churn">
+        <div class="predictions-dashboard__panel-header">
+          <h2 class="predictions-dashboard__panel-title">{{ 'Predicciones de Churn'|t }}</h2>
+          {% if stats.high_risk_count|default(0) > 0 %}
+            <span class="predictions-dashboard__risk-badge predictions-dashboard__risk-badge--high">
+              {{ stats.high_risk_count }} {{ 'alto riesgo'|t }}
+            </span>
+          {% endif %}
+        </div>
+        <div class="predictions-dashboard__grid">
+          {% for prediction in churn_predictions %}
+            {% include '@jaraba_predictive/partials/churn-prediction-card.html.twig' with {'prediction': prediction} only %}
+          {% endfor %}
+          {% if churn_predictions is empty %}
+            <p class="predictions-dashboard__empty">{{ 'No hay predicciones de churn disponibles.'|t }}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      {# ── Panel: Lead Scoring ────────────────────────────────────── #}
+      <section class="predictions-dashboard__panel"
+               id="panel-leads"
+               role="tabpanel"
+               data-panel="leads"
+               hidden>
+        <div class="predictions-dashboard__panel-header">
+          <h2 class="predictions-dashboard__panel-title">{{ 'Puntuaciones de Leads'|t }}</h2>
+          {% if stats.hot_leads_count|default(0) > 0 %}
+            <span class="predictions-dashboard__risk-badge predictions-dashboard__risk-badge--hot">
+              {{ stats.hot_leads_count }} {{ 'leads calientes'|t }}
+            </span>
+          {% endif %}
+        </div>
+        <div class="predictions-dashboard__grid">
+          {% for score in lead_scores %}
+            {% include '@jaraba_predictive/partials/lead-score-card.html.twig' with {'score': score} only %}
+          {% endfor %}
+          {% if lead_scores is empty %}
+            <p class="predictions-dashboard__empty">{{ 'No hay puntuaciones de leads disponibles.'|t }}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      {# ── Panel: Forecasting ─────────────────────────────────────── #}
+      <section class="predictions-dashboard__panel"
+               id="panel-forecasts"
+               role="tabpanel"
+               data-panel="forecasts"
+               hidden>
+        <div class="predictions-dashboard__panel-header">
+          <h2 class="predictions-dashboard__panel-title">{{ 'Modelos de Forecasting'|t }}</h2>
+        </div>
+        <div class="predictions-dashboard__grid">
+          {% for forecast in forecasts %}
+            {% include '@jaraba_predictive/partials/forecast-card.html.twig' with {'forecast': forecast} only %}
+          {% endfor %}
+          {% if forecasts is empty %}
+            <p class="predictions-dashboard__empty">{{ 'No hay forecasts disponibles.'|t }}</p>
+          {% endif %}
+        </div>
+      </section>
+
+      {# ── Panel: Anomalias ───────────────────────────────────────── #}
+      <section class="predictions-dashboard__panel"
+               id="panel-anomalies"
+               role="tabpanel"
+               data-panel="anomalies"
+               hidden>
+        <div class="predictions-dashboard__panel-header">
+          <h2 class="predictions-dashboard__panel-title">{{ 'Deteccion de Anomalias'|t }}</h2>
+        </div>
+        <div class="predictions-dashboard__grid">
+          {% if stats.anomaly_count|default(0) > 0 %}
+            <div class="predictions-dashboard__anomaly-summary">
+              <p>{{ 'Se han detectado %count anomalias en las metricas monitorizadas.'|t({'%count': stats.anomaly_count}) }}</p>
+            </div>
+          {% else %}
+            <p class="predictions-dashboard__empty">{{ 'No se han detectado anomalias.'|t }}</p>
+          {% endif %}
+        </div>
+      </section>
+    </main>
+
+    {# ── Sidebar: Quick actions ───────────────────────────────────── #}
+    <aside class="predictions-dashboard__sidebar">
+      <h3 class="predictions-dashboard__sidebar-title">{{ 'Acciones rapidas'|t }}</h3>
+      <div class="predictions-dashboard__actions">
+        <button class="predictions-dashboard__action predictions-dashboard__action--churn"
+                data-action="run-churn">
+          <svg class="predictions-dashboard__action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span>{{ 'Ejecutar Analisis Churn'|t }}</span>
+        </button>
+        <button class="predictions-dashboard__action predictions-dashboard__action--leads"
+                data-action="score-leads">
+          <svg class="predictions-dashboard__action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+          <span>{{ 'Puntuar Leads'|t }}</span>
+        </button>
+        <button class="predictions-dashboard__action predictions-dashboard__action--forecast"
+                data-action="generate-forecast">
+          <svg class="predictions-dashboard__action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>{{ 'Generar Forecast'|t }}</span>
+        </button>
+      </div>
+
+      <div class="predictions-dashboard__model-info">
+        <h4 class="predictions-dashboard__model-info-title">{{ 'Estado del Modelo'|t }}</h4>
+        <dl class="predictions-dashboard__model-meta">
+          <dt>{{ 'Ultima ejecucion'|t }}</dt>
+          <dd>{{ stats.last_run|default('N/A') }}</dd>
+          <dt>{{ 'Precision modelo'|t }}</dt>
+          <dd>{{ stats.model_accuracy|default('N/A') }}</dd>
+          <dt>{{ 'Datos procesados'|t }}</dt>
+          <dd>{{ stats.data_points|default(0) }}</dd>
+        </dl>
+      </div>
+    </aside>
+  </div>
+</div>

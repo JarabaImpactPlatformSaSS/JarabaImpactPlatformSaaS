@@ -1,0 +1,232 @@
+// =============================================================================
+// Dashboard de Agentes Autonomos (Jaraba Agents)
+// Directriz: Dart Sass, color-mix(), var(--ej-*), BEM
+// =============================================================================
+
+@use 'variables' as *;
+
+// Dashboard principal
+.agents-dashboard {
+  background: $agents-bg-body;
+  min-height: 100vh;
+  padding: $agents-spacing-xl;
+  font-family: $agents-font-family;
+
+  &__header {
+    margin-bottom: $agents-spacing-2xl;
+    padding-bottom: $agents-spacing-lg;
+    border-bottom: 2px solid $agents-border-color;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, $agents-color-ai 8%, transparent),
+      color-mix(in srgb, $agents-color-primary 5%, transparent)
+    );
+    padding: $agents-spacing-xl;
+    border-radius: $agents-border-radius-lg;
+  }
+
+  &__title {
+    font-family: $agents-font-headings;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $agents-color-text;
+    margin: 0 0 $agents-spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: 0.95rem;
+    color: $agents-color-text-muted;
+    margin: 0;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $agents-spacing-md;
+    margin-bottom: $agents-spacing-2xl;
+
+    @media (max-width: $agents-bp-lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: $agents-bp-sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__agents {
+    margin-bottom: $agents-spacing-2xl;
+  }
+
+  &__approvals {
+    margin-bottom: $agents-spacing-2xl;
+  }
+
+  &__section-title {
+    font-family: $agents-font-headings;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $agents-color-text;
+    margin: 0 0 $agents-spacing-lg;
+  }
+
+  &__empty {
+    color: $agents-color-text-muted;
+    font-style: italic;
+    padding: $agents-spacing-xl;
+    text-align: center;
+    background: $agents-bg-surface;
+    border-radius: $agents-border-radius-md;
+    border: 1px dashed $agents-border-color;
+  }
+}
+
+// Tarjetas de estadisticas
+.agents-stat-card {
+  background: $agents-bg-surface;
+  border: 1px solid $agents-border-color;
+  border-radius: $agents-border-radius-md;
+  padding: $agents-spacing-lg;
+  text-align: center;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: $agents-shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.85rem;
+    color: $agents-color-text-muted;
+    margin-top: $agents-spacing-xs;
+  }
+
+  // Modificadores de color por tipo de estadistica
+  &--total &__value {
+    color: $agents-color-primary;
+  }
+
+  &--active &__value {
+    color: $agents-color-success;
+  }
+
+  &--executions &__value {
+    color: $agents-color-ai;
+  }
+
+  &--approvals &__value {
+    color: $agents-color-warning;
+  }
+}
+
+// Grid de agentes
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $agents-spacing-md;
+}
+
+// Grid de aprobaciones
+.approvals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $agents-spacing-md;
+}
+
+// Tabla de ejecuciones
+.execution-row {
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: color-mix(in srgb, $agents-color-primary 3%, transparent);
+  }
+
+  &__agent {
+    font-weight: 500;
+  }
+
+  &__tokens,
+  &__cost {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &__started {
+    color: $agents-color-text-muted;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+
+// Badge de estado de ejecucion
+.execution-status {
+  display: inline-block;
+  padding: $agents-spacing-xs $agents-spacing-sm;
+  border-radius: $agents-border-radius;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  &--running {
+    background: color-mix(in srgb, $agents-color-info 15%, transparent);
+    color: $agents-color-info;
+  }
+
+  &--completed {
+    background: color-mix(in srgb, $agents-color-success 15%, transparent);
+    color: $agents-color-success;
+  }
+
+  &--failed {
+    background: color-mix(in srgb, $agents-color-danger 15%, transparent);
+    color: $agents-color-danger;
+  }
+
+  &--paused {
+    background: color-mix(in srgb, $agents-color-warning 15%, transparent);
+    color: $agents-color-warning;
+  }
+
+  &--cancelled {
+    background: color-mix(in srgb, #9ca3af 15%, transparent);
+    color: #6b7280;
+  }
+}
+
+// Badge generico
+.badge {
+  display: inline-block;
+  padding: $agents-spacing-xs $agents-spacing-sm;
+  border-radius: $agents-border-radius;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--success {
+    background: color-mix(in srgb, $agents-color-success 15%, transparent);
+    color: $agents-color-success;
+  }
+
+  &--warning {
+    background: color-mix(in srgb, $agents-color-warning 15%, transparent);
+    color: $agents-color-warning;
+  }
+
+  &--danger {
+    background: color-mix(in srgb, $agents-color-danger 15%, transparent);
+    color: $agents-color-danger;
+  }
+
+  &--inactive {
+    background: color-mix(in srgb, #9ca3af 15%, transparent);
+    color: #6b7280;
+  }
+}

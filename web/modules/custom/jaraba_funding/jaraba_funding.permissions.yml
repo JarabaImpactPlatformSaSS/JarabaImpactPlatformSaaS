@@ -1,20 +1,36 @@
-administer jaraba funding:
-  title: 'Administer Jaraba Funding'
-  description: 'Full access to funding intelligence configuration and data.'
+administer funding:
+  title: 'Administrar Fondos y Subvenciones'
+  description: 'Acceso completo a configuracion y datos del modulo de fondos.'
   restrict access: true
 
-view funding dashboard:
-  title: 'View Funding Dashboard'
-  description: 'Ver dashboard de subvenciones.'
+access funding:
+  title: 'Acceder al Dashboard de Fondos'
+  description: 'Ver el dashboard de fondos europeos y subvenciones.'
 
-view own funding matches:
-  title: 'View Own Funding Matches'
-  description: 'Ver matches propios.'
+access funding api:
+  title: 'Acceder a la API de Fondos'
+  description: 'Acceso a los endpoints REST del modulo de fondos.'
 
-manage funding subscriptions:
-  title: 'Manage Funding Subscriptions'
-  description: 'Gestionar suscripciones a alertas.'
+manage funding opportunities:
+  title: 'Gestionar Convocatorias'
+  description: 'Crear, editar y eliminar convocatorias de fondos.'
 
-use funding copilot:
-  title: 'Use Funding Copilot'
-  description: 'Usar el copilot de subvenciones.'
+view funding opportunities:
+  title: 'Ver Convocatorias'
+  description: 'Ver las convocatorias de fondos disponibles.'
+
+manage funding applications:
+  title: 'Gestionar Solicitudes'
+  description: 'Crear, editar y enviar solicitudes de fondos.'
+
+view funding applications:
+  title: 'Ver Solicitudes'
+  description: 'Ver las solicitudes de fondos del tenant.'
+
+manage technical reports:
+  title: 'Gestionar Memorias Tecnicas'
+  description: 'Crear, editar y generar memorias tecnicas para solicitudes.'
+
+view technical reports:
+  title: 'Ver Memorias Tecnicas'
+  description: 'Ver las memorias tecnicas generadas.'

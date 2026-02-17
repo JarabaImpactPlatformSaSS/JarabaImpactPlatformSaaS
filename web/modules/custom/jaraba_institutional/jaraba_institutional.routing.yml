@@ -1,0 +1,131 @@
+# ============================================================================
+# Rutas del modulo jaraba_institutional
+# Estructura: Dashboard (zero-region), API REST CRUD, Configuracion entidades
+# Logica: Prefijo /api/v1/institutional/, store() en lugar de create()
+# ============================================================================
+
+# --- Dashboard (zero-region pattern) ---
+jaraba_institutional.dashboard:
+  path: '/institutional'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalDashboardController::dashboard'
+    _title: 'Programas Institucionales'
+  requirements:
+    _permission: 'access institutional'
+
+# --- API: Programs CRUD ---
+jaraba_institutional.api.programs.list:
+  path: '/api/v1/institutional/programs'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::listPrograms'
+  methods: [GET]
+  requirements:
+    _permission: 'access institutional api'
+
+jaraba_institutional.api.programs.store:
+  path: '/api/v1/institutional/programs'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::storeProgram'
+  methods: [POST]
+  requirements:
+    _permission: 'manage programs'
+
+jaraba_institutional.api.programs.show:
+  path: '/api/v1/institutional/programs/{institutional_program}'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::showProgram'
+  methods: [GET]
+  requirements:
+    _permission: 'access institutional api'
+    institutional_program: \d+
+
+jaraba_institutional.api.programs.update:
+  path: '/api/v1/institutional/programs/{institutional_program}'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::updateProgram'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage programs'
+    institutional_program: \d+
+
+# --- API: Participants ---
+jaraba_institutional.api.participants.list:
+  path: '/api/v1/institutional/programs/{institutional_program}/participants'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::listParticipants'
+  methods: [GET]
+  requirements:
+    _permission: 'access institutional api'
+    institutional_program: \d+
+
+jaraba_institutional.api.participants.enroll:
+  path: '/api/v1/institutional/programs/{institutional_program}/participants'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::enrollParticipant'
+  methods: [POST]
+  requirements:
+    _permission: 'manage participants'
+    institutional_program: \d+
+
+jaraba_institutional.api.participants.update:
+  path: '/api/v1/institutional/participants/{program_participant}'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::updateParticipant'
+  methods: [PATCH]
+  requirements:
+    _permission: 'manage participants'
+    program_participant: \d+
+
+# --- API: STO Fichas ---
+jaraba_institutional.api.fichas.generate:
+  path: '/api/v1/institutional/participants/{program_participant}/ficha'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::generateFicha'
+  methods: [POST]
+  requirements:
+    _permission: 'generate sto fichas'
+    program_participant: \d+
+
+# --- API: Reporting ---
+jaraba_institutional.api.reports.fundae:
+  path: '/api/v1/institutional/programs/{institutional_program}/report/fundae'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::reportFundae'
+  methods: [GET]
+  requirements:
+    _permission: 'generate reports'
+    institutional_program: \d+
+
+jaraba_institutional.api.reports.fse:
+  path: '/api/v1/institutional/programs/{institutional_program}/report/fse'
+  defaults:
+    _controller: '\Drupal\jaraba_institutional\Controller\InstitutionalApiController::reportFse'
+  methods: [GET]
+  requirements:
+    _permission: 'generate reports'
+    institutional_program: \d+
+
+# --- Configuracion de entidades ---
+jaraba_institutional.institutional_program.settings:
+  path: '/admin/structure/institutional-programs/settings'
+  defaults:
+    _form: '\Drupal\jaraba_institutional\Form\InstitutionalSettingsForm'
+    _title: 'Configuracion de Programas Institucionales'
+  requirements:
+    _permission: 'administer institutional'
+
+jaraba_institutional.program_participant.settings:
+  path: '/admin/structure/program-participants/settings'
+  defaults:
+    _form: '\Drupal\jaraba_institutional\Form\InstitutionalSettingsForm'
+    _title: 'Configuracion de Participantes'
+  requirements:
+    _permission: 'administer institutional'
+
+jaraba_institutional.sto_ficha.settings:
+  path: '/admin/structure/sto-fichas/settings'
+  defaults:
+    _form: '\Drupal\jaraba_institutional\Form\InstitutionalSettingsForm'
+    _title: 'Configuracion de Fichas STO'
+  requirements:
+    _permission: 'administer institutional'

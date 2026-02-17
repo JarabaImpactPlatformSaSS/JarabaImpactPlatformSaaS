@@ -1,0 +1,6 @@
+default_currency: 'EUR'
+default_jurisdiction: 'ES'
+default_data_region: 'eu-west'
+vies_cache_hours: 24
+ecb_rates_cache_hours: 4
+auto_fetch_rates: true

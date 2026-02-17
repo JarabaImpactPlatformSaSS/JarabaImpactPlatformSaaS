@@ -1,0 +1,5 @@
+jaraba_agents.admin:
+  title: 'Agentes Autonomos'
+  parent: system.admin_structure
+  route_name: entity.autonomous_agent.collection
+  weight: 37

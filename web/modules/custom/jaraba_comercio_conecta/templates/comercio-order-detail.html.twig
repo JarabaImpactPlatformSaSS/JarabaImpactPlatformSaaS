@@ -1,0 +1,99 @@
+{#
+ # Template: Detalle de pedido ComercioConecta.
+ # Variables:
+ #   - order: Entidad pedido.
+ #   - items: Array de lineas de pedido.
+ #   - order_number, status, payment_status: Datos del pedido.
+ #   - subtotal, tax_amount, shipping_cost, discount_amount, total: Importes.
+ #   - tracking_number: Numero de seguimiento.
+ #}
+
+{% set status_labels = {
+  'draft': 'Borrador'|t,
+  'pending': 'Pendiente'|t,
+  'confirmed': 'Confirmado'|t,
+  'processing': 'En preparacion'|t,
+  'shipped': 'Enviado'|t,
+  'delivered': 'Entregado'|t,
+  'cancelled': 'Cancelado'|t,
+  'refunded': 'Reembolsado'|t,
+} %}
+
+{% set payment_labels = {
+  'pending': 'Pendiente'|t,
+  'paid': 'Pagado'|t,
+  'refunded': 'Reembolsado'|t,
+  'failed': 'Fallido'|t,
+} %}
+
+<div class="comercio-order-detail">
+  <div class="comercio-order-detail__header">
+    <a href="/mis-pedidos" class="comercio-order-detail__back">&larr; {{ 'Volver a mis pedidos'|t }}</a>
+    <h1>{{ 'Pedido'|t }} {{ order_number }}</h1>
+    <div class="comercio-order-detail__badges">
+      <span class="comercio-order-detail__status comercio-order-detail__status--{{ status }}">
+        {{ status_labels[status] ?? status }}
+      </span>
+      <span class="comercio-order-detail__payment comercio-order-detail__payment--{{ payment_status }}">
+        {{ payment_labels[payment_status] ?? payment_status }}
+      </span>
+    </div>
+  </div>
+
+  {% if tracking_number %}
+    <div class="comercio-order-detail__tracking">
+      <strong>{{ 'Seguimiento'|t }}:</strong> {{ tracking_number }}
+    </div>
+  {% endif %}
+
+  <div class="comercio-order-detail__items">
+    <h2>{{ 'Productos'|t }}</h2>
+    <table class="comercio-order-detail__table">
+      <thead>
+        <tr>
+          <th>{{ 'Producto'|t }}</th>
+          <th>{{ 'SKU'|t }}</th>
+          <th>{{ 'Cantidad'|t }}</th>
+          <th>{{ 'Precio'|t }}</th>
+          <th>{{ 'Total'|t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.product_title }}</td>
+            <td>{{ item.product_sku }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_price|number_format(2, ',', '.') }} EUR</td>
+            <td>{{ item.total_price|number_format(2, ',', '.') }} EUR</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="comercio-order-detail__totals">
+    <div class="comercio-order-detail__totals-row">
+      <span>{{ 'Subtotal'|t }}</span>
+      <span>{{ subtotal|number_format(2, ',', '.') }} EUR</span>
+    </div>
+    {% if discount_amount > 0 %}
+      <div class="comercio-order-detail__totals-row comercio-order-detail__totals-row--discount">
+        <span>{{ 'Descuento'|t }}</span>
+        <span>-{{ discount_amount|number_format(2, ',', '.') }} EUR</span>
+      </div>
+    {% endif %}
+    <div class="comercio-order-detail__totals-row">
+      <span>{{ 'Impuestos (IVA)'|t }}</span>
+      <span>{{ tax_amount|number_format(2, ',', '.') }} EUR</span>
+    </div>
+    <div class="comercio-order-detail__totals-row">
+      <span>{{ 'Envio'|t }}</span>
+      <span>{{ shipping_cost > 0 ? shipping_cost|number_format(2, ',', '.') ~ ' EUR' : 'Gratis'|t }}</span>
+    </div>
+    <div class="comercio-order-detail__totals-row comercio-order-detail__totals-row--total">
+      <span>{{ 'Total'|t }}</span>
+      <span>{{ total|number_format(2, ',', '.') }} EUR</span>
+    </div>
+  </div>
+</div>

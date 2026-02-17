@@ -1,34 +1,54 @@
 // =============================================================================
 // ServiciosConecta — Variables y Design Tokens
 //
-// DIRECTRIZ: NUNCA definir $ej-* en módulos satélite.
+// DIRECTRIZ: NUNCA definir $ej-* en modulos satelite.
 // Usar SOLO var(--ej-*, fallback) para heredar tokens del tema.
 // Los valores locales son fallbacks que se aplican solo si el tema
 // no ha inyectado sus CSS Variables.
 //
-// Paleta: Plataforma de Confianza Digital → Azul Confianza (#1E40AF)
-// Ver: docs/tecnicos/20260117f-101_Industry_Style_Presets_v1_Claude.md
+// Paleta: Plataforma de Confianza Digital
+// Mapeo Jaraba Design Tokens:
+//   - primary   → var(--ej-color-corporate, #233D63)
+//   - accent    → var(--ej-color-innovation, #00A9A5)
+//   - success   → var(--ej-color-success, #10B981)
+//   - danger    → var(--ej-color-danger, #EF4444)
+//   - warning   → var(--ej-color-warning, #F59E0B)
+//   - impulse   → var(--ej-color-impulse, #FF8C42)
 // =============================================================================
 
-@use 'sass:color';
+// ---------------------------------------------------------------------------
+// Vertical CSS Custom Properties
+// ---------------------------------------------------------------------------
+:root {
+  --ej-servicios-primary: var(--ej-color-corporate, #233D63);
+  --ej-servicios-accent: var(--ej-color-innovation, #00A9A5);
+  --ej-servicios-success: var(--ej-color-success, #10B981);
+  --ej-servicios-warning: var(--ej-color-warning, #F59E0B);
+  --ej-servicios-danger: var(--ej-color-danger, #EF4444);
+  --ej-servicios-impulse: var(--ej-color-impulse, #FF8C42);
+}
 
 // ---------------------------------------------------------------------------
-// Fallback values (solo se usan si --ej-* no están definidos por el tema)
+// SCSS variables referencing CSS custom properties
 // ---------------------------------------------------------------------------
-$servicios-primary: #1E40AF;       // Azul Confianza
-$servicios-primary-light: color.scale($servicios-primary, $lightness: 85%);
-$servicios-primary-dark: color.scale($servicios-primary, $lightness: -25%);
-$servicios-secondary: #059669;     // Verde Verificado
-$servicios-accent: #7C3AED;       // Violeta Premium
+$servicios-primary: var(--ej-servicios-primary);
+$servicios-accent: var(--ej-servicios-accent);
+$servicios-success: var(--ej-servicios-success);
+$servicios-warning: var(--ej-servicios-warning);
+$servicios-danger: var(--ej-servicios-danger);
+
+// ---------------------------------------------------------------------------
+// Secondary and derived color variables (CSS-native, no Sass color functions)
+// ---------------------------------------------------------------------------
+$servicios-primary-light: color-mix(in srgb, var(--ej-servicios-primary) 15%, #FFFFFF);
+$servicios-primary-dark: color-mix(in srgb, var(--ej-servicios-primary) 75%, #000000);
+$servicios-secondary: var(--ej-servicios-success);
 $servicios-cream: #F0F4FF;        // Azul muy claro fondo
 $servicios-text: #1A1A2E;         // Texto principal
 $servicios-text-muted: #6B7280;   // Texto secundario
-$servicios-border: #E5E7EB;       // Bordes suaves
+$servicios-border: #E2E8F0;       // Bordes suaves (Jaraba palette)
 $servicios-surface: #FFFFFF;       // Fondo de cards
-$servicios-danger: #DC2626;        // Rojo peligro
-$servicios-warning: #F59E0B;       // Amarillo alerta
-$servicios-success: #059669;       // Verde éxito
-$servicios-online: #06B6D4;       // Cyan para consultas online
+$servicios-online: var(--ej-servicios-accent);
 
 // ---------------------------------------------------------------------------
 // Spacing (scale 4px base, matching the theme)
@@ -67,12 +87,12 @@ $radius-xl: 1rem;       // 16px
 $radius-full: 50%;
 
 // ---------------------------------------------------------------------------
-// Shadows (glassmorphism + elevation)
+// Shadows (using color-mix for CSS-native transparency)
 // ---------------------------------------------------------------------------
-$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+$shadow-sm: 0 1px 2px color-mix(in srgb, #000000 5%, transparent);
+$shadow-md: 0 4px 6px -1px color-mix(in srgb, #000000 10%, transparent), 0 2px 4px -2px color-mix(in srgb, #000000 10%, transparent);
+$shadow-lg: 0 10px 15px -3px color-mix(in srgb, #000000 10%, transparent), 0 4px 6px -4px color-mix(in srgb, #000000 10%, transparent);
+$shadow-xl: 0 20px 25px -5px color-mix(in srgb, #000000 10%, transparent), 0 8px 10px -6px color-mix(in srgb, #000000 10%, transparent);
 
 // ---------------------------------------------------------------------------
 // Transitions

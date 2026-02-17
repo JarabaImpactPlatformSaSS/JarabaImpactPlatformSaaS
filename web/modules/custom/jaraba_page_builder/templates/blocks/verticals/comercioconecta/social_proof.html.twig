@@ -3,13 +3,18 @@
  # Category: comercioconecta
  # Type: social_proof
  #
- # Header "Confían en nosotros" + grid de logos con hover
+ # Header "Confian en nosotros" + grid de logos con hover
+ # Premium: animations, jaraba_icon system, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--social-proof pb-section--comercioconecta"
-         aria-label="{{ title|default('Confían en nosotros')|t }}">
+<section class="pb-section pb-section--social-proof pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Confian en nosotros')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
-      <h2 class="pb-section__title">{{ title|default('Marcas que confían en nosotros')|t }}</h2>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Comunidad')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Marcas que confian en nosotros')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Comercios y marcas que ya forman parte de ComercioConecta.')|t }}</p>
     </div>
     <div class="pb-section__logos-grid">
@@ -23,11 +28,16 @@
       ] %}
       {% set items = logos|default(default_logos) %}
       {% for logo in items %}
-        <div class="pb-section__logo">
+        <div class="pb-section__logo"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 60 }}">
           {% if logo.src|default('') %}
             <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" />
           {% else %}
-            <div class="pb-section__logo-placeholder">{{ logo.alt|default('Logo')|t }}</div>
+            <div class="pb-section__logo-placeholder" aria-hidden="true">
+              {{ jaraba_icon('ui', 'users', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+              <span>{{ logo.alt|default('Logo')|t }}</span>
+            </div>
           {% endif %}
         </div>
       {% endfor %}

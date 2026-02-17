@@ -1,0 +1,51 @@
+services:
+  logger.channel.jaraba_predictive:
+    parent: logger.channel_base
+    arguments: ['jaraba_predictive']
+
+  jaraba_predictive.churn_predictor:
+    class: Drupal\jaraba_predictive\Service\ChurnPredictorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_predictive'
+      - '@config.factory'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_predictive.lead_scorer:
+    class: Drupal\jaraba_predictive\Service\LeadScorerService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_predictive'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  jaraba_predictive.forecast_engine:
+    class: Drupal\jaraba_predictive\Service\ForecastEngineService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_predictive'
+      - '@config.factory'
+
+  jaraba_predictive.anomaly_detector:
+    class: Drupal\jaraba_predictive\Service\AnomalyDetectorService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_predictive'
+
+  jaraba_predictive.prediction_bridge:
+    class: Drupal\jaraba_predictive\Service\PredictionBridgeService
+    arguments:
+      - '@logger.channel.jaraba_predictive'
+      - '@config.factory'
+
+  jaraba_predictive.feature_store:
+    class: Drupal\jaraba_predictive\Service\FeatureStoreService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_predictive'
+
+  jaraba_predictive.retention_workflow:
+    class: Drupal\jaraba_predictive\Service\RetentionWorkflowService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_predictive'
+      - '@jaraba_predictive.churn_predictor'

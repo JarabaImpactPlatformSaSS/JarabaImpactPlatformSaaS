@@ -1,0 +1,11 @@
+id: serviciosconecta_free_bookings
+label: 'ServiciosConecta Free: Reservas'
+vertical: serviciosconecta
+plan: free
+feature_key: bookings_per_month
+limit_value: 10
+description: 'Maximo 10 reservas al mes en plan gratuito ServiciosConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 reservas mensuales. Actualiza a Starter para reservas ilimitadas.'
+expected_conversion: 0.40
+weight: 201
+status: true

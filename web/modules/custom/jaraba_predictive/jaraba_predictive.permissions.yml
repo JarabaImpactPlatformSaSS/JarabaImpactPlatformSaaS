@@ -1,0 +1,24 @@
+administer predictions:
+  title: 'Administrar modulo de predicciones'
+  restrict access: true
+
+access predictions:
+  title: 'Acceder al dashboard de predicciones'
+
+access predictions api:
+  title: 'Acceder a API REST de predicciones'
+
+view churn predictions:
+  title: 'Ver predicciones de churn'
+
+view lead scores:
+  title: 'Ver puntuaciones de leads'
+
+view forecasts:
+  title: 'Ver previsiones MRR/ARR'
+
+manage prediction models:
+  title: 'Gestionar modelos de prediccion'
+
+execute predictions:
+  title: 'Ejecutar predicciones'

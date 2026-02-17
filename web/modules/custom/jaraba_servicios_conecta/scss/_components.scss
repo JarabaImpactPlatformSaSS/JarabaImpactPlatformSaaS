@@ -1,9 +1,11 @@
 // =============================================================================
 // ServiciosConecta — Componentes reutilizables
-// Cards, badges, botones específicos del vertical
+// Cards, badges, botones especificos del vertical
+//
+// DIRECTRIZ: Usar color-mix() en lugar de color.scale()/darken()/lighten()
+// para compatibilidad con CSS custom properties.
 // =============================================================================
 
-@use 'sass:color';
 @use 'variables' as *;
 
 // --- Provider Card ---
@@ -31,7 +33,7 @@
     justify-content: center;
 
     &--placeholder {
-      background: color.scale($servicios-primary, $lightness: 80%);
+      background: color-mix(in srgb, var(--ej-servicios-primary) 20%, #FFFFFF);
     }
   }
 
@@ -190,33 +192,33 @@
   line-height: 1;
 
   &--online {
-    background: color.scale($servicios-online, $lightness: 85%);
-    color: color.scale($servicios-online, $lightness: -30%);
+    background: color-mix(in srgb, var(--ej-servicios-accent) 15%, #FFFFFF);
+    color: color-mix(in srgb, var(--ej-servicios-accent) 70%, #000000);
   }
 
   &--in_person {
-    background: color.scale($servicios-primary, $lightness: 85%);
-    color: $servicios-primary-dark;
+    background: color-mix(in srgb, var(--ej-servicios-primary) 15%, #FFFFFF);
+    color: color-mix(in srgb, var(--ej-servicios-primary) 75%, #000000);
   }
 
   &--hybrid {
-    background: color.scale($servicios-accent, $lightness: 85%);
-    color: color.scale($servicios-accent, $lightness: -20%);
+    background: color-mix(in srgb, var(--ej-servicios-accent) 15%, #FFFFFF);
+    color: color-mix(in srgb, var(--ej-servicios-accent) 80%, #000000);
   }
 
   &--home_visit {
-    background: color.scale($servicios-success, $lightness: 85%);
-    color: color.scale($servicios-success, $lightness: -20%);
+    background: color-mix(in srgb, var(--ej-servicios-success) 15%, #FFFFFF);
+    color: color-mix(in srgb, var(--ej-servicios-success) 80%, #000000);
   }
 
   &--phone {
-    background: color.scale($servicios-text-muted, $lightness: 80%);
+    background: color-mix(in srgb, $servicios-text-muted 20%, #FFFFFF);
     color: $servicios-text;
   }
 
   &--featured {
-    background: color.scale($servicios-warning, $lightness: 80%);
-    color: color.scale($servicios-warning, $lightness: -30%);
+    background: color-mix(in srgb, var(--ej-servicios-warning) 20%, #FFFFFF);
+    color: color-mix(in srgb, var(--ej-servicios-warning) 70%, #000000);
   }
 }
 

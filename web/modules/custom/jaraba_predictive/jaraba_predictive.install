@@ -1,0 +1,106 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Instalacion del modulo jaraba_predictive.
+ *
+ * Estructura: Hook de instalacion para vocabularios taxonomicos y terminos iniciales.
+ * Logica: Patron INSTALL-TAXONOMY-001 — Creacion de vocabularios prediction_model_version,
+ *         risk_level y lead_qualification con terminos semilla necesarios para la operacion
+ *         del modulo.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Implements hook_install().
+ *
+ * Estructura: Crea vocabularios taxonomicos y terminos iniciales.
+ * Logica: Patron INSTALL-TAXONOMY-001 — Los vocabularios se crean solo si no existen;
+ *         los terminos se crean para cada vocabulario con pesos secuenciales.
+ */
+function jaraba_predictive_install(): void {
+  // -------------------------------------------------------------------
+  // Vocabulario: prediction_model_version — Versiones de modelos predictivos.
+  // -------------------------------------------------------------------
+  if (!Vocabulary::load('prediction_model_version')) {
+    Vocabulary::create([
+      'vid' => 'prediction_model_version',
+      'name' => 'Version de modelo predictivo',
+      'description' => 'Versiones de los modelos de prediccion utilizados.',
+    ])->save();
+  }
+
+  $model_versions = [
+    'heuristic_v1',
+    'ml_v1',
+    'ml_v2',
+  ];
+
+  foreach ($model_versions as $weight => $term_name) {
+    Term::create([
+      'vid' => 'prediction_model_version',
+      'name' => $term_name,
+      'weight' => $weight,
+    ])->save();
+  }
+
+  // -------------------------------------------------------------------
+  // Vocabulario: risk_level — Niveles de riesgo de churn.
+  // -------------------------------------------------------------------
+  if (!Vocabulary::load('risk_level')) {
+    Vocabulary::create([
+      'vid' => 'risk_level',
+      'name' => 'Nivel de riesgo',
+      'description' => 'Clasificacion de niveles de riesgo para predicciones de churn.',
+    ])->save();
+  }
+
+  $risk_levels = [
+    'low',
+    'medium',
+    'high',
+    'critical',
+  ];
+
+  foreach ($risk_levels as $weight => $term_name) {
+    Term::create([
+      'vid' => 'risk_level',
+      'name' => $term_name,
+      'weight' => $weight,
+    ])->save();
+  }
+
+  // -------------------------------------------------------------------
+  // Vocabulario: lead_qualification — Niveles de cualificacion de leads.
+  // -------------------------------------------------------------------
+  if (!Vocabulary::load('lead_qualification')) {
+    Vocabulary::create([
+      'vid' => 'lead_qualification',
+      'name' => 'Cualificacion de lead',
+      'description' => 'Clasificacion de leads por nivel de cualificacion.',
+    ])->save();
+  }
+
+  $lead_qualifications = [
+    'cold',
+    'warm',
+    'hot',
+    'sales_ready',
+  ];
+
+  foreach ($lead_qualifications as $weight => $term_name) {
+    Term::create([
+      'vid' => 'lead_qualification',
+      'name' => $term_name,
+      'weight' => $weight,
+    ])->save();
+  }
+
+  \Drupal::logger('jaraba_predictive')->notice(
+    'Modulo jaraba_predictive instalado: vocabularios prediction_model_version, risk_level y lead_qualification creados con terminos iniciales.'
+  );
+}

@@ -1,0 +1,11 @@
+multiregion.main:
+  version: VERSION
+  css:
+    theme:
+      css/jaraba-multiregion.css: {}
+  js:
+    js/multiregion-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

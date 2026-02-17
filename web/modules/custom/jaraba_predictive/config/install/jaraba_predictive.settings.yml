@@ -1,0 +1,20 @@
+alert_threshold: 70
+model_version: 'heuristic_v1'
+python_enabled: false
+python_path: '/usr/bin/python3'
+scripts_path: 'modules/custom/jaraba_predictive/scripts'
+feature_cache_ttl: 3600
+churn_weights:
+  inactivity: 0.3
+  payment_failures: 0.25
+  support_tickets: 0.15
+  feature_adoption: 0.2
+  contract_age: 0.1
+lead_scoring:
+  engagement_weight: 0.4
+  activation_weight: 0.35
+  intent_weight: 0.25
+forecast:
+  default_period: 'monthly'
+  confidence_interval: 0.8
+  min_data_points: 12

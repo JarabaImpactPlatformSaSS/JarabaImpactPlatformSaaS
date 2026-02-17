@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v4.0
 
 **Fecha:** 2026-02-17
-**Versión:** 42.0.0 (Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium)
+**Versión:** 43.0.0 (JarabaLex Legal Practice Platform Completa — FASE A2-C3 + Diagnostico + CopilotAgent + 15 tests)
 **Estado:** Producción (IONOS)
 **Nivel de Madurez:** 4.9 / 5.0 (elevada tras resolver 23/65 hallazgos: 7 Críticos + 8 Altos + 8 Medios)
 
@@ -996,6 +996,57 @@
 │   ├── Permisos: 9 (manage/view/create/edit/delete cases + inquiries)   │
 │   ├── Tests: PHP lint 22/22 OK                                         │
 │   └── Estado: ✅ Produccion (FASE A1, Feb 2026)                        │
+│                                                                         │
+│   📦 jaraba_legal_calendar ✅ (Agenda Juridica — FASE A2)                │
+│   ├── Modulo JarabaLex: agenda juridica y tributaria                     │
+│   ├── Content Entity: LegalDeadline (plazos procesales + tributarios)    │
+│   ├── DeadlineCalculatorService: calculo plazos LEC 130.2               │
+│   │   (agosto inhabil, fines de semana, festivos)                        │
+│   ├── HearingService: gestion vistas judiciales                          │
+│   ├── CalendarDashboardController: zero-region /legal/calendar           │
+│   ├── Frontend: 2 zero-region templates, SCSS BEM, JS comportamiento    │
+│   ├── Tests: DeadlineCalculatorServiceTest (weekends, agosto)            │
+│   └── Estado: ✅ Produccion (FASE A2, Feb 2026)                         │
+│                                                                         │
+│   📦 jaraba_legal_billing ✅ (Facturacion Legal — FASE B1)               │
+│   ├── Modulo JarabaLex: facturacion y control horario legal              │
+│   ├── Content Entities: LegalTimeEntry, LegalInvoice, LegalExpense      │
+│   ├── TimeTrackingService: cronometro, entradas manuales, por caso      │
+│   ├── LegalInvoicingService: generacion facturas desde time entries      │
+│   ├── LegalBillingDashboardController: zero-region /legal/billing        │
+│   ├── Frontend: dashboard, cronometro JS, SCSS BEM (6732B compilado)    │
+│   ├── Tests: TimeTrackingServiceTest (start/stop/entries)                │
+│   └── Estado: ✅ Produccion (FASE B1, Feb 2026)                         │
+│                                                                         │
+│   📦 jaraba_legal_vault ✅ (Boveda Documental — FASE B2)                 │
+│   ├── Modulo JarabaLex: boveda documental con cadena de custodia         │
+│   ├── Content Entities: VaultDocument, VaultAccessLog                    │
+│   ├── VaultStorageService: almacenamiento seguro, hash chain SHA-256     │
+│   ├── VaultAuditLogService: log append-only, integridad verificable      │
+│   ├── VaultDashboardController: zero-region /legal/vault                 │
+│   ├── Frontend: dashboard filtros, audit trail, SCSS BEM (3282B)         │
+│   ├── Tests: VaultAuditLogServiceTest (hash chain, append-only)          │
+│   └── Estado: ✅ Produccion (FASE B2, Feb 2026)                         │
+│                                                                         │
+│   📦 jaraba_legal_lexnet ✅ (Integracion LexNET — FASE B3)               │
+│   ├── Modulo JarabaLex: integracion con sistema judicial LexNET          │
+│   ├── Content Entity: LexnetNotification                                 │
+│   ├── LexnetSyncService: sincronizacion notificaciones LexNET            │
+│   ├── LexnetProcessingService: procesamiento y clasificacion             │
+│   ├── LexnetDashboardController: zero-region /legal/lexnet               │
+│   ├── Frontend: dashboard, SCSS BEM (3368B compilado)                    │
+│   ├── Tests: LexnetSyncServiceTest (sync, filter, markProcessed)         │
+│   └── Estado: ✅ Produccion (FASE B3, Feb 2026)                         │
+│                                                                         │
+│   📦 jaraba_legal_templates ✅ (Plantillas Procesales — FASE C1)         │
+│   ├── Modulo JarabaLex: plantillas documentos juridicos                  │
+│   ├── Content Entity: LegalTemplate (sistema + personalizadas)           │
+│   ├── TemplateManagerService: merge fields, renderizado, listado         │
+│   ├── TemplateEditorController: editor GrapesJS integrado                │
+│   ├── GrapesJS: 11 bloques legales especializados                        │
+│   ├── Frontend: dashboard, editor, SCSS BEM (5601B compilado)            │
+│   ├── Tests: TemplateManagerServiceTest (list, render, system)           │
+│   └── Estado: ✅ Produccion (FASE C1, Feb 2026)                         │
 │                                                                         │
 │   📦 jaraba_tenant_export ✅ (Tenant Data Export + Daily Backup)          │
 │   ├── GDPR Art. 20 Portabilidad de Datos — Self-service tenant export  │
@@ -2608,10 +2659,11 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 
 ---
 
+| 2026-02-17 | **43.0.0** | **JarabaLex Legal Practice Platform Completa — FASE A2-C3:** 5 modulos nuevos anadidos al registro seccion 7.1 (jaraba_legal_calendar, jaraba_legal_billing, jaraba_legal_vault, jaraba_legal_lexnet, jaraba_legal_templates). Diagnostico Lead Magnet (LegalLandingController). JarabaLexCopilotAgent 6 modos en jaraba_ai_agents. 15 test files. 73 modulos custom. Aprendizaje #92. |
 | 2026-02-17 | **42.0.0** | **Plan Elevacion AgroConecta Clase Mundial v1 — 14 fases + 11 PB premium:** AgroConecta elevado a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (18 Services, Clase Mundial badge, 14 fases detalle). Tabla 12.3 actualizada con AgroConecta (14/14 + detalle 14 fases + PB premium). 7 servicios nuevos (FeatureGate, EmailSequence, CrossVertical, Journey, Health, Experiment, CopilotBridge). 12 FreemiumVerticalLimit + 8 UpgradeTrigger types + 4 FunnelDefinitions. 95 rgba→color-mix en 16 SCSS. 11 templates PB premium (jaraba_icon, schema.org, FAQ JSON-LD, LocalBusiness). 6 MJML email templates. Aprendizaje #91. |
 | 2026-02-16 | **41.0.0** | **FASE A1 jaraba_legal_cases — Legal Practice Platform:** Nuevo modulo jaraba_legal_cases anadido al registro seccion 7.1. 4 Content Entities (ClientCase, CaseActivity append-only, ClientInquiry, InquiryTriage). 4 Services, 3 Controllers, 11 API REST endpoints. 2 zero-region page templates. 47 ficheros. Aprendizaje #90. |
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 42.0.0 | **Fecha:** 2026-02-17 | **Autor:** IA Asistente
+> **Versión:** 43.0.0 | **Fecha:** 2026-02-17 | **Autor:** IA Asistente
 

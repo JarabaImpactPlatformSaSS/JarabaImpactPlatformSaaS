@@ -68,6 +68,23 @@ class UpgradeTriggerService
         'agro_partner_hub_limit_reached' => 0.22,
         'agro_analytics_advanced_limit_reached' => 0.18,
         'agro_demand_forecaster_limit_reached' => 0.15,
+        // ComercioConecta v1 — Fase 2.
+        'comercio_product_limit_reached' => 0.35,
+        'comercio_flash_offer_limit_reached' => 0.30,
+        'comercio_qr_limit_reached' => 0.28,
+        'comercio_copilot_limit_reached' => 0.28,
+        'comercio_analytics_gate' => 0.18,
+        'comercio_pos_gate' => 0.15,
+        'comercio_seo_gate' => 0.20,
+        // ServiciosConecta v1 — Fase 1.
+        'servicios_services_limit_reached' => 0.35,
+        'servicios_bookings_per_month_limit_reached' => 0.30,
+        'servicios_calendar_sync_limit_reached' => 0.28,
+        'servicios_buzon_confianza_limit_reached' => 0.25,
+        'servicios_firma_digital_limit_reached' => 0.22,
+        'servicios_ai_triage_limit_reached' => 0.28,
+        'servicios_video_conferencing_limit_reached' => 0.20,
+        'servicios_analytics_dashboard_limit_reached' => 0.18,
     ];
 
     /**
@@ -195,6 +212,14 @@ class UpgradeTriggerService
             'limit_reached', 'feature_blocked',
             'search_limit_reached', 'alert_limit_reached',
             'citation_blocked', 'digest_blocked', 'api_blocked',
+            'comercio_product_limit_reached', 'comercio_flash_offer_limit_reached',
+            'comercio_qr_limit_reached', 'comercio_copilot_limit_reached',
+            'comercio_analytics_gate', 'comercio_pos_gate', 'comercio_seo_gate',
+            // ServiciosConecta v1 — Fase 1.
+            'servicios_services_limit_reached', 'servicios_bookings_per_month_limit_reached',
+            'servicios_calendar_sync_limit_reached', 'servicios_buzon_confianza_limit_reached',
+            'servicios_firma_digital_limit_reached', 'servicios_ai_triage_limit_reached',
+            'servicios_video_conferencing_limit_reached', 'servicios_analytics_dashboard_limit_reached',
         ];
         if ($featureKey && in_array($type, $triggerTypesWithLimits)) {
             $freemiumLimit = $this->getVerticalLimit($verticalId, $planId, $featureKey);
@@ -413,6 +438,134 @@ class UpgradeTriggerService
                     ]),
                 ];
 
+            // ComercioConecta v1 — Fase 2.
+            case 'comercio_product_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 10);
+                return [
+                    'title' => $this->t('Has alcanzado tu limite de productos'),
+                    'message' => $this->t('Has publicado @limit productos. Con el plan @plan podras publicar productos ilimitados y llegar a mas clientes.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'comercio_flash_offer_limit_reached':
+                return [
+                    'title' => $this->t('Limite de ofertas flash alcanzado'),
+                    'message' => $this->t('Has alcanzado el maximo de ofertas flash activas. Con el plan @plan podras crear ofertas ilimitadas para atraer mas clientes.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'comercio_qr_limit_reached':
+                return [
+                    'title' => $this->t('Codigos QR no disponibles'),
+                    'message' => $this->t('Los codigos QR dinamicos para tu escaparate estan disponibles desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'comercio_copilot_limit_reached':
+                return [
+                    'title' => $this->t('Has agotado tus consultas IA del mes'),
+                    'message' => $this->t('Has utilizado todas tus consultas de IA este mes. Con el plan @plan tendras mas consultas para optimizar tu negocio.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'comercio_analytics_gate':
+                return [
+                    'title' => $this->t('Analytics avanzados no disponibles'),
+                    'message' => $this->t('Los analytics avanzados de ventas y clientes estan disponibles desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'comercio_pos_gate':
+                return [
+                    'title' => $this->t('Integracion TPV no disponible'),
+                    'message' => $this->t('La integracion con tu Terminal Punto de Venta esta disponible desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'comercio_seo_gate':
+                return [
+                    'title' => $this->t('Auditoria SEO no disponible'),
+                    'message' => $this->t('La auditoria SEO local automatizada esta disponible desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            // ServiciosConecta v1 — Fase 1.
+            case 'servicios_services_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 5);
+                return [
+                    'title' => $this->t('Has alcanzado tu limite de servicios publicados'),
+                    'message' => $this->t('Has publicado @limit servicios. Con el plan @plan podras publicar servicios ilimitados y llegar a mas clientes.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_bookings_per_month_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 20);
+                return [
+                    'title' => $this->t('Has alcanzado tu limite de reservas mensuales'),
+                    'message' => $this->t('Has recibido @limit reservas este mes. Con el plan @plan tendras reservas ilimitadas para hacer crecer tu consulta.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_calendar_sync_limit_reached':
+                return [
+                    'title' => $this->t('Sincronizacion de calendario no disponible'),
+                    'message' => $this->t('La sincronizacion con Google Calendar y Outlook esta disponible desde el plan @plan. Evita dobles reservas y gestiona tu agenda profesional.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_buzon_confianza_limit_reached':
+                return [
+                    'title' => $this->t('Buzon de Confianza no disponible'),
+                    'message' => $this->t('El Buzon de Confianza para comunicacion segura con tus clientes esta disponible desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_firma_digital_limit_reached':
+                return [
+                    'title' => $this->t('Firma digital no disponible'),
+                    'message' => $this->t('La firma digital de documentos y contratos esta disponible desde el plan @plan. Cierra acuerdos de forma segura y legal.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_ai_triage_limit_reached':
+                return [
+                    'title' => $this->t('Triaje IA no disponible'),
+                    'message' => $this->t('El triaje inteligente con IA para clasificar y priorizar consultas esta disponible desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_video_conferencing_limit_reached':
+                return [
+                    'title' => $this->t('Videoconsulta no disponible'),
+                    'message' => $this->t('Las videoconsultas integradas para atender a tus clientes en remoto estan disponibles desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'servicios_analytics_dashboard_limit_reached':
+                return [
+                    'title' => $this->t('Dashboard de analytics no disponible'),
+                    'message' => $this->t('El dashboard de analytics avanzados con metricas de rendimiento de tu consulta esta disponible desde el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
             default:
                 return [
                     'title' => $this->t('Mejora tu plan'),
@@ -495,6 +648,100 @@ class UpgradeTriggerService
         $icons['api_blocked'] = [
             'category' => 'actions',
             'name' => 'code',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+
+        // ComercioConecta v1 — Fase 2.
+        $icons['comercio_product_limit_reached'] = [
+            'category' => 'commerce',
+            'name' => 'shopping-bag',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['comercio_flash_offer_limit_reached'] = [
+            'category' => 'commerce',
+            'name' => 'flash',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['comercio_qr_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'qr-code',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['comercio_copilot_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'robot',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['comercio_analytics_gate'] = [
+            'category' => 'analytics',
+            'name' => 'chart-bar',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['comercio_pos_gate'] = [
+            'category' => 'commerce',
+            'name' => 'terminal',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['comercio_seo_gate'] = [
+            'category' => 'actions',
+            'name' => 'search',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+
+        // ServiciosConecta v1 — Fase 1.
+        $icons['servicios_services_limit_reached'] = [
+            'category' => 'services',
+            'name' => 'briefcase',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['servicios_bookings_per_month_limit_reached'] = [
+            'category' => 'services',
+            'name' => 'calendar-check',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['servicios_calendar_sync_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'calendar-sync',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['servicios_buzon_confianza_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'shield-check',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
+        ];
+        $icons['servicios_firma_digital_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'pen-tool',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['servicios_ai_triage_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'robot',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['servicios_video_conferencing_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'video',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['servicios_analytics_dashboard_limit_reached'] = [
+            'category' => 'analytics',
+            'name' => 'chart-bar',
             'variant' => 'duotone',
             'color' => 'azul-corporativo',
         ];
@@ -756,6 +1003,14 @@ class UpgradeTriggerService
             'legal_citations' => 'Con %s podras insertar citas legales automaticas en todos tus expedientes.',
             'legal_digest' => 'El plan %s incluye un digest semanal personalizado con las resoluciones mas relevantes.',
             'legal_copilot' => 'Con %s accedes al asistente juridico IA sin restricciones para consultas avanzadas.',
+            // ServiciosConecta v1 — Fase 1.
+            'servicios_bookings' => 'Con %s tendras reservas ilimitadas para hacer crecer tu consulta profesional.',
+            'servicios_calendar' => 'El plan %s incluye sincronizacion bidireccional con Google Calendar y Outlook.',
+            'servicios_buzon' => 'Con %s desbloqueas el Buzon de Confianza para comunicacion segura con clientes.',
+            'servicios_firma' => 'El plan %s incluye firma digital de documentos y contratos.',
+            'servicios_triage' => 'Con %s accedes al triaje IA para clasificar y priorizar consultas automaticamente.',
+            'servicios_video' => 'El plan %s desbloquea videoconsultas integradas para atencion remota.',
+            'servicios_analytics' => 'Con %s accedes al dashboard de analytics avanzados de tu consulta.',
         ];
 
         $template = $benefits[$mode] ?? 'El plan %s desbloquea funcionalidades avanzadas.';

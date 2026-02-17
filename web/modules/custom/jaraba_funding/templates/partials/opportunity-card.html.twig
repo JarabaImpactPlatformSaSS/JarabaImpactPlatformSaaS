@@ -1,0 +1,50 @@
+{#
+ # Parcial: Tarjeta de convocatoria de fondos.
+ #
+ # Variables:
+ #   - opportunity: array con id, name, funding_body, program, max_amount, deadline, status, url.
+ #}
+<article class="opportunity-card">
+  <header class="opportunity-card__header">
+    <h3 class="opportunity-card__title">{{ opportunity.name }}</h3>
+    {% set status_class = 'opportunity-card__status--' ~ opportunity.status %}
+    <span class="opportunity-card__status {{ status_class }}">
+      {% if opportunity.status == 'open' %}
+        {{ 'Abierta'|t }}
+      {% elseif opportunity.status == 'upcoming' %}
+        {{ 'Proxima'|t }}
+      {% elseif opportunity.status == 'closed' %}
+        {{ 'Cerrada'|t }}
+      {% elseif opportunity.status == 'resolved' %}
+        {{ 'Resuelta'|t }}
+      {% endif %}
+    </span>
+  </header>
+
+  <div class="opportunity-card__info">
+    <span class="opportunity-card__body">{{ opportunity.funding_body }}</span>
+    {% if opportunity.program %}
+      <span class="opportunity-card__program">{{ opportunity.program }}</span>
+    {% endif %}
+    {% if opportunity.max_amount %}
+      <span class="opportunity-card__amount">{{ 'Hasta'|t }} {{ opportunity.max_amount }} EUR</span>
+    {% endif %}
+    {% if opportunity.deadline %}
+      <span class="opportunity-card__deadline">{{ 'Plazo:'|t }} {{ opportunity.deadline }}</span>
+    {% endif %}
+  </div>
+
+  <footer class="opportunity-card__actions">
+    {% if opportunity.url %}
+      <a href="{{ opportunity.url }}" class="opportunity-card__action" target="_blank" rel="noopener">
+        {{ 'Ver convocatoria'|t }}
+      </a>
+    {% endif %}
+    <a href="/admin/content/funding-applications/add"
+       class="use-ajax opportunity-card__action opportunity-card__action--primary"
+       data-dialog-type="modal"
+       data-dialog-options='{"width": 800, "title": "{{ 'Crear solicitud'|t }}"}'>
+      {{ 'Solicitar'|t }}
+    </a>
+  </footer>
+</article>

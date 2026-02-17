@@ -1,0 +1,92 @@
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+<body{{ attributes.addClass('page-wrapper--clean', 'page--servicios', 'page--servicios-dashboard', 'dashboard-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    theme_settings: theme_settings|default({}),
+    logged_in: logged_in|default(false),
+    site_name: site_name|default('Jaraba'),
+  } %}
+
+  <div class="servicios-dashboard-layout">
+    <aside class="servicios-dashboard-sidebar">
+      <div class="servicios-sidebar__profile">
+        {% if current_provider %}
+          <div class="servicios-sidebar__avatar">
+            {% if provider_stats.display_name %}
+              <span class="servicios-sidebar__initials">{{ provider_stats.display_name|first|upper }}</span>
+            {% endif %}
+          </div>
+          <h3 class="servicios-sidebar__name">{{ provider_stats.display_name }}</h3>
+          {% if provider_stats.average_rating > 0 %}
+            <div class="servicios-sidebar__rating">
+              <span class="servicios-sidebar__stars">{{ '★'|repeat(provider_stats.average_rating|round) }}</span>
+              <span class="servicios-sidebar__rating-value">{{ provider_stats.average_rating|number_format(1) }}</span>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <nav class="servicios-sidebar__nav" aria-label="{% trans %}Provider navigation{% endtrans %}">
+        <a href="/mi-servicio" class="servicios-sidebar__link{{ current_path == '/mi-servicio' ? ' is-active' : '' }}">
+          {{ jaraba_icon('ui', 'dashboard', { variant: 'duotone', size: '20px' }) }}
+          <span>{% trans %}Dashboard{% endtrans %}</span>
+        </a>
+        <a href="/mi-servicio/servicios" class="servicios-sidebar__link{{ '/mi-servicio/servicios' in current_path ? ' is-active' : '' }}">
+          {{ jaraba_icon('ui', 'package', { variant: 'duotone', size: '20px' }) }}
+          <span>{% trans %}My Services{% endtrans %}</span>
+        </a>
+        <a href="/mi-servicio/reservas" class="servicios-sidebar__link{{ '/mi-servicio/reservas' in current_path ? ' is-active' : '' }}">
+          {{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '20px' }) }}
+          <span>{% trans %}Bookings{% endtrans %}</span>
+        </a>
+        <a href="/mi-servicio/calendario" class="servicios-sidebar__link{{ '/mi-servicio/calendario' in current_path ? ' is-active' : '' }}">
+          {{ jaraba_icon('ui', 'building', { variant: 'duotone', size: '20px' }) }}
+          <span>{% trans %}Calendar{% endtrans %}</span>
+        </a>
+        <a href="/mi-servicio/perfil" class="servicios-sidebar__link{{ '/mi-servicio/perfil' in current_path ? ' is-active' : '' }}">
+          {{ jaraba_icon('ui', 'user', { variant: 'duotone', size: '20px' }) }}
+          <span>{% trans %}Profile{% endtrans %}</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main id="main-content" class="main-content servicios-dashboard-content">
+      {% if clean_messages is not empty %}
+        <div class="messages-container">
+          {{ clean_messages }}
+        </div>
+      {% endif %}
+
+      {% if clean_content is not empty %}
+        {{ clean_content }}
+      {% endif %}
+    </main>
+  </div>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    theme_settings: theme_settings|default({}),
+    footer_copyright: footer_copyright|default(''),
+  } %}
+
+  {% include '@ecosistema_jaraba_theme/partials/_copilot-fab.html.twig' with {
+    agent_context: 'serviciosconecta_copilot',
+    avatar_type: 'profesional',
+    fab_color: 'var(--ej-color-corporate, #233D63)',
+    is_expanded: false,
+  } %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

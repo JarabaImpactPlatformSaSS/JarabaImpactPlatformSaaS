@@ -4,9 +4,12 @@
  # Type: social_proof
  #
  # Header "Confian en nosotros" + grid de logos con hover
+ # Premium: staggered animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--social-proof pb-section--serviciosconecta"
-         aria-label="{{ title|default('Empresas que confian en nosotros')|t }}">
+<section class="pb-section pb-section--social-proof pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Empresas que confian en nosotros')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <h2 class="pb-section__title">{{ title|default('Empresas que contratan nuestros profesionales')|t }}</h2>
@@ -23,7 +26,9 @@
       ] %}
       {% set items = logos|default(default_logos) %}
       {% for logo in items %}
-        <div class="pb-section__logo">
+        <div class="pb-section__logo"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
           {% if logo.src|default('') %}
             <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" />
           {% else %}

@@ -52,6 +52,13 @@ function jaraba_legal_intelligence_preprocess_html(array &$variables): void {
     'jaraba_legal.admin_dashboard' => 'page--legal-admin',
   ];
 
+  // Landing JarabaLex y diagnostico legal (Fase 0 Clase Mundial).
+  if ($route_name === 'ecosistema_jaraba_core.landing.jarabalex' || $route_name === 'jaraba_legal.diagnostico') {
+    $variables['attributes']['class'][] = 'page-jarabalex';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+    $variables['attributes']['class'][] = 'full-width-layout';
+  }
+
   if (isset($routeClasses[$route_name])) {
     $variables['attributes']['class'][] = $routeClasses[$route_name];
     $variables['attributes']['class'][] = 'page--legal';
@@ -436,6 +443,11 @@ function jaraba_legal_intelligence_theme(): array {
         'period_start' => '',
         'period_end' => '',
       ],
+    ],
+    // Lead Magnet: Diagnostico Legal Gratuito (Fase 0 Clase Mundial).
+    'legal_diagnostico' => [
+      'template' => 'legal-diagnostico',
+      'variables' => [],
     ],
     // === Parciales reutilizables ===
     'legal_resolution_card' => [

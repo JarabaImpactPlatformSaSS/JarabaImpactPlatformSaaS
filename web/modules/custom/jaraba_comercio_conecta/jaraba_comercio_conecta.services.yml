@@ -18,6 +18,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'
+      - '@ecosistema_jaraba_core.comercioconecta_feature_gate'
 
   # =====================================================================
   # ProductRetailService: CRUD y lógica de productos retail
@@ -31,6 +32,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'
+      - '@ecosistema_jaraba_core.comercioconecta_feature_gate'
 
   # =====================================================================
   # MerchantDashboardService: KPIs y datos del dashboard del comerciante
@@ -43,4 +45,105 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@database'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # ComercioConectaCopilotBridgeService: Contexto para copiloto IA
+  # Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 13
+  # =====================================================================
+  # =====================================================================
+  # OrderRetailService: CRUD y logica de pedidos retail
+  # Responsabilidad: crear, actualizar, cambiar estado de pedidos,
+  #   listar pedidos de usuario/comerciante, estadisticas
+  # =====================================================================
+  jaraba_comercio_conecta.order_retail:
+    class: Drupal\jaraba_comercio_conecta\Service\OrderRetailService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # CartService: Gestion de carrito de compras
+  # Responsabilidad: crear/obtener carrito, agregar/quitar items,
+  #   aplicar cupones, recalcular totales
+  # =====================================================================
+  jaraba_comercio_conecta.cart:
+    class: Drupal\jaraba_comercio_conecta\Service\CartService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # CheckoutService: Flujo de checkout multi-step
+  # Responsabilidad: validar stock, crear pedido desde carrito,
+  #   crear sub-pedidos por comerciante, registrar cupones
+  # =====================================================================
+  jaraba_comercio_conecta.checkout:
+    class: Drupal\jaraba_comercio_conecta\Service\CheckoutService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_comercio_conecta.cart'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # StripePaymentRetailService: Pagos Stripe Connect con split
+  # Responsabilidad: crear payment intents, confirmar pagos,
+  #   procesar reembolsos, transferencias a comerciantes
+  # =====================================================================
+  jaraba_comercio_conecta.stripe_payment:
+    class: Drupal\jaraba_comercio_conecta\Service\StripePaymentRetailService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # CartRecoveryService: Deteccion y recuperacion de carritos abandonados
+  # Responsabilidad: detectar carritos inactivos, enviar emails de
+  #   recuperacion, estadisticas de conversion
+  # =====================================================================
+  jaraba_comercio_conecta.cart_recovery:
+    class: Drupal\jaraba_comercio_conecta\Service\CartRecoveryService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # CustomerProfileService: Gestion de perfiles de consumidor
+  # Responsabilidad: crear/obtener perfil, favoritos, puntos fidelidad
+  # =====================================================================
+  jaraba_comercio_conecta.customer_profile:
+    class: Drupal\jaraba_comercio_conecta\Service\CustomerProfileService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_route_match'
+
+  # =====================================================================
+  # WishlistService: Gestion de listas de deseos
+  # Responsabilidad: CRUD wishlists, agregar/quitar items, verificar
+  # =====================================================================
+  jaraba_comercio_conecta.wishlist:
+    class: Drupal\jaraba_comercio_conecta\Service\WishlistService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+
+  # =====================================================================
+  # MerchantPayoutService: Historial de pagos y comisiones del comerciante
+  # Responsabilidad: resumen de payouts, ingresos mensuales, pendientes
+  # =====================================================================
+  jaraba_comercio_conecta.merchant_payout:
+    class: Drupal\jaraba_comercio_conecta\Service\MerchantPayoutService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'
+
+  jaraba_comercio_conecta.copilot_bridge:
+    class: Drupal\jaraba_comercio_conecta\Service\ComercioConectaCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'

@@ -1,15 +1,23 @@
 {#
- # Template: ComercioConecta - Llamada a la Acción
+ # Template: ComercioConecta - Llamada a la Accion
  # Category: comercioconecta
  # Type: cta
  #
- # Banner con gradient, título, subtitle y 2 CTAs (primary + secondary)
+ # Banner con gradient, titulo, subtitle y 2 CTAs (primary + secondary)
+ # Premium: animations, jaraba_icon system, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--cta pb-section--comercioconecta"
-         aria-label="{{ title|default('Empieza a vender hoy')|t }}">
+<section class="pb-section pb-section--cta pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Empieza a vender hoy')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
-    <h2 class="pb-section__title">{{ title|default('¿Listo para impulsar tu tienda?')|t }}</h2>
-    <p class="pb-section__subtitle">{{ subtitle|default('Únete a cientos de comercios que ya venden más con ComercioConecta. Empieza gratis, sin compromiso.')|t }}</p>
+    <div class="pb-section__cta-icon" aria-hidden="true">
+      {{ jaraba_icon('actions', 'rocket', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+    </div>
+    <span class="pb-section__eyebrow">{{ eyebrow|default('Empieza Ahora')|t }}</span>
+    <h2 class="pb-section__title">{{ title|default('Listo para impulsar tu tienda?')|t }}</h2>
+    <p class="pb-section__subtitle">{{ subtitle|default('Unete a cientos de comercios que ya venden mas con ComercioConecta. Empieza gratis, sin compromiso.')|t }}</p>
     <div class="pb-section__actions">
       <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
         {{ cta_text|default('Empieza gratis')|t }}

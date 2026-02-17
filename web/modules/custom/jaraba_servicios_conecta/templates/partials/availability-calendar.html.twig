@@ -1,0 +1,36 @@
+{#
+ # Calendario de disponibilidad (grid semanal).
+ #
+ # Variables:
+ #   - slots: array of AvailabilitySlot entities indexed by day_of_week
+ #   - current_week: string (Y-m-d of Monday)
+ #}
+<div class="servicios-availability-calendar">
+  <div class="servicios-availability-calendar__header">
+    <h3>{% trans %}Weekly Availability{% endtrans %}</h3>
+  </div>
+
+  <div class="servicios-availability-calendar__grid">
+    {% set day_names = ['monday'|t, 'tuesday'|t, 'wednesday'|t, 'thursday'|t, 'friday'|t, 'saturday'|t, 'sunday'|t] %}
+    {% for day_num in 1..7 %}
+      <div class="servicios-availability-calendar__day">
+        <div class="servicios-availability-calendar__day-header">
+          {{ day_names[day_num - 1] }}
+        </div>
+        <div class="servicios-availability-calendar__slots">
+          {% if slots[day_num] is defined %}
+            {% for slot in slots[day_num] %}
+              <div class="servicios-availability-calendar__slot servicios-availability-calendar__slot--active">
+                {{ slot.get('start_time').value|default('') }} - {{ slot.get('end_time').value|default('') }}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="servicios-availability-calendar__slot servicios-availability-calendar__slot--empty">
+              {% trans %}No availability{% endtrans %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

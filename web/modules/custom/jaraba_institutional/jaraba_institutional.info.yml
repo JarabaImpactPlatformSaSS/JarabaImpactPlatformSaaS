@@ -1,0 +1,13 @@
+name: 'Jaraba Institutional'
+type: module
+description: 'Integracion STO/PIIL/FUNDAE/FSE+ — Programas institucionales, participantes y fichas tecnicas.'
+package: 'JarabaLex'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:options
+  - drupal:datetime
+  - drupal:file
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+lifecycle: experimental

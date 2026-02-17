@@ -37,3 +37,10 @@ jaraba_servicios_conecta.service_package.collection:
   route_name: entity.service_package.collection
   base_route: system.admin_content
   weight: 64
+
+# Tab Reseñas en admin/content
+jaraba_servicios_conecta.review_servicios.collection:
+  title: 'Reseñas'
+  route_name: entity.review_servicios.collection
+  base_route: system.admin_content
+  weight: 65

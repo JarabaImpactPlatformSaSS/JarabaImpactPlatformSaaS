@@ -1,0 +1,38 @@
+{#
+ # Formulario de reserva publica.
+ #
+ # Variables:
+ #   - offering: ServiceOffering entity
+ #   - provider: ProviderProfile entity
+ #   - available_dates: array
+ #   - available_slots: array
+ #   - form: Drupal form render array
+ #}
+{{ attach_library('jaraba_servicios_conecta/booking') }}
+
+<div class="servicios-booking-form">
+  <div class="servicios-booking-form__header">
+    <h2 class="servicios-booking-form__title">{% trans %}Book Appointment{% endtrans %}</h2>
+    {% if provider %}
+      <p class="servicios-booking-form__provider">
+        {% trans %}with {{ provider.get('display_name').value }}{% endtrans %}
+      </p>
+    {% endif %}
+  </div>
+
+  {% if offering %}
+    <div class="servicios-booking-form__service-info">
+      <h3>{{ offering.get('title').value }}</h3>
+      {% if offering.get('price').value %}
+        <span class="servicios-booking-form__price">{{ offering.get('price').value|number_format(2) }} EUR</span>
+      {% endif %}
+      {% if offering.get('duration_minutes').value %}
+        <span class="servicios-booking-form__duration">{{ offering.get('duration_minutes').value }} {% trans %}min{% endtrans %}</span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if form %}
+    {{ form }}
+  {% endif %}
+</div>

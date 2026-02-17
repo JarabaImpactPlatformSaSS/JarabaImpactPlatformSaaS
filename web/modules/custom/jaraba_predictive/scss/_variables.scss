@@ -1,0 +1,79 @@
+// =============================================================================
+// Variables SCSS del modulo Jaraba Predictive (Modelos Predictivos)
+// Directriz: Dart Sass moderno con @use, color-mix(), var(--ej-*)
+// Regla: consumir var(--ej-*, fallback), NUNCA definir $ej-*
+// =============================================================================
+
+// Tipografia — consume tokens federados del ecosistema
+$pred-font-family: var(--ej-font-family-body, 'Inter', sans-serif);
+$pred-font-headings: var(--ej-font-family-headings, 'Outfit', sans-serif);
+
+// Colores primarios — predictive module palette (purpura IA)
+$pred-color-primary: var(--ej-color-predictive-primary, #7C3AED);
+$pred-color-secondary: var(--ej-color-predictive-secondary, #A78BFA);
+$pred-color-accent: var(--ej-color-predictive-accent, #DDD6FE);
+$pred-color-surface: var(--ej-color-predictive-surface, #F5F3FF);
+$pred-color-border: var(--ej-color-predictive-border, #C4B5FD);
+
+// Colores genericos del ecosistema
+$pred-color-success: var(--ej-color-success, #16a34a);
+$pred-color-warning: var(--ej-color-warning, #f59e0b);
+$pred-color-danger: var(--ej-color-error, #dc2626);
+$pred-color-info: var(--ej-color-primary, #2563eb);
+
+// Risk level colors
+$pred-risk-low: var(--ej-color-risk-low, #22C55E);
+$pred-risk-medium: var(--ej-color-risk-medium, #EAB308);
+$pred-risk-high: var(--ej-color-risk-high, #F97316);
+$pred-risk-critical: var(--ej-color-risk-critical, #EF4444);
+
+// Lead qualification colors
+$pred-lead-cold: var(--ej-color-lead-cold, #60A5FA);
+$pred-lead-warm: var(--ej-color-lead-warm, #FBBF24);
+$pred-lead-hot: var(--ej-color-lead-hot, #FB923C);
+$pred-lead-sales-ready: var(--ej-color-lead-sales-ready, #34D399);
+
+// Forecast metric colors
+$pred-metric-mrr: var(--ej-color-metric-mrr, #7C3AED);
+$pred-metric-arr: var(--ej-color-metric-arr, #2563EB);
+$pred-metric-tenants: var(--ej-color-metric-tenants, #059669);
+$pred-metric-users: var(--ej-color-metric-users, #D97706);
+
+// Superficies
+$pred-bg-body: var(--ej-bg-body, #f8fafc);
+$pred-bg-surface: var(--ej-bg-surface, #ffffff);
+$pred-color-text: var(--ej-color-text, #1e293b);
+$pred-color-text-muted: var(--ej-color-text-muted, #64748b);
+
+// Espaciado — federated tokens with fallbacks
+$pred-spacing-xs: var(--ej-spacing-xs, 0.25rem);
+$pred-spacing-sm: var(--ej-spacing-sm, 0.5rem);
+$pred-spacing-md: var(--ej-spacing-md, 1rem);
+$pred-spacing-lg: var(--ej-spacing-lg, 1.5rem);
+$pred-spacing-xl: var(--ej-spacing-xl, 2rem);
+$pred-spacing-2xl: var(--ej-spacing-2xl, 3rem);
+
+// Bordes
+$pred-border-radius: var(--ej-border-radius, 8px);
+$pred-border-radius-md: var(--ej-border-radius-md, 10px);
+$pred-border-radius-lg: var(--ej-border-radius-lg, 14px);
+$pred-card-radius: var(--ej-radius-card, 12px);
+$pred-border-color: var(--ej-border-color, #e2e8f0);
+
+// Sombras — usando color-mix() en lugar de rgba()
+$pred-shadow-sm: 0 1px 2px color-mix(in srgb, #000 5%, transparent);
+$pred-shadow-md: 0 4px 6px -1px color-mix(in srgb, #000 10%, transparent);
+$pred-shadow-lg: 0 10px 15px -3px color-mix(in srgb, #000 10%, transparent);
+$pred-card-shadow: var(--ej-shadow-card, 0 2px 8px color-mix(in srgb, #000 8%, transparent));
+$pred-card-shadow-hover: var(--ej-shadow-card-hover, 0 4px 16px color-mix(in srgb, #000 12%, transparent));
+
+// Breakpoints
+$pred-bp-sm: 640px;
+$pred-bp-md: 768px;
+$pred-bp-lg: 1024px;
+$pred-bp-xl: 1280px;
+
+// Transitions
+$pred-transition-fast: 0.15s ease;
+$pred-transition-normal: 0.2s ease;
+$pred-transition-slow: 0.4s ease;

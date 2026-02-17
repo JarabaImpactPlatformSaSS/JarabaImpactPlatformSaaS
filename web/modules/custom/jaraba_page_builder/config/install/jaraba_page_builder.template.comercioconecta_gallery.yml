@@ -15,6 +15,10 @@ fields_schema:
       type: string
       title: 'Subtitulo'
       maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 50
     description:
       type: string
       title: 'Descripcion'
@@ -22,6 +26,10 @@ fields_schema:
     image:
       type: string
       title: 'Imagen'
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
       format: image
     cta_text:
       type: string
@@ -31,17 +39,41 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
+    gallery:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 100
+          caption:
+            type: string
+            maxLength: 150
   required:
     - title
 plans_required:
   - professional
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-gallery.png'
 weight: 16
 preview_data:
-  title: 'Showcase de Productos'
-  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
-  description: 'Descripcion de ejemplo para la seccion galeria visual.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  title: 'Nuestros productos destacados'
+  subtitle: 'Descubre la variedad y calidad de nuestro catalogo.'
+  eyebrow: 'Galeria'
+  cta_text: 'Ver catalogo completo'
+  cta_url: '/comercio/catalogo'

@@ -4,9 +4,13 @@
  # Type: pricing
  #
  # Header + 3 pricing cards con precio, features list y CTA
+ # Premium: animations, jaraba_icon system, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--pricing pb-section--comercioconecta"
-         aria-label="{{ title|default('Nuestros Planes')|t }}">
+<section class="pb-section pb-section--pricing pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestros Planes')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Planes')|t }}</span>
@@ -15,18 +19,23 @@
     </div>
     <div class="pb-section__pricing-grid">
       {% set default_plans = [
-        { name: 'Básico', price: '29€', period: '/mes', featured: false, cta: 'Empezar gratis', features: ['Catálogo hasta 50 productos', 'Perfil de tienda', 'Soporte por email'] },
-        { name: 'Profesional', price: '59€', period: '/mes', featured: true, badge: 'Popular', cta: 'Probar 14 días', features: ['Catálogo ilimitado', 'Gestión de pedidos', 'Analítica de ventas', 'Soporte prioritario'] },
-        { name: 'Enterprise', price: '99€', period: '/mes', featured: false, cta: 'Contactar', features: ['Todo en Profesional', 'Multi-tienda', 'API personalizada', 'Gestor dedicado'] }
+        { name: 'Basico', price: '29', period: '/mes', featured: false, cta: 'Empezar gratis', features: ['Catalogo hasta 50 productos', 'Perfil de tienda', 'Soporte por email'] },
+        { name: 'Profesional', price: '59', period: '/mes', featured: true, badge: 'Popular', cta: 'Probar 14 dias', features: ['Catalogo ilimitado', 'Gestion de pedidos', 'Analitica de ventas', 'Soporte prioritario'] },
+        { name: 'Enterprise', price: '99', period: '/mes', featured: false, cta: 'Contactar', features: ['Todo en Profesional', 'Multi-tienda', 'API personalizada', 'Gestor dedicado'] }
       ] %}
       {% set items = plans|default(default_plans) %}
       {% for plan in items %}
-        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}">
+        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 150 }}">
           {% if plan.badge|default('') %}
             <span class="pb-section__pricing-badge">{{ plan.badge|t }}</span>
           {% endif %}
+          <div class="pb-section__pricing-icon" aria-hidden="true">
+            {{ jaraba_icon('business', 'money', { variant: 'duotone', size: '32px', color: 'primary' }) }}
+          </div>
           <h3 class="pb-section__pricing-name">{{ plan.name|default('Plan')|t }}</h3>
-          <div class="pb-section__pricing-price">{{ plan.price|default('0€') }}</div>
+          <div class="pb-section__pricing-price">{{ plan.price|default('0') }}<span class="pb-section__pricing-currency">&euro;</span></div>
           <div class="pb-section__pricing-period">{{ plan.period|default('/mes')|t }}</div>
           <ul class="pb-section__pricing-features">
             {% for feature in plan.features|default([]) %}

@@ -1,0 +1,237 @@
+// =============================================================================
+// ComercioConecta — Merchant Orders + Payments + Settings Styles
+//
+// DIRECTRIZ: BEM naming, mobile-first, var(--ej-*, fallback).
+// Cubre: comercio-merchant-orders, comercio-merchant-payments,
+//        comercio-merchant-settings
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Merchant Orders
+// ---------------------------------------------------------------------------
+.comercio-merchant-orders {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-xl;
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 1.5rem;
+    }
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    color: $comercio-text-muted;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-lg;
+    overflow: hidden;
+
+    th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $comercio-text-muted;
+      padding: $space-md;
+      border-bottom: 2px solid $comercio-border;
+      background: color-mix(in srgb, $comercio-border 30%, $comercio-surface);
+    }
+
+    td {
+      padding: $space-md;
+      border-bottom: 1px solid $comercio-border;
+      font-size: 0.9375rem;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  &__pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: $space-md;
+    margin-top: $space-xl;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Merchant Payments
+// ---------------------------------------------------------------------------
+.comercio-merchant-payments {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  h1 {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    margin-bottom: $space-xl;
+  }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-md;
+    margin-bottom: $space-2xl;
+
+    @media (min-width: $bp-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__summary-card {
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-lg;
+    padding: $space-lg;
+
+    &--warning { border-left: 3px solid $comercio-warning; }
+    &--success { border-left: 3px solid $comercio-success; }
+    &--info { border-left: 3px solid #3B82F6; }
+  }
+
+  &__summary-label {
+    font-size: 0.8125rem;
+    color: $comercio-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: $space-sm;
+  }
+
+  &__summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $comercio-text;
+  }
+
+  &__section-title {
+    font-family: $font-heading;
+    font-size: 1.125rem;
+    margin-bottom: $space-lg;
+  }
+
+  &__payouts-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: $space-2xl;
+
+    th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: $comercio-text-muted;
+      padding: $space-sm $space-md;
+      border-bottom: 2px solid $comercio-border;
+    }
+
+    td {
+      padding: $space-md;
+      border-bottom: 1px solid $comercio-border;
+    }
+  }
+
+  &__chart-placeholder {
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-lg;
+    padding: $space-xl;
+    min-height: 200px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Merchant Settings
+// ---------------------------------------------------------------------------
+.comercio-merchant-settings {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  h1 {
+    font-family: $font-heading;
+    font-size: 1.5rem;
+    margin-bottom: $space-xl;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-lg;
+
+    @media (min-width: $bp-lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__card {
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-lg;
+    overflow: hidden;
+  }
+
+  &__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $space-md $space-lg;
+    background: color-mix(in srgb, $comercio-border 30%, $comercio-surface);
+    border-bottom: 1px solid $comercio-border;
+  }
+
+  &__card-title {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__card-body {
+    padding: $space-lg;
+  }
+
+  &__field {
+    margin-bottom: $space-md;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__field-label {
+    font-size: 0.8125rem;
+    color: $comercio-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: $space-xs;
+  }
+
+  &__field-value {
+    font-size: 0.9375rem;
+    color: $comercio-text;
+
+    &--muted {
+      color: $comercio-text-muted;
+      font-style: italic;
+    }
+  }
+}

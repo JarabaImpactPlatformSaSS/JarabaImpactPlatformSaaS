@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Icono de edificio institucional (duotone con relleno del cuerpo) -->
+  <path d="M3 7l9-4 9 4v14H3V7Z" fill="var(--icon-fill, currentColor)" opacity="0.15"/>
+  <path d="M3 21V7l9-4 9 4v14"/>
+  <path d="M9 21V11"/>
+  <path d="M15 21V11"/>
+  <path d="M3 7h18"/>
+</svg>

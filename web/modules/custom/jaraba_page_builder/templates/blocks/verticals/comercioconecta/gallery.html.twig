@@ -3,32 +3,40 @@
  # Category: comercioconecta
  # Type: gallery
  #
- # Header + grid responsive de imágenes con hover overlay
+ # Header + grid responsive de imagenes con hover overlay
+ # Premium: animations, jaraba_icon system, parallax, background image support
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--gallery pb-section--comercioconecta"
-         aria-label="{{ title|default('Galería de Productos')|t }}">
+<section class="pb-section pb-section--gallery pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Galeria de Productos')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
-      <span class="pb-section__eyebrow">{{ eyebrow|default('Galería')|t }}</span>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Galeria')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Nuestros productos destacados')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Descubre la variedad y calidad de nuestro catálogo.')|t }}</p>
+      <p class="pb-section__subtitle">{{ subtitle|default('Descubre la variedad y calidad de nuestro catalogo.')|t }}</p>
     </div>
     <div class="pb-section__gallery-grid">
       {% set default_gallery = [
         { alt: 'Producto 1', caption: 'Novedad de temporada' },
-        { alt: 'Producto 2', caption: 'Más vendido' },
-        { alt: 'Producto 3', caption: 'Edición limitada' },
+        { alt: 'Producto 2', caption: 'Mas vendido' },
+        { alt: 'Producto 3', caption: 'Edicion limitada' },
         { alt: 'Producto 4', caption: 'Oferta especial' },
         { alt: 'Producto 5', caption: 'Recomendado' },
-        { alt: 'Producto 6', caption: 'Colección exclusiva' }
+        { alt: 'Producto 6', caption: 'Coleccion exclusiva' }
       ] %}
       {% set items = gallery|default(default_gallery) %}
       {% for item in items %}
-        <figure class="pb-section__gallery-item">
+        <figure class="pb-section__gallery-item"
+                data-effect="fade-up"
+                data-delay="{{ loop.index0 * 80 }}">
           {% if item.src|default('') %}
-            <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
+            <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" data-parallax="0.3" />
           {% else %}
-            <div class="pb-section__img-placeholder" aria-hidden="true">&#128247;</div>
+            <div class="pb-section__img-placeholder" aria-hidden="true">
+              {{ jaraba_icon('ui', 'image', { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            </div>
           {% endif %}
           {% if item.caption|default('') %}
             <figcaption>{{ item.caption|t }}</figcaption>

@@ -1,0 +1,10 @@
+predictive-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/jaraba-predictive.css: {}
+  js:
+    js/predictive-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

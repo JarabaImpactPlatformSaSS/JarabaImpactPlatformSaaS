@@ -1,0 +1,198 @@
+# -------------------------------------------------------------------
+# Estructura: Rutas del modulo jaraba_agents
+# Logica: Dashboard zero-region + API REST envelope + Entity settings
+# -------------------------------------------------------------------
+
+# === Dashboard (zero-region pattern) ===
+jaraba_agents.dashboard:
+  path: '/agents'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsDashboardController::dashboard'
+    _title: 'Agentes Autonomos'
+  requirements:
+    _permission: 'access agents'
+
+# === API — Configuracion de agentes ===
+jaraba_agents.api.agents.list:
+  path: '/api/v1/agents'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::listAgents'
+  requirements:
+    _permission: 'access agents api'
+  methods: [GET]
+
+jaraba_agents.api.agents.show:
+  path: '/api/v1/agents/{autonomous_agent}'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::showAgent'
+  requirements:
+    _permission: 'access agents api'
+    autonomous_agent: \d+
+  methods: [GET]
+
+jaraba_agents.api.agents.update_config:
+  path: '/api/v1/agents/{autonomous_agent}/config'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::updateAgentConfig'
+  requirements:
+    _permission: 'configure agents'
+    autonomous_agent: \d+
+  methods: [PATCH]
+
+# === API — Ejecuciones ===
+jaraba_agents.api.execute:
+  path: '/api/v1/agents/{autonomous_agent}/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::executeAgent'
+  requirements:
+    _permission: 'execute agents'
+    autonomous_agent: \d+
+  methods: [POST]
+
+jaraba_agents.api.executions.list:
+  path: '/api/v1/agents/{autonomous_agent}/executions'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::listExecutions'
+  requirements:
+    _permission: 'view executions'
+    autonomous_agent: \d+
+  methods: [GET]
+
+jaraba_agents.api.executions.show:
+  path: '/api/v1/agents/executions/{agent_execution}'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::showExecution'
+  requirements:
+    _permission: 'view executions'
+    agent_execution: \d+
+  methods: [GET]
+
+# === API — Aprobaciones ===
+jaraba_agents.api.approvals.pending:
+  path: '/api/v1/agents/approvals/pending'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::listPendingApprovals'
+  requirements:
+    _permission: 'view approvals'
+  methods: [GET]
+
+jaraba_agents.api.approvals.approve:
+  path: '/api/v1/agents/approvals/{agent_approval}/approve'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::approveAction'
+  requirements:
+    _permission: 'manage approvals'
+    agent_approval: \d+
+  methods: [POST]
+
+jaraba_agents.api.approvals.reject:
+  path: '/api/v1/agents/approvals/{agent_approval}/reject'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::rejectAction'
+  requirements:
+    _permission: 'manage approvals'
+    agent_approval: \d+
+  methods: [POST]
+
+# === API — Metricas ===
+jaraba_agents.api.metrics:
+  path: '/api/v1/agents/metrics'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::getMetrics'
+  requirements:
+    _permission: 'view metrics'
+  methods: [GET]
+
+# === Entity settings ===
+jaraba_agents.autonomous_agent.settings:
+  path: '/admin/structure/autonomous-agents/settings'
+  defaults:
+    _form: '\Drupal\jaraba_agents\Form\AgentsSettingsForm'
+    _title: 'Configuracion de Agentes Autonomos'
+  requirements:
+    _permission: 'administer agents'
+
+jaraba_agents.agent_execution.settings:
+  path: '/admin/structure/agent-executions/settings'
+  defaults:
+    _form: '\Drupal\jaraba_agents\Form\AgentsSettingsForm'
+    _title: 'Configuracion de Ejecuciones'
+  requirements:
+    _permission: 'administer agents'
+
+jaraba_agents.agent_approval.settings:
+  path: '/admin/structure/agent-approvals/settings'
+  defaults:
+    _form: '\Drupal\jaraba_agents\Form\AgentsSettingsForm'
+    _title: 'Configuracion de Aprobaciones'
+  requirements:
+    _permission: 'administer agents'
+
+# === API — Conversations (Orchestration FASE 3B) ===
+jaraba_agents.api.conversations.start:
+  path: '/api/v1/agents/conversations/start'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::startConversation'
+  requirements:
+    _permission: 'access agents api'
+  methods: [POST]
+
+jaraba_agents.api.conversations.message:
+  path: '/api/v1/agents/conversations/{agent_conversation}/message'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::addMessage'
+  requirements:
+    _permission: 'access agents api'
+    agent_conversation: \d+
+  methods: [POST]
+
+jaraba_agents.api.conversations.end:
+  path: '/api/v1/agents/conversations/{agent_conversation}/end'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::endConversation'
+  requirements:
+    _permission: 'access agents api'
+    agent_conversation: \d+
+  methods: [POST]
+
+jaraba_agents.api.conversations.rate:
+  path: '/api/v1/agents/conversations/{agent_conversation}/rate'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::rateConversation'
+  requirements:
+    _permission: 'access agents api'
+    agent_conversation: \d+
+  methods: [POST]
+
+jaraba_agents.api.observer.trace:
+  path: '/api/v1/agents/conversations/{agent_conversation}/trace'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::traceConversation'
+  requirements:
+    _permission: 'view metrics'
+    agent_conversation: \d+
+  methods: [GET]
+
+jaraba_agents.api.observer.metrics:
+  path: '/api/v1/agents/orchestration/metrics'
+  defaults:
+    _controller: '\Drupal\jaraba_agents\Controller\AgentsApiController::orchestrationMetrics'
+  requirements:
+    _permission: 'view metrics'
+  methods: [GET]
+
+jaraba_agents.agent_conversation.settings:
+  path: '/admin/structure/agent-conversations/settings'
+  defaults:
+    _form: '\Drupal\jaraba_agents\Form\AgentsSettingsForm'
+    _title: 'Configuracion de Conversaciones'
+  requirements:
+    _permission: 'administer agents'
+
+jaraba_agents.agent_handoff.settings:
+  path: '/admin/structure/agent-handoffs/settings'
+  defaults:
+    _form: '\Drupal\jaraba_agents\Form\AgentsSettingsForm'
+    _title: 'Configuracion de Handoffs'
+  requirements:
+    _permission: 'administer agents'

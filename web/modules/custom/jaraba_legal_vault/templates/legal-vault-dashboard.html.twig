@@ -1,0 +1,41 @@
+{#
+ # legal-vault-dashboard.html.twig — Boveda Documental Segura.
+ # Zero-region: datos inyectados via drupalSettings.jarabaLegalVault.
+ #
+ # Variables:
+ #  - documents: array — Documentos en la boveda.
+ #  - stats: array — Estadisticas de la boveda.
+ #  - filters: array — Filtros disponibles.
+ #}
+<div class="legal-vault-dashboard">
+  <div class="legal-vault-dashboard__header">
+    <h2>{{ 'Boveda Documental'|t }}</h2>
+    <div class="legal-vault-dashboard__actions">
+      <button class="ej-btn ej-btn--primary" data-vault-action="upload">
+        {{ 'Subir Documento'|t }}
+      </button>
+      <button class="ej-btn ej-btn--secondary" data-vault-action="share">
+        {{ 'Compartir'|t }}
+      </button>
+    </div>
+  </div>
+
+  <div class="legal-vault-dashboard__stats" data-vault-stats>
+    {# Stats se inyectan via JS desde drupalSettings #}
+  </div>
+
+  <div class="legal-vault-dashboard__filters">
+    <button class="ej-vault-filter active" data-vault-filter="all">{{ 'Todos'|t }}</button>
+    <button class="ej-vault-filter" data-vault-filter="active">{{ 'Activos'|t }}</button>
+    <button class="ej-vault-filter" data-vault-filter="signed">{{ 'Firmados'|t }}</button>
+    <button class="ej-vault-filter" data-vault-filter="shared">{{ 'Compartidos'|t }}</button>
+  </div>
+
+  <div class="legal-vault-dashboard__grid" data-vault-grid>
+    {# Document cards se renderizan via JS #}
+  </div>
+
+  <div class="legal-vault-dashboard__audit" data-vault-audit>
+    {# Registro de auditoria reciente #}
+  </div>
+</div>

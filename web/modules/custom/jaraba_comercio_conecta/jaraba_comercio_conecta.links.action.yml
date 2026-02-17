@@ -30,3 +30,24 @@ jaraba_comercio_conecta.merchant_profile.add:
   route_name: entity.merchant_profile.add_form
   appears_on:
     - entity.merchant_profile.collection
+
+# F6: Boton Añadir Pedido en la coleccion de pedidos
+jaraba_comercio_conecta.order_retail.add:
+  title: 'Añadir Pedido'
+  route_name: entity.order_retail.add_form
+  appears_on:
+    - entity.order_retail.collection
+
+# F6: Boton Añadir Devolucion
+jaraba_comercio_conecta.return_request.add:
+  title: 'Añadir Devolucion'
+  route_name: entity.return_request.add_form
+  appears_on:
+    - entity.return_request.collection
+
+# F6: Boton Añadir Cupon
+jaraba_comercio_conecta.coupon_retail.add:
+  title: 'Añadir Cupon'
+  route_name: entity.coupon_retail.add_form
+  appears_on:
+    - entity.coupon_retail.collection

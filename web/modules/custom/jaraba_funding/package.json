@@ -1,0 +1,13 @@
+{
+    "name": "jaraba-funding",
+    "version": "1.0.0",
+    "description": "Estilos SCSS para modulo funding — N2 Growth Ready",
+    "scripts": {
+        "build": "sass scss/main.scss:css/jaraba-funding.css --style=compressed --no-source-map",
+        "build:all": "npm run build && echo 'Build completado'",
+        "watch": "sass --watch scss:css --style=compressed"
+    },
+    "devDependencies": {
+        "sass": "^1.71.0"
+    }
+}

@@ -1,0 +1,48 @@
+{#
+ # Parcial: Fila de estado de solicitud de fondos.
+ #
+ # Variables:
+ #   - application: array con id, application_number, status, amount_requested, amount_approved, next_deadline.
+ #}
+<div class="application-status">
+  <div class="application-status__ref">
+    <span class="application-status__number">{{ application.application_number }}</span>
+  </div>
+
+  <div class="application-status__details">
+    {% if application.amount_requested %}
+      <span class="application-status__amount">
+        {{ 'Solicitado:'|t }} {{ application.amount_requested }} EUR
+      </span>
+    {% endif %}
+    {% if application.amount_approved %}
+      <span class="application-status__approved">
+        {{ 'Aprobado:'|t }} {{ application.amount_approved }} EUR
+      </span>
+    {% endif %}
+    {% if application.next_deadline %}
+      <span class="application-status__deadline">
+        {{ 'Proximo plazo:'|t }} {{ application.next_deadline }}
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="application-status__badge-wrapper">
+    {% set status_class = 'application-status__badge--' ~ application.status %}
+    <span class="application-status__badge {{ status_class }}">
+      {% if application.status == 'draft' %}
+        {{ 'Borrador'|t }}
+      {% elseif application.status == 'submitted' %}
+        {{ 'Presentada'|t }}
+      {% elseif application.status == 'approved' %}
+        {{ 'Aprobada'|t }}
+      {% elseif application.status == 'rejected' %}
+        {{ 'Rechazada'|t }}
+      {% elseif application.status == 'justifying' %}
+        {{ 'Justificando'|t }}
+      {% elseif application.status == 'closed' %}
+        {{ 'Cerrada'|t }}
+      {% endif %}
+    </span>
+  </div>
+</div>

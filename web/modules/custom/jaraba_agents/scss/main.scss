@@ -1,0 +1,10 @@
+// =============================================================================
+// Jaraba Agents — Entry point SCSS
+// N2 Growth Ready — Agentes IA Autonomos
+// @use only (Dart Sass ^1.71.0, no @import)
+// =============================================================================
+
+@use 'variables' as *;
+@use 'agents-dashboard';
+@use 'agent-card';
+@use 'approval-card';

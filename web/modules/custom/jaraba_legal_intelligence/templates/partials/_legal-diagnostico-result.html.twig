@@ -1,0 +1,28 @@
+{#
+ # _legal-diagnostico-result.html.twig — Resultado del diagnostico legal.
+ # Contenido inyectado via JS desde la respuesta de la API.
+ #}
+<div class="legal-diagnostico-result">
+  <div class="legal-diagnostico-result__header">
+    <h2>{% trans %}Tu Diagnostico Legal{% endtrans %}</h2>
+    <div class="legal-diagnostico-result__score" data-score-circle>
+      <span class="legal-diagnostico-result__score-value" data-score-value>0</span>
+      <span class="legal-diagnostico-result__score-label">{% trans %}Score{% endtrans %}</span>
+    </div>
+  </div>
+
+  <div class="legal-diagnostico-result__summary" data-diagnostico-summary>
+    {# Resumen inyectado via JS #}
+  </div>
+
+  <div class="legal-diagnostico-result__recommendations">
+    <h3>{% trans %}Recomendaciones{% endtrans %}</h3>
+    <ul data-diagnostico-recommendations>
+      {# Lista de recomendaciones inyectada via JS #}
+    </ul>
+  </div>
+
+  <div class="legal-diagnostico-result__cta" data-diagnostico-cta>
+    {# CTA inyectado via JS #}
+  </div>
+</div>

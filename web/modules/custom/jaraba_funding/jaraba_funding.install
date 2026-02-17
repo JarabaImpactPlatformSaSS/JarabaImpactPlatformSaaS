@@ -4,14 +4,26 @@ declare(strict_types=1);
 
 /**
  * @file
- * Install, update and uninstall functions for the Funding Intelligence module.
+ * Instalacion y actualizacion del modulo Funding (N2 Growth Ready).
+ *
+ * Estructura: Define hooks de instalacion, desinstalacion y actualizacion.
+ *
+ * Logica: La instalacion crea el vocabulario de taxonomia funding_program
+ *   y los programas iniciales de fondos europeos.
  */
 
 /**
  * Implements hook_install().
+ *
+ * Logica: Crea los programas de fondos iniciales como terminos de taxonomia
+ *   para que las convocatorias puedan clasificarse desde el primer momento.
+ *   Los terminos se crean solo si el vocabulario existe y esta vacio
+ *   (INSTALL-TAXONOMY-001).
  */
 function jaraba_funding_install(): void {
-  \Drupal::messenger()->addStatus(t('Funding Intelligence module installed. Configure at /admin/config/services/jaraba-funding'));
+  _jaraba_funding_create_programs();
+
+  \Drupal::messenger()->addStatus(t('Modulo de Fondos y Subvenciones (N2) instalado correctamente. Programas de fondos iniciales creados.'));
 }
 
 /**
@@ -19,9 +31,61 @@ function jaraba_funding_install(): void {
  */
 function jaraba_funding_uninstall(): void {
   \Drupal::configFactory()->getEditable('jaraba_funding.settings')->delete();
+}
 
-  \Drupal::state()->deleteMultiple([
-    'jaraba_funding.bdns_last_sync',
-    'jaraba_funding.alerts_last_check',
-  ]);
+/**
+ * Crea los programas de fondos iniciales.
+ *
+ * Logica: Crea un listado de programas de fondos europeos y nacionales
+ *   como terminos de taxonomia. Idempotente: solo crea si el vocabulario
+ *   esta vacio (INSTALL-TAXONOMY-001).
+ */
+function _jaraba_funding_create_programs(): void {
+  $vocabulary = 'funding_program';
+
+  $vocab_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocab_storage->load($vocabulary)) {
+    $vocab = $vocab_storage->create([
+      'vid' => $vocabulary,
+      'name' => t('Programa de Fondos'),
+      'description' => t('Programas de fondos europeos, nacionales y regionales para clasificacion de convocatorias.'),
+    ]);
+    $vocab->save();
+  }
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $existing = $term_storage->getQuery()
+    ->condition('vid', $vocabulary)
+    ->range(0, 1)
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($existing)) {
+    return;
+  }
+
+  $programs = [
+    'Kit Digital' => 0,
+    'PRTR Digitalizacion' => 1,
+    'FSE+ Empleo' => 2,
+    'Erasmus+ KA2' => 3,
+    'Programa Andalucia +ei' => 4,
+    'Horizonte Europa' => 5,
+    'FEDER' => 6,
+    'LIFE' => 7,
+    'InvestEU' => 8,
+    'Ayudas CDTI' => 9,
+    'Programa NEOTEC' => 10,
+    'Otros' => 99,
+  ];
+
+  foreach ($programs as $name => $weight) {
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $name,
+      'weight' => $weight,
+    ]);
+    $term->save();
+  }
 }

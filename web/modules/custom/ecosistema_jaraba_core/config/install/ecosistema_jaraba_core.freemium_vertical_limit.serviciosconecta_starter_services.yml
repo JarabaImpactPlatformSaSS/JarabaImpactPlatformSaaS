@@ -3,9 +3,9 @@ label: 'ServiciosConecta Starter: Servicios'
 vertical: serviciosconecta
 plan: starter
 feature_key: services
-limit_value: -1
-description: 'Servicios ilimitados en plan Starter ServiciosConecta.'
-upgrade_message: ''
-expected_conversion: 0
-weight: 201
+limit_value: 10
+description: 'Maximo 10 servicios en plan Starter ServiciosConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 servicios. Actualiza a Profesional para servicios ilimitados.'
+expected_conversion: 0.25
+weight: 202
 status: true

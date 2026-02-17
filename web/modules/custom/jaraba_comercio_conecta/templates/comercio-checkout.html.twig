@@ -1,0 +1,72 @@
+{#
+ # Template: Pagina de checkout de ComercioConecta.
+ # Variables:
+ #   - cart: Entidad carrito activo.
+ #   - items: Array de items con producto, cantidad, precio.
+ #   - empty: Boolean indicando carrito vacio.
+ #   - subtotal, discount, shipping, total: Importes.
+ #}
+
+<div class="comercio-checkout">
+  {% if empty %}
+    <div class="comercio-checkout__empty">
+      <h2>{{ 'Tu carrito esta vacio'|t }}</h2>
+      <p>{{ 'Explora el marketplace para encontrar productos de tu barrio.'|t }}</p>
+      <a href="/comercio-local" class="btn btn--primary">{{ 'Ir al Marketplace'|t }}</a>
+    </div>
+  {% else %}
+    <div class="comercio-checkout__layout">
+      <div class="comercio-checkout__items">
+        <h2>{{ 'Tu carrito'|t }}</h2>
+        {% for item in items %}
+          <div class="comercio-checkout__item" data-item-id="{{ item.item.id() }}">
+            <div class="comercio-checkout__item-info">
+              <h3>{{ item.product.get('title').value }}</h3>
+              <p class="comercio-checkout__item-price">{{ item.unit_price|number_format(2, ',', '.') }} EUR</p>
+            </div>
+            <div class="comercio-checkout__item-qty">
+              <label>{{ 'Cantidad'|t }}:</label>
+              <input type="number" value="{{ item.quantity }}" min="1" max="99"
+                     class="comercio-checkout__qty-input"
+                     data-item-id="{{ item.item.id() }}">
+            </div>
+            <div class="comercio-checkout__item-total">
+              {{ item.total|number_format(2, ',', '.') }} EUR
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="comercio-checkout__summary">
+        <h3>{{ 'Resumen del pedido'|t }}</h3>
+        <div class="comercio-checkout__summary-row">
+          <span>{{ 'Subtotal'|t }}</span>
+          <span>{{ subtotal|number_format(2, ',', '.') }} EUR</span>
+        </div>
+        {% if discount > 0 %}
+          <div class="comercio-checkout__summary-row comercio-checkout__summary-row--discount">
+            <span>{{ 'Descuento'|t }}</span>
+            <span>-{{ discount|number_format(2, ',', '.') }} EUR</span>
+          </div>
+        {% endif %}
+        <div class="comercio-checkout__summary-row">
+          <span>{{ 'Envio'|t }}</span>
+          <span>{{ shipping > 0 ? shipping|number_format(2, ',', '.') ~ ' EUR' : 'Gratis'|t }}</span>
+        </div>
+        <div class="comercio-checkout__summary-row comercio-checkout__summary-row--total">
+          <span>{{ 'Total'|t }}</span>
+          <span>{{ total|number_format(2, ',', '.') }} EUR</span>
+        </div>
+
+        <div class="comercio-checkout__coupon">
+          <input type="text" placeholder="{{ 'Codigo de cupon'|t }}" class="comercio-checkout__coupon-input">
+          <button type="button" class="btn btn--secondary comercio-checkout__coupon-btn">{{ 'Aplicar'|t }}</button>
+        </div>
+
+        <button type="button" class="btn btn--primary comercio-checkout__pay-btn">
+          {{ 'Pagar @total EUR'|t({'@total': total|number_format(2, ',', '.')}) }}
+        </button>
+      </div>
+    </div>
+  {% endif %}
+</div>

@@ -285,6 +285,30 @@ jaraba_legal.api.admin_sources:
     _permission: 'administer legal intelligence'
   methods: [GET]
 
+# ============================================
+# Lead Magnet: Diagnostico Legal Gratuito (Fase 0 Clase Mundial)
+# ============================================
+
+# Pagina publica del diagnostico legal (lead magnet).
+jaraba_legal.diagnostico:
+  path: '/jarabalex/diagnostico-legal'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalLandingController::diagnostico'
+    _title: 'Diagnostico Legal Gratuito'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# API: Procesar formulario de diagnostico legal.
+jaraba_legal.api.diagnostico:
+  path: '/api/v1/legal/diagnostico'
+  defaults:
+    _controller: '\Drupal\jaraba_legal_intelligence\Controller\LegalLandingController::processDiagnostico'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
 # Sitemap XML de resoluciones legales publicas.
 jaraba_legal.sitemap:
   path: '/legal/sitemap.xml'

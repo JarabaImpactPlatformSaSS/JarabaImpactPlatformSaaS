@@ -1,0 +1,20 @@
+// Variables locales del modulo Institutional.
+// Consumen Design Tokens federados de ecosistema_jaraba_core.
+// NUNCA definen $ej-* — solo $institutional-* locales.
+
+$institutional-color-primary: var(--ej-color-corporate, #233D63);
+$institutional-color-accent: var(--ej-color-innovation, #00A9A5);
+$institutional-color-success: var(--ej-color-success, #10B981);
+$institutional-color-warning: var(--ej-color-warning, #F59E0B);
+$institutional-color-earth: var(--ej-color-earth, #556B2F);
+$institutional-color-bg: var(--ej-color-bg-primary, #FFFFFF);
+$institutional-color-surface: var(--ej-color-bg-secondary, #F8FAFC);
+$institutional-color-text: var(--ej-color-text-primary, #1E293B);
+$institutional-color-text-muted: var(--ej-color-text-secondary, #64748B);
+$institutional-border-radius: var(--ej-radius-md, 0.5rem);
+$institutional-spacing-sm: var(--ej-spacing-sm, 0.5rem);
+$institutional-spacing-md: var(--ej-spacing-md, 1rem);
+$institutional-spacing-lg: var(--ej-spacing-lg, 1.5rem);
+$institutional-spacing-xl: var(--ej-spacing-xl, 2rem);
+$institutional-shadow: var(--ej-shadow-card, 0 1px 3px rgb(0 0 0 / 0.1));
+$institutional-transition: var(--ej-transition-base, 0.2s ease);

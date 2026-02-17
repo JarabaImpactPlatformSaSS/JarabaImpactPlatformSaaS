@@ -1,0 +1,395 @@
+// =============================================================================
+// Dashboard de Modelos Predictivos (Jaraba Predictive)
+// Directriz: Dart Sass, color-mix(), var(--ej-*), BEM
+// =============================================================================
+
+@use 'variables' as *;
+
+// Dashboard principal
+.predictions-dashboard {
+  background: $pred-bg-body;
+  min-height: 100vh;
+  padding: $pred-spacing-xl;
+  font-family: $pred-font-family;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  // ── Header ────────────────────────────────────────────────────────
+  &__header {
+    margin-bottom: $pred-spacing-2xl;
+    padding: $pred-spacing-xl;
+    border-radius: $pred-border-radius-lg;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, $pred-color-primary 8%, transparent),
+      color-mix(in srgb, $pred-color-secondary 5%, transparent)
+    );
+    border-bottom: 2px solid $pred-border-color;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $pred-spacing-lg;
+  }
+
+  &__header-text {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  &__title {
+    font-family: $pred-font-headings;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $pred-color-text;
+    margin: 0 0 $pred-spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: 0.95rem;
+    color: $pred-color-text-muted;
+    margin: 0;
+  }
+
+  // ── Stats badges ──────────────────────────────────────────────────
+  &__stats {
+    display: flex;
+    gap: $pred-spacing-md;
+    flex-wrap: wrap;
+  }
+
+  &__stat-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: $pred-bg-surface;
+    border: 1px solid $pred-border-color;
+    border-radius: $pred-card-radius;
+    padding: $pred-spacing-sm $pred-spacing-lg;
+    min-width: 100px;
+    text-align: center;
+    transition: box-shadow $pred-transition-normal, transform $pred-transition-normal;
+
+    &:hover {
+      box-shadow: $pred-shadow-md;
+      transform: translateY(-2px);
+    }
+  }
+
+  &__stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+
+    &--updated {
+      animation: pred-pulse 0.6s ease;
+    }
+  }
+
+  &__stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: $pred-color-text-muted;
+    margin-top: $pred-spacing-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+  }
+
+  // Stat badge color modifiers
+  &__stat-badge--churn &__stat-value {
+    color: $pred-risk-high;
+  }
+
+  &__stat-badge--leads &__stat-value {
+    color: $pred-color-primary;
+  }
+
+  &__stat-badge--forecasts &__stat-value {
+    color: $pred-metric-mrr;
+  }
+
+  &__stat-badge--anomalies &__stat-value {
+    color: $pred-color-warning;
+  }
+
+  // ── Body layout ───────────────────────────────────────────────────
+  &__body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: $pred-spacing-xl;
+
+    @media (max-width: $pred-bp-lg) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__main {
+    min-width: 0;
+  }
+
+  // ── Tab navigation ────────────────────────────────────────────────
+  &__tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid $pred-border-color;
+    margin-bottom: $pred-spacing-xl;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: $pred-spacing-xs;
+    padding: $pred-spacing-md $pred-spacing-lg;
+    border: none;
+    background: none;
+    font-family: $pred-font-family;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $pred-color-text-muted;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: color $pred-transition-fast, border-color $pred-transition-fast;
+
+    &:hover {
+      color: $pred-color-text;
+      background: color-mix(in srgb, $pred-color-primary 4%, transparent);
+    }
+
+    &--active {
+      color: $pred-color-primary;
+      border-bottom-color: $pred-color-primary;
+      font-weight: 600;
+    }
+  }
+
+  &__tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+
+    &--danger {
+      background: color-mix(in srgb, $pred-risk-critical 15%, transparent);
+      color: $pred-risk-critical;
+    }
+
+    &--success {
+      background: color-mix(in srgb, $pred-color-success 15%, transparent);
+      color: $pred-color-success;
+    }
+  }
+
+  // ── Panels ────────────────────────────────────────────────────────
+  &__panel {
+    display: none;
+
+    &--active {
+      display: block;
+    }
+  }
+
+  &__panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $pred-spacing-lg;
+  }
+
+  &__panel-title {
+    font-family: $pred-font-headings;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $pred-color-text;
+    margin: 0;
+  }
+
+  &__risk-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: $pred-spacing-xs $pred-spacing-sm;
+    border-radius: $pred-border-radius;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--high {
+      background: color-mix(in srgb, $pred-risk-high 15%, transparent);
+      color: $pred-risk-high;
+    }
+
+    &--hot {
+      background: color-mix(in srgb, $pred-lead-hot 15%, transparent);
+      color: $pred-lead-hot;
+    }
+  }
+
+  // ── Grid ──────────────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $pred-spacing-md;
+
+    @media (max-width: $pred-bp-lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: $pred-bp-sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+    color: $pred-color-text-muted;
+    font-style: italic;
+    padding: $pred-spacing-xl;
+    text-align: center;
+    background: $pred-bg-surface;
+    border-radius: $pred-border-radius-md;
+    border: 1px dashed $pred-border-color;
+  }
+
+  &__anomaly-summary {
+    grid-column: 1 / -1;
+    background: color-mix(in srgb, $pred-color-warning 8%, transparent);
+    border: 1px solid color-mix(in srgb, $pred-color-warning 30%, transparent);
+    border-radius: $pred-border-radius-md;
+    padding: $pred-spacing-lg;
+    color: $pred-color-text;
+  }
+
+  // ── Sidebar ───────────────────────────────────────────────────────
+  &__sidebar {
+    position: sticky;
+    top: $pred-spacing-xl;
+    align-self: start;
+    background: $pred-bg-surface;
+    border: 1px solid $pred-border-color;
+    border-radius: $pred-border-radius-lg;
+    padding: $pred-spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $pred-spacing-lg;
+
+    @media (max-width: $pred-bp-lg) {
+      position: static;
+    }
+  }
+
+  &__sidebar-title {
+    font-family: $pred-font-headings;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $pred-color-text;
+    margin: 0;
+  }
+
+  // ── Quick actions ─────────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: $pred-spacing-sm;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: $pred-spacing-sm;
+    padding: $pred-spacing-sm $pred-spacing-md;
+    border: 1px solid $pred-border-color;
+    border-radius: $pred-border-radius;
+    background: $pred-bg-surface;
+    font-family: $pred-font-family;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $pred-color-text;
+    cursor: pointer;
+    transition: all $pred-transition-normal;
+
+    &:hover {
+      background: color-mix(in srgb, $pred-color-primary 6%, transparent);
+      border-color: $pred-color-primary;
+      color: $pred-color-primary;
+    }
+
+    &--churn:hover {
+      background: color-mix(in srgb, $pred-risk-high 6%, transparent);
+      border-color: $pred-risk-high;
+      color: $pred-risk-high;
+    }
+
+    &--leads:hover {
+      background: color-mix(in srgb, $pred-lead-sales-ready 6%, transparent);
+      border-color: $pred-lead-sales-ready;
+      color: $pred-lead-sales-ready;
+    }
+
+    &--forecast:hover {
+      background: color-mix(in srgb, $pred-metric-mrr 6%, transparent);
+      border-color: $pred-metric-mrr;
+      color: $pred-metric-mrr;
+    }
+  }
+
+  &__action-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  // ── Model info ────────────────────────────────────────────────────
+  &__model-info {
+    border-top: 1px solid $pred-border-color;
+    padding-top: $pred-spacing-lg;
+  }
+
+  &__model-info-title {
+    font-family: $pred-font-headings;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $pred-color-text;
+    margin: 0 0 $pred-spacing-sm;
+  }
+
+  &__model-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: $pred-spacing-xs $pred-spacing-sm;
+    font-size: 0.8rem;
+    margin: 0;
+
+    dt {
+      color: $pred-color-text-muted;
+      font-weight: 500;
+    }
+
+    dd {
+      color: $pred-color-text;
+      font-weight: 600;
+      margin: 0;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+// ── Animations ──────────────────────────────────────────────────────
+@keyframes pred-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}

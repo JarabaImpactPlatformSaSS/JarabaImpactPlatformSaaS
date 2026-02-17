@@ -421,8 +421,11 @@ abstract class BaseAgent implements AgentInterface
             'empleo' => 'Sector de empleabilidad y búsqueda de trabajo.',
             'emprendimiento' => 'Sector de emprendimiento y startups.',
             'comercio' => 'Sector de comercio electrónico y ventas.',
+            'comercioconecta' => 'Sistema Operativo de Barrio para comercio de proximidad. Marketplace omnicanal con ofertas flash, QR dinamico, SEO local, analytics y copiloto IA para comerciantes.',
             'instituciones' => 'Sector institucional y B2B.',
             'agroconecta' => 'Ecosistema digital para productores agroalimentarios. Marketplace con trazabilidad, QR phy-gitales, IA para produccion, precios y marketing.',
+            'jarabalex' => 'Plataforma de Inteligencia Legal con IA. Busqueda semantica en jurisprudencia (CENDOJ, EUR-Lex, CURIA, HUDOC), legislacion (BOE, EUR-Lex), doctrina administrativa (DGT, TEAC, EDPB). Gestion de expedientes, agenda juridica, boveda documental, facturacion legal, integracion LexNET y plantillas procesales.',
+            'serviciosconecta' => 'Marketplace de servicios profesionales con reservas online. Sistema de gestion de consultas con calendario inteligente, buzon de confianza, firma digital, triaje IA, videoconsultas, analytics de rendimiento y copiloto IA para profesionales de servicios.',
             'general' => 'Plataforma multi-vertical.',
         ];
 

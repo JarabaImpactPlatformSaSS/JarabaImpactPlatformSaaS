@@ -1,0 +1,12 @@
+name: 'Jaraba Agents'
+type: module
+description: 'Agentes IA Autonomos — Orquestacion, guardrails, aprobaciones y agentes especializados.'
+package: 'JarabaLex'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:options
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+lifecycle: experimental

@@ -1,0 +1,6 @@
+jaraba_multiregion.admin:
+  title: 'Multi-Region'
+  description: 'Configuracion multi-pais, IVA y monedas.'
+  route_name: jaraba_multiregion.settings
+  parent: system.admin_structure
+  weight: 35

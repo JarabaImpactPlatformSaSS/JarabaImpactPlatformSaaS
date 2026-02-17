@@ -1,15 +1,25 @@
 {#
- # Template: ComercioConecta - Métricas de Ventas
+ # Template: ComercioConecta - Metricas de Ventas
  # Category: comercioconecta
  # Type: stats
  #
- # Header + fila de 4 stat counters (número grande + label)
+ # Header + fila de 4 stat counters (numero grande + label)
+ # Premium: animated counters, entrance animation, prefix/suffix support
+ # - data-counter on number elements triggers count-up animation
+ # - data-counter-duration controls animation speed (ms)
  #}
-<section class="pb-section pb-section--stats pb-section--comercioconecta"
-         aria-label="{{ title|default('Nuestras Cifras')|t }}">
+<section class="pb-section pb-section--stats pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Nuestras Cifras')|t }}"
+         data-effect="fade-up"
+         data-counter-duration="2000"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
-      <h2 class="pb-section__title">{{ title|default('Resultados que hablan por sí solos')|t }}</h2>
+      <div class="pb-section__header-icon" aria-hidden="true">
+        {{ jaraba_icon('analytics', 'chart-bar', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+      </div>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Resultados')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Resultados que hablan por si solos')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Cifras que demuestran el impacto de ComercioConecta en negocios locales.')|t }}</p>
     </div>
     <div class="pb-section__stats-row">
@@ -17,13 +27,15 @@
         { number: '+500', label: 'Comercios activos' },
         { number: '85%', label: 'Aumento en ventas' },
         { number: '+12K', label: 'Clientes conectados' },
-        { number: '4.8★', label: 'Satisfacción media' }
+        { number: '4.8', label: 'Satisfaccion media' }
       ] %}
       {% set items = stats|default(default_stats) %}
       {% for stat in items %}
         <div class="pb-section__stat">
-          <span class="pb-section__stat-number">{{ stat.number|default('0') }}</span>
-          <span class="pb-section__stat-label">{{ stat.label|default('Métrica')|t }}</span>
+          <span class="pb-section__stat-number">
+            {{ stat.prefix|default('') }}<span class="pb-section__stat-number" data-counter="{{ stat.number|default('0') }}" data-target="{{ stat.number|default('0')|replace({'+': '', '.': '', 'K': '000', 'k': '000'}) }}">0</span>{{ stat.suffix|default('') }}
+          </span>
+          <span class="pb-section__stat-label">{{ stat.label|default('Metrica')|t }}</span>
         </div>
       {% endfor %}
     </div>

@@ -1,0 +1,337 @@
+// =============================================================================
+// ComercioConecta — Checkout Styles
+//
+// DIRECTRIZ: BEM naming, mobile-first, var(--ej-*, fallback).
+// Cubre: comercio-checkout, comercio-confirmation
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Checkout page
+// ---------------------------------------------------------------------------
+.comercio-checkout {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__empty {
+    text-align: center;
+    padding: $space-3xl $space-lg;
+
+    h2 {
+      font-family: $font-heading;
+      color: var(--ej-color-comercio, $comercio-primary);
+      margin-bottom: $space-md;
+    }
+
+    p {
+      color: $comercio-text-muted;
+      margin-bottom: $space-xl;
+    }
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-xl;
+
+    @media (min-width: $bp-lg) {
+      grid-template-columns: 1fr 380px;
+    }
+  }
+
+  &__items {
+    h2 {
+      font-family: $font-heading;
+      font-size: 1.25rem;
+      margin-bottom: $space-lg;
+    }
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: $space-md;
+    align-items: center;
+    padding: $space-md;
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-md;
+    margin-bottom: $space-sm;
+    transition: box-shadow $transition-fast;
+
+    &:hover {
+      box-shadow: $shadow-sm;
+    }
+
+    @media (max-width: $bp-md) {
+      grid-template-columns: 1fr;
+      gap: $space-sm;
+    }
+  }
+
+  &__item-info {
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 $space-xs;
+      color: $comercio-text;
+    }
+  }
+
+  &__item-price {
+    font-size: 0.875rem;
+    color: $comercio-text-muted;
+  }
+
+  &__item-qty {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+
+    label {
+      font-size: 0.875rem;
+      color: $comercio-text-muted;
+    }
+  }
+
+  &__qty-input {
+    width: 60px;
+    padding: $space-xs $space-sm;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-sm;
+    text-align: center;
+    font-size: 0.875rem;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-comercio, $comercio-primary);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--ej-color-comercio, $comercio-primary) 20%, transparent);
+    }
+  }
+
+  &__item-total {
+    font-weight: 600;
+    font-size: 1rem;
+    color: $comercio-text;
+    white-space: nowrap;
+  }
+
+  // --- Resumen lateral ---
+  &__summary {
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-lg;
+    padding: $space-lg;
+    align-self: start;
+    position: sticky;
+    top: $space-lg;
+
+    h3 {
+      font-family: $font-heading;
+      font-size: 1.125rem;
+      margin-bottom: $space-lg;
+    }
+  }
+
+  &__summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-sm 0;
+    font-size: 0.9375rem;
+    color: $comercio-text;
+
+    &--discount span:last-child {
+      color: $comercio-success;
+      font-weight: 500;
+    }
+
+    &--total {
+      border-top: 2px solid $comercio-border;
+      margin-top: $space-sm;
+      padding-top: $space-md;
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+  }
+
+  // --- Cupón ---
+  &__coupon {
+    display: flex;
+    gap: $space-sm;
+    margin-top: $space-lg;
+    margin-bottom: $space-lg;
+  }
+
+  &__coupon-input {
+    flex: 1;
+    padding: $space-sm $space-md;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-sm;
+    font-size: 0.875rem;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-comercio, $comercio-primary);
+    }
+
+    &::placeholder {
+      color: $comercio-text-muted;
+    }
+  }
+
+  &__coupon-btn {
+    white-space: nowrap;
+  }
+
+  // --- Botón de pago ---
+  &__pay-btn {
+    width: 100%;
+    padding: $space-md $space-lg;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    border-radius: $radius-md;
+    transition: all $transition-base;
+
+    &--loading {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  }
+
+  // --- Mensajes ---
+  &__message {
+    padding: $space-md;
+    border-radius: $radius-md;
+    margin-bottom: $space-lg;
+    font-size: 0.9375rem;
+    animation: comercio-slide-in 250ms ease;
+
+    &--success {
+      background: color-mix(in srgb, $comercio-success 10%, $comercio-surface);
+      border: 1px solid color-mix(in srgb, $comercio-success 30%, transparent);
+      color: color.scale($comercio-success, $lightness: -30%);
+    }
+
+    &--error {
+      background: color-mix(in srgb, $comercio-danger 10%, $comercio-surface);
+      border: 1px solid color-mix(in srgb, $comercio-danger 30%, transparent);
+      color: color.scale($comercio-danger, $lightness: -20%);
+    }
+
+    &--warning {
+      background: color-mix(in srgb, $comercio-warning 10%, $comercio-surface);
+      border: 1px solid color-mix(in srgb, $comercio-warning 30%, transparent);
+      color: color.scale($comercio-warning, $lightness: -30%);
+    }
+
+    &--fade {
+      opacity: 0;
+      transition: opacity 300ms ease;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Confirmation page
+// ---------------------------------------------------------------------------
+.comercio-confirmation {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: $space-3xl $container-padding;
+  text-align: center;
+
+  &__icon {
+    margin-bottom: $space-xl;
+
+    svg {
+      animation: comercio-check-pop 400ms ease;
+    }
+  }
+
+  &__title {
+    font-family: $font-heading;
+    font-size: 1.75rem;
+    color: $comercio-text;
+    margin-bottom: $space-sm;
+  }
+
+  &__number {
+    font-size: 1.0625rem;
+    color: $comercio-text-muted;
+    margin-bottom: $space-xl;
+  }
+
+  &__details {
+    display: flex;
+    justify-content: center;
+    gap: $space-xl;
+    margin-bottom: $space-2xl;
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+  }
+
+  &__label {
+    font-size: 0.8125rem;
+    color: $comercio-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $comercio-text;
+  }
+
+  &__status {
+    &--confirmed {
+      color: $comercio-success;
+    }
+
+    &--pending {
+      color: $comercio-warning;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    gap: $space-md;
+    flex-wrap: wrap;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Animations
+// ---------------------------------------------------------------------------
+@keyframes comercio-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes comercio-check-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

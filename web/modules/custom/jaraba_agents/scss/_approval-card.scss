@@ -1,0 +1,141 @@
+// =============================================================================
+// Tarjeta de Aprobacion de Agente (Jaraba Agents)
+// Directriz: BEM, color-mix(), var(--ej-*)
+// Modificadores por nivel de riesgo: low, medium, high
+// =============================================================================
+
+@use 'variables' as *;
+
+.approval-card {
+  background: $agents-bg-surface;
+  border: 1px solid $agents-border-color;
+  border-radius: $agents-border-radius-md;
+  padding: $agents-spacing-lg;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: $agents-spacing-sm;
+
+  &:hover {
+    box-shadow: $agents-shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__risk {
+    display: inline-block;
+    padding: $agents-spacing-xs $agents-spacing-sm;
+    border-radius: $agents-border-radius;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    // Badges de color por nivel de riesgo
+    &--low {
+      background: color-mix(in srgb, $agents-color-success 15%, transparent);
+      color: $agents-color-success;
+    }
+
+    &--medium {
+      background: color-mix(in srgb, $agents-color-warning 15%, transparent);
+      color: $agents-color-warning;
+    }
+
+    &--high {
+      background: color-mix(in srgb, $agents-color-danger 15%, transparent);
+      color: $agents-color-danger;
+    }
+  }
+
+  &__status {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $agents-color-text-muted;
+  }
+
+  &__description {
+    font-size: 0.95rem;
+    color: $agents-color-text;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__reasoning {
+    font-size: 0.85rem;
+    color: $agents-color-text-muted;
+    margin: 0;
+    padding: $agents-spacing-sm;
+    background: color-mix(in srgb, $agents-color-primary 3%, transparent);
+    border-radius: $agents-border-radius;
+    border-left: 2px solid $agents-color-primary;
+    line-height: 1.4;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: $agents-spacing-sm;
+    border-top: 1px solid $agents-border-color;
+  }
+
+  &__expires {
+    font-size: 0.8rem;
+    color: $agents-color-text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $agents-spacing-sm;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $agents-spacing-xs;
+    padding: $agents-spacing-xs $agents-spacing-md;
+    border-radius: $agents-border-radius;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &--approve {
+      background: color-mix(in srgb, $agents-color-success 15%, transparent);
+      color: $agents-color-success;
+
+      &:hover {
+        background: color-mix(in srgb, $agents-color-success 25%, transparent);
+      }
+    }
+
+    &--reject {
+      background: color-mix(in srgb, $agents-color-danger 15%, transparent);
+      color: $agents-color-danger;
+
+      &:hover {
+        background: color-mix(in srgb, $agents-color-danger 25%, transparent);
+      }
+    }
+  }
+
+  // Modificadores de borde por nivel de riesgo
+  &--low {
+    border-left: 3px solid $agents-color-success;
+  }
+
+  &--medium {
+    border-left: 3px solid $agents-color-warning;
+  }
+
+  &--high {
+    border-left: 3px solid $agents-color-danger;
+  }
+}

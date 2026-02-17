@@ -63,9 +63,45 @@ view own comercio orders:
   title: 'Ver pedidos propios ComercioConecta'
   description: 'Ver historial de pedidos del cliente actual.'
 
+create comercio orders:
+  title: 'Crear pedidos ComercioConecta'
+  description: 'Crear pedidos manualmente (checkout o admin).'
+
+edit own comercio orders:
+  title: 'Editar pedidos propios ComercioConecta'
+  description: 'Editar pedidos del propio comerciante.'
+
 manage merchant orders:
   title: 'Gestionar pedidos del comerciante'
   description: 'Ver y gestionar pedidos recibidos por el comerciante.'
+
+# --- Devoluciones ---
+manage comercio returns:
+  title: 'Gestionar devoluciones ComercioConecta'
+  description: 'Acceso completo a solicitudes de devolucion.'
+  restrict access: true
+
+create comercio returns:
+  title: 'Crear solicitud de devolucion'
+  description: 'Crear solicitudes de devolucion como cliente.'
+
+# --- Cupones ---
+manage comercio coupons:
+  title: 'Gestionar cupones ComercioConecta'
+  description: 'Acceso completo a cupones de descuento.'
+  restrict access: true
+
+view comercio coupons:
+  title: 'Ver cupones ComercioConecta'
+  description: 'Ver cupones disponibles en el marketplace.'
+
+create comercio coupons:
+  title: 'Crear cupones ComercioConecta'
+  description: 'Crear cupones de descuento.'
+
+edit own comercio coupons:
+  title: 'Editar cupones propios ComercioConecta'
+  description: 'Editar cupones creados por el propio comerciante.'
 
 # --- Reviews ---
 manage comercio reviews:
@@ -100,6 +136,25 @@ manage comercio notifications:
   title: 'Gestionar notificaciones ComercioConecta'
   description: 'Administrar plantillas y configuración de notificaciones.'
   restrict access: true
+
+# --- Perfiles de consumidor ---
+administer customer profiles:
+  title: 'Administrar perfiles de consumidor ComercioConecta'
+  description: 'Acceso completo a perfiles de consumidor.'
+  restrict access: true
+
+create own customer profile:
+  title: 'Crear perfil de consumidor propio'
+  description: 'Crear perfil de consumidor para la cuenta actual.'
+
+view own customer profile:
+  title: 'Ver perfil de consumidor propio'
+  description: 'Ver el perfil de consumidor de la cuenta actual.'
+
+# --- Wishlist ---
+manage own wishlist:
+  title: 'Gestionar wishlist propia'
+  description: 'Crear, editar y eliminar listas de deseos propias.'
 
 # --- Admin Dashboard ---
 access comercio admin:

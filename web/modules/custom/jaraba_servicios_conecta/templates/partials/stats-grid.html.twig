@@ -1,0 +1,24 @@
+{#
+ # Grid de KPIs del profesional.
+ #
+ # Variables:
+ #   - kpis: array with keys: total_bookings, bookings_this_month, average_rating, total_reviews, revenue_month, completion_rate
+ #}
+<div class="servicios-stats-grid">
+  <div class="servicios-stats-grid__card">
+    <span class="servicios-stats-grid__value">{{ kpis.total_bookings|default(0) }}</span>
+    <span class="servicios-stats-grid__label">{% trans %}Total Bookings{% endtrans %}</span>
+  </div>
+  <div class="servicios-stats-grid__card">
+    <span class="servicios-stats-grid__value">{{ kpis.bookings_this_month|default(0) }}</span>
+    <span class="servicios-stats-grid__label">{% trans %}This Month{% endtrans %}</span>
+  </div>
+  <div class="servicios-stats-grid__card">
+    <span class="servicios-stats-grid__value">{{ kpis.average_rating|default(0)|number_format(1) }}</span>
+    <span class="servicios-stats-grid__label">{% trans %}Rating{% endtrans %}</span>
+  </div>
+  <div class="servicios-stats-grid__card">
+    <span class="servicios-stats-grid__value">{{ kpis.total_reviews|default(0) }}</span>
+    <span class="servicios-stats-grid__label">{% trans %}Reviews{% endtrans %}</span>
+  </div>
+</div>

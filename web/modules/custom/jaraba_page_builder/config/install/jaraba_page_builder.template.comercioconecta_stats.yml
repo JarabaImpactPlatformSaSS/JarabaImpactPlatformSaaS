@@ -15,6 +15,10 @@ fields_schema:
       type: string
       title: 'Subtitulo'
       maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 50
     description:
       type: string
       title: 'Descripcion'
@@ -22,6 +26,10 @@ fields_schema:
     image:
       type: string
       title: 'Imagen'
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
       format: image
     cta_text:
       type: string
@@ -31,17 +39,38 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
+    stats:
+      type: array
+      items:
+        type: object
+        properties:
+          number:
+            type: string
+            maxLength: 20
+          label:
+            type: string
+            maxLength: 100
   required:
     - title
 plans_required:
   - starter
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-stats.png'
 weight: 19
 preview_data:
-  title: 'Metricas de Ventas'
-  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
-  description: 'Descripcion de ejemplo para la seccion metricas de impacto.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  title: 'Resultados que hablan por si solos'
+  subtitle: 'Cifras que demuestran el impacto de ComercioConecta en negocios locales.'
+  eyebrow: 'Resultados'
+  cta_text: 'Ver casos de exito'
+  cta_url: '/comercio/casos'

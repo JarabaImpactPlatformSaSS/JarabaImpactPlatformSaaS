@@ -1,6 +1,17 @@
-# Enlaces de pestana (tabs) del modulo Funding Intelligence
+jaraba_funding.opportunities:
+  title: 'Convocatorias'
+  route_name: entity.funding_opportunity.collection
+  base_route: system.admin_content
+  weight: 40
 
-jaraba_funding.settings:
-  title: 'Configuracion'
-  route_name: jaraba_funding.settings
-  base_route: jaraba_funding.settings
+jaraba_funding.applications:
+  title: 'Solicitudes de Fondos'
+  route_name: entity.funding_application.collection
+  base_route: system.admin_content
+  weight: 41
+
+jaraba_funding.reports:
+  title: 'Memorias Tecnicas'
+  route_name: entity.technical_report.collection
+  base_route: system.admin_content
+  weight: 42

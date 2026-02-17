@@ -1,0 +1,67 @@
+{#
+ # Template: Lista de deseos del cliente ComercioConecta.
+ # Variables:
+ #   - wishlist: Entidad Wishlist del usuario.
+ #   - items: Array de items con product_id, product_title, product_price, product_image.
+ #   - empty: Boolean indicando si la wishlist esta vacia.
+ #}
+
+<div class="comercio-wishlist">
+
+  <header class="comercio-wishlist__header container">
+    <h1 class="comercio-wishlist__title">{{ 'Mi Lista de Deseos'|t }}</h1>
+  </header>
+
+  {% if empty %}
+    <div class="comercio-wishlist__empty container">
+      <div class="comercio-wishlist__empty-content">
+        <span class="comercio-wishlist__empty-icon">&#9829;</span>
+        <h2 class="comercio-wishlist__empty-title">{{ 'Tu lista de deseos esta vacia'|t }}</h2>
+        <p class="comercio-wishlist__empty-text">
+          {{ 'Explora nuestro marketplace y guarda tus productos favoritos.'|t }}
+        </p>
+        <a href="/comercio-local" class="btn btn--primary">{{ 'Explorar marketplace'|t }}</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="comercio-wishlist__grid container">
+      {% for item in items %}
+        <div class="comercio-wishlist__card" data-product-id="{{ item.product_id }}">
+
+          <div class="comercio-wishlist__card-image">
+            {% if item.product_image %}
+              <img src="{{ item.product_image }}"
+                   alt="{{ item.product_title }}"
+                   class="comercio-wishlist__card-img"
+                   loading="lazy">
+            {% else %}
+              <div class="comercio-wishlist__card-placeholder">
+                <span>{{ 'Sin imagen'|t }}</span>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="comercio-wishlist__card-body">
+            <h3 class="comercio-wishlist__card-title">
+              <a href="/comercio-local/producto/{{ item.product_id }}">{{ item.product_title }}</a>
+            </h3>
+            <span class="comercio-wishlist__card-price">
+              {{ item.product_price|number_format(2, ',', '.') }} EUR
+            </span>
+          </div>
+
+          <div class="comercio-wishlist__card-actions">
+            <button class="comercio-btn comercio-btn--danger comercio-btn--small comercio-wishlist__remove-btn"
+                    data-product-id="{{ item.product_id }}"
+                    data-action="remove-from-wishlist"
+                    aria-label="{{ 'Eliminar de la lista de deseos'|t }}">
+              {{ 'Eliminar'|t }}
+            </button>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>

@@ -1,0 +1,59 @@
+// =============================================================================
+// Variables SCSS del modulo Jaraba Agents (Agentes IA Autonomos)
+// Directriz: Dart Sass moderno con @use, color-mix(), var(--ej-*)
+// Regla: consumir var(--ej-*, fallback), NUNCA definir $ej-*
+// =============================================================================
+
+// Tipografia — consume tokens federados del ecosistema
+$agents-font-family: var(--ej-font-family-body, 'Inter', sans-serif);
+$agents-font-headings: var(--ej-font-family-headings, 'Outfit', sans-serif);
+
+// Colores primarios — consume tokens federados
+$agents-color-primary: var(--ej-color-primary, #2563eb);
+$agents-color-secondary: var(--ej-color-secondary, #00a9a5);
+$agents-color-accent: var(--ej-color-accent, #f59e0b);
+$agents-color-success: var(--ej-color-success, #16a34a);
+$agents-color-warning: var(--ej-color-warning, #f59e0b);
+$agents-color-danger: var(--ej-color-error, #dc2626);
+$agents-color-info: var(--ej-color-primary, #2563eb);
+
+// Color especifico de IA — token de impulso
+$agents-color-ai: var(--ej-color-impulse, #FF8C42);
+
+// Superficies
+$agents-bg-body: var(--ej-bg-body, #f8fafc);
+$agents-bg-surface: var(--ej-bg-surface, #ffffff);
+$agents-color-text: var(--ej-color-text, #1e293b);
+$agents-color-text-muted: var(--ej-color-text-muted, #64748b);
+
+// Espaciado
+$agents-spacing-xs: 0.25rem;
+$agents-spacing-sm: 0.5rem;
+$agents-spacing-md: 1rem;
+$agents-spacing-lg: 1.5rem;
+$agents-spacing-xl: 2rem;
+$agents-spacing-2xl: 3rem;
+
+// Bordes
+$agents-border-radius: var(--ej-border-radius, 8px);
+$agents-border-radius-md: var(--ej-border-radius-md, 10px);
+$agents-border-radius-lg: var(--ej-border-radius-lg, 14px);
+$agents-border-color: var(--ej-border-color, #e2e8f0);
+
+// Sombras — usando color-mix() en lugar de rgba()
+$agents-shadow-sm: 0 1px 2px color-mix(in srgb, #000 5%, transparent);
+$agents-shadow-md: 0 4px 6px -1px color-mix(in srgb, #000 10%, transparent);
+$agents-shadow-lg: 0 10px 15px -3px color-mix(in srgb, #000 10%, transparent);
+
+// Breakpoints
+$agents-bp-sm: 640px;
+$agents-bp-md: 768px;
+$agents-bp-lg: 1024px;
+$agents-bp-xl: 1280px;
+
+// Niveles de autonomia — colores
+$agents-level-l0: #9ca3af;
+$agents-level-l1: #3b82f6;
+$agents-level-l2: #22c55e;
+$agents-level-l3: #f97316;
+$agents-level-l4: #ef4444;

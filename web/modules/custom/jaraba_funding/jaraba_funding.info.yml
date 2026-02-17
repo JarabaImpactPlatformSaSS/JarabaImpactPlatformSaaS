@@ -1,9 +1,16 @@
-name: 'Jaraba Funding Intelligence'
+name: 'Jaraba Funding'
 type: module
-description: 'Inteligencia de subvenciones con matching IA, alertas y copilot.'
-package: Jaraba
+description: 'Gestion de fondos europeos, subvenciones y convocatorias. Tracking de convocatorias (Kit Digital, PRTR, FSE+), generacion automatica de memorias tecnicas, control presupuestario y alertas de plazos.'
+package: 'JarabaLex'
 core_version_requirement: ^10.3 || ^11
+php: 8.3
 dependencies:
+  - drupal:user
+  - drupal:file
+  - drupal:views
+  - drupal:field_ui
+  - drupal:datetime
+  - drupal:link
+  - drupal:options
   - ecosistema_jaraba_core:ecosistema_jaraba_core
-  - jaraba_legal_knowledge:jaraba_legal_knowledge
-  - jaraba_matching:jaraba_matching
+configure: jaraba_funding.settings

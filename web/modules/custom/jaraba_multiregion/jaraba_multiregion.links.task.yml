@@ -1,0 +1,17 @@
+jaraba_multiregion.regions:
+  title: 'Regiones'
+  route_name: entity.tenant_region.collection
+  base_route: system.admin_content
+  weight: 43
+
+jaraba_multiregion.tax_rules:
+  title: 'Reglas Fiscales'
+  route_name: entity.tax_rule.collection
+  base_route: system.admin_content
+  weight: 44
+
+jaraba_multiregion.currency_rates:
+  title: 'Tipos de Cambio'
+  route_name: entity.currency_rate.collection
+  base_route: system.admin_content
+  weight: 45

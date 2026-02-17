@@ -1,0 +1,40 @@
+# -------------------------------------------------------------------
+# Estructura: Pestanas locales del modulo jaraba_agents
+# Logica: Navegacion entre entidades y configuracion
+# -------------------------------------------------------------------
+
+jaraba_agents.agents_tab:
+  title: 'Agentes'
+  route_name: entity.autonomous_agent.collection
+  base_route: entity.autonomous_agent.collection
+  weight: 49
+
+jaraba_agents.executions_tab:
+  title: 'Ejecuciones'
+  route_name: entity.agent_execution.collection
+  base_route: entity.autonomous_agent.collection
+  weight: 50
+
+jaraba_agents.approvals_tab:
+  title: 'Aprobaciones'
+  route_name: entity.agent_approval.collection
+  base_route: entity.autonomous_agent.collection
+  weight: 51
+
+jaraba_agents.autonomous_agent.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_agents.autonomous_agent.settings
+  base_route: entity.autonomous_agent.collection
+  weight: 100
+
+jaraba_agents.agent_execution.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_agents.agent_execution.settings
+  base_route: entity.agent_execution.collection
+  weight: 100
+
+jaraba_agents.agent_approval.settings_tab:
+  title: 'Configuracion'
+  route_name: jaraba_agents.agent_approval.settings
+  base_route: entity.agent_approval.collection
+  weight: 100

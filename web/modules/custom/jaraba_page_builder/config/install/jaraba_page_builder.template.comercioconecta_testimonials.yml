@@ -15,6 +15,10 @@ fields_schema:
       type: string
       title: 'Subtitulo'
       maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Eyebrow'
+      maxLength: 50
     description:
       type: string
       title: 'Descripcion'
@@ -22,6 +26,10 @@ fields_schema:
     image:
       type: string
       title: 'Imagen'
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
       format: image
     cta_text:
       type: string
@@ -31,17 +39,47 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
+    testimonials:
+      type: array
+      items:
+        type: object
+        properties:
+          quote:
+            type: string
+            maxLength: 500
+          name:
+            type: string
+            maxLength: 100
+          role:
+            type: string
+            maxLength: 100
+          initials:
+            type: string
+            maxLength: 3
+          avatar:
+            type: string
+            format: image
   required:
     - title
 plans_required:
   - professional
   - professional
   - enterprise
-is_premium: false
+is_premium: true
+animation: fade-up
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-testimonials.png'
 weight: 13
 preview_data:
-  title: 'Resenas de Clientes'
-  subtitle: 'Subtitulo de ejemplo para ComercioConecta'
-  description: 'Descripcion de ejemplo para la seccion historias de exito.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  title: 'Lo que dicen nuestros comerciantes'
+  subtitle: 'Comercios reales que han transformado su negocio con ComercioConecta.'
+  eyebrow: 'Testimonios'
+  cta_text: 'Ver mas historias'
+  cta_url: '/comercio/testimonios'

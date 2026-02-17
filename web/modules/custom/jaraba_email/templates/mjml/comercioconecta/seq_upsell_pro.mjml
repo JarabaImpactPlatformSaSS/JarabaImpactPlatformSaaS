@@ -1,0 +1,72 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .plan-feature { padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+      .plan-feature:last-child { border-bottom: none; }
+      .check-icon { color: #FF8C42; font-weight: bold; margin-right: 8px; }
+      .pro-badge { display: inline-block; background-color: #ffffff; color: #FF8C42; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f3f4f6" width="600px">
+    <!-- Header -->
+    <mj-section background-color="#FF8C42" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
+          {{ t('ComercioConecta') }} <span class="pro-badge">PRO</span>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Contenido -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="22px" font-weight="bold" color="#FF8C42" padding-bottom="8px">
+          {{ t('Tu comercio necesita m&aacute;s potencia') }}
+        </mj-text>
+        <mj-text>
+          <p>{{ t('Hola') }} {{ user_name }},</p>
+          <p>{{ t('Has alcanzado el <strong>{{ usage_pct }}%</strong> de tu l&iacute;mite del Plan Starter. Con {{ total_sales }} ventas procesadas, est&aacute;s listo para el siguiente nivel.') }}</p>
+        </mj-text>
+        <mj-text font-size="16px" font-weight="bold" color="#FF8C42" padding-top="16px">
+          {{ t('El Plan Profesional incluye:') }}
+        </mj-text>
+        <mj-text>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('Productos ilimitados') }}</div>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('Ofertas flash ilimitadas') }}</div>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('Analytics avanzados de clientes y ventas') }}</div>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('Integraci&oacute;n con TPV / punto de venta') }}</div>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('Copiloto IA ilimitado') }}</div>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('SEO local avanzado y Google My Business') }}</div>
+          <div class="plan-feature"><span class="check-icon">&check;</span> {{ t('Soporte prioritario telef&oacute;nico') }}</div>
+        </mj-text>
+        <mj-button href="{{ upgrade_url }}" align="center" padding="24px 0">
+          {{ t('Ver plan Profesional') }}
+        </mj-button>
+        <mj-text font-size="13px" color="#6b7280" align="center">
+          {{ t('Los comercios Profesional reciben una media de {{ pro_avg_visits }} visitas al mes. ROI medio: {{ pro_roi }}x.') }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#e5e7eb" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
+          <a href="{{ unsubscribe_url }}" class="footer-link">{{ t('Cancelar suscripci&oacute;n') }}</a> &nbsp;|&nbsp;
+          <a href="{{ site_url }}/privacy" class="footer-link">{{ t('Pol&iacute;tica de privacidad') }}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

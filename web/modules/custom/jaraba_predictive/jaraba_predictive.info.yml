@@ -1,0 +1,12 @@
+name: 'Jaraba Predictive'
+type: module
+description: 'Modelos Predictivos ML — Churn prediction, lead scoring, MRR/ARR forecasting y deteccion de anomalias.'
+package: 'JarabaLex'
+core_version_requirement: ^10.3 || ^11
+php: 8.3
+dependencies:
+  - drupal:user
+  - drupal:options
+  - drupal:datetime
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+lifecycle: experimental

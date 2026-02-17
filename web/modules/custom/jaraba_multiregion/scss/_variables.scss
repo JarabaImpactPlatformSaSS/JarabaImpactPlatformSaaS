@@ -1,0 +1,20 @@
+// Variables locales del modulo Multi-Region.
+// SSOT de tokens en ecosistema_jaraba_core (consumimos var(--ej-*)).
+// NUNCA definir $ej-* variables aqui — Federated Design Tokens.
+// Solo variables de layout locales y breakpoints estructurales.
+
+$multiregion-spacing-xs: 4px;
+$multiregion-spacing-sm: 8px;
+$multiregion-spacing-md: 16px;
+$multiregion-spacing-lg: 24px;
+$multiregion-spacing-xl: 32px;
+$multiregion-radius: 8px;
+$multiregion-radius-sm: 4px;
+
+// Mixin responsive mobile-first con breakpoints estandar.
+@mixin respond-to($bp) {
+  @if $bp == sm { @media (min-width: 576px) { @content; } }
+  @if $bp == md { @media (min-width: 768px) { @content; } }
+  @if $bp == lg { @media (min-width: 992px) { @content; } }
+  @if $bp == xl { @media (min-width: 1200px) { @content; } }
+}

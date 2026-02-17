@@ -1,28 +1,22 @@
 jaraba_funding.settings:
   type: config_object
-  label: 'Funding Intelligence settings'
+  label: 'Configuracion del modulo de Fondos y Subvenciones'
   mapping:
-    bdns_api_url:
-      type: string
-      label: 'BDNS API base URL'
-    boja_api_url:
-      type: string
-      label: 'BOJA API base URL'
-    matching_threshold:
-      type: float
-      label: 'Matching score threshold (0-100)'
-    max_matches_per_tenant:
+    alert_days_default:
       type: integer
-      label: 'Maximum matches per tenant'
-    alert_frequency:
-      type: string
-      label: 'Default alert frequency (immediate, daily, weekly)'
-    qdrant_collection:
-      type: string
-      label: 'Qdrant collection name for funding calls'
-    sync_interval_hours:
+      label: 'Dias por defecto para alertas antes del deadline'
+    max_opportunities_dashboard:
       type: integer
-      label: 'BDNS sync interval in hours'
-    copilot_enabled:
+      label: 'Numero maximo de convocatorias en el dashboard'
+    max_applications_dashboard:
+      type: integer
+      label: 'Numero maximo de solicitudes en el dashboard'
+    ai_report_enabled:
       type: boolean
-      label: 'Enable funding copilot'
+      label: 'Habilitar generacion de memorias tecnicas con IA'
+    ai_model_preference:
+      type: string
+      label: 'Modelo IA preferido para generacion de memorias'
+    budget_currency:
+      type: string
+      label: 'Moneda por defecto para presupuestos'

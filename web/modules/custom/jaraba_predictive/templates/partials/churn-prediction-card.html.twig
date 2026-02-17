@@ -1,0 +1,85 @@
+{#
+ # Tarjeta de prediccion de churn.
+ #
+ # Variables:
+ #   - prediction: objeto ChurnPrediction con campos:
+ #       risk_level, risk_score, organization_name, contributing_factors,
+ #       predicted_churn_date, confidence, id
+ #}
+{% set risk_level = prediction.risk_level|default('low') %}
+{% set risk_score = prediction.risk_score|default(0) %}
+{% set confidence = prediction.confidence|default(0) %}
+
+<article class="prediction-card prediction-card--churn prediction-card--{{ risk_level }}">
+  <div class="prediction-card__header">
+    <span class="prediction-card__badge prediction-card__badge--{{ risk_level }}">
+      {{ risk_level|capitalize|t }}
+    </span>
+    <div class="prediction-card__score">
+      <span class="prediction-card__score-value">{{ risk_score }}</span>
+      <span class="prediction-card__score-unit">%</span>
+    </div>
+  </div>
+
+  <div class="prediction-card__body">
+    <h3 class="prediction-card__name">{{ prediction.organization_name|default('') }}</h3>
+
+    {# Risk gauge #}
+    <div class="risk-gauge risk-gauge--{{ risk_level }}"
+         data-value="{{ risk_score }}"
+         aria-label="{{ 'Riesgo de churn: %score%'|t({'%score': risk_score ~ '%'}) }}">
+      <svg class="risk-gauge__svg" viewBox="0 0 120 120" width="120" height="120">
+        <circle class="risk-gauge__track"
+                cx="60" cy="60" r="52"
+                fill="none"
+                stroke-width="8"/>
+        <circle class="risk-gauge__circle"
+                cx="60" cy="60" r="52"
+                fill="none"
+                stroke-width="8"
+                stroke-dasharray="326.73"
+                stroke-dashoffset="326.73"
+                transform="rotate(-90 60 60)"/>
+      </svg>
+      <span class="risk-gauge__value">{{ risk_score }}%</span>
+    </div>
+
+    {# Contributing factors #}
+    {% if prediction.contributing_factors is not empty %}
+      <ul class="prediction-card__factors">
+        {% for factor in prediction.contributing_factors %}
+          <li class="prediction-card__factor">{{ factor|t }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {# Predicted churn date #}
+    {% if prediction.predicted_churn_date %}
+      <div class="prediction-card__meta">
+        <span class="prediction-card__meta-label">{{ 'Fecha estimada'|t }}</span>
+        <span class="prediction-card__meta-value">{{ prediction.predicted_churn_date }}</span>
+      </div>
+    {% endif %}
+
+    {# Confidence meter #}
+    <div class="prediction-card__meter" aria-label="{{ 'Confianza: %conf%'|t({'%conf': confidence ~ '%'}) }}">
+      <span class="prediction-card__meter-label">{{ 'Confianza'|t }}</span>
+      <div class="prediction-card__meter-track">
+        <div class="prediction-card__meter-fill" style="width: {{ confidence }}%;" data-confidence="{{ confidence }}"></div>
+      </div>
+      <span class="prediction-card__meter-value">{{ confidence }}%</span>
+    </div>
+  </div>
+
+  <div class="prediction-card__footer">
+    <a href="{{ path('jaraba_predictive.churn_prediction.view', {'churn_prediction': prediction.id|default(0)}) }}"
+       class="prediction-card__action prediction-card__action--view">
+      {{ 'Ver Detalles'|t }}
+    </a>
+    <button class="prediction-card__action prediction-card__action--retain"
+            data-prediction-id="{{ prediction.id|default(0) }}"
+            data-action="trigger-retention">
+      {{ 'Activar Retencion'|t }}
+    </button>
+  </div>
+</article>

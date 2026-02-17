@@ -1,0 +1,180 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Modulo jaraba_institutional — Programas institucionales STO/PIIL/FUNDAE/FSE+.
+ *
+ * Estructura: Hooks de tema (zero-region), preprocesamiento, logging de entidades.
+ * Logica: Inyeccion de datos al dashboard, clases CSS N2-growth-ready,
+ *         registro de temas y sugerencias de plantilla.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Estructura: Registra la plantilla principal del dashboard (zero-region)
+ *             y parciales para tarjetas de programa, filas de participante
+ *             y tarjetas de ficha STO.
+ * Logica: Variables inicializadas a array vacio para seguridad en plantillas.
+ */
+function jaraba_institutional_theme(): array {
+  return [
+    'page__institutional' => [
+      'variables' => [
+        'programs' => [],
+        'participants' => [],
+        'stats' => [],
+        'copilot_context' => [],
+      ],
+    ],
+    'institutional_program_card' => [
+      'variables' => [
+        'program' => NULL,
+      ],
+      'template' => 'partials/program-card',
+    ],
+    'institutional_participant_row' => [
+      'variables' => [
+        'participant' => NULL,
+      ],
+      'template' => 'partials/participant-row',
+    ],
+    'institutional_ficha_card' => [
+      'variables' => [
+        'ficha' => NULL,
+      ],
+      'template' => 'partials/ficha-card',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Estructura: Sugiere plantilla page__institutional para la ruta del dashboard.
+ * Logica: Solo aplica cuando la ruta activa es jaraba_institutional.dashboard.
+ */
+function jaraba_institutional_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() === 'jaraba_institutional.dashboard') {
+    $suggestions[] = 'page__institutional';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Agrega clases CSS al body para rutas del modulo institutional.
+ * Logica: Clase 'page-institutional' y 'n2-growth-ready' para todas las rutas
+ *         jaraba_institutional.*; clase 'full-width-layout' exclusiva del dashboard.
+ */
+function jaraba_institutional_preprocess_html(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  if ($route_name && str_starts_with($route_name, 'jaraba_institutional.')) {
+    $variables['attributes']['class'][] = 'page-institutional';
+    $variables['attributes']['class'][] = 'n2-growth-ready';
+
+    if ($route_name === 'jaraba_institutional.dashboard') {
+      $variables['attributes']['class'][] = 'full-width-layout';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Estructura: Inyecta datos al dashboard (zero-region pattern).
+ * Logica: Carga programas, participantes y estadisticas via servicios,
+ *         adjunta biblioteca CSS/JS y drupalSettings para el frontend.
+ */
+function jaraba_institutional_preprocess_page(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() !== 'jaraba_institutional.dashboard') {
+    return;
+  }
+
+  /** @var \Drupal\jaraba_institutional\Service\ProgramManagerService $program_manager */
+  $program_manager = \Drupal::service('jaraba_institutional.program_manager');
+  /** @var \Drupal\jaraba_institutional\Service\ParticipantTrackerService $participant_tracker */
+  $participant_tracker = \Drupal::service('jaraba_institutional.participant_tracker');
+
+  // Estructura: Carga de datos para las variables de la plantilla.
+  $programs = $program_manager->listPrograms();
+  $participants = $participant_tracker->listParticipants();
+  $stats = $program_manager->getDashboardStats();
+
+  $variables['programs'] = $programs;
+  $variables['participants'] = $participants;
+  $variables['stats'] = $stats;
+
+  // Logica: Adjuntar biblioteca y configuracion JavaScript.
+  $variables['#attached']['library'][] = 'jaraba_institutional/institutional.main';
+  $variables['#attached']['drupalSettings']['jarabaInstitutional'] = [
+    'apiBase' => '/api/v1/institutional',
+    'programCount' => is_countable($programs) ? count($programs) : 0,
+    'participantCount' => is_countable($participants) ? count($participants) : 0,
+    'stats' => $stats,
+  ];
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Estructura: Registra en log cuando se crea un participante de programa.
+ * Logica: Solo actua sobre entidades de tipo 'program_participant'.
+ */
+function jaraba_institutional_entity_insert(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() === 'program_participant') {
+    \Drupal::logger('jaraba_institutional')->info(
+      'Participante inscrito: @label (ID: @id)',
+      [
+        '@label' => $entity->label(),
+        '@id' => $entity->id(),
+      ]
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Estructura: Registra en log cambios de estado en programas institucionales.
+ * Logica: Solo actua sobre entidades 'institutional_program' cuando el campo
+ *         'status' ha cambiado respecto a su valor original.
+ */
+function jaraba_institutional_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'institutional_program') {
+    return;
+  }
+
+  if (!$entity->hasField('status')) {
+    return;
+  }
+
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $original = $entity->original ?? NULL;
+  if ($original === NULL) {
+    return;
+  }
+
+  $new_status = $entity->get('status')->value;
+  $old_status = $original->get('status')->value;
+
+  if ($new_status !== $old_status) {
+    \Drupal::logger('jaraba_institutional')->notice(
+      'Programa @label cambio de estado: @old -> @new',
+      [
+        '@label' => $entity->label(),
+        '@old' => $old_status ?? 'N/A',
+        '@new' => $new_status ?? 'N/A',
+      ]
+    );
+  }
+}

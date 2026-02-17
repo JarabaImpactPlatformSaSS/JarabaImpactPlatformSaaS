@@ -1,0 +1,114 @@
+// Estilos de la tarjeta de ficha STO.
+// BEM naming con modificadores por tipo de ficha y estado de firma.
+
+@use 'variables' as *;
+
+.ficha-card {
+  display: flex;
+  flex-direction: column;
+  gap: $institutional-spacing-sm;
+  padding: $institutional-spacing-lg;
+  background: $institutional-color-bg;
+  border-radius: $institutional-border-radius;
+  box-shadow: $institutional-shadow;
+  border-inline-start: 3px solid $institutional-color-text-muted;
+  transition: box-shadow $institutional-transition;
+
+  &:hover {
+    box-shadow: 0 4px 12px color-mix(in srgb, $institutional-color-primary 12%, transparent);
+  }
+
+  // --- Modificadores por tipo de ficha ---
+
+  &--initial {
+    border-inline-start-color: $institutional-color-primary;
+  }
+
+  &--progress {
+    border-inline-start-color: $institutional-color-accent;
+  }
+
+  &--final {
+    border-inline-start-color: $institutional-color-success;
+  }
+}
+
+// --- Header ---
+
+.ficha-card__header {
+  display: flex;
+  align-items: center;
+  gap: $institutional-spacing-sm;
+  flex-wrap: wrap;
+}
+
+.ficha-card__number {
+  font-family: var(--ej-font-family-mono, ui-monospace, monospace);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $institutional-color-primary;
+}
+
+.ficha-card__type {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $institutional-color-text-muted;
+}
+
+.ficha-card__ai-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: auto;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, $institutional-color-accent 15%, $institutional-color-bg);
+  color: $institutional-color-accent;
+  border: 1px solid color-mix(in srgb, $institutional-color-accent 30%, $institutional-color-bg);
+}
+
+// --- Signature ---
+
+.ficha-card__signature {
+  display: flex;
+  align-items: center;
+}
+
+.ficha-card__signature-status {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  // Modificadores por estado de firma.
+  &--pending {
+    background: color-mix(in srgb, $institutional-color-warning 12%, $institutional-color-bg);
+    color: $institutional-color-warning;
+  }
+
+  &--signed {
+    background: color-mix(in srgb, $institutional-color-success 12%, $institutional-color-bg);
+    color: $institutional-color-success;
+  }
+
+  &--rejected {
+    background: color-mix(in srgb, #EF4444 12%, $institutional-color-bg);
+    color: #EF4444;
+  }
+}
+
+// --- Date ---
+
+.ficha-card__date {
+  font-size: 0.8125rem;
+  color: $institutional-color-text-muted;
+  font-variant-numeric: tabular-nums;
+}

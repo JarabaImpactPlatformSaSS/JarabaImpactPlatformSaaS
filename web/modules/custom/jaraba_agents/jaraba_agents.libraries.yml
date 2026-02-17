@@ -1,0 +1,13 @@
+agents.main:
+  version: VERSION
+  css:
+    theme:
+      css/jaraba-agents.css: {}
+  js:
+    js/agents-dashboard.js:
+      attributes:
+        defer: true
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

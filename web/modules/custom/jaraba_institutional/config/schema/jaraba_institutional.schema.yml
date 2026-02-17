@@ -1,0 +1,28 @@
+jaraba_institutional.settings:
+  type: config_object
+  label: 'Configuracion de Jaraba Institutional'
+  mapping:
+    default_program_type:
+      type: string
+      label: 'Tipo de programa por defecto'
+    sto_ficha_prefix:
+      type: string
+      label: 'Prefijo para fichas STO'
+    sto_ficha_year_format:
+      type: string
+      label: 'Formato de anio para fichas STO'
+    fundae_entity_code:
+      type: string
+      label: 'Codigo de entidad FUNDAE'
+    fse_entity_code:
+      type: string
+      label: 'Codigo de entidad FSE+'
+    auto_generate_ficha_number:
+      type: boolean
+      label: 'Generar numero de ficha automaticamente'
+    pdf_template:
+      type: string
+      label: 'Plantilla PDF para fichas'
+    signature_provider:
+      type: string
+      label: 'Proveedor de firma digital'

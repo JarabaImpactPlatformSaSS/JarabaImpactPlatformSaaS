@@ -1,0 +1,13 @@
+{# Fila de ejecucion de agente. #}
+<tr class="execution-row execution-row--{{ execution.status|default('running') }}">
+  <td class="execution-row__agent">{{ execution.agent_name|default('') }}</td>
+  <td class="execution-row__trigger">{{ execution.trigger_type|default('')|t }}</td>
+  <td class="execution-row__status">
+    <span class="execution-status execution-status--{{ execution.status|default('running') }}">
+      {{ execution.status|default('')|t }}
+    </span>
+  </td>
+  <td class="execution-row__tokens">{{ execution.tokens_used|default(0) }}</td>
+  <td class="execution-row__cost">{{ execution.cost_estimate|default(0)|number_format(4) }} €</td>
+  <td class="execution-row__started">{{ execution.started_at|default('') }}</td>
+</tr>

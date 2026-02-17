@@ -24,9 +24,9 @@ $comercio-text: #1A1A2E;          // Texto principal
 $comercio-text-muted: #6B7280;    // Texto secundario
 $comercio-border: #E5E7EB;        // Bordes suaves
 $comercio-surface: #FFFFFF;        // Fondo de cards
-$comercio-danger: #DC2626;         // Rojo peligro
+$comercio-danger: #EF4444;         // Rojo peligro (Jaraba palette)
 $comercio-warning: #F59E0B;        // Amarillo alerta
-$comercio-success: #059669;        // Verde éxito
+$comercio-success: #10B981;        // Verde éxito (Jaraba palette)
 
 // ---------------------------------------------------------------------------
 // Spacing (scale 4px base, matching the theme)
@@ -67,10 +67,10 @@ $radius-full: 50%;
 // ---------------------------------------------------------------------------
 // Shadows (glassmorphism + elevation)
 // ---------------------------------------------------------------------------
-$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+$shadow-sm: 0 1px 2px color-mix(in srgb, black 5%, transparent);
+$shadow-md: 0 4px 6px -1px color-mix(in srgb, black 10%, transparent), 0 2px 4px -2px color-mix(in srgb, black 10%, transparent);
+$shadow-lg: 0 10px 15px -3px color-mix(in srgb, black 10%, transparent), 0 4px 6px -4px color-mix(in srgb, black 10%, transparent);
+$shadow-xl: 0 20px 25px -5px color-mix(in srgb, black 10%, transparent), 0 8px 10px -6px color-mix(in srgb, black 10%, transparent);
 
 // ---------------------------------------------------------------------------
 // Transitions

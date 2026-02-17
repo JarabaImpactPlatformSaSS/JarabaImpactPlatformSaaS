@@ -4,9 +4,12 @@
  # Type: pricing
  #
  # Header + 3 pricing cards con precio, features list y CTA
+ # Premium: staggered animations, jaraba_icon checkmarks
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
-<section class="pb-section pb-section--pricing pb-section--serviciosconecta"
-         aria-label="{{ title|default('Paquetes de Servicio')|t }}">
+<section class="pb-section pb-section--pricing pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         aria-label="{{ title|default('Paquetes de Servicio')|t }}"
+         data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__header">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Tarifas')|t }}</span>
@@ -21,7 +24,9 @@
       ] %}
       {% set items = plans|default(default_plans) %}
       {% for plan in items %}
-        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}">
+        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
           {% if plan.badge|default('') %}
             <span class="pb-section__pricing-badge">{{ plan.badge|t }}</span>
           {% endif %}
@@ -30,7 +35,10 @@
           <div class="pb-section__pricing-period">{{ plan.period|default('/mes')|t }}</div>
           <ul class="pb-section__pricing-features">
             {% for feature in plan.features|default([]) %}
-              <li>{{ feature|t }}</li>
+              <li>
+                <span class="pb-section__pricing-check" aria-hidden="true">{{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '16px', color: 'success' }) }}</span>
+                {{ feature|t }}
+              </li>
             {% endfor %}
           </ul>
           <a href="{{ plan.url|default('#') }}" class="pb-section__cta pb-section__cta--primary">

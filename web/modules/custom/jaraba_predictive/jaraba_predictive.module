@@ -1,0 +1,200 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Modulo jaraba_predictive — Modelos Predictivos ML.
+ *
+ * Estructura: Hooks principales del modulo (theme, preprocess, entity).
+ * Logica: Zero-region pattern para dashboard, inyeccion de datos via servicios,
+ *         registro de eventos en entity insert/update.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_theme().
+ *
+ * Estructura: Registra plantillas del dashboard y parciales reutilizables.
+ * Logica: Variables inyectadas desde hook_preprocess_page() para zero-region.
+ */
+function jaraba_predictive_theme(): array {
+  return [
+    'page__predictions' => [
+      'variables' => [
+        'churn_predictions' => [],
+        'lead_scores' => [],
+        'forecasts' => [],
+        'stats' => [],
+        'copilot_context' => NULL,
+      ],
+    ],
+    'churn_prediction_card' => [
+      'template' => 'partials/churn-prediction-card',
+      'variables' => [
+        'prediction' => NULL,
+      ],
+    ],
+    'lead_score_card' => [
+      'template' => 'partials/lead-score-card',
+      'variables' => [
+        'lead_score' => NULL,
+      ],
+    ],
+    'forecast_card' => [
+      'template' => 'partials/forecast-card',
+      'variables' => [
+        'forecast' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Estructura: Sugerencia de plantilla page__predictions para la ruta del dashboard.
+ * Logica: Permite al tema utilizar page--predictions.html.twig.
+ */
+function jaraba_predictive_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() === 'jaraba_predictive.dashboard') {
+    $suggestions[] = 'page__predictions';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Estructura: Clases de body para rutas del modulo.
+ * Logica: Agrega 'page-predictions' y 'n2-growth-ready' en rutas jaraba_predictive.*;
+ *         agrega 'full-width-layout' exclusivamente en el dashboard.
+ */
+function jaraba_predictive_preprocess_html(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  if ($route_name && str_starts_with($route_name, 'jaraba_predictive.')) {
+    $variables['attributes']['class'][] = 'page-predictions';
+    $variables['attributes']['class'][] = 'n2-growth-ready';
+
+    if ($route_name === 'jaraba_predictive.dashboard') {
+      $variables['attributes']['class'][] = 'full-width-layout';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Estructura: Inyeccion de datos para el dashboard zero-region.
+ * Logica: Carga predicciones de churn, lead scores, forecasts y estadisticas
+ *         via servicios; adjunta library y drupalSettings para el frontend.
+ */
+function jaraba_predictive_preprocess_page(array &$variables): void {
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() !== 'jaraba_predictive.dashboard') {
+    return;
+  }
+
+  /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Estructura: Carga de predicciones de churn recientes.
+  $churn_predictions = [];
+  if ($entity_type_manager->hasDefinition('churn_prediction')) {
+    $churn_storage = $entity_type_manager->getStorage('churn_prediction');
+    $churn_ids = $churn_storage->getQuery()
+      ->accessCheck(TRUE)
+      ->sort('created', 'DESC')
+      ->range(0, 20)
+      ->execute();
+    $churn_predictions = $churn_storage->loadMultiple($churn_ids);
+  }
+
+  // Estructura: Carga de lead scores recientes.
+  $lead_scores = [];
+  if ($entity_type_manager->hasDefinition('lead_score')) {
+    $lead_storage = $entity_type_manager->getStorage('lead_score');
+    $lead_ids = $lead_storage->getQuery()
+      ->accessCheck(TRUE)
+      ->sort('created', 'DESC')
+      ->range(0, 20)
+      ->execute();
+    $lead_scores = $lead_storage->loadMultiple($lead_ids);
+  }
+
+  // Estructura: Carga de forecasts recientes.
+  $forecasts = [];
+  if ($entity_type_manager->hasDefinition('forecast')) {
+    $forecast_storage = $entity_type_manager->getStorage('forecast');
+    $forecast_ids = $forecast_storage->getQuery()
+      ->accessCheck(TRUE)
+      ->sort('created', 'DESC')
+      ->range(0, 20)
+      ->execute();
+    $forecasts = $forecast_storage->loadMultiple($forecast_ids);
+  }
+
+  // Logica: Estadisticas agregadas para el dashboard.
+  $stats = [
+    'total_churn_predictions' => count($churn_predictions),
+    'total_lead_scores' => count($lead_scores),
+    'total_forecasts' => count($forecasts),
+    'high_risk_count' => 0,
+    'hot_leads_count' => 0,
+  ];
+
+  // Contar predicciones de alto riesgo.
+  foreach ($churn_predictions as $prediction) {
+    $risk_level = $prediction->get('risk_level')->value ?? '';
+    if (in_array($risk_level, ['high', 'critical'], TRUE)) {
+      $stats['high_risk_count']++;
+    }
+  }
+
+  // Contar leads calientes.
+  foreach ($lead_scores as $lead) {
+    $qualification = $lead->get('qualification')->value ?? '';
+    if (in_array($qualification, ['hot', 'sales_ready'], TRUE)) {
+      $stats['hot_leads_count']++;
+    }
+  }
+
+  $variables['churn_predictions'] = $churn_predictions;
+  $variables['lead_scores'] = $lead_scores;
+  $variables['forecasts'] = $forecasts;
+  $variables['stats'] = $stats;
+
+  // Logica: Adjuntar library y configuracion JS para el frontend.
+  $variables['#attached']['library'][] = 'jaraba_predictive/predictive-dashboard';
+  $variables['#attached']['drupalSettings']['jarabaPredictive'] = [
+    'apiBase' => '/api/v1/predictions',
+    'churnCount' => count($churn_predictions),
+    'leadCount' => count($lead_scores),
+    'forecastCount' => count($forecasts),
+    'stats' => $stats,
+  ];
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Estructura: Registro de eventos al crear predicciones y scores.
+ * Logica: Log informativo cuando se crea una entidad de prediccion.
+ */
+function jaraba_predictive_entity_insert(EntityInterface $entity): void {
+  $predictive_types = ['churn_prediction', 'lead_score', 'forecast'];
+
+  if (in_array($entity->getEntityTypeId(), $predictive_types, TRUE)) {
+    \Drupal::logger('jaraba_predictive')->info(
+      'Entidad @type creada: @id.',
+      [
+        '@type' => $entity->getEntityTypeId(),
+        '@id' => $entity->id(),
+      ]
+    );
+  }
+}

@@ -14,3 +14,7 @@
 @use 'merchant-dashboard';
 @use 'merchant-products';
 @use 'components';
+@use 'checkout';
+@use 'orders';
+@use 'customer-portal';
+@use 'merchant-orders';

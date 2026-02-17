@@ -1,0 +1,5 @@
+entity.autonomous_agent.add_form:
+  title: 'Crear agente'
+  route_name: entity.autonomous_agent.add_form
+  appears_on:
+    - entity.autonomous_agent.collection

@@ -1,0 +1,50 @@
+{#
+ # Template zero-region para el dashboard de Programas Institucionales.
+ #
+ # Variables:
+ #   - programs: array de programas activos
+ #   - participants: array de participantes recientes (not used directly in template, via JS)
+ #   - stats: estadisticas del dashboard
+ #   - copilot_context: contexto para el copilot (nullable)
+ #}
+{{ attach_library('jaraba_institutional/institutional.main') }}
+
+<div class="institutional-dashboard" data-module="jaraba-institutional">
+  <header class="institutional-dashboard__header">
+    <h1 class="institutional-dashboard__title">{{ 'Programas Institucionales'|t }}</h1>
+    <p class="institutional-dashboard__subtitle">{{ 'Gestion STO/PIIL/FUNDAE/FSE+ — Programas, participantes y fichas tecnicas'|t }}</p>
+  </header>
+
+  {# Stats cards #}
+  <section class="institutional-dashboard__stats">
+    <div class="institutional-stat-card institutional-stat-card--programs">
+      <span class="institutional-stat-card__value">{{ stats.total_programs|default(0) }}</span>
+      <span class="institutional-stat-card__label">{{ 'Programas'|t }}</span>
+    </div>
+    <div class="institutional-stat-card institutional-stat-card--active">
+      <span class="institutional-stat-card__value">{{ stats.active_programs|default(0) }}</span>
+      <span class="institutional-stat-card__label">{{ 'Activos'|t }}</span>
+    </div>
+    <div class="institutional-stat-card institutional-stat-card--participants">
+      <span class="institutional-stat-card__value">{{ stats.total_participants|default(0) }}</span>
+      <span class="institutional-stat-card__label">{{ 'Participantes'|t }}</span>
+    </div>
+    <div class="institutional-stat-card institutional-stat-card--insertion">
+      <span class="institutional-stat-card__value">{{ stats.avg_insertion_rate|default(0)|number_format(1) }}%</span>
+      <span class="institutional-stat-card__label">{{ 'Tasa de insercion'|t }}</span>
+    </div>
+  </section>
+
+  {# Programs list #}
+  <section class="institutional-dashboard__programs">
+    <h2 class="institutional-dashboard__section-title">{{ 'Programas activos'|t }}</h2>
+    <div class="institutional-programs-grid">
+      {% for program in programs %}
+        {% include '@jaraba_institutional/partials/program-card.html.twig' with {'program': program} only %}
+      {% endfor %}
+      {% if programs is empty %}
+        <p class="institutional-dashboard__empty">{{ 'No hay programas activos.'|t }}</p>
+      {% endif %}
+    </div>
+  </section>
+</div>
