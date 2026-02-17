@@ -1,7 +1,7 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-16
-**Version:** 3.0.0
+**Version:** 5.0.0
 
 ---
 
@@ -78,7 +78,7 @@ Actualizar los 3 documentos maestros + crear aprendizaje:
 
 ## 6. Patron Elevacion Vertical a Clase Mundial
 
-Workflow reutilizable de 14 fases para elevar un vertical a clase mundial (probado con Empleabilidad, Emprendimiento, Andalucia+ei, JarabaLex, AgroConecta):
+Workflow reutilizable de 14 fases para elevar un vertical a clase mundial (probado con Empleabilidad, Emprendimiento, Andalucia+ei, JarabaLex, AgroConecta, ComercioConecta, ServiciosConecta):
 
 | Fase | Entregable | Ficheros clave |
 |------|-----------|----------------|
@@ -145,10 +145,42 @@ Workflow para elevar templates PB de un vertical a premium:
 
 ---
 
-## 8. Registro de Cambios
+## 8. Patron Sprint Entidades Masivo (ENTITY-BATCH-001)
+
+Para verticales commerce con 20+ entidades nuevas (como ComercioConecta Sprint 2-3), extender el patron de elevacion con sprints de entidades adicionales:
+
+### Estrategia de paralelizacion por tipo de artefacto
+
+| Agente | Tipo | Artefactos |
+|--------|------|-----------|
+| A | Entidades | `src/Entity/*.php` — Content Entities con annotations, baseFieldDefinitions |
+| B | Access+Forms+ListBuilders | `src/Access/*Handler.php` + `src/Form/*Form.php` + `src/ListBuilder/*.php` |
+| C | Services | `src/Service/*Service.php` — logica de negocio |
+| D | Controllers+Templates | `src/Controller/*.php` + `templates/*.html.twig` |
+
+### Ficheros compartidos (post-agente, secuencial)
+
+1. `{modulo}.services.yml` — registrar todos los servicios nuevos
+2. `{modulo}.routing.yml` — registrar todas las rutas
+3. `{modulo}.permissions.yml` — registrar todos los permisos
+4. `{modulo}.links.task.yml` + `.links.menu.yml` — registrar admin tabs
+5. `{modulo}.module` — actualizar hook_theme() + hook_preprocess_html() + hook_cron()
+6. `{modulo}.install` — crear hook_update_NNNNN() para instalar schemas de nuevas entidades
+7. `{modulo}.libraries.yml` — registrar nuevas libraries JS/CSS
+8. `scss/main.scss` — @use nuevos partials SCSS
+
+### Regla ENTITY-BATCH-INSTALL-001
+
+Al anadir multiples entidades a un modulo existente, crear un unico `hook_update_NNNNN()` que itere sobre la lista de entity_type_ids, verifique existencia con `getEntityType()`, y solo instale si no existe.
+
+---
+
+## 9. Registro de Cambios
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-17 | **5.0.0** | Nueva seccion 8 Patron Sprint Entidades Masivo (ENTITY-BATCH-001): workflow para verticales commerce con 20+ entidades nuevas. Estrategia paralelizacion por tipo de artefacto (4 agentes: entities, access+forms, services, controllers). Lista de 8 ficheros compartidos post-agente. Regla ENTITY-BATCH-INSTALL-001. Seccion 6 ampliada con ComercioConecta y ServiciosConecta en lista de verticales probados. Aprendido durante Plan Elevacion ComercioConecta Clase Mundial v1 (42 entidades, 25 servicios, 3 sprints) |
+| 2026-02-17 | **4.0.0** | Patron de elevacion vertical ejecutado 7a vez (ServiciosConecta). Confirmado estable tras: Empleabilidad, Emprendimiento, Andalucia+ei, JarabaLex, AgroConecta, ComercioConecta, ServiciosConecta. Regla ELEVATION-PATTERN-STABLE-001: patron 14 fases es referencia definitiva. Regla CONCURRENT-SERVICES-YML-001: services.yml compartido requiere re-read antes de edit en agentes paralelos. Regla SCSS-COMPILED-PENDING-001: verificar .scss source no .css compiled para compliance. Aprendido durante Plan Elevacion ServiciosConecta Clase Mundial v1 |
 | 2026-02-17 | **3.0.0** | Seccion 3 ampliada (FEATUREGATE-TYPES-001, PB-PREMIUM-001). Seccion 5 nueva regla 8 (emojis prohibidos). Seccion 6 actualizada (AgroConecta anadido a verticales probados, checklist FeatureGate 3 tipos, estrategia paralelizacion PARALLEL-ELEV-001, paths de ficheros corregidos). Nueva seccion 7 Patron Elevacion Page Builder Premium (PB-PREMIUM-001 + PB-BATCH-001). Seccion 4.2 ampliada (tabla 12.3 en Arquitectura). Aprendido durante Plan Elevacion AgroConecta Clase Mundial v1 |
 | 2026-02-16 | **2.0.0** | Seccion 6 Patron Elevacion Vertical (14 fases + checklist). Seccion 2 ampliada (leer sibling agents). Seccion 3 ampliada (LEGAL-RAG-001, LEGAL-GATE-001, LEGAL-BODY-001). Seccion 4 ampliada (actualizacion flujo trabajo). Seccion 7 Registro de Cambios. Aprendido durante Plan Elevacion JarabaLex v1 |
 | 2026-02-16 | **1.0.0** | Creacion inicial: 5 secciones (Inicio, Antes, Durante, Despues, Reglas de Oro). Aprendido durante documentacion zero-region pattern |

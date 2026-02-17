@@ -1,0 +1,160 @@
+// =============================================================================
+// ComercioConecta — Search Styles
+//
+// DIRECTRIZ: BEM naming, mobile-first, var(--ej-*, fallback).
+// Cubre: comercio-search
+// =============================================================================
+
+@use 'sass:color';
+@use 'variables' as *;
+
+.comercio-search {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: $space-lg $container-padding;
+
+  &__header {
+    margin-bottom: $space-xl;
+    position: relative;
+
+    h1 {
+      font-family: $font-heading;
+      font-size: 1.5rem;
+      margin-bottom: $space-lg;
+    }
+  }
+
+  &__bar {
+    display: flex;
+    gap: $space-sm;
+  }
+
+  &__input {
+    flex: 1;
+    padding: $space-md $space-lg;
+    border: 2px solid $comercio-border;
+    border-radius: $radius-lg;
+    font-size: 1rem;
+    transition: border-color $transition-fast;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-comercio, $comercio-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-comercio, $comercio-primary) 15%, transparent);
+    }
+  }
+
+  &__btn {
+    padding: $space-md $space-xl;
+    border-radius: $radius-lg;
+    white-space: nowrap;
+  }
+
+  &__autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-md;
+    box-shadow: $shadow-lg;
+    z-index: 100;
+    display: none;
+
+    &--visible {
+      display: block;
+    }
+  }
+
+  &__autocomplete-item {
+    padding: $space-sm $space-md;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    border-bottom: 1px solid $comercio-border;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &:hover,
+    &--active {
+      background: color-mix(in srgb, var(--ej-color-comercio, $comercio-primary) 8%, $comercio-surface);
+    }
+  }
+
+  &__meta {
+    margin-bottom: $space-lg;
+    color: $comercio-text-muted;
+    font-size: 0.9375rem;
+  }
+
+  &__results {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  &__result {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    padding: $space-md $space-lg;
+    background: $comercio-surface;
+    border: 1px solid $comercio-border;
+    border-radius: $radius-md;
+    text-decoration: none;
+    color: $comercio-text;
+    transition: all $transition-fast;
+
+    &:hover {
+      border-color: var(--ej-color-comercio, $comercio-primary);
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  &__type-badge {
+    display: inline-block;
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &--product_retail {
+      background: color-mix(in srgb, var(--ej-color-comercio, $comercio-primary) 15%, $comercio-surface);
+      color: var(--ej-color-comercio, $comercio-primary);
+    }
+
+    &--merchant_profile {
+      background: color-mix(in srgb, $comercio-secondary 15%, $comercio-surface);
+      color: $comercio-secondary;
+    }
+  }
+
+  &__result-content {
+    flex: 1;
+  }
+
+  &__result-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__result-distance {
+    font-size: 0.8125rem;
+    color: $comercio-text-muted;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $space-3xl $space-lg;
+
+    p {
+      color: $comercio-text-muted;
+      margin-bottom: $space-md;
+    }
+  }
+}

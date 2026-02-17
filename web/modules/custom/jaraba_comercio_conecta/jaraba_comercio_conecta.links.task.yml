@@ -65,3 +65,101 @@ jaraba_comercio_conecta.customer_profile_retail.collection:
   route_name: entity.customer_profile_retail.collection
   base_route: system.admin_content
   weight: 58
+
+# F8: Tab Indice Busqueda en admin/content
+jaraba_comercio_conecta.search_index.collection:
+  title: 'Indice Busqueda'
+  route_name: entity.comercio_search_index.collection
+  base_route: system.admin_content
+  weight: 59
+
+# F8: Tab Sinonimos Busqueda en admin/content
+jaraba_comercio_conecta.search_synonym.collection:
+  title: 'Sinonimos Busqueda'
+  route_name: entity.comercio_search_synonym.collection
+  base_route: system.admin_content
+  weight: 60
+
+# F8: Tab Perfil SEO Local en admin/content
+jaraba_comercio_conecta.local_business.collection:
+  title: 'Perfil SEO Local'
+  route_name: entity.comercio_local_business.collection
+  base_route: system.admin_content
+  weight: 61
+
+# F9: Tab Ofertas Flash en admin/content
+jaraba_comercio_conecta.flash_offer.collection:
+  title: 'Ofertas Flash'
+  route_name: entity.comercio_flash_offer.collection
+  base_route: system.admin_content
+  weight: 62
+
+# F9: Tab QR Codes en admin/content
+jaraba_comercio_conecta.qr_code.collection:
+  title: 'Codigos QR'
+  route_name: entity.comercio_qr_code.collection
+  base_route: system.admin_content
+  weight: 63
+
+# F9: Tab Resenas en admin/content
+jaraba_comercio_conecta.review.collection:
+  title: 'Resenas'
+  route_name: entity.comercio_review.collection
+  base_route: system.admin_content
+  weight: 64
+
+# F9: Tab Plantillas Notificacion en admin/content
+jaraba_comercio_conecta.notification_template.collection:
+  title: 'Plantillas Notificacion'
+  route_name: entity.comercio_notification_template.collection
+  base_route: system.admin_content
+  weight: 65
+
+# F10a: Tab Envios en admin/content
+jaraba_comercio_conecta.shipment.collection:
+  title: 'Envios'
+  route_name: entity.comercio_shipment.collection
+  base_route: system.admin_content
+  weight: 66
+
+# F10a: Tab Metodos Envio en admin/content
+jaraba_comercio_conecta.shipping_method.collection:
+  title: 'Metodos Envio'
+  route_name: entity.comercio_shipping_method.collection
+  base_route: system.admin_content
+  weight: 67
+
+# F10a: Tab Transportistas en admin/content
+jaraba_comercio_conecta.carrier_config.collection:
+  title: 'Transportistas'
+  route_name: entity.comercio_carrier_config.collection
+  base_route: system.admin_content
+  weight: 68
+
+# F10b: Tab Conexiones POS en admin/content
+jaraba_comercio_conecta.pos_connection.collection:
+  title: 'Conexiones POS'
+  route_name: entity.comercio_pos_connection.collection
+  base_route: system.admin_content
+  weight: 69
+
+# F10c: Tab Moderacion en admin/content
+jaraba_comercio_conecta.moderation_queue.collection:
+  title: 'Cola Moderacion'
+  route_name: entity.comercio_moderation_queue.collection
+  base_route: system.admin_content
+  weight: 70
+
+# F10c: Tab Incidencias en admin/content
+jaraba_comercio_conecta.incident_ticket.collection:
+  title: 'Incidencias'
+  route_name: entity.comercio_incident_ticket.collection
+  base_route: system.admin_content
+  weight: 71
+
+# F10c: Tab Payouts en admin/content
+jaraba_comercio_conecta.payout_record.collection:
+  title: 'Payouts'
+  route_name: entity.comercio_payout_record.collection
+  base_route: system.admin_content
+  weight: 72

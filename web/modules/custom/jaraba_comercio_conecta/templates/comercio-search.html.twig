@@ -1,0 +1,64 @@
+{#
+ # Template: Pagina de busqueda ComercioConecta.
+ # Variables:
+ #   - query: Texto de busqueda actual.
+ #   - results: Array de resultados con title, entity_type_ref, entity_id_ref, distance.
+ #   - total: Total de resultados.
+ #   - filters: Filtros aplicados.
+ #}
+
+<div class="comercio-search">
+  <div class="comercio-search__header">
+    <h1>{{ 'Buscar en Comercio Local'|t }}</h1>
+    <div class="comercio-search__bar">
+      <input type="text"
+             class="comercio-search__input"
+             placeholder="{{ 'Buscar productos, comercios...'|t }}"
+             value="{{ query }}"
+             data-search-input
+             autocomplete="off">
+      <button type="button" class="btn btn--primary comercio-search__btn" data-search-submit>
+        {{ 'Buscar'|t }}
+      </button>
+    </div>
+    <div class="comercio-search__autocomplete" data-search-autocomplete></div>
+  </div>
+
+  {% if query %}
+    <div class="comercio-search__meta">
+      <p>{{ '@count resultados para "@query"'|t({'@count': total, '@query': query}) }}</p>
+    </div>
+  {% endif %}
+
+  {% if results is not empty %}
+    <div class="comercio-search__results">
+      {% for result in results %}
+        {% set type_labels = {
+          'product_retail': 'Producto'|t,
+          'merchant_profile': 'Comercio'|t,
+        } %}
+        <a href="{{ result.url ?? '#' }}" class="comercio-search__result">
+          <div class="comercio-search__result-type">
+            <span class="comercio-search__type-badge comercio-search__type-badge--{{ result.entity_type_ref }}">
+              {{ type_labels[result.entity_type_ref] ?? result.entity_type_ref }}
+            </span>
+          </div>
+          <div class="comercio-search__result-content">
+            <h3 class="comercio-search__result-title">{{ result.title }}</h3>
+            {% if result.distance is defined and result.distance is not null %}
+              <span class="comercio-search__result-distance">
+                {{ result.distance|number_format(1, ',', '.') }} km
+              </span>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% elseif query %}
+    <div class="comercio-search__empty">
+      <p>{{ 'No se encontraron resultados para "@query".'|t({'@query': query}) }}</p>
+      <p>{{ 'Prueba con otros terminos o explora el marketplace.'|t }}</p>
+      <a href="/comercio-local" class="btn btn--secondary">{{ 'Ir al Marketplace'|t }}</a>
+    </div>
+  {% endif %}
+</div>

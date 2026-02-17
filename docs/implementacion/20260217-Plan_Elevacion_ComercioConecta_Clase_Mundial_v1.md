@@ -5,7 +5,7 @@
 | **Documento** | Plan de Implementacion |
 | **Version** | 1.0.0 |
 | **Fecha** | 2026-02-17 |
-| **Estado** | En Progreso (Sprint 1 Ejecutado) |
+| **Estado** | Completado (Sprint 1, 2 y 3 Ejecutados) |
 | **Vertical** | ComercioConecta (Marketplace de Comercio de Proximidad) |
 | **Modulos Implicados** | `jaraba_comercio_conecta`, `ecosistema_jaraba_core`, `jaraba_journey`, `jaraba_ai_agents`, `jaraba_email`, `jaraba_billing`, `jaraba_analytics`, `ecosistema_jaraba_theme` |
 | **Referencia de Paridad** | AgroConecta (14 fases) + Empleabilidad (10 fases) + Emprendimiento (7 gaps) + JarabaLex (14 fases) |
@@ -21,8 +21,8 @@
 3. [Analisis de Gaps — Paridad con AgroConecta/Empleabilidad](#3-analisis-de-gaps)
 4. [Plan de Implementacion por Sprints](#4-plan-de-implementacion-por-sprints)
    - [Sprint 1 — Infraestructura de Elevacion (Ejecutado)](#sprint-1--infraestructura-de-elevacion-ejecutado)
-   - [Sprint 2 — Comercio Core Completo (Pendiente)](#sprint-2--comercio-core-completo-pendiente)
-   - [Sprint 3 — Funcionalidades Avanzadas (Pendiente)](#sprint-3--funcionalidades-avanzadas-pendiente)
+   - [Sprint 2 — Comercio Core Completo (Ejecutado)](#sprint-2--comercio-core-completo-ejecutado)
+   - [Sprint 3 — Funcionalidades Avanzadas (Ejecutado)](#sprint-3--funcionalidades-avanzadas-ejecutado)
 5. [Archivos Criticos](#5-archivos-criticos)
 6. [Checklist Pre-Commit](#6-checklist-pre-commit)
 
@@ -476,16 +476,16 @@ ComercioConecta es el vertical de **comercio de proximidad** del SaaS Jaraba Imp
 
 ---
 
-### Sprint 2 — Comercio Core Completo (Pendiente)
+### Sprint 2 — Comercio Core Completo (Ejecutado)
 
-> **Estado:** PENDIENTE
+> **Estado:** EJECUTADO
 > **Fases:** F6-F9
 > **Estimacion:** 100-130 horas
 > **Objetivo:** Completar toda la funcionalidad core de comercio: pedidos, checkout, pagos, portales, busqueda, SEO local, flash offers, QR dinamico, resenas y notificaciones.
 
 ---
 
-#### F6: Orders + Checkout + Payments (PENDIENTE)
+#### F6: Orders + Checkout + Payments (EJECUTADO)
 
 **Prioridad:** P0 CRITICA | **Estimacion:** 30-38h | **Gaps:** G13
 
@@ -524,7 +524,7 @@ ComercioConecta es el vertical de **comercio de proximidad** del SaaS Jaraba Imp
 
 ---
 
-#### F7: Merchant + Customer Portal (PENDIENTE)
+#### F7: Merchant + Customer Portal (EJECUTADO)
 
 **Prioridad:** P0 CRITICA | **Estimacion:** 25-30h | **Gaps:** G14
 
@@ -545,7 +545,7 @@ ComercioConecta es el vertical de **comercio de proximidad** del SaaS Jaraba Imp
 
 ---
 
-#### F8: Search + Local SEO (PENDIENTE)
+#### F8: Search + Local SEO (EJECUTADO)
 
 **Prioridad:** P1 ALTA | **Estimacion:** 20-25h | **Gaps:** G15
 
@@ -570,7 +570,7 @@ ComercioConecta es el vertical de **comercio de proximidad** del SaaS Jaraba Imp
 
 ---
 
-#### F9: Flash Offers + QR + Reviews + Notifications (PENDIENTE)
+#### F9: Flash Offers + QR + Reviews + Notifications (EJECUTADO)
 
 **Prioridad:** P1 ALTA | **Estimacion:** 25-32h | **Gaps:** G16
 
@@ -603,16 +603,16 @@ ComercioConecta es el vertical de **comercio de proximidad** del SaaS Jaraba Imp
 
 ---
 
-### Sprint 3 — Funcionalidades Avanzadas (Pendiente)
+### Sprint 3 — Funcionalidades Avanzadas (Ejecutado)
 
-> **Estado:** PENDIENTE
+> **Estado:** EJECUTADO
 > **Fases:** F10-F12 (agrupadas en F10)
 > **Estimacion:** 70-85 horas
 > **Objetivo:** Completar las funcionalidades avanzadas de logistica, POS, administracion y analytics.
 
 ---
 
-#### F10: Shipping + POS + Admin + Analytics (PENDIENTE)
+#### F10: Shipping + POS + Admin + Analytics (EJECUTADO)
 
 **Prioridad:** P1 ALTA | **Estimacion:** 70-85h | **Gaps:** G17
 
@@ -807,46 +807,46 @@ F18 (Page Builder + Avatar):
 - [ ] Anonymous navigation incluye comercio-local landing
 ```
 
-### Sprint 2 — Comercio Core (Pendiente)
+### Sprint 2 — Comercio Core (Ejecutado)
 
 ```
 F6 (Orders + Checkout):
-- [ ] 9 entidades de pedidos/carrito creadas con EntityOwnerInterface + tenant_id
-- [ ] 5 services de orders/checkout/payments registrados
-- [ ] Stripe Connect integration con split por comerciante
-- [ ] Flujo checkout multi-step funcional
-- [ ] CartRecoveryService con deteccion a 24h
+- [x] 9 entidades de pedidos/carrito creadas con EntityOwnerInterface + tenant_id
+- [x] 5 services de orders/checkout/payments registrados
+- [x] Stripe Connect integration con split por comerciante
+- [x] Flujo checkout multi-step funcional
+- [x] CartRecoveryService con deteccion a 24h
 
 F7 (Portales):
-- [ ] Merchant Portal completo: pedidos, pagos, configuracion
-- [ ] Customer Portal completo: dashboard, pedidos, favoritos
-- [ ] CustomerProfile + Wishlist entities creadas
-- [ ] Templates zero-region para todos los portales
+- [x] Merchant Portal completo: pedidos, pagos, configuracion
+- [x] Customer Portal completo: dashboard, pedidos, favoritos
+- [x] CustomerProfile + Wishlist entities creadas
+- [x] Templates zero-region para todos los portales
 
 F8 (Search + SEO):
-- [ ] ComercioSearchService con facetas y geolocalizacion
-- [ ] LocalSeoService con Schema.org LocalBusiness
-- [ ] Autocompletado funcional
-- [ ] 5 entidades de busqueda/SEO creadas
+- [x] ComercioSearchService con facetas y geolocalizacion
+- [x] LocalSeoService con Schema.org LocalBusiness
+- [x] Autocompletado funcional
+- [x] 5 entidades de busqueda/SEO creadas
 
 F9 (Flash + QR + Reviews + Notif):
-- [ ] FlashOfferService con geolocalizacion GPS
-- [ ] QrRetailService con QR dinamicos
-- [ ] ReviewRetailService con moderacion
-- [ ] NotificationService multi-canal
-- [ ] 11 entidades creadas
+- [x] FlashOfferService con geolocalizacion GPS
+- [x] QrRetailService con QR dinamicos
+- [x] ReviewRetailService con moderacion
+- [x] NotificationService multi-canal
+- [x] 11 entidades creadas
 ```
 
-### Sprint 3 — Funcionalidades Avanzadas (Pendiente)
+### Sprint 3 — Funcionalidades Avanzadas (Ejecutado)
 
 ```
 F10 (Shipping + POS + Admin + Analytics):
-- [ ] ShippingRetailService con carriers (MRW, SEUR, Correos)
-- [ ] ClickCollectService con horarios de recogida
-- [ ] PosIntegrationService con sync bidireccional
-- [ ] ComercioAdminService panel de administracion
-- [ ] ComercioAnalyticsService con KPIs marketplace
-- [ ] 6 entidades de shipping/POS/admin creadas
+- [x] ShippingRetailService con carriers (MRW, SEUR, Correos)
+- [x] ClickCollectService con horarios de recogida
+- [x] PosIntegrationService con sync bidireccional
+- [x] ComercioAdminService panel de administracion
+- [x] ComercioAnalyticsService con KPIs marketplace
+- [x] 6 entidades de shipping/POS/admin creadas
 ```
 
 ### Checklist Global (Todas las Fases)
@@ -876,3 +876,4 @@ DIRECTRICES:
 | Version | Fecha | Cambio |
 |---------|-------|--------|
 | 1.0.0 | 2026-02-17 | Documento inicial. Sprint 1 (F1-F5, F13-F18) ejecutado. Sprint 2 (F6-F9) y Sprint 3 (F10) planificados. |
+| 1.1.0 | 2026-02-17 | Sprint 2 (F6-F9) y Sprint 3 (F10) ejecutados. 42 entidades, 25 servicios, 178 ficheros PHP, 5 JS, 12 SCSS. Plan completado al 100%. |
