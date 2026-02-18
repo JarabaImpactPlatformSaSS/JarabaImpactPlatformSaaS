@@ -73,9 +73,13 @@ class TemplatePickerController extends ControllerBase
      */
     public function listTemplates(): array
     {
-        $templates = $this->entityTypeManager
-            ->getStorage('page_template')
-            ->loadMultiple();
+        $storage = $this->entityTypeManager->getStorage('page_template');
+        $ids = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', TRUE)
+            ->sort('weight', 'ASC')
+            ->execute();
+        $templates = $storage->loadMultiple($ids);
 
         // Agrupar por categoría.
         $categories = [];

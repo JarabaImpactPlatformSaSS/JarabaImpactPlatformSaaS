@@ -85,6 +85,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/footer-section.png'
 preview_data:
   tagline: "Building the future of business, one platform at a time."
   columns:

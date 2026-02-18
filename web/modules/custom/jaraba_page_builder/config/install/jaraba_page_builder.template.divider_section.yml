@@ -47,6 +47,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/divider-section.png'
 preview_data:
   style: gradient
   width: medium

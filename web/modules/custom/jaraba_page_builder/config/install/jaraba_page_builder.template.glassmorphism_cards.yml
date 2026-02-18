@@ -52,6 +52,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/glassmorphism-cards.png'
 preview_data:
   title: "Premium Features"
   subtitle: "Experience the future of design"

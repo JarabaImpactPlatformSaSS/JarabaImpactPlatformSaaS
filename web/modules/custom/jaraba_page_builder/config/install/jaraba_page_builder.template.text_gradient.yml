@@ -76,6 +76,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/text-gradient.png'
 preview_data:
   text: "Transform Your Business"
   subtitle: "Unlock the full potential of your team with our cutting-edge platform"

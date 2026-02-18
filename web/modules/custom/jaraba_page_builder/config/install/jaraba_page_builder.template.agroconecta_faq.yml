@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_faq
 label: 'AgroConecta: Certificacion Organica'
-description: 'Seccion preguntas frecuentes especializada para productores agricolas.'
+description: 'Sección preguntas frecuentes especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/faq.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     faqs:
       type: array
@@ -56,8 +56,16 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-faq.png'
 weight: 9
 preview_data:
-  title: 'Certificacion Organica'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion preguntas frecuentes.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: FAQ
+  title: Preguntas frecuentes
+  subtitle: Resolvemos tus dudas sobre venta directa y producción agrícola.
+  faqs:
+    -
+      question: ¿Cómo puedo registrar mi finca?
+      answer: 'El proceso es sencillo: crea tu cuenta, completa el perfil de tu finca con fotos y descripción de tus productos, y en 24h tu tienda estará activa.'
+    -
+      question: ¿Qué comisión cobra la plataforma?
+      answer: 'Cobramos una comisión justa del 8% por venta realizada. Sin cuotas mensuales ni costes ocultos. Solo pagas cuando vendes.'
+    -
+      question: ¿Cómo se gestiona la logística de envío?
+      answer: Ofrecemos integración con transportistas especializados en productos frescos. También puedes gestionar tus propios envíos o habilitar recogida en finca.

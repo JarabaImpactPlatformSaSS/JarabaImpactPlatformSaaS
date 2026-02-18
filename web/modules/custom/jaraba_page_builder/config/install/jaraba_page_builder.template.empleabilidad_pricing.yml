@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: empleabilidad_pricing
 label: 'Empleabilidad: Funciones Premium'
-description: 'Seccion tabla de precios especializada para buscadores de empleo.'
+description: 'Sección tabla de precios especializada para buscadores de empleo.'
 category: empleabilidad
 twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/pricing.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,49 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/empleabilidad-pricing.png'
 weight: 39
 preview_data:
-  title: 'Funciones Premium'
-  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
-  description: 'Descripcion de ejemplo para la seccion tabla de precios.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Planes
+  title: Elige el plan que impulse tu carrera
+  subtitle: Opciones flexibles para cada etapa de tu desarrollo profesional.
+  show_toggle: false
+  plans:
+    -
+      name: Buscador
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Registrarse gratis
+      url: /registro
+      features:
+        - Acceso a ofertas
+        - Perfil profesional
+        - Alertas de empleo
+    -
+      name: Profesional
+      price: 15€
+      period: /mes
+      featured: true
+      badge: Recomendado
+      cta: Elegir plan
+      url: /planes/profesional
+      features:
+        - Todo de Buscador
+        - Cursos premium
+        - Orientador asignado
+        - CV optimizado con IA
+    -
+      name: Premium
+      price: 39€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/premium
+      features:
+        - Todo de Profesional
+        - Coaching ejecutivo
+        - Headhunting activo
+        - Certificaciones incluidas

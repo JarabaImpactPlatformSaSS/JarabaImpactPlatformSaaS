@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_features
 label: 'AgroConecta: Productos Organicos'
-description: 'Seccion rejilla de caracteristicas especializada para productores agricolas.'
+description: 'Sección rejilla de características especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/features.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     columns:
       type: integer
@@ -62,8 +62,23 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-features.png'
 weight: 1
 preview_data:
-  title: 'Productos Organicos'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion rejilla de caracteristicas.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Funcionalidades
+  title: Todo lo que tu finca necesita para vender online
+  subtitle: Herramientas diseñadas para la realidad del campo.
+  columns: 3
+  features:
+    -
+      icon: shopping-bag
+      icon_category: commerce
+      title: Tienda online
+      desc: Crea tu catálogo de productos con fotos, precios y disponibilidad actualizada en tiempo real.
+    -
+      icon: truck
+      icon_category: logistics
+      title: Logística integrada
+      desc: Gestiona envíos de productos frescos con cadena de frío y seguimiento en tiempo real.
+    -
+      icon: chart-bar
+      icon_category: analytics
+      title: Analítica de ventas
+      desc: Dashboard con métricas de ventas, productos más demandados y tendencias estacionales.

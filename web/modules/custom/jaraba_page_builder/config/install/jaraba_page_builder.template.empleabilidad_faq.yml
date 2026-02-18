@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: empleabilidad_faq
 label: 'Empleabilidad: Consejos de Busqueda'
-description: 'Seccion preguntas frecuentes especializada para buscadores de empleo.'
+description: 'Sección preguntas frecuentes especializada para buscadores de empleo.'
 category: empleabilidad
 twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/faq.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,19 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/empleabilidad-faq.png'
 weight: 42
 preview_data:
-  title: 'Consejos de Busqueda'
-  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
-  description: 'Descripcion de ejemplo para la seccion preguntas frecuentes.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: FAQ
+  title: Preguntas frecuentes
+  subtitle: Resolvemos tus dudas sobre formación, empleo y desarrollo profesional.
+  faqs:
+    -
+      question: ¿Es gratuito registrarse?
+      answer: Sí, el registro y el acceso a ofertas de empleo es completamente gratuito. Los programas formativos premium tienen un coste subvencionado.
+    -
+      question: ¿Cómo funciona la orientación profesional?
+      answer: Asignamos un orientador que analiza tu perfil, identifica áreas de mejora y diseña un plan personalizado de desarrollo profesional con objetivos concretos.
+    -
+      question: ¿Las certificaciones tienen validez oficial?
+      answer: Sí, todas nuestras certificaciones están homologadas por el SEPE y reconocidas por las principales empresas empleadoras del país.

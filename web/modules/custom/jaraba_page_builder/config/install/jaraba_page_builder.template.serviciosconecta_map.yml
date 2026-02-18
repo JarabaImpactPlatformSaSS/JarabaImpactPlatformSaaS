@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_map
 label: 'ServiciosConecta: Areas de Cobertura'
-description: 'Seccion ubicacion y cobertura especializada para profesionales de servicios.'
+description: 'Sección ubicación y cobertura especializada para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/map.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     map_embed:
       type: string
@@ -45,10 +45,18 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-map.png'
 weight: 29
 preview_data:
-  title: 'Areas de Cobertura'
-  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
-  description: 'Descripcion de ejemplo para la seccion ubicacion y cobertura.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Ubicación
+  title: Nuestra oficina
+  subtitle: Visítanos para conocer la plataforma en persona.
+  map_embed: ''
+  address: Calle Servicios, 15, Jaraba, Zaragoza
+  phone: +34 976 000 004
+  email: 'info@serviciosconecta.es'
+  working_hours:
+    -
+      days: Lunes a Viernes
+      open: '09:00'
+      close: '18:00'

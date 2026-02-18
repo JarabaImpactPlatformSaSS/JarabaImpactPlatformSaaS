@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_gallery
 label: 'ComercioConecta: Showcase de Productos'
-description: 'Seccion galeria visual especializada para comercios y tiendas.'
+description: 'Sección galería visual especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/gallery.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
     gallery:
       type: array
@@ -75,8 +75,24 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-gallery.png'
 weight: 16
 preview_data:
-  title: 'Nuestros productos destacados'
-  subtitle: 'Descubre la variedad y calidad de nuestro catalogo.'
-  eyebrow: 'Galeria'
-  cta_text: 'Ver catalogo completo'
-  cta_url: '/comercio/catalogo'
+  eyebrow: Galería
+  title: Nuestros productos destacados
+  subtitle: Descubre la variedad y calidad de nuestro catálogo.
+  layout: grid
+  gallery:
+    -
+      src: ''
+      alt: Artesanía local cerámica
+      caption: Cerámica artesanal de Teruel
+    -
+      src: ''
+      alt: Moda sostenible
+      caption: Colección de moda sostenible
+    -
+      src: ''
+      alt: Productos gourmet
+      caption: Selección gourmet de la tierra
+    -
+      src: ''
+      alt: Decoración artesanal
+      caption: Decoración con encanto rural

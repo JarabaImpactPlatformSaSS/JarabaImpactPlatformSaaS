@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: empleabilidad_map
 label: 'Empleabilidad: Ubicaciones de Empleo'
-description: 'Seccion ubicacion y cobertura especializada para buscadores de empleo.'
+description: 'Sección ubicación y cobertura especializada para buscadores de empleo.'
 category: empleabilidad
 twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/map.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     map_embed:
       type: string
@@ -45,10 +45,22 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/empleabilidad-map.png'
 weight: 40
 preview_data:
-  title: 'Ubicaciones de Empleo'
-  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
-  description: 'Descripcion de ejemplo para la seccion ubicacion y cobertura.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Ubicación
+  title: Visítanos
+  subtitle: Estamos aquí para ayudarte en tu desarrollo profesional.
+  map_embed: ''
+  address: Calle Empleo, 10, Jaraba, Zaragoza
+  phone: +34 976 000 002
+  email: 'orientacion@empleabilidad.es'
+  working_hours:
+    -
+      days: Lunes a Viernes
+      open: '09:00'
+      close: '19:00'
+    -
+      days: Sábados
+      open: '10:00'
+      close: '13:00'

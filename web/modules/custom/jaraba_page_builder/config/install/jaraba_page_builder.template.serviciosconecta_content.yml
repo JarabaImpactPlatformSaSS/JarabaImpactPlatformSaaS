@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_content
 label: 'ServiciosConecta: Expertise y Trayectoria'
-description: 'Seccion seccion narrativa especializada para profesionales de servicios.'
+description: 'Sección narrativa especializada para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/content.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,15 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-content.png'
 weight: 26
 preview_data:
-  title: 'Expertise y Trayectoria'
-  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
-  description: 'Descripcion de ejemplo para la seccion seccion narrativa.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Plataforma
+  title: La plataforma que profesionaliza tus servicios
+  subtitle: Herramientas digitales para gestionar y hacer crecer tu actividad profesional
+  description: '<p>ServiciosConecta ofrece a profesionales independientes y pequeñas empresas de servicios las herramientas necesarias para gestionar su negocio de forma profesional: agenda de citas, facturación automática, perfil verificado y sistema de valoraciones.</p><p>Para los clientes, ofrecemos un directorio de profesionales verificados con disponibilidad en tiempo real y sistema de reservas instantáneo.</p>'
+  layout: left
+  cta_text: Descubrir la plataforma
+  cta_url: /plataforma
+  image: ''
+  background_image: ''

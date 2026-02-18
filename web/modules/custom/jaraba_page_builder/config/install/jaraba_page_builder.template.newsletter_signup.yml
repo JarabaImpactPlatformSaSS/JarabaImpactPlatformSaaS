@@ -69,6 +69,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/newsletter-signup.png'
 preview_data:
   title: "Stay Updated"
   subtitle: "Get the latest news and exclusive content delivered to your inbox"

@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_content
 label: 'ComercioConecta: Historia de la Marca'
-description: 'Seccion seccion narrativa especializada para comercios y tiendas.'
+description: 'Sección narrativa especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/content.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -61,11 +61,12 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-content.png'
 weight: 15
 preview_data:
-  title: 'Conecta con tus clientes donde esten'
-  subtitle: 'Presenta tus productos y servicios con una experiencia digital que refleja la calidad de tu comercio.'
-  eyebrow: 'Contenido'
-  description: 'Desde catalogos interactivos hasta sistemas de pedidos, ofrecemos las herramientas que tu comercio necesita para crecer en la era digital.'
-  cta_text: 'Conocer mas'
-  cta_url: '/comercio/historia'
-  cta_secondary_text: 'Ver catalogo'
-  cta_secondary_url: '/comercio/catalogo'
+  eyebrow: Nuestra misión
+  title: Empoderamos al comercio local
+  subtitle: Tecnología accesible para que ningún negocio se quede atrás
+  description: '<p>ComercioConecta es la respuesta digital para los comercios que quieren competir en igualdad de condiciones. Nuestra plataforma ofrece todas las herramientas que necesitas para gestionar tu negocio online: catálogo de productos, pasarela de pagos, gestión de pedidos y envíos.</p><p>Con plantillas profesionales y un asistente de configuración, tu tienda online puede estar operativa en menos de una hora.</p>'
+  layout: right
+  cta_text: Descubre cómo funciona
+  cta_url: /como-funciona
+  image: ''
+  background_image: ''

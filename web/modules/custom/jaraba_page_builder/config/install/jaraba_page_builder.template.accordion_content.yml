@@ -55,6 +55,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/accordion-content.png'
 preview_data:
   title: "Learn More About Our Platform"
   subtitle: "Click to expand each section"

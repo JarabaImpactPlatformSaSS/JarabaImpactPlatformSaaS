@@ -62,6 +62,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comparison-slider.png'
 preview_data:
   title: "See the Transformation"
   subtitle: "Drag the slider to compare before and after"

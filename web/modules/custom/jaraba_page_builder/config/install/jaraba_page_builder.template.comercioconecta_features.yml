@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_features
 label: 'ComercioConecta: Catalogo de Productos'
-description: 'Seccion rejilla de caracteristicas especializada para comercios y tiendas.'
+description: 'Sección rejilla de características especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/features.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
     columns:
       type: integer
@@ -78,8 +78,23 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-features.png'
 weight: 12
 preview_data:
-  title: 'Todo lo que tu comercio necesita'
-  subtitle: 'Herramientas disenadas para potenciar la gestion y ventas de tu negocio.'
-  eyebrow: 'Funcionalidades'
-  cta_text: 'Explorar funciones'
-  cta_url: '/comercio/funcionalidades'
+  eyebrow: Funcionalidades
+  title: Todo lo que tu comercio necesita
+  subtitle: Herramientas diseñadas para potenciar la gestión y ventas de tu negocio.
+  columns: 3
+  features:
+    -
+      icon: shopping-cart
+      icon_category: commerce
+      title: Catálogo inteligente
+      desc: Gestiona productos con variantes, stock automático, precios dinámicos y categorías ilimitadas.
+    -
+      icon: credit-card
+      icon_category: commerce
+      title: Pagos seguros
+      desc: Acepta pagos con tarjeta, Bizum, transferencia y contrareembolso con pasarelas certificadas PCI DSS.
+    -
+      icon: truck
+      icon_category: logistics
+      title: Envíos automatizados
+      desc: Conecta con mensajeros, genera etiquetas y ofrece seguimiento en tiempo real a tus clientes.

@@ -77,6 +77,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/how-it-works.png'
 preview_data:
   eyebrow: "SIMPLE & EASY"
   title: "How It Works"

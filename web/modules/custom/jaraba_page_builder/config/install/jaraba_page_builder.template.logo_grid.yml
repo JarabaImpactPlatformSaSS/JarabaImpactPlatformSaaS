@@ -61,6 +61,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/logo-grid.png'
 preview_data:
   eyebrow: "TRUSTED BY"
   title: "Industry Leaders Trust Our Platform"

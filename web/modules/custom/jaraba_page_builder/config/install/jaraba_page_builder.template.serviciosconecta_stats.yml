@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_stats
 label: 'ServiciosConecta: Metricas de Experiencia'
-description: 'Seccion metricas de impacto especializada para profesionales de servicios.'
+description: 'Sección métricas de impacto especializada para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/stats.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     background_image:
       type: string
@@ -45,10 +45,30 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-stats.png'
 weight: 30
 preview_data:
-  title: 'Metricas de Experiencia'
-  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
-  description: 'Descripcion de ejemplo para la seccion metricas de impacto.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Resultados
+  title: Cifras que respaldan nuestro servicio
+  subtitle: Métricas reales del impacto de ServiciosConecta en profesionales.
+  stats:
+    -
+      number: '+420'
+      label: Profesionales activos
+      prefix: ''
+      suffix: ''
+    -
+      number: 8.5K
+      label: Servicios realizados
+      prefix: ''
+      suffix: ''
+    -
+      number: '4.8'
+      label: Valoración media
+      prefix: ''
+      suffix: /5
+    -
+      number: '95'
+      label: Tasa de satisfacción
+      prefix: ''
+      suffix: '%'

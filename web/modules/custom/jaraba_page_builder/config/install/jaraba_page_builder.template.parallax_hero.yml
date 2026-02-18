@@ -63,6 +63,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/parallax-hero.png'
 preview_data:
   title: "Elevate Your Vision"
   subtitle: "Create stunning experiences that captivate your audience"

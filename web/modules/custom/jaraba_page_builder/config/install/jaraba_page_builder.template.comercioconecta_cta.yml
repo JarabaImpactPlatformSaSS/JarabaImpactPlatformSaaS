@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_cta
 label: 'ComercioConecta: Agregar al Carrito'
-description: 'Seccion seccion de conversion especializada para comercios y tiendas.'
+description: 'Sección de conversión especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/cta.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -61,10 +61,12 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-cta.png'
 weight: 14
 preview_data:
-  title: 'Listo para impulsar tu tienda?'
-  subtitle: 'Unete a cientos de comercios que ya venden mas con ComercioConecta. Empieza gratis, sin compromiso.'
-  eyebrow: 'Empieza Ahora'
-  cta_text: 'Empieza gratis'
-  cta_url: '/comercio/registro'
-  cta_secondary_text: 'Ver demo'
-  cta_secondary_url: '/comercio/demo'
+  eyebrow: Empieza ahora
+  title: ¿Listo para impulsar tu tienda?
+  subtitle: Miles de comercios ya venden online con ComercioConecta. Únete y empieza a crecer.
+  cta_text: Crear mi tienda gratis
+  cta_url: /registro
+  cta_secondary_text: Hablar con un asesor
+  cta_secondary_url: /contacto
+  countdown_date: ''
+  background_image: ''

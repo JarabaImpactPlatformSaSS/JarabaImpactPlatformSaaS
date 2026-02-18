@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_provider_spotlight
 label: 'ServiciosConecta: Perfil Destacado del Profesional'
-description: 'Seccion perfil destacado de profesional con credenciales, valoracion y servicios ofrecidos.'
+description: 'Sección perfil destacado de profesional con credenciales, valoración y servicios ofrecidos.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/provider_spotlight.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -32,7 +32,7 @@ fields_schema:
       maxLength: 100
     provider_title:
       type: string
-      title: 'Titulo profesional'
+      title: 'Título profesional'
       maxLength: 150
     provider_bio:
       type: string
@@ -48,7 +48,7 @@ fields_schema:
       maxLength: 10
     review_count:
       type: string
-      title: 'Numero de valoraciones'
+      title: 'Numero de valoraciónes'
       maxLength: 20
     years_experience:
       type: string
@@ -74,11 +74,11 @@ fields_schema:
             maxLength: 100
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cred_items:
       type: array

@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_gallery
 label: 'Emprendimiento: Tracker de Experimentos'
-description: 'Seccion galeria visual especializada para emprendedores.'
+description: 'Sección galería visual especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/gallery.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,27 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-gallery.png'
 weight: 49
 preview_data:
-  title: 'Tracker de Experimentos'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion galeria visual.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Galería
+  title: Nuestros eventos y actividades
+  subtitle: Momentos que definen el espíritu emprendedor.
+  layout: grid
+  gallery:
+    -
+      src: ''
+      alt: Demo Day
+      caption: Demo Day ante inversores
+    -
+      src: ''
+      alt: Workshop de ideación
+      caption: Taller de Design Thinking
+    -
+      src: ''
+      alt: Mentoring session
+      caption: Sesión de mentoring personalizado
+    -
+      src: ''
+      alt: Networking event
+      caption: Encuentro de networking emprendedor

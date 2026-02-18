@@ -75,6 +75,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/orbit-animation.png'
 preview_data:
   center_content:
     type: icon

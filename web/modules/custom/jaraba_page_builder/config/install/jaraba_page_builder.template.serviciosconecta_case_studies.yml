@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_case_studies
 label: 'ServiciosConecta: Casos de Exito'
-description: 'Seccion casos de exito con before/after, testimonial y KPIs de impacto.'
+description: 'Sección casos de éxito con before/after, testimonial y KPIs de impacto.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/case_studies.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -28,7 +28,7 @@ fields_schema:
       format: image
     cases:
       type: array
-      title: 'Casos de exito'
+      title: 'Casos de éxito'
       items:
         type: object
         properties:
@@ -61,11 +61,11 @@ fields_schema:
             format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -77,8 +77,8 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-case-studies.png'
 weight: 233
 preview_data:
-  title: 'Historias de exito reales'
+  title: 'Historias de éxito reales'
   subtitle: 'Descubre como nuestros profesionales han transformado negocios y resuelto retos complejos.'
   eyebrow: 'Casos de Exito'
   cta_text: 'Ver todos los casos'
-  cta_url: '/servicios/casos-exito'
+  cta_url: '/servicios/casos-éxito'

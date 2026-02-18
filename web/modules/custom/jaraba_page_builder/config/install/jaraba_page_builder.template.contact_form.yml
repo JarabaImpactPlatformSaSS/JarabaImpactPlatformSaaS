@@ -118,6 +118,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/contact-form.png'
 preview_data:
   title: "Get In Touch"
   subtitle: "Have questions? We'd love to hear from you."

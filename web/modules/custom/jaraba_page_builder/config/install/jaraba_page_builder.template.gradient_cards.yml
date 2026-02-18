@@ -61,6 +61,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/gradient-cards.png'
 preview_data:
   title: "Why Choose Us"
   subtitle: "Modern solutions for modern businesses"

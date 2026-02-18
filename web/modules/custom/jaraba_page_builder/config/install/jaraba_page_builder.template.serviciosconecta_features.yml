@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_features
 label: 'ServiciosConecta: Rejilla de Servicios'
-description: 'Seccion rejilla de caracteristicas especializada para profesionales de servicios.'
+description: 'Sección rejilla de características especializada para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/features.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     background_image:
       type: string
@@ -50,10 +50,26 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-features.png'
 weight: 23
 preview_data:
-  title: 'Rejilla de Servicios'
-  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
-  description: 'Descripcion de ejemplo para la seccion rejilla de caracteristicas.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Funcionalidades
+  title: Todo lo que necesitas para gestionar tus servicios
+  subtitle: Herramientas profesionales para una gestión eficiente.
+  columns: 3
+  features:
+    -
+      icon: calendar
+      icon_category: ui
+      title: Agenda inteligente
+      desc: Sistema de reservas con disponibilidad en tiempo real, confirmaciones automáticas y recordatorios por email y SMS.
+    -
+      icon: shield-check
+      icon_category: ui
+      title: Perfil verificado
+      desc: Distintivo de profesional verificado que genera confianza en los clientes y mejora tu visibilidad.
+    -
+      icon: chart-line
+      icon_category: analytics
+      title: Panel de métricas
+      desc: Dashboard con estadísticas de reservas, ingresos, valoraciones y rendimiento para optimizar tu negocio.

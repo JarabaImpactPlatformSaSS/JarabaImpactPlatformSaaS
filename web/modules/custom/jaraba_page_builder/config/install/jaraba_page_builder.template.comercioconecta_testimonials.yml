@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_testimonials
 label: 'ComercioConecta: Resenas de Clientes'
-description: 'Seccion historias de exito especializada para comercios y tiendas.'
+description: 'Sección historias de éxito especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/testimonials.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
     testimonials:
       type: array
@@ -81,8 +81,28 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-testimonials.png'
 weight: 13
 preview_data:
-  title: 'Lo que dicen nuestros comerciantes'
-  subtitle: 'Comercios reales que han transformado su negocio con ComercioConecta.'
-  eyebrow: 'Testimonios'
-  cta_text: 'Ver mas historias'
-  cta_url: '/comercio/testimonios'
+  eyebrow: Testimonios
+  title: Lo que dicen nuestros comerciantes
+  subtitle: Comercios reales que han transformado su negocio con ComercioConecta.
+  testimonials:
+    -
+      quote: 'Antes perdía clientes porque no tenía presencia online. Ahora el 40% de mis ventas vienen de la tienda digital.'
+      name: Elena Martín
+      role: Librería El Rincón
+      rating: 5
+      avatar: ''
+      initials: EM
+    -
+      quote: La integración con Correos y MRW me ha simplificado los envíos. Todo automático y mis clientes reciben tracking al instante.
+      name: Carlos Gómez
+      role: Tienda de deportes
+      rating: 5
+      avatar: ''
+      initials: CG
+    -
+      quote: El diseño de las plantillas es profesional y moderno. Mis clientes me felicitan por la web.
+      name: Isabel Navarro
+      role: Floristería
+      rating: 4
+      avatar: ''
+      initials: IN

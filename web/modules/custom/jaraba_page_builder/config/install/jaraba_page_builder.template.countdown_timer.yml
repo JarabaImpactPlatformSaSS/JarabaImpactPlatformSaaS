@@ -63,6 +63,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/countdown-timer.png'
 preview_data:
   title: "Product Launch Coming Soon"
   description: "Be the first to experience our revolutionary new platform. Sign up now for early access."

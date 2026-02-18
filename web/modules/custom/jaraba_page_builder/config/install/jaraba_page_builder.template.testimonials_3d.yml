@@ -59,6 +59,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/testimonials-3d.png'
 preview_data:
   title: "What Our Clients Say"
   testimonials:

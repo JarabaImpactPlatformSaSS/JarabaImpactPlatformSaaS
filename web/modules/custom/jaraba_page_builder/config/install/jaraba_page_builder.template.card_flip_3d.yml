@@ -57,6 +57,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/card-flip-3d.png'
 preview_data:
   title: "Our Services"
   subtitle: "Hover to flip and learn more"

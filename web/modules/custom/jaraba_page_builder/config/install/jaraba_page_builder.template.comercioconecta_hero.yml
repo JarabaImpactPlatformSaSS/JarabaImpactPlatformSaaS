@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_hero
 label: 'ComercioConecta: Escaparate de Tienda'
-description: 'Seccion seccion hero principal especializada para comercios y tiendas.'
+description: 'Sección hero principal especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/hero.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -61,11 +61,13 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-hero.png'
 weight: 11
 preview_data:
-  title: 'Lleva tu tienda al siguiente nivel'
-  subtitle: 'Herramientas digitales para impulsar tus ventas, conectar con clientes y hacer crecer tu negocio local.'
-  eyebrow: 'ComercioConecta'
-  description: 'Plataforma integral para la gestion y crecimiento de tu comercio.'
-  cta_text: 'Empieza ahora'
-  cta_url: '/comercio/registro'
-  cta_secondary_text: 'Ver planes'
-  cta_secondary_url: '/comercio/planes'
+  eyebrow: ComercioConecta
+  title: Tu tienda online, lista en minutos
+  subtitle: Digitaliza tu comercio local y vende a toda España
+  description: Plataforma integral de comercio electrónico diseñada para pequeños y medianos negocios que quieren dar el salto al mundo digital sin complicaciones.
+  image: ''
+  cta_text: Crear mi tienda
+  cta_url: /registro
+  cta_secondary_text: Ver demo
+  cta_secondary_url: /demo
+  background_image: ''

@@ -92,7 +92,7 @@ class PageTemplate extends ConfigEntityBase implements PageTemplateInterface
      *
      * @var string
      */
-    protected $category = 'landing';
+    protected $category = 'content';
 
     /**
      * Ruta al template Twig.
@@ -156,7 +156,7 @@ class PageTemplate extends ConfigEntityBase implements PageTemplateInterface
      */
     public function getCategory(): string
     {
-        return $this->category ?? 'landing';
+        return $this->category ?? 'content';
     }
 
     /**

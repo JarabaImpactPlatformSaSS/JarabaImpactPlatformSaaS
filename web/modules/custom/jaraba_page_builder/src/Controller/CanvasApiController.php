@@ -352,7 +352,7 @@ class CanvasApiController extends ControllerBase
     protected function templateToGrapesJSBlock(PageTemplate $template): array
     {
         // PageTemplate es ConfigEntity, usar métodos de la entidad.
-        $category = method_exists($template, 'getCategory') ? ($template->getCategory() ?: 'Bloques') : 'Bloques';
+        $category = method_exists($template, 'getCategory') ? ($template->getCategory() ?: 'content') : 'content';
 
         // Obtener thumbnail/preview desde el método getPreviewImage.
         // GrapesJS espera HTML o SVG en el campo media, no una URL string.
@@ -433,11 +433,15 @@ class CanvasApiController extends ControllerBase
      */
     protected function getDefaultBlockIcon(string $category): string
     {
+        // Keys use machine names (lowercase) to match getCategory() output.
         $icons = [
-            'Hero' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21,3H3C1.89,3 1,3.89 1,5V19A2,2 0 0,0 3,21H21C22.11,21 23,20.11 23,19V5C23,3.89 22.11,3 21,3M21,19H3V5H21V19Z"/></svg>',
-            'CTA' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2"/></svg>',
-            'Features' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,11H11V3H3V11M5,5H9V9H5V5M13,21H21V13H13V21M15,15H19V19H15V15M3,21H11V13H3V21M5,15H9V19H5V15M13,3V11H21V3H13M19,9H15V5H19V9Z"/></svg>',
-            'Testimonios' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2Z"/></svg>',
+            'hero' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M21,3H3C1.89,3 1,3.89 1,5V19A2,2 0 0,0 3,21H21C22.11,21 23,20.11 23,19V5C23,3.89 22.11,3 21,3M21,19H3V5H21V19Z"/></svg>',
+            'cta' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2"/></svg>',
+            'features' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,11H11V3H3V11M5,5H9V9H5V5M13,21H21V13H13V21M15,15H19V19H15V15M3,21H11V13H3V21M5,15H9V19H5V15M13,3V11H21V3H13M19,9H15V5H19V9Z"/></svg>',
+            'testimonials' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2Z"/></svg>',
+            'content' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>',
+            'pricing' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z"/></svg>',
+            'gallery' => '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M22,16V4A2,2 0 0,0 20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16M11,12L13.03,14.71L16,11L20,16H8L11,12M2,6V20A2,2 0 0,0 4,22H18V20H4V6H2Z"/></svg>',
         ];
 
         return $icons[$category] ?? '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,5V19H5V5H19M21,3H3V21H21V3Z"/></svg>';

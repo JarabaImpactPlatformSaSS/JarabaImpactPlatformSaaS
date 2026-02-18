@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_faq
 label: 'ServiciosConecta: Proceso del Servicio'
-description: 'Seccion preguntas frecuentes especializada para profesionales de servicios.'
+description: 'Sección preguntas frecuentes especializada para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/faq.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,19 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-faq.png'
 weight: 31
 preview_data:
-  title: 'Proceso del Servicio'
-  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
-  description: 'Descripcion de ejemplo para la seccion preguntas frecuentes.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: FAQ
+  title: Preguntas frecuentes
+  subtitle: Resolvemos tus dudas sobre nuestra plataforma de servicios.
+  faqs:
+    -
+      question: ¿Cómo se verifican los profesionales?
+      answer: Verificamos la identidad, titulación y experiencia de cada profesional. Además, el sistema de valoraciones de clientes reales garantiza la calidad del servicio.
+    -
+      question: ¿Qué comisión cobra la plataforma?
+      answer: 'Los profesionales del plan gratuito pagan un 10% por reserva. Con planes premium, la comisión se reduce al 5% o se elimina completamente.'
+    -
+      question: ¿Los pagos son seguros?
+      answer: Sí, utilizamos Stripe como pasarela de pagos con protección al comprador. El dinero se retiene hasta que el servicio se completa satisfactoriamente.

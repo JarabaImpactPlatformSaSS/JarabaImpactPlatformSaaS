@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_cta
 label: 'ServiciosConecta: Reservar Consulta'
-description: 'Seccion seccion de conversion especializada para profesionales de servicios.'
+description: 'Sección de conversión especializada para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/cta.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,19 +28,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -49,10 +49,15 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/serviciosconecta-cta.png'
 weight: 25
 preview_data:
-  title: 'Reservar Consulta'
-  subtitle: 'Subtitulo de ejemplo para ServiciosConecta'
-  description: 'Descripcion de ejemplo para la seccion seccion de conversion.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Únete
+  title: ¿Eres profesional? Haz crecer tu negocio con nosotros
+  subtitle: Cientos de profesionales ya gestionan sus servicios y captan nuevos clientes a través de nuestra plataforma.
+  cta_text: Registrarme como profesional
+  cta_url: /registro-profesional
+  cta_secondary_text: Soy cliente
+  cta_secondary_url: /registro-cliente
+  countdown_date: ''
+  background_image: ''

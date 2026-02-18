@@ -84,6 +84,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/services-grid.png'
 preview_data:
   eyebrow: "WHAT WE DO"
   title: "OUR SERVICES"

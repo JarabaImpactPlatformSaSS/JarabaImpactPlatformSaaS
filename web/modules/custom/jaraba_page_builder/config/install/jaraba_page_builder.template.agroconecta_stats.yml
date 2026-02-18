@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_stats
 label: 'AgroConecta: Metricas de Impacto'
-description: 'Seccion metricas de impacto especializada para productores agricolas.'
+description: 'Sección métricas de impacto especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/stats.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     stats:
       type: array
@@ -56,8 +56,27 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-stats.png'
 weight: 8
 preview_data:
-  title: 'Metricas de Impacto'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion metricas de impacto.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Impacto
+  title: Nuestras cifras hablan
+  subtitle: Resultados reales del impacto de AgroConecta en el campo.
+  stats:
+    -
+      number: '+320'
+      label: Productores activos
+      prefix: ''
+      suffix: ''
+    -
+      number: 15K
+      label: Pedidos mensuales
+      prefix: ''
+      suffix: ''
+    -
+      number: '98'
+      label: Satisfacción
+      prefix: ''
+      suffix: '%'
+    -
+      number: '45'
+      label: Provincias cubiertas
+      prefix: ''
+      suffix: ''
