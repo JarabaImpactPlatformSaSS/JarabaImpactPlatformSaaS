@@ -214,7 +214,9 @@ class EN16931ModelTest extends UnitTestCase {
    * @covers ::validate
    */
   public function testValidateMissingLines(): void {
-    $model = EN16931Model::fromArray($this->fullData(['lines' => []]));
+    $data = $this->fullData();
+    $data['lines'] = [];
+    $model = EN16931Model::fromArray($data);
     $errors = $model->validate();
     $this->assertNotEmpty(array_filter($errors, fn($e) => str_contains($e, 'BG-25')));
   }

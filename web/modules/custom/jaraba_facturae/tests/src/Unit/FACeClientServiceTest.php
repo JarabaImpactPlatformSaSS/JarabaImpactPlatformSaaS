@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_facturae\Unit;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\CertificateManagerService;
+use Drupal\jaraba_facturae\Entity\FacturaeDocument;
 use Drupal\jaraba_facturae\Service\FACeClientService;
 use Drupal\jaraba_facturae\ValueObject\FACeResponse;
 use Drupal\jaraba_facturae\ValueObject\FACeStatus;
@@ -250,8 +250,8 @@ class FACeClientServiceTest extends UnitTestCase {
   /**
    * Creates a mock FacturaeDocument entity.
    */
-  protected function createMockDocument(string $signedXml, int $tenantId): ContentEntityInterface {
-    $document = $this->createMock(ContentEntityInterface::class);
+  protected function createMockDocument(string $signedXml, int $tenantId): FacturaeDocument {
+    $document = $this->createMock(FacturaeDocument::class);
     $fieldMap = [
       'xml_signed' => (object) ['value' => $signedXml],
       'tenant_id' => (object) ['target_id' => $tenantId],

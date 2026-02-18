@@ -78,7 +78,7 @@ class VeriFactuPdfServiceTest extends UnitTestCase {
     $this->fileSystem->method('prepareDirectory')->willReturn(TRUE);
     $this->fileSystem->method('realpath')->willReturn(FALSE);
 
-    $this->qrService->method('generateQrImage')->willReturn(NULL);
+    $this->qrService->method('generateQrImage')->willReturn('');
 
     // Should not throw, just return NULL because filesystem is mocked.
     $result = $this->service->generateCompliancePage([

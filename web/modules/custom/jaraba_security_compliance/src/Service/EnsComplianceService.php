@@ -156,6 +156,13 @@ class EnsComplianceService {
         'required_level' => 'basic',
         'description' => 'Proteccion del perimetro de comunicaciones mediante firewall y segmentacion.',
       ],
+      'mp.com.2' => [
+        'measure_id' => 'mp.com.2',
+        'category' => 'protection',
+        'measure_name' => 'Proteccion de la Informacion en Transito',
+        'required_level' => 'medium',
+        'description' => 'Cifrado de las comunicaciones para proteger la confidencialidad e integridad de la informacion.',
+      ],
       'mp.si.1' => [
         'measure_id' => 'mp.si.1',
         'category' => 'protection',
@@ -409,6 +416,10 @@ class EnsComplianceService {
       ],
       'mp.com.1' => [
         'mapping' => 'SecurityHeadersSubscriber (CSP, HSTS), nginx hardening, .htaccess security rules.',
+        'status' => 'implemented',
+      ],
+      'mp.com.2' => [
+        'mapping' => 'TLS 1.3 encryption for all communications; managed by platform Load Balancer and cloud edge.',
         'status' => 'implemented',
       ],
       'mp.si.1' => [

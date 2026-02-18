@@ -143,9 +143,8 @@ class VeriFactuQrServiceTest extends UnitTestCase {
     ];
 
     $record->method('get')->willReturnCallback(function (string $field) use ($fieldMap) {
-      $item = $this->createMock(FieldItemListInterface::class);
+      $item = new \stdClass();
       $item->value = $fieldMap[$field] ?? NULL;
-      $item->__get = fn($prop) => $fieldMap[$field] ?? NULL;
       return $item;
     });
 

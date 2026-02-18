@@ -95,7 +95,7 @@ class VaultAuditLogServiceTest extends UnitTestCase {
     $lastHashQuery->method('range')->willReturnSelf();
     $lastHashQuery->method('execute')->willReturn([]);
 
-    $entry = $this->createMock(\stdClass::class);
+    $entry = $this->createMock(VaultAuditEntryMockInterface::class);
     $entry->method('id')->willReturn(55);
     $entry->expects($this->once())->method('save');
 
@@ -157,7 +157,7 @@ class VaultAuditLogServiceTest extends UnitTestCase {
     $query->method('execute')->willReturn([1]);
 
     // Create a fake entry with a deliberately wrong hash.
-    $entry = $this->createMock(\stdClass::class);
+    $entry = $this->createMock(VaultAuditEntryMockInterface::class);
     $entry->method('id')->willReturn(1);
 
     $fieldMap = [
@@ -204,11 +204,11 @@ class VaultAuditLogServiceTest extends UnitTestCase {
     $lastHashQuery->method('range')->willReturnSelf();
     $lastHashQuery->method('execute')->willReturn([]);
 
-    $entry1 = $this->createMock(\stdClass::class);
+    $entry1 = $this->createMock(VaultAuditEntryMockInterface::class);
     $entry1->method('id')->willReturn(1);
     $entry1->expects($this->once())->method('save');
 
-    $entry2 = $this->createMock(\stdClass::class);
+    $entry2 = $this->createMock(VaultAuditEntryMockInterface::class);
     $entry2->method('id')->willReturn(2);
     $entry2->expects($this->once())->method('save');
 
@@ -240,13 +240,11 @@ class VaultAuditLogServiceTest extends UnitTestCase {
    */
   public function testLogActionReturnsZeroOnException(): void {
     $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('getQuery')
-      ->willThrowException(new \RuntimeException('DB error'));
-
+    // Force exception in getStorage or create.
     $this->entityTypeManager
       ->method('getStorage')
       ->with('document_audit_log')
-      ->willReturn($storage);
+      ->willThrowException(new \RuntimeException('Storage error'));
 
     $this->logger->expects($this->once())
       ->method('error');
@@ -278,12 +276,30 @@ class VaultAuditLogServiceTest extends UnitTestCase {
    * Helper to create a mock field item with first()->getValue() support.
    */
   protected function createFieldItemWithGetValue(array $value): object {
-    $firstItem = $this->createMock(\stdClass::class);
+    $firstItem = $this->createMock(VaultFieldItemMockInterface::class);
     $firstItem->method('getValue')->willReturn($value);
 
-    $field = $this->createMock(\stdClass::class);
+    $field = $this->createMock(VaultFieldItemMockInterface::class);
     $field->method('first')->willReturn($firstItem);
     return $field;
   }
 
 }
+
+/**
+ * Temporary interface for mocking audit entries.
+ */
+interface VaultAuditEntryMockInterface {
+  public function id();
+  public function save();
+  public function get(string $field);
+}
+
+/**
+ * Temporary interface for field items.
+ */
+interface VaultFieldItemMockInterface {
+  public function first();
+  public function getValue();
+}
+

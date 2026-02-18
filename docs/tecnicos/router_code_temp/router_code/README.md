@@ -75,9 +75,9 @@ Crear archivo `.env`:
 
 ```env
 # Proveedores de IA
-ANTHROPIC_API_KEY=sk-ant-xxxxx
-GOOGLE_API_KEY=AIzaxxxxx
-OPENAI_API_KEY=sk-xxxxx
+ANTHROPIC_API_KEY=sk-ant-mock-key
+GOOGLE_API_KEY=AIza-mock-key
+OPENAI_API_KEY=sk-mock-key
 
 # Base de datos
 DATABASE_URL=postgresql://user:pass@localhost:5432/copiloto_db

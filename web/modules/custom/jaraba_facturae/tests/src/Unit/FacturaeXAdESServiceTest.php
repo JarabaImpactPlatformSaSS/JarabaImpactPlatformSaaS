@@ -7,6 +7,7 @@ namespace Drupal\Tests\jaraba_facturae\Unit;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\CertificateManagerService;
+use Drupal\ecosistema_jaraba_core\ValueObject\CertificateValidationResult;
 use Drupal\jaraba_facturae\Service\FacturaeXAdESService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -267,15 +268,13 @@ class FacturaeXAdESServiceTest extends UnitTestCase {
       ->with('facturae_tenant_config')
       ->willReturn($storage);
 
-    $validationResult = new \stdClass();
-    $validationResult->isValid = TRUE;
-    $validationResult->status = 'valid';
-    $validationResult->subject = 'CN=Test Corp';
-    $validationResult->issuer = 'CN=Test CA';
-    $validationResult->nif = 'B12345678';
-    $validationResult->validFrom = '2025-01-01';
-    $validationResult->validTo = '2026-01-01';
-    $validationResult->daysRemaining = 300;
+    $certInfo = [
+      'subject' => ['CN' => 'Test Corp'],
+      'issuer' => ['CN' => 'Test CA'],
+      'serialNumber' => '12345678',
+      'validTo_time_t' => strtotime('+1 year'),
+    ];
+    $validationResult = CertificateValidationResult::valid($certInfo, 'B12345678');
 
     $this->certificateManager->method('validateCertificate')
       ->with(1, 'test_password')
@@ -284,8 +283,7 @@ class FacturaeXAdESServiceTest extends UnitTestCase {
     $result = $this->service->getCertificateInfo(1);
 
     $this->assertTrue($result['is_valid']);
-    $this->assertEquals('valid', $result['status']);
-    $this->assertEquals('CN=Test Corp', $result['subject']);
+    $this->assertEquals('Test Corp', $result['subject']);
     $this->assertEquals('B12345678', $result['nif']);
   }
 

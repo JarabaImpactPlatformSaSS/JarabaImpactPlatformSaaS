@@ -40,33 +40,44 @@ class VeriFactuEventLogAccessControlHandlerTest extends UnitTestCase {
     $entity_type = $this->createMock(EntityTypeInterface::class);
     $entity_type->method('id')->willReturn('verifactu_event_log');
     $entity_type->method('getAdminPermission')->willReturn('administer verifactu');
-    $entity_type->method('getHandlerClasses')->willReturn([]);
 
     $this->handler = new VeriFactuEventLogAccessControlHandler($entity_type);
 
     // Set up container with cache contexts manager.
     $container = new ContainerBuilder();
     $cache_contexts_manager = $this->createMock(CacheContextsManager::class);
-    $cache_contexts_manager->method('assertValidTokens')->willReturn(TRUE);
     $container->set('cache_contexts_manager', $cache_contexts_manager);
     \Drupal::setContainer($container);
+  }
+
+  /**
+   * Invokes the protected checkAccess method.
+   */
+  protected function callCheckAccess($entity, $operation, $account) {
+    $reflection = new \ReflectionMethod($this->handler, 'checkAccess');
+    $reflection->setAccessible(TRUE);
+    return $reflection->invoke($this->handler, $entity, $operation, $account);
+  }
+
+  /**
+   * Helper to create a mock entity with cache metadata.
+   */
+  protected function createMockEntity(): ContentEntityInterface {
+    $entity = $this->createMock(ContentEntityInterface::class);
+    $entity->method('getCacheContexts')->willReturn([]);
+    $entity->method('getCacheTags')->willReturn([]);
+    $entity->method('getCacheMaxAge')->willReturn(-1);
+    return $entity;
   }
 
   /**
    * Tests that update is always forbidden.
    */
   public function testUpdateAlwaysForbidden(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
-    $entity->method('getEntityTypeId')->willReturn('verifactu_event_log');
-    $entity->method('getCacheContexts')->willReturn([]);
-    $entity->method('getCacheTags')->willReturn([]);
-    $entity->method('getCacheMaxAge')->willReturn(-1);
-
+    $entity = $this->createMockEntity();
     $admin = $this->createMock(AccountInterface::class);
-    $admin->method('hasPermission')->willReturn(TRUE);
-    $admin->method('id')->willReturn(1);
 
-    $result = $this->handler->access($entity, 'update', $admin, TRUE);
+    $result = $this->callCheckAccess($entity, 'update', $admin);
     $this->assertTrue($result->isForbidden());
   }
 
@@ -74,17 +85,10 @@ class VeriFactuEventLogAccessControlHandlerTest extends UnitTestCase {
    * Tests that delete is always forbidden.
    */
   public function testDeleteAlwaysForbidden(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
-    $entity->method('getEntityTypeId')->willReturn('verifactu_event_log');
-    $entity->method('getCacheContexts')->willReturn([]);
-    $entity->method('getCacheTags')->willReturn([]);
-    $entity->method('getCacheMaxAge')->willReturn(-1);
-
+    $entity = $this->createMockEntity();
     $admin = $this->createMock(AccountInterface::class);
-    $admin->method('hasPermission')->willReturn(TRUE);
-    $admin->method('id')->willReturn(1);
 
-    $result = $this->handler->access($entity, 'delete', $admin, TRUE);
+    $result = $this->callCheckAccess($entity, 'delete', $admin);
     $this->assertTrue($result->isForbidden());
   }
 
@@ -92,19 +96,14 @@ class VeriFactuEventLogAccessControlHandlerTest extends UnitTestCase {
    * Tests that view is allowed for users with event log permission.
    */
   public function testViewAllowedWithPermission(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
-    $entity->method('getEntityTypeId')->willReturn('verifactu_event_log');
-    $entity->method('getCacheContexts')->willReturn([]);
-    $entity->method('getCacheTags')->willReturn([]);
-    $entity->method('getCacheMaxAge')->willReturn(-1);
-
+    $entity = $this->createMockEntity();
     $account = $this->createMock(AccountInterface::class);
-    $account->method('hasPermission')->willReturnCallback(function (string $perm): bool {
-      return $perm === 'view verifactu event log';
-    });
-    $account->method('id')->willReturn(2);
+    $account->method('hasPermission')->willReturnMap([
+      ['administer verifactu', FALSE],
+      ['view verifactu event log', TRUE],
+    ]);
 
-    $result = $this->handler->access($entity, 'view', $account, TRUE);
+    $result = $this->callCheckAccess($entity, 'view', $account);
     $this->assertTrue($result->isAllowed());
   }
 
@@ -112,17 +111,11 @@ class VeriFactuEventLogAccessControlHandlerTest extends UnitTestCase {
    * Tests that view is denied without any relevant permission.
    */
   public function testViewDeniedWithoutPermission(): void {
-    $entity = $this->createMock(ContentEntityInterface::class);
-    $entity->method('getEntityTypeId')->willReturn('verifactu_event_log');
-    $entity->method('getCacheContexts')->willReturn([]);
-    $entity->method('getCacheTags')->willReturn([]);
-    $entity->method('getCacheMaxAge')->willReturn(-1);
-
+    $entity = $this->createMockEntity();
     $account = $this->createMock(AccountInterface::class);
     $account->method('hasPermission')->willReturn(FALSE);
-    $account->method('id')->willReturn(3);
 
-    $result = $this->handler->access($entity, 'view', $account, TRUE);
+    $result = $this->callCheckAccess($entity, 'view', $account);
     $this->assertFalse($result->isAllowed());
   }
 

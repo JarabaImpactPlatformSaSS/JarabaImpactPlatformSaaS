@@ -55,10 +55,15 @@ class SocialCalendarServiceTest extends UnitTestCase {
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->postStorage = $this->createMock(EntityStorageInterface::class);
 
+    // Mock getStorage to return appropriate storage based on entity type.
     $this->entityTypeManager
       ->method('getStorage')
-      ->with('social_post')
-      ->willReturn($this->postStorage);
+      ->willReturnCallback(function (string $entity_type) {
+        if ($entity_type === 'social_post') {
+          return $this->postStorage;
+        }
+        return $this->createMock(EntityStorageInterface::class);
+      });
 
     $this->service = new SocialCalendarService(
       $this->entityTypeManager,
@@ -214,6 +219,12 @@ class SocialCalendarServiceTest extends UnitTestCase {
    * @covers ::getOptimalTimes
    */
   public function testGetOptimalTimesReturnsDefaultsForPlatform(): void {
+    $query = $this->createMock(QueryInterface::class);
+    $query->method('accessCheck')->willReturnSelf();
+    $query->method('condition')->willReturnSelf();
+    $query->method('execute')->willReturn([]);
+    $this->postStorage->method('getQuery')->willReturn($query);
+
     $times = $this->service->getOptimalTimes(42, 'instagram');
 
     $this->assertCount(3, $times);
@@ -233,6 +244,12 @@ class SocialCalendarServiceTest extends UnitTestCase {
    * @covers ::getOptimalTimes
    */
   public function testGetOptimalTimesReturnsEmptyForUnknownPlatform(): void {
+    $query = $this->createMock(QueryInterface::class);
+    $query->method('accessCheck')->willReturnSelf();
+    $query->method('condition')->willReturnSelf();
+    $query->method('execute')->willReturn([]);
+    $this->postStorage->method('getQuery')->willReturn($query);
+
     $times = $this->service->getOptimalTimes(42, 'mastodon');
 
     $this->assertIsArray($times);

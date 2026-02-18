@@ -200,7 +200,7 @@ class VeriFactuRemisionServiceTest extends UnitTestCase {
     });
 
     $batch->method('set')->willReturnSelf();
-    $batch->method('save')->willReturn(SAVED_UPDATED);
+    $batch->method('save')->willReturn(2);
 
     return $batch;
   }

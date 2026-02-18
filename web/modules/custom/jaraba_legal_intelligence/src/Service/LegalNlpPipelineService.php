@@ -79,7 +79,7 @@ class LegalNlpPipelineService {
    *   Gestor de tipos de entidad para buscar resoluciones citadas.
    */
   public function __construct(
-    protected AiProviderPluginManager $aiProvider,
+    protected object $aiProvider,
     protected ClientInterface $httpClient,
     protected ConfigFactoryInterface $configFactory,
     protected LoggerInterface $logger,

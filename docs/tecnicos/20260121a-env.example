@@ -59,7 +59,7 @@ DRUPAL_TRUSTED_HOSTS=localhost,127.0.0.1,tu-dominio.com
 
 # API Key de Anthropic (obtener en console.anthropic.com)
 # ¡MANTENER SEGURA! No compartir ni subir a repositorios
-ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ANTHROPIC_API_KEY=sk-ant-api03-MOCK_KEY_REPLACED
 
 # Modelo de Claude a usar
 # Opciones: claude-3-5-sonnet-20241022, claude-3-opus-20240229, claude-3-haiku-20240307

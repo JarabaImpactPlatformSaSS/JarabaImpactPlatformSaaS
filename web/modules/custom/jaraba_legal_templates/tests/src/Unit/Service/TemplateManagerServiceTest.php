@@ -255,7 +255,7 @@ class TemplateManagerServiceTest extends UnitTestCase {
    * Helper to create a mock field item with getValue() returning array.
    */
   protected function createFieldItemList(array $values): object {
-    $field = $this->createMock(\stdClass::class);
+    $field = $this->createMock(FieldItemListMockInterface::class);
     $field->method('getValue')->willReturn($values);
     return $field;
   }
@@ -274,11 +274,11 @@ class TemplateManagerServiceTest extends UnitTestCase {
     array $mergeFields,
     string $created,
   ): object {
-    $template = $this->createMock(\stdClass::class);
+    $template = $this->createMock(LegalTemplateMockInterface::class);
     $template->method('id')->willReturn($id);
     $template->method('uuid')->willReturn($uuid);
 
-    $mergeFieldsItemList = $this->createMock(\stdClass::class);
+    $mergeFieldsItemList = $this->createMock(FieldItemListMockInterface::class);
     $mergeFieldsItemList->method('getValue')->willReturn(
       !empty($mergeFields) ? [$mergeFields] : [],
     );
@@ -300,4 +300,20 @@ class TemplateManagerServiceTest extends UnitTestCase {
     return $template;
   }
 
+}
+
+/**
+ * Temporary interface for mocking legal templates.
+ */
+interface LegalTemplateMockInterface {
+  public function id();
+  public function uuid();
+  public function get(string $field);
+}
+
+/**
+ * Temporary interface for mocking field item lists.
+ */
+interface FieldItemListMockInterface {
+  public function getValue();
 }

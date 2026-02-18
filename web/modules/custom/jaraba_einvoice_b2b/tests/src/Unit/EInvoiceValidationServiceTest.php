@@ -179,12 +179,20 @@ class EInvoiceValidationServiceTest extends UnitTestCase {
    * @covers ::validateBusinessRules
    */
   public function testBusinessRulesNegativePayable(): void {
-    $xml = str_replace(
-      '<cbc:PayableAmount currencyID="EUR">1210.00</cbc:PayableAmount>',
-      '<cbc:PayableAmount currencyID="EUR">-50.00</cbc:PayableAmount>',
-      $this->createValidUblXml(),
-    );
-    $result = $this->validator->validateBusinessRules($xml);
+    $xml = $this->createValidUblXml();
+    $dom = new \DOMDocument();
+    $dom->loadXML($xml);
+    $xpath = new \DOMXPath($dom);
+    $xpath->registerNamespace('cbc', 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2');
+    $xpath->registerNamespace('cac', 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2');
+
+    $nodes = $xpath->query('//cac:LegalMonetaryTotal/cbc:PayableAmount');
+    if ($nodes->length > 0) {
+      $nodes->item(0)->nodeValue = '-50.00';
+    }
+    $modifiedXml = $dom->saveXML();
+
+    $result = $this->validator->validateBusinessRules($modifiedXml);
     $this->assertFalse($result->valid);
     $this->assertNotEmpty(array_filter($result->errors, fn($e) => str_contains($e, 'BIZ-03')));
   }
