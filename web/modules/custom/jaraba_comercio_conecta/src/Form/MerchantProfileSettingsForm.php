@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_comercio_conecta\Form;
 
 use Drupal\Core\Form\FormBase;

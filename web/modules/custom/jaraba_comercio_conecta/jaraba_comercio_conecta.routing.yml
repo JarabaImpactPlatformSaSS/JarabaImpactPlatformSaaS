@@ -620,3 +620,16 @@ jaraba_comercio_conecta.api.notifications.preferences.update:
   methods: [POST]
   requirements:
     _user_is_logged_in: 'TRUE'
+
+# --- API REST: Copilot Proactive Actions ---
+# GET: check pending proactive action, POST: dismiss action
+
+jaraba_comercio_conecta.copilot.proactive:
+  path: '/api/v1/copilot/comercio/proactive'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::proactive'
+  requirements:
+    _permission: 'access content'
+  methods: [GET, POST]
+  options:
+    _format: json
