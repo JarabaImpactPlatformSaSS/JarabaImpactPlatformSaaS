@@ -258,9 +258,11 @@ class FacturaeXAdESService {
     if ($signatureValueElements->length > 0 && $signedInfoElements->length > 0) {
       $signatureValue = base64_decode(trim($signatureValueElements->item(0)->textContent));
 
-      // Canonicalize SignedInfo.
+      // Canonicalize SignedInfo in a separate document to match signing context.
       $signedInfoNode = $signedInfoElements->item(0);
-      $canonicalSignedInfo = $signedInfoNode->C14N();
+      $siDoc = new \DOMDocument();
+      $siDoc->appendChild($siDoc->importNode($signedInfoNode, TRUE));
+      $canonicalSignedInfo = $siDoc->C14N();
 
       $publicKey = openssl_pkey_get_public($certPem);
       if ($publicKey !== FALSE) {

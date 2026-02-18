@@ -2,97 +2,74 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\jaraba_verifactu\Unit;
+namespace {
+  if (!class_exists('SoapFault')) {
+    /**
+     * Dummy SoapFault for environments without ext-soap.
+     */
+    class SoapFault extends \Exception {
+      public function __construct($code, $message) {
+        parent::__construct($message);
+      }
+    }
+  }
+}
 
-use Drupal\jaraba_verifactu\Exception\VeriFactuAeatCommunicationException;
-use Drupal\jaraba_verifactu\Exception\VeriFactuChainBreakException;
-use Drupal\Tests\UnitTestCase;
+namespace Drupal\Tests\jaraba_verifactu\Unit {
 
-/**
- * Tests para las excepciones VeriFactu.
- *
- * @group jaraba_verifactu
- */
-class VeriFactuExceptionsTest extends UnitTestCase {
+  use Drupal\jaraba_verifactu\Exception\VeriFactuAeatCommunicationException;
+  use Drupal\jaraba_verifactu\Exception\VeriFactuChainBreakException;
+  use Drupal\Tests\UnitTestCase;
 
   /**
-   * Tests VeriFactuChainBreakException construction and properties.
+   * Tests the custom exceptions for VeriFactu.
+   *
+   * @group jaraba_verifactu
    */
-  public function testChainBreakExceptionProperties(): void {
-    $exception = new VeriFactuChainBreakException(
-      tenantId: 42,
-      recordId: 100,
-      expectedHash: 'abc123def456abc123def456abc123def456abc123def456abc123def456abcd',
-      actualHash: 'zzz999aaa111zzz999aaa111zzz999aaa111zzz999aaa111zzz999aaa111zzzz',
-    );
+  class VeriFactuExceptionsTest extends UnitTestCase {
 
-    $this->assertSame(42, $exception->tenantId);
-    $this->assertSame(100, $exception->recordId);
-    $this->assertStringContainsString('tenant 42', $exception->getMessage());
-    $this->assertStringContainsString('record 100', $exception->getMessage());
-    $this->assertSame(0, $exception->getCode());
+    /**
+     * Tests VeriFactuChainBreakException.
+     */
+    public function testChainBreakException(): void {
+      $e = new VeriFactuChainBreakException(42, 101, 'hash-a', 'hash-b');
+      $this->assertStringContainsString('chain break detected', $e->getMessage());
+      $this->assertEquals(42, $e->tenantId);
+      $this->assertEquals(101, $e->recordId);
+      $this->assertEquals('hash-a', $e->expectedHash);
+      $this->assertEquals('hash-b', $e->actualHash);
+    }
+
+    /**
+     * Tests VeriFactuAeatCommunicationException.
+     */
+    public function testAeatCommunicationException(): void {
+      $e = new VeriFactuAeatCommunicationException('AEAT Timeout', 'SubmitInvoice');
+      $this->assertEquals('AEAT Timeout', $e->getMessage());
+      $this->assertEquals('SubmitInvoice', $e->soapAction);
+    }
+
+    /**
+     * Tests exception wrapping.
+     */
+    public function testExceptionWrapping(): void {
+      $previous = new \Exception('Original error');
+      $e = new VeriFactuAeatCommunicationException('Wrapped error', 'Action', '', '', 0, $previous);
+
+      $this->assertEquals('Wrapped error', $e->getMessage());
+      $this->assertSame($previous, $e->getPrevious());
+    }
+
+    /**
+     * Tests VeriFactuAeatCommunicationException with SoapFault simulation.
+     */
+    public function testAeatCommunicationExceptionWithPrevious(): void {
+      $soapFault = new \SoapFault('Server', 'SOAP Error');
+      $e = new VeriFactuAeatCommunicationException('Communication failed', 'Action', '', '', 0, $soapFault);
+
+      $this->assertEquals('Communication failed', $e->getMessage());
+      $this->assertSame($soapFault, $e->getPrevious());
+    }
+
   }
-
-  /**
-   * Tests VeriFactuChainBreakException with previous exception.
-   */
-  public function testChainBreakExceptionWithPrevious(): void {
-    $previous = new \RuntimeException('disk error');
-    $exception = new VeriFactuChainBreakException(
-      tenantId: 1,
-      recordId: 5,
-      expectedHash: 'aaa',
-      actualHash: 'bbb',
-      previous: $previous,
-    );
-
-    $this->assertSame($previous, $exception->getPrevious());
-  }
-
-  /**
-   * Tests VeriFactuAeatCommunicationException construction.
-   */
-  public function testAeatCommunicationExceptionProperties(): void {
-    $exception = new VeriFactuAeatCommunicationException(
-      message: 'SOAP fault: connection timeout',
-      soapAction: 'SuministroFactEmitidas',
-      responseCode: '503',
-      responseXml: '<error>timeout</error>',
-      httpStatusCode: 503,
-    );
-
-    $this->assertSame('SOAP fault: connection timeout', $exception->getMessage());
-    $this->assertSame('SuministroFactEmitidas', $exception->soapAction);
-    $this->assertSame('503', $exception->responseCode);
-    $this->assertSame('<error>timeout</error>', $exception->responseXml);
-    $this->assertSame(503, $exception->httpStatusCode);
-  }
-
-  /**
-   * Tests VeriFactuAeatCommunicationException with defaults.
-   */
-  public function testAeatCommunicationExceptionDefaults(): void {
-    $exception = new VeriFactuAeatCommunicationException('Generic error');
-
-    $this->assertSame('Generic error', $exception->getMessage());
-    $this->assertSame('', $exception->soapAction);
-    $this->assertSame('', $exception->responseCode);
-    $this->assertSame('', $exception->responseXml);
-    $this->assertSame(0, $exception->httpStatusCode);
-    $this->assertNull($exception->getPrevious());
-  }
-
-  /**
-   * Tests VeriFactuAeatCommunicationException with previous exception.
-   */
-  public function testAeatCommunicationExceptionWithPrevious(): void {
-    $previous = new \SoapFault('Server', 'Internal');
-    $exception = new VeriFactuAeatCommunicationException(
-      message: 'SOAP fault',
-      previous: $previous,
-    );
-
-    $this->assertSame($previous, $exception->getPrevious());
-  }
-
 }

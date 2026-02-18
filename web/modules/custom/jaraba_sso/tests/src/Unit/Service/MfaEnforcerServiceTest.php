@@ -8,7 +8,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_sso\Entity\MfaPolicyInterface;
 use Drupal\jaraba_sso\Service\MfaEnforcerService;
@@ -278,9 +278,9 @@ class MfaEnforcerServiceTest extends TestCase {
   /**
    * Helper: creates a mock tenant entity.
    */
-  protected function createMockTenant(int $id): object {
-    $tenant = $this->createMock(\Drupal\Core\Entity\ContentEntityInterface::class);
-    $tenant->method('id')->willReturn($id);
+  protected function createMockTenant(int $id): TenantInterface&MockObject {
+    $tenant = $this->createMock(TenantInterface::class);
+    $tenant->method('id')->willReturn((string) $id);
     return $tenant;
   }
 

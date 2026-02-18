@@ -257,9 +257,14 @@ class PlatformPushServiceTest extends TestCase {
    * @covers ::sendNotification
    */
   public function testSendNotificationReturnsFalseNoSubscriptions(): void {
+    $query = $this->createMock(QueryInterface::class);
+    $query->method('accessCheck')->willReturnSelf();
+    $query->method('condition')->willReturnSelf();
+    $query->method('execute')->willReturn([]);
+
     $this->storage
-      ->method('loadByProperties')
-      ->willReturn([]);
+      ->method('getQuery')
+      ->willReturn($query);
 
     $result = $this->service->sendNotification(999, 'Test', 'Body');
 

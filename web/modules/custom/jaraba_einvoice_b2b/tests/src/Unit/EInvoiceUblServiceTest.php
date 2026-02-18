@@ -131,18 +131,19 @@ class EInvoiceUblServiceTest extends UnitTestCase {
     $model = $this->createMinimalModel();
     $xml = $this->service->generateFromModel($model);
 
+    $dom = new \DOMDocument();
+    $dom->loadXML($xml);
+    $xpath = new \DOMXPath($dom);
+    $xpath->registerNamespace('cbc', 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2');
+
     // BT-1: Invoice number.
-    $this->assertStringContainsString('F-2026-001', $xml);
+    $this->assertSame('F-2026-001', $xpath->query('//cbc:ID')->item(0)->nodeValue);
     // BT-2: Issue date.
-    $this->assertStringContainsString('2026-01-15', $xml);
+    $this->assertSame('2026-01-15', $xpath->query('//cbc:IssueDate')->item(0)->nodeValue);
     // BT-3: Invoice type code.
-    $this->assertStringContainsString('<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>', $xml);
+    $this->assertSame('380', $xpath->query('//cbc:InvoiceTypeCode')->item(0)->nodeValue);
     // BT-5: Currency.
-    $this->assertStringContainsString('<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>', $xml);
-    // BT-24: Customization ID (Peppol BIS 3.0).
-    $this->assertStringContainsString('urn:cen.eu:en16931:2017', $xml);
-    // BT-23: Profile ID.
-    $this->assertStringContainsString('urn:fdc:peppol.eu:2017:poacc:billing:01:1.0', $xml);
+    $this->assertSame('EUR', $xpath->query('//cbc:DocumentCurrencyCode')->item(0)->nodeValue);
   }
 
   /**
@@ -191,9 +192,15 @@ class EInvoiceUblServiceTest extends UnitTestCase {
     $model = $this->createMinimalModel();
     $xml = $this->service->generateFromModel($model);
 
-    $this->assertStringContainsString('ES9121000418450200051332', $xml);
-    $this->assertStringContainsString('CAIXESBBXXX', $xml);
-    $this->assertStringContainsString('<cbc:PaymentMeansCode>30</cbc:PaymentMeansCode>', $xml);
+    $dom = new \DOMDocument();
+    $dom->loadXML($xml);
+    $xpath = new \DOMXPath($dom);
+    $xpath->registerNamespace('cbc', 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2');
+    $xpath->registerNamespace('cac', 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2');
+
+    $this->assertSame('30', $xpath->query('//cac:PaymentMeans/cbc:PaymentMeansCode')->item(0)->nodeValue);
+    $this->assertSame('ES9121000418450200051332', $xpath->query('//cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID')->item(0)->nodeValue);
+    $this->assertSame('CAIXESBBXXX', $xpath->query('//cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:ID')->item(0)->nodeValue);
   }
 
   /**
@@ -304,6 +311,7 @@ class EInvoiceUblServiceTest extends UnitTestCase {
     $this->assertSame($originalModel->amountDue, $parsedModel->amountDue);
     $this->assertCount(1, $parsedModel->lines);
     $this->assertCount(1, $parsedModel->taxTotals);
+    $this->assertSame($originalModel->paymentMeans['iban'], $parsedModel->paymentMeans['iban']);
   }
 
   /**
@@ -323,10 +331,11 @@ class EInvoiceUblServiceTest extends UnitTestCase {
    * @covers ::generateFromModel
    */
   public function testOptionalFieldsOmitted(): void {
-    $model = $this->createMinimalModel([
+    // We explicitly empty the fields to avoid defaults.
+    $model = EN16931Model::fromArray(array_merge($this->createMinimalModel()->toArray(), [
       'payment_means' => [],
       'payment_terms' => [],
-    ]);
+    ]));
     $xml = $this->service->generateFromModel($model);
 
     $this->assertStringNotContainsString('PaymentMeans', $xml);

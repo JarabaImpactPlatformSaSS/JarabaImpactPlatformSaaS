@@ -113,7 +113,7 @@ class LexnetSyncServiceTest extends UnitTestCase {
     $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')->willReturn([]);
 
-    $entity = $this->createMock(\stdClass::class);
+    $entity = $this->createMock(LexnetNotificationMockInterface::class);
     $entity->expects($this->exactly(2))->method('save');
     $storage->method('create')->willReturn($entity);
 
@@ -148,7 +148,7 @@ class LexnetSyncServiceTest extends UnitTestCase {
       ]);
 
     // This notification already exists.
-    $existingEntity = new \stdClass();
+    $existingEntity = $this->createMock(LexnetNotificationMockInterface::class);
     $storage = $this->createMock(EntityStorageInterface::class);
     $storage->method('loadByProperties')
       ->with(['external_id' => 'EXT-001'])
@@ -212,7 +212,7 @@ class LexnetSyncServiceTest extends UnitTestCase {
    * @covers ::acknowledgeNotification
    */
   public function testMarkAsProcessed(): void {
-    $notification = $this->createMock(\stdClass::class);
+    $notification = $this->createMock(LexnetNotificationMockInterface::class);
 
     $externalIdField = new \stdClass();
     $externalIdField->value = 'EXT-001';
@@ -329,7 +329,7 @@ class LexnetSyncServiceTest extends UnitTestCase {
     ?int $caseId,
     string $created,
   ): object {
-    $notification = $this->createMock(\stdClass::class);
+    $notification = $this->createMock(LexnetNotificationMockInterface::class);
     $notification->method('id')->willReturn($id);
     $notification->method('uuid')->willReturn($uuid);
 
@@ -355,4 +355,15 @@ class LexnetSyncServiceTest extends UnitTestCase {
     return $notification;
   }
 
+}
+
+/**
+ * Temporary interface for mocking LexNET notifications.
+ */
+interface LexnetNotificationMockInterface {
+  public function id();
+  public function uuid();
+  public function save();
+  public function set($field, $value);
+  public function get(string $field);
 }

@@ -101,11 +101,11 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123456'],
+                ['stripe_secret_key', 'sk_test_mock_secret_key'],
             ]);
 
         $result = $this->service->getSecretKey();
-        $this->assertEquals('sk_test_123456', $result);
+        $this->assertEquals('sk_test_mock_secret_key', $result);
     }
 
     /**
@@ -135,7 +135,7 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123'],
+                ['stripe_secret_key', 'sk_test_mock_key'],
             ]);
 
         // Mock: respuesta de creación de cuenta.
@@ -197,7 +197,7 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123'],
+                ['stripe_secret_key', 'sk_test_mock_key'],
             ]);
 
         $response = new Response(200, [], json_encode([
@@ -226,7 +226,7 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123'],
+                ['stripe_secret_key', 'sk_test_mock_key'],
             ]);
 
         $response = new Response(200, [], json_encode([
@@ -258,7 +258,7 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123'],
+                ['stripe_secret_key', 'sk_test_mock_key'],
                 ['stripe_platform_fee', '5.0'],
             ]);
 
@@ -294,7 +294,7 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123'],
+                ['stripe_secret_key', 'sk_test_mock_key'],
                 ['stripe_platform_fee', $feePercent],
             ]);
 
@@ -437,7 +437,7 @@ class StripeConnectServiceTest extends UnitTestCase
     {
         $this->config->method('get')
             ->willReturnMap([
-                ['stripe_secret_key', 'sk_test_123'],
+                ['stripe_secret_key', 'sk_test_mock_key'],
             ]);
 
         $response = new Response(200, [], json_encode([
@@ -451,7 +451,7 @@ class StripeConnectServiceTest extends UnitTestCase
                 'GET',
                 'https://api.stripe.com/v1/accounts/acct_test',
                 $this->callback(function ($options) {
-                    return $options['headers']['Authorization'] === 'Bearer sk_test_123';
+                    return $options['headers']['Authorization'] === 'Bearer sk_test_mock_key';
                 })
             )
             ->willReturn($response);

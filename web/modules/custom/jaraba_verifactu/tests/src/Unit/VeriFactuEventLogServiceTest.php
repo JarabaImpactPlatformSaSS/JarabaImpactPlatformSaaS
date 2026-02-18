@@ -80,7 +80,7 @@ class VeriFactuEventLogServiceTest extends UnitTestCase {
    */
   public function testLogEventCreatesEntity(string $eventType): void {
     $mockEntity = $this->createMock(VeriFactuEventLog::class);
-    $mockEntity->method('save')->willReturn(SAVED_NEW);
+    $mockEntity->method('save')->willReturn(1);
 
     $this->storage->expects($this->once())
       ->method('create')
@@ -125,7 +125,7 @@ class VeriFactuEventLogServiceTest extends UnitTestCase {
    */
   public function testLogEventExtractsSeverity(): void {
     $mockEntity = $this->createMock(VeriFactuEventLog::class);
-    $mockEntity->method('save')->willReturn(SAVED_NEW);
+    $mockEntity->method('save')->willReturn(1);
 
     $this->storage->expects($this->once())
       ->method('create')
@@ -145,7 +145,7 @@ class VeriFactuEventLogServiceTest extends UnitTestCase {
    */
   public function testLogEventSerializesDetailsAsJson(): void {
     $mockEntity = $this->createMock(VeriFactuEventLog::class);
-    $mockEntity->method('save')->willReturn(SAVED_NEW);
+    $mockEntity->method('save')->willReturn(1);
 
     $this->storage->expects($this->once())
       ->method('create')
@@ -166,7 +166,7 @@ class VeriFactuEventLogServiceTest extends UnitTestCase {
    */
   public function testLogEventWithRecordId(): void {
     $mockEntity = $this->createMock(VeriFactuEventLog::class);
-    $mockEntity->method('save')->willReturn(SAVED_NEW);
+    $mockEntity->method('save')->willReturn(1);
 
     $this->storage->expects($this->once())
       ->method('create')
@@ -197,7 +197,7 @@ class VeriFactuEventLogServiceTest extends UnitTestCase {
    */
   public function testEventHashFormat(): void {
     $mockEntity = $this->createMock(VeriFactuEventLog::class);
-    $mockEntity->method('save')->willReturn(SAVED_NEW);
+    $mockEntity->method('save')->willReturn(1);
 
     $this->storage->expects($this->once())
       ->method('create')

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_intelligence\Service;
 
-use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
@@ -76,7 +76,7 @@ class LegalSearchService {
   /**
    * Construye una nueva instancia de LegalSearchService.
    *
-   * @param \Drupal\ai\AiProviderPluginManager $aiProvider
+   * @param object $aiProvider
    *   Gestor de plugins de IA para generar embeddings de la query.
    * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext
    *   Servicio de contexto de tenant para verificar plan y limites.
@@ -88,15 +88,20 @@ class LegalSearchService {
    *   Factoria de configuracion para leer URLs, thresholds y limites.
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger del canal jaraba_legal_intelligence.
+   * @param \Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService $featureGate
+   *   Servicio de feature gate para limites.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   Proxy de cuenta del usuario actual.
    */
   public function __construct(
-    protected AiProviderPluginManager $aiProvider,
+    protected object $aiProvider,
     protected TenantContextService $tenantContext,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected ClientInterface $httpClient,
     protected ConfigFactoryInterface $configFactory,
     protected LoggerInterface $logger,
     protected JarabaLexFeatureGateService $featureGate,
+    protected AccountProxyInterface $currentUser,
   ) {}
 
   /**
@@ -771,7 +776,7 @@ class LegalSearchService {
    *   ['allowed' => bool, 'message' => string|null].
    */
   private function checkPlanLimits($config): array {
-    $userId = (int) \Drupal::currentUser()->id();
+    $userId = (int) $this->currentUser->id();
 
     // Usuarios anonimos: permitir busqueda (sera filtrada por permisos de ruta).
     if ($userId === 0) {

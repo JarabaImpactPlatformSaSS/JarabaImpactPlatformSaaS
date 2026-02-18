@@ -128,7 +128,7 @@ class SlaCalculatorServiceTest extends UnitTestCase {
    */
   public function testCalculateUptimeWithIncidents(): void {
     // Create a mock incident with 60 minutes of downtime.
-    $incident = $this->createMock(\stdClass::class);
+    $incident = $this->createMock(SlaEntityMockInterface::class);
     $incident->method('get')->willReturnCallback(function (string $field) {
       $fields = [
         'started_at' => $this->createFieldItem('2026-01-15T10:00:00'),
@@ -220,7 +220,7 @@ class SlaCalculatorServiceTest extends UnitTestCase {
     $incidentStorage->method('getQuery')->willReturn($incidentQuery);
 
     // Agreement with 99.9% target.
-    $agreement = $this->createMock(\stdClass::class);
+    $agreement = $this->createMock(SlaEntityMockInterface::class);
     $agreement->method('get')->willReturnCallback(function (string $field) {
       $fields = [
         'uptime_target' => $this->createFieldItem('99.900'),
@@ -254,7 +254,7 @@ class SlaCalculatorServiceTest extends UnitTestCase {
    */
   public function testSlaNotMetWhenBelowTarget(): void {
     // Create incidents totaling significant downtime.
-    $incident = $this->createMock(\stdClass::class);
+    $incident = $this->createMock(SlaEntityMockInterface::class);
     $incident->method('get')->willReturnCallback(function (string $field) {
       $fields = [
         // 3 days of downtime.
@@ -275,7 +275,7 @@ class SlaCalculatorServiceTest extends UnitTestCase {
     $incidentStorage->method('loadMultiple')->with([1])->willReturn([$incident]);
 
     // Agreement with 99.99% target.
-    $agreement = $this->createMock(\stdClass::class);
+    $agreement = $this->createMock(SlaEntityMockInterface::class);
     $agreement->method('get')->willReturnCallback(function (string $field) {
       $fields = [
         'uptime_target' => $this->createFieldItem('99.990'),
@@ -305,4 +305,11 @@ class SlaCalculatorServiceTest extends UnitTestCase {
     $this->assertGreaterThan(0.0, $result['downtime_minutes']);
   }
 
+}
+
+/**
+ * Temporary interface for mocking SLA entities.
+ */
+interface SlaEntityMockInterface {
+  public function get(string $field);
 }

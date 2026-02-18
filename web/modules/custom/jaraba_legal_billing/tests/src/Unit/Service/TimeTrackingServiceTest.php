@@ -90,7 +90,7 @@ class TimeTrackingServiceTest extends UnitTestCase {
    * @covers ::logTime
    */
   public function testStartTimer(): void {
-    $entry = $this->createMock(\stdClass::class);
+    $entry = $this->createMock(TimeEntryMockInterface::class);
     $entry->method('id')->willReturn(101);
     $entry->method('uuid')->willReturn('entry-uuid-abc');
     $durationField = $this->createFieldItem(90);
@@ -228,7 +228,7 @@ class TimeTrackingServiceTest extends UnitTestCase {
     ?int $invoiceId,
     string $created,
   ): object {
-    $entry = $this->createMock(\stdClass::class);
+    $entry = $this->createMock(TimeEntryMockInterface::class);
     $entry->method('id')->willReturn($id);
     $entry->method('uuid')->willReturn($uuid);
 
@@ -251,4 +251,14 @@ class TimeTrackingServiceTest extends UnitTestCase {
     return $entry;
   }
 
+}
+
+/**
+ * Temporary interface for mocking time entry.
+ */
+interface TimeEntryMockInterface {
+  public function id();
+  public function uuid();
+  public function save();
+  public function get(string $field);
 }

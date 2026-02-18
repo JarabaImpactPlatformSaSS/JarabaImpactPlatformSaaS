@@ -488,13 +488,13 @@ QDRANT_DEV_API_KEY=dev_local_key_change_me_12345
 # OPENAI (Embeddings)
 # Obtener en: https://platform.openai.com/api-keys
 # ─────────────────────────────────────────────────────────────────────────
-OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENAI_API_KEY=sk-proj-MOCK_KEY_REPLACED
  
 # ─────────────────────────────────────────────────────────────────────────
 # ANTHROPIC (Claude API)
 # Obtener en: https://console.anthropic.com/
 # ─────────────────────────────────────────────────────────────────────────
-ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ANTHROPIC_API_KEY=sk-ant-MOCK_KEY_REPLACED
  
 # ─────────────────────────────────────────────────────────────────────────
 # MEILISEARCH

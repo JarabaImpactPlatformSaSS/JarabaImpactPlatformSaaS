@@ -64,9 +64,9 @@ class FacturaeValidationServiceTest extends UnitTestCase {
       'NIE Z0000000M' => ['Z0000000M'],
       // CIF.
       'CIF A28015865' => ['A28015865'],
-      'CIF B86596045' => ['B86596045'],
+      'CIF B86596046' => ['B86596046'],
       'CIF Q2826000H' => ['Q2826000H'],
-      'CIF P1234567A' => ['P1234567A'],
+      'CIF P1234567D' => ['P1234567D'],
     ];
   }
 

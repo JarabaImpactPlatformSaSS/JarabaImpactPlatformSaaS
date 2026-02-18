@@ -11,6 +11,7 @@
  *
  * RUTAS:
  * - /empleo, /talento, /emprender, /comercio, /instituciones
+ * - /jarabalex, /legal, /agroconecta, /comercioconecta, etc.
  *
  * @see ecosistema_jaraba_theme.theme para preprocess
  */
@@ -20,19 +21,7 @@
 {{ attach_library('ecosistema_jaraba_core/global') }}
 {{ attach_library('ecosistema_jaraba_theme/progressive-profiling') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-vertical-landing', 'landing-page', 'vertical-' ~ vertical_key|default('default')) }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
+<div class="page-wrapper page-wrapper--clean page-wrapper--landing">
 
   {# HEADER - Partial reutilizable con menú móvil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -73,6 +62,4 @@
     is_expanded: false
   } %}
 
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-</body>
-</html>
+</div>
