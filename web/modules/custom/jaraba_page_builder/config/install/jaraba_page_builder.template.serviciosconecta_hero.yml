@@ -1,4 +1,7 @@
-id: 'serviciosconecta_hero'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_hero
 label: 'ServiciosConecta: Presentacion Profesional'
 description: 'Seccion seccion hero principal especializada para profesionales de servicios.'
 category: serviciosconecta

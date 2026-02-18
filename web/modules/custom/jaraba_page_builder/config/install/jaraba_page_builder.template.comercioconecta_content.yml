@@ -1,4 +1,7 @@
-id: 'comercioconecta_content'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_content
 label: 'ComercioConecta: Historia de la Marca'
 description: 'Seccion seccion narrativa especializada para comercios y tiendas.'
 category: comercioconecta

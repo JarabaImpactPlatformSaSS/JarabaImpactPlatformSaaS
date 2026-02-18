@@ -1,4 +1,7 @@
-id: 'agroconecta_faq'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_faq
 label: 'AgroConecta: Certificacion Organica'
 description: 'Seccion preguntas frecuentes especializada para productores agricolas.'
 category: agroconecta

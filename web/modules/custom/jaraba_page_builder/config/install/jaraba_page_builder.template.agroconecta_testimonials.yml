@@ -1,4 +1,7 @@
-id: 'agroconecta_testimonials'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_testimonials
 label: 'AgroConecta: Historia del Productor'
 description: 'Seccion historias de exito especializada para productores agricolas.'
 category: agroconecta

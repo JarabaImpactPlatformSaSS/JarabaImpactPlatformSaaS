@@ -1,4 +1,7 @@
-id: 'serviciosconecta_case_studies'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_case_studies
 label: 'ServiciosConecta: Casos de Exito'
 description: 'Seccion casos de exito con before/after, testimonial y KPIs de impacto.'
 category: serviciosconecta

@@ -1,4 +1,7 @@
-id: 'serviciosconecta_features'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_features
 label: 'ServiciosConecta: Rejilla de Servicios'
 description: 'Seccion rejilla de caracteristicas especializada para profesionales de servicios.'
 category: serviciosconecta

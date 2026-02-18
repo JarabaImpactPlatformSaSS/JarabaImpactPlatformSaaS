@@ -1,4 +1,7 @@
-id: 'agroconecta_content'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_content
 label: 'AgroConecta: Certificacion y Origen'
 description: 'Seccion seccion narrativa especializada para productores agricolas.'
 category: agroconecta

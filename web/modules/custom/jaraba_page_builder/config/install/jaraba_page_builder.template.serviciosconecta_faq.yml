@@ -1,4 +1,7 @@
-id: 'serviciosconecta_faq'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_faq
 label: 'ServiciosConecta: Proceso del Servicio'
 description: 'Seccion preguntas frecuentes especializada para profesionales de servicios.'
 category: serviciosconecta

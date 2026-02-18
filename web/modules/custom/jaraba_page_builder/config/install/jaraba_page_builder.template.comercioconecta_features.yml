@@ -1,4 +1,7 @@
-id: 'comercioconecta_features'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_features
 label: 'ComercioConecta: Catalogo de Productos'
 description: 'Seccion rejilla de caracteristicas especializada para comercios y tiendas.'
 category: comercioconecta

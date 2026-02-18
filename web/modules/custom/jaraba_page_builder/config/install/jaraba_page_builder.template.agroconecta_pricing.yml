@@ -1,4 +1,7 @@
-id: 'agroconecta_pricing'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_pricing
 label: 'AgroConecta: Cajas de Suscripcion'
 description: 'Seccion tabla de precios especializada para productores agricolas.'
 category: agroconecta

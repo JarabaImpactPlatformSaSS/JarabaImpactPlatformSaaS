@@ -309,3 +309,66 @@ function jaraba_page_builder_update_9004(&$sandbox) {
     '@skipped' => $skipped,
   ]);
 }
+
+/**
+ * Re-import 59 vertical templates with corrected Drupal config headers.
+ *
+ * Los YAMLs originales carecian de langcode/status/dependencies, lo que
+ * impedia que Drupal los reconociera como config entities activas.
+ * Este update fuerza la reimportacion con las cabeceras corregidas.
+ */
+function jaraba_page_builder_update_9005(&$sandbox) {
+  $verticals = [
+    'agroconecta',
+    'comercioconecta',
+    'serviciosconecta',
+    'empleabilidad',
+    'emprendimiento',
+  ];
+
+  $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
+  $config_path = $module_path . '/config/install';
+  $imported = 0;
+  $updated = 0;
+
+  foreach ($verticals as $vertical) {
+    $pattern = $config_path . '/jaraba_page_builder.template.' . $vertical . '_*.yml';
+    $files = glob($pattern);
+
+    foreach ($files as $file) {
+      $yaml_content = file_get_contents($file);
+      if (!$yaml_content) {
+        continue;
+      }
+
+      $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+      if (empty($data['id'])) {
+        continue;
+      }
+
+      // Garantizar cabeceras Drupal.
+      $data += [
+        'langcode' => 'es',
+        'status' => TRUE,
+        'dependencies' => [],
+      ];
+
+      $config_name = 'jaraba_page_builder.template.' . $data['id'];
+      $config = \Drupal::configFactory()->getEditable($config_name);
+
+      if ($config->isNew()) {
+        $imported++;
+      }
+      else {
+        $updated++;
+      }
+
+      $config->setData($data)->save();
+    }
+  }
+
+  return t('Vertical templates — new: @imported, updated: @updated.', [
+    '@imported' => $imported,
+    '@updated' => $updated,
+  ]);
+}

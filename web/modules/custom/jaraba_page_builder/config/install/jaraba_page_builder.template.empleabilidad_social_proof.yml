@@ -1,4 +1,7 @@
-id: 'empleabilidad_social_proof'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_social_proof
 label: 'Empleabilidad: Empresas Aliadas'
 description: 'Seccion credibilidad y confianza especializada para buscadores de empleo.'
 category: empleabilidad

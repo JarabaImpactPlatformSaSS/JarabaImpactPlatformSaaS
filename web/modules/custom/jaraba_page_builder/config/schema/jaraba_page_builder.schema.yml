@@ -65,6 +65,9 @@ jaraba_page_builder.template.*:
     preview_data:
       type: ignore
       label: 'Datos curados de preview'
+    animation:
+      type: string
+      label: 'Animación de entrada'
     weight:
       type: integer
       label: 'Peso'

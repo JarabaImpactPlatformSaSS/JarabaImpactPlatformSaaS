@@ -1,4 +1,7 @@
-id: 'serviciosconecta_stats'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_stats
 label: 'ServiciosConecta: Metricas de Experiencia'
 description: 'Seccion metricas de impacto especializada para profesionales de servicios.'
 category: serviciosconecta

@@ -1,4 +1,7 @@
-id: 'serviciosconecta_pricing'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_pricing
 label: 'ServiciosConecta: Paquetes de Servicio'
 description: 'Seccion tabla de precios especializada para profesionales de servicios.'
 category: serviciosconecta

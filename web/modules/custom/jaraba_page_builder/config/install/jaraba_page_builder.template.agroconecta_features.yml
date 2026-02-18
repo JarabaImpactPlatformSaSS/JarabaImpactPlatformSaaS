@@ -1,4 +1,7 @@
-id: 'agroconecta_features'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_features
 label: 'AgroConecta: Productos Organicos'
 description: 'Seccion rejilla de caracteristicas especializada para productores agricolas.'
 category: agroconecta

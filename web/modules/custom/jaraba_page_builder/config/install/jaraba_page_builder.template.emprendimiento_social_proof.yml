@@ -1,4 +1,7 @@
-id: 'emprendimiento_social_proof'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_social_proof
 label: 'Emprendimiento: Red de Mentores'
 description: 'Seccion credibilidad y confianza especializada para emprendedores.'
 category: emprendimiento

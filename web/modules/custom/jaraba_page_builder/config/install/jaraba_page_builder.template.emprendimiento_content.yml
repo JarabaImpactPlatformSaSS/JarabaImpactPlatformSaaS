@@ -1,4 +1,7 @@
-id: 'emprendimiento_content'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_content
 label: 'Emprendimiento: Modelo de Negocio'
 description: 'Seccion seccion narrativa especializada para emprendedores.'
 category: emprendimiento

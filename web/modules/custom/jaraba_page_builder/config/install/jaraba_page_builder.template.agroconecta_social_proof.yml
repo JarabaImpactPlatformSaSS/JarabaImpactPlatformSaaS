@@ -1,4 +1,7 @@
-id: 'agroconecta_social_proof'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_social_proof
 label: 'AgroConecta: Resenas de Compradores'
 description: 'Seccion credibilidad y confianza especializada para productores agricolas.'
 category: agroconecta

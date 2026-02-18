@@ -1,4 +1,7 @@
-id: 'serviciosconecta_gallery'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_gallery
 label: 'ServiciosConecta: Portafolio de Proyectos'
 description: 'Seccion galeria visual especializada para profesionales de servicios.'
 category: serviciosconecta

@@ -1,4 +1,7 @@
-id: 'emprendimiento_testimonials'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_testimonials
 label: 'Emprendimiento: Historias de Fundadores'
 description: 'Seccion historias de exito especializada para emprendedores.'
 category: emprendimiento

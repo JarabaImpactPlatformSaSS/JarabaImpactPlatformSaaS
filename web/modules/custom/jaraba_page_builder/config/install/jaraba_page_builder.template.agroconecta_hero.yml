@@ -1,4 +1,7 @@
-id: 'agroconecta_hero'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_hero
 label: 'AgroConecta: Escaparate del Productor'
 description: 'Seccion seccion hero principal especializada para productores agricolas.'
 category: agroconecta
