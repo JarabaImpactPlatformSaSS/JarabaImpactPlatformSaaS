@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_ai_agents\Unit\Agent;
 
-use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
 use Drupal\jaraba_ai_agents\Agent\JarabaLexCopilotAgent;
@@ -34,7 +33,7 @@ class JarabaLexCopilotAgentTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $aiProvider = $this->createMock(AiProviderPluginManager::class);
+    $aiProvider = $this->createMock(AiProviderPluginManagerInterface::class);
     $configFactory = $this->createMock(ConfigFactoryInterface::class);
     $logger = $this->createMock(LoggerInterface::class);
     $brandVoice = $this->createMock(TenantBrandVoiceService::class);
@@ -173,5 +172,16 @@ class JarabaLexCopilotAgentTest extends UnitTestCase {
     $this->assertIsString($result);
     $this->assertNotEmpty($result);
   }
+
+}
+
+/**
+ * Temporary interface for mocking AiProviderPluginManager.
+ */
+interface AiProviderPluginManagerInterface {
+
+  public function getDefaultProviderForOperationType(string $operationType): ?array;
+
+  public function createInstance(string $pluginId, array $configuration = []);
 
 }

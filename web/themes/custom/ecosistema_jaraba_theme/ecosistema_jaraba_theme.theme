@@ -866,6 +866,23 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
 }
 
 /**
+ * Helper: Obtiene las configuraciones base del tema para inyectar en templates.
+ */
+function _ecosistema_jaraba_theme_get_base_settings($config) {
+  return [
+    'header_layout' => $config->get('header_layout') ?: 'classic',
+    'footer_layout' => $config->get('footer_layout') ?: 'standard',
+    'header_sticky' => $config->get('header_sticky') ?? TRUE,
+    'enable_header_cta' => $config->get('enable_header_cta') ?? FALSE,
+    'header_cta_text' => $config->get('header_cta_text') ?: t('Empezar'),
+    'header_cta_url' => $config->get('header_cta_url') ?: '/user/register',
+    'enable_footer' => $config->get('enable_footer') ?? TRUE,
+    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'navigation_items' => $config->get('navigation_items'),
+  ];
+}
+
+/**
  * Implements hook_preprocess_html().
  *
  * Inyecta CSS variables desde la configuración del tema.
@@ -1850,7 +1867,7 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
  */
 function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
-  $variables['theme_settings'] = $config->get();
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
 
   // Default values
   if (!isset($variables['theme_settings']['header_layout'])) {
@@ -2067,12 +2084,7 @@ function ecosistema_jaraba_theme_preprocess_page__auth(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
   $site_config = \Drupal::config('system.site');
   
-  $variables['theme_settings'] = [
-    'header_layout' => $config->get('header_layout') ?: 'classic',
-    'footer_layout' => $config->get('footer_layout') ?: 'standard',
-    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
-    'enable_footer' => $config->get('enable_footer') ?? TRUE,
-  ];
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
   
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: '';
@@ -2148,12 +2160,7 @@ function ecosistema_jaraba_theme_preprocess_page__empleabilidad(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
   $site_config = \Drupal::config('system.site');
 
-  $variables['theme_settings'] = [
-    'header_layout' => $config->get('header_layout') ?: 'classic',
-    'footer_layout' => $config->get('footer_layout') ?: 'standard',
-    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
-    'enable_footer' => $config->get('enable_footer') ?? TRUE,
-  ];
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
 
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: '';
@@ -2187,12 +2194,7 @@ function ecosistema_jaraba_theme_preprocess_page__legal(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
   $site_config = \Drupal::config('system.site');
 
-  $variables['theme_settings'] = [
-    'header_layout' => $config->get('header_layout') ?: 'classic',
-    'footer_layout' => $config->get('footer_layout') ?: 'standard',
-    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
-    'enable_footer' => $config->get('enable_footer') ?? TRUE,
-  ];
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
 
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: '';
@@ -2226,12 +2228,7 @@ function ecosistema_jaraba_theme_preprocess_page__emprendimiento(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
   $site_config = \Drupal::config('system.site');
 
-  $variables['theme_settings'] = [
-    'header_layout' => $config->get('header_layout') ?: 'classic',
-    'footer_layout' => $config->get('footer_layout') ?: 'standard',
-    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
-    'enable_footer' => $config->get('enable_footer') ?? TRUE,
-  ];
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
 
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: '';
@@ -2264,12 +2261,7 @@ function ecosistema_jaraba_theme_preprocess_page__andalucia_ei(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
   $site_config = \Drupal::config('system.site');
 
-  $variables['theme_settings'] = [
-    'header_layout' => $config->get('header_layout') ?: 'classic',
-    'footer_layout' => $config->get('footer_layout') ?: 'standard',
-    'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
-    'enable_footer' => $config->get('enable_footer') ?? TRUE,
-  ];
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
 
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: '';
@@ -2383,10 +2375,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
   $config = \Drupal::config('ecosistema_jaraba_theme.settings');
   $site_config = \Drupal::config('system.site');
   
-  $variables['theme_settings'] = [
-    'header_layout' => $config->get('header_layout') ?: 'classic',
-    'footer_layout' => $config->get('footer_layout') ?: 'standard',
-  ];
+  $variables['theme_settings'] = _ecosistema_jaraba_theme_get_base_settings($config);
   
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: '';
@@ -2944,6 +2933,8 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
     'ecosistema_jaraba_core.landing.serviciosconecta',
     'ecosistema_jaraba_core.landing.empleabilidad',
     'ecosistema_jaraba_core.landing.emprendimiento',
+    'ecosistema_jaraba_core.landing.jarabalex',
+    'ecosistema_jaraba_core.landing.legal',
   ];
   if (in_array($route, $landing_routes)) {
     $suggestions[] = 'page__vertical_landing';

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexJourneyProgressionService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
@@ -39,6 +41,20 @@ class JarabaLexJourneyProgressionServiceTest extends UnitTestCase {
   protected $logger;
 
   /**
+   * Mock time.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $time;
+
+  /**
+   * Mock state.
+   *
+   * @var \Drupal\Core\State\StateInterface|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $state;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -46,10 +62,14 @@ class JarabaLexJourneyProgressionServiceTest extends UnitTestCase {
 
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->time = $this->createMock(TimeInterface::class);
+    $this->state = $this->createMock(StateInterface::class);
 
     $this->service = new JarabaLexJourneyProgressionService(
       $this->entityTypeManager,
       $this->logger,
+      $this->time,
+      $this->state,
     );
   }
 
@@ -175,7 +195,12 @@ class JarabaLexJourneyProgressionServiceTest extends UnitTestCase {
     // relies on \Drupal static calls.
     // Use reflection to test evaluate by mocking getDismissedRules.
     $service = $this->getMockBuilder(JarabaLexJourneyProgressionService::class)
-      ->setConstructorArgs([$this->entityTypeManager, $this->logger])
+      ->setConstructorArgs([
+        $this->entityTypeManager,
+        $this->logger,
+        $this->time,
+        $this->state,
+      ])
       ->onlyMethods(['evaluate'])
       ->getMock();
 

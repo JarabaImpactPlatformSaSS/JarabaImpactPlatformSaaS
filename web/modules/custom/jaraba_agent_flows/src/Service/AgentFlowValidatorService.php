@@ -66,16 +66,19 @@ class AgentFlowValidatorService {
     // Verificar que exista la clave 'steps'.
     if (!isset($config['steps'])) {
       $errors[] = 'La configuracion debe contener una clave "steps".';
+      $this->logErrors($errors);
       return $errors;
     }
 
     if (!is_array($config['steps'])) {
       $errors[] = 'La clave "steps" debe ser un array.';
+      $this->logErrors($errors);
       return $errors;
     }
 
     if (empty($config['steps'])) {
       $errors[] = 'El flujo debe contener al menos un paso.';
+      $this->logErrors($errors);
       return $errors;
     }
 
@@ -136,12 +139,26 @@ class AgentFlowValidatorService {
     }
 
     if (!empty($errors)) {
-      $this->logger->notice('Validacion de flujo fallida con @count errores.', [
-        '@count' => count($errors),
-      ]);
+      $this->logErrors($errors);
     }
 
     return $errors;
+  }
+
+  /**
+   * Registra los errores de validacion en el logger.
+   *
+   * @param array $errors
+   *   Los errores encontrados.
+   */
+  protected function logErrors(array $errors): void {
+    if (empty($errors)) {
+      return;
+    }
+
+    $this->logger->notice('Validacion de flujo fallida con @count errores.', [
+      '@count' => count($errors),
+    ]);
   }
 
   /**

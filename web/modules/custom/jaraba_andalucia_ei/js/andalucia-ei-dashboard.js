@@ -26,11 +26,13 @@
                 var animId;
 
                 function resize() {
-                    // Use clientWidth/clientHeight to avoid feedback loop
-                    // (getBoundingClientRect includes the inflated canvas dimensions)
-                    var parent = canvas.parentElement;
-                    canvas.width = parent.clientWidth || window.innerWidth;
-                    canvas.height = parent.clientHeight || 400;
+                    // Clamp to viewport to prevent horizontal overflow.
+                    var w = Math.min(canvas.parentElement.clientWidth, window.innerWidth);
+                    var h = canvas.parentElement.clientHeight || 400;
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
                 }
 
                 function createParticle() {

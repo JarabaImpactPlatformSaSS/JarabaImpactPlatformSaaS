@@ -38,9 +38,9 @@ abstract class BaseAgent implements AgentInterface
      * Permite acceso dinámico a diferentes proveedores (OpenAI, Claude, etc.)
      * basándose en la configuración del módulo ai.
      *
-     * @var \Drupal\ai\AiProviderPluginManager
+     * @var object
      */
-    protected AiProviderPluginManager $aiProvider;
+    protected object $aiProvider;
 
     /**
      * La factoría de configuración.
@@ -111,7 +111,7 @@ abstract class BaseAgent implements AgentInterface
     /**
      * Construye un BaseAgent.
      *
-     * @param \Drupal\ai\AiProviderPluginManager $aiProvider
+     * @param object $aiProvider
      *   El gestor de proveedores IA.
      * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
      *   La factoría de configuración.
@@ -123,7 +123,7 @@ abstract class BaseAgent implements AgentInterface
      *   El servicio de observabilidad IA.
      */
     public function __construct(
-        AiProviderPluginManager $aiProvider,
+        object $aiProvider,
         ConfigFactoryInterface $configFactory,
         LoggerInterface $logger,
         TenantBrandVoiceService $brandVoice,

@@ -1357,6 +1357,15 @@ ecosistema_jaraba_core.landing.jarabalex:
   requirements:
     _access: 'TRUE'
 
+# Alias: /legal → JarabaLex landing
+ecosistema_jaraba_core.landing.legal:
+  path: '/legal'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::jarabalex'
+    _title: 'JarabaLex - Inteligencia legal con IA'
+  requirements:
+    _access: 'TRUE'
+
 # Lead Magnet: Guia Vende Online sin Intermediarios (AgroConecta)
 ecosistema_jaraba_core.lead_magnet.guia_agroconecta:
   path: '/agroconecta/guia-vende-online'
