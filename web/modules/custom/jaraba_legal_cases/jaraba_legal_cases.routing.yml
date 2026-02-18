@@ -59,6 +59,7 @@ jaraba_legal_cases.api.cases.store:
   methods: [POST]
   requirements:
     _permission: 'create legal cases'
+    _csrf_token: 'TRUE'
 
 jaraba_legal_cases.api.cases.detail:
   path: '/api/v1/legal/cases/{uuid}'
@@ -105,6 +106,7 @@ jaraba_legal_cases.api.inquiries.store:
   methods: [POST]
   requirements:
     _permission: 'manage legal inquiries'
+    _csrf_token: 'TRUE'
 
 jaraba_legal_cases.api.inquiries.list:
   path: '/api/v1/legal/inquiries'
@@ -121,6 +123,7 @@ jaraba_legal_cases.api.inquiries.triage:
   methods: [POST]
   requirements:
     _permission: 'manage legal inquiries'
+    _csrf_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_cases.api.inquiries.convert:
@@ -130,6 +133,7 @@ jaraba_legal_cases.api.inquiries.convert:
   methods: [POST]
   requirements:
     _permission: 'manage legal inquiries'
+    _csrf_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_cases.api.inquiries.assign:

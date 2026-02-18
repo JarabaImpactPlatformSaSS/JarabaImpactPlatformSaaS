@@ -12,3 +12,9 @@ jaraba_andalucia_ei.sto_export:
   appears_on:
     - entity.programa_participante_ei.collection
   weight: 10
+
+entity.solicitud_ei.add_form:
+  title: 'Añadir Solicitud'
+  route_name: entity.solicitud_ei.add_form
+  appears_on:
+    - entity.solicitud_ei.collection

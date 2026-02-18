@@ -117,9 +117,10 @@ class RagApiController extends ControllerBase
             ]);
 
         } catch (BadRequestHttpException $e) {
+            $this->getLogger('jaraba_rag')->warning('Bad request: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Solicitud inválida. Verifique los parámetros enviados.',
             ], 400);
         } catch (\Exception $e) {
             $this->getLogger('jaraba_rag')->error('Error en API query: @message', [

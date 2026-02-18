@@ -1,0 +1,6 @@
+services:
+  jaraba_zkp.oracle:
+    class: Drupal\jaraba_zkp\Service\ZkOracleService
+    arguments:
+      - '@database'
+      - '@logger.channel.default'

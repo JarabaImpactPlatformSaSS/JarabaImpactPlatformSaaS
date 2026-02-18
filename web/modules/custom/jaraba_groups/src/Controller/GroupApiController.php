@@ -61,7 +61,7 @@ class GroupApiController extends ControllerBase
             $data[] = $this->serializeGroup($group);
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['count' => count($data), 'timestamp' => time()]]);
     }
 
     /**
@@ -72,14 +72,15 @@ class GroupApiController extends ControllerBase
         $group = $this->entityTypeManager()->getStorage('collaboration_group')->load($id);
 
         if (!$group) {
-            return new JsonResponse(['error' => 'Group not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Group not found']], 404);
         }
 
         $data = $this->serializeGroup($group, TRUE);
         $data['is_member'] = $this->membershipService->isMember($id);
         $data['is_admin'] = $this->membershipService->isAdmin($id);
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data]);
     }
 
     /**
@@ -97,9 +98,11 @@ class GroupApiController extends ControllerBase
                 'status' => $membership->getStatus(),
             ]);
         } catch (\RuntimeException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+            \Drupal::logger('jaraba_groups')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 400);
         } catch (\InvalidArgumentException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 404);
+            \Drupal::logger('jaraba_groups')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 404);
         }
     }
 
@@ -110,9 +113,10 @@ class GroupApiController extends ControllerBase
     {
         try {
             $this->membershipService->leave($id);
-            return new JsonResponse(['message' => 'Left group successfully']);
+            return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Left group successfully'], 'meta' => ['timestamp' => time()]]);
         } catch (\RuntimeException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+            \Drupal::logger('jaraba_groups')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 400);
         }
     }
 
@@ -122,7 +126,7 @@ class GroupApiController extends ControllerBase
     public function listMembers(int $id): JsonResponse
     {
         if (!$this->membershipService->isMember($id)) {
-            return new JsonResponse(['error' => 'Must be a member to view members'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Must be a member to view members']], 403);
         }
 
         $members = $this->membershipService->getMembers($id);
@@ -139,7 +143,7 @@ class GroupApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return new JsonResponse(['data' => $data, 'meta' => ['count' => count($data), 'timestamp' => time()]]);
     }
 
     /**
@@ -148,7 +152,7 @@ class GroupApiController extends ControllerBase
     public function listDiscussions(int $id, Request $request): JsonResponse
     {
         if (!$this->membershipService->isMember($id)) {
-            return new JsonResponse(['error' => 'Must be a member'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Must be a member']], 403);
         }
 
         $storage = $this->entityTypeManager()->getStorage('group_discussion');
@@ -180,7 +184,7 @@ class GroupApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -219,7 +223,7 @@ class GroupApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -234,7 +238,7 @@ class GroupApiController extends ControllerBase
             $data[] = $this->serializeGroup($group);
         }
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

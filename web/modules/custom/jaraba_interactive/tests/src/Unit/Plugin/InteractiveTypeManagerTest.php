@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
 use Drupal\jaraba_interactive\Plugin\InteractiveTypeManager;
+use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests unitarios para InteractiveTypeManager.
@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\jaraba_interactive\Plugin\InteractiveTypeManager
  * @group jaraba_interactive
  */
-class InteractiveTypeManagerTest extends TestCase {
+class InteractiveTypeManagerTest extends UnitTestCase {
 
   /**
    * El plugin manager bajo prueba (mock parcial).
@@ -36,6 +36,11 @@ class InteractiveTypeManagerTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->manager = $this->getMockBuilder(InteractiveTypeManager::class)
       ->disableOriginalConstructor()

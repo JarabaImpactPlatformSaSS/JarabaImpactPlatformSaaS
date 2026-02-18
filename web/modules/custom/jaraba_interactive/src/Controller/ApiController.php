@@ -233,7 +233,7 @@ class ApiController extends ControllerBase
             ]);
             return new JsonResponse([
                 'status' => 'error',
-                'message' => $e->getMessage(),
+                'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
 
@@ -597,7 +597,7 @@ class ApiController extends ControllerBase
             ]);
             return new JsonResponse([
                 'status' => 'error',
-                'message' => $e->getMessage(),
+                'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -664,7 +664,7 @@ class ApiController extends ControllerBase
             ]);
             return new JsonResponse([
                 'status' => 'error',
-                'message' => $e->getMessage(),
+                'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_multiregion\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -64,6 +65,11 @@ class ViesValidatorServiceTest extends UnitTestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->httpClient = $this->createMock(ClientInterface::class);
@@ -330,7 +336,7 @@ XML;
    * @covers ::isExpired
    */
   public function testIsExpiredReturnsFalseWhenValidationIsRecent(): void {
-    $entity = $this->createMock(EntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
 
     // Created 1 hour ago -- well within the default 24-hour window.
     $createdField = $this->createMock(FieldItemListInterface::class);
@@ -356,7 +362,7 @@ XML;
    * @covers ::isExpired
    */
   public function testIsExpiredReturnsTrueWhenValidationIsOld(): void {
-    $entity = $this->createMock(EntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
 
     // Created 48 hours ago -- beyond the default 24-hour window.
     $createdField = $this->createMock(FieldItemListInterface::class);
@@ -382,7 +388,7 @@ XML;
    * @covers ::isExpired
    */
   public function testIsExpiredRespectsCustomCacheHours(): void {
-    $entity = $this->createMock(EntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
 
     // Created 2 hours ago. With a 1-hour cache window, this should be expired.
     $createdField = $this->createMock(FieldItemListInterface::class);

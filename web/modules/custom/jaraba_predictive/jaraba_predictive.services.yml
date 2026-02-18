@@ -10,6 +10,8 @@ services:
       - '@logger.channel.jaraba_predictive'
       - '@config.factory'
       - '@ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_predictive.feature_store'
+      - '@jaraba_predictive.retention_workflow'
 
   jaraba_predictive.lead_scorer:
     class: Drupal\jaraba_predictive\Service\LeadScorerService
@@ -22,6 +24,7 @@ services:
     class: Drupal\jaraba_predictive\Service\ForecastEngineService
     arguments:
       - '@entity_type.manager'
+      - '@database'
       - '@logger.channel.jaraba_predictive'
       - '@config.factory'
 
@@ -30,6 +33,21 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_predictive'
+      - '@jaraba_billing.tenant_metering'
+
+  jaraba_predictive.security_guardian:
+    class: Drupal\jaraba_predictive\Service\SecurityGuardianService
+    arguments:
+      - '@jaraba_predictive.anomaly_detector'
+      - '@?jaraba_pwa.push'
+      - '@logger.channel.jaraba_predictive'
+
+  jaraba_predictive.fraud_engine:
+    class: Drupal\jaraba_predictive\Service\FraudEngineService
+    arguments:
+      - '@logger.channel.jaraba_predictive'
+
+
 
   jaraba_predictive.prediction_bridge:
     class: Drupal\jaraba_predictive\Service\PredictionBridgeService
@@ -41,6 +59,7 @@ services:
     class: Drupal\jaraba_predictive\Service\FeatureStoreService
     arguments:
       - '@entity_type.manager'
+      - '@database'
       - '@logger.channel.jaraba_predictive'
 
   jaraba_predictive.retention_workflow:
@@ -48,4 +67,5 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_predictive'
-      - '@jaraba_predictive.churn_predictor'
+      - '@?jaraba_pwa.push'
+      - '@jaraba_content_hub.newsletter_bridge'

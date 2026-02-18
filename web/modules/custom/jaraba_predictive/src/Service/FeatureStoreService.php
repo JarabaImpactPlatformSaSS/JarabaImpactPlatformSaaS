@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_predictive\Service;
 
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -58,6 +59,7 @@ class FeatureStoreService {
    */
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly Connection $database,
     protected readonly LoggerInterface $logger,
   ) {}
 
@@ -115,8 +117,31 @@ class FeatureStoreService {
       'feature_adoption_rate' => $this->calculateFeatureAdoptionRate($tenantId),
       'revenue_30d' => $this->calculateRevenue30d($tenantId),
       'active_users_count' => $this->calculateActiveUsersCount($tenantId),
+      'job_posting_velocity' => $this->calculateJobPostingVelocity($tenantId),
       'calculated_at' => date('Y-m-d\TH:i:s'),
     ];
+...
+  /**
+   * Calcula la velocidad de publicación de ofertas (últimos 30 días).
+   * Específico para el vertical de Empleo.
+   */
+  protected function calculateJobPostingVelocity(int $tenantId): int {
+    try {
+      if (!$this->database->schema()->tableExists('job_announcement')) {
+        return 0;
+      }
+
+      return (int) $this->database->select('job_announcement', 'j')
+        ->condition('j.tenant_id', $tenantId)
+        ->condition('j.created', time() - (30 * 86400), '>=')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+    }
+    catch (\Exception $e) {
+      return 0;
+    }
+  }
 
     // Almacenar en cache de memoria.
     $memoryCache[$cacheKey] = $features;
@@ -280,71 +305,96 @@ class FeatureStoreService {
   }
 
   /**
-   * Calcula el numero de fallos de pago recientes.
-   *
-   * ESTRUCTURA: Metodo interno de calculo de feature individual.
-   * LOGICA: Retorna valor heuristico (sin integracion con pasarela).
-   *
-   * @param int $tenantId
-   *   ID del tenant.
-   *
-   * @return int
-   *   Numero de fallos de pago. 0 por defecto.
+   * Calcula el número de fallos de pago recientes.
    */
   protected function calculatePaymentFailureCount(int $tenantId): int {
-    // Heuristico: sin integracion directa con pasarela de pago.
-    return 0;
+    try {
+      // Consultamos la tabla de facturas de jaraba_billing.
+      if (!$this->database->schema()->tableExists('billing_invoice')) {
+        return 0;
+      }
+
+      return (int) $this->database->select('billing_invoice', 'i')
+        ->condition('i.tenant_id', $tenantId)
+        ->condition('i.status', 'failed')
+        ->condition('i.created', time() - (30 * 86400), '>=')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+    }
+    catch (\Exception $e) {
+      return 0;
+    }
   }
 
   /**
-   * Calcula el numero de tickets de soporte abiertos.
-   *
-   * ESTRUCTURA: Metodo interno de calculo de feature individual.
-   * LOGICA: Retorna valor heuristico (sin integracion con sistema de tickets).
-   *
-   * @param int $tenantId
-   *   ID del tenant.
-   *
-   * @return int
-   *   Numero de tickets de soporte. 0 por defecto.
+   * Calcula el número de tickets de soporte abiertos.
    */
   protected function calculateSupportTicketCount(int $tenantId): int {
-    // Heuristico: sin integracion con sistema de tickets.
-    return 0;
+    try {
+      // Consultamos la tabla de tickets si existe (módulo jaraba_support).
+      if (!$this->database->schema()->tableExists('support_ticket')) {
+        return 0;
+      }
+
+      return (int) $this->database->select('support_ticket', 't')
+        ->condition('t.tenant_id', $tenantId)
+        ->condition('t.status', 'open')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+    }
+    catch (\Exception $e) {
+      return 0;
+    }
   }
 
   /**
-   * Calcula la tasa de adopcion de funcionalidades (0.0-1.0).
-   *
-   * ESTRUCTURA: Metodo interno de calculo de feature individual.
-   * LOGICA: Porcentaje de funcionalidades disponibles que usa el tenant.
-   *
-   * @param int $tenantId
-   *   ID del tenant.
-   *
-   * @return float
-   *   Tasa de adopcion (0.0-1.0). 0.5 por defecto (heuristico).
+   * Calcula la tasa de adopción de funcionalidades (0.0-1.0).
    */
   protected function calculateFeatureAdoptionRate(int $tenantId): float {
-    // Heuristico: se asume adopcion media sin datos de telemetria.
-    return 0.5;
+    try {
+      // Consultamos los feature gates de AgroConecta como proxy de adopción.
+      if (!$this->database->schema()->tableExists('agroconecta_feature_usage')) {
+        return 0.5;
+      }
+
+      $usedFeatures = (int) $this->database->select('agroconecta_feature_usage', 'f')
+        ->condition('f.tenant_id', $tenantId)
+        ->addExpression('COUNT(DISTINCT feature_key)', 'count')
+        ->execute()
+        ->fetchField();
+
+      // Asumimos un máximo de 10 features principales por vertical para el score.
+      return (float) min(1.0, $usedFeatures / 10);
+    }
+    catch (\Exception $e) {
+      return 0.5;
+    }
   }
 
   /**
-   * Calcula el revenue de los ultimos 30 dias.
-   *
-   * ESTRUCTURA: Metodo interno de calculo de feature individual.
-   * LOGICA: Retorna valor heuristico (sin integracion con billing).
-   *
-   * @param int $tenantId
-   *   ID del tenant.
-   *
-   * @return float
-   *   Revenue en ultimos 30 dias. 0.0 por defecto.
+   * Calcula el revenue de los últimos 30 días.
    */
   protected function calculateRevenue30d(int $tenantId): float {
-    // Heuristico: sin integracion con sistema de facturacion.
-    return 0.0;
+    try {
+      if (!$this->database->schema()->tableExists('financial_transaction')) {
+        return 0.0;
+      }
+
+      $revenue = $this->database->select('financial_transaction', 't')
+        ->condition('t.tenant_id', $tenantId)
+        ->condition('t.type', 'credit')
+        ->condition('t.created', time() - (30 * 86400), '>=')
+        ->addExpression('SUM(amount)', 'total')
+        ->execute()
+        ->fetchField();
+
+      return (float) ($revenue ?? 0.0);
+    }
+    catch (\Exception $e) {
+      return 0.0;
+    }
   }
 
   /**

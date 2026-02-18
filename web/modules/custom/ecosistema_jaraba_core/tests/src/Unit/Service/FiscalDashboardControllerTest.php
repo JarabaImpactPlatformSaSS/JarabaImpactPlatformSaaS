@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\ecosistema_jaraba_core\Controller\FiscalDashboardController;
 use Drupal\ecosistema_jaraba_core\Service\FiscalComplianceService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
@@ -47,9 +48,16 @@ class FiscalDashboardControllerTest extends UnitTestCase {
       'einvoice_b2b' => FALSE,
     ]);
 
+    $tenantContext = $this->createMock(TenantContextService::class);
+
     $controller = new FiscalDashboardController(
       $complianceService,
       $logger,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      $tenantContext,
     );
 
     // Use reflection to set the entityTypeManager.
@@ -110,9 +118,16 @@ class FiscalDashboardControllerTest extends UnitTestCase {
       'einvoice_b2b' => FALSE,
     ]);
 
+    $tenantContext = $this->createMock(TenantContextService::class);
+
     $controller = new FiscalDashboardController(
       $complianceService,
       $logger,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      $tenantContext,
     );
 
     $reflection = new \ReflectionClass($controller);
@@ -171,10 +186,16 @@ class FiscalDashboardControllerTest extends UnitTestCase {
       'einvoice_b2b' => FALSE,
     ]);
 
+    $tenantContext = $this->createMock(TenantContextService::class);
+
     $controller = new FiscalDashboardController(
       $complianceService,
       $logger,
       $hashService,
+      NULL,
+      NULL,
+      NULL,
+      $tenantContext,
     );
 
     $reflection = new \ReflectionClass($controller);

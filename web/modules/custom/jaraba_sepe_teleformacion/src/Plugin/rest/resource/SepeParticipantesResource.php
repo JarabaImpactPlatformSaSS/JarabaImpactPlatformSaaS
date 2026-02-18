@@ -19,8 +19,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *   id = "sepe_participantes_resource",
  *   label = @Translation("SEPE Participantes"),
  *   uri_paths = {
- *     "canonical" = "/api/sepe/participantes/{id}",
- *     "collection" = "/api/sepe/acciones/{accion_id}/participantes"
+ *     "canonical" = "/api/v1/sepe/participantes/{id}",
+ *     "collection" = "/api/v1/sepe/acciones/{accion_id}/participantes"
  *   }
  * )
  */

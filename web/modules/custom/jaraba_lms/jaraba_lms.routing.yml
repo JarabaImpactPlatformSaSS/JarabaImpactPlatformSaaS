@@ -87,6 +87,7 @@ jaraba_lms.api.enroll:
   requirements:
     _permission: 'enroll in free courses'
     course_id: '\d+'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_lms.api.user_enrollments:
@@ -113,6 +114,7 @@ jaraba_lms.api.record_progress:
   requirements:
     _permission: 'track own progress'
     enrollment_id: '\d+'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_lms.api.learning_paths:
@@ -282,6 +284,7 @@ jaraba_lms.lesson.complete:
   requirements:
     _permission: 'access lms courses'
     lesson_id: '\d+'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # xAPI statements endpoint
@@ -291,6 +294,7 @@ jaraba_lms.xapi.statements:
     _controller: '\Drupal\jaraba_lms\Controller\XapiController::recordStatement'
   requirements:
     _permission: 'access lms courses'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # ================================================================================

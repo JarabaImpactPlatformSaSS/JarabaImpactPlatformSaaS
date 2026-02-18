@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
 use Drupal\jaraba_interactive\Plugin\InteractiveType\DragAndDrop;
+use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests unitarios para el plugin DragAndDrop.
@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\jaraba_interactive\Plugin\InteractiveType\DragAndDrop
  * @group jaraba_interactive
  */
-class DragAndDropTest extends TestCase {
+class DragAndDropTest extends UnitTestCase {
 
   /**
    * El plugin bajo prueba.
@@ -31,6 +31,11 @@ class DragAndDropTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->plugin = $this->getMockBuilder(DragAndDrop::class)
       ->disableOriginalConstructor()

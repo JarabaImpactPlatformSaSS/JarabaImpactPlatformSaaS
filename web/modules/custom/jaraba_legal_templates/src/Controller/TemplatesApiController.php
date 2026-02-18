@@ -55,10 +55,7 @@ class TemplatesApiController extends ControllerBase {
       $items = $this->templateManager->getSystemTemplates();
     }
 
-    return new JsonResponse([
-      'data' => $items,
-      'meta' => ['total' => count($items), 'limit' => $limit, 'offset' => $offset],
-    ]);
+    return new JsonResponse(['success' => TRUE, 'data' => $items, 'meta' => ['total' => count($items), 'limit' => $limit, 'offset' => $offset]]);
   }
 
   /**
@@ -67,7 +64,8 @@ class TemplatesApiController extends ControllerBase {
   public function store(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['name']) || empty($data['template_type']) || empty($data['template_body'])) {
-      return new JsonResponse(['error' => 'Campos requeridos: name, template_type, template_body.'], 422);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: name, template_type, template_body.']], 422);
     }
 
     try {
@@ -87,11 +85,11 @@ class TemplatesApiController extends ControllerBase {
       ]);
       $template->save();
 
-      return new JsonResponse(['data' => $this->templateManager->serializeTemplate($template)], 201);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->templateManager->serializeTemplate($template), 'meta' => ['timestamp' => time()]], 201);
     }
     catch (\Exception $e) {
       $this->logger->error('Error creating template: @msg', ['@msg' => $e->getMessage()]);
-      return new JsonResponse(['error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 
@@ -101,7 +99,7 @@ class TemplatesApiController extends ControllerBase {
   public function generate(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['template_id'])) {
-      return new JsonResponse(['error' => 'Campo requerido: template_id.'], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campo requerido: template_id.']], 422);
     }
 
     $result = $this->documentGenerator->generateFromTemplate(
@@ -111,10 +109,10 @@ class TemplatesApiController extends ControllerBase {
     );
 
     if (isset($result['error'])) {
-      return new JsonResponse(['error' => $result['error']], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
     }
 
-    return new JsonResponse(['data' => $result], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -123,7 +121,7 @@ class TemplatesApiController extends ControllerBase {
   public function generateAi(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['template_id']) || empty($data['case_id'])) {
-      return new JsonResponse(['error' => 'Campos requeridos: template_id, case_id.'], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: template_id, case_id.']], 422);
     }
 
     $result = $this->documentGenerator->generateWithAi(
@@ -132,10 +130,10 @@ class TemplatesApiController extends ControllerBase {
     );
 
     if (isset($result['error'])) {
-      return new JsonResponse(['error' => $result['error']], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
     }
 
-    return new JsonResponse(['data' => $result], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -148,13 +146,14 @@ class TemplatesApiController extends ControllerBase {
       $doc = reset($docs);
 
       if (!$doc) {
-        return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
       }
 
-      return new JsonResponse(['data' => $this->documentGenerator->serializeDocument($doc)]);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->documentGenerator->serializeDocument($doc), 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => $e->getMessage()], 500);
+      $this->logger->error('Document detail retrieval failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 

@@ -906,7 +906,7 @@ class WebhookController extends ControllerBase
             );
             return new JsonResponse([
                 'error' => 'Webhook processing failed',
-                'message' => $e->getMessage(),
+                'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

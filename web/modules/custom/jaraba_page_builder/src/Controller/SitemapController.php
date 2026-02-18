@@ -134,8 +134,9 @@ class SitemapController extends ControllerBase
             ]);
         }
         catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
                 'valid' => FALSE,
             ], 500);
         }
@@ -198,7 +199,8 @@ class SitemapController extends ControllerBase
             ]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
         }
     }
 

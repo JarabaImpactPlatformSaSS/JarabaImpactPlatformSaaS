@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -70,6 +72,10 @@ class AgroConectaHealthScoreService {
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly Connection $database,
     protected readonly LoggerInterface $logger,
+    protected readonly TimeInterface $time,
+    protected readonly StateInterface $state,
+    protected readonly ?object $agroconectaFeatureGate = NULL,
+    protected readonly ?object $npsSurvey = NULL,
   ) {}
 
   /**
@@ -223,7 +229,7 @@ class AgroConectaHealthScoreService {
       $revenueScore = min(30, (int) ($totalRevenue / 1000 * 30));
 
       // Conversion: recent orders (last 30 days) vs total.
-      $now = \Drupal::time()->getRequestTime();
+      $now = $this->time->getRequestTime();
       $recentCount = 0;
       foreach ($orders as $order) {
         $created = (int) ($order->get('created')->value ?? 0);
@@ -291,7 +297,7 @@ class AgroConectaHealthScoreService {
   protected function calculateCopilotUsage(int $userId): int {
     try {
       $stateKey = "agroconecta_copilot_uses_{$userId}";
-      $uses = (int) \Drupal::state()->get($stateKey, 0);
+      $uses = (int) $this->state->get($stateKey, 0);
       if ($uses === 0) {
         return 0;
       }
@@ -301,7 +307,7 @@ class AgroConectaHealthScoreService {
 
       // Actions: copilot actions completed.
       $actionsKey = "agroconecta_copilot_actions_{$userId}";
-      $actions = (int) \Drupal::state()->get($actionsKey, 0);
+      $actions = (int) $this->state->get($actionsKey, 0);
       $actionsScore = min(50, $actions * 25);
 
       return min(100, $usesScore + $actionsScore);
@@ -322,9 +328,8 @@ class AgroConectaHealthScoreService {
 
     try {
       // QR traceability active.
-      if (\Drupal::hasService('ecosistema_jaraba_core.agroconecta_feature_gate')) {
-        $featureGate = \Drupal::service('ecosistema_jaraba_core.agroconecta_feature_gate');
-        $qrResult = $featureGate->check($userId, 'traceability_qr');
+      if ($this->agroconectaFeatureGate) {
+        $qrResult = $this->agroconectaFeatureGate->check($userId, 'traceability_qr');
         if (($qrResult->used ?? 0) > 0) {
           $score += 25;
         }
@@ -337,7 +342,7 @@ class AgroConectaHealthScoreService {
     try {
       // B2B channel active.
       $b2bKey = "agroconecta_b2b_active_{$userId}";
-      if (\Drupal::state()->get($b2bKey, FALSE)) {
+      if ($this->state->get($b2bKey, FALSE)) {
         $score += 25;
       }
     }
@@ -348,7 +353,7 @@ class AgroConectaHealthScoreService {
     try {
       // Shipping configured.
       $shippingKey = "agroconecta_shipping_configured_{$userId}";
-      if (\Drupal::state()->get($shippingKey, FALSE)) {
+      if ($this->state->get($shippingKey, FALSE)) {
         $score += 25;
       }
     }
@@ -359,7 +364,7 @@ class AgroConectaHealthScoreService {
     try {
       // Social links.
       $socialKey = "agroconecta_social_links_{$userId}";
-      if (\Drupal::state()->get($socialKey, FALSE)) {
+      if ($this->state->get($socialKey, FALSE)) {
         $score += 25;
       }
     }
@@ -380,7 +385,7 @@ class AgroConectaHealthScoreService {
   protected function calculateGmvMonthly(): array {
     $target = self::KPI_TARGETS['gmv_monthly'];
     try {
-      $thirtyDaysAgo = \Drupal::time()->getRequestTime() - (30 * 86400);
+      $thirtyDaysAgo = $this->time->getRequestTime() - (30 * 86400);
       $gmv = (float) $this->database->query(
         "SELECT COALESCE(SUM(total), 0) FROM {agro_order} WHERE status = 'completed' AND created > :cutoff",
         [':cutoff' => $thirtyDaysAgo]
@@ -503,13 +508,12 @@ class AgroConectaHealthScoreService {
    */
   protected function calculateNps(): array {
     $target = self::KPI_TARGETS['nps'];
-    if (!\Drupal::hasService('jaraba_customer_success.nps_survey')) {
+    if (!$this->npsSurvey) {
       return ['value' => 0, 'unit' => 'score', 'target' => $target['value'], 'status' => 'behind', 'label' => 'NPS Marketplace'];
     }
 
     try {
-      $nps = \Drupal::service('jaraba_customer_success.nps_survey')
-        ->getScore('agroconecta');
+      $nps = $this->npsSurvey->getScore('agroconecta');
       $score = $nps ?? 0;
 
       return [
@@ -531,7 +535,7 @@ class AgroConectaHealthScoreService {
   protected function calculateArpu(): array {
     $target = self::KPI_TARGETS['arpu'];
     try {
-      $thirtyDaysAgo = \Drupal::time()->getRequestTime() - (30 * 86400);
+      $thirtyDaysAgo = $this->time->getRequestTime() - (30 * 86400);
 
       $totalRevenue = (float) $this->database->query(
         "SELECT COALESCE(SUM(total), 0) FROM {agro_order} WHERE status = 'completed' AND created > :cutoff",
@@ -595,7 +599,7 @@ class AgroConectaHealthScoreService {
   protected function calculateChurnRate(): array {
     $target = self::KPI_TARGETS['churn_rate'];
     try {
-      $thirtyDaysAgo = \Drupal::time()->getRequestTime() - (30 * 86400);
+      $thirtyDaysAgo = $this->time->getRequestTime() - (30 * 86400);
 
       $cancelled = (int) $this->database->query(
         "SELECT COUNT(*) FROM {tenant_subscription_log} WHERE vertical = :v AND action = 'cancel' AND created > :cutoff",

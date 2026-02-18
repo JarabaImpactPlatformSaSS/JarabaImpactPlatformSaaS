@@ -529,8 +529,8 @@ class SaasMetricsService
         $endDate = date('Y-m-t', strtotime($startDate));
 
         $query = $this->database->select('financial_transaction', 'ft')
-            ->condition('ft.timestamp', $startDate, '>=')
-            ->condition('ft.timestamp', $endDate . ' 23:59:59', '<=')
+            ->condition('ft.transaction_timestamp', $startDate, '>=')
+            ->condition('ft.transaction_timestamp', $endDate . ' 23:59:59', '<=')
             ->condition('ft.transaction_type', 'subscription_canceled');
 
         $query->addExpression('ABS(SUM(ft.amount))', 'total');

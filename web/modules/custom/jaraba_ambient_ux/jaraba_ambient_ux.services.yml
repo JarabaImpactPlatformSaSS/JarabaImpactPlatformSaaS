@@ -1,0 +1,6 @@
+services:
+  jaraba_ambient_ux.intent_engine:
+    class: Drupal\jaraba_ambient_ux\Service\IntentToLayoutService
+    arguments:
+      - '@jaraba_predictive.churn_predictor'
+      - '@logger.channel.default'

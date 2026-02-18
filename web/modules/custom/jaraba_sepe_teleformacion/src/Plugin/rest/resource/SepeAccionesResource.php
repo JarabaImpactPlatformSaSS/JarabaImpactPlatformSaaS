@@ -18,8 +18,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *   id = "sepe_acciones_resource",
  *   label = @Translation("SEPE Acciones Formativas"),
  *   uri_paths = {
- *     "canonical" = "/api/sepe/acciones/{id}",
- *     "collection" = "/api/sepe/acciones"
+ *     "canonical" = "/api/v1/sepe/acciones/{id}",
+ *     "collection" = "/api/v1/sepe/acciones"
  *   }
  * )
  */

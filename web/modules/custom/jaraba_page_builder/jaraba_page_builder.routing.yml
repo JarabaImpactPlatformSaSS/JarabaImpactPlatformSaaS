@@ -214,6 +214,7 @@ jaraba_page_builder.api.generate_content:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -227,6 +228,7 @@ jaraba_page_builder.api.seo_ai_suggest:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -240,6 +242,7 @@ jaraba_page_builder.api.ai_generate_template:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -253,6 +256,7 @@ jaraba_page_builder.api.ai_generate_page:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -278,6 +282,7 @@ jaraba_page_builder.api.ga4_verify:
   methods: [POST]
   requirements:
     _permission: 'administer page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
 
@@ -290,6 +295,7 @@ jaraba_page_builder.api.ai_suggest_images:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -303,6 +309,7 @@ jaraba_page_builder.api.ai_track_image_download:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -315,6 +322,7 @@ jaraba_page_builder.api.generate_field:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -464,6 +472,7 @@ jaraba_page_builder.api.experiments_start:
   methods: [POST]
   requirements:
     _permission: 'administer page builder'
+    _csrf_token: 'TRUE'
     id: '\d+'
   options:
     _auth: ['cookie', 'basic_auth']
@@ -476,6 +485,7 @@ jaraba_page_builder.api.experiments_stop:
   methods: [POST]
   requirements:
     _permission: 'administer page builder'
+    _csrf_token: 'TRUE'
     id: '\d+'
   options:
     _auth: ['cookie', 'basic_auth']
@@ -488,6 +498,7 @@ jaraba_page_builder.api.experiments_declare_winner:
   methods: [POST]
   requirements:
     _permission: 'administer page builder'
+    _csrf_token: 'TRUE'
     id: '\d+'
   options:
     _auth: ['cookie', 'basic_auth']
@@ -557,6 +568,7 @@ jaraba_page_builder.api.sections.add:
   methods: [POST]
   requirements:
     _permission: 'edit page builder content'
+    _csrf_token: 'TRUE'
     page_content: \d+
   options:
     _auth: ['cookie', 'basic_auth']
@@ -725,6 +737,7 @@ jaraba_page_builder.api.publish:
   methods: [POST]
   requirements:
     _permission: 'publish own page content,publish any page content'
+    _csrf_token: 'TRUE'
     page_content: \d+
   options:
     _auth: ['cookie', 'basic_auth']
@@ -758,6 +771,7 @@ jaraba_page_builder.api.assets_upload:
   methods: [POST]
   requirements:
     _permission: 'create media'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -839,6 +853,7 @@ jaraba_page_builder.api.templates_cache_invalidate:
   methods: [POST]
   requirements:
     _permission: 'administer page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE
@@ -868,6 +883,7 @@ jaraba_page_builder.api.onboarding_set:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: FALSE
     _auth: ['cookie', 'basic_auth']
@@ -888,6 +904,7 @@ jaraba_page_builder.api.accessibility_validate:
   methods: [POST]
   requirements:
     _permission: 'access page builder'
+    _csrf_token: 'TRUE'
   options:
     _auth: ['cookie', 'basic_auth']
     no_cache: TRUE

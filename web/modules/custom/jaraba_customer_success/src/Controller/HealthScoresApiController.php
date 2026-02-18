@@ -74,14 +74,11 @@ class HealthScoresApiController extends ControllerBase {
       $data[] = $this->serializeHealthScore($entity);
     }
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => [
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
         'total' => count($data),
         'limit' => $limit,
         'offset' => $offset,
-      ],
-    ]);
+      ]]);
   }
 
   /**
@@ -91,11 +88,12 @@ class HealthScoresApiController extends ControllerBase {
     $history = $this->healthCalculator->getHistory($tenant_id, 1);
 
     if (empty($history)) {
-      return new JsonResponse(['error' => 'No health score found for tenant.'], 404);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No health score found for tenant.']], 404);
     }
 
     $entity = reset($history);
-    return new JsonResponse(['data' => $this->serializeHealthScore($entity)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeHealthScore($entity), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -110,7 +108,7 @@ class HealthScoresApiController extends ControllerBase {
       $data[] = $this->serializeHealthScore($entity);
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -149,7 +147,7 @@ class HealthScoresApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -187,7 +185,7 @@ class HealthScoresApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -205,7 +203,7 @@ class HealthScoresApiController extends ControllerBase {
     $expansion_signal->set('status', $new_status);
     $expansion_signal->save();
 
-    return new JsonResponse(['data' => ['id' => (int) $expansion_signal->id(), 'status' => $new_status]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['id' => (int) $expansion_signal->id(), 'status' => $new_status], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -216,13 +214,13 @@ class HealthScoresApiController extends ControllerBase {
     $tenant_id = $this->tenantContext->getCurrentTenantId() ?? ($content['tenant_id'] ?? NULL);
 
     if (!$tenant_id) {
-      return new JsonResponse(['error' => 'tenant_id is required.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'tenant_id is required.']], 400);
     }
 
     $execution = $this->playbookExecutor->execute($cs_playbook, $tenant_id);
 
     if (!$execution) {
-      return new JsonResponse(['error' => 'Failed to start playbook execution. It may already be running.'], 409);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Failed to start playbook execution. It may already be running.']], 409);
     }
 
     return new JsonResponse([

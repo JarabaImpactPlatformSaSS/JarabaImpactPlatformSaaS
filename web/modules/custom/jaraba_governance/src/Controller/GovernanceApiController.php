@@ -86,10 +86,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -125,10 +126,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -171,10 +173,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -198,10 +201,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -221,10 +225,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -252,10 +257,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -299,10 +305,11 @@ class GovernanceApiController extends ControllerBase {
       ], 201);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -322,10 +329,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -352,10 +360,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -385,10 +394,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -412,10 +422,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -446,10 +457,11 @@ class GovernanceApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_governance')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }

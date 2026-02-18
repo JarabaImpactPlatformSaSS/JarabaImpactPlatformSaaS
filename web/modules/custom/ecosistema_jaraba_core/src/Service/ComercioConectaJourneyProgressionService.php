@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
@@ -165,6 +167,9 @@ class ComercioConectaJourneyProgressionService {
   public function __construct(
     protected readonly StateInterface $state,
     protected readonly LoggerInterface $logger,
+    protected readonly TimeInterface $time,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly ?object $comercioconectaFeatureGate = NULL,
   ) {}
 
   /**
@@ -208,7 +213,7 @@ class ComercioConectaJourneyProgressionService {
     $cached = $this->state->get($stateKey);
 
     if ($cached) {
-      $age = \Drupal::time()->getRequestTime() - ($cached['evaluated_at'] ?? 0);
+      $age = $this->time->getRequestTime() - ($cached['evaluated_at'] ?? 0);
       if ($age < 3600) {
         return $cached['action'];
       }
@@ -217,7 +222,7 @@ class ComercioConectaJourneyProgressionService {
     $action = $this->evaluate($userId);
     $this->state->set($stateKey, [
       'action' => $action,
-      'evaluated_at' => \Drupal::time()->getRequestTime(),
+      'evaluated_at' => $this->time->getRequestTime(),
     ]);
 
     return $action;
@@ -296,7 +301,7 @@ class ComercioConectaJourneyProgressionService {
       if ($lastActivity === 0) {
         return FALSE;
       }
-      $threshold = \Drupal::time()->getRequestTime() - (3 * 86400);
+      $threshold = $this->time->getRequestTime() - (3 * 86400);
       return $lastActivity < $threshold;
     }
     catch (\Exception $e) {
@@ -309,7 +314,7 @@ class ComercioConectaJourneyProgressionService {
    */
   protected function checkLessThan3Products(int $userId): bool {
     try {
-      $productCount = (int) \Drupal::entityTypeManager()
+      $productCount = (int) $this->entityTypeManager
         ->getStorage('comercio_product')
         ->getQuery()
         ->accessCheck(FALSE)
@@ -330,7 +335,7 @@ class ComercioConectaJourneyProgressionService {
    */
   protected function checkZeroSales(int $userId): bool {
     try {
-      $products = (int) \Drupal::entityTypeManager()
+      $products = (int) $this->entityTypeManager
         ->getStorage('comercio_product')
         ->getQuery()
         ->accessCheck(FALSE)
@@ -343,7 +348,7 @@ class ComercioConectaJourneyProgressionService {
         return FALSE;
       }
 
-      $orders = (int) \Drupal::entityTypeManager()
+      $orders = (int) $this->entityTypeManager
         ->getStorage('comercio_order')
         ->getQuery()
         ->accessCheck(FALSE)
@@ -364,7 +369,7 @@ class ComercioConectaJourneyProgressionService {
    */
   protected function checkUnansweredReviews(int $userId): bool {
     try {
-      $unanswered = (int) \Drupal::entityTypeManager()
+      $unanswered = (int) $this->entityTypeManager
         ->getStorage('comercio_review')
         ->getQuery()
         ->accessCheck(FALSE)
@@ -413,16 +418,15 @@ class ComercioConectaJourneyProgressionService {
    */
   protected function checkFreeWith8PlusProducts(int $userId): bool {
     try {
-      if (!\Drupal::hasService('ecosistema_jaraba_core.comercioconecta_feature_gate')) {
+      if (!$this->comercioconectaFeatureGate) {
         return FALSE;
       }
-      $featureGate = \Drupal::service('ecosistema_jaraba_core.comercioconecta_feature_gate');
-      $plan = $featureGate->getUserPlan($userId);
+      $plan = $this->comercioconectaFeatureGate->getUserPlan($userId);
       if ($plan !== 'free') {
         return FALSE;
       }
 
-      $result = $featureGate->check($userId, 'products');
+      $result = $this->comercioconectaFeatureGate->check($userId, 'products');
       if ($result->limit <= 0) {
         return FALSE;
       }
@@ -438,7 +442,7 @@ class ComercioConectaJourneyProgressionService {
    */
   protected function checkMoreThan50Sales(int $userId): bool {
     try {
-      $orderCount = (int) \Drupal::entityTypeManager()
+      $orderCount = (int) $this->entityTypeManager
         ->getStorage('comercio_order')
         ->getQuery()
         ->accessCheck(FALSE)
@@ -470,7 +474,7 @@ class ComercioConectaJourneyProgressionService {
       if ($cartUpdated === 0) {
         return FALSE;
       }
-      $threshold = \Drupal::time()->getRequestTime() - 3600;
+      $threshold = $this->time->getRequestTime() - 3600;
       return $cartUpdated < $threshold;
     }
     catch (\Exception $e) {
@@ -483,7 +487,7 @@ class ComercioConectaJourneyProgressionService {
    */
   protected function checkNoPurchase30Days(int $userId): bool {
     try {
-      $orders = \Drupal::entityTypeManager()
+      $orders = $this->entityTypeManager
         ->getStorage('comercio_order')
         ->getQuery()
         ->accessCheck(FALSE)
@@ -497,11 +501,11 @@ class ComercioConectaJourneyProgressionService {
         return FALSE;
       }
 
-      $order = \Drupal::entityTypeManager()
+      $order = $this->entityTypeManager
         ->getStorage('comercio_order')
         ->load(reset($orders));
       $created = (int) ($order->get('created')->value ?? 0);
-      $threshold = \Drupal::time()->getRequestTime() - (30 * 86400);
+      $threshold = $this->time->getRequestTime() - (30 * 86400);
       return $created < $threshold;
     }
     catch (\Exception $e) {

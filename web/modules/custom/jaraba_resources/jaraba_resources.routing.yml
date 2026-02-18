@@ -37,6 +37,7 @@ jaraba_resources.api.kits.download:
   methods: [POST]
   requirements:
     _permission: 'download digital kit'
+    _csrf_token: 'TRUE'
     id: \d+
   options:
     _format: json
@@ -48,6 +49,7 @@ jaraba_resources.api.kits.rate:
   methods: [POST]
   requirements:
     _permission: 'view digital kits'
+    _csrf_token: 'TRUE'
     id: \d+
   options:
     _format: json
@@ -81,6 +83,7 @@ jaraba_resources.api.subscription.trial:
   methods: [POST]
   requirements:
     _permission: 'subscribe to plans'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 
@@ -91,6 +94,7 @@ jaraba_resources.api.subscription.cancel:
   methods: [POST]
   requirements:
     _permission: 'subscribe to plans'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 

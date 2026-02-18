@@ -122,3 +122,63 @@ jaraba_andalucia_ei.api.participant.delete:
   requirements:
     _permission: 'delete programa participante ei'
     id: '\d+'
+
+# === FORMULARIO DE SOLICITUD (PÚBLICO) ===
+jaraba_andalucia_ei.solicitar:
+  path: '/andalucia-ei/solicitar'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\SolicitudEiController::solicitar'
+    _title: 'Solicitar plaza - Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
+# === SOLICITUDES: COLECCIÓN ADMIN ===
+entity.solicitud_ei.collection:
+  path: '/admin/content/andalucia-ei/solicitudes'
+  defaults:
+    _entity_list: 'solicitud_ei'
+    _title: 'Solicitudes Andalucía +ei'
+  requirements:
+    _permission: 'view solicitud ei'
+
+# === SOLICITUDES: CRUD ===
+entity.solicitud_ei.canonical:
+  path: '/admin/content/andalucia-ei/solicitudes/{solicitud_ei}'
+  defaults:
+    _entity_view: 'solicitud_ei'
+    _title: 'Ver Solicitud'
+  requirements:
+    _permission: 'view solicitud ei'
+
+entity.solicitud_ei.add_form:
+  path: '/admin/content/andalucia-ei/solicitudes/add'
+  defaults:
+    _entity_form: 'solicitud_ei.add'
+    _title: 'Añadir Solicitud'
+  requirements:
+    _permission: 'create solicitud ei'
+
+entity.solicitud_ei.edit_form:
+  path: '/admin/content/andalucia-ei/solicitudes/{solicitud_ei}/edit'
+  defaults:
+    _entity_form: 'solicitud_ei.edit'
+    _title: 'Editar Solicitud'
+  requirements:
+    _permission: 'edit solicitud ei'
+
+entity.solicitud_ei.delete_form:
+  path: '/admin/content/andalucia-ei/solicitudes/{solicitud_ei}/delete'
+  defaults:
+    _entity_form: 'solicitud_ei.delete'
+    _title: 'Eliminar Solicitud'
+  requirements:
+    _permission: 'delete solicitud ei'
+
+# === SOLICITUDES: SETTINGS (Field UI) ===
+entity.solicitud_ei.settings:
+  path: '/admin/structure/solicitud-ei'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\SolicitudEiSettingsForm'
+    _title: 'Configuración Solicitud Andalucía +ei'
+  requirements:
+    _permission: 'administer andalucia ei'

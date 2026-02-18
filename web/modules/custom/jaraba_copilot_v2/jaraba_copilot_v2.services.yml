@@ -13,6 +13,8 @@ services:
       - '@current_user'
       - '@jaraba_copilot_v2.feature_unlock'
       - '@logger.channel.jaraba_copilot_v2'
+      - '@state'
+      - '@datetime.time'
 
   jaraba_copilot_v2.experiment_library:
     class: Drupal\jaraba_copilot_v2\Service\ExperimentLibraryService

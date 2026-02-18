@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Filled scale plates (duotone background) -->
+  <path d="M2 12a3 3 0 0 0 6 0H2z" fill="currentColor" opacity="0.3"/>
+  <path d="M16 12a3 3 0 0 0 6 0h-6z" fill="currentColor" opacity="0.3"/>
+  <!-- Pillar -->
+  <line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="2"/>
+  <!-- Base -->
+  <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <!-- Top beam -->
+  <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" stroke-width="2"/>
+  <!-- Left scale -->
+  <path d="M4 6L2 12h6L6 6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M2 12a3 3 0 0 0 6 0" stroke="currentColor" stroke-width="2"/>
+  <!-- Right scale -->
+  <path d="M18 6l2 6h-6l2-6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M16 12a3 3 0 0 0 6 0" stroke="currentColor" stroke-width="2"/>
+  <!-- Top circle -->
+  <circle cx="12" cy="3" r="1.5" fill="currentColor"/>
+</svg>

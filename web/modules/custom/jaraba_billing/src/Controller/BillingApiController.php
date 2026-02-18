@@ -151,7 +151,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error creating subscription: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -182,7 +182,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error changing plan: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -218,7 +218,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error canceling subscription: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -253,7 +253,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error reactivating subscription: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -376,7 +376,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error creating portal session: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -452,7 +452,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error adding payment method: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -472,7 +472,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error deleting payment method: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -525,7 +525,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
     catch (\Exception $e) {
       $this->logger->error('Error updating customer: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 

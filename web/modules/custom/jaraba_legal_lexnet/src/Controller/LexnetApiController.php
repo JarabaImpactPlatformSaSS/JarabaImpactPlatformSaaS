@@ -112,7 +112,8 @@ class LexnetApiController extends ControllerBase {
       return new JsonResponse(['success' => TRUE, 'data' => $this->syncService->serializeNotification($notification), 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
+      $this->logger->error('Link to case failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 
@@ -156,7 +157,8 @@ class LexnetApiController extends ControllerBase {
       return new JsonResponse(['success' => TRUE, 'data' => $this->submissionService->serializeSubmission($submission), 'meta' => ['timestamp' => time()]], 201);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
+      $this->logger->error('Submission creation failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 

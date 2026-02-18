@@ -106,6 +106,7 @@ jaraba_foc.api.snapshot:
     _controller: '\Drupal\jaraba_foc\Controller\ApiController::createSnapshot'
   requirements:
     _permission: 'administer foc'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # ═══════════════════════════════════════════════════════════════════════════

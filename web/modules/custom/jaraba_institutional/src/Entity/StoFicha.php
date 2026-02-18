@@ -285,12 +285,6 @@ class StoFicha extends ContentEntityBase {
       ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de creacion del registro.'))
       ->setDisplayConfigurable('view', TRUE);
 
-    // --- Indices de base de datos ---
-    $fields['tenant_id']->addIndex('value');
-    $fields['participant_id']->addIndex('value');
-    $fields['ficha_number']->addIndex('value');
-    $fields['ficha_type']->addIndex('value');
-
     return $fields;
   }
 

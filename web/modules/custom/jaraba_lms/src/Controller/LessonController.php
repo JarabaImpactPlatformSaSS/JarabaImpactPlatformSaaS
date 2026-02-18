@@ -60,9 +60,10 @@ class LessonController extends ControllerBase
                 'message' => 'Lesson marked as complete',
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_lms')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

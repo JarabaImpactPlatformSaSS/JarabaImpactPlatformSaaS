@@ -61,10 +61,12 @@ class EInvoicePaymentController extends ControllerBase {
       ], 201);
     }
     catch (\InvalidArgumentException $e) {
-      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => $e->getMessage()]], 404);
+      \Drupal::logger('jaraba_einvoice_b2b')->error('Payment recording validation error: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 404);
     }
     catch (\Throwable $e) {
-      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => $e->getMessage()]], 500);
+      \Drupal::logger('jaraba_einvoice_b2b')->error('Payment recording failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 

@@ -303,13 +303,6 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
       ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de la ultima modificacion.'))
       ->setDisplayConfigurable('view', TRUE);
 
-    // --- Indices de base de datos ---
-    $fields['tenant_id']->addIndex('value');
-    $fields['program_type']->addIndex('value');
-    $fields['status']->addIndex('value');
-    $fields['program_code']->addIndex('value');
-    $fields['start_date']->addIndex('value');
-
     return $fields;
   }
 

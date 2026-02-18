@@ -87,6 +87,7 @@ jaraba_mentoring.api.match:
   requirements:
     _permission: 'view mentor profiles'
     _format: 'json'
+    _csrf_token: 'TRUE'
 
 # API: Lista de Mentores
 jaraba_mentoring.api.list:
@@ -156,6 +157,7 @@ jaraba_mentoring.api.sessions.create:
   methods: [POST]
   requirements:
     _permission: 'book mentoring session'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 
@@ -178,6 +180,7 @@ jaraba_mentoring.api.sessions.cancel:
   requirements:
     _permission: 'access content'
     session_id: '\d+'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 
@@ -189,6 +192,7 @@ jaraba_mentoring.api.sessions.reschedule:
   requirements:
     _permission: 'access content'
     session_id: '\d+'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 
@@ -236,6 +240,7 @@ jaraba_mentoring.api.packages.purchase:
   requirements:
     _permission: 'book mentoring session'
     package_id: '\d+'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 
@@ -272,6 +277,7 @@ jaraba_mentoring.api.engagements.terminate:
   requirements:
     _permission: 'manage engagements'
     engagement_id: '\d+'
+    _csrf_token: 'TRUE'
   options:
     _format: json
 

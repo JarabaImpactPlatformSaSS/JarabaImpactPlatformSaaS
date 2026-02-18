@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -121,6 +123,9 @@ class AndaluciaEiJourneyProgressionService {
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly TimeInterface $time,
+    protected readonly StateInterface $state,
+    protected readonly ?object $faseTransitionManager = NULL,
   ) {}
 
   /**
@@ -164,19 +169,19 @@ class AndaluciaEiJourneyProgressionService {
    */
   public function getPendingAction(int $userId): ?array {
     $cacheKey = "andalucia_ei_proactive_pending_{$userId}";
-    $cached = \Drupal::state()->get($cacheKey);
+    $cached = $this->state->get($cacheKey);
 
     if ($cached) {
-      $age = \Drupal::time()->getRequestTime() - ($cached['evaluated_at'] ?? 0);
+      $age = $this->time->getRequestTime() - ($cached['evaluated_at'] ?? 0);
       if ($age < 3600) {
         return $cached['action'];
       }
     }
 
     $action = $this->evaluate($userId);
-    \Drupal::state()->set($cacheKey, [
+    $this->state->set($cacheKey, [
       'action' => $action,
-      'evaluated_at' => \Drupal::time()->getRequestTime(),
+      'evaluated_at' => $this->time->getRequestTime(),
     ]);
 
     return $action;
@@ -187,13 +192,13 @@ class AndaluciaEiJourneyProgressionService {
    */
   public function dismissAction(int $userId, string $ruleId): void {
     $key = "andalucia_ei_proactive_dismissed_{$userId}";
-    $dismissed = \Drupal::state()->get($key, []);
+    $dismissed = $this->state->get($key, []);
     if (!in_array($ruleId, $dismissed, TRUE)) {
       $dismissed[] = $ruleId;
-      \Drupal::state()->set($key, $dismissed);
+      $this->state->set($key, $dismissed);
     }
 
-    \Drupal::state()->delete("andalucia_ei_proactive_pending_{$userId}");
+    $this->state->delete("andalucia_ei_proactive_pending_{$userId}");
 
     $this->logger->info('Proactive rule @rule dismissed by user @uid', [
       '@rule' => $ruleId,
@@ -225,9 +230,9 @@ class AndaluciaEiJourneyProgressionService {
         }
 
         $action = $this->evaluate($userId);
-        \Drupal::state()->set("andalucia_ei_proactive_pending_{$userId}", [
+        $this->state->set("andalucia_ei_proactive_pending_{$userId}", [
           'action' => $action,
-          'evaluated_at' => \Drupal::time()->getRequestTime(),
+          'evaluated_at' => $this->time->getRequestTime(),
         ]);
         $processed++;
       }
@@ -269,7 +274,7 @@ class AndaluciaEiJourneyProgressionService {
       if (!$created) {
         return FALSE;
       }
-      $elapsed = \Drupal::time()->getRequestTime() - $created;
+      $elapsed = $this->time->getRequestTime() - $created;
       return $elapsed > ($days * 86400);
     }
 
@@ -279,7 +284,7 @@ class AndaluciaEiJourneyProgressionService {
       return FALSE;
     }
 
-    $elapsed = \Drupal::time()->getRequestTime() - $changed;
+    $elapsed = $this->time->getRequestTime() - $changed;
     return $elapsed > ($days * 86400);
   }
 
@@ -292,7 +297,7 @@ class AndaluciaEiJourneyProgressionService {
       return FALSE;
     }
 
-    $elapsed = \Drupal::time()->getRequestTime() - $created;
+    $elapsed = $this->time->getRequestTime() - $created;
     if ($elapsed < ($minDays * 86400)) {
       return FALSE;
     }
@@ -327,13 +332,12 @@ class AndaluciaEiJourneyProgressionService {
    * Delegates to FaseTransitionManager if available.
    */
   protected function checkCanTransit($participant): bool {
-    if (!\Drupal::hasService('jaraba_andalucia_ei.fase_transition_manager')) {
+    if (!$this->faseTransitionManager) {
       return FALSE;
     }
 
     try {
-      $manager = \Drupal::service('jaraba_andalucia_ei.fase_transition_manager');
-      return $manager->canTransitToInsercion($participant);
+      return $this->faseTransitionManager->canTransitToInsercion($participant);
     }
     catch (\Throwable $e) {
       return FALSE;
@@ -359,7 +363,7 @@ class AndaluciaEiJourneyProgressionService {
     if (!$changed) {
       return FALSE;
     }
-    $elapsed = \Drupal::time()->getRequestTime() - $changed;
+    $elapsed = $this->time->getRequestTime() - $changed;
     return $elapsed > ($days * 86400);
   }
 
@@ -380,7 +384,7 @@ class AndaluciaEiJourneyProgressionService {
       return FALSE;
     }
 
-    $cutoff = \Drupal::time()->getRequestTime() - ($days * 86400);
+    $cutoff = $this->time->getRequestTime() - ($days * 86400);
     return $changed > $cutoff;
   }
 
@@ -404,7 +408,7 @@ class AndaluciaEiJourneyProgressionService {
    * Gets list of dismissed rule IDs for a user.
    */
   protected function getDismissedRules(int $userId): array {
-    return \Drupal::state()->get("andalucia_ei_proactive_dismissed_{$userId}", []);
+    return $this->state->get("andalucia_ei_proactive_dismissed_{$userId}", []);
   }
 
 }

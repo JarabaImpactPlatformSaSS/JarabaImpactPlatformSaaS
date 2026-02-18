@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
 use Drupal\jaraba_interactive\Plugin\InteractiveType\QuestionSet;
-use PHPUnit\Framework\TestCase;
+use Drupal\Tests\UnitTestCase;
 
 // Stub de la funcion global t() para tests unitarios puros.
 // La funcion real requiere el bootstrap de Drupal.
@@ -39,7 +39,7 @@ if (!function_exists('t')) {
  * @coversDefaultClass \Drupal\jaraba_interactive\Plugin\InteractiveType\QuestionSet
  * @group jaraba_interactive
  */
-class QuestionSetTest extends TestCase {
+class QuestionSetTest extends UnitTestCase {
 
   /**
    * El plugin bajo prueba.
@@ -51,6 +51,11 @@ class QuestionSetTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->plugin = $this->getMockBuilder(QuestionSet::class)
       ->disableOriginalConstructor()

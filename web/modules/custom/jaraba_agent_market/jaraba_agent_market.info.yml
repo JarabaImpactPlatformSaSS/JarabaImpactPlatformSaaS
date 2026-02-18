@@ -1,0 +1,9 @@
+name: 'Jaraba Agent Market'
+type: module
+description: 'Mercado de negociación autónoma entre Gemelos Digitales (Phase 3).'
+package: 'Jaraba Platform'
+core_version_requirement: ^10 || ^11
+dependencies:
+  - jaraba_identity:jaraba_identity
+  - jaraba_ai_agents:jaraba_ai_agents
+  - jaraba_billing:jaraba_billing

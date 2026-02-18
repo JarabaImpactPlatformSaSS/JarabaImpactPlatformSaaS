@@ -6,7 +6,7 @@ namespace Drupal\jaraba_site_builder\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\jaraba_page_builder\Entity\PageContent;
+use Drupal\jaraba_page_builder\PageContentInterface;
 
 /**
  * Servicio de auditoría SEO para páginas del Site Builder.
@@ -55,7 +55,7 @@ class SeoAuditorService
     /**
      * Audita una página y devuelve score + issues.
      *
-     * @param \Drupal\jaraba_page_builder\Entity\PageContent $page
+     * @param \Drupal\jaraba_page_builder\PageContentInterface $page
      *   La página a auditar.
      *
      * @return array
@@ -64,7 +64,7 @@ class SeoAuditorService
      *   - issues: array de issues con type, message, check, score
      *   - checks: array detallado de cada check
      */
-    public function audit(PageContent $page): array
+    public function audit(PageContentInterface $page): array
     {
         $checks = [];
 
@@ -122,7 +122,7 @@ class SeoAuditorService
         $count = 0;
 
         foreach ($pages as $page) {
-            if ($page instanceof PageContent) {
+            if ($page instanceof PageContentInterface) {
                 $result = $this->audit($page);
                 $totalScore += $result['score'];
                 $count++;
@@ -135,13 +135,13 @@ class SeoAuditorService
     /**
      * Obtiene el HTML renderizado de la página para análisis.
      *
-     * @param \Drupal\jaraba_page_builder\Entity\PageContent $page
+     * @param \Drupal\jaraba_page_builder\PageContentInterface $page
      *   La página.
      *
      * @return string
      *   HTML renderizado.
      */
-    protected function getRenderedHtml(PageContent $page): string
+    protected function getRenderedHtml(PageContentInterface $page): string
     {
         // Priorizar rendered_html (Canvas Editor output).
         if ($page->hasField('rendered_html')) {
@@ -206,7 +206,7 @@ class SeoAuditorService
      *
      * Verifica presencia y longitud del meta título.
      */
-    protected function checkMetaTitle(PageContent $page): array
+    protected function checkMetaTitle(PageContentInterface $page): array
     {
         $metaTitle = '';
         if ($page->hasField('meta_title')) {
@@ -256,7 +256,7 @@ class SeoAuditorService
      *
      * Verifica presencia y longitud de la meta descripción.
      */
-    protected function checkMetaDescription(PageContent $page): array
+    protected function checkMetaDescription(PageContentInterface $page): array
     {
         $metaDesc = '';
         if ($page->hasField('meta_description')) {
@@ -306,7 +306,7 @@ class SeoAuditorService
      *
      * Verifica que exista exactamente un H1 en el HTML renderizado.
      */
-    protected function checkH1Unique(PageContent $page): array
+    protected function checkH1Unique(PageContentInterface $page): array
     {
         $html = $this->getRenderedHtml($page);
         $issues = [];
@@ -356,7 +356,7 @@ class SeoAuditorService
      *
      * Verifica que todas las imágenes tengan atributo alt no vacío.
      */
-    protected function checkImagesAlt(PageContent $page): array
+    protected function checkImagesAlt(PageContentInterface $page): array
     {
         $html = $this->getRenderedHtml($page);
         $issues = [];
@@ -421,7 +421,7 @@ class SeoAuditorService
      *
      * Verifica que el contenido tenga al menos 300 palabras.
      */
-    protected function checkContentLength(PageContent $page): array
+    protected function checkContentLength(PageContentInterface $page): array
     {
         $html = $this->getRenderedHtml($page);
         $issues = [];
@@ -463,7 +463,7 @@ class SeoAuditorService
      *
      * Verifica que exista un path alias limpio.
      */
-    protected function checkUrlSlug(PageContent $page): array
+    protected function checkUrlSlug(PageContentInterface $page): array
     {
         $slug = '';
         if ($page->hasField('path_alias')) {

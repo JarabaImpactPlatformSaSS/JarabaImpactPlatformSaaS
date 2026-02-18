@@ -64,6 +64,11 @@ services:
       - '@database'
       - '@logger.factory'
       - '@config.factory'
+      - '@datetime.time'
+      - '@state'
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@language_manager'
 
   # ---------------------------------------------------------------------------
   # Servicio de Indexación

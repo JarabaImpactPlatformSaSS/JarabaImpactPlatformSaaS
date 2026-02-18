@@ -62,7 +62,8 @@
           {{ jaraba_icon('verticals', intention.icon, { size: '40px', color: intention.color_class|default('primary') }) }}
         {% else %}
           {# Fallback: SVG inline para datos por defecto #}
-          {{ intention.icon_svg|raw }}
+          {# AUDIT-SEC-02: |raw for SVG from preprocess — sanitize to SVG-safe tags #}
+          {{ intention.icon_svg|striptags('<svg><path><circle><rect><line><polyline><polygon><g><defs><use><symbol><clipPath><mask><text><tspan>')|raw }}
         {% endif %}
       </div>
       <h2 class="intention-card__title">{{ intention.title }}</h2>

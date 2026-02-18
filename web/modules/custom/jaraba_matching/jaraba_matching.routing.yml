@@ -46,6 +46,7 @@ jaraba_matching.api.feedback:
     _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::submitFeedback'
   requirements:
     _permission: 'create match feedback'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # Force reindex job
@@ -55,5 +56,6 @@ jaraba_matching.api.reindex:
     _controller: '\Drupal\jaraba_matching\Controller\MatchingApiController::reindexJob'
   requirements:
     _permission: 'administer matching'
+    _csrf_token: 'TRUE'
     job_id: '\d+'
   methods: [POST]

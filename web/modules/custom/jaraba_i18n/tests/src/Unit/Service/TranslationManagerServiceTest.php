@@ -9,6 +9,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\jaraba_i18n\Service\TranslationManagerService;
@@ -176,6 +177,10 @@ class TranslationManagerServiceTest extends TestCase {
   /**
    * Tests que getTranslationStats retorna la estructura correcta.
    *
+   * AUDIT-PERF-N09: Updated test to match the optimized query-based
+   * implementation that uses count queries per language instead of
+   * loading all entities with loadMultiple.
+   *
    * @covers ::getTranslationStats
    */
   public function testGetTranslationStatsCountsCorrectly(): void {
@@ -184,26 +189,41 @@ class TranslationManagerServiceTest extends TestCase {
       'en' => 'English',
     ]);
 
-    // Crear dos entidades: una con traduccion a 'en', otra sin.
-    $entity1 = $this->createMock(TranslatableChangedEntityStub::class);
-    $entity1->method('isTranslatable')->willReturn(TRUE);
-    $originalLang1 = $this->createLanguageMock('es', 'Spanish');
-    $entity1->method('getUntranslated')->willReturnSelf();
-    $entity1->method('language')->willReturn($originalLang1);
-    $entity1->method('hasTranslation')
-      ->willReturnCallback(fn(string $langcode) => in_array($langcode, ['es', 'en'], TRUE));
+    // Mock the default language for getTranslationStats.
+    $defaultLanguage = $this->createLanguageMock('es', 'Spanish');
+    $this->languageManager->method('getDefaultLanguage')->willReturn($defaultLanguage);
 
-    $entity2 = $this->createMock(TranslatableChangedEntityStub::class);
-    $entity2->method('isTranslatable')->willReturn(TRUE);
-    $originalLang2 = $this->createLanguageMock('es', 'Spanish');
-    $entity2->method('getUntranslated')->willReturnSelf();
-    $entity2->method('language')->willReturn($originalLang2);
-    $entity2->method('hasTranslation')
-      ->willReturnCallback(fn(string $langcode) => $langcode === 'es');
+    // Track query calls to return different counts per condition.
+    $queryCallIndex = 0;
 
-    // Mock storage.
+    // Create a query mock factory that returns the correct count for each call.
+    // Call order: 1) total count, 2) 'es' langcode count, 3) 'en' langcode count.
     $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('loadMultiple')->willReturn([$entity1, $entity2]);
+    $storage->method('getQuery')->willReturnCallback(
+      function () use (&$queryCallIndex) {
+        $queryCallIndex++;
+        $currentCall = $queryCallIndex;
+        $query = $this->createMock(QueryInterface::class);
+        $query->method('accessCheck')->willReturnSelf();
+        $query->method('condition')->willReturnSelf();
+        $query->method('count')->willReturnSelf();
+        $query->method('execute')->willReturnCallback(
+          function () use ($currentCall) {
+            // Call 1: total count = 2 entities.
+            // Call 2: 'es' langcode count = 2 (both entities have 'es').
+            // Call 3: 'en' langcode count = 1 (only one entity has 'en').
+            return match ($currentCall) {
+              1 => 2,
+              2 => 2,
+              3 => 1,
+              default => 0,
+            };
+          }
+        );
+        return $query;
+      }
+    );
+
     $this->entityTypeManager->method('getStorage')->willReturn($storage);
 
     $stats = $this->service->getTranslationStats('page_content');
@@ -215,9 +235,9 @@ class TranslationManagerServiceTest extends TestCase {
     // Ambas entidades tienen 'es' (original), una tiene 'en'.
     $this->assertSame(2, $stats['translated']['es']);
     $this->assertSame(1, $stats['translated']['en']);
-    // Solo entity2 le falta 'en'.
+    // Solo una entidad le falta 'en'.
     $this->assertSame(1, $stats['missing']['en']);
-    // Nadie le falta 'es' porque es el original de ambas.
+    // 'es' is the default language, so missing is always 0.
     $this->assertSame(0, $stats['missing']['es']);
   }
 
@@ -233,6 +253,117 @@ class TranslationManagerServiceTest extends TestCase {
     $status = $this->service->getTranslationStatus($entity);
 
     $this->assertSame([], $status);
+  }
+
+  /**
+   * Tests getBatchTranslationStatus batch-loads entities and returns status.
+   *
+   * AUDIT-PERF-N09: Verifies that the new batch method loads all entities
+   * in a single loadMultiple call and returns correct per-entity status.
+   *
+   * @covers ::getBatchTranslationStatus
+   */
+  public function testGetBatchTranslationStatusLoadsInBatch(): void {
+    $this->setUpLanguages([
+      'es' => 'Spanish',
+      'en' => 'English',
+    ]);
+
+    // Entity 1: original in 'es', has 'en' translation (up to date).
+    $entity1 = $this->createMock(TranslatableChangedEntityStub::class);
+    $entity1->method('isTranslatable')->willReturn(TRUE);
+    $originalLang1 = $this->createLanguageMock('es', 'Spanish');
+    $entity1->method('getUntranslated')->willReturnSelf();
+    $entity1->method('language')->willReturn($originalLang1);
+    $entity1->method('getChangedTime')->willReturn(1000);
+    $entity1->method('hasTranslation')
+      ->willReturnCallback(fn(string $langcode) => in_array($langcode, ['es', 'en'], TRUE));
+
+    $translation1 = $this->createMock(TranslatableChangedEntityStub::class);
+    $translation1->method('getChangedTime')->willReturn(2000);
+    $entity1->method('getTranslation')->willReturn($translation1);
+
+    // Entity 2: original in 'es', no 'en' translation.
+    $entity2 = $this->createMock(TranslatableChangedEntityStub::class);
+    $entity2->method('isTranslatable')->willReturn(TRUE);
+    $originalLang2 = $this->createLanguageMock('es', 'Spanish');
+    $entity2->method('getUntranslated')->willReturnSelf();
+    $entity2->method('language')->willReturn($originalLang2);
+    $entity2->method('getChangedTime')->willReturn(1500);
+    $entity2->method('hasTranslation')
+      ->willReturnCallback(fn(string $langcode) => $langcode === 'es');
+
+    // Mock storage — loadMultiple should be called exactly once with both IDs.
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $storage->expects($this->once())
+      ->method('loadMultiple')
+      ->with([1, 2])
+      ->willReturn([1 => $entity1, 2 => $entity2]);
+
+    $this->entityTypeManager->method('getStorage')
+      ->with('page_content')
+      ->willReturn($storage);
+
+    $results = $this->service->getBatchTranslationStatus('page_content', [1, 2]);
+
+    // Verify entity 1 status.
+    $this->assertArrayHasKey(1, $results);
+    $this->assertTrue($results[1]['es']['exists']);
+    $this->assertTrue($results[1]['es']['is_original']);
+    $this->assertTrue($results[1]['en']['exists']);
+    $this->assertFalse($results[1]['en']['outdated']);
+
+    // Verify entity 2 status.
+    $this->assertArrayHasKey(2, $results);
+    $this->assertTrue($results[2]['es']['exists']);
+    $this->assertTrue($results[2]['es']['is_original']);
+    $this->assertFalse($results[2]['en']['exists']);
+  }
+
+  /**
+   * Tests getBatchTranslationStatus returns empty for empty input.
+   *
+   * @covers ::getBatchTranslationStatus
+   */
+  public function testGetBatchTranslationStatusEmptyInput(): void {
+    $results = $this->service->getBatchTranslationStatus('page_content', []);
+    $this->assertSame([], $results);
+  }
+
+  /**
+   * Tests getBatchTranslationStatus detects outdated translations.
+   *
+   * @covers ::getBatchTranslationStatus
+   */
+  public function testGetBatchTranslationStatusDetectsOutdated(): void {
+    $this->setUpLanguages([
+      'es' => 'Spanish',
+      'en' => 'English',
+    ]);
+
+    // Entity with outdated 'en' translation (original changed after translation).
+    $entity = $this->createMock(TranslatableChangedEntityStub::class);
+    $entity->method('isTranslatable')->willReturn(TRUE);
+    $originalLang = $this->createLanguageMock('es', 'Spanish');
+    $entity->method('getUntranslated')->willReturnSelf();
+    $entity->method('language')->willReturn($originalLang);
+    $entity->method('getChangedTime')->willReturn(3000);
+    $entity->method('hasTranslation')
+      ->willReturnCallback(fn(string $langcode) => in_array($langcode, ['es', 'en'], TRUE));
+
+    $outdatedTranslation = $this->createMock(TranslatableChangedEntityStub::class);
+    $outdatedTranslation->method('getChangedTime')->willReturn(1000);
+    $entity->method('getTranslation')->willReturn($outdatedTranslation);
+
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $storage->method('loadMultiple')->willReturn([5 => $entity]);
+    $this->entityTypeManager->method('getStorage')->willReturn($storage);
+
+    $results = $this->service->getBatchTranslationStatus('page_content', [5]);
+
+    $this->assertArrayHasKey(5, $results);
+    $this->assertTrue($results[5]['en']['exists']);
+    $this->assertTrue($results[5]['en']['outdated'], 'Translation should be detected as outdated.');
   }
 
 }

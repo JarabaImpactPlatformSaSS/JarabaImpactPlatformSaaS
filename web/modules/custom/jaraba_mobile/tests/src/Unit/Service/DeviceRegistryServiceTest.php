@@ -52,6 +52,13 @@ class DeviceRegistryServiceTest extends TestCase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set up Drupal container for \Drupal::time().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $timeMock = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $timeMock->method('getRequestTime')->willReturn(time());
+    $container->set('datetime.time', $timeMock);
+    \Drupal::setContainer($container);
+
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->tenantContext = $this->createMock(TenantContextService::class);
     $this->currentUser = $this->createMock(AccountProxyInterface::class);

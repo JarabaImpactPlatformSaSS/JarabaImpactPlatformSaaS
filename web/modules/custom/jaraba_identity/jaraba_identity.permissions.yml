@@ -1,0 +1,12 @@
+administer jaraba identity:
+  title: 'Administrar Identidad Soberana'
+  description: 'Permite configurar los ajustes globales de identidad.'
+  restrict access: true
+
+view own identity wallet:
+  title: 'Ver propia cartera de identidad'
+  description: 'Permite a un usuario ver su DID y claves públicas.'
+
+manage own identity wallet:
+  title: 'Gestionar propia cartera de identidad'
+  description: 'Permite rotar claves y gestionar credenciales asociadas.'

@@ -12,6 +12,7 @@ use Drupal\Core\State\StateInterface;
 use Drupal\jaraba_pixels\Service\CredentialManagerService;
 use Drupal\jaraba_pixels\Service\TokenVerificationService;
 use Drupal\Tests\UnitTestCase;
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -51,6 +52,11 @@ class TokenVerificationServiceTest extends UnitTestCase {
   protected LoggerInterface $logger;
 
   /**
+   * Mock del cliente HTTP.
+   */
+  protected ClientInterface $httpClient;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -60,6 +66,7 @@ class TokenVerificationServiceTest extends UnitTestCase {
     $this->mailManager = $this->createMock(MailManagerInterface::class);
     $this->state = $this->createMock(StateInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->httpClient = $this->createMock(ClientInterface::class);
 
     $loggerFactory = $this->getMockBuilder(\stdClass::class)
       ->addMethods(['get'])
@@ -73,6 +80,7 @@ class TokenVerificationServiceTest extends UnitTestCase {
       $this->mailManager,
       $this->state,
       $loggerFactory,
+      $this->httpClient,
     );
 
     // Set up a mock container for \Drupal::config() calls in the service.

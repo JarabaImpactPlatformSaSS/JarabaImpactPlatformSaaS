@@ -1,0 +1,11 @@
+{
+  "name": "jaraba-ai-agents",
+  "version": "1.0.0",
+  "description": "Estilos para el sistema de Agentes IA.",
+  "scripts": {
+    "build": "sass scss/main.scss:css/ai-agents.css --style=compressed --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.71.0"
+  }
+}

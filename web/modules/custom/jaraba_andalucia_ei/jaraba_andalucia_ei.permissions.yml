@@ -24,3 +24,20 @@ delete programa participante ei:
 export sto data:
   title: 'Exportar datos para STO'
   description: 'Permite generar paquetes de exportación para el STO.'
+
+# === SOLICITUDES ===
+create solicitud ei:
+  title: 'Crear solicitudes Andalucía +ei'
+  description: 'Permite crear nuevas solicitudes de participación.'
+
+view solicitud ei:
+  title: 'Ver solicitudes Andalucía +ei'
+  description: 'Permite ver las solicitudes de participación.'
+
+edit solicitud ei:
+  title: 'Editar solicitudes Andalucía +ei'
+  description: 'Permite modificar solicitudes existentes.'
+
+delete solicitud ei:
+  title: 'Eliminar solicitudes Andalucía +ei'
+  description: 'Permite eliminar solicitudes de participación.'

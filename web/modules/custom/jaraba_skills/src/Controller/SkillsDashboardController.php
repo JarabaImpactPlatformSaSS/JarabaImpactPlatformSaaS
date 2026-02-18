@@ -355,9 +355,10 @@ class SkillsDashboardController extends ControllerBase
                 'simulated' => TRUE,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_skills')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'message' => $e->getMessage(),
+                'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -427,9 +428,10 @@ class SkillsDashboardController extends ControllerBase
                 'daily_data' => $dailyData,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_skills')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

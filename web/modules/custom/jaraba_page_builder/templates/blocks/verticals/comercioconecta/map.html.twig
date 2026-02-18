@@ -14,7 +14,7 @@
   <div class="pb-section__container">
     <div class="pb-section__map-embed" data-parallax="0.3">
       {% if map_embed|default('') %}
-        {{ map_embed|raw }}
+        {{ map_embed|striptags('<iframe>')|raw }}
       {% else %}
         <div class="pb-section__img-placeholder" aria-hidden="true">
           {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '48px', color: 'primary' }) }}

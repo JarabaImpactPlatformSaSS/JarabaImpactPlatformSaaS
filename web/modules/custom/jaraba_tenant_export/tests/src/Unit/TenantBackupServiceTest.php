@@ -17,6 +17,18 @@ use Drupal\Tests\UnitTestCase;
 class TenantBackupServiceTest extends UnitTestCase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
+  }
+
+  /**
    * Tests that default config values are valid.
    */
   public function testDefaultConfigValues(): void {

@@ -58,7 +58,7 @@ Esta auditoría integral reveló **65 hallazgos** distribuidos en 4 dimensiones.
 | Monitoring stack completo | Prometheus + Grafana + Loki + AlertManager (14 reglas) |
 | AI multiproveedor con failover | 3 proveedores (Claude, GPT-4, Gemini Flash), circuit breaker |
 | Go-Live procedures robustos | 3 scripts ejecutables, 24 validaciones preflight |
-| Test coverage creciente | 121+ unit tests, k6 load tests, BackstopJS visual, PHPStan Level 5 |
+| Test coverage creciente | 340 archivos test, 2,444 métodos, k6 load tests, BackstopJS visual, PHPStan Level 5 |
 | Remediación integral ejecutada | 7/7 hallazgos CRÍTICOS resueltos, 20/20 FASES 1-3 completados ✅, IDOR remediado en 29 controladores |
 | Indexación automática multi-tenant | TenantEntityStorageSchema añade 4 índices a todas las entities con tenant_id |
 | Locking en flujos financieros | LockBackendInterface en todos los flujos Stripe (customer, subscription, invoice, webhook) |
@@ -419,7 +419,7 @@ Esta auditoría integral reveló **65 hallazgos** distribuidos en 4 dimensiones.
 | Hallazgos ALTOS previos | 32 | 25 pendientes | 22% resueltos |
 | Módulos custom | ~45 | 62 (+17 nuevos) | Crecimiento acelerado |
 | Content Entities | ~150 | 268 (+118) | Crecimiento muy rápido |
-| Unit tests | ~64 | 121+ | Mejora significativa |
+| Unit tests | ~64 | 340 archivos, 2,444 métodos | Mejora significativa |
 | Documentos técnicos | 280+ | 435+ | Documentación excepcional |
 | Servicios core | ~100 | 200+ | Complejidad creciente |
 

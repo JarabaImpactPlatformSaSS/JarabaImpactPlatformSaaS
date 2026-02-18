@@ -109,8 +109,8 @@ class PredictiveApiController extends ControllerBase {
       $result = $this->churnPredictor->calculateChurnRisk($tenantId);
       $prediction = $result['prediction'];
 
-      return new JsonResponse([
-        'data' => [
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => [
           'id' => (int) $prediction->id(),
           'tenant_id' => $tenantId,
           'risk_score' => $result['risk_score'],
@@ -124,8 +124,9 @@ class PredictiveApiController extends ControllerBase {
       ]);
     }
     catch (\InvalidArgumentException $e) {
+      \Drupal::logger('jaraba_predictive')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 404);
     }
     catch (\Exception $e) {
@@ -156,12 +157,10 @@ class PredictiveApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data,
-        'meta' => [
+        'data' => $data, 'meta' => [
           'tenant_id' => $tenantId ?: NULL,
           'days' => $days,
-        ],
-      ]);
+        ]]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -204,22 +203,20 @@ class PredictiveApiController extends ControllerBase {
           ];
         }
         catch (\Exception $e) {
+          \Drupal::logger('jaraba_predictive')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
           $errors[] = [
             'tenant_id' => $tenantId,
-            'error' => $e->getMessage(),
+            'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
           ];
         }
       }
 
-      return new JsonResponse([
-        'data' => $results,
-        'meta' => [
+      return new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => [
           'total_requested' => count($tenantIds),
           'total_success' => count($results),
           'total_errors' => count($errors),
           'errors' => $errors,
-        ],
-      ]);
+        ]]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -253,8 +250,7 @@ class PredictiveApiController extends ControllerBase {
       $result = $this->leadScorer->scoreUser($userId);
       $leadScore = $result['lead_score'];
 
-      return new JsonResponse([
-        'data' => [
+      return new JsonResponse(['success' => TRUE, 'data' => [
           'id' => (int) $leadScore->id(),
           'user_id' => $userId,
           'total_score' => (int) ($leadScore->get('total_score')->value ?? 0),
@@ -267,8 +263,9 @@ class PredictiveApiController extends ControllerBase {
       ]);
     }
     catch (\InvalidArgumentException $e) {
+      \Drupal::logger('jaraba_predictive')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 404);
     }
     catch (\Exception $e) {
@@ -312,22 +309,21 @@ class PredictiveApiController extends ControllerBase {
           ];
         }
         catch (\Exception $e) {
+          \Drupal::logger('jaraba_predictive')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
           $errors[] = [
             'user_id' => $userId,
-            'error' => $e->getMessage(),
+            'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
           ];
         }
       }
 
       return new JsonResponse([
-        'data' => $results,
-        'meta' => [
+        'data' => $results, 'meta' => [
           'total_requested' => count($userIds),
           'total_success' => count($results),
           'total_errors' => count($errors),
           'errors' => $errors,
-        ],
-      ]);
+        ]]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -370,8 +366,7 @@ class PredictiveApiController extends ControllerBase {
       $leadScore->set('last_activity', date('Y-m-d\TH:i:s'));
       $leadScore->save();
 
-      return new JsonResponse([
-        'data' => [
+      return new JsonResponse(['success' => TRUE, 'data' => [
           'lead_score_id' => (int) $leadScore->id(),
           'event_type' => $eventType,
           'total_events' => count($existingEvents),
@@ -428,17 +423,16 @@ class PredictiveApiController extends ControllerBase {
       $data = $this->forecastEngine->getForecastHistory($metric, $limit);
 
       return new JsonResponse([
-        'data' => $data,
-        'meta' => [
+        'data' => $data, 'meta' => [
           'metric' => $metric,
           'period' => $period,
           'limit' => $limit,
-        ],
-      ]);
+        ]]);
     }
     catch (\InvalidArgumentException $e) {
+      \Drupal::logger('jaraba_predictive')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 400);
     }
     catch (\Exception $e) {
@@ -468,25 +462,19 @@ class PredictiveApiController extends ControllerBase {
       if ($metric) {
         $result = $this->anomalyDetector->detectAnomalies($metric, $lookbackDays);
 
-        return new JsonResponse([
-          'data' => $result,
-          'meta' => [
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => [
             'metric' => $metric,
             'lookback_days' => $lookbackDays,
-          ],
-        ]);
+          ]]);
       }
 
       // Sin metric especifico: retornar anomalias recientes.
       $limit = min(50, max(1, (int) $request->query->get('limit', 10)));
       $anomalies = $this->anomalyDetector->getRecentAnomalies($limit);
 
-      return new JsonResponse([
-        'data' => $anomalies,
-        'meta' => [
+      return new JsonResponse(['success' => TRUE, 'data' => $anomalies, 'meta' => [
           'limit' => $limit,
-        ],
-      ]);
+        ]]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
@@ -523,8 +511,7 @@ class PredictiveApiController extends ControllerBase {
       // --- Forecast (latest MRR) ---
       $mrrForecasts = $this->forecastEngine->getForecastHistory('mrr', 1);
 
-      return new JsonResponse([
-        'data' => [
+      return new JsonResponse(['success' => TRUE, 'data' => [
           'churn' => [
             'high_risk_count' => count($highRiskTenants),
             'high_risk_tenants' => $highRiskTenants,
@@ -541,11 +528,9 @@ class PredictiveApiController extends ControllerBase {
           'forecast' => [
             'latest_mrr' => $mrrForecasts[0] ?? NULL,
           ],
-        ],
-        'meta' => [
+        ], 'meta' => [
           'generated_at' => date('Y-m-d\TH:i:s'),
-        ],
-      ]);
+        ]]);
     }
     catch (\Exception $e) {
       return new JsonResponse([

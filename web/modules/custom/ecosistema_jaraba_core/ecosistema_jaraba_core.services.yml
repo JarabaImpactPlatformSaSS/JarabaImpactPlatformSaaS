@@ -719,6 +719,9 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@datetime.time'
+      - '@state'
+      - '@?ecosistema_jaraba_core.jarabalex_feature_gate'
 
   # Plan Elevación JarabaLex v1 — Fase 8: Cross-Vertical Bridges.
   ecosistema_jaraba_core.jarabalex_cross_vertical_bridge:
@@ -770,6 +773,10 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@datetime.time'
+      - '@state'
+      - '@module_handler'
+      - '@?jaraba_candidate.profile_completion'
 
   # ===========================================
   # EMPLOYABILITY HEALTH SCORE (Plan Elevación Empleabilidad v1 — Fase 10)
@@ -970,6 +977,11 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@datetime.time'
+      - '@state'
+      - '@module_handler'
+      - '@?jaraba_copilot_v2.bmc_validation'
+      - '@?jaraba_funding.matching_engine'
 
   # ===========================================
   # EMPRENDIMIENTO EMAIL SEQUENCES (Plan Elevación Emprendimiento v2 — Fase 3 G3)
@@ -1060,6 +1072,9 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@datetime.time'
+      - '@state'
+      - '@?jaraba_andalucia_ei.fase_transition_manager'
 
   # ===========================================
   # COMPLIANCE AGGREGATOR — STACK COMPLIANCE LEGAL N1 (FASE 12)
@@ -1185,6 +1200,10 @@ services:
       - '@entity_type.manager'
       - '@database'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@datetime.time'
+      - '@state'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@?jaraba_customer_success.nps_survey'
 
   # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 11: Experiment Service.
   ecosistema_jaraba_core.agroconecta_experiment:
@@ -1240,6 +1259,9 @@ services:
     arguments:
       - '@state'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@datetime.time'
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.comercioconecta_feature_gate'
 
   # ===========================================
   # COMERCIOCONECTA HEALTH SCORE (Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 16)

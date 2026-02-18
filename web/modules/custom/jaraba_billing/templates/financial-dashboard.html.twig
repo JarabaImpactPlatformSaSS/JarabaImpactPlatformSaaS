@@ -1,0 +1,63 @@
+{#
+/**
+ * @file
+ * Template para el Dashboard Financiero del Tenant.
+ */
+#}
+<div class="financial-dashboard">
+  <header class="dashboard-header">
+    <h1 class="dashboard-header__title">{{ 'Gestión Financiera'|t }}</h1>
+  </header>
+
+  <div class="dashboard-grid">
+    {# Card de Saldo Wallet #}
+    <section class="stat-card stat-card--wallet">
+      <div class="stat-card__icon">{{ jaraba_icon('ui', 'wallet', { size: '32px' }) }}</div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">{{ 'Saldo Disponible'|t }}</span>
+        <span class="stat-card__value">{{ balance|number_format(2, ',', '.') }} €</span>
+      </div>
+      <div class="stat-card__actions">
+        <a href="/billing/recharge" class="btn btn--primary btn--sm" data-dialog-type="modal">{{ 'Recargar Saldo'|t }}</a>
+      </div>
+    </section>
+
+    {# Proyección de Gasto #}
+    <section class="stat-card stat-card--forecast">
+      <div class="stat-card__content">
+        <span class="stat-card__label">{{ 'Previsión de Gasto (Mes)'|t }}</span>
+        <span class="stat-card__value">{{ forecast.projected_total|number_format(2, ',', '.') }} €</span>
+        <div class="stat-card__trend {{ forecast.projected_total > balance ? 'trend--danger' : 'trend--safe' }}">
+          {{ forecast.projected_total > balance ? '¡Atención! Saldo insuficiente para el mes.'|t : 'Saldo suficiente.'|t }}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {# Tabla de Consumo de IA y Recursos #}
+  <section class="usage-section">
+    <h2 class="section-title">{{ 'Consumo de Recursos IA'|t }}</h2>
+    <div class="usage-table-wrapper">
+      <table class="usage-table">
+        <thead>
+          <tr>
+            <th>{{ 'Servicio'|t }}</th>
+            <th>{{ 'Uso'|t }}</th>
+            <th>{{ 'Coste'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for metric, data in usage.metrics %}
+            {% if data.total > 0 %}
+              <tr>
+                <td><strong>{{ metric|replace({'_': ' '})|upper }}</strong></td>
+                <td>{{ data.total|number_format(0, ',', '.') }}</td>
+                <td>{{ data.cost|number_format(4, ',', '.') }} €</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

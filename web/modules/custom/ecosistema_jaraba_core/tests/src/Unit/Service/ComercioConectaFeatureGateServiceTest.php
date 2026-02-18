@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface;
 use Drupal\ecosistema_jaraba_core\Service\ComercioConectaFeatureGateService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService;
 use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Drupal\Tests\UnitTestCase;
@@ -27,8 +28,8 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
   protected UpgradeTriggerService $upgradeTriggerService;
   protected Connection $database;
   protected AccountProxyInterface $currentUser;
-  protected EntityTypeManagerInterface $entityTypeManager;
   protected LoggerInterface $logger;
+  protected TenantContextService $tenantContext;
   protected ComercioConectaFeatureGateService $service;
 
   /**
@@ -40,8 +41,8 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
     $this->upgradeTriggerService = $this->createMock(UpgradeTriggerService::class);
     $this->database = $this->createMock(Connection::class);
     $this->currentUser = $this->createMock(AccountProxyInterface::class);
-    $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->tenantContext = $this->createMock(TenantContextService::class);
 
     // Mock container for t()
     $container = new ContainerBuilder();
@@ -52,8 +53,8 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
       $this->upgradeTriggerService,
       $this->database,
       $this->currentUser,
-      $this->entityTypeManager,
-      $this->logger
+      $this->logger,
+      $this->tenantContext,
     );
   }
 

@@ -74,6 +74,7 @@ jaraba_einvoice_b2b.api.generate:
     _title: 'Generate E-Invoice'
   requirements:
     _permission: 'create einvoice documents'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json
@@ -89,6 +90,7 @@ jaraba_einvoice_b2b.api.send:
     _title: 'Send E-Invoice'
   requirements:
     _permission: 'send einvoice'
+    _csrf_token: 'TRUE'
     einvoice_document: \d+
   methods: [POST]
   options:
@@ -101,6 +103,7 @@ jaraba_einvoice_b2b.api.receive:
     _title: 'Receive E-Invoice'
   requirements:
     _permission: 'receive einvoice'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json
@@ -116,6 +119,7 @@ jaraba_einvoice_b2b.api.payment.record:
     _title: 'Record Payment'
   requirements:
     _permission: 'manage einvoice payment events'
+    _csrf_token: 'TRUE'
     einvoice_document: \d+
   methods: [POST]
   options:
@@ -139,6 +143,7 @@ jaraba_einvoice_b2b.api.payment.communicate:
     _title: 'Communicate Payment to SPFE'
   requirements:
     _permission: 'manage einvoice payment events'
+    _csrf_token: 'TRUE'
     event_id: \d+
   methods: [POST]
   options:
@@ -175,6 +180,7 @@ jaraba_einvoice_b2b.api.convert:
     _title: 'E-Invoice Format Conversion API'
   requirements:
     _permission: 'create einvoice documents'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json
@@ -186,6 +192,7 @@ jaraba_einvoice_b2b.api.validate:
     _title: 'E-Invoice Validation API'
   requirements:
     _permission: 'view einvoice documents'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json

@@ -295,13 +295,6 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
       ->setDescription(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha y hora de la ultima modificacion.'))
       ->setDisplayConfigurable('view', TRUE);
 
-    // --- Indices de base de datos ---
-    $fields['tenant_id']->addIndex('value');
-    $fields['program_id']->addIndex('value');
-    $fields['user_id']->addIndex('value');
-    $fields['status']->addIndex('value');
-    $fields['employment_outcome']->addIndex('value');
-
     return $fields;
   }
 

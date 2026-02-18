@@ -86,18 +86,17 @@ class InstitutionalApiController extends ControllerBase {
         $result['items'],
       );
 
-      return new JsonResponse([
-        'data' => $programs,
-        'meta' => [
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $programs, 'meta' => [
           'total' => $result['total'],
           'limit' => $limit,
           'offset' => $offset,
-        ],
-      ]);
+        ]]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -132,13 +131,13 @@ class InstitutionalApiController extends ControllerBase {
     try {
       $program = $this->programManager->store($body);
 
-      return new JsonResponse([
-        'data' => $this->serializeProgram($program),
+      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeProgram($program),
       ], 201);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -169,8 +168,9 @@ class InstitutionalApiController extends ControllerBase {
       ]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -228,8 +228,9 @@ class InstitutionalApiController extends ControllerBase {
       ]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -266,17 +267,16 @@ class InstitutionalApiController extends ControllerBase {
       );
 
       return new JsonResponse([
-        'data' => $participants,
-        'meta' => [
+        'data' => $participants, 'meta' => [
           'total' => $result['total'],
           'limit' => $limit,
           'offset' => $offset,
-        ],
-      ]);
+        ]]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -315,8 +315,9 @@ class InstitutionalApiController extends ControllerBase {
       ], 201);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -369,8 +370,9 @@ class InstitutionalApiController extends ControllerBase {
       ]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -423,8 +425,9 @@ class InstitutionalApiController extends ControllerBase {
       ], 201);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -451,8 +454,9 @@ class InstitutionalApiController extends ControllerBase {
       ]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -475,8 +479,9 @@ class InstitutionalApiController extends ControllerBase {
       ]);
     }
     catch (\Throwable $e) {
+      \Drupal::logger('jaraba_institutional')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }

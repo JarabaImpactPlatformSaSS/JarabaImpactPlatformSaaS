@@ -101,7 +101,7 @@
   <section class="product__description">
     <h2>Descripción del Producto</h2>
     <div class="product__body" itemprop="description">
-      {{ product.body.value|raw }}
+      {{ product.body.value|striptags('<p><br><strong><em><ul><ol><li><a><h3><h4><img><table><tr><td><th><thead><tbody>')|raw }}
     </div>
   </section>
   {% endif %}

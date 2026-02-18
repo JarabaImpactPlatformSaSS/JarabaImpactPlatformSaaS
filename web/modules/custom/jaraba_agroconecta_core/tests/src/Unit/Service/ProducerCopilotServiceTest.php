@@ -7,10 +7,13 @@ namespace Drupal\Tests\jaraba_agroconecta_core\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
+use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Drupal\jaraba_agroconecta_core\Service\ProducerCopilotService;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\jaraba_ai_agents\Agent\ProducerCopilotAgent;
+use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests para ProducerCopilotService.
@@ -21,7 +24,7 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\jaraba_agroconecta_core\Service\ProducerCopilotService
  * @group jaraba_agroconecta_core
  */
-class ProducerCopilotServiceTest extends TestCase {
+class ProducerCopilotServiceTest extends UnitTestCase {
 
   /**
    * El servicio bajo prueba.
@@ -37,6 +40,11 @@ class ProducerCopilotServiceTest extends TestCase {
    * Mock del agente copiloto.
    */
   private ProducerCopilotAgent&MockObject $copilotAgent;
+
+  /**
+   * Mock del feature gate service.
+   */
+  private AgroConectaFeatureGateService&MockObject $featureGate;
 
   /**
    * Mock del storage de productos.
@@ -64,8 +72,23 @@ class ProducerCopilotServiceTest extends TestCase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set up Drupal container for TranslatableMarkup::__toString()
+    // and \Drupal::currentUser() / \Drupal::service() calls.
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+
+    $currentUser = $this->createMock(AccountProxyInterface::class);
+    $currentUser->method('id')->willReturn(1);
+    $container->set('current_user', $currentUser);
+
+    \Drupal::setContainer($container);
+
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->copilotAgent = $this->createMock(ProducerCopilotAgent::class);
+    $this->featureGate = $this->createMock(AgroConectaFeatureGateService::class);
+    // Default: allow all feature gate checks (FeatureGateResult is final).
+    $this->featureGate->method('checkAndFire')
+      ->willReturn(FeatureGateResult::allowed('copilot_uses_per_month', 'pro'));
     $this->productStorage = $this->createMock(EntityStorageInterface::class);
     $this->conversationStorage = $this->createMock(EntityStorageInterface::class);
     $this->messageStorage = $this->createMock(EntityStorageInterface::class);
@@ -85,6 +108,7 @@ class ProducerCopilotServiceTest extends TestCase {
     $this->service = new ProducerCopilotService(
       $this->entityTypeManager,
       $this->copilotAgent,
+      $this->featureGate,
     );
   }
 
@@ -367,24 +391,10 @@ class ProducerCopilotServiceTest extends TestCase {
         'agent_id' => 'producer_copilot',
       ]);
 
-    // Mock \Drupal::currentUser() for static calls in chat().
-    // Since we cannot easily mock static Drupal calls in unit tests,
-    // we use reflection to verify the method's orchestration logic.
-    // Instead, we test that an exception handling / fallback works.
-    // For this test we verify the service doesn't crash with a mock setup.
-    // In a real integration test the full Drupal container would be available.
+    $result = $this->service->chat(1, 'Hola', NULL);
 
-    // We expect the static call to fail, so we catch it.
-    try {
-      $result = $this->service->chat(1, 'Hola', NULL);
-      // If Drupal::currentUser() is accessible (e.g., in-process test), verify result.
-      $this->assertArrayHasKey('conversation_id', $result);
-      $this->assertSame(55, $result['conversation_id']);
-    }
-    catch (\Error|\RuntimeException $e) {
-      // Static Drupal::currentUser() call is expected to fail in pure unit test.
-      $this->assertStringContainsString('Drupal', $e->getMessage());
-    }
+    $this->assertArrayHasKey('conversation_id', $result);
+    $this->assertSame(55, $result['conversation_id']);
   }
 
   // =========================================================================

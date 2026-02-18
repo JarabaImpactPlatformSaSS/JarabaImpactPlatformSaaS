@@ -24,6 +24,7 @@
       {% for block in blocks %}
         <section class="page-builder-block page-builder-block--{{ block.type|default('default') }}"
                  data-block-id="{{ block.id|default(loop.index) }}">
+          {# AUDIT-SEC-02: |raw required — content is server-rendered Twig output, pre-sanitized by Drupal render pipeline #}
           {{ block.rendered|raw }}
         </section>
       {% endfor %}

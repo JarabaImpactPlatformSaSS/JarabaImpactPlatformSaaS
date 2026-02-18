@@ -76,7 +76,8 @@ class MentorApiController extends ControllerBase
             $data[] = $this->serializeMentor($mentor);
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['count' => count($data), 'timestamp' => time()]]);
     }
 
     /**
@@ -91,7 +92,7 @@ class MentorApiController extends ControllerBase
     public function get(MentorProfile $mentor_profile): JsonResponse
     {
         $data = $this->serializeMentor($mentor_profile, TRUE);
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data]);
     }
 
     /**
@@ -113,7 +114,7 @@ class MentorApiController extends ControllerBase
         $scheduler = \Drupal::service('jaraba_mentoring.session_scheduler');
         $slots = $scheduler->getAvailableSlots($mentor_profile, $start, $end);
 
-        return new JsonResponse(['data' => $slots, 'count' => count($slots)]);
+        return new JsonResponse(['data' => $slots, 'meta' => ['count' => count($slots), 'timestamp' => time()]]);
     }
 
     /**
@@ -150,7 +151,7 @@ class MentorApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['count' => count($data), 'timestamp' => time()]]);
     }
 
     /**

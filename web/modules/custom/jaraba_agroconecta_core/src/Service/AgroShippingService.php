@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\jaraba_agroconecta_core\Entity\AgroShipmentInterface;
 use Drupal\jaraba_agroconecta_core\Shipping\CarrierManager;
+use Drupal\jaraba_pwa\Service\PlatformPushService;
+use Drupal\jaraba_ai_agents\Attribute\AgentTool;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -30,6 +32,7 @@ class AgroShippingService {
     protected Connection $database,
     protected LoggerInterface $logger,
     protected CarrierManager $carrierManager,
+    protected PlatformPushService $pushService,
   ) {}
 
   /**
@@ -59,6 +62,9 @@ class AgroShippingService {
       $shipment->set('state', 'label_created');
       $shipment->set('label_generated_at', date('Y-m-d\TH:i:s'));
       $shipment->save();
+
+      // Notificar al cliente vía PWA (Fase F10).
+      $this->notifyCustomerOfShipment($shipment);
     }
 
     return $response;
@@ -96,6 +102,15 @@ class AgroShippingService {
    * @return array
    *   Desglose de costes por productor.
    */
+  #[AgentTool(
+    name: 'agro_calculate_shipping',
+    description: 'Calcula tarifas de envío para productos agroalimentarios según destino.',
+    parameters: [
+      'items' => ['type' => 'array', 'description' => 'Lista de productos y cantidades'],
+      'postalCode' => ['type' => 'string', 'description' => 'Código postal de destino'],
+      'tenantId' => ['type' => 'integer', 'description' => 'ID del tenant']
+    ]
+  )]
   public function calculateRates(array $items, string $postalCode, int $tenantId): array {
     $results = [];
     $producers_data = $this->groupItemsByProducer($items);
@@ -243,6 +258,35 @@ class AgroShippingService {
 
     $ids = $query->execute();
     return !empty($ids) ? $storage->load(reset($ids)) : NULL;
+  }
+
+  /**
+   * Envía notificación push al cliente sobre su envío.
+   */
+  protected function notifyCustomerOfShipment(AgroShipmentInterface $shipment): void {
+    try {
+      $suborder = $shipment->get('sub_order_id')->entity;
+      if (!$suborder) return;
+      
+      $order = $suborder->get('order_id')->entity;
+      if (!$order) return;
+
+      $userId = (int) $order->get('uid')->target_id;
+      if (!$userId) return;
+
+      $this->pushService->sendToUser(
+        $userId,
+        $this->t('¡Tu pedido AgroConecta está listo!'),
+        $this->t('El envío @num ha sido registrado con @carrier.', [
+          '@num' => $shipment->getShipmentNumber(),
+          '@carrier' => strtoupper($shipment->getCarrierId()),
+        ]),
+        ['url' => '/my-orders/' . $order->id()]
+      );
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Failed to send shipment push: @error', ['@error' => $e->getMessage()]);
+    }
   }
 
 }

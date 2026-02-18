@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
 use Drupal\jaraba_interactive\Plugin\InteractiveType\InteractiveVideo;
-use PHPUnit\Framework\TestCase;
+use Drupal\Tests\UnitTestCase;
 
 /**
  * Tests para el plugin InteractiveVideo.
@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\jaraba_interactive\Plugin\InteractiveType\InteractiveVideo
  * @group jaraba_interactive
  */
-class InteractiveVideoTest extends TestCase {
+class InteractiveVideoTest extends UnitTestCase {
 
   /**
    * El plugin bajo prueba.
@@ -28,6 +28,11 @@ class InteractiveVideoTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->plugin = $this->getMockBuilder(InteractiveVideo::class)
       ->disableOriginalConstructor()

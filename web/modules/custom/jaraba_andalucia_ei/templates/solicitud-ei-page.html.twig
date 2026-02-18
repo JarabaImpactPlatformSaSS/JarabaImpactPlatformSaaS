@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * Template premium para la página de solicitud Andalucía +ei.
+ *
+ * Hero premium consistente con el dashboard principal.
+ * Canvas particles interactivas + gradient-shift + accent gradient.
+ *
+ * Variables:
+ *   - form: El formulario de solicitud renderizado.
+ */
+#}
+<div class="aei-solicitud-page">
+  {# Hero Premium — mismo patrón que dashboard #}
+  <section class="aei-hero aei-hero--solicitud">
+    <canvas id="aei-hero-particles" class="aei-hero__particles" aria-hidden="true"></canvas>
+    <div class="aei-hero__overlay" aria-hidden="true"></div>
+    <div class="aei-hero__content">
+      <span class="aei-hero__badge">
+        <span>🚀</span>
+        <span>{% trans %}PROGRAMA PÚBLICO{% endtrans %}</span>
+      </span>
+      <h1 class="aei-hero__title">{% trans %}Solicita tu plaza en Andalucía <span class="aei-hero__accent">+ei</span>{% endtrans %}</h1>
+      <p class="aei-hero__subtitle">{% trans %}Emprendimiento Aumentado con Inteligencia Artificial{% endtrans %}</p>
+      <p class="aei-hero__description">{% trans %}Completa el formulario y nos pondremos en contacto contigo para iniciar tu itinerario personalizado.{% endtrans %}</p>
+    </div>
+    <div class="aei-hero__decoration" aria-hidden="true"></div>
+  </section>
+
+  {# Contenido principal #}
+  <div class="aei-solicitud-page__content">
+    <div class="aei-solicitud-page__grid">
+
+      {# Columna del formulario #}
+      <div class="aei-solicitud-page__form-column">
+        <div class="aei-solicitud-page__form-card">
+          <div class="aei-solicitud-page__form-header">
+            <h2>{% trans %}Formulario de solicitud{% endtrans %}</h2>
+            <p>{% trans %}Completa tus datos para iniciar el proceso de selección. Todos los campos marcados con * son obligatorios.{% endtrans %}</p>
+          </div>
+          {{ form }}
+        </div>
+      </div>
+
+      {# Columna de información #}
+      <div class="aei-solicitud-page__info-column">
+        <div class="aei-solicitud-page__info-card">
+          <h3>{% trans %}¿Qué incluye el programa?{% endtrans %}</h3>
+          <ul class="aei-solicitud-page__features">
+            <li>
+              <span class="aei-solicitud-page__feature-icon">🤖</span>
+              <div>
+                <strong>{% trans %}Copilot IA 24/7{% endtrans %}</strong>
+                <p>{% trans %}Asistente de inteligencia artificial para guiarte en tu emprendimiento.{% endtrans %}</p>
+              </div>
+            </li>
+            <li>
+              <span class="aei-solicitud-page__feature-icon">📚</span>
+              <div>
+                <strong>{% trans %}50h Formación Acreditada{% endtrans %}</strong>
+                <p>{% trans %}Formación especializada en emprendimiento con certificación oficial.{% endtrans %}</p>
+              </div>
+            </li>
+            <li>
+              <span class="aei-solicitud-page__feature-icon">👥</span>
+              <div>
+                <strong>{% trans %}Mentoría Experta{% endtrans %}</strong>
+                <p>{% trans %}Acompañamiento personalizado de mentores profesionales.{% endtrans %}</p>
+              </div>
+            </li>
+            <li>
+              <span class="aei-solicitud-page__feature-icon">🎯</span>
+              <div>
+                <strong>{% trans %}Itinerario Personalizado{% endtrans %}</strong>
+                <p>{% trans %}Plan de inserción laboral adaptado a tu perfil y objetivos.{% endtrans %}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="aei-solicitud-page__info-card aei-solicitud-page__info-card--highlight">
+          <h3>{% trans %}¿A quién va dirigido?{% endtrans %}</h3>
+          <ul class="aei-solicitud-page__colectivos">
+            <li>
+              <span class="aei-solicitud-page__colectivo-tag aei-solicitud-page__colectivo-tag--duracion">{% trans %}Larga duración{% endtrans %}</span>
+              {% trans %}Desempleo de más de 12 meses{% endtrans %}
+            </li>
+            <li>
+              <span class="aei-solicitud-page__colectivo-tag aei-solicitud-page__colectivo-tag--mayores">{% trans %}Mayores de 45{% endtrans %}</span>
+              {% trans %}En situación de desempleo{% endtrans %}
+            </li>
+            <li>
+              <span class="aei-solicitud-page__colectivo-tag aei-solicitud-page__colectivo-tag--migrantes">{% trans %}Migrantes{% endtrans %}</span>
+              {% trans %}Personas migrantes en Andalucía{% endtrans %}
+            </li>
+            <li>
+              <span class="aei-solicitud-page__colectivo-tag aei-solicitud-page__colectivo-tag--perceptores">{% trans %}Perceptores{% endtrans %}</span>
+              {% trans %}Prestaciones, subsidio o RAI{% endtrans %}
+            </li>
+          </ul>
+        </div>
+
+        <div class="aei-solicitud-page__info-card aei-solicitud-page__info-card--contact">
+          <h3>{% trans %}¿Tienes dudas?{% endtrans %}</h3>
+          <p>{% trans %}Escríbenos por WhatsApp y te ayudamos con el proceso de solicitud.{% endtrans %}</p>
+          <a href="https://wa.me/34623174304?text=Hola%2C%20me%20interesa%20el%20programa%20Andaluc%C3%ADa%20%2Bei" target="_blank" rel="noopener" class="aei-solicitud-page__contact-link">
+            💬 {% trans %}WhatsApp +34 623 174 304{% endtrans %}
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

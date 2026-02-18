@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
 use Drupal\jaraba_interactive\Plugin\InteractiveType\Essay;
+use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests unitarios para el plugin Essay.
@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\jaraba_interactive\Plugin\InteractiveType\Essay
  * @group jaraba_interactive
  */
-class EssayTest extends TestCase {
+class EssayTest extends UnitTestCase {
 
   /**
    * El plugin bajo prueba.
@@ -31,6 +31,11 @@ class EssayTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->plugin = $this->getMockBuilder(Essay::class)
       ->disableOriginalConstructor()

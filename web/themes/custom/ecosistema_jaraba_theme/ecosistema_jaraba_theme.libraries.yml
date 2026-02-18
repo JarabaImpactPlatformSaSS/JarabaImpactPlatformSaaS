@@ -147,6 +147,7 @@ lenis:
       attributes:
         defer: true
         crossorigin: anonymous
+        integrity: sha384-4EgXbGZLDwcPHcRGrHOxm1OvumWUqhr/ts6eapdZnak6ORZAsSE3fMd0niykaSkw
 
 # F12 — Lenis scroll integration para landing pages
 lenis-scroll:

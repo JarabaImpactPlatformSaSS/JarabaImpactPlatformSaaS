@@ -89,10 +89,10 @@ interface FinancialTransactionInterface extends ContentEntityInterface, EntityCh
     /**
      * Obtiene el ID del vertical relacionado.
      *
-     * @return int|null
-     *   ID del vertical relacionado.
+     * @return string|null
+     *   Machine name del vertical relacionado.
      */
-    public function getRelatedVerticalId(): ?int;
+    public function getRelatedVerticalId(): ?string;
 
     /**
      * Indica si la transacción es un ingreso (positivo).

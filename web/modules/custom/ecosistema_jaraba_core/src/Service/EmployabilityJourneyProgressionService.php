@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -108,6 +111,10 @@ class EmployabilityJourneyProgressionService {
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly TimeInterface $time,
+    protected readonly StateInterface $state,
+    protected readonly ModuleHandlerInterface $moduleHandler,
+    protected readonly ?object $profileCompletion = NULL,
   ) {}
 
   /**
@@ -151,19 +158,19 @@ class EmployabilityJourneyProgressionService {
    */
   public function getPendingAction(int $userId): ?array {
     $cacheKey = "employability_proactive_pending_{$userId}";
-    $cached = \Drupal::state()->get($cacheKey);
+    $cached = $this->state->get($cacheKey);
 
     if ($cached) {
-      $age = \Drupal::time()->getRequestTime() - ($cached['evaluated_at'] ?? 0);
+      $age = $this->time->getRequestTime() - ($cached['evaluated_at'] ?? 0);
       if ($age < 3600) {
         return $cached['action'];
       }
     }
 
     $action = $this->evaluate($userId);
-    \Drupal::state()->set($cacheKey, [
+    $this->state->set($cacheKey, [
       'action' => $action,
-      'evaluated_at' => \Drupal::time()->getRequestTime(),
+      'evaluated_at' => $this->time->getRequestTime(),
     ]);
 
     return $action;
@@ -174,13 +181,13 @@ class EmployabilityJourneyProgressionService {
    */
   public function dismissAction(int $userId, string $ruleId): void {
     $key = "employability_proactive_dismissed_{$userId}";
-    $dismissed = \Drupal::state()->get($key, []);
+    $dismissed = $this->state->get($key, []);
     if (!in_array($ruleId, $dismissed, TRUE)) {
       $dismissed[] = $ruleId;
-      \Drupal::state()->set($key, $dismissed);
+      $this->state->set($key, $dismissed);
     }
 
-    \Drupal::state()->delete("employability_proactive_pending_{$userId}");
+    $this->state->delete("employability_proactive_pending_{$userId}");
 
     $this->logger->info('Proactive rule @rule dismissed by user @uid', [
       '@rule' => $ruleId,
@@ -212,9 +219,9 @@ class EmployabilityJourneyProgressionService {
         }
 
         $action = $this->evaluate($userId);
-        \Drupal::state()->set("employability_proactive_pending_{$userId}", [
+        $this->state->set("employability_proactive_pending_{$userId}", [
           'action' => $action,
-          'evaluated_at' => \Drupal::time()->getRequestTime(),
+          'evaluated_at' => $this->time->getRequestTime(),
         ]);
         $processed++;
       }
@@ -260,7 +267,7 @@ class EmployabilityJourneyProgressionService {
       return FALSE;
     }
 
-    $elapsed = \Drupal::time()->getRequestTime() - $reference;
+    $elapsed = $this->time->getRequestTime() - $reference;
     return $elapsed > ($days * 86400);
   }
 
@@ -268,13 +275,12 @@ class EmployabilityJourneyProgressionService {
    * Checks if user profile completion is below a threshold.
    */
   protected function checkProfileBelow(int $userId, int $threshold): bool {
-    if (!\Drupal::hasService('jaraba_candidate.profile_completion')) {
+    if (!$this->profileCompletion) {
       return FALSE;
     }
 
     try {
-      $completion = \Drupal::service('jaraba_candidate.profile_completion')
-        ->calculateCompletion($userId);
+      $completion = $this->profileCompletion->calculateCompletion($userId);
       return ($completion['percentage'] ?? 0) < $threshold;
     }
     catch (\Exception $e) {
@@ -286,13 +292,12 @@ class EmployabilityJourneyProgressionService {
    * Checks if profile is >=70% complete but user has zero applications.
    */
   protected function checkProfileCompleteNoApps(int $userId): bool {
-    if (!\Drupal::hasService('jaraba_candidate.profile_completion')) {
+    if (!$this->profileCompletion) {
       return FALSE;
     }
 
     try {
-      $completion = \Drupal::service('jaraba_candidate.profile_completion')
-        ->calculateCompletion($userId);
+      $completion = $this->profileCompletion->calculateCompletion($userId);
       if (($completion['percentage'] ?? 0) < 70) {
         return FALSE;
       }
@@ -376,7 +381,7 @@ class EmployabilityJourneyProgressionService {
         return FALSE;
       }
 
-      $cutoff = \Drupal::time()->getRequestTime() - ($days * 86400);
+      $cutoff = $this->time->getRequestTime() - ($days * 86400);
       foreach ($applications as $app) {
         $changed = (int) ($app->get('changed')->value ?? 0);
         if ($changed > $cutoff) {
@@ -395,7 +400,7 @@ class EmployabilityJourneyProgressionService {
    * Loads the journey state entity for a user.
    */
   protected function getJourneyState(int $userId) {
-    if (!\Drupal::moduleHandler()->moduleExists('jaraba_journey')) {
+    if (!$this->moduleHandler->moduleExists('jaraba_journey')) {
       return NULL;
     }
 
@@ -418,7 +423,7 @@ class EmployabilityJourneyProgressionService {
    * Gets list of dismissed rule IDs for a user.
    */
   protected function getDismissedRules(int $userId): array {
-    return \Drupal::state()->get("employability_proactive_dismissed_{$userId}", []);
+    return $this->state->get("employability_proactive_dismissed_{$userId}", []);
   }
 
 }

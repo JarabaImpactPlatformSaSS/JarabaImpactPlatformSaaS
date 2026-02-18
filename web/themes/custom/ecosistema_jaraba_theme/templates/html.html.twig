@@ -41,5 +41,10 @@
     {{ page }}
     {{ page_bottom }}
     <js-bottom-placeholder token="{{ placeholder_token }}">
+    
+    {# PWA Install Prompt (Fase F10) #}
+    {% if pwa_install_prompt %}
+      {{ pwa_install_prompt }}
+    {% endif %}
   </body>
 </html>

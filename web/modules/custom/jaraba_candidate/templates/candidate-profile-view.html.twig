@@ -56,7 +56,7 @@
     <section class="profile-section">
       <h2 class="section-title">{{ 'Sobre mí'|t }}</h2>
       <div class="section-content">
-        {{ profile.summary|nl2br }}
+        {{ profile.summary|striptags('<p><br><strong><em><ul><ol><li><a>')|raw }}
       </div>
     </section>
   {% endif %}

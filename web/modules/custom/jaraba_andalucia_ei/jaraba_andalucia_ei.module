@@ -37,6 +37,12 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'andalucia-ei-dashboard',
     ],
+    'solicitud_ei_page' => [
+      'variables' => [
+        'form' => NULL,
+      ],
+      'template' => 'solicitud-ei-page',
+    ],
   ];
 }
 
@@ -314,6 +320,62 @@ function jaraba_andalucia_ei_mail(string $key, array &$message, array $params): 
             ['programa_participante_ei' => $params['participante_id'] ?? 0],
             ['absolute' => TRUE]
           )->toString(),
+        ]
+      );
+      break;
+
+    case 'nueva_solicitud':
+      // Preparar info de triaje IA si disponible.
+      $ai_info = '';
+      if (!empty($params['ai_score'])) {
+        $ai_info = "\n\n--- TRIAJE IA ---\n" .
+          "Puntuación: " . $params['ai_score'] . "/100\n" .
+          "Recomendación: " . strtoupper($params['ai_recomendacion'] ?? 'pendiente') . "\n" .
+          "Justificación: " . ($params['ai_justificacion'] ?? 'No disponible');
+      }
+
+      $message['subject'] = t('Nueva solicitud Andalucía +ei: @nombre', [
+        '@nombre' => $params['nombre'] ?? 'Sin nombre',
+      ]);
+      $message['body'][] = t(
+        "Se ha recibido una nueva solicitud de participación en Andalucía +ei:\n\n" .
+        "Nombre: @nombre\n" .
+        "Email: @email\n" .
+        "Teléfono: @telefono\n" .
+        "Provincia: @provincia\n" .
+        "Colectivo inferido: @colectivo\n" .
+        "@ai_info\n\n" .
+        "Revisar solicitud:\n@url",
+        [
+          '@nombre' => $params['nombre'] ?? '',
+          '@email' => $params['email'] ?? '',
+          '@telefono' => $params['telefono'] ?? '',
+          '@provincia' => $params['provincia'] ?? '',
+          '@colectivo' => $params['colectivo'] ?? 'Sin determinar',
+          '@ai_info' => $ai_info,
+          '@url' => $params['solicitud_url'] ?? '',
+        ]
+      );
+      break;
+
+    case 'confirmacion_solicitud':
+      $message['subject'] = t('Tu solicitud Andalucía +ei ha sido recibida ✅');
+      $message['body'][] = t(
+        "Hola @nombre,\n\n" .
+        "Hemos recibido correctamente tu solicitud de participación en el programa Andalucía +ei.\n\n" .
+        "📋 RESUMEN DE TU SOLICITUD:\n" .
+        "- Programa: Andalucía +ei — Emprendimiento Aumentado con IA\n" .
+        "- Colectivo asignado: @colectivo\n\n" .
+        "📌 PRÓXIMOS PASOS:\n" .
+        "1. Nuestro equipo revisará tu solicitud en los próximos días laborables.\n" .
+        "2. Te contactaremos por teléfono o email para confirmar tu participación.\n" .
+        "3. Si tienes cualquier duda, escríbenos por WhatsApp al +34 623 174 304.\n\n" .
+        "¡Gracias por tu interés en emprender con nosotros!\n\n" .
+        "— Equipo Andalucía +ei\n" .
+        "Jaraba Impact Platform",
+        [
+          '@nombre' => $params['nombre'] ?? '',
+          '@colectivo' => $params['colectivo'] ?? 'Por determinar',
         ]
       );
       break;

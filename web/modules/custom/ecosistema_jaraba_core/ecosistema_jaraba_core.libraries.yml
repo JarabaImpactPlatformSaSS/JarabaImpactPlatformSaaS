@@ -18,7 +18,7 @@
 chartjs:
   version: 4.4.1
   js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true, attributes: { crossorigin: anonymous, integrity: false } }
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true, attributes: { crossorigin: anonymous, integrity: 'sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4' } }
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA PRINCIPAL DEL MÓDULO

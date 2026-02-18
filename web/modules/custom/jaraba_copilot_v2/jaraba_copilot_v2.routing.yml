@@ -73,6 +73,7 @@ jaraba_copilot_v2.api.chat_stream:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
+    _csrf_token: 'TRUE'
 
 # API Endpoints
 jaraba_copilot_v2.api.chat:
@@ -82,6 +83,7 @@ jaraba_copilot_v2.api.chat:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
+    _csrf_token: 'TRUE'
     _format: 'json'
 
 # Endpoint público para usuarios anónimos (rate limited)
@@ -138,6 +140,7 @@ jaraba_copilot_v2.api.experiment_suggest:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
+    _csrf_token: 'TRUE'
     _format: 'json'
 
 jaraba_copilot_v2.api.modes:
@@ -209,6 +212,7 @@ jaraba_copilot_v2.api.hypotheses.create:
   methods: [POST]
   requirements:
     _permission: 'create hypotheses'
+    _csrf_token: 'TRUE'
     _format: 'json'
 
 jaraba_copilot_v2.api.hypotheses.get:
@@ -238,6 +242,7 @@ jaraba_copilot_v2.api.hypotheses.prioritize:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
+    _csrf_token: 'TRUE'
     _format: 'json'
 
 # =============================================
@@ -259,6 +264,7 @@ jaraba_copilot_v2.api.experiments.create:
   methods: [POST]
   requirements:
     _permission: 'create experiments'
+    _csrf_token: 'TRUE'
     _format: 'json'
 
 jaraba_copilot_v2.api.experiments.get:
@@ -278,6 +284,7 @@ jaraba_copilot_v2.api.experiments.start:
   methods: [POST]
   requirements:
     _permission: 'create experiments'
+    _csrf_token: 'TRUE'
     _format: 'json'
     id: '\d+'
 
@@ -330,6 +337,7 @@ jaraba_copilot_v2.api.entrepreneurs.create:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
+    _csrf_token: 'TRUE'
     _format: 'json'
 
 jaraba_copilot_v2.api.entrepreneurs.get:
@@ -359,6 +367,7 @@ jaraba_copilot_v2.api.entrepreneurs.dime:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
+    _csrf_token: 'TRUE'
     _format: 'json'
     id: '\d+'
 

@@ -691,6 +691,21 @@ function _jaraba_page_builder_extract_og_image(array $contentData, string $baseU
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * AUDIT-DEBT-3.2: Conditional heatmap library to break circular dependency.
+ * The jaraba_heatmap/viewer library was removed from the analytics-dashboard
+ * library definition in jaraba_page_builder.libraries.yml to break the cycle
+ * jaraba_page_builder -> jaraba_heatmap -> jaraba_page_builder.
+ * It is now attached conditionally only when the heatmap module is installed.
+ */
+function jaraba_page_builder_page_attachments_alter(array &$attachments) {
+  if (\Drupal::moduleHandler()->moduleExists('jaraba_heatmap')) {
+    $attachments['#attached']['library'][] = 'jaraba_heatmap/viewer';
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK() para bloques de cursos recomendados.
  *
  * Carga las entidades lms_course por sus IDs y las prepara para el template.

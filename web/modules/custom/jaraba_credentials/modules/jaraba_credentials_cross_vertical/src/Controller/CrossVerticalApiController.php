@@ -54,7 +54,8 @@ class CrossVerticalApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['rules' => $data]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -87,7 +88,7 @@ class CrossVerticalApiController extends ControllerBase {
       }
     }
 
-    return new JsonResponse(['progress' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -97,7 +98,7 @@ class CrossVerticalApiController extends ControllerBase {
     $uid = (int) $this->currentUser()->id();
     $summary = $this->activityTracker->getUserActivitySummary($uid);
 
-    return new JsonResponse(['activity' => $summary]);
+    return new JsonResponse(['success' => TRUE, 'data' => $summary, 'meta' => ['timestamp' => time()]]);
   }
 
 }

@@ -1,0 +1,7 @@
+services:
+  jaraba_agent_market.protocol:
+    class: Drupal\jaraba_agent_market\Service\NegotiationProtocolService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_identity.did_manager'
+      - '@logger.channel.default'

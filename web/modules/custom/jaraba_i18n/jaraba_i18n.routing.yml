@@ -40,6 +40,7 @@ jaraba_i18n.api.translate:
     _controller: '\Drupal\jaraba_i18n\Controller\TranslationApiController::translate'
   requirements:
     _permission: 'translate any entity'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: 'json'

@@ -52,7 +52,8 @@ class EmprendimientoCredentialsApiController extends ControllerBase {
       }
     }
 
-    return new JsonResponse(['catalog' => $templates]);
+    // AUDIT-CONS-N08: Standardized JSON envelope.
+    return new JsonResponse(['success' => TRUE, 'data' => $templates, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -64,10 +65,16 @@ class EmprendimientoCredentialsApiController extends ControllerBase {
     $userTemplates = $this->credentialService->getUserEmprendimientoTemplates($uid);
 
     return new JsonResponse([
-      'earned_badges' => $userTemplates,
-      'total_available' => count(EmprendimientoCredentialService::TEMPLATES),
-      'total_earned' => count($userTemplates),
-      'phase_progress' => $phaseProgress,
+      'success' => TRUE,
+      'data' => [
+        'earned_badges' => $userTemplates,
+        'phase_progress' => $phaseProgress,
+      ],
+      'meta' => [
+        'total_available' => count(EmprendimientoCredentialService::TEMPLATES),
+        'total_earned' => count($userTemplates),
+        'timestamp' => time(),
+      ],
     ]);
   }
 
@@ -80,9 +87,13 @@ class EmprendimientoCredentialsApiController extends ControllerBase {
     $expertiseLevel = $this->expertiseService->evaluateUserLevel($uid);
 
     return new JsonResponse([
-      'phases' => array_values($journeyMap),
-      'expertise_level' => $expertiseLevel,
-      'xp' => $this->expertiseService->getUserXp($uid),
+      'success' => TRUE,
+      'data' => [
+        'phases' => array_values($journeyMap),
+        'expertise_level' => $expertiseLevel,
+        'xp' => $this->expertiseService->getUserXp($uid),
+      ],
+      'meta' => ['timestamp' => time()],
     ]);
   }
 
@@ -94,7 +105,7 @@ class EmprendimientoCredentialsApiController extends ControllerBase {
     $next = $this->journeyTracker->getNextRecommendedBadge($uid);
 
     if (!$next) {
-      return new JsonResponse(['next' => NULL, 'message' => 'All badges earned']);
+      return new JsonResponse(['success' => TRUE, 'data' => NULL, 'meta' => ['message' => 'All badges earned', 'timestamp' => time()]]);
     }
 
     // Enrich with template details.
@@ -106,7 +117,7 @@ class EmprendimientoCredentialsApiController extends ControllerBase {
       $next['description'] = $template->get('description')->value ?? '';
     }
 
-    return new JsonResponse(['next' => $next]);
+    return new JsonResponse(['success' => TRUE, 'data' => $next, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -126,11 +137,15 @@ class EmprendimientoCredentialsApiController extends ControllerBase {
     $xpToNext = $nextLevel ? $levels[$nextLevel] - $xp : 0;
 
     return new JsonResponse([
-      'level' => $level,
-      'xp' => $xp,
-      'benefits' => $benefits,
-      'next_level' => $nextLevel,
-      'xp_to_next' => max(0, $xpToNext),
+      'success' => TRUE,
+      'data' => [
+        'level' => $level,
+        'xp' => $xp,
+        'benefits' => $benefits,
+        'next_level' => $nextLevel,
+        'xp_to_next' => max(0, $xpToNext),
+      ],
+      'meta' => ['timestamp' => time()],
     ]);
   }
 

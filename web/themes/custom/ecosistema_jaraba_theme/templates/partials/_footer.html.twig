@@ -169,7 +169,7 @@
         {% endif %}
 
         {# Si no hay redes configuradas, mostrar placeholders #}
-        {% if not ts.footer_social_linkedin and not ts.footer_social_twitter and not ts.footer_social_facebook %}
+        {% if not ts.footer_social_linkedin and not ts.footer_social_twitter and not ts.footer_social_facebook and logged_in %}
           <span class="landing-footer__no-social">{% trans %}Configure social links in theme settings{% endtrans %}</span>
         {% endif %}
       </div>

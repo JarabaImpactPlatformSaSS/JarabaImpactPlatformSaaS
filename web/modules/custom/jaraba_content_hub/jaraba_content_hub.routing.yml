@@ -249,6 +249,7 @@ jaraba_content_hub.api.articles.create:
   methods: [POST]
   requirements:
     _permission: 'create content article'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.articles.update:
   path: '/api/v1/content/articles/{uuid}'
@@ -265,6 +266,7 @@ jaraba_content_hub.api.articles.publish:
   methods: [POST]
   requirements:
     _permission: 'publish content article'
+    _csrf_token: 'TRUE'
 
 # === AI Writing Assistant API Routes ===
 
@@ -275,6 +277,7 @@ jaraba_content_hub.api.ai.outline:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.ai.expand:
   path: '/api/v1/content/ai/expand-section'
@@ -283,6 +286,7 @@ jaraba_content_hub.api.ai.expand:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.ai.headline:
   path: '/api/v1/content/ai/optimize-headline'
@@ -291,6 +295,7 @@ jaraba_content_hub.api.ai.headline:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.ai.seo:
   path: '/api/v1/content/ai/improve-seo'
@@ -299,6 +304,7 @@ jaraba_content_hub.api.ai.seo:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.ai.full_article:
   path: '/api/v1/content/ai/full-article'
@@ -307,6 +313,7 @@ jaraba_content_hub.api.ai.full_article:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.ai.create_draft:
   path: '/api/v1/content/ai/create-draft'
@@ -315,6 +322,7 @@ jaraba_content_hub.api.ai.create_draft:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.ai.apply_seo:
   path: '/api/v1/content/ai/articles/{articleId}/apply-seo'
@@ -323,6 +331,7 @@ jaraba_content_hub.api.ai.apply_seo:
   methods: [POST]
   requirements:
     _permission: 'use content ai assistant'
+    _csrf_token: 'TRUE'
 
 # AI Generation Logs (Admin)
 jaraba_content_hub.ai_logs:
@@ -352,6 +361,7 @@ jaraba_content_hub.api.recommendations.index:
   requirements:
     _permission: 'administer content articles'
     article_id: '\d+'
+    _csrf_token: 'TRUE'
 
 jaraba_content_hub.api.recommendations.reindex:
   path: '/api/v1/content/reindex-all'
@@ -360,4 +370,5 @@ jaraba_content_hub.api.recommendations.reindex:
   methods: [POST]
   requirements:
     _permission: 'administer content articles'
+    _csrf_token: 'TRUE'
 

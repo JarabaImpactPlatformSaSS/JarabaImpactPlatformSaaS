@@ -19,9 +19,10 @@ use Symfony\Component\HttpFoundation\Request;
  * Usado por el componente Alpine.js i18n-selector.
  *
  * ENDPOINTS:
- * - GET /api/jaraba-i18n/status/{entity_type}/{entity_id}
- * - POST /api/jaraba-i18n/translate
- * - GET /api/jaraba-i18n/stats/{entity_type}
+ * - GET /api/v1/jaraba-i18n/status/{entity_type}/{entity_id}
+ * - POST /api/v1/jaraba-i18n/translate
+ * - GET /api/v1/jaraba-i18n/stats/{entity_type}
+ * AUDIT-CONS-N07: Added API versioning prefix.
  */
 class TranslationApiController extends ControllerBase
 {
@@ -84,8 +85,9 @@ class TranslationApiController extends ControllerBase
             ]);
 
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_i18n')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -154,8 +156,9 @@ class TranslationApiController extends ControllerBase
             ]);
 
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_i18n')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -180,8 +183,9 @@ class TranslationApiController extends ControllerBase
             ]);
 
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_i18n')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

@@ -404,7 +404,8 @@ class SalesApiController extends ControllerBase
             return new JsonResponse(['success' => TRUE, 'data' => $suggestions, 'total' => count($suggestions)]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_agroconecta_core')->error('Cross-sell suggestions failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -422,7 +423,8 @@ class SalesApiController extends ControllerBase
             return new JsonResponse(['success' => TRUE, 'data' => $suggestions, 'total' => count($suggestions)]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_agroconecta_core')->error('Upsell suggestions failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -438,7 +440,8 @@ class SalesApiController extends ControllerBase
             return new JsonResponse(['success' => TRUE, 'data' => $stats]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_agroconecta_core')->error('Recovery stats failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 }

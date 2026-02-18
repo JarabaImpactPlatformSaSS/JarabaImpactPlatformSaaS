@@ -23,6 +23,7 @@ jaraba_rag.api.query:
   methods: [POST]
   requirements:
     _permission: 'use jaraba_rag copilot'
+    _csrf_token: 'TRUE'
 
 jaraba_rag.api.reindex:
   path: '/api/v1/jaraba-rag/reindex/{entity_type}/{entity_id}'
@@ -31,6 +32,7 @@ jaraba_rag.api.reindex:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba_rag'
+    _csrf_token: 'TRUE'
 
 jaraba_rag.tenant_stats:
   path: '/admin/reports/jaraba-rag/tenant/{tenant_id}'

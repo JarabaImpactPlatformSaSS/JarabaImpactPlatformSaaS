@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_crm\Unit\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_crm\Service\CrmForecastingService;
 use Drupal\jaraba_crm\Service\OpportunityService;
@@ -24,6 +25,7 @@ class CrmForecastingServiceTest extends UnitTestCase {
   protected OpportunityService $opportunityService;
   protected PipelineStageService $pipelineStageService;
   protected LoggerInterface $logger;
+  protected CacheBackendInterface $cache;
 
   /**
    * {@inheritdoc}
@@ -35,12 +37,14 @@ class CrmForecastingServiceTest extends UnitTestCase {
     $this->opportunityService = $this->createMock(OpportunityService::class);
     $this->pipelineStageService = $this->createMock(PipelineStageService::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->cache = $this->createMock(CacheBackendInterface::class);
 
     $this->service = new CrmForecastingService(
       $this->entityTypeManager,
       $this->opportunityService,
       $this->pipelineStageService,
       $this->logger,
+      $this->cache,
     );
   }
 

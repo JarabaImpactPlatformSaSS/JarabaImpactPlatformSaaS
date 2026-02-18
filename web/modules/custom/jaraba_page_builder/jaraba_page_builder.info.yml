@@ -13,6 +13,5 @@ dependencies:
   - jaraba_billing:jaraba_billing
   - jaraba_copilot_v2:jaraba_copilot_v2
   - jaraba_pixels:jaraba_pixels
-  - jaraba_site_builder:jaraba_site_builder
 
 configure: entity.page_template.collection

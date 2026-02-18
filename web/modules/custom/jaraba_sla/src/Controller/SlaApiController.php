@@ -95,9 +95,10 @@ class SlaApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sla')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => ['code' => 'ERROR', 'message' => $e->getMessage()],
+        'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'],
       ], 500);
     }
   }
@@ -144,9 +145,10 @@ class SlaApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sla')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => ['code' => 'ERROR', 'message' => $e->getMessage()],
+        'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'],
       ], 500);
     }
   }
@@ -172,9 +174,10 @@ class SlaApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sla')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => ['code' => 'ERROR', 'message' => $e->getMessage()],
+        'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'],
       ], 500);
     }
   }
@@ -326,9 +329,10 @@ class SlaApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sla')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => ['code' => 'ERROR', 'message' => $e->getMessage()],
+        'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'],
       ], 500);
     }
   }

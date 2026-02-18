@@ -144,9 +144,10 @@ class ConsentController extends ControllerBase
                 'message' => 'Consent saved successfully.',
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_analytics')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -179,9 +180,10 @@ class ConsentController extends ControllerBase
                 'message' => 'Consent revoked successfully.',
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_analytics')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

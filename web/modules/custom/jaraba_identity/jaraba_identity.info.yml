@@ -1,0 +1,10 @@
+name: 'Jaraba Sovereign Identity'
+type: module
+description: 'Infraestructura de Identidad Soberana (DID) para Agentes Autónomos y Usuarios.'
+package: 'Jaraba Platform'
+core_version_requirement: ^10 || ^11
+dependencies:
+  - jaraba_credentials:jaraba_credentials
+  - jaraba_pwa:jaraba_pwa
+  - drupal:key
+  - drupal:user
