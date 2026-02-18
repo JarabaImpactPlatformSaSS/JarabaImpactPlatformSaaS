@@ -614,8 +614,22 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   
   $form['footer_options']['footer_show_powered_by'] = [
     '#type' => 'checkbox',
-    '#title' => t('Mostrar "Powered by Jaraba"'),
+    '#title' => t('Mostrar "Powered by"'),
     '#default_value' => $config->get('footer_show_powered_by') ?? TRUE,
+  ];
+
+  $form['footer_options']['footer_powered_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('Texto Powered by'),
+    '#default_value' => $config->get('footer_powered_text') ?: 'Jaraba Impact Platform',
+    '#states' => ['visible' => [':input[name="footer_show_powered_by"]' => ['checked' => TRUE]]],
+  ];
+
+  $form['footer_options']['footer_powered_url'] = [
+    '#type' => 'textfield',
+    '#title' => t('URL Powered by'),
+    '#default_value' => $config->get('footer_powered_url') ?: 'https://jaraba.io',
+    '#states' => ['visible' => [':input[name="footer_show_powered_by"]' => ['checked' => TRUE]]],
   ];
 
   $form['footer_options']['colors'] = [
@@ -878,6 +892,9 @@ function _ecosistema_jaraba_theme_get_base_settings($config) {
     'header_cta_url' => $config->get('header_cta_url') ?: '/user/register',
     'enable_footer' => $config->get('enable_footer') ?? TRUE,
     'footer_copyright' => str_replace('[year]', date('Y'), $config->get('footer_copyright') ?: '© [year] Jaraba Impact Platform'),
+    'footer_show_powered_by' => $config->get('footer_show_powered_by') ?? TRUE,
+    'footer_powered_text' => $config->get('footer_powered_text') ?: 'Jaraba Impact Platform',
+    'footer_powered_url' => $config->get('footer_powered_url') ?: 'https://jaraba.io',
     'navigation_items' => $config->get('navigation_items'),
   ];
 }

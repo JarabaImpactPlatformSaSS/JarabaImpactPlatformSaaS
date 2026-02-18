@@ -29,6 +29,12 @@ class JarabaLexCopilotAgent extends BaseAgent {
    * Modos del agente con sus configuraciones.
    */
   protected const MODES = [
+    'legal_alerts' => [
+      'label' => 'Alertas Normativas',
+      'description' => 'Configuracion y gestion de alertas sobre cambios normativos.',
+      'temperature' => 0.2,
+      'keywords' => ['alerta', 'notificar', 'vigilar', 'cambio normativo', 'derogacion'],
+    ],
     'legal_search' => [
       'label' => 'Busqueda Juridica',
       'description' => 'Busqueda semantica en jurisprudencia, legislacion y doctrina administrativa.',
@@ -40,12 +46,6 @@ class JarabaLexCopilotAgent extends BaseAgent {
       'description' => 'Analisis de resoluciones judiciales con citas cruzadas y linea jurisprudencial.',
       'temperature' => 0.4,
       'keywords' => ['analizar', 'analisis', 'fundamentar', 'citar', 'doctrina', 'linea jurisprudencial'],
-    ],
-    'legal_alerts' => [
-      'label' => 'Alertas Normativas',
-      'description' => 'Configuracion y gestion de alertas sobre cambios normativos.',
-      'temperature' => 0.2,
-      'keywords' => ['alerta', 'notificar', 'vigilar', 'cambio normativo', 'derogacion'],
     ],
     'case_assistant' => [
       'label' => 'Asistente del Expediente',
@@ -99,8 +99,15 @@ class JarabaLexCopilotAgent extends BaseAgent {
   /**
    * {@inheritdoc}
    */
-  public function getIdentifier(): string {
+  public function getAgentId(): string {
     return 'jarabalex_copilot';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel(): string {
+    return 'JarabaLex Copilot';
   }
 
   /**
@@ -122,6 +129,44 @@ class JarabaLexCopilotAgent extends BaseAgent {
       ];
     }
     return $modes;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAvailableActions(): array {
+    $actions = [];
+    foreach (self::MODES as $key => $config) {
+      $actions[$key] = [
+        'label' => $config['label'],
+        'description' => $config['description'],
+        'requires' => ['message'],
+        'optional' => [],
+        'tier' => 'balanced',
+      ];
+    }
+    return $actions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function execute(string $action, array $context): array {
+    $this->setCurrentAction($action);
+    $message = $context['message'] ?? '';
+    if (empty($message)) {
+      return [
+        'success' => FALSE,
+        'error' => 'No message provided in context.',
+      ];
+    }
+
+    $mode = isset(self::MODES[$action]) ? $action : $this->detectMode($message);
+    $options = [
+      'temperature' => $this->getTemperature($mode),
+    ];
+
+    return $this->callAiApi($message, $options);
   }
 
   /**
