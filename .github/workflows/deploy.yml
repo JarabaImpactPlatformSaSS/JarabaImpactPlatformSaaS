@@ -515,31 +515,32 @@ jobs:
           echo "⏳ Esperando 10s para estabilización post-deploy..."
           sleep 10
 
-          if [ -z "$PRODUCTION_URL" ]; then
-            echo "::error::PRODUCTION_URL secret is not configured. Set it in Settings → Secrets → Actions."
-            exit 1
+          # Try HTTP health check if PRODUCTION_URL is configured
+          if [ -n "$PRODUCTION_URL" ]; then
+            # Path changed from /health to /api/v1/platform/status to avoid IONOS WAF blocking.
+            HEALTH_URL="${PRODUCTION_URL}/api/v1/platform/status"
+
+            echo "🔍 Verificando platform status endpoint (HTTP)..."
+            for i in 1 2 3; do
+              HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo '000')
+              RESPONSE=$(cat /tmp/health_response.json 2>/dev/null || echo '{}')
+              STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
+
+              if [ "$STATUS" = "ok" ]; then
+                echo "✅ Health check passed via HTTP! Platform is healthy."
+                echo "$RESPONSE" | jq .
+                exit 0
+              fi
+
+              echo "⚠️ Intento $i/3: HTTP=$HTTP_CODE status=$STATUS. Reintentando en 5s..."
+              sleep 5
+            done
+
+            echo "⚠️ HTTP health check failed after 3 attempts (HTTP=$HTTP_CODE)."
+          else
+            echo "::warning::PRODUCTION_URL secret is not configured. Skipping HTTP health check."
           fi
 
-          # Path changed from /health to /api/v1/platform/status to avoid IONOS WAF blocking.
-          HEALTH_URL="${PRODUCTION_URL}/api/v1/platform/status"
-
-          echo "🔍 Verificando platform status endpoint (HTTP)..."
-          for i in 1 2 3; do
-            HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" "$HEALTH_URL" 2>/dev/null || echo '000')
-            RESPONSE=$(cat /tmp/health_response.json 2>/dev/null || echo '{}')
-            STATUS=$(echo "$RESPONSE" | jq -r '.status' 2>/dev/null || echo 'unknown')
-
-            if [ "$STATUS" = "ok" ]; then
-              echo "✅ Health check passed via HTTP! Platform is healthy."
-              echo "$RESPONSE" | jq .
-              exit 0
-            fi
-
-            echo "⚠️ Intento $i/3: HTTP=$HTTP_CODE status=$STATUS. Reintentando en 5s..."
-            sleep 5
-          done
-
-          echo "⚠️ HTTP health check failed after 3 attempts (HTTP=$HTTP_CODE)."
           echo "Falling back to SSH-based Drush verification..."
           echo ""
 
@@ -561,17 +562,23 @@ jobs:
 
           if echo "$SSH_STATUS" | grep -q "^OK:"; then
             echo "✅ Health check passed via SSH drush! Drupal bootstrap and DB are healthy."
-            echo "::warning::HTTP health endpoint unreachable (IONOS web PHP/CGI issue) but deploy verified via SSH."
+            if [ -z "$PRODUCTION_URL" ]; then
+              echo "::warning::PRODUCTION_URL secret not set. Deploy verified via SSH only. Set it in Settings → Secrets → Actions."
+            else
+              echo "::warning::HTTP health endpoint unreachable (IONOS web PHP/CGI issue) but deploy verified via SSH."
+            fi
             exit 0
           fi
 
-          echo "❌ Health check failed via both HTTP and SSH!"
-          echo ""
-          echo "=== Full response headers for status endpoint ==="
-          curl -sI "$HEALTH_URL" 2>&1
-          echo ""
-          echo "=== Full response headers for / ==="
-          curl -sI "${PRODUCTION_URL}/" 2>&1
+          echo "❌ Health check failed via SSH!"
+          if [ -n "$PRODUCTION_URL" ]; then
+            echo ""
+            echo "=== Full response headers for status endpoint ==="
+            curl -sI "$HEALTH_URL" 2>&1
+            echo ""
+            echo "=== Full response headers for / ==="
+            curl -sI "${PRODUCTION_URL}/" 2>&1
+          fi
 
           exit 1
 
@@ -581,6 +588,10 @@ jobs:
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
+          if [ -z "$PRODUCTION_URL" ]; then
+            echo "⚠️ PRODUCTION_URL not set — skipping homepage check."
+            exit 0
+          fi
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}")
           if [ "$HTTP_STATUS" != "200" ]; then
             echo "⚠️ Homepage returned HTTP $HTTP_STATUS (non-blocking)"
