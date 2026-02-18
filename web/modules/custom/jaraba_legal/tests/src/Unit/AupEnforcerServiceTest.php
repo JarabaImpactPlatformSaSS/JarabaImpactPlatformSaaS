@@ -37,6 +37,13 @@ class AupEnforcerServiceTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    $stateMock = $this->createMock(\Drupal\Core\State\StateInterface::class);
+    $container->set('state', $stateMock);
+    \Drupal::setContainer($container);
+
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->tenantContext = $this->createMock(TenantContextService::class);
     $this->configFactory = $this->createMock(ConfigFactoryInterface::class);
@@ -86,6 +93,22 @@ class AupEnforcerServiceTest extends UnitTestCase {
     $config = $this->createMock(ImmutableConfig::class);
     $config->method('get')->willReturn(NULL);
     $this->configFactory->method('get')->willReturn($config);
+
+    // Mock para create() que se llama desde updateUsageRecord
+    // cuando no existe un registro previo para el recurso.
+    $fieldItem = $this->createMock(\Drupal\Core\Field\FieldItemListInterface::class);
+    $fieldItem->value = NULL;
+    $recordMock = $this->getMockBuilder(\Drupal\jaraba_legal\Entity\UsageLimitRecord::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $recordMock->method('id')->willReturn(1);
+    $recordMock->method('get')->willReturn($fieldItem);
+    $recordMock->method('set')->willReturnSelf();
+    $recordMock->method('isExceeded')->willReturn(FALSE);
+    $recordMock->method('isNearLimit')->willReturn(FALSE);
+    $recordMock->method('getUsagePercentage')->willReturn(0.0);
+    $storage->method('create')->willReturn($recordMock);
+    $storage->method('load')->willReturn(NULL);
 
     // Como la inicializacion de defaults llama a updateUsageRecord
     // que necesita entity->create()->save(), verificamos que el

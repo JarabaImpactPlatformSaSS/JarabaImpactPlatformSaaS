@@ -175,7 +175,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando empresa: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -208,7 +208,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error actualizando empresa: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -232,7 +232,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error eliminando empresa: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -346,7 +346,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando contacto: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -379,7 +379,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error actualizando contacto: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -403,7 +403,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error eliminando contacto: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -516,7 +516,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando oportunidad: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -549,7 +549,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error actualizando oportunidad: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -573,7 +573,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error eliminando oportunidad: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -603,7 +603,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error cambiando etapa: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -626,7 +626,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error marcando ganada: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -659,7 +659,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error marcando perdida: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -721,7 +721,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error reordenando etapas: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -745,7 +745,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando etapas por defecto: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -814,7 +814,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando actividad: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -899,7 +899,7 @@ class CrmApiController extends ControllerBase implements ContainerInjectionInter
     }
     catch (\Exception $e) {
       $this->logger->error('Error actualizando BANT: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 

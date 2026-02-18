@@ -98,6 +98,7 @@ jaraba_candidate.cv_generate:
     _controller: '\Drupal\jaraba_candidate\Controller\CvController::generate'
   requirements:
     _permission: 'build own cv'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # --- Rutas de JobSeeker Dashboard ---
@@ -156,6 +157,7 @@ jaraba_candidate.api.experience.add:
     _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::addExperience'
   requirements:
     _permission: 'edit own profile'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.skills:
@@ -172,6 +174,7 @@ jaraba_candidate.api.skills.add:
     _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::addSkill'
   requirements:
     _permission: 'edit own profile'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.skills.delete:
@@ -198,6 +201,7 @@ jaraba_candidate.api.cv.generate:
     _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::generateCv'
   requirements:
     _permission: 'build own cv'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.completion:
@@ -214,6 +218,7 @@ jaraba_candidate.api.import_linkedin:
     _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::importLinkedIn'
   requirements:
     _permission: 'edit own profile'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # --- Rutas del Copilot de Empleabilidad (Spec 20260120b S10) ---
@@ -225,6 +230,7 @@ jaraba_candidate.copilot.chat:
     _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::chat'
   requirements:
     _permission: 'view own copilot history'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json
@@ -248,6 +254,7 @@ jaraba_candidate.copilot.proactive:
     _controller: '\Drupal\jaraba_candidate\Controller\CopilotApiController::proactive'
   requirements:
     _permission: 'view own copilot history'
+    _csrf_token: 'TRUE'
   methods: [GET, POST]
   options:
     _format: json
@@ -344,6 +351,7 @@ jaraba_candidate.api.copilot.conversations:
     _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::createConversation'
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.copilot.messages:
@@ -352,6 +360,7 @@ jaraba_candidate.api.copilot.messages:
     _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::trackMessage'
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.copilot.feedback:
@@ -360,6 +369,7 @@ jaraba_candidate.api.copilot.feedback:
     _controller: '\Drupal\jaraba_candidate\Controller\InsightsApiController::submitFeedback'
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.insights.summary:

@@ -1,325 +1,204 @@
 /**
- * Jaraba Impact Platform - Service Worker
+ * Jaraba Impact Platform - Enterprise Service Worker
  * 
- * Implementa:
- * - Offline-first caching
- * - Push notifications
- * - Background sync
+ * ESTRATEGIA DE RENDIMIENTO:
+ * 1. Pre-cache dinámico del App Shell.
+ * 2. Estrategias diferenciadas por contexto (API, Admin, Static).
+ * 3. Limpieza proactiva de versiones antiguas.
  */
 
-const CACHE_NAME = 'jaraba-v1.0.0';
+// Versión generada dinámicamente (en producción esto se reemplaza por el hash del commit)
+const CACHE_VERSION = 'jaraba-v' + (new Date().getTime());
+const STATIC_CACHE = `static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline';
 
-// Assets to cache immediately on install
-const PRECACHE_ASSETS = [
-    '/',
-    '/tenant/dashboard',
-    '/offline',
-    '/themes/custom/jaraba_theme/css/style.css',
-    '/modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css',
-    '/themes/custom/jaraba_theme/images/logo.png',
-    '/manifest.json',
+/**
+ * App Shell: Assets críticos para carga instantánea.
+ */
+const ESSENTIAL_ASSETS = [
+  '/',
+  '/offline',
+  '/themes/custom/ecosistema_jaraba_theme/css/main.css',
+  '/modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css',
+  '/manifest.json'
 ];
 
-// Cache strategies
-const CACHE_STRATEGIES = {
-    // Network first, cache fallback
-    networkFirst: [
-        '/api/',
-        '/tenant/',
-        '/admin/',
-    ],
-    // Cache first, network fallback
-    cacheFirst: [
-        '/themes/',
-        '/modules/',
-        '/core/',
-        '.css',
-        '.js',
-        '.png',
-        '.jpg',
-        '.svg',
-        '.woff2',
-    ],
-    // Stale while revalidate
-    staleWhileRevalidate: [
-        '/node/',
-        '/marketplace',
-    ],
-};
+/**
+ * Mapa de Rutas y Estrategias (Prioridad de arriba a abajo).
+ */
+const ROUTE_STRATEGIES = [
+  { pattern: /^\/admin\//, strategy: 'network-only' },
+  { pattern: /^\/api\/v1\//, strategy: 'network-first' },
+  { pattern: /^\/user\/(login|logout|register)/, strategy: 'network-only' },
+  { pattern: /\.(?:css|js|woff2?|svg|png|jpg|webp)$/, strategy: 'cache-first' },
+  { pattern: /^\/(?:productor|comercio|legal|empleo)/, strategy: 'stale-while-revalidate' }
+];
 
-// Install event - precache assets
+// --- EVENTOS DEL SERVICE WORKER ---
+
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing Service Worker...');
-
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('[SW] Precaching app shell');
-                return cache.addAll(PRECACHE_ASSETS);
-            })
-            .then(() => {
-                console.log('[SW] Successfully installed');
-                return self.skipWaiting();
-            })
-            .catch((error) => {
-                console.error('[SW] Precache failed:', error);
-            })
-    );
+  event.waitUntil(
+    caches.open(STATIC_CACHE).then((cache) => {
+      console.log('[PWA] Precaching Essential Assets');
+      return cache.addAll(ESSENTIAL_ASSETS);
+    })
+  );
+  self.skipWaiting();
 });
 
-// Activate event - clean old caches
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activating Service Worker...');
-
-    event.waitUntil(
-        caches.keys()
-            .then((cacheNames) => {
-                return Promise.all(
-                    cacheNames
-                        .filter((name) => name !== CACHE_NAME)
-                        .map((name) => {
-                            console.log('[SW] Deleting old cache:', name);
-                            return caches.delete(name);
-                        })
-                );
-            })
-            .then(() => {
-                console.log('[SW] Service Worker activated');
-                return self.clients.claim();
-            })
-    );
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter(key => key !== STATIC_CACHE && key !== DYNAMIC_CACHE)
+            .map(key => caches.delete(key))
+      );
+    })
+  );
+  self.clients.claim();
 });
 
-// Fetch event - serve from cache or network
 self.addEventListener('fetch', (event) => {
-    const { request } = event;
-    const url = new URL(request.url);
+  const { request } = event;
+  const url = new URL(request.url);
 
-    // Skip non-GET requests
-    if (request.method !== 'GET') {
-        return;
-    }
+  // Solo procesar peticiones GET del mismo origen.
+  if (request.method !== 'GET' || url.origin !== self.location.origin) {
+    return;
+  }
 
-    // Skip chrome-extension and other non-http
-    if (!url.protocol.startsWith('http')) {
-        return;
-    }
+  const strategy = getStrategy(url.pathname);
 
-    // Determine cache strategy
-    const strategy = getCacheStrategy(url.pathname);
+  switch (strategy) {
+    case 'network-only':
+      // No interceptamos, dejamos que vaya directo a red.
+      return;
 
-    switch (strategy) {
-        case 'networkFirst':
-            event.respondWith(networkFirst(request));
-            break;
-        case 'cacheFirst':
-            event.respondWith(cacheFirst(request));
-            break;
-        case 'staleWhileRevalidate':
-            event.respondWith(staleWhileRevalidate(request));
-            break;
-        default:
-            event.respondWith(networkFirst(request));
-    }
+    case 'cache-first':
+      event.respondWith(cacheFirst(request));
+      break;
+
+    case 'stale-while-revalidate':
+      event.respondWith(staleWhileRevalidate(request));
+      break;
+
+    case 'network-first':
+    default:
+      event.respondWith(networkFirst(request));
+      break;
+  }
 });
 
-// Network first strategy
-async function networkFirst(request) {
-    try {
-        const networkResponse = await fetch(request);
+// --- LÓGICA DE ESTRATEGIAS ---
 
-        if (networkResponse.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(request, networkResponse.clone());
-        }
-
-        return networkResponse;
-    } catch (error) {
-        const cachedResponse = await caches.match(request);
-
-        if (cachedResponse) {
-            return cachedResponse;
-        }
-
-        // Return offline page for navigation requests
-        if (request.mode === 'navigate') {
-            return caches.match(OFFLINE_URL);
-        }
-
-        throw error;
+/**
+ * Determina la estrategia basada en el patrón de la URL.
+ */
+function getStrategy(pathname) {
+  for (const route of ROUTE_STRATEGIES) {
+    if (route.pattern.test(pathname)) {
+      return route.strategy;
     }
+  }
+  return 'network-first';
 }
 
-// Cache first strategy
+/**
+ * Cache First (Assets estáticos).
+ */
 async function cacheFirst(request) {
-    const cachedResponse = await caches.match(request);
+  const cached = await caches.match(request);
+  if (cached) return cached;
 
-    if (cachedResponse) {
-        return cachedResponse;
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, response.clone());
     }
-
-    try {
-        const networkResponse = await fetch(request);
-
-        if (networkResponse.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(request, networkResponse.clone());
-        }
-
-        return networkResponse;
-    } catch (error) {
-        console.error('[SW] Cache first failed:', error);
-        throw error;
-    }
+    return response;
+  } catch (e) {
+    return new Response('Resource unavailable', { status: 404 });
+  }
 }
 
-// Stale while revalidate strategy
+/**
+ * Network First (APIs y Contenido Crítico).
+ */
+async function networkFirst(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (e) {
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    
+    if (request.mode === 'navigate') {
+      return caches.match(OFFLINE_URL);
+    }
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+/**
+ * Stale While Revalidate (Dashboards y Marketplaces).
+ */
 async function staleWhileRevalidate(request) {
-    const cache = await caches.open(CACHE_NAME);
-    const cachedResponse = await cache.match(request);
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cached = await cache.match(request);
 
-    const fetchPromise = fetch(request)
-        .then((networkResponse) => {
-            if (networkResponse.ok) {
-                cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-        })
-        .catch((error) => {
-            console.error('[SW] Revalidate failed:', error);
-        });
-
-    return cachedResponse || fetchPromise;
-}
-
-// Determine cache strategy for a path
-function getCacheStrategy(pathname) {
-    for (const [strategy, patterns] of Object.entries(CACHE_STRATEGIES)) {
-        for (const pattern of patterns) {
-            if (pathname.includes(pattern)) {
-                return strategy;
-            }
-        }
+  const fetchPromise = fetch(request).then((response) => {
+    if (response.ok) {
+      cache.put(request, response.clone());
     }
-    return 'networkFirst';
+    return response;
+  }).catch(() => null);
+
+  return cached || fetchPromise;
 }
 
-// Push notification event
+// --- NOTIFICACIONES PUSH ---
+
 self.addEventListener('push', (event) => {
-    console.log('[SW] Push notification received');
+  if (!(self.Notification && self.Notification.permission === 'granted')) {
+    return;
+  }
 
-    let data = {
-        title: 'Jaraba Impact Platform',
-        body: 'Tienes nuevas notificaciones',
-        icon: '/themes/custom/jaraba_theme/images/icon-192x192.png',
-        badge: '/themes/custom/jaraba_theme/images/badge-72x72.png',
-        tag: 'jaraba-notification',
-        data: {},
-    };
-
-    try {
-        if (event.data) {
-            data = { ...data, ...event.data.json() };
-        }
-    } catch (e) {
-        console.error('[SW] Failed to parse push data:', e);
-    }
-
-    const options = {
-        body: data.body,
-        icon: data.icon,
-        badge: data.badge,
-        tag: data.tag,
-        data: data.data,
-        vibrate: [100, 50, 100],
-        actions: [
-            { action: 'view', title: 'Ver' },
-            { action: 'dismiss', title: 'Descartar' },
-        ],
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
-    );
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'Jaraba Impact Platform';
+  
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || 'Novedades en la plataforma.',
+      icon: '/themes/custom/ecosistema_jaraba_theme/images/icons/icon-192x192.png',
+      badge: '/themes/custom/ecosistema_jaraba_theme/images/icons/badge-72x72.png',
+      data: data.data || {},
+      actions: [
+        { action: 'view', title: 'Ver detalle' }
+      ]
+    })
+  );
 });
 
-// Notification click event
 self.addEventListener('notificationclick', (event) => {
-    console.log('[SW] Notification clicked:', event.notification.tag);
+  event.notification.close();
+  const urlToOpen = event.notification.data.url || '/';
 
-    event.notification.close();
-
-    if (event.action === 'dismiss') {
-        return;
-    }
-
-    const url = event.notification.data?.url || '/tenant/dashboard';
-
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then((clientList) => {
-                // Focus existing window if available
-                for (const client of clientList) {
-                    if (client.url.includes(url) && 'focus' in client) {
-                        return client.focus();
-                    }
-                }
-                // Otherwise open new window
-                if (clients.openWindow) {
-                    return clients.openWindow(url);
-                }
-            })
-    );
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (let client of windowClients) {
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
 });
-
-// Background sync event
-self.addEventListener('sync', (event) => {
-    console.log('[SW] Background sync:', event.tag);
-
-    if (event.tag === 'sync-orders') {
-        event.waitUntil(syncOrders());
-    }
-
-    if (event.tag === 'sync-products') {
-        event.waitUntil(syncProducts());
-    }
-});
-
-// Sync orders in background
-async function syncOrders() {
-    console.log('[SW] Syncing orders...');
-
-    // TODO: Implement order sync logic
-    // Get pending orders from IndexedDB
-    // Send to server
-    // Clear synced items
-
-    return Promise.resolve();
-}
-
-// Sync products in background
-async function syncProducts() {
-    console.log('[SW] Syncing products...');
-
-    // TODO: Implement product sync logic
-
-    return Promise.resolve();
-}
-
-// Message event for communication with main thread
-self.addEventListener('message', (event) => {
-    console.log('[SW] Message received:', event.data);
-
-    if (event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-
-    if (event.data.type === 'CACHE_URLS') {
-        const urls = event.data.urls || [];
-        caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(urls));
-    }
-});
-
-console.log('[SW] Service Worker loaded');

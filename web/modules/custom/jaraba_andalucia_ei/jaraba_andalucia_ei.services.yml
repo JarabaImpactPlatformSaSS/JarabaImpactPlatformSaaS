@@ -23,3 +23,9 @@ services:
   logger.channel.jaraba_andalucia_ei:
     parent: logger.channel_base
     arguments: ['jaraba_andalucia_ei']
+
+  jaraba_andalucia_ei.solicitud_triage:
+    class: Drupal\jaraba_andalucia_ei\Service\SolicitudTriageService
+    arguments:
+      - '@ai.provider'
+      - '@logger.channel.jaraba_andalucia_ei'

@@ -85,7 +85,7 @@ class SessionApiController extends ControllerBase
             $data[] = $this->serializeSession($session);
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'count' => count($data)]);
     }
 
     /**
@@ -117,34 +117,35 @@ class SessionApiController extends ControllerBase
             ->load($content['engagement_id']);
 
         if (!$engagement) {
-            return new JsonResponse(['error' => 'Engagement not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Engagement not found']], 404);
         }
 
         // Verificar que el usuario es el mentee del engagement.
         if ((int) $engagement->get('mentee_id')->target_id !== (int) $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         // Verificar sesiones disponibles.
         if ($engagement->getSessionsRemaining() <= 0) {
-            return new JsonResponse(['error' => 'No sessions remaining in this engagement'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No sessions remaining in this engagement']], 400);
         }
 
         try {
             $slot_datetime = new \DateTime($content['slot_datetime']);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Invalid datetime format'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid datetime format']], 400);
         }
 
         // Cargar mentor.
         $mentor = $engagement->get('mentor_id')->entity;
         if (!$mentor) {
-            return new JsonResponse(['error' => 'Mentor not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Mentor not found']], 404);
         }
 
         // Verificar disponibilidad del slot.
         if (!$this->scheduler->isSlotAvailable($mentor, $slot_datetime)) {
-            return new JsonResponse(['error' => 'Slot not available'], 409);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Slot not available']], 409);
         }
 
         // Crear la sesión.
@@ -172,9 +173,7 @@ class SessionApiController extends ControllerBase
         $session->save();
 
         return new JsonResponse([
-            'data' => $this->serializeSession($session),
-            'message' => 'Session booked successfully',
-        ], 201);
+            'data' => $this->serializeSession($session), 'meta' => ['timestamp' => time()]], 201);
     }
 
     /**
@@ -189,7 +188,7 @@ class SessionApiController extends ControllerBase
             ->load($session_id);
 
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Session not found']], 404);
         }
 
         // Verificar acceso.
@@ -199,7 +198,7 @@ class SessionApiController extends ControllerBase
         $is_mentee = (int) $session->get('mentee_id')->target_id === $user_id;
 
         if (!$is_mentor && !$is_mentee) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         $content = json_decode($request->getContent(), TRUE) ?? [];
@@ -218,10 +217,7 @@ class SessionApiController extends ControllerBase
 
         $session->save();
 
-        return new JsonResponse([
-            'data' => $this->serializeSession($session),
-            'message' => 'Session updated',
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => $this->serializeSession($session), 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -236,13 +232,13 @@ class SessionApiController extends ControllerBase
             ->load($session_id);
 
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Session not found']], 404);
         }
 
         // Verificar que la sesión puede ser cancelada.
         $current_status = $session->get('status')->value;
         if (!in_array($current_status, ['scheduled', 'confirmed'], TRUE)) {
-            return new JsonResponse(['error' => 'Session cannot be cancelled'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Session cannot be cancelled']], 400);
         }
 
         // Verificar acceso (mentor o mentee).
@@ -252,7 +248,7 @@ class SessionApiController extends ControllerBase
         $is_mentee = (int) $session->get('mentee_id')->target_id === $user_id;
 
         if (!$is_mentor && !$is_mentee) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         $content = json_decode($request->getContent(), TRUE) ?? [];
@@ -271,10 +267,7 @@ class SessionApiController extends ControllerBase
             $engagement->save();
         }
 
-        return new JsonResponse([
-            'message' => 'Session cancelled successfully',
-            'data' => $this->serializeSession($session),
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Session cancelled successfully', 'data' => $this->serializeSession($session)], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -290,25 +283,25 @@ class SessionApiController extends ControllerBase
             ->load($session_id);
 
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Session not found']], 404);
         }
 
         $content = json_decode($request->getContent(), TRUE) ?? [];
 
         if (empty($content['new_datetime'])) {
-            return new JsonResponse(['error' => 'new_datetime is required'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'new_datetime is required']], 400);
         }
 
         try {
             $new_datetime = new \DateTime($content['new_datetime']);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Invalid datetime format'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid datetime format']], 400);
         }
 
         // Verificar disponibilidad del nuevo slot.
         $mentor = $session->get('mentor_id')->entity;
         if (!$this->scheduler->isSlotAvailable($mentor, $new_datetime)) {
-            return new JsonResponse(['error' => 'New slot not available'], 409);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'New slot not available']], 409);
         }
 
         // Actualizar fechas.
@@ -317,10 +310,7 @@ class SessionApiController extends ControllerBase
         $session->set('status', 'scheduled');
         $session->save();
 
-        return new JsonResponse([
-            'message' => 'Session rescheduled successfully',
-            'data' => $this->serializeSession($session),
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Session rescheduled successfully', 'data' => $this->serializeSession($session)], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -335,7 +325,7 @@ class SessionApiController extends ControllerBase
             ->load($session_id);
 
         if (!$session) {
-            return new JsonResponse(['error' => 'Session not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Session not found']], 404);
         }
 
         // Verificar que la sesión puede unirse (dentro de ventana de tiempo).

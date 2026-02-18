@@ -29,6 +29,7 @@ jaraba_institutional.api.programs.store:
   methods: [POST]
   requirements:
     _permission: 'manage programs'
+    _csrf_token: 'TRUE'
 
 jaraba_institutional.api.programs.show:
   path: '/api/v1/institutional/programs/{institutional_program}'
@@ -66,6 +67,7 @@ jaraba_institutional.api.participants.enroll:
   requirements:
     _permission: 'manage participants'
     institutional_program: \d+
+    _csrf_token: 'TRUE'
 
 jaraba_institutional.api.participants.update:
   path: '/api/v1/institutional/participants/{program_participant}'
@@ -85,6 +87,7 @@ jaraba_institutional.api.fichas.generate:
   requirements:
     _permission: 'generate sto fichas'
     program_participant: \d+
+    _csrf_token: 'TRUE'
 
 # --- API: Reporting ---
 jaraba_institutional.api.reports.fundae:

@@ -215,7 +215,8 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
                     'status' => $article->getPublicationStatus(),
                 ], 'meta' => ['timestamp' => time()]], 201);
         } catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
+            \Drupal::logger('jaraba_content_hub')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
         }
     }
 

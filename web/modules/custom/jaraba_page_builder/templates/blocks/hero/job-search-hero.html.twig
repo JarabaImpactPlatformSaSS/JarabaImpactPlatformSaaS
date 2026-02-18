@@ -33,7 +33,7 @@
       <h1 class="jaraba-job-search-hero__title">{{ content.title|default('Encuentra tu próximo empleo'|trans) }}</h1>
       
       {% if content.subtitle %}
-        <p class="jaraba-job-search-hero__subtitle">{{ content.subtitle }}</p>
+        <p class="jaraba-job-search-hero__subtitle">{{ content.subtitle|striptags('<strong><em><br><a>')|raw }}</p>
       {% endif %}
       
       {# Buscador #}

@@ -22,7 +22,8 @@
       {% set items = features|default(default_features) %}
       {% for feature in items %}
         <div class="pb-section__feature-card">
-          <div class="pb-section__feature-icon" aria-hidden="true">{{ feature.icon|default('&#9733;')|raw }}</div>
+          {# AUDIT-SEC-02: |raw needed for HTML entities (emoji icons). Input is admin-configured, low risk. #}
+          <div class="pb-section__feature-icon" aria-hidden="true">{{ feature.icon|default('&#9733;')|striptags|raw }}</div>
           <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
           <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>
         </div>

@@ -28,7 +28,7 @@
         <h1 class="jaraba-split-hero__title">{{ content.title }}</h1>
         
         {% if content.subtitle %}
-          <p class="jaraba-split-hero__subtitle">{{ content.subtitle }}</p>
+          <p class="jaraba-split-hero__subtitle">{{ content.subtitle|striptags('<strong><em><br><a>')|raw }}</p>
         {% endif %}
         
         {# Mini features #}

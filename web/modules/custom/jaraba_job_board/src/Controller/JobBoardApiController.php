@@ -183,7 +183,8 @@ class JobBoardApiController extends ControllerBase
 
             return new JsonResponse(['applications' => $result]);
         } catch (\Exception $e) {
-            return new JsonResponse(['applications' => [], 'error' => $e->getMessage()]);
+            \Drupal::logger('jaraba_job_board')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['applications' => [], 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']);
         }
     }
 

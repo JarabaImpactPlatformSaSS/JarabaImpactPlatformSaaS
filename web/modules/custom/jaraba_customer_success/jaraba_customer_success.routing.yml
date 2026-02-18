@@ -193,6 +193,7 @@ jaraba_customer_success.api.playbook_execute:
     _controller: '\Drupal\jaraba_customer_success\Controller\HealthScoresApiController::executePlaybook'
   requirements:
     _permission: 'manage playbooks'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json
@@ -222,6 +223,7 @@ jaraba_customer_success.api.nps.submit:
     _controller: '\Drupal\jaraba_customer_success\Controller\NpsApiController::submitResponse'
   requirements:
     _permission: 'view customer success'
+    _csrf_token: 'TRUE'
   methods: [POST]
   options:
     _format: json

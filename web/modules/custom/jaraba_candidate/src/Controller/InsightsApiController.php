@@ -77,9 +77,10 @@ class InsightsApiController extends ControllerBase
                 'is_new' => $conversation->isNew(),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_candidate')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -138,9 +139,10 @@ class InsightsApiController extends ControllerBase
                 'error' => 'Failed to track message',
             ], 500);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_candidate')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -181,9 +183,10 @@ class InsightsApiController extends ControllerBase
                 'message' => 'Feedback recorded',
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_candidate')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

@@ -93,6 +93,7 @@ jaraba_crm.api.pipeline.move:
   methods: [POST]
   requirements:
     _permission: 'edit crm entities'
+    _csrf_token: 'TRUE'
 
 # =============================================================================
 # PIPELINE STAGE SETTINGS (Field UI)
@@ -136,6 +137,7 @@ jaraba_crm.api.companies.create:
   methods: [POST]
   requirements:
     _permission: 'create crm entities'
+    _csrf_token: 'TRUE'
 
 jaraba_crm.api.companies.update:
   path: '/api/v1/crm/companies/{id}'
@@ -181,6 +183,7 @@ jaraba_crm.api.contacts.create:
   methods: [POST]
   requirements:
     _permission: 'create crm entities'
+    _csrf_token: 'TRUE'
 
 jaraba_crm.api.contacts.update:
   path: '/api/v1/crm/contacts/{id}'
@@ -226,6 +229,7 @@ jaraba_crm.api.opportunities.create:
   methods: [POST]
   requirements:
     _permission: 'create crm entities'
+    _csrf_token: 'TRUE'
 
 jaraba_crm.api.opportunities.update:
   path: '/api/v1/crm/opportunities/{id}'
@@ -252,6 +256,7 @@ jaraba_crm.api.opportunities.stage:
   methods: [POST]
   requirements:
     _permission: 'edit crm entities'
+    _csrf_token: 'TRUE'
     id: '\d+'
 
 jaraba_crm.api.opportunities.won:
@@ -261,6 +266,7 @@ jaraba_crm.api.opportunities.won:
   methods: [POST]
   requirements:
     _permission: 'edit crm entities'
+    _csrf_token: 'TRUE'
     id: '\d+'
 
 jaraba_crm.api.opportunities.lost:
@@ -270,6 +276,7 @@ jaraba_crm.api.opportunities.lost:
   methods: [POST]
   requirements:
     _permission: 'edit crm entities'
+    _csrf_token: 'TRUE'
     id: '\d+'
 
 # --- Sales Playbook (Doc 186) ---
@@ -309,6 +316,7 @@ jaraba_crm.api.pipeline_stages.reorder:
   methods: [POST]
   requirements:
     _permission: 'edit crm entities'
+    _csrf_token: 'TRUE'
 
 jaraba_crm.api.pipeline_stages.defaults:
   path: '/api/v1/crm/pipeline-stages/defaults'
@@ -317,6 +325,7 @@ jaraba_crm.api.pipeline_stages.defaults:
   methods: [POST]
   requirements:
     _permission: 'administer crm entities'
+    _csrf_token: 'TRUE'
 
 # --- Actividades ---
 
@@ -335,6 +344,7 @@ jaraba_crm.api.activities.create:
   methods: [POST]
   requirements:
     _permission: 'create crm entities'
+    _csrf_token: 'TRUE'
 
 # --- Forecasting ---
 

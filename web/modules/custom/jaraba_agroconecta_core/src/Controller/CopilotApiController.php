@@ -183,7 +183,8 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
             return new JsonResponse(['success' => TRUE, 'data' => $result]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_agroconecta_core')->error('Demand forecast failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -199,7 +200,8 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
             return new JsonResponse(['success' => TRUE, 'data' => $result, 'total' => count($result)]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_agroconecta_core')->error('Trending products failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -219,7 +221,8 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
             return new JsonResponse(['success' => TRUE, 'data' => $result]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_agroconecta_core')->error('Competitive position failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 }

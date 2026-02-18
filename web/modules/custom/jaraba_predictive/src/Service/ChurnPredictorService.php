@@ -7,6 +7,8 @@ namespace Drupal\jaraba_predictive\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_predictive\Service\FeatureStoreService;
+use Drupal\jaraba_predictive\Service\RetentionWorkflowService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -50,6 +52,8 @@ class ChurnPredictorService {
     protected readonly LoggerInterface $logger,
     protected readonly ConfigFactoryInterface $configFactory,
     protected readonly TenantContextService $tenantContext,
+    protected readonly FeatureStoreService $featureStore,
+    protected readonly RetentionWorkflowService $retentionWorkflow,
   ) {}
 
   /**
@@ -91,28 +95,28 @@ class ChurnPredictorService {
 
     $config = $this->configFactory->get('jaraba_predictive.settings');
     $weights = $config->get('churn_weights') ?? [];
-    $modelVersion = $config->get('model_version') ?? 'heuristic_v1';
+    $modelVersion = $config->get('model_version') ?? 'heuristic_v2';
 
-    // --- Recoleccion de senales ---
-    $inactivityScore = $this->calculateInactivityScore($tenantId);
-    $paymentScore = $this->calculatePaymentFailureScore($tenantId);
-    $supportScore = $this->calculateSupportTicketScore($tenantId);
-    $adoptionScore = $this->calculateFeatureAdoptionScore($tenantId);
-    $contractScore = $this->calculateContractAgeScore($tenantId);
+    // --- Recolección de señales REALES via FeatureStore ---
+    $features = $this->featureStore->getFeatures($tenantId);
+    
+    $inactivityScore = min(100, ($features['days_since_last_login'] / 30) * 100);
+    $paymentScore = min(100, $features['payment_failure_count'] * 33);
+    $supportScore = min(100, ($features['support_ticket_count'] / 5) * 100);
+    $adoptionScore = (1.0 - $features['feature_adoption_rate']) * 100;
+    $contractScore = 20.0; // Fallback heurístico por ahora.
 
-    // --- Ponderacion con pesos configurables ---
-    $wInactivity = (float) ($weights['inactivity'] ?? 0.3);
-    $wPayment = (float) ($weights['payment_failures'] ?? 0.25);
+    // --- Ponderación con pesos configurables ---
+    $wInactivity = (float) ($weights['inactivity'] ?? 0.35);
+    $wPayment = (float) ($weights['payment_failures'] ?? 0.30);
     $wSupport = (float) ($weights['support_tickets'] ?? 0.15);
-    $wAdoption = (float) ($weights['feature_adoption'] ?? 0.2);
-    $wContract = (float) ($weights['contract_age'] ?? 0.1);
+    $wAdoption = (float) ($weights['feature_adoption'] ?? 0.20);
 
     $riskScore = (int) round(
       ($inactivityScore * $wInactivity)
       + ($paymentScore * $wPayment)
       + ($supportScore * $wSupport)
       + ($adoptionScore * $wAdoption)
-      + ($contractScore * $wContract)
     );
 
     $riskScore = max(0, min(100, $riskScore));
@@ -160,6 +164,9 @@ class ChurnPredictorService {
       'calculated_at' => date('Y-m-d\TH:i:s'),
     ]);
     $prediction->save();
+
+    // Disparar flujo de retención proactiva (F189).
+    $this->retentionWorkflow->triggerResponse($tenantId, $riskScore, $riskLevel);
 
     $this->logger->info('Churn prediction calculated for tenant @id: score=@score, level=@level', [
       '@id' => $tenantId,

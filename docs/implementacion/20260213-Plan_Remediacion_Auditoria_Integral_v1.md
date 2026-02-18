@@ -142,7 +142,7 @@ La auditoría integral del 2026-02-13 analizó la plataforma desde 15 disciplina
 | Archivos PHP | 400+ |
 | Templates Twig | 200+ |
 | Archivos SCSS | 102 |
-| Tests (PHPUnit) | 121+ |
+| Tests (PHPUnit) | 340 archivos, 2,444 métodos |
 | Documentos técnicos | 435+ |
 
 ### 2.2 Auditoría Anterior (2026-02-06)

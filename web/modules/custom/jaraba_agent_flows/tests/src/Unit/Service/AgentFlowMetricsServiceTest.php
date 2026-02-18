@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_agent_flows\Unit\Service;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_agent_flows\Service\AgentFlowMetricsService;
@@ -20,6 +21,7 @@ class AgentFlowMetricsServiceTest extends UnitTestCase {
 
   protected EntityTypeManagerInterface $entityTypeManager;
   protected LoggerInterface $logger;
+  protected CacheBackendInterface $cache;
   protected AgentFlowMetricsService $service;
 
   /**
@@ -30,10 +32,12 @@ class AgentFlowMetricsServiceTest extends UnitTestCase {
 
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->cache = $this->createMock(CacheBackendInterface::class);
 
     $this->service = new AgentFlowMetricsService(
       $this->entityTypeManager,
       $this->logger,
+      $this->cache,
     );
   }
 

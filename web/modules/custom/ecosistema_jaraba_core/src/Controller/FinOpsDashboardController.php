@@ -2,7 +2,10 @@
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\State\StateInterface;
 use Drupal\ecosistema_jaraba_core\Service\AICostOptimizationService;
 use Drupal\ecosistema_jaraba_core\Service\FinOpsTrackingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -39,11 +42,35 @@ class FinOpsDashboardController extends ControllerBase
     protected ?AICostOptimizationService $aiCostService = NULL;
 
     /**
+     * The state service.
+     *
+     * @var \Drupal\Core\State\StateInterface
+     */
+    protected StateInterface $state;
+
+    /**
+     * The database connection.
+     *
+     * @var \Drupal\Core\Database\Connection
+     */
+    protected Connection $database;
+
+    /**
+     * The config factory.
+     *
+     * @var \Drupal\Core\Config\ConfigFactoryInterface
+     */
+    protected ConfigFactoryInterface $configFactoryService;
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container): static
     {
         $instance = parent::create($container);
+        $instance->state = $container->get('state');
+        $instance->database = $container->get('database');
+        $instance->configFactoryService = $container->get('config.factory');
 
         try {
             $instance->finopsTracking = $container->get('ecosistema_jaraba_core.finops_tracking');
@@ -181,7 +208,7 @@ class FinOpsDashboardController extends ControllerBase
         $tenants = [];
 
         try {
-            $tenant_storage = \Drupal::entityTypeManager()->getStorage('tenant');
+            $tenant_storage = $this->entityTypeManager()->getStorage('tenant');
             $tenant_entities = $tenant_storage->loadMultiple();
 
             foreach ($tenant_entities as $tenant) {
@@ -229,7 +256,7 @@ class FinOpsDashboardController extends ControllerBase
                         $vertical_id = $vertical->id();
                         $vertical_name = $vertical->label();
                         $enabled_features = $vertical->getEnabledFeatures();
-                        $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
+                        $feature_storage = $this->entityTypeManager()->getStorage('feature');
 
                         // AUDIT-PERF-N04: Batch load en lugar de N+1 queries.
                         $features = $feature_storage->loadMultiple($enabled_features);
@@ -287,7 +314,7 @@ class FinOpsDashboardController extends ControllerBase
             }
         } catch (\Exception $e) {
             // Log error pero NO devolver datos ficticios
-            \Drupal::logger('ecosistema_jaraba_core')->warning(
+            $this->getLogger('ecosistema_jaraba_core')->warning(
                 'FinOps: Error loading tenants: @error',
                 ['@error' => $e->getMessage()]
             );
@@ -319,7 +346,7 @@ class FinOpsDashboardController extends ControllerBase
 
         // Fallback: Estimar basado en content count
         try {
-            $node_count = \Drupal::entityQuery('node')
+            $node_count = $this->entityTypeManager()->getStorage('node')->getQuery()
                 ->accessCheck(FALSE)
                 ->count()
                 ->execute();
@@ -351,7 +378,7 @@ class FinOpsDashboardController extends ControllerBase
         }
 
         // Fallback: State API (puede ser real si hay datos previos)
-        $state = \Drupal::state();
+        $state = $this->state;
         $key = "finops_api_count_{$tenant_id}";
         $requests = $state->get($key, 0);
 
@@ -481,7 +508,7 @@ class FinOpsDashboardController extends ControllerBase
      */
     protected function calculateCostTrend(): string
     {
-        $state = \Drupal::state();
+        $state = $this->state;
         $previous = $state->get('finops_previous_daily_cost', 0);
         $current = $state->get('finops_current_daily_cost', 0);
 
@@ -678,7 +705,7 @@ class FinOpsDashboardController extends ControllerBase
                 }
             }
         } catch (\Exception $e) {
-            \Drupal::logger('ecosistema_jaraba_core')->warning(
+            $this->getLogger('ecosistema_jaraba_core')->warning(
                 'FinOps: Error calculating revenue: @error',
                 ['@error' => $e->getMessage()]
             );
@@ -801,7 +828,7 @@ class FinOpsDashboardController extends ControllerBase
 
         // Verificar si existe la tabla de tracking
         try {
-            $has_tracking_table = \Drupal::database()->schema()->tableExists('finops_usage_log');
+            $has_tracking_table = $this->database->schema()->tableExists('finops_usage_log');
         } catch (\Exception $e) {
             // Ignore
         }
@@ -809,7 +836,7 @@ class FinOpsDashboardController extends ControllerBase
         // Verificar si hay datos reales en la tabla
         if ($has_tracking_table) {
             try {
-                $count = \Drupal::database()->select('finops_usage_log', 'f')
+                $count = $this->database->select('finops_usage_log', 'f')
                     ->countQuery()
                     ->execute()
                     ->fetchField();
@@ -864,7 +891,7 @@ class FinOpsDashboardController extends ControllerBase
             return $config_cache;
         }
 
-        $config = \Drupal::config('ecosistema_jaraba_core.finops');
+        $config = $this->configFactoryService->get('ecosistema_jaraba_core.finops');
 
         $config_cache = [
             // Precios unitarios
@@ -920,7 +947,7 @@ class FinOpsDashboardController extends ControllerBase
         $total_unit_cost_potential = 0;
 
         try {
-            $feature_storage = \Drupal::entityTypeManager()->getStorage('feature');
+            $feature_storage = $this->entityTypeManager()->getStorage('feature');
             $feature_entities = $feature_storage->loadMultiple();
 
             foreach ($feature_entities as $feature) {
@@ -959,7 +986,7 @@ class FinOpsDashboardController extends ControllerBase
                 }
             }
         } catch (\Exception $e) {
-            \Drupal::logger('ecosistema_jaraba_core')->warning(
+            $this->getLogger('ecosistema_jaraba_core')->warning(
                 'FinOps: Error loading features: @error',
                 ['@error' => $e->getMessage()]
             );
@@ -1012,7 +1039,7 @@ class FinOpsDashboardController extends ControllerBase
             $total_cost = $tenant['costs']['total'] ?? 0;
 
             // DEBUG: Log para diagnosticar
-            \Drupal::logger('ecosistema_jaraba_core')->debug(
+            $this->getLogger('ecosistema_jaraba_core')->debug(
                 'UnitEconomics: Tenant @name - received MRR: @mrr, plan_cost: @pc',
                 [
                     '@name' => $tenant['name'] ?? 'Unknown',
@@ -1074,7 +1101,7 @@ class FinOpsDashboardController extends ControllerBase
         usort($economics, fn($a, $b) => $b['ltv_cac_ratio'] <=> $a['ltv_cac_ratio']);
 
         // DEBUG: Log resultado final
-        \Drupal::logger('ecosistema_jaraba_core')->debug(
+        $this->getLogger('ecosistema_jaraba_core')->debug(
             'UnitEconomics: Returning @count tenants. First: @first',
             [
                 '@count' => count($economics),
@@ -1204,7 +1231,7 @@ class FinOpsDashboardController extends ControllerBase
         }
 
         try {
-            $state = \Drupal::state();
+            $state = $this->state;
 
             // Obtener datos agregados desde el servicio
             $totalTokens = $state->get('ai_cost_total_tokens', 0);
@@ -1257,7 +1284,7 @@ class FinOpsDashboardController extends ControllerBase
                 'status' => $this->getAiCostStatus($totalCost),
             ];
         } catch (\Exception $e) {
-            \Drupal::logger('ecosistema_jaraba_core')->warning(
+            $this->getLogger('ecosistema_jaraba_core')->warning(
                 'FinOps: Error getting AI cost metrics: @error',
                 ['@error' => $e->getMessage()]
             );
@@ -1287,7 +1314,7 @@ class FinOpsDashboardController extends ControllerBase
      */
     protected function getAiCostHistory(): array
     {
-        $state = \Drupal::state();
+        $state = $this->state;
         $result = [
             'daily' => [],
             'by_provider' => [],
@@ -1344,7 +1371,7 @@ class FinOpsDashboardController extends ControllerBase
             }
 
         } catch (\Exception $e) {
-            \Drupal::logger('ecosistema_jaraba_core')->warning(
+            $this->getLogger('ecosistema_jaraba_core')->warning(
                 'FinOps: Error getting AI cost history: @error',
                 ['@error' => $e->getMessage()]
             );

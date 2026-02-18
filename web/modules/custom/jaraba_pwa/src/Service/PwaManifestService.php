@@ -144,33 +144,26 @@ class PwaManifestService {
    */
   protected function applyTenantOverrides(array $manifest, int $tenantId): array {
     try {
-      // Try to load tenant theme configuration.
-      $themeStorage = $this->entityTypeManager->getStorage('tenant_theme_config');
-      $themeConfigs = $themeStorage->loadByProperties([
-        'tenant_id' => $tenantId,
-      ]);
-
-      if (empty($themeConfigs)) {
-        return $manifest;
-      }
-
-      $themeConfig = reset($themeConfigs);
-
-      // Override name from group entity.
+      // 1. Obtener el grupo (tenant).
       $groupStorage = $this->entityTypeManager->getStorage('group');
       $group = $groupStorage->load($tenantId);
       if ($group) {
-        $manifest['name'] = $group->label() . ' - Jaraba';
+        $manifest['name'] = $group->label();
         $manifest['short_name'] = $group->label();
       }
 
-      // Override colors from theme config.
-      if ($themeConfig->hasField('primary_color') && $themeConfig->get('primary_color')->value) {
-        $manifest['theme_color'] = $themeConfig->get('primary_color')->value;
-      }
+      // 2. Obtener Design Token Config del vertical.
+      // Primero detectamos el vertical del tenant.
+      $vertical = $group ? $group->get('field_vertical')->entity : NULL;
+      $verticalId = $vertical ? $vertical->id() : 'general';
 
-      if ($themeConfig->hasField('background_color') && $themeConfig->get('background_color')->value) {
-        $manifest['background_color'] = $themeConfig->get('background_color')->value;
+      $tokenStorage = $this->entityTypeManager->getStorage('design_token_config');
+      $tokenConfigs = $tokenStorage->loadByProperties(['vertical' => $verticalId]);
+      
+      if (!empty($tokenConfigs)) {
+        $tokenConfig = reset($tokenConfigs);
+        $manifest['theme_color'] = $tokenConfig->get('colors')['primary'] ?? $manifest['theme_color'];
+        $manifest['background_color'] = $tokenConfig->get('colors')['background'] ?? $manifest['background_color'];
       }
 
       return $manifest;

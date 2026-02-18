@@ -6,6 +6,7 @@ namespace Drupal\jaraba_billing\Service;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\jaraba_billing\Service\WalletService;
 
 /**
  * Servicio de metering avanzado por tenant.
@@ -51,6 +52,7 @@ class TenantMeteringService
     public function __construct(
         protected Connection $database,
         protected CacheBackendInterface $cache,
+        protected WalletService $walletService,
     ) {
     }
 
@@ -59,12 +61,37 @@ class TenantMeteringService
      */
     public function record(string $tenantId, string $metric, float $value, array $metadata = []): void
     {
+        // 1. Calcular coste.
+        $unitPrice = self::UNIT_PRICES[$metric] ?? 0;
+        $cost = $value * $unitPrice;
+
+        // 2. Intentar deducir del Wallet (Prepago).
+        $paidFromWallet = FALSE;
+        if ($cost > 0) {
+            try {
+                // Si tiene saldo suficiente, descontamos.
+                // Nota: En un sistema real, aquí iría una lógica de configuración "Preferir Wallet".
+                if ($this->walletService->getBalance((int) $tenantId) >= $cost) {
+                    $paidFromWallet = $this->walletService->debit(
+                        (int) $tenantId,
+                        $cost,
+                        'usage_metering',
+                        uniqid('usg_'),
+                        "Usage: $metric ($value units)"
+                    );
+                }
+            } catch (\Exception $e) {
+                // Fallo silencioso del wallet, registramos como postpago normal.
+            }
+        }
+
+        // 3. Registrar métrica (marcando si ya se pagó).
         $this->database->insert('tenant_metering')
             ->fields([
                 'tenant_id' => $tenantId,
                 'metric' => $metric,
                 'value' => $value,
-                'metadata' => json_encode($metadata),
+                'metadata' => json_encode($metadata + ['prepaid' => $paidFromWallet]),
                 'created' => time(),
                 'period' => date('Y-m'),
             ])

@@ -7,6 +7,7 @@ namespace Drupal\Tests\jaraba_legal_intelligence\Unit\Service;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Drupal\jaraba_legal_intelligence\Service\LegalCitationService;
@@ -50,6 +51,13 @@ class LegalCitationServiceTest extends UnitTestCase {
   protected $logger;
 
   /**
+   * Mock feature gate service.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $featureGate;
+
+  /**
    * Mock resolution storage.
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -79,6 +87,7 @@ class LegalCitationServiceTest extends UnitTestCase {
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->tenantContext = $this->createMock(TenantContextService::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->featureGate = $this->createMock(JarabaLexFeatureGateService::class);
 
     $this->resolutionStorage = $this->createMock(EntityStorageInterface::class);
     $this->bookmarkStorage = $this->createMock(EntityStorageInterface::class);
@@ -95,6 +104,7 @@ class LegalCitationServiceTest extends UnitTestCase {
       $this->entityTypeManager,
       $this->tenantContext,
       $this->logger,
+      $this->featureGate,
     );
   }
 

@@ -46,5 +46,17 @@ sync-status:
     js/pwa-sync-status.js: {}
   dependencies:
     - core/drupal
-    - core/drupalSettings
     - core/once
+
+# Premium PWA installation prompt.
+pwa-install:
+  version: 1.0
+  css:
+    theme:
+      css/pwa-install.css: {}
+  js:
+    js/pwa-install.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings

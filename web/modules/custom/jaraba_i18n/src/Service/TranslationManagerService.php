@@ -248,9 +248,12 @@ class TranslationManagerService
      */
     public function getTranslationStats(string $entityTypeId): array
     {
+        // AUDIT-PERF-N09: Optimized from O(E*L) to batch processing.
+        // Uses count queries per language instead of loading all entities into
+        // memory and iterating E*L times. This reduces the operation to O(L)
+        // database count queries with no entity instantiation.
         $storage = $this->entityTypeManager->getStorage($entityTypeId);
 
-        // AUDIT-PERF-N09: Usar entity queries O(L) en lugar de loadMultiple O(E*L).
         $total = (int) $storage->getQuery()
             ->accessCheck(FALSE)
             ->count()
@@ -263,10 +266,14 @@ class TranslationManagerService
         ];
 
         $languages = $this->getAvailableLanguages();
-        $defaultLang = \Drupal::languageManager()->getDefaultLanguage()->getId();
+        $defaultLang = $this->languageManager->getDefaultLanguage()->getId();
 
         foreach ($languages as $langcode => $language) {
-            // Contar entidades con traducción en este idioma via query (1 query por idioma).
+            // Count entities with a translation in this language via a single
+            // count query. For translatable entity types with a data table,
+            // the langcode condition matches rows in the data table which
+            // includes one row per translation — so this correctly counts
+            // entities that have been translated to $langcode.
             $count = (int) $storage->getQuery()
                 ->accessCheck(FALSE)
                 ->condition('langcode', $langcode)
@@ -280,6 +287,76 @@ class TranslationManagerService
         }
 
         return $stats;
+    }
+
+    /**
+     * Obtiene estadísticas de traducción para múltiples entidades a la vez.
+     *
+     * AUDIT-PERF-N09: Optimized from O(E*L) to batch processing.
+     * Instead of calling getTranslationStatus() per entity (which would result
+     * in O(E*L) work), this method batch-loads all entities at once and
+     * processes them in a single pass.
+     *
+     * @param string $entityTypeId
+     *   ID del tipo de entidad (ej: 'page_content', 'blog_post').
+     * @param int[] $entityIds
+     *   Array de IDs de entidades a consultar.
+     *
+     * @return array<int|string, array<string, array{exists: bool, outdated: bool, label: string, is_original: bool}>>
+     *   Estado de traducción indexado por entity ID y langcode.
+     */
+    public function getBatchTranslationStatus(string $entityTypeId, array $entityIds): array
+    {
+        if (empty($entityIds)) {
+            return [];
+        }
+
+        // AUDIT-PERF-N09: Batch-load all entities in one query instead of
+        // loading them one-by-one inside a loop.
+        $storage = $this->entityTypeManager->getStorage($entityTypeId);
+        $entities = $storage->loadMultiple($entityIds);
+        $languages = $this->getAvailableLanguages();
+
+        $results = [];
+        foreach ($entities as $id => $entity) {
+            if (!$entity instanceof ContentEntityInterface || !$entity->isTranslatable()) {
+                continue;
+            }
+
+            $original = $entity->getUntranslated();
+            $originalLangcode = $original->language()->getId();
+
+            $originalChanged = 0;
+            if ($original instanceof EntityChangedInterface) {
+                $originalChanged = $original->getChangedTime();
+            }
+
+            $status = [];
+            foreach ($languages as $langcode => $language) {
+                $hasTranslation = $entity->hasTranslation($langcode);
+
+                $isOutdated = FALSE;
+                if ($hasTranslation && $langcode !== $originalLangcode) {
+                    $translation = $entity->getTranslation($langcode);
+                    $translationChanged = 0;
+                    if ($translation instanceof EntityChangedInterface) {
+                        $translationChanged = $translation->getChangedTime();
+                    }
+                    $isOutdated = $originalChanged > $translationChanged;
+                }
+
+                $status[$langcode] = [
+                    'exists' => $hasTranslation,
+                    'outdated' => $isOutdated,
+                    'label' => $language->getName(),
+                    'is_original' => $langcode === $originalLangcode,
+                ];
+            }
+
+            $results[$id] = $status;
+        }
+
+        return $results;
     }
 
 }

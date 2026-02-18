@@ -1,4 +1,10 @@
 services:
+  jaraba_billing.wallet:
+    class: Drupal\jaraba_billing\Service\WalletService
+    arguments:
+      - '@database'
+      - '@logger.channel.default'
+
   # ===========================================
   # JARABA BILLING — Servicios de Subscripción y Metering
   # ===========================================
@@ -38,6 +44,7 @@ services:
     arguments:
       - '@database'
       - '@cache.default'
+      - '@jaraba_billing.wallet'
 
   # Motor de cálculo de precios basado en PricingRule
   jaraba_billing.pricing_engine:

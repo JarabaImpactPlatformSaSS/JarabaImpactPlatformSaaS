@@ -1,0 +1,80 @@
+/**
+ * Agent Dashboard - The Future UI.
+ * Variables locales para encapsulamiento.
+ */
+.page-agent-dashboard {
+  --ad-bg: #0f172a;
+  --ad-surface: #1e293b;
+  --ad-primary: #00f0ff; /* Neon Cyan */
+  --ad-text: #f8fafc;
+  
+  background-color: var(--ad-bg);
+  color: var(--ad-text);
+  font-family: 'Outfit', sans-serif;
+}
+
+.agent-dashboard {
+  display: grid;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+  overflow: hidden;
+
+  &__header {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    justify-content: space-between;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1px; /* Grid lines */
+    background: rgba(255,255,255,0.05);
+  }
+}
+
+.agent-sidebar {
+  background: var(--ad-bg);
+  padding: 1.5rem;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.twin-card {
+  background: var(--ad-surface);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: var(--ad-primary);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.negotiation-viewer {
+  background: var(--ad-bg);
+  padding: 2rem;
+  
+  .feed-item {
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+    
+    .action {
+      color: var(--ad-primary);
+      font-weight: bold;
+    }
+  }
+}

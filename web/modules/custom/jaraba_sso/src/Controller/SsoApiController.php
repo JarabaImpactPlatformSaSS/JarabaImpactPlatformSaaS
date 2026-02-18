@@ -96,9 +96,10 @@ class SsoApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sso')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -172,9 +173,10 @@ class SsoApiController extends ControllerBase {
       ], 201);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sso')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -242,9 +244,10 @@ class SsoApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sso')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -286,9 +289,10 @@ class SsoApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sso')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -335,9 +339,10 @@ class SsoApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sso')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -403,9 +408,10 @@ class SsoApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_sso')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }

@@ -118,7 +118,8 @@ class VerifyController extends ControllerBase
             $response['expires_on'] = $credential->get('expires_on')->value;
         }
 
-        return new JsonResponse($response);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $response, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

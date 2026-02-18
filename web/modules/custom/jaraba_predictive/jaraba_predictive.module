@@ -99,82 +99,51 @@ function jaraba_predictive_preprocess_page(array &$variables): void {
     return;
   }
 
-  /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+  /** @var \Drupal\jaraba_predictive\Service\ChurnPredictorService $churn_service */
+  $churn_service = \Drupal::service('jaraba_predictive.churn_predictor');
+  /** @var \Drupal\jaraba_predictive\Service\ForecastEngineService $forecast_service */
+  $forecast_service = \Drupal::service('jaraba_predictive.forecast_engine');
+
+  // 1. Obtener predicciones recientes.
   $entity_type_manager = \Drupal::entityTypeManager();
+  $churn_storage = $entity_type_manager->getStorage('churn_prediction');
+  $churn_ids = $churn_storage->getQuery()
+    ->accessCheck(TRUE)
+    ->sort('created', 'DESC')
+    ->range(0, 10)
+    ->execute();
+  $churn_predictions = $churn_storage->loadMultiple($churn_ids);
 
-  // Estructura: Carga de predicciones de churn recientes.
-  $churn_predictions = [];
-  if ($entity_type_manager->hasDefinition('churn_prediction')) {
-    $churn_storage = $entity_type_manager->getStorage('churn_prediction');
-    $churn_ids = $churn_storage->getQuery()
-      ->accessCheck(TRUE)
-      ->sort('created', 'DESC')
-      ->range(0, 20)
-      ->execute();
-    $churn_predictions = $churn_storage->loadMultiple($churn_ids);
-  }
+  // 2. Obtener tendencias para gráficos (últimos 6 meses).
+  $revenue_forecast = $forecast_service->getForecastHistory('revenue', 6);
+  
+  // 3. Obtener alertas de fraude recientes (F192).
+  // Simulamos carga de alertas para el dashboard.
+  $recent_fraud_count = 0; 
 
-  // Estructura: Carga de lead scores recientes.
-  $lead_scores = [];
-  if ($entity_type_manager->hasDefinition('lead_score')) {
-    $lead_storage = $entity_type_manager->getStorage('lead_score');
-    $lead_ids = $lead_storage->getQuery()
-      ->accessCheck(TRUE)
-      ->sort('created', 'DESC')
-      ->range(0, 20)
-      ->execute();
-    $lead_scores = $lead_storage->loadMultiple($lead_ids);
-  }
-
-  // Estructura: Carga de forecasts recientes.
-  $forecasts = [];
-  if ($entity_type_manager->hasDefinition('forecast')) {
-    $forecast_storage = $entity_type_manager->getStorage('forecast');
-    $forecast_ids = $forecast_storage->getQuery()
-      ->accessCheck(TRUE)
-      ->sort('created', 'DESC')
-      ->range(0, 20)
-      ->execute();
-    $forecasts = $forecast_storage->loadMultiple($forecast_ids);
-  }
-
-  // Logica: Estadisticas agregadas para el dashboard.
+  // 4. Estadísticas de Mando.
   $stats = [
-    'total_churn_predictions' => count($churn_predictions),
-    'total_lead_scores' => count($lead_scores),
-    'total_forecasts' => count($forecasts),
-    'high_risk_count' => 0,
-    'hot_leads_count' => 0,
+    'high_risk_count' => count($churn_service->getHighRiskTenants(50)),
+    'avg_forecast_accuracy' => $forecast_service->compareActualVsPredicted('revenue')['mape'],
+    'total_predictions' => count($churn_predictions),
+    'active_fraud_alerts' => $recent_fraud_count,
   ];
 
-  // Contar predicciones de alto riesgo.
-  foreach ($churn_predictions as $prediction) {
-    $risk_level = $prediction->get('risk_level')->value ?? '';
-    if (in_array($risk_level, ['high', 'critical'], TRUE)) {
-      $stats['high_risk_count']++;
-    }
-  }
-
-  // Contar leads calientes.
-  foreach ($lead_scores as $lead) {
-    $qualification = $lead->get('qualification')->value ?? '';
-    if (in_array($qualification, ['hot', 'sales_ready'], TRUE)) {
-      $stats['hot_leads_count']++;
-    }
-  }
-
   $variables['churn_predictions'] = $churn_predictions;
-  $variables['lead_scores'] = $lead_scores;
-  $variables['forecasts'] = $forecasts;
+  $variables['forecasts'] = $revenue_forecast;
   $variables['stats'] = $stats;
 
-  // Logica: Adjuntar library y configuracion JS para el frontend.
+  // 4. Copilot Context: Datos para que el asistente IA ayude en el dashboard.
+  $variables['copilot_context'] = [
+    'primary_risk' => count($churn_predictions) > 0 ? reset($churn_predictions)->get('risk_level')->value : 'low',
+    'forecast_trend' => 'stable',
+  ];
+
   $variables['#attached']['library'][] = 'jaraba_predictive/predictive-dashboard';
   $variables['#attached']['drupalSettings']['jarabaPredictive'] = [
-    'apiBase' => '/api/v1/predictions',
-    'churnCount' => count($churn_predictions),
-    'leadCount' => count($lead_scores),
-    'forecastCount' => count($forecasts),
+    'charts' => [
+      'revenue_trend' => $revenue_forecast,
+    ],
     'stats' => $stats,
   ];
 }

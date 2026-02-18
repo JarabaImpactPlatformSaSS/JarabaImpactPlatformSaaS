@@ -368,7 +368,8 @@ class BillingApiController extends ControllerBase {
       ], 'meta' => ['timestamp' => time()]], 201);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
+      $this->logger->error('Credit note creation failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 

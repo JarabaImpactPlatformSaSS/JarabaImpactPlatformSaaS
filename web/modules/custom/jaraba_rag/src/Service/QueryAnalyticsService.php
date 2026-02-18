@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_rag\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\State\StateInterface;
 
 /**
  * Servicio de Analytics para queries de la Knowledge Base.
@@ -45,6 +50,11 @@ class QueryAnalyticsService
         protected Connection $database,
         protected LoggerChannelFactoryInterface $loggerFactory,
         protected ConfigFactoryInterface $configFactory,
+        protected TimeInterface $time,
+        protected StateInterface $state,
+        protected EntityTypeManagerInterface $entityTypeManager,
+        protected MailManagerInterface $mailManager,
+        protected LanguageManagerInterface $languageManager,
     ) {
     }
 
@@ -90,7 +100,7 @@ class QueryAnalyticsService
                     'hallucination_count' => (int) ($data['hallucination_count'] ?? 0),
                     'token_usage' => (int) ($data['token_usage'] ?? 0),
                     'provider_id' => $data['provider_id'] ?? NULL,
-                    'created' => \Drupal::time()->getRequestTime(),
+                    'created' => $this->time->getRequestTime(),
                 ])
                 ->execute();
 
@@ -156,7 +166,7 @@ class QueryAnalyticsService
         $threshold = $config->get('analytics.gap_alert_threshold') ?? 5;
 
         // Contar queries similares sin respuesta en últimas 24h
-        $oneDayAgo = \Drupal::time()->getRequestTime() - 86400;
+        $oneDayAgo = $this->time->getRequestTime() - 86400;
 
         $count = $this->database->select(self::TABLE_NAME, 'q')
             ->condition('query_hash', $queryHash)
@@ -199,7 +209,7 @@ class QueryAnalyticsService
 
             // Resolve tenant admin email.
             if ($tenantId !== NULL) {
-                $tenantStorage = \Drupal::entityTypeManager()->getStorage('group');
+                $tenantStorage = $this->entityTypeManager->getStorage('group');
                 $tenant = $tenantStorage->load($tenantId);
                 if ($tenant) {
                     // Get the tenant owner/admin.
@@ -212,12 +222,11 @@ class QueryAnalyticsService
 
             // Fallback to site mail if no tenant admin found.
             if (empty($adminEmail)) {
-                $adminEmail = \Drupal::config('system.site')->get('mail');
+                $adminEmail = $this->configFactory->get('system.site')->get('mail');
             }
 
             if (!empty($adminEmail)) {
-                $mailManager = \Drupal::service('plugin.manager.mail');
-                $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+                $langcode = $this->languageManager->getDefaultLanguage()->getId();
 
                 $params = [
                     'subject' => sprintf(
@@ -238,7 +247,7 @@ class QueryAnalyticsService
                     ),
                 ];
 
-                $mailManager->mail(
+                $this->mailManager->mail(
                     'jaraba_rag',
                     'content_gap_alert',
                     $adminEmail,
@@ -413,7 +422,7 @@ class QueryAnalyticsService
     {
         try {
             // Find the most recent PURCHASE_INTENT query from this user (last 30 min).
-            $windowStart = \Drupal::time()->getRequestTime() - 1800;
+            $windowStart = $this->time->getRequestTime() - 1800;
 
             $queryLog = $this->database->select(self::TABLE_NAME, 'q')
                 ->fields('q', ['query_text', 'query_hash', 'confidence_score'])
@@ -429,7 +438,7 @@ class QueryAnalyticsService
             // Store conversion via State API (lightweight, no extra table).
             $month = date('Y-m');
             $stateKey = "ai_conversions_{$tenantId}_{$month}";
-            $conversions = \Drupal::state()->get($stateKey, [
+            $conversions = $this->state->get($stateKey, [
                 'count' => 0,
                 'revenue' => 0.0,
                 'queries_matched' => 0,
@@ -441,7 +450,7 @@ class QueryAnalyticsService
                 $conversions['queries_matched']++;
             }
 
-            \Drupal::state()->set($stateKey, $conversions);
+            $this->state->set($stateKey, $conversions);
 
             $this->loggerFactory->get('jaraba_rag')->info(
                 'BIZ-03: AI conversion recorded - tenant @tenant, order @order, total @total EUR, query matched: @matched',
@@ -483,7 +492,7 @@ class QueryAnalyticsService
         for ($i = 0; $i < $months; $i++) {
             $month = date('Y-m', strtotime("-{$i} months"));
             $stateKey = "ai_conversions_{$tenantId}_{$month}";
-            $data = \Drupal::state()->get($stateKey, []);
+            $data = $this->state->get($stateKey, []);
             $totals['count'] += $data['count'] ?? 0;
             $totals['revenue'] += $data['revenue'] ?? 0.0;
             $totals['queries_matched'] += $data['queries_matched'] ?? 0;
@@ -492,7 +501,7 @@ class QueryAnalyticsService
         // Get total PURCHASE_INTENT queries in the same period.
         $since = $this->getPeriodTimestamp($period === 'quarter' ? 'month' : 'month');
         if ($period === 'quarter') {
-            $since = \Drupal::time()->getRequestTime() - (86400 * 90);
+            $since = $this->time->getRequestTime() - (86400 * 90);
         }
 
         $purchaseIntents = $this->database->select(self::TABLE_NAME, 'q')
@@ -519,7 +528,7 @@ class QueryAnalyticsService
      */
     protected function getPeriodTimestamp(string $period): int
     {
-        $now = \Drupal::time()->getRequestTime();
+        $now = $this->time->getRequestTime();
 
         return match ($period) {
             'day' => $now - 86400,

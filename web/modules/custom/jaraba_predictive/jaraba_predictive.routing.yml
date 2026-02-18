@@ -19,6 +19,7 @@ jaraba_predictive.api.churn.predict:
     _controller: '\Drupal\jaraba_predictive\Controller\PredictiveApiController::predictChurn'
   requirements:
     _permission: 'access predictions api'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_predictive.api.churn.history:
@@ -35,6 +36,7 @@ jaraba_predictive.api.churn.batch:
     _controller: '\Drupal\jaraba_predictive\Controller\PredictiveApiController::churnBatch'
   requirements:
     _permission: 'execute predictions'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # === API — Lead Scoring ===
@@ -44,6 +46,7 @@ jaraba_predictive.api.leads.score:
     _controller: '\Drupal\jaraba_predictive\Controller\PredictiveApiController::scoreLead'
   requirements:
     _permission: 'access predictions api'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_predictive.api.leads.batch:
@@ -52,6 +55,7 @@ jaraba_predictive.api.leads.batch:
     _controller: '\Drupal\jaraba_predictive\Controller\PredictiveApiController::leadBatch'
   requirements:
     _permission: 'execute predictions'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_predictive.api.leads.event:
@@ -60,6 +64,7 @@ jaraba_predictive.api.leads.event:
     _controller: '\Drupal\jaraba_predictive\Controller\PredictiveApiController::trackLeadEvent'
   requirements:
     _permission: 'access predictions api'
+    _csrf_token: 'TRUE'
     lead_score: \d+
   methods: [POST]
 

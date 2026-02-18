@@ -8,6 +8,14 @@ jaraba_andalucia_ei.structure:
   parent: system.admin_structure
   weight: 30
 
+# Entrada en Structure (para Field UI de Solicitudes)
+jaraba_andalucia_ei.solicitud_structure:
+  title: 'Solicitud Andalucía +ei'
+  description: 'Administrar campos y visualización de solicitudes Andalucía +ei.'
+  route_name: entity.solicitud_ei.settings
+  parent: system.admin_structure
+  weight: 31
+
 # Entrada en Config > Programas
 jaraba_andalucia_ei.config:
   title: 'Andalucía +ei'

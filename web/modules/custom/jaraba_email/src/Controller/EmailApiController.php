@@ -122,7 +122,7 @@ class EmailApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error creando lista: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -196,7 +196,7 @@ class EmailApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error suscribiendo: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -220,7 +220,7 @@ class EmailApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error desuscribiendo: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -287,7 +287,7 @@ class EmailApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error enviando campana: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -379,7 +379,7 @@ class EmailApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error inscribiendo en secuencia: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 

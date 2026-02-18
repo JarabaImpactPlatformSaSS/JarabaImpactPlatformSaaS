@@ -181,9 +181,10 @@ class SocialWebhookController extends ControllerBase
             ]);
 
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_social_commerce')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

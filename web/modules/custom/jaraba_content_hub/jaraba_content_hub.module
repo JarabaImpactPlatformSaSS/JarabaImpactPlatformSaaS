@@ -187,16 +187,28 @@ function jaraba_content_hub_theme(): array {
  * Implements hook_ENTITY_TYPE_presave() for content_article.
  */
 function jaraba_content_hub_content_article_presave(EntityInterface $entity): void {
-  // Calculate reading time based on body length.
+  // 1. Cálculo de tiempo de lectura (Lógica existente).
   if ($entity->hasField('body') && !$entity->get('body')->isEmpty()) {
     $text = strip_tags($entity->get('body')->value);
     $word_count = str_word_count($text);
-    // Average reading speed: 200 words per minute.
     $reading_time = (int) ceil($word_count / 200);
     $entity->set('reading_time', max(1, $reading_time));
+
+    // 2. Análisis de Sentimiento (Nueva Lógica F194).
+    /** @var \Drupal\jaraba_content_hub\Service\SentimentEngineService $sentimentEngine */
+    $sentimentEngine = \Drupal::service('jaraba_content_hub.sentiment_engine');
+    $analysis = $sentimentEngine->analyze($text);
+    
+    $entity->set('sentiment_score', $analysis['score']);
+    $entity->set('sentiment_label', $analysis['label']);
+
+    // 3. Monitor de Reputación (Alerta si hay riesgo).
+    /** @var \Drupal\jaraba_content_hub\Service\ReputationMonitorService $reputationMonitor */
+    $reputationMonitor = \Drupal::service('jaraba_content_hub.reputation_monitor');
+    $reputationMonitor->evaluateContentRisk($entity);
   }
 
-  // Auto-generate slug if empty.
+  // 4. Auto-generación de slug (Lógica existente).
   if ($entity->hasField('slug') && $entity->get('slug')->isEmpty()) {
     $title = $entity->label();
     $slug = \Drupal::service('pathauto.alias_cleaner')->cleanString($title);
@@ -216,6 +228,13 @@ function jaraba_content_hub_content_article_insert(EntityInterface $entity): voi
  */
 function jaraba_content_hub_content_article_update(EntityInterface $entity): void {
   _jaraba_content_hub_index_article_if_published($entity);
+  
+  // Trigger: Artículo publicado -> crear borrador de newsletter.
+  if ($entity->get('status')->value === 'published' && $entity->original->get('status')->value !== 'published') {
+    /** @var \Drupal\jaraba_content_hub\Service\NewsletterBridgeService $bridge */
+    $bridge = \Drupal::service('jaraba_content_hub.newsletter_bridge');
+    $bridge->createArticleNewsletter($entity);
+  }
 }
 
 /**
@@ -264,3 +283,67 @@ function _jaraba_content_hub_index_article_if_published(EntityInterface $entity)
   }
 }
 
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Inyecta variables de página para el zero-region pattern.
+ * Plan Elevación Content Hub — Clase Mundial.
+ * Directriz ZERO-REGION-001.
+ */
+function jaraba_content_hub_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  // Solo procesar rutas del Content Hub frontend.
+  if (str_starts_with($route_name, 'jaraba_content_hub.')) {
+    // Inyectar clean_content desde el controller render array.
+    if (isset($variables['page']['content'])) {
+      $variables['clean_content'] = $variables['page']['content'];
+    }
+
+    // Contexto del tema para parciales (header/footer).
+    $themeHandler = \Drupal::service('theme_handler');
+    $activeTheme = $themeHandler->getDefault();
+    $themeConfig = \Drupal::config($activeTheme . '.settings');
+    
+    $variables['theme_settings'] = $themeConfig->get() ?: [];
+    $variables['site_name'] = \Drupal::config('system.site')->get('name') ?: 'Jaraba Impact Platform';
+    
+    $logoSettings = theme_get_setting('logo', $activeTheme);
+    $variables['logo'] = '';
+    if (!empty($logoSettings['use_default'])) {
+      $variables['logo'] = '/' . \Drupal::service('extension.list.theme')->getPath($activeTheme) . '/logo.svg';
+    } elseif (!empty($logoSettings['path'])) {
+      $variables['logo'] = $logoSettings['path'];
+    }
+    
+    $variables['logged_in'] = \Drupal::currentUser()->isAuthenticated();
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Redirige todas las rutas frontend del Content Hub al template zero-region.
+ */
+function jaraba_content_hub_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  // Rutas frontend del vertical (excluir rutas API y admin puras).
+  if (str_starts_with($route_name, 'jaraba_content_hub.') && !str_contains($route_name, '.api.')) {
+    $suggestions[] = 'page__content_hub';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Añade body classes para las páginas del Content Hub.
+ */
+function jaraba_content_hub_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (str_starts_with($route_name, 'jaraba_content_hub.')) {
+    $variables['attributes']['class'][] = 'page-content-hub';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+}

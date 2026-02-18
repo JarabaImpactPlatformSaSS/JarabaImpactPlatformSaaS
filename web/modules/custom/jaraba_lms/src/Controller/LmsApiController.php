@@ -155,7 +155,8 @@ class LmsApiController extends ControllerBase
 
             return new JsonResponse(['enrollments' => $result, 'total' => count($result)]);
         } catch (\Exception $e) {
-            return new JsonResponse(['enrollments' => [], 'error' => $e->getMessage()]);
+            \Drupal::logger('jaraba_lms')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['enrollments' => [], 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']);
         }
     }
 
@@ -216,7 +217,8 @@ class LmsApiController extends ControllerBase
                 'lessons' => $lessonProgress,
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_lms')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -285,7 +287,8 @@ class LmsApiController extends ControllerBase
                 'total_lessons' => $totalLessons,
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            \Drupal::logger('jaraba_lms')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -333,7 +336,8 @@ class LmsApiController extends ControllerBase
                 'total' => count($paths),
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['learning_paths' => [], 'error' => $e->getMessage()]);
+            \Drupal::logger('jaraba_lms')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['learning_paths' => [], 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']);
         }
     }
 
@@ -413,7 +417,8 @@ class LmsApiController extends ControllerBase
                 'completed_courses' => count($completedCourseIds),
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['recommendations' => [], 'error' => $e->getMessage()]);
+            \Drupal::logger('jaraba_lms')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['recommendations' => [], 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']);
         }
     }
 

@@ -14,7 +14,6 @@ dependencies:
   - drupal:options
   - drupal:datetime
   # Jaraba custom
-  - jaraba_skills:jaraba_skills
   - jaraba_theming:jaraba_theming
 
 configure: entity.vertical.collection

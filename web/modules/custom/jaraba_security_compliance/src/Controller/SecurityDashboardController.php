@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_security_compliance\Service\AuditLogService;
 use Drupal\jaraba_security_compliance\Service\ComplianceTrackerService;
 use Drupal\jaraba_security_compliance\Service\PolicyEnforcerService;
+use Drupal\jaraba_security_compliance\Service\AutomatedComplianceService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,6 +45,11 @@ class SecurityDashboardController extends ControllerBase {
   protected PolicyEnforcerService $policyEnforcer;
 
   /**
+   * Servicio de compliance automatizado.
+   */
+  protected AutomatedComplianceService $automatedCompliance;
+
+  /**
    * Constructor con inyección de dependencias.
    */
   public function __construct(
@@ -51,11 +57,13 @@ class SecurityDashboardController extends ControllerBase {
     AuditLogService $auditLog,
     ComplianceTrackerService $complianceTracker,
     PolicyEnforcerService $policyEnforcer,
+    AutomatedComplianceService $automatedCompliance,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->auditLog = $auditLog;
     $this->complianceTracker = $complianceTracker;
     $this->policyEnforcer = $policyEnforcer;
+    $this->automatedCompliance = $automatedCompliance;
   }
 
   /**
@@ -67,6 +75,7 @@ class SecurityDashboardController extends ControllerBase {
       $container->get('jaraba_security_compliance.audit_log'),
       $container->get('jaraba_security_compliance.compliance_tracker'),
       $container->get('jaraba_security_compliance.policy_enforcer'),
+      $container->get('jaraba_security_compliance.automated_compliance'),
     );
   }
 
@@ -117,6 +126,9 @@ class SecurityDashboardController extends ControllerBase {
   public function dashboard(): array {
     $complianceScore = $this->complianceTracker->getComplianceScore();
     $frameworks = $this->complianceTracker->getComplianceStatus();
+    
+    // Ejecutar chequeos automatizados en tiempo real (F193).
+    $automatedChecks = $this->automatedCompliance->runComplianceChecks();
 
     return [
       '#theme' => 'jaraba_security_dashboard',
@@ -124,10 +136,12 @@ class SecurityDashboardController extends ControllerBase {
       '#frameworks' => $frameworks,
       '#recent_events' => $this->getRecentAuditEvents(),
       '#active_policies' => $this->getActivePoliciesSummary(),
+      '#automated_checks' => $automatedChecks, // Nueva variable para el template.
       '#stats' => [
         'compliance_score' => $complianceScore,
         'total_frameworks' => count($frameworks),
         'audit_operational' => $this->auditLog->isOperational(),
+        'automated_pass_rate' => $this->calculatePassRate($automatedChecks),
       ],
       '#attached' => [
         'library' => [
@@ -144,6 +158,15 @@ class SecurityDashboardController extends ControllerBase {
         'max-age' => 30,
       ],
     ];
+  }
+
+  /**
+   * Calcula el ratio de éxito de los chequeos automatizados.
+   */
+  protected function calculatePassRate(array $checks): int {
+    if (empty($checks)) return 0;
+    $passed = count(array_filter($checks, fn($c) => $c['status'] === 'pass'));
+    return (int) (($passed / count($checks)) * 100);
   }
 
   /**

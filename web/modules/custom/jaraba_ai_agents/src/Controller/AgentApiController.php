@@ -22,10 +22,11 @@ use Symfony\Component\HttpFoundation\Request;
  * operaciones IA con contexto multi-tenant.
  *
  * ENDPOINTS:
- * - GET /api/ai-agents: Lista todos los agentes disponibles
- * - GET /api/ai-agents/{agent_id}: Detalle de un agente específico
- * - GET /api/ai-agents/{agent_id}/actions: Acciones disponibles del agente
- * - POST /api/ai-agents/{agent_id}/execute: Ejecuta una acción del agente
+ * - GET /api/v1/agents: Lista todos los agentes disponibles
+ * - GET /api/v1/agents/{agent_id}: Detalle de un agente específico
+ * - GET /api/v1/agents/{agent_id}/actions: Acciones disponibles del agente
+ * - POST /api/v1/agents/{agent_id}/execute: Ejecuta una acción del agente
+ * AUDIT-CONS-N07: Added API versioning prefix.
  *
  * ARQUITECTURA:
  * - Utiliza AgentOrchestrator para gestión centralizada de agentes

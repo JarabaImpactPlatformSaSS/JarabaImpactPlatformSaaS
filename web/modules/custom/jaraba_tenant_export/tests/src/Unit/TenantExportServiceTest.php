@@ -49,6 +49,11 @@ class TenantExportServiceTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
+
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->dataCollector = $this->createMock(TenantDataCollectorService::class);
     $this->rateLimiter = $this->createMock(RateLimiterService::class);

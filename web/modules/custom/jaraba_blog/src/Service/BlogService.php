@@ -58,7 +58,7 @@ class BlogService {
    */
   public function listPosts(array $filters = [], int $page = 0, int $limit = 12): array {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_post');
+    $storage = $this->entityTypeManager->getStorage('content_article');
 
     // Query de conteo.
     $countQuery = $storage->getQuery()
@@ -72,7 +72,6 @@ class BlogService {
     $query = $storage->getQuery()
       ->condition('tenant_id', $tenantId)
       ->accessCheck(FALSE)
-      ->sort('published_at', 'DESC')
       ->sort('created', 'DESC')
       ->range($page * $limit, $limit);
     $this->applyFilters($query, $filters);
@@ -95,10 +94,10 @@ class BlogService {
       $query->condition('status', $filters['status']);
     }
     if (!empty($filters['category_id'])) {
-      $query->condition('category_id', $filters['category_id']);
+      $query->condition('category', $filters['category_id']);
     }
     if (!empty($filters['author_id'])) {
-      $query->condition('author_id', $filters['author_id']);
+      $query->condition('uid', $filters['author_id']);
     }
     if (!empty($filters['is_featured'])) {
       $query->condition('is_featured', TRUE);
@@ -106,7 +105,7 @@ class BlogService {
     if (!empty($filters['search'])) {
       $group = $query->orConditionGroup()
         ->condition('title', '%' . $filters['search'] . '%', 'LIKE')
-        ->condition('excerpt', '%' . $filters['search'] . '%', 'LIKE');
+        ->condition('body', '%' . $filters['search'] . '%', 'LIKE');
       $query->condition($group);
     }
   }
@@ -116,7 +115,7 @@ class BlogService {
    */
   public function getPostBySlug(string $slug): ?object {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_post');
+    $storage = $this->entityTypeManager->getStorage('content_article');
 
     $ids = $storage->getQuery()
       ->condition('tenant_id', $tenantId)
@@ -136,7 +135,7 @@ class BlogService {
    * Obtiene un post por ID.
    */
   public function getPost(int $id): ?object {
-    return $this->entityTypeManager->getStorage('blog_post')->load($id);
+    return $this->entityTypeManager->getStorage('content_article')->load($id);
   }
 
   /**
@@ -306,13 +305,11 @@ class BlogService {
    */
   public function listCategories(): array {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_category');
+    $storage = $this->entityTypeManager->getStorage('content_category');
 
     $ids = $storage->getQuery()
       ->condition('tenant_id', $tenantId)
-      ->condition('is_active', TRUE)
       ->accessCheck(FALSE)
-      ->sort('weight', 'ASC')
       ->sort('name', 'ASC')
       ->execute();
 
@@ -324,7 +321,7 @@ class BlogService {
    */
   public function getCategoryBySlug(string $slug): ?object {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_category');
+    $storage = $this->entityTypeManager->getStorage('content_category');
 
     $ids = $storage->getQuery()
       ->condition('tenant_id', $tenantId)
@@ -341,20 +338,23 @@ class BlogService {
    */
   public function updateCategoryPostsCount(int $categoryId): void {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_post');
+    $storage = $this->entityTypeManager->getStorage('content_article');
 
     $count = (int) $storage->getQuery()
       ->condition('tenant_id', $tenantId)
-      ->condition('category_id', $categoryId)
+      ->condition('category', $categoryId)
       ->condition('status', 'published')
       ->accessCheck(FALSE)
       ->count()
       ->execute();
 
-    $category = $this->entityTypeManager->getStorage('blog_category')->load($categoryId);
+    $category = $this->entityTypeManager->getStorage('content_category')->load($categoryId);
     if ($category) {
-      $category->set('posts_count', $count);
-      $category->save();
+      // Si la entidad content_category tiene un campo para el conteo.
+      if ($category->hasField('posts_count')) {
+        $category->set('posts_count', $count);
+        $category->save();
+      }
     }
   }
 
@@ -405,7 +405,7 @@ class BlogService {
    */
   public function getStats(): array {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_post');
+    $storage = $this->entityTypeManager->getStorage('content_article');
 
     $total = (int) $storage->getQuery()
       ->condition('tenant_id', $tenantId)
@@ -427,26 +427,19 @@ class BlogService {
       ->count()
       ->execute();
 
-    // Total de visitas.
-    $viewsQuery = $this->database->select('blog_post', 'bp')
-      ->condition('bp.tenant_id', $tenantId);
-    $viewsQuery->addExpression('SUM(views_count)', 'total_views');
-    $totalViews = (int) $viewsQuery->execute()->fetchField();
+    // Total de visitas (suponiendo que content_article tiene views_count).
+    $totalViews = 0;
+    if ($this->database->schema()->tableExists('content_article')) {
+      $viewsQuery = $this->database->select('content_article', 'ca')
+        ->condition('ca.tenant_id', $tenantId);
+      $viewsQuery->addExpression('SUM(views_count)', 'total_views');
+      $totalViews = (int) $viewsQuery->execute()->fetchField();
+    }
 
     // Categorias activas.
-    $categories = (int) $this->entityTypeManager->getStorage('blog_category')
+    $categories = (int) $this->entityTypeManager->getStorage('content_category')
       ->getQuery()
       ->condition('tenant_id', $tenantId)
-      ->condition('is_active', TRUE)
-      ->accessCheck(FALSE)
-      ->count()
-      ->execute();
-
-    // Autores activos.
-    $authors = (int) $this->entityTypeManager->getStorage('blog_author')
-      ->getQuery()
-      ->condition('tenant_id', $tenantId)
-      ->condition('is_active', TRUE)
       ->accessCheck(FALSE)
       ->count()
       ->execute();
@@ -457,7 +450,7 @@ class BlogService {
       'draft' => $draft,
       'total_views' => $totalViews,
       'categories' => $categories,
-      'authors' => $authors,
+      'authors' => 0, // En el Hub el autor es el User UID
     ];
   }
 
@@ -466,7 +459,7 @@ class BlogService {
    */
   public function getPopularPosts(int $limit = 5): array {
     $tenantId = $this->getTenantId();
-    $storage = $this->entityTypeManager->getStorage('blog_post');
+    $storage = $this->entityTypeManager->getStorage('content_article');
 
     $ids = $storage->getQuery()
       ->condition('tenant_id', $tenantId)
@@ -485,11 +478,11 @@ class BlogService {
   public function getAllTags(): array {
     $tenantId = $this->getTenantId();
 
-    $result = $this->database->select('blog_post', 'bp')
-      ->fields('bp', ['tags'])
-      ->condition('bp.tenant_id', $tenantId)
-      ->condition('bp.status', 'published')
-      ->isNotNull('bp.tags')
+    $result = $this->database->select('content_article', 'ca')
+      ->fields('ca', ['tags'])
+      ->condition('ca.tenant_id', $tenantId)
+      ->condition('ca.status', 'published')
+      ->isNotNull('ca.tags')
       ->execute();
 
     $allTags = [];
@@ -512,7 +505,7 @@ class BlogService {
    * Se ejecuta via cron.
    */
   public function publishScheduledPosts(): int {
-    $storage = $this->entityTypeManager->getStorage('blog_post');
+    $storage = $this->entityTypeManager->getStorage('content_article');
     $now = date('Y-m-d\TH:i:s');
 
     $ids = $storage->getQuery()
@@ -532,7 +525,7 @@ class BlogService {
 
         $this->logger->info('Post programado publicado: @id (@title)', [
           '@id' => $post->id(),
-          '@title' => $post->getTitle(),
+          '@title' => $post->label(),
         ]);
       }
     }

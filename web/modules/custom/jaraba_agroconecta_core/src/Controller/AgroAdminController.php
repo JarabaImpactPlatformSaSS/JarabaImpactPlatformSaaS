@@ -104,10 +104,11 @@ class AgroAdminController extends ControllerBase implements ContainerInjectionIn
                     'count' => $count,
                 ];
             } catch (\Exception $e) {
+                \Drupal::logger('jaraba_agroconecta_core')->error('Health check failed for @type: @msg', ['@type' => $type, '@msg' => $e->getMessage()]);
                 $checks[$type] = [
                     'label' => $label,
                     'status' => 'error',
-                    'message' => $e->getMessage(),
+                    'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
                 ];
             }
         }

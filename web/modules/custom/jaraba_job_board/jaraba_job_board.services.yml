@@ -88,6 +88,16 @@ services:
       - '@current_user'
 
   # ============================================================================
+  # FRAUDE Y PREDICCIÓN
+  # ============================================================================
+
+  jaraba_job_board.fraud_rule.spam:
+    class: Drupal\jaraba_job_board\Fraud\JobApplicationSpamRule
+    arguments: ['@database']
+    tags:
+      - { name: jaraba_predictive.fraud_rule }
+
+  # ============================================================================
   # WEB PUSH NOTIFICATIONS
   # ============================================================================
 
@@ -98,5 +108,3 @@ services:
       - '@entity_type.manager'
       - '@http_client'
       - '@logger.channel.jaraba_job_board'
-
-

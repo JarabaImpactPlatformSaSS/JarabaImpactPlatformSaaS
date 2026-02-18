@@ -64,9 +64,10 @@ class SiteStructureApiController extends ControllerBase
                 'data' => $stats,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -86,9 +87,10 @@ class SiteStructureApiController extends ControllerBase
                 'data' => $tree,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -115,9 +117,10 @@ class SiteStructureApiController extends ControllerBase
                 'message' => $this->t('Árbol reordenado correctamente'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -163,9 +166,10 @@ class SiteStructureApiController extends ControllerBase
                 'message' => $this->t('Página añadida al árbol'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -234,9 +238,10 @@ class SiteStructureApiController extends ControllerBase
                 'data' => $data,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -285,9 +290,10 @@ class SiteStructureApiController extends ControllerBase
                 'message' => $this->t('Página actualizada'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -308,9 +314,10 @@ class SiteStructureApiController extends ControllerBase
                 'message' => $this->t('Página eliminada del árbol'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -333,9 +340,10 @@ class SiteStructureApiController extends ControllerBase
                 'message' => $this->t('Página movida'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -394,9 +402,10 @@ class SiteStructureApiController extends ControllerBase
                 'message' => $this->t('@count páginas actualizadas.', ['@count' => $updated]),
             ]);
         } catch (\InvalidArgumentException $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 400);
         } catch (\Exception $e) {
             return new JsonResponse([
@@ -451,9 +460,10 @@ class SiteStructureApiController extends ControllerBase
                 ],
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

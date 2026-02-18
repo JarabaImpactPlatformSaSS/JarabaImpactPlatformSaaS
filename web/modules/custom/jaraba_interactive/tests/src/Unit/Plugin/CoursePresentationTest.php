@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\jaraba_interactive\Unit\Plugin;
 
 use Drupal\jaraba_interactive\Plugin\InteractiveType\CoursePresentation;
-use PHPUnit\Framework\TestCase;
+use Drupal\Tests\UnitTestCase;
 
 /**
  * Tests para el plugin CoursePresentation.
@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \Drupal\jaraba_interactive\Plugin\InteractiveType\CoursePresentation
  * @group jaraba_interactive
  */
-class CoursePresentationTest extends TestCase {
+class CoursePresentationTest extends UnitTestCase {
 
   /**
    * El plugin bajo prueba.
@@ -28,6 +28,11 @@ class CoursePresentationTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->plugin = $this->getMockBuilder(CoursePresentation::class)
       ->disableOriginalConstructor()

@@ -40,10 +40,8 @@ class EngagementApiController extends ControllerBase
         $ids = array_unique(array_merge($mentorIds, $menteeIds));
 
         if (empty($ids)) {
-            return new JsonResponse([
-                'data' => [],
-                'meta' => ['total' => 0],
-            ]);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => [], 'meta' => ['total' => 0]]);
         }
 
         $engagements = $storage->loadMultiple($ids);
@@ -53,10 +51,7 @@ class EngagementApiController extends ControllerBase
             $data[] = $this->formatEngagement($engagement);
         }
 
-        return new JsonResponse([
-            'data' => $data,
-            'meta' => ['total' => count($data)],
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['total' => count($data)]]);
     }
 
     /**
@@ -84,8 +79,7 @@ class EngagementApiController extends ControllerBase
             ], 403);
         }
 
-        return new JsonResponse([
-            'data' => $this->formatEngagement($engagement),
+        return new JsonResponse(['success' => TRUE, 'data' => $this->formatEngagement($engagement),
         ]);
     }
 
@@ -123,9 +117,7 @@ class EngagementApiController extends ControllerBase
         $engagement->save();
 
         return new JsonResponse([
-            'data' => $this->formatEngagement($engagement),
-            'message' => 'Engagement terminated successfully',
-        ]);
+            'data' => $this->formatEngagement($engagement), 'meta' => ['timestamp' => time()]]);
     }
 
     /**

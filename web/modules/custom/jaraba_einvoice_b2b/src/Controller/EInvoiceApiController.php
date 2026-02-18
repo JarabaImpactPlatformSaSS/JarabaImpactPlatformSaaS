@@ -154,7 +154,8 @@ class EInvoiceApiController extends ControllerBase {
       ], 201);
     }
     catch (\Throwable $e) {
-      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => $e->getMessage()]], 500);
+      \Drupal::logger('jaraba_einvoice_b2b')->error('E-invoice generation failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 
@@ -175,7 +176,8 @@ class EInvoiceApiController extends ControllerBase {
       ], $result->success ? 200 : 422);
     }
     catch (\Throwable $e) {
-      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => $e->getMessage()]], 500);
+      \Drupal::logger('jaraba_einvoice_b2b')->error('E-invoice delivery failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 
@@ -236,7 +238,8 @@ class EInvoiceApiController extends ControllerBase {
       ], 201);
     }
     catch (\Throwable $e) {
-      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => $e->getMessage()]], 500);
+      \Drupal::logger('jaraba_einvoice_b2b')->error('E-invoice receive failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 500);
     }
   }
 
@@ -263,7 +266,8 @@ class EInvoiceApiController extends ControllerBase {
       ]);
     }
     catch (\Throwable $e) {
-      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => $e->getMessage()]], 422);
+      \Drupal::logger('jaraba_einvoice_b2b')->error('E-invoice format conversion failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'data' => NULL, 'meta' => ['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 422);
     }
   }
 

@@ -20,6 +20,7 @@
     opacity: 0;
     transform: translateY(28px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -27,8 +28,13 @@
 }
 
 @keyframes aei-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes aei-pulse-ring {
@@ -36,6 +42,7 @@
     transform: scale(1);
     opacity: 0.6;
   }
+
   100% {
     transform: scale(2.4);
     opacity: 0;
@@ -43,18 +50,35 @@
 }
 
 @keyframes aei-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 @keyframes aei-gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes aei-gauge-fill {
-  from { stroke-dashoffset: 326.7; }
+  from {
+    stroke-dashoffset: 326.7;
+  }
 }
 
 // =============================================================================
@@ -96,6 +120,8 @@
   font-family: var(--aei-font);
   background: var(--aei-bg-body);
   min-height: 100vh;
+  overflow-x: hidden; // Prevent particle canvas horizontal overflow
+  width: 100%;
 }
 
 // =============================================================================
@@ -106,7 +132,7 @@
   opacity: 0;
   transform: translateY(28px);
   transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   &--visible {
     opacity: 1;
@@ -123,12 +149,10 @@
   padding: 5rem 2rem 4rem;
   text-align: center;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    var(--aei-corporate) 0%,
-    var(--aei-azul-profundo) 50%,
-    color-mix(in srgb, var(--aei-corporate) 80%, black) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--aei-corporate) 0%,
+      var(--aei-azul-profundo) 50%,
+      color-mix(in srgb, var(--aei-corporate) 80%, black) 100%);
   background-size: 200% 200%;
   animation: aei-gradient-shift 12s ease infinite;
 
@@ -137,6 +161,8 @@
     inset: 0;
     width: 100%;
     height: 100%;
+    max-width: 100%;
+    display: block;
     z-index: 1;
     pointer-events: none;
   }
@@ -253,11 +279,9 @@
 .aei-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(248, 250, 252, 0.90) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(248, 250, 252, 0.90) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--aei-radius);
@@ -313,11 +337,25 @@
     border-radius: 10px;
     flex-shrink: 0;
 
-    &--progress { background: color-mix(in srgb, var(--aei-primary) 12%, transparent); }
-    &--health   { background: color-mix(in srgb, var(--aei-secondary) 12%, transparent); }
-    &--hours    { background: color-mix(in srgb, var(--aei-corporate) 10%, transparent); }
-    &--training { background: color-mix(in srgb, var(--aei-azul-profundo) 10%, transparent); }
-    &--actions  { background: color-mix(in srgb, var(--aei-primary) 12%, transparent); }
+    &--progress {
+      background: color-mix(in srgb, var(--aei-primary) 12%, transparent);
+    }
+
+    &--health {
+      background: color-mix(in srgb, var(--aei-secondary) 12%, transparent);
+    }
+
+    &--hours {
+      background: color-mix(in srgb, var(--aei-corporate) 10%, transparent);
+    }
+
+    &--training {
+      background: color-mix(in srgb, var(--aei-azul-profundo) 10%, transparent);
+    }
+
+    &--actions {
+      background: color-mix(in srgb, var(--aei-primary) 12%, transparent);
+    }
   }
 
   &__body {
@@ -533,9 +571,17 @@
     border-radius: 2px;
     transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-    &--ia     { background: linear-gradient(90deg, var(--aei-primary), #FFB347); }
-    &--mentor { background: linear-gradient(90deg, var(--aei-corporate), #4A6FA5); }
-    &--total  { background: linear-gradient(90deg, var(--aei-secondary), #00D4AA); }
+    &--ia {
+      background: linear-gradient(90deg, var(--aei-primary), #FFB347);
+    }
+
+    &--mentor {
+      background: linear-gradient(90deg, var(--aei-corporate), #4A6FA5);
+    }
+
+    &--total {
+      background: linear-gradient(90deg, var(--aei-secondary), #00D4AA);
+    }
   }
 }
 
@@ -589,7 +635,7 @@
       position: absolute;
       inset: 0;
       border-radius: 7px;
-      background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+      background: linear-gradient(90deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
       background-size: 200% 100%;
       animation: aei-shimmer 2.5s ease infinite;
     }
@@ -793,7 +839,9 @@
     white-space: nowrap;
     flex-shrink: 0;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__dismiss {
@@ -903,7 +951,9 @@
     color: var(--aei-primary);
     text-decoration: none;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -919,7 +969,7 @@
     margin: 0 auto;
     text-align: center;
     padding: 3rem 2.5rem;
-    background: linear-gradient(135deg, rgba(255,255,255,0.97), rgba(248,250,252,0.92));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(248, 250, 252, 0.92));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-radius: var(--aei-radius);
@@ -1116,11 +1166,9 @@
   border-collapse: collapse;
 
   thead {
-    background: linear-gradient(
-      to bottom,
-      var(--aei-bg-subtle),
-      color-mix(in srgb, var(--aei-bg-subtle) 60%, transparent)
-    );
+    background: linear-gradient(to bottom,
+        var(--aei-bg-subtle),
+        color-mix(in srgb, var(--aei-bg-subtle) 60%, transparent));
   }
 
   th {

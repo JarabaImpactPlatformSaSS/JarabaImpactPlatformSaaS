@@ -99,7 +99,8 @@ class CanvasApiController extends ControllerBase
                 'message' => 'Canvas created successfully',
             ], 201);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            $this->getLogger('jaraba_business_tools')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -155,7 +156,7 @@ class CanvasApiController extends ControllerBase
             // Update completeness score
             $this->canvasService->updateCompletenessScore($newCanvas->id());
 
-            \Drupal::logger('jaraba_business_tools')->info('Cloned canvas @source to @new for user @user', [
+            $this->getLogger('jaraba_business_tools')->info('Cloned canvas @source to @new for user @user', [
                 '@source' => $id,
                 '@new' => $newCanvas->id(),
                 '@user' => $this->currentUser()->id(),
@@ -171,10 +172,10 @@ class CanvasApiController extends ControllerBase
             ], 201);
 
         } catch (\Throwable $e) {
-            \Drupal::logger('jaraba_business_tools')->error('Clone canvas error: @msg', [
+            $this->getLogger('jaraba_business_tools')->error('Clone canvas error: @msg', [
                 '@msg' => $e->getMessage(),
             ]);
-            return new JsonResponse(['error' => 'Server error: ' . $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -236,7 +237,7 @@ class CanvasApiController extends ControllerBase
             // Update completeness score
             $this->canvasService->updateCompletenessScore($canvas->id());
 
-            \Drupal::logger('jaraba_business_tools')->info('Generated canvas @id for user @user', [
+            $this->getLogger('jaraba_business_tools')->info('Generated canvas @id for user @user', [
                 '@id' => $canvas->id(),
                 '@user' => $this->currentUser()->id(),
             ]);
@@ -254,10 +255,10 @@ class CanvasApiController extends ControllerBase
             ], 201);
 
         } catch (\Throwable $e) {
-            \Drupal::logger('jaraba_business_tools')->error('Generate canvas error: @msg', [
+            $this->getLogger('jaraba_business_tools')->error('Generate canvas error: @msg', [
                 '@msg' => $e->getMessage(),
             ]);
-            return new JsonResponse(['error' => 'Server error: ' . $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -428,7 +429,7 @@ class CanvasApiController extends ControllerBase
     public function addItem(int $id, string $type, Request $request): JsonResponse
     {
         try {
-            \Drupal::logger('canvas_api')->debug('addItem START: canvas=@id, type=@type', [
+            $this->getLogger('canvas_api')->debug('addItem START: canvas=@id, type=@type', [
                 '@id' => $id,
                 '@type' => $type,
             ]);
@@ -445,7 +446,7 @@ class CanvasApiController extends ControllerBase
                 return new JsonResponse(['error' => 'Text is required'], 400);
             }
 
-            \Drupal::logger('canvas_api')->debug('addItem: calling addItemToBlock');
+            $this->getLogger('canvas_api')->debug('addItem: calling addItemToBlock');
 
             $block = $this->canvasService->addItemToBlock(
                 $id,
@@ -458,19 +459,19 @@ class CanvasApiController extends ControllerBase
                 return new JsonResponse(['error' => 'Block not found'], 404);
             }
 
-            \Drupal::logger('canvas_api')->debug('addItem SUCCESS');
+            $this->getLogger('canvas_api')->debug('addItem SUCCESS');
 
             return new JsonResponse([
                 'data' => ['items' => $block->getItems()],
                 'message' => 'Item added',
             ], 201);
         } catch (\Throwable $e) {
-            \Drupal::logger('canvas_api')->error('addItem ERROR: @msg at @file:@line', [
+            $this->getLogger('canvas_api')->error('addItem ERROR: @msg at @file:@line', [
                 '@msg' => $e->getMessage(),
                 '@file' => $e->getFile(),
                 '@line' => $e->getLine(),
             ]);
-            return new JsonResponse(['error' => 'Server error: ' . $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -480,7 +481,7 @@ class CanvasApiController extends ControllerBase
     public function removeItem(int $id, string $type, string $itemId): JsonResponse
     {
         try {
-            \Drupal::logger('canvas_api')->debug('removeItem START: canvas=@id, type=@type, item=@itemId', [
+            $this->getLogger('canvas_api')->debug('removeItem START: canvas=@id, type=@type, item=@itemId', [
                 '@id' => $id,
                 '@type' => $type,
                 '@itemId' => $itemId,
@@ -492,7 +493,7 @@ class CanvasApiController extends ControllerBase
                 return new JsonResponse(['error' => 'Access denied'], 403);
             }
 
-            \Drupal::logger('canvas_api')->debug('removeItem: calling removeItemFromBlock');
+            $this->getLogger('canvas_api')->debug('removeItem: calling removeItemFromBlock');
 
             $success = $this->canvasService->removeItemFromBlock($id, $type, $itemId);
 
@@ -500,16 +501,16 @@ class CanvasApiController extends ControllerBase
                 return new JsonResponse(['error' => 'Item not found'], 404);
             }
 
-            \Drupal::logger('canvas_api')->debug('removeItem SUCCESS');
+            $this->getLogger('canvas_api')->debug('removeItem SUCCESS');
 
             return new JsonResponse(['message' => 'Item removed']);
         } catch (\Throwable $e) {
-            \Drupal::logger('canvas_api')->error('removeItem ERROR: @msg at @file:@line', [
+            $this->getLogger('canvas_api')->error('removeItem ERROR: @msg at @file:@line', [
                 '@msg' => $e->getMessage(),
                 '@file' => $e->getFile(),
                 '@line' => $e->getLine(),
             ]);
-            return new JsonResponse(['error' => 'Server error: ' . $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -572,10 +573,10 @@ class CanvasApiController extends ControllerBase
             ]);
 
         } catch (\Throwable $e) {
-            \Drupal::logger('canvas_api')->error('updateItem ERROR: @msg', [
+            $this->getLogger('canvas_api')->error('updateItem ERROR: @msg', [
                 '@msg' => $e->getMessage(),
             ]);
-            return new JsonResponse(['error' => 'Server error: ' . $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -693,7 +694,8 @@ class CanvasApiController extends ControllerBase
                 'message' => 'Versión guardada correctamente',
             ], 201);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            $this->getLogger('jaraba_business_tools')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -784,10 +786,10 @@ class CanvasApiController extends ControllerBase
                 'Content-Disposition' => 'inline; filename="canvas-' . $safeTitle . '.html"',
             ]);
         } catch (\Throwable $e) {
-            \Drupal::logger('jaraba_business_tools')->error('Canvas PDF export error: @msg', [
+            $this->getLogger('jaraba_business_tools')->error('Canvas PDF export error: @msg', [
                 '@msg' => $e->getMessage(),
             ]);
-            return new JsonResponse(['error' => 'Error generating PDF: ' . $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
         }
     }
 
@@ -847,7 +849,7 @@ class CanvasApiController extends ControllerBase
 
         $userId = (int) $this->currentUser()->id();
 
-        \Drupal::logger('jaraba_business_tools')->info('Agent rating: @rating from user @user (session: @session)', [
+        $this->getLogger('jaraba_business_tools')->info('Agent rating: @rating from user @user (session: @session)', [
             '@rating' => $data['rating'],
             '@user' => $userId,
             '@session' => $data['session_id'] ?? 'unknown',

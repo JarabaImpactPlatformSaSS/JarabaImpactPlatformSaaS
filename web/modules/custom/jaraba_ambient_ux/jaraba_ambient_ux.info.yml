@@ -1,0 +1,8 @@
+name: 'Jaraba Ambient UX'
+type: module
+description: 'Motor de Interfaz Líquida Generativa. Adapta el frontend al contexto predictivo.'
+package: 'Jaraba Platform'
+core_version_requirement: ^10 || ^11
+dependencies:
+  - jaraba_predictive:jaraba_predictive
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

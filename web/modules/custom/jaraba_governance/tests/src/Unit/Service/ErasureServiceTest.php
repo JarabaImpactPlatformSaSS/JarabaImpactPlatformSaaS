@@ -116,8 +116,16 @@ class ErasureServiceTest extends UnitTestCase {
     $request->method('set')->willReturnSelf();
     $request->expects($this->atLeast(2))->method('save');
 
+    // Erasure storage needs both load() for processRequest() and getQuery()
+    // for getAffectedEntities() which iterates over 'erasure_request' type.
+    $erasureQuery = $this->createMock(QueryInterface::class);
+    $erasureQuery->method('accessCheck')->willReturnSelf();
+    $erasureQuery->method('condition')->willReturnSelf();
+    $erasureQuery->method('execute')->willReturn([]);
+
     $erasureStorage = $this->createMock(EntityStorageInterface::class);
     $erasureStorage->method('load')->with(1)->willReturn($request);
+    $erasureStorage->method('getQuery')->willReturn($erasureQuery);
 
     // Mock entity query for affected entities — for node type.
     $nodeQuery = $this->createMock(QueryInterface::class);

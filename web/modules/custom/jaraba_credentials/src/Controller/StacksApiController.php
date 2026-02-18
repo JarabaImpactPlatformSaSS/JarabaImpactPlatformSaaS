@@ -53,7 +53,8 @@ class StacksApiController extends ControllerBase {
   public function getStack(string $id): JsonResponse {
     $stack = $this->entityTypeManager()->getStorage('credential_stack')->load($id);
     if (!$stack) {
-      return new JsonResponse(['error' => 'Stack not found'], 404);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Stack not found']], 404);
     }
 
     $data = $this->serializeStack($stack);
@@ -67,7 +68,7 @@ class StacksApiController extends ControllerBase {
       $data['optional_template_details'] = $this->loadTemplateDetails($optionalIds);
     }
 
-    return new JsonResponse($data);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -97,7 +98,7 @@ class StacksApiController extends ControllerBase {
   public function stackProgress(string $id): JsonResponse {
     $stack = $this->entityTypeManager()->getStorage('credential_stack')->load($id);
     if (!$stack) {
-      return new JsonResponse(['error' => 'Stack not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Stack not found']], 404);
     }
 
     $uid = (int) $this->currentUser()->id();

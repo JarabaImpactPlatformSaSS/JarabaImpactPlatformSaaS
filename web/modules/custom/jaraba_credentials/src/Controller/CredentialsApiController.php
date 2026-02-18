@@ -144,10 +144,12 @@ class CredentialsApiController extends ControllerBase
             ]);
         }
         catch (\InvalidArgumentException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 404);
+            \Drupal::logger('jaraba_credentials')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 404);
         }
         catch (\LogicException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 409);
+            \Drupal::logger('jaraba_credentials')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 409);
         }
         catch (\Exception $e) {
             return new JsonResponse(['error' => 'Internal server error'], 500);

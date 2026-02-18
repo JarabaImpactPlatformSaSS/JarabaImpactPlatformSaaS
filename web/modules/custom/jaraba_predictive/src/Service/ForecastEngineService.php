@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_predictive\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -42,6 +43,7 @@ class ForecastEngineService {
    */
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly Connection $database,
     protected readonly LoggerInterface $logger,
     protected readonly ConfigFactoryInterface $configFactory,
   ) {}
@@ -267,43 +269,84 @@ class ForecastEngineService {
   }
 
   /**
-   * Recopila puntos de datos historicos para regresion.
+   * Predice la demanda de un producto específico para el próximo periodo.
+   *
+   * Útil para productores de AgroConecta en la planificación de cosechas.
+   */
+  public function predictProductDemand(int $productId, int $tenantId): array {
+    if (!$this->database->schema()->tableExists('agro_order_item')) {
+      return ['success' => FALSE, 'message' => 'Módulo AgroConecta no disponible.'];
+    }
+
+    $query = $this->database->select('agro_order_item', 'i')
+      ->fields('i', ['quantity']);
+    $query->join('agro_order', 'o', 'o.id = i.order_id');
+    $query->fields('o', ['created'])
+      ->condition('i.product_id', $productId)
+      ->condition('o.tenant_id', $tenantId)
+      ->sort('o.created', 'ASC');
+
+    $results = $query->execute()->fetchAll();
+    
+    if (count($results) < 6) {
+      return ['success' => FALSE, 'message' => 'Insuficientes datos históricos (mínimo 6 meses).'];
+    }
+
+    $monthlyData = [];
+    foreach ($results as $row) {
+      $month = date('Y-m', (int) $row->created);
+      $monthlyData[$month] = ($monthlyData[$month] ?? 0) + (float) $row->quantity;
+    }
+
+    $regression = $this->linearRegression(array_values($monthlyData));
+    $predictedQuantity = $regression['slope'] * count($monthlyData) + $regression['intercept'];
+
+    return [
+      'success' => TRUE,
+      'product_id' => $productId,
+      'predicted_quantity' => max(0, round($predictedQuantity, 2)),
+      'confidence' => round($regression['r_squared'] * 100, 2),
+      'trend' => $regression['slope'] > 0 ? 'increasing' : 'decreasing',
+    ];
+  }
+
+  /**
+   * Recopila puntos de datos históricos REALES de transacciones.
    *
    * ESTRUCTURA: Metodo interno de recopilacion de datos.
-   * LOGICA: Busca Forecast entities con actual_value para usar como
-   *   datos de entrenamiento del modelo de regresion.
-   *
-   * @param string $metric
-   *   Metrica a buscar.
-   *
-   * @return array
-   *   Array de floats con valores historicos ordenados cronologicamente.
+   * LOGICA: Consulta la tabla financial_transaction para obtener la serie temporal.
    */
-  protected function getHistoricalDataPoints(string $metric): array {
-    $storage = $this->entityTypeManager->getStorage('forecast');
-
-    $ids = $storage->getQuery()
-      ->accessCheck(TRUE)
-      ->condition('forecast_type', $metric)
-      ->condition('actual_value', 0, '>')
-      ->sort('created', 'ASC')
-      ->execute();
-
-    if (empty($ids)) {
+  protected function getHistoricalDataPoints(string $metric, int $tenantId = NULL): array {
+    if (!$this->database->schema()->tableExists('financial_transaction')) {
       return [];
     }
 
-    $forecasts = $storage->loadMultiple($ids);
-    $dataPoints = [];
+    $query = $this->database->select('financial_transaction', 't')
+      ->fields('t', ['amount', 'created'])
+      ->condition('t.type', 'credit')
+      ->sort('t.created', 'ASC');
 
-    foreach ($forecasts as $forecast) {
-      $value = (float) ($forecast->get('actual_value')->value ?? 0);
-      if ($value > 0) {
-        $dataPoints[] = $value;
-      }
+    if ($tenantId) {
+      $query->condition('t.tenant_id', $tenantId);
     }
 
-    return $dataPoints;
+    $results = $query->execute()->fetchAll();
+    
+    if (empty($results)) {
+      return [];
+    }
+
+    // Agrupamos por mes para generar los data points.
+    $monthlyData = [];
+    foreach ($results as $row) {
+      $month = date('Y-m', (int) $row->created);
+      if (!isset($monthlyData[$month])) {
+        $monthlyData[$month] = 0.0;
+      }
+      $monthlyData[$month] += (float) $row->amount;
+    }
+
+    return array_values($monthlyData);
   }
 
   /**

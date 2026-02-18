@@ -7,6 +7,7 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\Trait\ApiResponseTrait;
 use Psr\Log\LoggerInterface;
@@ -31,15 +32,69 @@ class AdminCenterApiController extends ControllerBase {
 
   use ApiResponseTrait;
 
+  /**
+   * The admin center settings service.
+   *
+   * @var object
+   */
+  protected $adminCenterSettings;
+
+  /**
+   * The admin center alerts service.
+   *
+   * @var object
+   */
+  protected $adminCenterAlerts;
+
+  /**
+   * The admin center analytics service.
+   *
+   * @var object
+   */
+  protected $adminCenterAnalytics;
+
+  /**
+   * The admin center finance service.
+   *
+   * @var object
+   */
+  protected $adminCenterFinance;
+
+  /**
+   * The masquerade service.
+   *
+   * @var object|null
+   */
+  protected $masquerade;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected ModuleHandlerInterface $moduleHandlerService;
+
   public function __construct(
     protected LoggerInterface $logger,
     EntityTypeManagerInterface $entityTypeManager,
     AccountProxyInterface $currentUser,
     protected RendererInterface $renderer,
     protected Connection $database,
+    object $adminCenterSettings,
+    object $adminCenterAlerts,
+    object $adminCenterAnalytics,
+    object $adminCenterFinance,
+    ModuleHandlerInterface $moduleHandler,
+    ?object $masquerade,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->currentUser = $currentUser;
+    $this->adminCenterSettings = $adminCenterSettings;
+    $this->adminCenterAlerts = $adminCenterAlerts;
+    $this->adminCenterAnalytics = $adminCenterAnalytics;
+    $this->adminCenterFinance = $adminCenterFinance;
+    $this->moduleHandlerService = $moduleHandler;
+    $this->masquerade = $masquerade;
   }
 
   /**
@@ -52,6 +107,12 @@ class AdminCenterApiController extends ControllerBase {
       $container->get('current_user'),
       $container->get('renderer'),
       $container->get('database'),
+      $container->get('ecosistema_jaraba_core.admin_center_settings'),
+      $container->get('ecosistema_jaraba_core.admin_center_alerts'),
+      $container->get('ecosistema_jaraba_core.admin_center_analytics'),
+      $container->get('ecosistema_jaraba_core.admin_center_finance'),
+      $container->get('module_handler'),
+      $container->has('masquerade') ? $container->get('masquerade') : NULL,
     );
   }
 
@@ -237,10 +298,9 @@ class AdminCenterApiController extends ControllerBase {
       ]);
 
       // Impersonation via masquerade module if available.
-      if (\Drupal::moduleHandler()->moduleExists('masquerade')) {
-        $masquerade = \Drupal::service('masquerade');
+      if ($this->moduleHandlerService->moduleExists('masquerade') && $this->masquerade) {
         $targetUser = $this->entityTypeManager->getStorage('user')->load($targetUid);
-        if ($targetUser && $masquerade->switchTo($targetUser)) {
+        if ($targetUser && $this->masquerade->switchTo($targetUser)) {
           return $this->apiSuccess([
             'redirect' => '/tenant/dashboard',
             'target_uid' => (int) $targetUid,
@@ -634,8 +694,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function financeMetrics(): JsonResponse {
     try {
-      $financeService = \Drupal::service('ecosistema_jaraba_core.admin_center_finance');
-      $data = $financeService->getFinanceDashboardData();
+      $data = $this->adminCenterFinance->getFinanceDashboardData();
 
       return $this->apiSuccess($data);
     }
@@ -652,8 +711,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function financeTenantAnalytics(): JsonResponse {
     try {
-      $financeService = \Drupal::service('ecosistema_jaraba_core.admin_center_finance');
-      $tenants = $financeService->getTenantAnalytics();
+      $tenants = $this->adminCenterFinance->getTenantAnalytics();
 
       return $this->apiSuccess($tenants);
     }
@@ -679,7 +737,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function listAlerts(Request $request): JsonResponse {
     try {
-      $alertService = \Drupal::service('ecosistema_jaraba_core.admin_center_alerts');
+      $alertService = $this->adminCenterAlerts;
 
       $filters = [
         'severity' => $request->query->get('severity', ''),
@@ -707,7 +765,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function alertsSummary(): JsonResponse {
     try {
-      $alertService = \Drupal::service('ecosistema_jaraba_core.admin_center_alerts');
+      $alertService = $this->adminCenterAlerts;
       $summary = $alertService->getDashboardSummary();
 
       return $this->apiSuccess($summary);
@@ -737,7 +795,7 @@ class AdminCenterApiController extends ControllerBase {
         );
       }
 
-      $alertService = \Drupal::service('ecosistema_jaraba_core.admin_center_alerts');
+      $alertService = $this->adminCenterAlerts;
       $success = $alertService->updateAlertState((int) $foc_alert, $newState);
 
       if (!$success) {
@@ -762,7 +820,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function alertDetailPanel(string $foc_alert): Response {
     try {
-      $alertService = \Drupal::service('ecosistema_jaraba_core.admin_center_alerts');
+      $alertService = $this->adminCenterAlerts;
       $detail = $alertService->getAlertDetail((int) $foc_alert);
 
       if (!$detail) {
@@ -792,7 +850,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function listPlaybooks(): JsonResponse {
     try {
-      $alertService = \Drupal::service('ecosistema_jaraba_core.admin_center_alerts');
+      $alertService = $this->adminCenterAlerts;
       $playbooks = $alertService->listPlaybooks();
 
       return $this->apiSuccess($playbooks);
@@ -814,7 +872,7 @@ class AdminCenterApiController extends ControllerBase {
       $body = json_decode($request->getContent(), TRUE) ?? [];
       $tenantId = isset($body['tenant_id']) ? (int) $body['tenant_id'] : NULL;
 
-      $alertService = \Drupal::service('ecosistema_jaraba_core.admin_center_alerts');
+      $alertService = $this->adminCenterAlerts;
       $result = $alertService->executePlaybook((int) $cs_playbook, $tenantId);
 
       if (!$result['success']) {
@@ -840,7 +898,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function analyticsOverview(): JsonResponse {
     try {
-      $analyticsService = \Drupal::service('ecosistema_jaraba_core.admin_center_analytics');
+      $analyticsService = $this->adminCenterAnalytics;
       $data = $analyticsService->getAnalyticsOverview();
 
       return $this->apiSuccess($data);
@@ -858,7 +916,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function analyticsAi(): JsonResponse {
     try {
-      $analyticsService = \Drupal::service('ecosistema_jaraba_core.admin_center_analytics');
+      $analyticsService = $this->adminCenterAnalytics;
       $data = $analyticsService->getAiTelemetrySummary();
 
       return $this->apiSuccess($data);
@@ -877,7 +935,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function listLogs(Request $request): JsonResponse {
     try {
-      $analyticsService = \Drupal::service('ecosistema_jaraba_core.admin_center_analytics');
+      $analyticsService = $this->adminCenterAnalytics;
 
       $filters = [
         'source' => $request->query->get('source', 'all'),
@@ -980,7 +1038,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function settingsOverview(): JsonResponse {
     try {
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       return $this->apiSuccess($settingsService->getSettingsOverview());
     }
     catch (\Exception $e) {
@@ -1002,7 +1060,7 @@ class AdminCenterApiController extends ControllerBase {
         return $this->apiError('Body vacío.', 'EMPTY_BODY', 422);
       }
 
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       $settingsService->saveGeneralSettings($body);
 
       return $this->apiSuccess([
@@ -1023,7 +1081,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function listPlans(): JsonResponse {
     try {
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       return $this->apiSuccess($settingsService->listPlans());
     }
     catch (\Exception $e) {
@@ -1039,7 +1097,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function listIntegrations(): JsonResponse {
     try {
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       return $this->apiSuccess($settingsService->getIntegrationsStatus());
     }
     catch (\Exception $e) {
@@ -1055,7 +1113,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function listApiKeys(): JsonResponse {
     try {
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       $keys = $settingsService->listApiKeys();
 
       // Strip sensitive fields.
@@ -1088,7 +1146,7 @@ class AdminCenterApiController extends ControllerBase {
         return $this->apiError('El label es obligatorio.', 'MISSING_LABEL', 422);
       }
 
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       $record = $settingsService->createApiKey($label, $scope);
 
       return $this->apiSuccess($record);
@@ -1106,7 +1164,7 @@ class AdminCenterApiController extends ControllerBase {
    */
   public function revokeApiKey(string $key_id): JsonResponse {
     try {
-      $settingsService = \Drupal::service('ecosistema_jaraba_core.admin_center_settings');
+      $settingsService = $this->adminCenterSettings;
       $revoked = $settingsService->revokeApiKey($key_id);
 
       if (!$revoked) {

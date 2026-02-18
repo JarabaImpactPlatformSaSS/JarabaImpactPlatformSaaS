@@ -227,10 +227,13 @@ class EventApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => [],
-        'error' => 'Error al listar eventos: ' . $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -345,10 +348,13 @@ class EventApiController extends ControllerBase {
       ], 201);
     }
     catch (\Exception $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => 'Error al crear evento: ' . $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -419,10 +425,13 @@ class EventApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => 'Error al actualizar evento: ' . $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -468,10 +477,13 @@ class EventApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => 'Error al eliminar evento: ' . $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -631,24 +643,33 @@ class EventApiController extends ControllerBase {
       ], 201);
     }
     catch (EventNotOpenException $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 400);
     }
     catch (DuplicateRegistrationException $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 409);
     }
     catch (EventFullException $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 409);
     }
   }
@@ -703,10 +724,13 @@ class EventApiController extends ControllerBase {
       ]);
     }
     catch (\RuntimeException $e) {
+      if ($this->eventLogger) {
+        $this->eventLogger->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+      }
       return new JsonResponse([
         'success' => FALSE,
         'data' => NULL,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 404);
     }
   }

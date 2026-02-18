@@ -139,9 +139,10 @@ class ExperimentApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_copilot_v2')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -191,9 +192,10 @@ class ExperimentApiController extends ControllerBase {
       ], 201);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_copilot_v2')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -221,9 +223,10 @@ class ExperimentApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_copilot_v2')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -263,9 +266,10 @@ class ExperimentApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_copilot_v2')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }
@@ -364,9 +368,10 @@ class ExperimentApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
+      $this->getLogger('jaraba_copilot_v2')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
       return new JsonResponse([
         'success' => FALSE,
-        'error' => $e->getMessage(),
+        'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
       ], 500);
     }
   }

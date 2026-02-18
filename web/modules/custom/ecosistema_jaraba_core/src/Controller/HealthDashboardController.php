@@ -2,7 +2,14 @@
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\State\StateInterface;
+use GuzzleHttp\ClientInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
@@ -16,6 +23,63 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class HealthDashboardController extends ControllerBase
 {
+
+    /**
+     * The database connection.
+     *
+     * @var \Drupal\Core\Database\Connection
+     */
+    protected Connection $database;
+
+    /**
+     * The state service.
+     *
+     * @var \Drupal\Core\State\StateInterface
+     */
+    protected StateInterface $state;
+
+    /**
+     * The HTTP client.
+     *
+     * @var \GuzzleHttp\ClientInterface
+     */
+    protected ClientInterface $httpClient;
+
+    /**
+     * The mail manager.
+     *
+     * @var \Drupal\Core\Mail\MailManagerInterface
+     */
+    protected MailManagerInterface $mailManager;
+
+    /**
+     * The config factory.
+     *
+     * @var \Drupal\Core\Config\ConfigFactoryInterface
+     */
+    protected ConfigFactoryInterface $configFactoryService;
+
+    /**
+     * The cache backend.
+     *
+     * @var \Drupal\Core\Cache\CacheBackendInterface
+     */
+    protected CacheBackendInterface $cacheBackend;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static
+    {
+        $instance = parent::create($container);
+        $instance->database = $container->get('database');
+        $instance->state = $container->get('state');
+        $instance->httpClient = $container->get('http_client');
+        $instance->mailManager = $container->get('plugin.manager.mail');
+        $instance->configFactoryService = $container->get('config.factory');
+        $instance->cacheBackend = $container->get('cache.default');
+        return $instance;
+    }
 
     /**
      * Renders the health dashboard page.
@@ -108,7 +172,7 @@ class HealthDashboardController extends ControllerBase
      */
     protected function logAndAlertHealthChecks(array $services, int $overall_health): void
     {
-        $state = \Drupal::state();
+        $state = $this->state;
         $previous_states = $state->get('jaraba_health_previous_states', []);
         $alerts_to_send = [];
 
@@ -151,7 +215,7 @@ class HealthDashboardController extends ControllerBase
     protected function sendHealthAlerts(array $alerts): void
     {
         // Rate limiting - don't send more than 1 alert per 5 minutes
-        $state = \Drupal::state();
+        $state = $this->state;
         $last_alert = $state->get('jaraba_health_last_alert', 0);
 
         if (time() - $last_alert < 300) {
@@ -160,7 +224,7 @@ class HealthDashboardController extends ControllerBase
         }
 
         // Get site email
-        $site_mail = \Drupal::config('system.site')->get('mail');
+        $site_mail = $this->configFactoryService->get('system.site')->get('mail');
         if (empty($site_mail)) {
             return;
         }
@@ -183,8 +247,8 @@ class HealthDashboardController extends ControllerBase
 
         // Send email using Drupal mail system
         try {
-            $mailManager = \Drupal::service('plugin.manager.mail');
-            $langcode = \Drupal::currentUser()->getPreferredLangcode();
+            $mailManager = $this->mailManager;
+            $langcode = $this->currentUser()->getPreferredLangcode();
 
             $params = [
                 'subject' => $this->t('[ALERT] Jaraba Platform Health Issue'),
@@ -204,12 +268,12 @@ class HealthDashboardController extends ControllerBase
             // Update last alert time
             $state->set('jaraba_health_last_alert', time());
 
-            \Drupal::logger('ecosistema_jaraba_core')->warning('Health alert sent: @services', [
+            $this->getLogger('ecosistema_jaraba_core')->warning('Health alert sent: @services', [
                 '@services' => implode(', ', array_column($alerts, 'service')),
             ]);
 
         } catch (\Exception $e) {
-            \Drupal::logger('ecosistema_jaraba_core')->error('Failed to send health alert: @error', [
+            $this->getLogger('ecosistema_jaraba_core')->error('Failed to send health alert: @error', [
                 '@error' => $e->getMessage(),
             ]);
         }
@@ -221,7 +285,7 @@ class HealthDashboardController extends ControllerBase
     protected function logHealthCheck(string $service_key, string $status, ?float $latency, ?string $message, int $overall_health): void
     {
         try {
-            $database = \Drupal::database();
+            $database = $this->database;
 
             // Ensure the table exists. If not, create it.
             if (!$database->schema()->tableExists('health_check_log')) {
@@ -290,7 +354,7 @@ class HealthDashboardController extends ControllerBase
                 ])
                 ->execute();
         } catch (\Exception $e) {
-            \Drupal::logger('ecosistema_jaraba_core')->error('Failed to log health check for @service: @error', [
+            $this->getLogger('ecosistema_jaraba_core')->error('Failed to log health check for @service: @error', [
                 '@service' => $service_key,
                 '@error' => $e->getMessage(),
             ]);
@@ -303,7 +367,7 @@ class HealthDashboardController extends ControllerBase
     protected function checkDatabase(): array
     {
         try {
-            $connection = \Drupal::database();
+            $connection = $this->database;
             $start = microtime(true);
             $connection->query('SELECT 1')->fetchField();
             $latency = round((microtime(true) - $start) * 1000, 2);
@@ -334,7 +398,7 @@ class HealthDashboardController extends ControllerBase
         $qdrant_url = 'http://qdrant:6333/';
 
         try {
-            $client = \Drupal::httpClient();
+            $client = $this->httpClient;
             $start = microtime(true);
             $response = $client->get($qdrant_url, [
                 'timeout' => 3,
@@ -370,7 +434,7 @@ class HealthDashboardController extends ControllerBase
     protected function checkCache(): array
     {
         try {
-            $cache = \Drupal::cache();
+            $cache = $this->cacheBackend;
             $test_key = 'health_check_' . time();
 
             $start = microtime(true);
@@ -409,7 +473,7 @@ class HealthDashboardController extends ControllerBase
         global $base_url;
 
         try {
-            $client = \Drupal::httpClient();
+            $client = $this->httpClient;
             $start = microtime(true);
             $response = $client->get($base_url, [
                 'timeout' => 10,
@@ -447,7 +511,7 @@ class HealthDashboardController extends ControllerBase
      */
     protected function getUptime(): string
     {
-        $state = \Drupal::state();
+        $state = $this->state;
         $first_seen = $state->get('jaraba_first_health_check');
 
         if (!$first_seen) {
@@ -474,7 +538,7 @@ class HealthDashboardController extends ControllerBase
         $checks = [];
 
         try {
-            $database = \Drupal::database();
+            $database = $this->database;
 
             // Check if table exists
             if (!$database->schema()->tableExists('health_check_log')) {

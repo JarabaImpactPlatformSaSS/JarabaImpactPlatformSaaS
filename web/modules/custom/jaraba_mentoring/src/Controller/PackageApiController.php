@@ -79,7 +79,7 @@ class PackageApiController extends ControllerBase
             $data[] = $this->serializePackage($package);
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'count' => count($data)]);
     }
 
     /**
@@ -94,11 +94,12 @@ class PackageApiController extends ControllerBase
             ->load($package_id);
 
         if (!$package) {
-            return new JsonResponse(['error' => 'Package not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Package not found']], 404);
         }
 
         if (!$package->get('is_published')->value) {
-            return new JsonResponse(['error' => 'Package not available'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Package not available']], 404);
         }
 
         return new JsonResponse([
@@ -118,7 +119,7 @@ class PackageApiController extends ControllerBase
     {
         // Verificar que el usuario está autenticado.
         if ($this->currentUser()->isAnonymous()) {
-            return new JsonResponse(['error' => 'Authentication required'], 401);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Authentication required']], 401);
         }
 
         $package = $this->entityTypeManager()
@@ -126,11 +127,11 @@ class PackageApiController extends ControllerBase
             ->load($package_id);
 
         if (!$package) {
-            return new JsonResponse(['error' => 'Package not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Package not found']], 404);
         }
 
         if (!$package->get('is_published')->value) {
-            return new JsonResponse(['error' => 'Package not available'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Package not available']], 404);
         }
 
         $content = json_decode($request->getContent(), TRUE) ?? [];
@@ -196,9 +197,7 @@ class PackageApiController extends ControllerBase
                     'engagement_id' => (int) $engagement->id(),
                     'amount' => $price,
                     'currency' => 'EUR',
-                ],
-                'message' => 'Payment initiated. Complete payment on frontend.',
-            ]);
+                ], 'meta' => ['timestamp' => time()]]);
 
         } catch (\Exception $e) {
             \Drupal::logger('jaraba_mentoring')->error('Payment initiation failed: @error', [

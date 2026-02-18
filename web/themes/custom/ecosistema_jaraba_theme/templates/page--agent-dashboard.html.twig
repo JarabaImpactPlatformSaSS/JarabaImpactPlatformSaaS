@@ -1,0 +1,77 @@
+{#
+/**
+ * @file
+ * Dashboard del Mercado de Agentes Autónomos.
+ * Diseño futurista, modo oscuro por defecto.
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+<body{{ attributes.addClass('page-agent-dashboard', 'theme-dark') }}>
+  
+  <div class="agent-dashboard">
+    {# Header Minimalista #}
+    <header class="agent-dashboard__header">
+      <div class="agent-brand">
+        {{ jaraba_icon('ai', 'network', { size: '32px', color: '#00F0FF' }) }}
+        <span>Jaraba <strong>Agent Network</strong></span>
+      </div>
+      <div class="agent-status">
+        <span class="status-indicator status-indicator--active"></span>
+        {{ 'Red Operativa'|t }}
+      </div>
+    </header>
+
+    <main class="agent-dashboard__grid">
+      {# Panel Izquierdo: Gemelos Activos #}
+      <aside class="agent-sidebar">
+        <h3>{{ 'Mis Gemelos'|t }}</h3>
+        {% for twin in twins %}
+          <div class="twin-card">
+            <div class="twin-card__header">
+              <span class="twin-name">{{ twin.name }}</span>
+              <span class="twin-role badge">{{ twin.role }}</span>
+            </div>
+            <div class="twin-card__stats">
+              <div class="stat">
+                <label>{{ 'Tratos'|t }}</label>
+                <span>{{ twin.deals_count }}</span>
+              </div>
+              <div class="stat">
+                <label>{{ 'Volumen'|t }}</label>
+                <span>{{ twin.volume }} €</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </aside>
+
+      {# Panel Central: Visualizador de Negociación en Tiempo Real #}
+      <section class="negotiation-viewer">
+        <div class="viewer-header">
+          <h2>{{ 'Actividad de Mercado en Vivo'|t }}</h2>
+        </div>
+        <div class="viewer-feed" id="negotiation-feed">
+          {# Aquí se inyectan los eventos JDTP vía JS/WebSockets #}
+          <div class="feed-item">
+            <span class="time">10:42:01</span>
+            <span class="actor">Agent_Alpha</span>
+            <span class="action">BID</span>
+            <span class="detail">100kg Tomate @ 2.45€</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

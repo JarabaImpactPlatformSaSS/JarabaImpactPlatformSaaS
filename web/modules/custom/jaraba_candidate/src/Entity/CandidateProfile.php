@@ -87,7 +87,9 @@ class CandidateProfile extends ContentEntityBase implements CandidateProfileInte
      */
     public function getSummary(): string
     {
-        return $this->get('summary')->value ?? '';
+        $value = $this->get('summary')->value ?? '';
+        $format = $this->get('summary')->format ?? 'basic_html';
+        return check_markup($value, $format);
     }
 
     /**

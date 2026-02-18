@@ -7,6 +7,7 @@ namespace Drupal\Tests\jaraba_customer_success\Unit\Controller;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_customer_success\Controller\NpsApiController;
 use Drupal\jaraba_customer_success\Service\NpsSurveyService;
 use Drupal\Tests\UnitTestCase;
@@ -24,6 +25,7 @@ class NpsApiControllerTest extends UnitTestCase {
   protected NpsSurveyService $npsSurveyService;
   protected EntityTypeManagerInterface $entityTypeManager;
   protected LoggerInterface $logger;
+  protected TenantContextService $tenantContext;
   protected NpsApiController $controller;
 
   /**
@@ -35,11 +37,13 @@ class NpsApiControllerTest extends UnitTestCase {
     $this->npsSurveyService = $this->createMock(NpsSurveyService::class);
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->tenantContext = $this->createMock(TenantContextService::class);
 
     $this->controller = new NpsApiController(
       $this->entityTypeManager,
       $this->npsSurveyService,
       $this->logger,
+      $this->tenantContext,
     );
 
     // The controller uses $this->t() from StringTranslationTrait.

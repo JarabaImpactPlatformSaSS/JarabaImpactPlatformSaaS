@@ -56,6 +56,7 @@ jaraba_job_board.apply:
     _title: 'Aplicar'
   requirements:
     _permission: 'apply to jobs'
+    _csrf_token: 'TRUE'
   methods: [GET, POST]
 
 # --- Rutas de Empleadores ---
@@ -130,6 +131,7 @@ jaraba_job_board.update_application_status:
     _controller: '\Drupal\jaraba_job_board\Controller\EmployerController::updateStatus'
   requirements:
     _permission: 'manage job applications'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 # --- Rutas de API REST ---
@@ -157,6 +159,7 @@ jaraba_job_board.api.apply:
   requirements:
     _permission: 'apply to jobs'
     job_id: '\d+'
+    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_job_board.api.applications:
@@ -300,6 +303,7 @@ jaraba_job_board.api.push_subscribe:
   methods: [POST]
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
 
 jaraba_job_board.api.push_unsubscribe:
   path: '/api/v1/push/unsubscribe'
@@ -308,6 +312,7 @@ jaraba_job_board.api.push_unsubscribe:
   methods: [POST]
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
 
 jaraba_job_board.api.push_vapid:
   path: '/api/v1/push/vapid-key'
@@ -324,6 +329,7 @@ jaraba_job_board.api.push_test:
   methods: [POST]
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
 
 # --- API Agent Rating ---
 jaraba_job_board.api.agent_rating:
@@ -333,5 +339,6 @@ jaraba_job_board.api.agent_rating:
   methods: [POST]
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
 
 

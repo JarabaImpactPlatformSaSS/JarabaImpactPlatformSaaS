@@ -186,6 +186,7 @@
       <div class="skills-section skills-section--{{ type }}">
         <header class="skills-section__header">
           <h2 class="skills-section__title">
+            {# AUDIT-SEC-02: |raw safe — SVG icons hardcoded in template, no user input #}
             {{ skill_icons[type]|raw }}
             {{ config.label }}
           </h2>

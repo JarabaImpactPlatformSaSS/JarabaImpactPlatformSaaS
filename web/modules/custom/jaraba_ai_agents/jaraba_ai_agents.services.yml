@@ -1,4 +1,5 @@
 services:
+
   # Logger channel
   logger.channel.jaraba_ai_agents:
     parent: logger.channel_base

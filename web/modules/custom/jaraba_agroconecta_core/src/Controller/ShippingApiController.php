@@ -63,7 +63,8 @@ class ShippingApiController extends ControllerBase {
       return new JsonResponse(['success' => TRUE, 'data' => $data]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      \Drupal::logger('jaraba_agroconecta_core')->error('Shipping zones failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -122,7 +123,8 @@ class ShippingApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      \Drupal::logger('jaraba_agroconecta_core')->error('Shipping rate calculation failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 

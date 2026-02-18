@@ -1,0 +1,131 @@
+/**
+ * Estilos para el Prompt de Instalación PWA.
+ * Diseño Clase Mundial — Flotante, Mobile-first.
+ */
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 450px;
+  z-index: 1000;
+  animation: pwa-slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.hidden {
+    display: none;
+  }
+
+  &__container {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--ej-color-primary, #233D63);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__placeholder {
+    color: white;
+    font-weight: 800;
+    font-size: 1.5rem;
+  }
+
+  &__content {
+    flex-grow: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: var(--ej-font-heading, 'Outfit');
+    color: var(--ej-color-text, #2D3436);
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-secondary, #636E72);
+    line-height: 1.2;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    color: var(--ej-color-text-secondary);
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    
+    &:hover {
+      background: rgba(0,0,0,0.05);
+    }
+  }
+}
+
+/**
+ * Guía para iOS
+ */
+.pwa-ios-guide {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  background: var(--ej-color-primary, #233D63);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  width: 200px;
+
+  &__content {
+    line-height: 1.4;
+    svg { vertical-align: middle; margin: 0 2px; }
+  }
+
+  &__arrow {
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--ej-color-primary, #233D63);
+  }
+}
+
+@keyframes pwa-slide-up {
+  from { bottom: -100px; opacity: 0; }
+  to { bottom: 20px; opacity: 1; }
+}

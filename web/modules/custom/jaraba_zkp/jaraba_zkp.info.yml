@@ -1,0 +1,9 @@
+name: 'Jaraba ZKP Intelligence'
+type: module
+description: 'Motor de Inteligencia Colectiva Privada (Zero-Knowledge Proofs) para benchmarking anónimo.'
+package: 'Jaraba Platform'
+core_version_requirement: ^10 || ^11
+dependencies:
+  - jaraba_predictive:jaraba_predictive
+  - jaraba_credentials:jaraba_credentials
+  - jaraba_billing:jaraba_billing

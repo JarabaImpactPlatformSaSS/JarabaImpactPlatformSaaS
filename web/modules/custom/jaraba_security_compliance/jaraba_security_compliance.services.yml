@@ -48,3 +48,11 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.automated_compliance:
+    class: Drupal\jaraba_security_compliance\Service\AutomatedComplianceService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@database'
+      - '@logger.channel.jaraba_security_compliance'

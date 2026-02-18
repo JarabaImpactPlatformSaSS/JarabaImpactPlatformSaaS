@@ -73,9 +73,10 @@ class SiteConfigApiController extends ControllerBase
                 'data' => $data,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -133,9 +134,10 @@ class SiteConfigApiController extends ControllerBase
                 'message' => $this->t('Configuración guardada'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -197,9 +199,10 @@ class SiteConfigApiController extends ControllerBase
                 'message' => $this->t('Logo actualizado'),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -245,9 +248,10 @@ class SiteConfigApiController extends ControllerBase
                 'message' => $this->t('Header actualizado a @variant', ['@variant' => $variant]),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -289,9 +293,10 @@ class SiteConfigApiController extends ControllerBase
                 'message' => $this->t('Footer actualizado a @variant', ['@variant' => $variant]),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_site_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_mobile\Unit\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -106,6 +108,14 @@ class PushSenderServiceTest extends TestCase {
       ->method('get')
       ->with('jaraba_mobile.settings')
       ->willReturn($this->config);
+
+    // Set up the Drupal container with datetime.time service,
+    // required by PushSenderService::send() via \Drupal::time().
+    $time = $this->createMock(TimeInterface::class);
+    $time->method('getRequestTime')->willReturn(1700000000);
+    $container = new ContainerBuilder();
+    $container->set('datetime.time', $time);
+    \Drupal::setContainer($container);
 
     $this->service = new PushSenderService(
       $this->entityTypeManager,
@@ -456,21 +466,24 @@ class PushSenderServiceTest extends TestCase {
       ->method('loadMultiple')
       ->willReturn([$deviceEntity]);
 
-    // FCM call throws exception.
+    // FCM call throws exception — caught per-token inside sendToFcm(),
+    // so the exception does NOT propagate to send(). The status ends up
+    // 'sent' (notification processed) with error details in fcm_response.
     $this->httpClient
       ->method('request')
       ->willThrowException(new \RuntimeException('Connection timeout'));
 
-    // Logger should record the error.
+    // sendToFcm logs per-token failures as warnings, not errors.
     $this->logger
       ->expects($this->atLeastOnce())
-      ->method('error');
+      ->method('warning');
 
-    // Notification should be created with 'failed' status.
+    // Notification is created with 'sent' status because sendToFcm
+    // catches per-token exceptions internally and returns normally.
     $notification = $this->createMock(PushNotificationInterface::class);
     $notification->method('id')->willReturn(88);
     $statusField = new \stdClass();
-    $statusField->value = 'failed';
+    $statusField->value = 'sent';
     $notification->method('get')->willReturn($statusField);
     $notification->method('save')->willReturn(1);
 
@@ -478,13 +491,14 @@ class PushSenderServiceTest extends TestCase {
       ->expects($this->once())
       ->method('create')
       ->with($this->callback(function (array $values): bool {
-        return $values['status'] === 'failed';
+        return $values['status'] === 'sent'
+          && str_contains($values['fcm_response'], 'Connection timeout');
       }))
       ->willReturn($notification);
 
     $result = $this->service->send(42, 'Test', 'Body', 'general');
 
-    $this->assertSame('failed', $result->get('status')->value);
+    $this->assertSame('sent', $result->get('status')->value);
   }
 
 }

@@ -381,6 +381,20 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
             ])
             ->setDisplayConfigurable('form', TRUE);
 
+        // Análisis de Sentimiento (F194).
+        $fields['sentiment_score'] = BaseFieldDefinition::create('decimal')
+            ->setLabel(t('Sentiment Score'))
+            ->setDescription(t('Puntuación de sentimiento de -1.0 a 1.0.'))
+            ->setSetting('precision', 5)
+            ->setSetting('scale', 4)
+            ->setDefaultValue(0);
+
+        $fields['sentiment_label'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Sentiment Label'))
+            ->setDescription(t('Etiqueta de sentimiento: positive, neutral, negative.'))
+            ->setSetting('max_length', 16)
+            ->setDefaultValue('neutral');
+
         // Puntuación de engagement.
         $fields['engagement_score'] = BaseFieldDefinition::create('decimal')
             ->setLabel(t('Puntuación de Engagement'))

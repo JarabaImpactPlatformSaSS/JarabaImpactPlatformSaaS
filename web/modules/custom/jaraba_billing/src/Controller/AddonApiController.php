@@ -187,7 +187,7 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error activating addon: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -247,7 +247,7 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error canceling addon: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -278,7 +278,7 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error upgrading plan: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 
@@ -326,7 +326,7 @@ class AddonApiController extends ControllerBase implements ContainerInjectionInt
     }
     catch (\Exception $e) {
       $this->logger->error('Error getting upcoming invoice: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse(['success' => FALSE, 'error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.'], 500);
     }
   }
 

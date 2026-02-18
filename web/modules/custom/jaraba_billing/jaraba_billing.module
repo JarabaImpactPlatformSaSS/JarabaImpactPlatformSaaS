@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Billing.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_billing_theme(): array {
+  return [
+    'financial_dashboard' => [
+      'variables' => [
+        'balance' => 0,
+        'usage' => [],
+        'forecast' => [],
+      ],
+      'template' => 'financial-dashboard',
+    ],
+  ];
+}

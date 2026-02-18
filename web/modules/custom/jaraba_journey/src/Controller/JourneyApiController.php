@@ -124,7 +124,8 @@ class JourneyApiController extends ControllerBase
         // Añadir triggers evaluados
         $actions['suggested_triggers'] = $this->triggerService->evaluateTriggers($user_id);
 
-        return new JsonResponse($actions);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $actions, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -169,7 +170,7 @@ class JourneyApiController extends ControllerBase
         $kpis['context'] = $this->contextService->getFullContext($user_id);
         $kpis['risk_score'] = $this->contextService->calculateRiskScore($user_id);
 
-        return new JsonResponse($kpis);
+        return new JsonResponse(['success' => TRUE, 'data' => $kpis, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

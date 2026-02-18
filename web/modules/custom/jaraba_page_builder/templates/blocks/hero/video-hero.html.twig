@@ -61,7 +61,7 @@
       <h1 class="jaraba-video-hero__title">{{ content.title }}</h1>
       
       {% if content.subtitle %}
-        <p class="jaraba-video-hero__subtitle">{{ content.subtitle }}</p>
+        <p class="jaraba-video-hero__subtitle">{{ content.subtitle|striptags('<strong><em><br><a>')|raw }}</p>
       {% endif %}
       
       <div class="jaraba-video-hero__actions">

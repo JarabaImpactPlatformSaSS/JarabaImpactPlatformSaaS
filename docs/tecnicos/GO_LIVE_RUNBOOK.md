@@ -41,7 +41,7 @@
 | **Hosting** | IONOS Shared Hosting |
 | **Deploy** | Git push to production |
 | **Dominio** | plataformadeecosistemas.com |
-| **Modulos custom** | 51 |
+| **Modulos custom** | 86 |
 
 ### 1.2 Verticales
 
@@ -71,7 +71,7 @@
 **Responsable**: Equipo de Desarrollo
 
 - [ ] Ejecutar suite de tests unitarios completa (`phpunit`)
-- [ ] Verificar los 51 modulos con `drush pm:list --status=enabled`
+- [ ] Verificar los 86 módulos con `drush pm:list --status=enabled`
 - [ ] Ejecutar preflight checks: `./scripts/golive/01_preflight_checks.sh`
 - [ ] Revisar todos los watchdog errors de los ultimos 7 dias
 - [ ] Validar integracion Stripe en modo test:
@@ -286,7 +286,7 @@ La decision go/no-go se toma evaluando cada criterio. **Todos los criterios crit
 | Base de datos operativa | Critico | Continuar | Rollback | [ ] |
 | SSL certificado valido | Critico | Continuar | Rollback | [ ] |
 | Stripe webhook responde | Critico | Continuar | Rollback | [ ] |
-| 51 modulos habilitados | Critico | Continuar | Evaluar | [ ] |
+| 86 módulos habilitados | Critico | Continuar | Evaluar | [ ] |
 | Preflight checks 0 FAIL | Critico | Continuar | Rollback | [ ] |
 | Validation suite 0 FAIL | Critico | Continuar | Evaluar | [ ] |
 | Qdrant conectividad | Alto | Continuar | Evaluar* | [ ] |
@@ -639,7 +639,7 @@ Estos escenarios requieren evaluacion rapida (< 15 min) antes de decidir:
 
 ### T-7: Pre-Go-Live
 - [ ] Tests unitarios pasan
-- [ ] 51 modulos verificados
+- [ ] 86 módulos verificados
 - [ ] Integracion Stripe validada
 - [ ] Integracion Qdrant validada
 - [ ] 5 flujos de registro probados

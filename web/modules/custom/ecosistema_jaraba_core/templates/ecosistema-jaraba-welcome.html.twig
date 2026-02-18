@@ -34,7 +34,7 @@
           {{ '¡Bienvenido a @vertical!'|t({'@vertical': vertical.name}) }}
         </h1>
         <p class="ej-welcome-header__subtitle">
-          {{ 'Tu organización <strong>@tenant</strong> está lista.'|t({'@tenant': tenant.name})|raw }}
+          {% trans %}Tu organización <strong>{{ tenant.name }}</strong> está lista.{% endtrans %}
         </p>
       </header>
 
@@ -47,7 +47,7 @@
           <div class="ej-welcome-trial-card__content">
             <h3>{{ 'Periodo de prueba activo'|t }}</h3>
             <p>
-              {{ 'Te quedan <strong>@days días</strong> para explorar todas las funcionalidades.'|t({'@days': trial_days_remaining})|raw }}
+              {% trans %}Te quedan <strong>{{ trial_days_remaining }} días</strong> para explorar todas las funcionalidades.{% endtrans %}
             </p>
           </div>
           <a href="{{ path('ecosistema_jaraba_core.onboarding.setup_payment') }}" class="ej-btn ej-btn--outline ej-btn--sm">

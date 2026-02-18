@@ -61,7 +61,7 @@ class ResourceApiController extends ControllerBase
             $data[] = $this->serializeKit($kit);
         }
 
-        return new JsonResponse(['data' => $data, 'count' => count($data)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['count' => count($data), 'timestamp' => time()]]);
     }
 
     /**
@@ -72,7 +72,8 @@ class ResourceApiController extends ControllerBase
         $kit = $this->entityTypeManager()->getStorage('digital_kit')->load($id);
 
         if (!$kit) {
-            return new JsonResponse(['error' => 'Kit not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Kit not found']], 404);
         }
 
         $canAccess = $this->subscriptionService->canAccessKit($kit);
@@ -83,7 +84,7 @@ class ResourceApiController extends ControllerBase
             $data['required_plan'] = $kit->getAccessLevel();
         }
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -94,7 +95,7 @@ class ResourceApiController extends ControllerBase
         $kit = $this->entityTypeManager()->getStorage('digital_kit')->load($id);
 
         if (!$kit) {
-            return new JsonResponse(['error' => 'Kit not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Kit not found']], 404);
         }
 
         if (!$this->subscriptionService->canAccessKit($kit)) {
@@ -121,10 +122,7 @@ class ResourceApiController extends ControllerBase
             }
         }
 
-        return new JsonResponse([
-            'message' => 'Download granted',
-            'files' => $downloadUrls,
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Download granted', 'files' => $downloadUrls], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -135,14 +133,14 @@ class ResourceApiController extends ControllerBase
         $kit = $this->entityTypeManager()->getStorage('digital_kit')->load($id);
 
         if (!$kit) {
-            return new JsonResponse(['error' => 'Kit not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Kit not found']], 404);
         }
 
         $data = json_decode($request->getContent(), TRUE);
         $rating = (float) ($data['rating'] ?? 0);
 
         if ($rating < 1 || $rating > 5) {
-            return new JsonResponse(['error' => 'Rating must be between 1 and 5'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Rating must be between 1 and 5']], 400);
         }
 
         // Calculate new average.
@@ -156,11 +154,8 @@ class ResourceApiController extends ControllerBase
         $kit->set('rating_count', $newCount);
         $kit->save();
 
-        return new JsonResponse([
-            'message' => 'Rating submitted',
-            'new_rating' => $newRating,
-            'total_ratings' => $newCount,
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Rating submitted', 'new_rating' => $newRating,
+            'total_ratings' => $newCount], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -178,7 +173,7 @@ class ResourceApiController extends ControllerBase
         // Sort by display order.
         usort($data, fn($a, $b) => $a['display_order'] <=> $b['display_order']);
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -216,7 +211,7 @@ class ResourceApiController extends ControllerBase
         $planId = $data['plan_id'] ?? NULL;
 
         if (!$planId) {
-            return new JsonResponse(['error' => 'plan_id required'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'plan_id required']], 400);
         }
 
         try {
@@ -225,13 +220,11 @@ class ResourceApiController extends ControllerBase
                 (int) $planId
             );
 
-            return new JsonResponse([
-                'message' => 'Trial started',
-                'subscription_id' => $subscription->id(),
-                'trial_end' => $subscription->get('trial_end')->value,
-            ]);
+            return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Trial started', 'subscription_id' => $subscription->id(),
+                'trial_end' => $subscription->get('trial_end')->value], 'meta' => ['timestamp' => time()]]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+            \Drupal::logger('jaraba_resources')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.']], 400);
         }
     }
 
@@ -243,15 +236,12 @@ class ResourceApiController extends ControllerBase
         $subscription = $this->subscriptionService->getCurrentSubscription();
 
         if (!$subscription) {
-            return new JsonResponse(['error' => 'No active subscription'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No active subscription']], 404);
         }
 
         $this->subscriptionService->cancelSubscription($subscription);
 
-        return new JsonResponse([
-            'message' => 'Subscription cancelled',
-            'active_until' => $subscription->getCurrentPeriodEnd(),
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Subscription cancelled', 'active_until' => $subscription->getCurrentPeriodEnd()], 'meta' => ['timestamp' => time()]]);
     }
 
     /**

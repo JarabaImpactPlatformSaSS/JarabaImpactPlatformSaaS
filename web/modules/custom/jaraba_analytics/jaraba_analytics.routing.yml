@@ -30,6 +30,7 @@ jaraba_analytics.api.event:
   methods: [POST]
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -41,6 +42,7 @@ jaraba_analytics.api.batch:
   methods: [POST]
   requirements:
     _permission: 'access content'
+    _csrf_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -110,6 +112,7 @@ jaraba_analytics.api.funnels.create:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba analytics'
+    _csrf_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -144,6 +147,7 @@ jaraba_analytics.api.cohorts.create:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba analytics'
+    _csrf_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -237,6 +241,7 @@ jaraba_analytics.api.reports.execute:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba analytics'
+    _csrf_token: 'TRUE'
     report_id: \d+
   options:
     no_cache: TRUE
@@ -296,6 +301,7 @@ jaraba_analytics.api.widgets.create:
   methods: [POST]
   requirements:
     _permission: 'manage analytics dashboards'
+    _csrf_token: 'TRUE'
     dashboardId: \d+
   options:
     no_cache: TRUE
@@ -387,4 +393,5 @@ jaraba_analytics.api.programa.reports.generate:
   methods: [POST]
   requirements:
     _permission: 'generate institutional reports'
+    _csrf_token: 'TRUE'
 

@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * Componente premium para invitar a la instalación de la PWA.
+ *
+ * Sigue el sistema de diseño Jaraba Impact con tokens federados.
+ */
+#}
+<div id="pwa-install-prompt" class="pwa-install-prompt hidden" aria-hidden="true">
+  <div class="pwa-install-prompt__container">
+    <div class="pwa-install-prompt__icon">
+      {% if logo %}
+        <img src="{{ logo }}" alt="{{ site_name }}">
+      {% else %}
+        <div class="pwa-install-prompt__placeholder">J</div>
+      {% endif %}
+    </div>
+    
+    <div class="pwa-install-prompt__content">
+      <h3 class="pwa-install-prompt__title">{% trans %}Instalar la App{% endtrans %}</h3>
+      <p class="pwa-install-prompt__desc">{% trans %}Acceso rápido, notificaciones en tiempo real y modo offline.{% endtrans %}</p>
+    </div>
+
+    <div class="pwa-install-prompt__actions">
+      <button id="pwa-install-btn" class="btn btn--primary btn--sm">
+        {% trans %}Instalar{% endtrans %}
+      </button>
+      <button id="pwa-install-close" class="pwa-install-prompt__close" aria-label="{% trans %}Cerrar{% endtrans %}">
+        {{ jaraba_icon('ui', 'close') }}
+      </button>
+    </div>
+  </div>
+
+  {# Guía específica para iOS (se muestra mediante JS) #}
+  <div id="pwa-ios-guide" class="pwa-ios-guide hidden">
+    <div class="pwa-ios-guide__content">
+      <p>
+        {% trans %}Pulsa el icono de compartir{% endtrans %} {{ jaraba_icon('ui', 'share-ios') }}
+        {% trans %}y luego{% endtrans %} <strong>{% trans %}Añadir a pantalla de inicio{% endtrans %}</strong>
+      </p>
+    </div>
+    <div class="pwa-ios-guide__arrow"></div>
+  </div>
+</div>

@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\ecosistema_jaraba_core\Service\AuditLogService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Controller for the Compliance Dashboard (G115-1).
@@ -23,14 +29,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ComplianceDashboardController extends ControllerBase {
 
   /**
-   * Constructor with dependency injection.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
-   * @param \Drupal\ecosistema_jaraba_core\Service\AuditLogService $auditLog
-   *   The audit log service.
-   */
-  /**
    * Servicio de audit log.
    *
    * @var \Drupal\ecosistema_jaraba_core\Service\AuditLogService
@@ -38,14 +36,68 @@ class ComplianceDashboardController extends ControllerBase {
   protected AuditLogService $auditLog;
 
   /**
+   * The state service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected StateInterface $state;
+
+  /**
+   * The date formatter service.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
+  protected DateFormatterInterface $dateFormatter;
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected ConfigFactoryInterface $configFactoryService;
+
+  /**
+   * The config storage sync.
+   *
+   * @var \Drupal\Core\Config\StorageInterface
+   */
+  protected StorageInterface $configStorageSync;
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected RequestStack $requestStack;
+
+  /**
+   * The time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected TimeInterface $time;
+
+  /**
    * Constructor con inyeccion de dependencias.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     AuditLogService $auditLog,
+    StateInterface $state,
+    DateFormatterInterface $dateFormatter,
+    ConfigFactoryInterface $configFactory,
+    StorageInterface $configStorageSync,
+    RequestStack $requestStack,
+    TimeInterface $time,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->auditLog = $auditLog;
+    $this->state = $state;
+    $this->dateFormatter = $dateFormatter;
+    $this->configFactoryService = $configFactory;
+    $this->configStorageSync = $configStorageSync;
+    $this->requestStack = $requestStack;
+    $this->time = $time;
   }
 
   /**
@@ -55,6 +107,12 @@ class ComplianceDashboardController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('ecosistema_jaraba_core.audit_log'),
+      $container->get('state'),
+      $container->get('date.formatter'),
+      $container->get('config.factory'),
+      $container->get('config.storage.sync'),
+      $container->get('request_stack'),
+      $container->get('datetime.time'),
     );
   }
 
@@ -254,19 +312,19 @@ class ComplianceDashboardController extends ControllerBase {
       case 'change_management':
       case 'config_management':
         // Check if config management is active.
-        $config_sync_dir = \Drupal::service('config.storage.sync');
+        $config_sync_dir = $this->configStorageSync;
         return !empty($config_sync_dir->listAll()) ? 'pass' : 'warning';
 
       case 'secure_auth':
         // Check HTTPS enforcement.
-        $request = \Drupal::request();
-        $is_https = $request->isSecure() || $request->headers->get('X-Forwarded-Proto') === 'https';
+        $request = $this->requestStack->getCurrentRequest();
+        $is_https = $request && ($request->isSecure() || $request->headers->get('X-Forwarded-Proto') === 'https');
         return $is_https ? 'pass' : 'fail';
 
       case 'cryptography':
       case 'transport_security':
         // Check HSTS header is configured.
-        $security_config = \Drupal::config('ecosistema_jaraba_core.security_headers');
+        $security_config = $this->configFactoryService->get('ecosistema_jaraba_core.security_headers');
         $hsts = $security_config->get('hsts_enabled');
         return $hsts ? 'pass' : 'warning';
 
@@ -280,12 +338,12 @@ class ComplianceDashboardController extends ControllerBase {
       case 'processing_records':
       case 'security_processing':
         // GDPR controls - check basic privacy settings.
-        $has_policy = \Drupal::config('system.site')->get('page.403') !== '';
+        $has_policy = $this->configFactoryService->get('system.site')->get('page.403') !== '';
         return $has_policy ? 'pass' : 'warning';
 
       case 'breach_notification':
         // Check alerting is configured.
-        $alerting_config = \Drupal::config('ecosistema_jaraba_core.alerting');
+        $alerting_config = $this->configFactoryService->get('ecosistema_jaraba_core.alerting');
         $has_webhook = !empty($alerting_config->get('slack_webhook'));
         return $has_webhook ? 'pass' : 'warning';
 
@@ -324,7 +382,7 @@ class ComplianceDashboardController extends ControllerBase {
             'message' => $entity->get('message')->value ?? '',
             'ip_address' => $entity->get('ip_address')->value ?? '',
             'timestamp' => $entity->get('created')->value ?? 0,
-            'timestamp_formatted' => \Drupal::service('date.formatter')->format(
+            'timestamp_formatted' => $this->dateFormatter->format(
               (int) ($entity->get('created')->value ?? 0),
               'short',
             ),
@@ -333,7 +391,7 @@ class ComplianceDashboardController extends ControllerBase {
       }
     }
     catch (\Exception $e) {
-      \Drupal::logger('ecosistema_jaraba_core')->warning(
+      $this->getLogger('ecosistema_jaraba_core')->warning(
         'Failed to load audit log events: @error',
         ['@error' => $e->getMessage()],
       );
@@ -350,7 +408,7 @@ class ComplianceDashboardController extends ControllerBase {
    */
   protected function checkSecurityHeaders(): array {
     $headers = [];
-    $security_config = \Drupal::config('ecosistema_jaraba_core.security_headers');
+    $security_config = $this->configFactoryService->get('ecosistema_jaraba_core.security_headers');
 
     // Content-Security-Policy.
     $csp_enabled = (bool) $security_config->get('csp_enabled');
@@ -436,7 +494,7 @@ class ComplianceDashboardController extends ControllerBase {
         ->execute();
 
       // Count critical events (last 30 days).
-      $thirty_days_ago = \Drupal::time()->getRequestTime() - (30 * 86400);
+      $thirty_days_ago = $this->time->getRequestTime() - (30 * 86400);
       $stats['critical_events'] = (int) $storage->getQuery()
         ->accessCheck(TRUE)
         ->condition('severity', 'critical')
@@ -446,7 +504,7 @@ class ComplianceDashboardController extends ControllerBase {
     }
     catch (\Exception $e) {
       // Entity type may not exist yet.
-      \Drupal::logger('ecosistema_jaraba_core')->notice(
+      $this->getLogger('ecosistema_jaraba_core')->notice(
         'Audit log entity not available for stats: @error',
         ['@error' => $e->getMessage()],
       );
@@ -470,16 +528,16 @@ class ComplianceDashboardController extends ControllerBase {
     }
 
     // Last assessment date.
-    $last_assessment = \Drupal::state()->get('jaraba_compliance_last_assessment');
+    $last_assessment = $this->state->get('jaraba_compliance_last_assessment');
     if ($last_assessment) {
-      $stats['last_assessment'] = \Drupal::service('date.formatter')->format(
+      $stats['last_assessment'] = $this->dateFormatter->format(
         (int) $last_assessment,
         'short',
       );
     }
 
     // Update the assessment timestamp.
-    \Drupal::state()->set('jaraba_compliance_last_assessment', \Drupal::time()->getRequestTime());
+    $this->state->set('jaraba_compliance_last_assessment', $this->time->getRequestTime());
 
     return $stats;
   }

@@ -8,8 +8,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\jaraba_interactive\EventSubscriber\CompletionSubscriber;
 use Drupal\jaraba_interactive\Service\XApiEmitter;
+use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
  * @coversDefaultClass \Drupal\jaraba_interactive\EventSubscriber\CompletionSubscriber
  * @group jaraba_interactive
  */
-class CompletionSubscriberTest extends TestCase {
+class CompletionSubscriberTest extends UnitTestCase {
 
   /**
    * El suscriptor bajo prueba.
@@ -54,6 +54,11 @@ class CompletionSubscriberTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->xapiEmitter = $this->createMock(XApiEmitter::class);
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);

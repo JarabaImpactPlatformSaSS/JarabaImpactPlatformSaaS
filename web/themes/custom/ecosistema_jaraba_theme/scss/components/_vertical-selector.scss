@@ -1,5 +1,5 @@
 // === VERTICAL SELECTOR - Homepage selector de verticales ===
-// Doc 178 §4.1: Selector visual de 5 verticales en la homepage.
+// Doc 178 §4.1: Selector visual de 6 verticales en la homepage.
 // Cards interactivas con icono, titulo, descripcion y CTA.
 //
 // Usa las CSS Custom Properties del Design Token System:
@@ -43,10 +43,18 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--ej-spacing-lg, 1.5rem);
-    max-width: 1100px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ej-spacing-md, 1rem);
+    max-width: 1200px;
     margin: 0 auto;
+
+    @media (min-width: 600px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(6, 1fr);
+    }
   }
 }
 
@@ -59,38 +67,94 @@
   flex-direction: column;
   align-items: center;
   padding: var(--ej-spacing-lg, 1.5rem) var(--ej-spacing-md, 1rem);
-  background: var(--ej-bg-surface, #FFFFFF);
-  border: 1px solid var(--ej-border-color, #E5E7EB);
-  border-radius: var(--ej-border-radius, 12px);
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--ej-radius-xl, 16px);
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
   transition:
-    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
     box-shadow 0.3s ease,
     border-color 0.3s ease;
-  cursor: pointer;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  // Shine effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    transition: left 0.6s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Accent border top
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--ej-color-impulse, #FF8C42));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover,
   &:focus-visible {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: var(--ej-shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
-    border-color: var(--ej-color-impulse, #FF8C42);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow:
+      0 20px 40px rgba(35, 61, 99, 0.12),
+      0 8px 16px rgba(35, 61, 99, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+    border-color: color-mix(in srgb, var(--card-accent, var(--ej-color-impulse, #FF8C42)) 30%, transparent);
+
+    &::before {
+      left: 150%;
+    }
+
+    &::after {
+      opacity: 1;
+    }
 
     .vertical-card__cta {
-      color: var(--ej-color-impulse, #FF8C42);
+      color: var(--card-accent, var(--ej-color-impulse, #FF8C42));
     }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--ej-color-impulse, #FF8C42);
+    outline: 2px solid var(--card-accent, var(--ej-color-impulse, #FF8C42));
     outline-offset: 2px;
   }
 
   // Highlighted card (detected vertical)
   &--highlighted {
-    border-color: var(--ej-color-impulse, #FF8C42);
+    border-color: var(--card-accent, var(--ej-color-impulse, #FF8C42));
     border-width: 2px;
-    box-shadow: 0 2px 12px color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 15%, transparent);
-    background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 3%, var(--ej-bg-surface, #FFFFFF));
+    box-shadow:
+      0 4px 24px color-mix(in srgb, var(--card-accent, var(--ej-color-impulse, #FF8C42)) 15%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+    &::after {
+      opacity: 1;
+    }
   }
 
   // ===========================================================================
@@ -105,27 +169,48 @@
     height: 72px;
     border-radius: 50%;
     margin-bottom: var(--ej-spacing-md, 1rem);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+
+    // Glow ring on hover
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--card-accent, var(--ej-color-impulse, #FF8C42)) 15%, transparent), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
 
     &--azul-corporativo {
+      --card-accent: var(--ej-color-corporate, #233D63);
       background: color-mix(in srgb, var(--ej-color-corporate, #233D63) 10%, transparent);
     }
 
     &--naranja-impulso {
+      --card-accent: var(--ej-color-impulse, #FF8C42);
       background: color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 10%, transparent);
     }
 
     &--verde-agro {
+      --card-accent: var(--ej-color-agro, #556B2F);
       background: color-mix(in srgb, var(--ej-color-agro, #556B2F) 10%, transparent);
     }
 
     &--verde-innovacion {
+      --card-accent: var(--ej-color-innovation, #00A9A5);
       background: color-mix(in srgb, var(--ej-color-innovation, #00A9A5) 10%, transparent);
     }
   }
 
   &:hover &__icon {
-    transform: scale(1.1);
+    transform: scale(1.12) rotate(3deg);
+
+    &::after {
+      opacity: 1;
+    }
   }
 
   &__title {

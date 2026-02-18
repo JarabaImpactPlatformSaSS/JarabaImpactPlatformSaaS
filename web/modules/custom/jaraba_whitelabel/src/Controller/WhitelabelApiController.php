@@ -102,15 +102,17 @@ class WhitelabelApiController extends ControllerBase {
       $config = $this->configResolver->resolveConfig($tenantIdInt);
 
       if ($config === NULL) {
+        // AUDIT-CONS-N08: Standardized JSON envelope.
         return new JsonResponse([
-          'status' => 'not_found',
-          'message' => 'No whitelabel configuration found.',
+          'success' => FALSE,
+          'error' => ['code' => 'NOT_FOUND', 'message' => 'No whitelabel configuration found.'],
         ], 404);
       }
 
       return new JsonResponse([
-        'status' => 'ok',
+        'success' => TRUE,
         'data' => $config,
+        'meta' => ['timestamp' => time()],
       ]);
     }
     catch (\Throwable $e) {
@@ -119,8 +121,8 @@ class WhitelabelApiController extends ControllerBase {
       ]);
 
       return new JsonResponse([
-        'status' => 'error',
-        'message' => 'Internal server error.',
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Internal server error.'],
       ], 500);
     }
   }
@@ -139,16 +141,17 @@ class WhitelabelApiController extends ControllerBase {
       $tenantId = $this->tenantContext->getCurrentTenantId() ?? $request->query->get('tenant_id');
       if ($tenantId === NULL || !is_numeric($tenantId)) {
         return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Missing or invalid tenant_id parameter.',
+          'success' => FALSE,
+          'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'Missing or invalid tenant_id parameter.'],
         ], 400);
       }
 
       $domains = $this->domainManager->getDomainsForTenant((int) $tenantId);
 
       return new JsonResponse([
-        'status' => 'ok',
+        'success' => TRUE,
         'data' => $domains,
+        'meta' => ['timestamp' => time()],
       ]);
     }
     catch (\Throwable $e) {
@@ -157,8 +160,8 @@ class WhitelabelApiController extends ControllerBase {
       ]);
 
       return new JsonResponse([
-        'status' => 'error',
-        'message' => 'Internal server error.',
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Internal server error.'],
       ], 500);
     }
   }
@@ -181,8 +184,8 @@ class WhitelabelApiController extends ControllerBase {
 
       if (!is_array($data)) {
         return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Invalid JSON body.',
+          'success' => FALSE,
+          'error' => ['code' => 'INVALID_BODY', 'message' => 'Invalid JSON body.'],
         ], 400);
       }
 
@@ -191,16 +194,16 @@ class WhitelabelApiController extends ControllerBase {
 
       if (!is_numeric($tenantId) || empty($domain) || !is_string($domain)) {
         return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Missing or invalid tenant_id or domain.',
+          'success' => FALSE,
+          'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'Missing or invalid tenant_id or domain.'],
         ], 400);
       }
 
       // Basic domain format validation.
       if (!preg_match('/^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)+$/', $domain)) {
         return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Invalid domain format.',
+          'success' => FALSE,
+          'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'Invalid domain format.'],
         ], 400);
       }
 
@@ -208,18 +211,19 @@ class WhitelabelApiController extends ControllerBase {
 
       if ($domainId === NULL) {
         return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Domain already exists or could not be added.',
+          'success' => FALSE,
+          'error' => ['code' => 'CONFLICT', 'message' => 'Domain already exists or could not be added.'],
         ], 409);
       }
 
       return new JsonResponse([
-        'status' => 'ok',
+        'success' => TRUE,
         'data' => [
           'domain_id' => $domainId,
           'domain' => $domain,
           'tenant_id' => (int) $tenantId,
         ],
+        'meta' => ['timestamp' => time()],
       ], 201);
     }
     catch (\Throwable $e) {
@@ -228,8 +232,8 @@ class WhitelabelApiController extends ControllerBase {
       ]);
 
       return new JsonResponse([
-        'status' => 'error',
-        'message' => 'Internal server error.',
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Internal server error.'],
       ], 500);
     }
   }

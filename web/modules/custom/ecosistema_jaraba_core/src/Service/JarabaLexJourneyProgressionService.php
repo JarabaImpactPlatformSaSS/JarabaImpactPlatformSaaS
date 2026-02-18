@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -111,6 +113,9 @@ class JarabaLexJourneyProgressionService {
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly TimeInterface $time,
+    protected readonly StateInterface $state,
+    protected readonly ?object $jarabalexFeatureGate = NULL,
   ) {}
 
   /**
@@ -148,17 +153,17 @@ class JarabaLexJourneyProgressionService {
    */
   public function getPendingAction(int $userId): ?array {
     $stateKey = "jarabalex_proactive_pending_{$userId}";
-    $cached = \Drupal::state()->get($stateKey);
+    $cached = $this->state->get($stateKey);
 
-    if ($cached && ($cached['expires'] ?? 0) > \Drupal::time()->getRequestTime()) {
+    if ($cached && ($cached['expires'] ?? 0) > $this->time->getRequestTime()) {
       return $cached['rule'];
     }
 
     $rule = $this->evaluate($userId);
     if ($rule) {
-      \Drupal::state()->set($stateKey, [
+      $this->state->set($stateKey, [
         'rule' => $rule,
-        'expires' => \Drupal::time()->getRequestTime() + 3600,
+        'expires' => $this->time->getRequestTime() + 3600,
       ]);
     }
 
@@ -171,10 +176,10 @@ class JarabaLexJourneyProgressionService {
   public function dismissAction(int $userId, string $ruleId): void {
     $dismissed = $this->getDismissedRules($userId);
     $dismissed[] = $ruleId;
-    \Drupal::state()->set("jarabalex_proactive_dismissed_{$userId}", array_unique($dismissed));
+    $this->state->set("jarabalex_proactive_dismissed_{$userId}", array_unique($dismissed));
 
     // Limpiar cache.
-    \Drupal::state()->delete("jarabalex_proactive_pending_{$userId}");
+    $this->state->delete("jarabalex_proactive_pending_{$userId}");
   }
 
   /**
@@ -227,11 +232,11 @@ class JarabaLexJourneyProgressionService {
    */
   protected function checkNoActivity(int $userId, int $days): bool {
     $stateKey = "jarabalex_last_activity_{$userId}";
-    $lastActivity = (int) \Drupal::state()->get($stateKey, 0);
+    $lastActivity = (int) $this->state->get($stateKey, 0);
     if ($lastActivity === 0) {
       return FALSE;
     }
-    $threshold = \Drupal::time()->getRequestTime() - ($days * 86400);
+    $threshold = $this->time->getRequestTime() - ($days * 86400);
     return $lastActivity < $threshold;
   }
 
@@ -240,11 +245,10 @@ class JarabaLexJourneyProgressionService {
    */
   protected function checkSearchesWithoutBookmarks(int $userId): bool {
     try {
-      if (!\Drupal::hasService('ecosistema_jaraba_core.jarabalex_feature_gate')) {
+      if (!$this->jarabalexFeatureGate) {
         return FALSE;
       }
-      $featureGate = \Drupal::service('ecosistema_jaraba_core.jarabalex_feature_gate');
-      $searchResult = $featureGate->check($userId, 'searches_per_month');
+      $searchResult = $this->jarabalexFeatureGate->check($userId, 'searches_per_month');
       if (($searchResult->used ?? 0) < 5) {
         return FALSE;
       }
@@ -300,15 +304,14 @@ class JarabaLexJourneyProgressionService {
    */
   protected function checkUsageAbove80(int $userId): bool {
     try {
-      if (!\Drupal::hasService('ecosistema_jaraba_core.jarabalex_feature_gate')) {
+      if (!$this->jarabalexFeatureGate) {
         return FALSE;
       }
-      $featureGate = \Drupal::service('ecosistema_jaraba_core.jarabalex_feature_gate');
-      $plan = $featureGate->getUserPlan($userId);
+      $plan = $this->jarabalexFeatureGate->getUserPlan($userId);
       if ($plan !== 'free') {
         return FALSE;
       }
-      $result = $featureGate->check($userId, 'searches_per_month');
+      $result = $this->jarabalexFeatureGate->check($userId, 'searches_per_month');
       if ($result->limit <= 0) {
         return FALSE;
       }
@@ -345,11 +348,10 @@ class JarabaLexJourneyProgressionService {
    */
   protected function checkNationalOnlyUser(int $userId): bool {
     try {
-      if (!\Drupal::hasService('ecosistema_jaraba_core.jarabalex_feature_gate')) {
+      if (!$this->jarabalexFeatureGate) {
         return FALSE;
       }
-      $featureGate = \Drupal::service('ecosistema_jaraba_core.jarabalex_feature_gate');
-      $result = $featureGate->check($userId, 'searches_per_month');
+      $result = $this->jarabalexFeatureGate->check($userId, 'searches_per_month');
       if (($result->used ?? 0) < 10) {
         return FALSE;
       }
@@ -372,7 +374,7 @@ class JarabaLexJourneyProgressionService {
    * Obtiene reglas descartadas.
    */
   protected function getDismissedRules(int $userId): array {
-    return \Drupal::state()->get("jarabalex_proactive_dismissed_{$userId}", []);
+    return $this->state->get("jarabalex_proactive_dismissed_{$userId}", []);
   }
 
 }

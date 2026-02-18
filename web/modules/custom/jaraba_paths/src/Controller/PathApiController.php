@@ -72,14 +72,11 @@ class PathApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse([
-            'data' => $items,
-            'meta' => [
+        return new JsonResponse(['success' => TRUE, 'data' => $items, 'meta' => [
                 'total' => (int) $total,
                 'page' => $page,
                 'limit' => $limit,
-            ],
-        ]);
+            ]]);
     }
 
     /**
@@ -92,7 +89,8 @@ class PathApiController extends ControllerBase
         $path = $this->loadByUuid($uuid);
 
         if (!$path) {
-            return new JsonResponse(['error' => 'Path not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Path not found']], 404);
         }
 
         return new JsonResponse([
@@ -119,7 +117,7 @@ class PathApiController extends ControllerBase
         $path = $this->loadByUuid($uuid);
 
         if (!$path) {
-            return new JsonResponse(['error' => 'Path not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Path not found']], 404);
         }
 
         $enrollmentService = \Drupal::service('jaraba_paths.enrollment');
@@ -145,7 +143,7 @@ class PathApiController extends ControllerBase
         $enrollment = !empty($enrollments) ? reset($enrollments) : NULL;
 
         if (!$enrollment) {
-            return new JsonResponse(['error' => 'Enrollment not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Enrollment not found']], 404);
         }
 
         return new JsonResponse([
@@ -171,7 +169,7 @@ class PathApiController extends ControllerBase
         $enrollment = !empty($enrollments) ? reset($enrollments) : NULL;
 
         if (!$enrollment) {
-            return new JsonResponse(['error' => 'Enrollment not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Enrollment not found']], 404);
         }
 
         $progressService = \Drupal::service('jaraba_paths.progress');

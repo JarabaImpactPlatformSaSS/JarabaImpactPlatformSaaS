@@ -6,7 +6,9 @@ namespace Drupal\jaraba_matching\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_matching\Service\EmbeddingService;
 use Drupal\jaraba_matching\Service\MatchingService;
+use Drupal\jaraba_matching\Service\QdrantMatchingClient;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,12 +36,32 @@ class MatchingApiController extends ControllerBase
     protected TenantContextService $tenantContext;
 
     /**
+     * The Qdrant matching client (optional).
+     *
+     * @var \Drupal\jaraba_matching\Service\QdrantMatchingClient|null
+     */
+    protected ?QdrantMatchingClient $qdrantClient;
+
+    /**
+     * The embedding service (optional).
+     *
+     * @var \Drupal\jaraba_matching\Service\EmbeddingService|null
+     */
+    protected ?EmbeddingService $embeddingService;
+
+    /**
      * Constructor.
      */
-    public function __construct(MatchingService $matching_service, TenantContextService $tenant_context)
-    {
+    public function __construct(
+        MatchingService $matching_service,
+        TenantContextService $tenant_context,
+        ?QdrantMatchingClient $qdrant_client = NULL,
+        ?EmbeddingService $embedding_service = NULL,
+    ) {
         $this->matchingService = $matching_service;
         $this->tenantContext = $tenant_context;
+        $this->qdrantClient = $qdrant_client;
+        $this->embeddingService = $embedding_service;
     }
 
     /**
@@ -49,7 +71,9 @@ class MatchingApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_matching.matching_service'),
-            $container->get('ecosistema_jaraba_core.tenant_context')
+            $container->get('ecosistema_jaraba_core.tenant_context'),
+            $container->has('jaraba_matching.qdrant_client') ? $container->get('jaraba_matching.qdrant_client') : NULL,
+            $container->has('jaraba_matching.embedding_service') ? $container->get('jaraba_matching.embedding_service') : NULL,
         );
     }
 
@@ -73,9 +97,10 @@ class MatchingApiController extends ControllerBase
                 'matches' => $results,
             ]);
         } catch (\Exception $e) {
+            $this->getLogger('jaraba_matching')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -139,9 +164,10 @@ class MatchingApiController extends ControllerBase
                 'jobs' => $results,
             ]);
         } catch (\Exception $e) {
+            $this->getLogger('jaraba_matching')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -186,9 +212,10 @@ class MatchingApiController extends ControllerBase
                 'breakdown' => $score['breakdown'],
             ]);
         } catch (\Exception $e) {
+            $this->getLogger('jaraba_matching')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -213,20 +240,14 @@ class MatchingApiController extends ControllerBase
             }
 
             // Try Qdrant semantic search first.
-            if (\Drupal::hasService('jaraba_matching.qdrant_client')
-                && \Drupal::hasService('jaraba_matching.embedding_service')) {
+            if ($this->qdrantClient !== NULL && $this->embeddingService !== NULL) {
                 try {
-                    /** @var \Drupal\jaraba_matching\Service\QdrantMatchingClient $qdrantClient */
-                    $qdrantClient = \Drupal::service('jaraba_matching.qdrant_client');
-                    /** @var \Drupal\jaraba_matching\Service\EmbeddingService $embeddingService */
-                    $embeddingService = \Drupal::service('jaraba_matching.embedding_service');
-
-                    if ($qdrantClient->isAvailable()) {
-                        $text = $embeddingService->getJobEmbeddingText($job);
-                        $embedding = $embeddingService->generate($text);
+                    if ($this->qdrantClient->isAvailable()) {
+                        $text = $this->embeddingService->getJobEmbeddingText($job);
+                        $embedding = $this->embeddingService->generate($text);
 
                         if (!empty($embedding)) {
-                            $results = $qdrantClient->searchJobsForCandidate(
+                            $results = $this->qdrantClient->searchJobsForCandidate(
                                 $embedding,
                                 $tenantId,
                                 $limit + 1, // +1 to exclude self
@@ -362,9 +383,10 @@ class MatchingApiController extends ControllerBase
                 'feedback_id' => $feedback->id(),
             ]);
         } catch (\Exception $e) {
+            $this->getLogger('jaraba_matching')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -385,20 +407,14 @@ class MatchingApiController extends ControllerBase
                 ], 404);
             }
 
-            if (!\Drupal::hasService('jaraba_matching.qdrant_client')
-                || !\Drupal::hasService('jaraba_matching.embedding_service')) {
+            if ($this->qdrantClient === NULL || $this->embeddingService === NULL) {
                 return new JsonResponse([
                     'success' => FALSE,
                     'error' => 'Qdrant indexing services not available',
                 ], 503);
             }
 
-            /** @var \Drupal\jaraba_matching\Service\QdrantMatchingClient $qdrantClient */
-            $qdrantClient = \Drupal::service('jaraba_matching.qdrant_client');
-            /** @var \Drupal\jaraba_matching\Service\EmbeddingService $embeddingService */
-            $embeddingService = \Drupal::service('jaraba_matching.embedding_service');
-
-            if (!$qdrantClient->isAvailable()) {
+            if (!$this->qdrantClient->isAvailable()) {
                 return new JsonResponse([
                     'success' => FALSE,
                     'error' => 'Qdrant server is not reachable',
@@ -406,8 +422,8 @@ class MatchingApiController extends ControllerBase
             }
 
             // Generate embedding from job content.
-            $text = $embeddingService->getJobEmbeddingText($job);
-            $embedding = $embeddingService->generate($text);
+            $text = $this->embeddingService->getJobEmbeddingText($job);
+            $embedding = $this->embeddingService->generate($text);
 
             if (empty($embedding)) {
                 return new JsonResponse([
@@ -430,7 +446,7 @@ class MatchingApiController extends ControllerBase
             ];
 
             // Upsert to Qdrant.
-            $success = $qdrantClient->indexJob($job_id, $embedding, $payload);
+            $success = $this->qdrantClient->indexJob($job_id, $embedding, $payload);
 
             if ($success) {
                 return new JsonResponse([
@@ -447,9 +463,10 @@ class MatchingApiController extends ControllerBase
             ], 500);
         }
         catch (\Exception $e) {
+            $this->getLogger('jaraba_matching')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,
-                'error' => 'Indexing failed: ' . $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

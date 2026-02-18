@@ -1,0 +1,88 @@
+/**
+ * Estilos para el rastreador de ejecución de Agentes IA.
+ * Diseño Clase Mundial — Jaraba Impact.
+ */
+.agent-execution {
+  --ae-primary: var(--ej-color-corporate, #233D63);
+  --ae-success: var(--ej-color-success, #27AE60);
+  --ae-bg: #f8fafc;
+
+  padding: 1.5rem;
+  background: var(--ae-bg);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--ae-primary) 10%, transparent);
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit');
+    font-size: 1.1rem;
+    color: var(--ae-primary);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: color-mix(in srgb, var(--ae-primary) 10%, transparent);
+    }
+  }
+
+  &__step {
+    position: relative;
+    padding-left: 45px;
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &--success {
+      .agent-execution__step-icon {
+        background: var(--ae-success);
+        color: white;
+        border-color: var(--ae-success);
+      }
+    }
+  }
+
+  &__step-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border: 2px solid var(--ae-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    font-size: 0.8rem;
+  }
+
+  &__step-content {
+    .step-desc {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: block;
+    }
+    .step-tool {
+      font-size: 0.75rem;
+      color: var(--ej-color-text-secondary);
+      font-family: monospace;
+    }
+  }
+}

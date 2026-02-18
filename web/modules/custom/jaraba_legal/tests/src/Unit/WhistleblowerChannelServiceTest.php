@@ -38,6 +38,11 @@ class WhistleblowerChannelServiceTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
+
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->tenantContext = $this->createMock(TenantContextService::class);
     $this->configFactory = $this->createMock(ConfigFactoryInterface::class);

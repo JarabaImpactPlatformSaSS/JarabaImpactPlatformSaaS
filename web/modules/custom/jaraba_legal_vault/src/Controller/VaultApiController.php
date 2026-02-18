@@ -61,10 +61,7 @@ class VaultApiController extends ControllerBase {
       $data[] = $this->serializeDocument($doc);
     }
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
-    ]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
   }
 
   /**
@@ -75,12 +72,13 @@ class VaultApiController extends ControllerBase {
     $file = $request->files->get('file');
 
     if (!$title || !$file) {
-      return new JsonResponse(['error' => 'Los campos title y file son obligatorios.'], 400);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos title y file son obligatorios.']], 400);
     }
 
     $content = file_get_contents($file->getPathname());
     if ($content === FALSE) {
-      return new JsonResponse(['error' => 'No se pudo leer el archivo.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No se pudo leer el archivo.']], 400);
     }
 
     $result = $this->vaultService->store(
@@ -96,7 +94,7 @@ class VaultApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error al almacenar documento.'], 500);
     }
 
-    return new JsonResponse(['data' => $this->serializeDocument($result['document'])], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($result['document'])], 201);
   }
 
   /**
@@ -105,9 +103,9 @@ class VaultApiController extends ControllerBase {
   public function detail(string $uuid): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
-    return new JsonResponse(['data' => $this->serializeDocument($document)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($document), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -116,7 +114,7 @@ class VaultApiController extends ControllerBase {
   public function delete(string $uuid): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $result = $this->vaultService->softDelete((int) $document->id());
@@ -124,7 +122,7 @@ class VaultApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error al eliminar.'], 500);
     }
 
-    return new JsonResponse(['data' => ['deleted' => TRUE]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['deleted' => TRUE], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -133,17 +131,17 @@ class VaultApiController extends ControllerBase {
   public function storeVersion(string $uuid, Request $request): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $file = $request->files->get('file');
     if (!$file) {
-      return new JsonResponse(['error' => 'El campo file es obligatorio.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El campo file es obligatorio.']], 400);
     }
 
     $content = file_get_contents($file->getPathname());
     if ($content === FALSE) {
-      return new JsonResponse(['error' => 'No se pudo leer el archivo.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No se pudo leer el archivo.']], 400);
     }
 
     $result = $this->vaultService->createVersion(
@@ -157,7 +155,7 @@ class VaultApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error al crear version.'], 500);
     }
 
-    return new JsonResponse(['data' => $this->serializeDocument($result['document'])], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($result['document', 'meta' => ['timestamp' => time()]])], 201);
   }
 
   /**
@@ -166,13 +164,13 @@ class VaultApiController extends ControllerBase {
   public function listVersions(string $uuid): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $versions = $this->vaultService->getVersions((int) $document->id());
     $data = array_map(fn($v) => $this->serializeDocument($v), $versions);
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -181,7 +179,7 @@ class VaultApiController extends ControllerBase {
   public function share(string $uuid, Request $request): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $content = json_decode($request->getContent(), TRUE);
@@ -214,7 +212,7 @@ class VaultApiController extends ControllerBase {
   public function listAccess(string $uuid): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $grants = $this->accessService->listAccessGrants((int) $document->id());
@@ -234,7 +232,7 @@ class VaultApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -245,7 +243,7 @@ class VaultApiController extends ControllerBase {
     if (!$result['success']) {
       return new JsonResponse(['error' => $result['error'] ?? 'Error al revocar.'], 500);
     }
-    return new JsonResponse(['data' => ['revoked' => TRUE]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['revoked' => TRUE], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -254,7 +252,7 @@ class VaultApiController extends ControllerBase {
   public function revokeAllAccess(string $uuid): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $result = $this->accessService->revokeAll((int) $document->id());
@@ -271,7 +269,7 @@ class VaultApiController extends ControllerBase {
   public function audit(string $uuid): JsonResponse {
     $document = $this->vaultService->getDocumentByUuid($uuid);
     if (!$document) {
-      return new JsonResponse(['error' => 'Documento no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Documento no encontrado.']], 404);
     }
 
     $trail = $this->auditService->getAuditTrail((int) $document->id());
@@ -302,10 +300,7 @@ class VaultApiController extends ControllerBase {
     $result = $this->accessService->getSharedWithMe($limit, $offset);
     $data = array_map(fn($doc) => $this->serializeDocument($doc), $result['documents']);
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
-    ]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
   }
 
   /**
@@ -318,8 +313,7 @@ class VaultApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Token invalido.'], 403);
     }
 
-    return new JsonResponse([
-      'data' => $this->serializeDocument($result['document']),
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($result['document']),
     ]);
   }
 
@@ -347,9 +341,7 @@ class VaultApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data,
-      'meta' => ['total' => $result['total'], 'export_format' => $format],
-    ]);
+      'data' => $data, 'meta' => ['total' => $result['total'], 'export_format' => $format]]);
   }
 
   /**

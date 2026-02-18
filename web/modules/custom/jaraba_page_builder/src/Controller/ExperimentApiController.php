@@ -183,8 +183,9 @@ class ExperimentApiController extends ControllerBase
                 'results' => $results,
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -227,8 +228,9 @@ class ExperimentApiController extends ControllerBase
                 'status' => $experiment->getStatus(),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -265,8 +267,9 @@ class ExperimentApiController extends ControllerBase
                 'status' => $experiment->getStatus(),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -314,8 +317,9 @@ class ExperimentApiController extends ControllerBase
                 'status' => 'completed',
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -342,8 +346,9 @@ class ExperimentApiController extends ControllerBase
 
             return new JsonResponse($results);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }
@@ -381,8 +386,9 @@ class ExperimentApiController extends ControllerBase
                 'total' => count($results),
             ]);
         } catch (\Exception $e) {
+            \Drupal::logger('jaraba_page_builder')->error('Operation failed: @msg', ['@msg' => $e->getMessage()]);
             return new JsonResponse([
-                'error' => $e->getMessage(),
+                'error' => 'Se produjo un error interno. Inténtelo de nuevo más tarde.',
             ], 500);
         }
     }

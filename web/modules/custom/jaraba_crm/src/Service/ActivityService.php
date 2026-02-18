@@ -225,6 +225,61 @@ class ActivityService
     }
 
     /**
+     * Registra una actividad genérica desde módulos externos.
+     *
+     * Acepta un array flexible con type, contact_email, stage y data,
+     * y crea una Activity CRM si encuentra un contacto asociado.
+     */
+    public function logActivity(array $params): ?Activity
+    {
+        $type = $params['type'] ?? 'note';
+        $contactEmail = $params['contact_email'] ?? NULL;
+        $data = $params['data'] ?? [];
+        $stage = $params['stage'] ?? '';
+
+        // Buscar contacto CRM por email.
+        $contactId = NULL;
+        if ($contactEmail) {
+            $contactIds = $this->getStorage()
+                ->getEntityType()
+                ->getClass();
+            // Use entity query on crm_contact.
+            $ids = \Drupal::entityTypeManager()
+                ->getStorage('crm_contact')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('email', $contactEmail)
+                ->range(0, 1)
+                ->execute();
+            $contactId = $ids ? (int) reset($ids) : NULL;
+        }
+
+        if (!$contactId) {
+            \Drupal::logger('jaraba_crm')->notice(
+                'logActivity: No CRM contact found for email @email, skipping.',
+                ['@email' => $contactEmail ?? 'N/A']
+            );
+            return NULL;
+        }
+
+        $subject = ucfirst(str_replace('_', ' ', $type));
+        if (!empty($data['fase'])) {
+            $subject .= ': ' . $data['fase'];
+        }
+
+        return $this->create([
+            'contact_id' => $contactId,
+            'subject' => $subject,
+            'type' => 'note',
+            'notes' => [
+                'value' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+                'format' => 'basic_html',
+            ],
+            'activity_date' => date('Y-m-d\TH:i:s'),
+        ]);
+    }
+
+    /**
      * Cuenta actividades.
      */
     public function count(?int $tenantId = NULL, ?string $type = NULL): int

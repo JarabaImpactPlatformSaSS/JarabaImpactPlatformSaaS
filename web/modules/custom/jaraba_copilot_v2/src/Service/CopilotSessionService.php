@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_copilot_v2\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -65,6 +67,16 @@ class CopilotSessionService {
   protected LoggerInterface $logger;
 
   /**
+   * The state service.
+   */
+  protected StateInterface $state;
+
+  /**
+   * The time service.
+   */
+  protected TimeInterface $time;
+
+  /**
    * Constructs a CopilotSessionService.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
@@ -75,17 +87,25 @@ class CopilotSessionService {
    *   The feature unlock service for mode availability checks.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger channel.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     AccountProxyInterface $currentUser,
     FeatureUnlockService $featureUnlock,
     LoggerInterface $logger,
+    StateInterface $state,
+    TimeInterface $time,
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->currentUser = $currentUser;
     $this->featureUnlock = $featureUnlock;
     $this->logger = $logger;
+    $this->state = $state;
+    $this->time = $time;
   }
 
   /**
@@ -119,7 +139,7 @@ class CopilotSessionService {
     }
 
     $sessionId = $this->generateSessionId();
-    $now = (int) \Drupal::time()->getRequestTime();
+    $now = (int) $this->time->getRequestTime();
 
     $session = [
       'session_id' => $sessionId,
@@ -136,7 +156,7 @@ class CopilotSessionService {
     ];
 
     // Store session data.
-    $state = \Drupal::state();
+    $state = $this->state;
     $state->set(self::STATE_PREFIX . $sessionId, $session);
 
     // Set as user's active session.
@@ -168,7 +188,7 @@ class CopilotSessionService {
    *   array if the session was not found.
    */
   public function endSession(string $sessionId): array {
-    $state = \Drupal::state();
+    $state = $this->state;
     $session = $state->get(self::STATE_PREFIX . $sessionId);
 
     if (!$session) {
@@ -176,7 +196,7 @@ class CopilotSessionService {
       return [];
     }
 
-    $now = (int) \Drupal::time()->getRequestTime();
+    $now = (int) $this->time->getRequestTime();
     $session['status'] = 'ended';
     $session['ended_at'] = $now;
     $session['duration_seconds'] = $now - $session['started_at'];
@@ -212,7 +232,7 @@ class CopilotSessionService {
    *   The active session data, or NULL if no active session exists.
    */
   public function getActiveSession(int $userId): ?array {
-    $state = \Drupal::state();
+    $state = $this->state;
     $sessionId = $state->get(self::ACTIVE_SESSION_PREFIX . $userId);
 
     if (!$sessionId) {
@@ -243,7 +263,7 @@ class CopilotSessionService {
    *   Array of session data arrays, sorted by most recent first.
    */
   public function getSessionHistory(int $userId, int $limit = 20): array {
-    $state = \Drupal::state();
+    $state = $this->state;
     $historyIds = $state->get(self::HISTORY_PREFIX . $userId, []);
 
     // Take only the most recent sessions.
@@ -286,7 +306,7 @@ class CopilotSessionService {
    *   The created message data, or an empty array if session not found.
    */
   public function addMessage(string $sessionId, string $role, string $content, array $metadata = []): array {
-    $state = \Drupal::state();
+    $state = $this->state;
     $session = $state->get(self::STATE_PREFIX . $sessionId);
 
     if (!$session || $session['status'] !== 'active') {
@@ -294,7 +314,7 @@ class CopilotSessionService {
       return [];
     }
 
-    $now = (int) \Drupal::time()->getRequestTime();
+    $now = (int) $this->time->getRequestTime();
 
     $message = [
       'id' => $session['message_count'] + 1,
@@ -327,7 +347,7 @@ class CopilotSessionService {
    *   - average_satisfaction: Average satisfaction rating (1-5).
    */
   public function getSessionMetrics(): array {
-    $state = \Drupal::state();
+    $state = $this->state;
     $metrics = $state->get(self::METRICS_KEY, []);
 
     $activeSessions = max(0, (int) ($metrics['active_sessions'] ?? 0));
@@ -367,7 +387,7 @@ class CopilotSessionService {
       return FALSE;
     }
 
-    $state = \Drupal::state();
+    $state = $this->state;
     $session = $state->get(self::STATE_PREFIX . $sessionId);
 
     if (!$session) {
@@ -407,7 +427,7 @@ class CopilotSessionService {
    *   The session ID to add.
    */
   protected function addToHistory(int $userId, string $sessionId): void {
-    $state = \Drupal::state();
+    $state = $this->state;
     $history = $state->get(self::HISTORY_PREFIX . $userId, []);
 
     // Prepend the new session (most recent first).
@@ -428,7 +448,7 @@ class CopilotSessionService {
    *   The amount to increment (can be negative).
    */
   protected function incrementMetric(string $key, int $amount = 1): void {
-    $state = \Drupal::state();
+    $state = $this->state;
     $metrics = $state->get(self::METRICS_KEY, []);
     $metrics[$key] = ($metrics[$key] ?? 0) + $amount;
     $state->set(self::METRICS_KEY, $metrics);
@@ -443,7 +463,7 @@ class CopilotSessionService {
    *   The duration of the just-ended session in seconds.
    */
   protected function updateAverageDuration(int $newDuration): void {
-    $state = \Drupal::state();
+    $state = $this->state;
     $metrics = $state->get(self::METRICS_KEY, []);
 
     $totalEnded = ($metrics['total_ended_sessions'] ?? 0) + 1;

@@ -12,6 +12,7 @@ use Drupal\jaraba_ai_agents\Agent\BaseAgent;
 use Drupal\jaraba_ai_agents\Agent\AgentInterface;
 use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
 use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_billing\Service\TenantMeteringService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -58,6 +59,11 @@ class ContentWriterAgent extends BaseAgent implements AgentInterface
     protected AccountProxyInterface $currentUser;
 
     /**
+     * Servicio de medición de uso.
+     */
+    protected TenantMeteringService $meteringService;
+
+    /**
      * Construye un ContentWriterAgent.
      *
      * @param \Drupal\ai\AiProviderPluginManager $aiProvider
@@ -74,6 +80,8 @@ class ContentWriterAgent extends BaseAgent implements AgentInterface
      *   El gestor de tipos de entidad.
      * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
      *   El usuario actual.
+     * @param \Drupal\jaraba_billing\Service\TenantMeteringService $meteringService
+     *   El servicio de metering.
      */
     public function __construct(
         AiProviderPluginManager $aiProvider,
@@ -83,10 +91,12 @@ class ContentWriterAgent extends BaseAgent implements AgentInterface
         AIObservabilityService $observability,
         EntityTypeManagerInterface $entityTypeManager,
         AccountProxyInterface $currentUser,
+        TenantMeteringService $meteringService,
     ) {
         parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability);
         $this->entityTypeManager = $entityTypeManager;
         $this->currentUser = $currentUser;
+        $this->meteringService = $meteringService;
     }
 
     /**

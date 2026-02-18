@@ -135,8 +135,14 @@
                data-panel="forecasts"
                hidden>
         <div class="predictions-dashboard__panel-header">
-          <h2 class="predictions-dashboard__panel-title">{{ 'Modelos de Forecasting'|t }}</h2>
+          <h2 class="predictions-dashboard__panel-title">{{ 'Previsión de Ingresos (6 meses)'|t }}</h2>
         </div>
+        
+        {# Gráfico de Tendencia (Fase 189) #}
+        <div class="predictions-dashboard__chart-container">
+          <canvas id="revenue-forecast-chart"></canvas>
+        </div>
+
         <div class="predictions-dashboard__grid">
           {% for forecast in forecasts %}
             {% include '@jaraba_predictive/partials/forecast-card.html.twig' with {'forecast': forecast} only %}

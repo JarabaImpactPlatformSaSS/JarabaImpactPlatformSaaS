@@ -10,7 +10,7 @@
   <div class="pb-section__container">
     <div class="pb-section__map-embed">
       {% if map_embed|default('') %}
-        {{ map_embed|raw }}
+        {{ map_embed|striptags('<iframe>')|raw }}
       {% else %}
         <span>{{ 'Mapa de ubicación — inserta tu código de mapa aquí'|t }}</span>
       {% endif %}

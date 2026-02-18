@@ -47,6 +47,8 @@ class ContentHubDashboardController extends ControllerBase
      * Renders the Content Hub Dashboard for frontend (tenant editors).
      *
      * Uses a clean page template with header/footer, no admin theme.
+     * All variables (logo, site_name, theme_settings) are injected via 
+     * jaraba_content_hub_preprocess_page().
      */
     public function dashboardFrontend(): array
     {
@@ -55,27 +57,6 @@ class ContentHubDashboardController extends ControllerBase
         $topCategories = $this->getTopCategories(5);
         $drafts = $this->getDraftArticles(5);
 
-        // Get theme settings for partials using Config API (Drupal 11 compatible)
-        $themeHandler = \Drupal::service('theme_handler');
-        $activeTheme = $themeHandler->getDefault();
-
-        // Get theme settings from config instead of theme_get_setting()
-        $themeConfig = \Drupal::config($activeTheme . '.settings');
-        $themeSettings = $themeConfig->get() ?: [];
-
-        // Get site config
-        $config = \Drupal::config('system.site');
-        $siteName = $config->get('name') ?: 'Jaraba Impact Platform';
-
-        // Get logo path using theme_get_setting with specific setting name
-        $logoSettings = theme_get_setting('logo', $activeTheme);
-        $logo = '';
-        if (!empty($logoSettings['use_default'])) {
-            $logo = '/' . \Drupal::service('extension.list.theme')->getPath($activeTheme) . '/logo.svg';
-        } elseif (!empty($logoSettings['path'])) {
-            $logo = $logoSettings['path'];
-        }
-
         return [
             '#theme' => 'content_hub_dashboard_frontend',
             '#stats' => $stats,
@@ -83,14 +64,8 @@ class ContentHubDashboardController extends ControllerBase
             '#top_categories' => $topCategories,
             '#drafts' => $drafts,
             '#quick_actions' => $this->getQuickActionsFrontend(),
-            // Theme variables for partials
-            '#site_name' => $siteName,
-            '#logo' => $logo,
-            '#logged_in' => \Drupal::currentUser()->isAuthenticated(),
-            '#theme_settings' => $themeSettings,
             '#attached' => [
                 'library' => [
-                    'ecosistema_jaraba_theme/global',
                     'ecosistema_jaraba_theme/content-hub',
                 ],
             ],

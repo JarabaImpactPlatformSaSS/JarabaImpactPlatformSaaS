@@ -48,6 +48,7 @@ jaraba_legal_vault.api.documents.store:
   methods: [POST]
   requirements:
     _permission: 'manage vault documents'
+    _csrf_token: 'TRUE'
 
 jaraba_legal_vault.api.documents.detail:
   path: '/api/v1/vault/documents/{uuid}'
@@ -74,6 +75,7 @@ jaraba_legal_vault.api.documents.versions.store:
   methods: [POST]
   requirements:
     _permission: 'manage vault documents'
+    _csrf_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_vault.api.documents.versions.list:
@@ -94,6 +96,7 @@ jaraba_legal_vault.api.documents.share:
   methods: [POST]
   requirements:
     _permission: 'manage document access'
+    _csrf_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_vault.api.documents.access.list:

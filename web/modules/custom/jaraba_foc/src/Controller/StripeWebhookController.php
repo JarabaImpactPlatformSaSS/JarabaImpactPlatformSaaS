@@ -98,14 +98,15 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
         // ═══════════════════════════════════════════════════════════════════════
         if (!$this->stripeConnect->verifyWebhookSignature($payload, $sigHeader)) {
             $this->focLogger->warning('Webhook de Stripe rechazado: firma inválida.');
-            return new JsonResponse(['error' => 'Invalid signature'], 400);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 400);
         }
 
         // Decodificar evento
         $event = json_decode($payload, TRUE);
         if (!$event || !isset($event['type'])) {
             $this->focLogger->warning('Webhook de Stripe rechazado: payload inválido.');
-            return new JsonResponse(['error' => 'Invalid payload'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid payload']], 400);
         }
 
         $eventType = $event['type'];
@@ -131,7 +132,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
                 '@type' => $eventType,
                 '@error' => $e->getMessage(),
             ]);
-            return new JsonResponse(['error' => 'Processing failed'], 500);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Processing failed']], 500);
         }
     }
 
@@ -186,7 +187,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             '@currency' => $currency,
         ]);
 
-        return new JsonResponse(['status' => 'processed']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -214,7 +215,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             '@amount' => $amount,
         ]);
 
-        return new JsonResponse(['status' => 'processed']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -242,7 +243,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             '@amount' => $amountRefunded,
         ]);
 
-        return new JsonResponse(['status' => 'processed']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -284,7 +285,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             ]);
         }
 
-        return new JsonResponse(['status' => 'processed']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -296,7 +297,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
 
         $this->focLogger->info('Suscripción creada: @id', ['@id' => $subscriptionId]);
 
-        return new JsonResponse(['status' => 'processed']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -343,7 +344,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
             ]);
         }
 
-        return new JsonResponse(['status' => 'processed']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -352,7 +353,7 @@ class StripeWebhookController extends ControllerBase implements ContainerInjecti
     protected function handleUnknownEvent(string $eventType): JsonResponse
     {
         $this->focLogger->debug('Evento Stripe ignorado: @type', ['@type' => $eventType]);
-        return new JsonResponse(['status' => 'ignored']);
+        return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'ignored'], 'meta' => ['timestamp' => time()]]);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

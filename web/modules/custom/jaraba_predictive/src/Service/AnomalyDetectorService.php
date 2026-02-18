@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_predictive\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\jaraba_billing\Service\TenantMeteringService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -34,7 +35,7 @@ class AnomalyDetectorService {
   /**
    * Factor de desviacion estandar para umbral de anomalia.
    */
-  protected const SIGMA_THRESHOLD = 2.0;
+  protected const SIGMA_THRESHOLD = 2.5;
 
   /**
    * Construye el servicio de deteccion de anomalias.
@@ -43,10 +44,13 @@ class AnomalyDetectorService {
    *   Gestor de tipos de entidad para acceso a almacenamiento.
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger del canal jaraba_predictive.
+   * @param \Drupal\jaraba_billing\Service\TenantMeteringService $meteringService
+   *   Servicio de medición de uso.
    */
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly TenantMeteringService $meteringService,
   ) {}
 
   /**
@@ -237,6 +241,56 @@ class AnomalyDetectorService {
     });
 
     return array_slice($allAnomalies, 0, $limit);
+  }
+
+  /**
+   * Detecta si hay un pico de consumo de tokens sospechoso.
+   */
+  public function detectAiUsageAnomaly(int $tenantId): array {
+    // 1. Obtener historial de consumo diario de los últimos 15 días.
+    $history = $this->meteringService->getHistoricalUsage((string) $tenantId, 15);
+    
+    $tokenSeries = [];
+    foreach ($history as $period => $metrics) {
+      $tokenSeries[] = $metrics[TenantMeteringService::METRIC_AI_TOKENS] ?? 0.0;
+    }
+
+    if (count($tokenSeries) < 5) {
+      return ['is_anomaly' => FALSE];
+    }
+
+    // 2. Cálculo estadístico.
+    $n = count($tokenSeries);
+    $mean = array_sum($tokenSeries) / $n;
+    $variance = 0.0;
+    foreach ($tokenSeries as $v) {
+      $variance += ($v - $mean) ** 2;
+    }
+    $stdDev = sqrt($variance / ($n - 1));
+
+    // 3. Evaluar uso actual.
+    $usageData = $this->meteringService->getUsage((string) $tenantId);
+    $currentUsage = $usageData['metrics'][TenantMeteringService::METRIC_AI_TOKENS]['total'] ?? 0;
+    
+    $threshold = $mean + (self::SIGMA_THRESHOLD * $stdDev);
+
+    if ($currentUsage > $threshold && $currentUsage > 5000) { // Ignorar ruidos pequeños.
+      $this->logger->critical('ALERTA DE SEGURIDAD IA: Tenant @id consumiendo @cur (Media: @mean)', [
+        '@id' => $tenantId,
+        '@cur' => $currentUsage,
+        '@mean' => $mean
+      ]);
+      
+      return [
+        'is_anomaly' => TRUE,
+        'type' => 'ai_token_spike',
+        'severity' => 'critical',
+        'current_value' => $currentUsage,
+        'expected_max' => $threshold,
+      ];
+    }
+
+    return ['is_anomaly' => FALSE];
   }
 
 }

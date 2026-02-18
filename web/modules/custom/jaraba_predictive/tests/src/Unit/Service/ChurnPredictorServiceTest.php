@@ -12,6 +12,8 @@ use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_predictive\Service\ChurnPredictorService;
+use Drupal\jaraba_predictive\Service\FeatureStoreService;
+use Drupal\jaraba_predictive\Service\RetentionWorkflowService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
@@ -59,6 +61,20 @@ class ChurnPredictorServiceTest extends UnitTestCase {
   protected $tenantContext;
 
   /**
+   * Mock feature store service.
+   *
+   * @var \Drupal\jaraba_predictive\Service\FeatureStoreService|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $featureStore;
+
+  /**
+   * Mock retention workflow service.
+   *
+   * @var \Drupal\jaraba_predictive\Service\RetentionWorkflowService|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $retentionWorkflow;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -68,6 +84,8 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->configFactory = $this->createMock(ConfigFactoryInterface::class);
     $this->tenantContext = $this->createMock(TenantContextService::class);
+    $this->featureStore = $this->createMock(FeatureStoreService::class);
+    $this->retentionWorkflow = $this->createMock(RetentionWorkflowService::class);
 
     // Default config setup: returns NULL for all config keys so the service
     // falls back to its default weights and model version.
@@ -82,6 +100,8 @@ class ChurnPredictorServiceTest extends UnitTestCase {
       $this->logger,
       $this->configFactory,
       $this->tenantContext,
+      $this->featureStore,
+      $this->retentionWorkflow,
     );
   }
 

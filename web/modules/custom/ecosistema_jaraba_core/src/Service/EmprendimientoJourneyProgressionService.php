@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\State\StateInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -108,6 +111,11 @@ class EmprendimientoJourneyProgressionService {
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly TimeInterface $time,
+    protected readonly StateInterface $state,
+    protected readonly ModuleHandlerInterface $moduleHandler,
+    protected readonly ?object $bmcValidation = NULL,
+    protected readonly ?object $fundingMatchingEngine = NULL,
   ) {}
 
   /**
@@ -151,19 +159,19 @@ class EmprendimientoJourneyProgressionService {
    */
   public function getPendingAction(int $userId): ?array {
     $cacheKey = "emprendimiento_proactive_pending_{$userId}";
-    $cached = \Drupal::state()->get($cacheKey);
+    $cached = $this->state->get($cacheKey);
 
     if ($cached) {
-      $age = \Drupal::time()->getRequestTime() - ($cached['evaluated_at'] ?? 0);
+      $age = $this->time->getRequestTime() - ($cached['evaluated_at'] ?? 0);
       if ($age < 3600) {
         return $cached['action'];
       }
     }
 
     $action = $this->evaluate($userId);
-    \Drupal::state()->set($cacheKey, [
+    $this->state->set($cacheKey, [
       'action' => $action,
-      'evaluated_at' => \Drupal::time()->getRequestTime(),
+      'evaluated_at' => $this->time->getRequestTime(),
     ]);
 
     return $action;
@@ -174,13 +182,13 @@ class EmprendimientoJourneyProgressionService {
    */
   public function dismissAction(int $userId, string $ruleId): void {
     $key = "emprendimiento_proactive_dismissed_{$userId}";
-    $dismissed = \Drupal::state()->get($key, []);
+    $dismissed = $this->state->get($key, []);
     if (!in_array($ruleId, $dismissed, TRUE)) {
       $dismissed[] = $ruleId;
-      \Drupal::state()->set($key, $dismissed);
+      $this->state->set($key, $dismissed);
     }
 
-    \Drupal::state()->delete("emprendimiento_proactive_pending_{$userId}");
+    $this->state->delete("emprendimiento_proactive_pending_{$userId}");
 
     $this->logger->info('Proactive rule @rule dismissed by user @uid', [
       '@rule' => $ruleId,
@@ -212,9 +220,9 @@ class EmprendimientoJourneyProgressionService {
         }
 
         $action = $this->evaluate($userId);
-        \Drupal::state()->set("emprendimiento_proactive_pending_{$userId}", [
+        $this->state->set("emprendimiento_proactive_pending_{$userId}", [
           'action' => $action,
-          'evaluated_at' => \Drupal::time()->getRequestTime(),
+          'evaluated_at' => $this->time->getRequestTime(),
         ]);
         $processed++;
       }
@@ -260,7 +268,7 @@ class EmprendimientoJourneyProgressionService {
       return FALSE;
     }
 
-    $elapsed = \Drupal::time()->getRequestTime() - $reference;
+    $elapsed = $this->time->getRequestTime() - $reference;
     return $elapsed > ($days * 86400);
   }
 
@@ -268,7 +276,7 @@ class EmprendimientoJourneyProgressionService {
    * Checks if BMC canvas completeness is below 50%.
    */
   protected function checkCanvasBelow50(int $userId): bool {
-    if (!\Drupal::hasService('jaraba_copilot_v2.bmc_validation')) {
+    if (!$this->bmcValidation) {
       return FALSE;
     }
 
@@ -282,8 +290,7 @@ class EmprendimientoJourneyProgressionService {
       }
 
       $canvas = reset($canvases);
-      $validation = \Drupal::service('jaraba_copilot_v2.bmc_validation')
-        ->validateCanvas($canvas);
+      $validation = $this->bmcValidation->validateCanvas($canvas);
 
       return ($validation['overall_percentage'] ?? 0) < 50;
     }
@@ -308,7 +315,7 @@ class EmprendimientoJourneyProgressionService {
         return FALSE;
       }
 
-      $sevenDaysAgo = \Drupal::time()->getRequestTime() - (7 * 86400);
+      $sevenDaysAgo = $this->time->getRequestTime() - (7 * 86400);
 
       foreach ($hypotheses as $hypothesis) {
         $created = (int) ($hypothesis->get('created')->value ?? 0);
@@ -414,13 +421,12 @@ class EmprendimientoJourneyProgressionService {
    * Checks if user is eligible for funding but hasn't applied.
    */
   protected function checkEligibleNotApplied(int $userId): bool {
-    if (!\Drupal::hasService('jaraba_funding.matching_engine')) {
+    if (!$this->fundingMatchingEngine) {
       return FALSE;
     }
 
     try {
-      $matches = \Drupal::service('jaraba_funding.matching_engine')
-        ->findMatches($userId);
+      $matches = $this->fundingMatchingEngine->findMatches($userId);
 
       $hasGoodMatch = FALSE;
       foreach ($matches as $match) {
@@ -454,7 +460,7 @@ class EmprendimientoJourneyProgressionService {
    * Loads the journey state entity for a user.
    */
   protected function getJourneyState(int $userId) {
-    if (!\Drupal::moduleHandler()->moduleExists('jaraba_journey')) {
+    if (!$this->moduleHandler->moduleExists('jaraba_journey')) {
       return NULL;
     }
 
@@ -477,7 +483,7 @@ class EmprendimientoJourneyProgressionService {
    * Gets list of dismissed rule IDs for a user.
    */
   protected function getDismissedRules(int $userId): array {
-    return \Drupal::state()->get("emprendimiento_proactive_dismissed_{$userId}", []);
+    return $this->state->get("emprendimiento_proactive_dismissed_{$userId}", []);
   }
 
 }

@@ -148,7 +148,6 @@ analytics-dashboard:
     - ecosistema_jaraba_core/global
     - ecosistema_jaraba_core/chartjs
     - ecosistema_jaraba_theme/slide-panel
-    - jaraba_heatmap/viewer
 
 # Canvas Editor - Editor Visual Multi-Block con Preview (Gap J evolucionado)
 section-editor:
@@ -157,7 +156,7 @@ section-editor:
     theme:
       css/canvas-editor.css: {}
   js:
-    https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js: { type: external, minified: true }
+    https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js: { type: external, minified: true, attributes: { crossorigin: anonymous, integrity: 'sha384-eeLEhtwdMwD3X9y+8P3Cn7Idl/M+w8H4uZqkgD/2eJVkWIN1yKzEj6XegJ9dL3q0' } }
     js/section-editor.js: {}
   dependencies:
     - core/drupal
@@ -367,7 +366,7 @@ grapesjs-onboarding:
       css/vendor/driver.min.css: { minified: true }
       css/grapesjs-onboarding.css: {}
   js:
-    https://unpkg.com/driver.js@1.3.1/dist/driver.js.iife.js: { type: external, minified: true }
+    https://unpkg.com/driver.js@1.3.1/dist/driver.js.iife.js: { type: external, minified: true, attributes: { crossorigin: anonymous, integrity: 'sha384-BhR06AMz62Xn0o53z8itVS1vw4JslNckRFgOTa6/Dob0Agdmbbh8Dr9sDO2h18TO' } }
     js/grapesjs-onboarding.js: {}
   dependencies:
     - core/drupal

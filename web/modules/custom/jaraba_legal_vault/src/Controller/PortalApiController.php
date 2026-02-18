@@ -50,7 +50,8 @@ class PortalApiController extends ControllerBase {
   public function overview(string $token): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido o expediente no encontrado.'], 403);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido o expediente no encontrado.']], 403);
     }
 
     return new JsonResponse([
@@ -70,7 +71,7 @@ class PortalApiController extends ControllerBase {
   public function listRequests(string $token): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido.'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido.']], 403);
     }
 
     try {
@@ -94,10 +95,10 @@ class PortalApiController extends ControllerBase {
         ];
       }
 
-      return new JsonResponse(['data' => $data]);
+      return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al cargar solicitudes.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al cargar solicitudes.']], 500);
     }
   }
 
@@ -107,7 +108,7 @@ class PortalApiController extends ControllerBase {
   public function uploadDocument(string $token, int $id, Request $request): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido.'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido.']], 403);
     }
 
     try {
@@ -115,17 +116,17 @@ class PortalApiController extends ControllerBase {
       $docRequest = $reqStorage->load($id);
 
       if (!$docRequest || (int) $docRequest->get('case_id')->target_id !== (int) $case->id()) {
-        return new JsonResponse(['error' => 'Solicitud no encontrada.'], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Solicitud no encontrada.']], 404);
       }
 
       $file = $request->files->get('file');
       if (!$file) {
-        return new JsonResponse(['error' => 'El campo file es obligatorio.'], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El campo file es obligatorio.']], 400);
       }
 
       $content = file_get_contents($file->getPathname());
       if ($content === FALSE) {
-        return new JsonResponse(['error' => 'No se pudo leer el archivo.'], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No se pudo leer el archivo.']], 400);
       }
 
       // Almacenar en vault cifrado.
@@ -138,7 +139,7 @@ class PortalApiController extends ControllerBase {
       );
 
       if (!$result['success']) {
-        return new JsonResponse(['error' => 'Error al almacenar documento.'], 500);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al almacenar documento.']], 500);
       }
 
       // Actualizar solicitud.
@@ -146,10 +147,10 @@ class PortalApiController extends ControllerBase {
       $docRequest->set('uploaded_document_id', $result['document']->id());
       $docRequest->save();
 
-      return new JsonResponse(['data' => ['uploaded' => TRUE, 'request_id' => $id]], 201);
+      return new JsonResponse(['success' => TRUE, 'data' => ['uploaded' => TRUE, 'request_id' => $id], 'meta' => ['timestamp' => time()]], 201);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al procesar upload.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al procesar upload.']], 500);
     }
   }
 
@@ -159,7 +160,7 @@ class PortalApiController extends ControllerBase {
   public function listDeliveries(string $token): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido.'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido.']], 403);
     }
 
     try {
@@ -184,10 +185,10 @@ class PortalApiController extends ControllerBase {
         ];
       }
 
-      return new JsonResponse(['data' => $data]);
+      return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al cargar entregas.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al cargar entregas.']], 500);
     }
   }
 
@@ -197,7 +198,7 @@ class PortalApiController extends ControllerBase {
   public function download(string $token, int $id): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido.'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido.']], 403);
     }
 
     try {
@@ -205,7 +206,7 @@ class PortalApiController extends ControllerBase {
       $delivery = $storage->load($id);
 
       if (!$delivery || (int) $delivery->get('case_id')->target_id !== (int) $case->id()) {
-        return new JsonResponse(['error' => 'Entrega no encontrada.'], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Entrega no encontrada.']], 404);
       }
 
       $docId = (int) $delivery->get('document_id')->target_id;
@@ -233,7 +234,7 @@ class PortalApiController extends ControllerBase {
       ]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al descargar.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al descargar.']], 500);
     }
   }
 
@@ -243,7 +244,7 @@ class PortalApiController extends ControllerBase {
   public function acknowledge(string $token, int $id): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido.'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido.']], 403);
     }
 
     try {
@@ -251,7 +252,7 @@ class PortalApiController extends ControllerBase {
       $delivery = $storage->load($id);
 
       if (!$delivery || (int) $delivery->get('case_id')->target_id !== (int) $case->id()) {
-        return new JsonResponse(['error' => 'Entrega no encontrada.'], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Entrega no encontrada.']], 404);
       }
 
       $delivery->set('status', 'acknowledged');
@@ -261,10 +262,10 @@ class PortalApiController extends ControllerBase {
       $docId = (int) $delivery->get('document_id')->target_id;
       $this->auditService->log($docId, 'viewed', ['via' => 'portal', 'acknowledged' => TRUE]);
 
-      return new JsonResponse(['data' => ['acknowledged' => TRUE]]);
+      return new JsonResponse(['success' => TRUE, 'data' => ['acknowledged' => TRUE], 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al confirmar recepcion.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al confirmar recepcion.']], 500);
     }
   }
 
@@ -274,7 +275,7 @@ class PortalApiController extends ControllerBase {
   public function activity(string $token): JsonResponse {
     $case = $this->loadCaseByToken($token);
     if (!$case) {
-      return new JsonResponse(['error' => 'Token invalido.'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Token invalido.']], 403);
     }
 
     try {
@@ -297,10 +298,10 @@ class PortalApiController extends ControllerBase {
         ];
       }
 
-      return new JsonResponse(['data' => $data]);
+      return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al cargar actividad.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al cargar actividad.']], 500);
     }
   }
 

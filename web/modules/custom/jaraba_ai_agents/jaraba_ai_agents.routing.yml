@@ -54,6 +54,7 @@ jaraba_ai_agents.api.execute:
   methods: [POST]
   requirements:
     _permission: 'use ai agents'
+    _csrf_token: 'TRUE'
 
 # Observability API Routes
 jaraba_ai_agents.api.observability.stats:
@@ -120,6 +121,7 @@ jaraba_ai_agents.api.workflows.execute:
   methods: [POST]
   requirements:
     _permission: 'use ai agents'
+    _csrf_token: 'TRUE'
 
 # Quality Evaluation API Routes
 jaraba_ai_agents.api.quality.evaluate:
@@ -129,6 +131,7 @@ jaraba_ai_agents.api.quality.evaluate:
   methods: [POST]
   requirements:
     _permission: 'administer ai agents'
+    _csrf_token: 'TRUE'
 
 jaraba_ai_agents.api.quality.stats:
   path: '/api/v1/ai/quality/stats'
@@ -154,6 +157,7 @@ jaraba_ai_agents.api.brand_voice.feedback:
   methods: [POST]
   requirements:
     _permission: 'manage tenant brand voice'
+    _csrf_token: 'TRUE'
 
 jaraba_ai_agents.api.brand_voice.alignment:
   path: '/api/v1/ai/brand-voice/alignment'
@@ -162,6 +166,7 @@ jaraba_ai_agents.api.brand_voice.alignment:
   methods: [POST]
   requirements:
     _permission: 'manage tenant brand voice'
+    _csrf_token: 'TRUE'
 
 jaraba_ai_agents.api.brand_voice.training_stats:
   path: '/api/v1/ai/brand-voice/training-stats'
@@ -178,6 +183,7 @@ jaraba_ai_agents.api.brand_voice.refine:
   methods: [POST]
   requirements:
     _permission: 'administer ai agents'
+    _csrf_token: 'TRUE'
 
 # F11 — Prompt Experiment API Routes
 jaraba_ai_agents.api.prompt_experiments.list:
@@ -195,6 +201,7 @@ jaraba_ai_agents.api.prompt_experiments.create:
   methods: [POST]
   requirements:
     _permission: 'administer ai agents'
+    _csrf_token: 'TRUE'
 
 jaraba_ai_agents.api.prompt_experiments.results:
   path: '/api/v1/ai/prompt-experiments/{experiment_id}/results'

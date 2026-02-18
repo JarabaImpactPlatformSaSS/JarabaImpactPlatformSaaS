@@ -7,8 +7,8 @@ namespace Drupal\Tests\jaraba_interactive\Unit\Service;
 use Drupal\jaraba_interactive\Plugin\InteractiveTypeInterface;
 use Drupal\jaraba_interactive\Plugin\InteractiveTypeManager;
 use Drupal\jaraba_interactive\Service\Scorer;
+use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
  * @coversDefaultClass \Drupal\jaraba_interactive\Service\Scorer
  * @group jaraba_interactive
  */
-class ScorerTest extends TestCase {
+class ScorerTest extends UnitTestCase {
 
   /**
    * El servicio bajo prueba.
@@ -42,6 +42,11 @@ class ScorerTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
 
     $this->typeManager = $this->createMock(InteractiveTypeManager::class);
     $this->logger = $this->createMock(LoggerInterface::class);

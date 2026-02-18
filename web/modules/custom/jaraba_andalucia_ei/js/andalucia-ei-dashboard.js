@@ -26,9 +26,11 @@
                 var animId;
 
                 function resize() {
-                    var rect = canvas.parentElement.getBoundingClientRect();
-                    canvas.width = rect.width;
-                    canvas.height = rect.height;
+                    // Use clientWidth/clientHeight to avoid feedback loop
+                    // (getBoundingClientRect includes the inflated canvas dimensions)
+                    var parent = canvas.parentElement;
+                    canvas.width = parent.clientWidth || window.innerWidth;
+                    canvas.height = parent.clientHeight || 400;
                 }
 
                 function createParticle() {

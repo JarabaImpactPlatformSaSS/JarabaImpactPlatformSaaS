@@ -82,13 +82,14 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     // Verificación de firma HMAC-SHA256.
     if (!$this->stripeConnect->verifyWebhookSignature($payload, $sigHeader)) {
       $this->billingLogger->warning('Billing webhook rechazado: firma inválida.');
-      return new JsonResponse(['error' => 'Invalid signature'], 400);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 400);
     }
 
     $event = json_decode($payload, TRUE);
     if (!$event || !isset($event['type'])) {
       $this->billingLogger->warning('Billing webhook rechazado: payload inválido.');
-      return new JsonResponse(['error' => 'Invalid payload'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid payload']], 400);
     }
 
     $eventType = $event['type'];
@@ -114,7 +115,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
         '@type' => $eventType,
         '@error' => $e->getMessage(),
       ]);
-      return new JsonResponse(['error' => 'Processing failed'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Processing failed']], 500);
     }
   }
 
@@ -128,7 +129,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       '@id' => $data['id'] ?? 'unknown',
     ]);
 
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -171,7 +172,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       '@tenant' => $tenantId,
     ]);
 
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -184,7 +185,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       '@id' => $data['id'] ?? 'unknown',
     ]);
 
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -260,7 +261,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       '@tenant' => $tenantId,
     ]);
 
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -301,7 +302,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       '@tenant' => $tenantId,
     ]);
 
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -348,7 +349,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       '@tenant' => $tenantId,
     ]);
 
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -396,7 +397,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     }
 
     $this->billingLogger->info('Payment method vinculado: @pm', ['@pm' => $pmId]);
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -426,7 +427,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     }
 
     $this->billingLogger->info('Payment method desvinculado: @pm', ['@pm' => $pmId]);
-    return new JsonResponse(['status' => 'processed']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -434,7 +435,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
    */
   protected function handleUnknownEvent(string $eventType): JsonResponse {
     $this->billingLogger->debug('Billing webhook ignorado: @type', ['@type' => $eventType]);
-    return new JsonResponse(['status' => 'ignored']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'ignored'], 'meta' => ['timestamp' => time()]]);
   }
 
 }

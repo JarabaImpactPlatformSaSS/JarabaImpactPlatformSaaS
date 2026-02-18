@@ -53,7 +53,8 @@
                 {{ jaraba_icon('ui', feature.icon, { size: '64px', color: loop.index == 1 ? 'primary' : (loop.index == 2 ? 'secondary' : 'corporate') }) }}
               {% else %}
                 {# Fallback: SVG inline para datos por defecto #}
-                {{ feature.icon_svg|raw }}
+                {# AUDIT-SEC-02: |raw for SVG from preprocess — sanitize to SVG-safe tags #}
+                {{ feature.icon_svg|striptags('<svg><path><circle><rect><line><polyline><polygon><g><defs><use><symbol><clipPath><mask><text><tspan>')|raw }}
               {% endif %}
             </div>
           </div>

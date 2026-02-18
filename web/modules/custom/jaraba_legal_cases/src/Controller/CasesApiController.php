@@ -66,14 +66,11 @@ class CasesApiController extends ControllerBase {
       $data[] = $this->serializeCase($case);
     }
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => [
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ],
-    ]);
+      ]]);
   }
 
   /**
@@ -82,7 +79,8 @@ class CasesApiController extends ControllerBase {
   public function store(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['title']) || empty($content['client_name'])) {
-      return new JsonResponse(['error' => 'Los campos title y client_name son obligatorios.'], 400);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos title y client_name son obligatorios.']], 400);
     }
 
     try {
@@ -101,10 +99,10 @@ class CasesApiController extends ControllerBase {
       ]);
       $case->save();
 
-      return new JsonResponse(['data' => $this->serializeCase($case)], 201);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeCase($case)], 201);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al crear el expediente.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al crear el expediente.']], 500);
     }
   }
 
@@ -114,9 +112,9 @@ class CasesApiController extends ControllerBase {
   public function detail(string $uuid): JsonResponse {
     $case = $this->caseManager->getCaseByUuid($uuid);
     if (!$case) {
-      return new JsonResponse(['error' => 'Expediente no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Expediente no encontrado.']], 404);
     }
-    return new JsonResponse(['data' => $this->serializeCase($case)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeCase($case), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -125,7 +123,7 @@ class CasesApiController extends ControllerBase {
   public function update(string $uuid, Request $request): JsonResponse {
     $case = $this->caseManager->getCaseByUuid($uuid);
     if (!$case) {
-      return new JsonResponse(['error' => 'Expediente no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Expediente no encontrado.']], 404);
     }
 
     $content = json_decode($request->getContent(), TRUE);
@@ -143,10 +141,10 @@ class CasesApiController extends ControllerBase {
 
     try {
       $case->save();
-      return new JsonResponse(['data' => $this->serializeCase($case)]);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeCase($case), 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al actualizar el expediente.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al actualizar el expediente.']], 500);
     }
   }
 
@@ -156,15 +154,15 @@ class CasesApiController extends ControllerBase {
   public function delete(string $uuid): JsonResponse {
     $case = $this->caseManager->getCaseByUuid($uuid);
     if (!$case) {
-      return new JsonResponse(['error' => 'Expediente no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Expediente no encontrado.']], 404);
     }
 
     try {
       $case->delete();
-      return new JsonResponse(['data' => ['deleted' => TRUE]]);
+      return new JsonResponse(['success' => TRUE, 'data' => ['deleted' => TRUE], 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al eliminar el expediente.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al eliminar el expediente.']], 500);
     }
   }
 
@@ -174,7 +172,7 @@ class CasesApiController extends ControllerBase {
   public function activity(string $uuid): JsonResponse {
     $case = $this->caseManager->getCaseByUuid($uuid);
     if (!$case) {
-      return new JsonResponse(['error' => 'Expediente no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Expediente no encontrado.']], 404);
     }
 
     $activities = $this->activityLogger->getActivities((int) $case->id());
@@ -191,7 +189,7 @@ class CasesApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -200,7 +198,7 @@ class CasesApiController extends ControllerBase {
   public function storeInquiry(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['subject']) || empty($content['client_name'])) {
-      return new JsonResponse(['error' => 'Los campos subject y client_name son obligatorios.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos subject y client_name son obligatorios.']], 400);
     }
 
     try {
@@ -218,10 +216,10 @@ class CasesApiController extends ControllerBase {
       ]);
       $inquiry->save();
 
-      return new JsonResponse(['data' => $this->serializeInquiry($inquiry)], 201);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->serializeInquiry($inquiry), 'meta' => ['timestamp' => time()]], 201);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Error al crear la consulta.'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error al crear la consulta.']], 500);
     }
   }
 
@@ -244,13 +242,11 @@ class CasesApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data,
-      'meta' => [
+      'data' => $data, 'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ],
-    ]);
+      ]]);
   }
 
   /**
@@ -262,7 +258,7 @@ class CasesApiController extends ControllerBase {
     $inquiry = !empty($entities) ? reset($entities) : NULL;
 
     if (!$inquiry) {
-      return new JsonResponse(['error' => 'Consulta no encontrada.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Consulta no encontrada.']], 404);
     }
 
     $result = $this->triageService->triageInquiry((int) $inquiry->id());
@@ -270,7 +266,7 @@ class CasesApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error en triaje.'], 500);
     }
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -282,7 +278,7 @@ class CasesApiController extends ControllerBase {
     $inquiry = !empty($entities) ? reset($entities) : NULL;
 
     if (!$inquiry) {
-      return new JsonResponse(['error' => 'Consulta no encontrada.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Consulta no encontrada.']], 404);
     }
 
     $result = $this->inquiryManager->convertToCase((int) $inquiry->id());
@@ -290,7 +286,7 @@ class CasesApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error en conversion.'], 400);
     }
 
-    return new JsonResponse(['data' => $result], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -299,7 +295,7 @@ class CasesApiController extends ControllerBase {
   public function assign(string $uuid, Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['user_id'])) {
-      return new JsonResponse(['error' => 'El campo user_id es obligatorio.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El campo user_id es obligatorio.']], 400);
     }
 
     $storage = $this->entityTypeManager()->getStorage('client_inquiry');
@@ -307,7 +303,7 @@ class CasesApiController extends ControllerBase {
     $inquiry = !empty($entities) ? reset($entities) : NULL;
 
     if (!$inquiry) {
-      return new JsonResponse(['error' => 'Consulta no encontrada.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Consulta no encontrada.']], 404);
     }
 
     $result = $this->inquiryManager->assignInquiry((int) $inquiry->id(), (int) $content['user_id']);
@@ -315,7 +311,7 @@ class CasesApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error en asignacion.'], 400);
     }
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
   /**

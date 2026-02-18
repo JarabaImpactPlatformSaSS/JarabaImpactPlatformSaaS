@@ -47,6 +47,7 @@ jaraba_legal_templates.api.templates.store:
   methods: [POST]
   requirements:
     _permission: 'manage legal templates'
+    _csrf_token: 'TRUE'
 
 # --- API REST — Document Generation ---
 
@@ -57,6 +58,7 @@ jaraba_legal_templates.api.documents.generate:
   methods: [POST]
   requirements:
     _permission: 'generate legal documents'
+    _csrf_token: 'TRUE'
 
 jaraba_legal_templates.api.documents.generate_ai:
   path: '/api/v1/legal/documents/generate-ai'
@@ -65,6 +67,7 @@ jaraba_legal_templates.api.documents.generate_ai:
   methods: [POST]
   requirements:
     _permission: 'generate legal documents'
+    _csrf_token: 'TRUE'
 
 jaraba_legal_templates.api.documents.detail:
   path: '/api/v1/legal/documents/{uuid}'

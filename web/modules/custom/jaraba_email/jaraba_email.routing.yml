@@ -245,6 +245,7 @@ jaraba_email.api.lists.create:
   methods: [POST]
   requirements:
     _permission: 'administer email lists'
+    _csrf_token: 'TRUE'
 
 # --- Suscriptores ---
 
@@ -263,6 +264,7 @@ jaraba_email.api.subscribers.create:
   methods: [POST]
   requirements:
     _permission: 'administer email subscribers'
+    _csrf_token: 'TRUE'
 
 jaraba_email.api.subscribers.unsubscribe:
   path: '/api/v1/email/subscribers/{id}'
@@ -290,6 +292,7 @@ jaraba_email.api.campaigns.send:
   methods: [POST]
   requirements:
     _permission: 'send email campaigns'
+    _csrf_token: 'TRUE'
     id: '\d+'
 
 jaraba_email.api.campaigns.stats:
@@ -328,6 +331,7 @@ jaraba_email.api.sequences.enroll:
   methods: [POST]
   requirements:
     _permission: 'administer email sequences'
+    _csrf_token: 'TRUE'
     id: '\d+'
 
 # --- Webhooks ---

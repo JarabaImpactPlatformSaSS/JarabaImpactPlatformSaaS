@@ -134,10 +134,10 @@ class FinancialTransaction extends ContentEntityBase implements FinancialTransac
     /**
      * {@inheritdoc}
      */
-    public function getRelatedVerticalId(): ?int
+    public function getRelatedVerticalId(): ?string
     {
-        $vid = $this->get('related_vertical')->target_id;
-        return $vid ? (int) $vid : NULL;
+        $value = $this->get('related_vertical')->value;
+        return $value ?: NULL;
     }
 
     /**
@@ -341,7 +341,8 @@ class FinancialTransaction extends ContentEntityBase implements FinancialTransac
                     'weight' => 6,
                 ])
             ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
+            ->setDisplayConfigurable('view', TRUE)
+            ->addConstraint('UniqueField');
 
         // ═══════════════════════════════════════════════════════════════════════
         // RELACIONES

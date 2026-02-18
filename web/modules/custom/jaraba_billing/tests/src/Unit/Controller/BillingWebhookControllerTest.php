@@ -68,7 +68,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
       ->method('verifyWebhookSignature')
       ->willReturn(FALSE);
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], '{}');
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], '{}');
     $request->headers->set('Stripe-Signature', 'invalid');
 
     $response = $this->controller->handle($request);
@@ -83,7 +83,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
       ->method('verifyWebhookSignature')
       ->willReturn(TRUE);
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], 'not json');
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], 'not json');
     $request->headers->set('Stripe-Signature', 'valid');
 
     $response = $this->controller->handle($request);
@@ -115,7 +115,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
         return $data['id'] === 'in_test';
       }));
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
     $request->headers->set('Stripe-Signature', 'valid');
 
     $response = $this->controller->handle($request);
@@ -135,7 +135,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
       ->method('verifyWebhookSignature')
       ->willReturn(TRUE);
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
     $request->headers->set('Stripe-Signature', 'valid');
 
     $response = $this->controller->handle($request);
@@ -163,7 +163,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $this->invoiceService->expects($this->once())
       ->method('syncInvoice');
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
     $request->headers->set('Stripe-Signature', 'valid');
 
     $response = $this->controller->handle($request);
@@ -211,7 +211,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
     // We can't easily inject entityTypeManager for ControllerBase,
     // but we verify the handler method exists and the controller processes correctly.
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
     $request->headers->set('Stripe-Signature', 'valid');
 
     $response = $this->controller->handle($request);
@@ -240,7 +240,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
       ->method('verifyWebhookSignature')
       ->willReturn(TRUE);
 
-    $request = Request::create('/api/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
+    $request = Request::create('/api/v1/billing/stripe-webhook', 'POST', [], [], [], [], $payload);
     $request->headers->set('Stripe-Signature', 'valid');
 
     $response = $this->controller->handle($request);
