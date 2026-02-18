@@ -115,7 +115,7 @@ class QrRetailService {
   /**
    * Registra un evento de escaneo de QR.
    *
-   * Logica: Crea entidad comercio_qr_scan_event con datos del escaneo
+   * Logica: Crea entidad comercio_qr_scan con datos del escaneo
    *   e incrementa el scan_count del QR.
    *
    * @param int $qrCodeId
@@ -132,7 +132,7 @@ class QrRetailService {
    *   Longitud del escaneo.
    */
   public function recordScan(int $qrCodeId, ?int $userId, string $sessionId, string $userAgent, ?float $lat, ?float $lng): void {
-    $scan_storage = $this->entityTypeManager->getStorage('comercio_qr_scan_event');
+    $scan_storage = $this->entityTypeManager->getStorage('comercio_qr_scan');
     $qr_storage = $this->entityTypeManager->getStorage('comercio_qr_code');
 
     try {
@@ -165,7 +165,7 @@ class QrRetailService {
   /**
    * Captura un lead desde un escaneo QR.
    *
-   * Logica: Crea entidad comercio_qr_lead_capture con los datos del
+   * Logica: Crea entidad comercio_qr_lead con los datos del
    *   formulario del lead (nombre, email, telefono, etc.).
    *
    * @param int $qrCodeId
@@ -179,7 +179,7 @@ class QrRetailService {
    *   TRUE si se guardo el lead correctamente.
    */
   public function captureLead(int $qrCodeId, int $scanEventId, array $data): bool {
-    $storage = $this->entityTypeManager->getStorage('comercio_qr_lead_capture');
+    $storage = $this->entityTypeManager->getStorage('comercio_qr_lead');
 
     try {
       $lead = $storage->create(array_merge($data, [
@@ -215,8 +215,8 @@ class QrRetailService {
    *   Array con total_scans, unique_users, total_leads, ab_performance.
    */
   public function getQrStats(int $qrCodeId): array {
-    $scan_storage = $this->entityTypeManager->getStorage('comercio_qr_scan_event');
-    $lead_storage = $this->entityTypeManager->getStorage('comercio_qr_lead_capture');
+    $scan_storage = $this->entityTypeManager->getStorage('comercio_qr_scan');
+    $lead_storage = $this->entityTypeManager->getStorage('comercio_qr_lead');
 
     try {
       $total_scans = (int) $scan_storage->getQuery()

@@ -291,7 +291,7 @@ function jaraba_comercio_conecta_entity_update(EntityInterface $entity): void {
       try {
         $shopId = $entity->get('shop_id')->target_id ?? NULL;
         if ($shopId) {
-          $shop = \Drupal::entityTypeManager()->getStorage('merchant_shop')->load($shopId);
+          $shop = \Drupal::entityTypeManager()->getStorage('merchant_profile')->load($shopId);
           $ownerId = $shop ? ($shop->get('user_id')->target_id ?? NULL) : NULL;
           if ($ownerId) {
             $owner = \Drupal::entityTypeManager()->getStorage('user')->load($ownerId);

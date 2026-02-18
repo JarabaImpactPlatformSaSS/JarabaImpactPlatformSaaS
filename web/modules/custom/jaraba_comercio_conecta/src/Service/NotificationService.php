@@ -124,7 +124,7 @@ class NotificationService {
    *   Array de preferencias indexado por canal y categoria.
    */
   public function getUserPreferences(int $userId): array {
-    $storage = $this->entityTypeManager->getStorage('comercio_notification_preference');
+    $storage = $this->entityTypeManager->getStorage('comercio_notification_pref');
 
     try {
       $ids = $storage->getQuery()
@@ -169,7 +169,7 @@ class NotificationService {
    *   Si esta habilitada o no.
    */
   public function updatePreference(int $userId, string $channel, string $category, bool $enabled): void {
-    $storage = $this->entityTypeManager->getStorage('comercio_notification_preference');
+    $storage = $this->entityTypeManager->getStorage('comercio_notification_pref');
 
     try {
       $ids = $storage->getQuery()
