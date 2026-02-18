@@ -53,7 +53,7 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
     $nifField = new \stdClass();
     $nifField->value = $buyerNif;
 
-    $invoice = $this->createMock(\stdClass::class);
+    $invoice = $this->createMock(BillingInvoiceInterface::class);
     $invoice->method('id')->willReturn(1);
     $invoice->method('get')->willReturnCallback(function (string $field) use ($nifField) {
       if ($field === 'buyer_nif') {
@@ -152,13 +152,13 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
    * @covers ::processFinalizedInvoice
    */
   public function testProcessB2gInvoiceWithAllModules(): void {
-    $verifactu = $this->createMock(\stdClass::class);
-    $resultEntity = $this->createMock(\stdClass::class);
+    $verifactu = $this->createMock(VerifactuRecordServiceInterface::class);
+    $resultEntity = $this->createMock(FiscalResultEntityInterface::class);
     $resultEntity->method('id')->willReturn(42);
     $verifactu->method('createFromBillingInvoice')->willReturn($resultEntity);
 
-    $facturae = $this->createMock(\stdClass::class);
-    $facturaeEntity = $this->createMock(\stdClass::class);
+    $facturae = $this->createMock(FacturaeXmlServiceInterface::class);
+    $facturaeEntity = $this->createMock(FiscalResultEntityInterface::class);
     $facturaeEntity->method('id')->willReturn(15);
     $facturae->method('generateFromBillingInvoice')->willReturn($facturaeEntity);
 
@@ -195,8 +195,8 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
    * @covers ::processFinalizedInvoice
    */
   public function testB2bInvoiceDelegatesToEinvoice(): void {
-    $einvoice = $this->createMock(\stdClass::class);
-    $resultEntity = $this->createMock(\stdClass::class);
+    $einvoice = $this->createMock(EinvoiceDeliveryServiceInterface::class);
+    $resultEntity = $this->createMock(FiscalResultEntityInterface::class);
     $resultEntity->method('id')->willReturn(99);
     $einvoice->method('createFromBillingInvoice')->willReturn($resultEntity);
 
@@ -215,8 +215,8 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
    * @covers ::processFinalizedInvoice
    */
   public function testNacionalInvoiceOnlyTriggersVerifactu(): void {
-    $verifactu = $this->createMock(\stdClass::class);
-    $resultEntity = $this->createMock(\stdClass::class);
+    $verifactu = $this->createMock(VerifactuRecordServiceInterface::class);
+    $resultEntity = $this->createMock(FiscalResultEntityInterface::class);
     $resultEntity->method('id')->willReturn(1);
     $verifactu->method('createFromBillingInvoice')->willReturn($resultEntity);
 
@@ -236,7 +236,7 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
    * @covers ::processFinalizedInvoice
    */
   public function testDelegationExceptionReturnsError(): void {
-    $verifactu = $this->createMock(\stdClass::class);
+    $verifactu = $this->createMock(VerifactuRecordServiceInterface::class);
     $verifactu->method('createFromBillingInvoice')
       ->willThrowException(new \RuntimeException('Connection failed'));
 
@@ -249,4 +249,40 @@ class FiscalInvoiceDelegationServiceTest extends UnitTestCase {
     $this->assertSame('Connection failed', $results['verifactu']['message']);
   }
 
+}
+
+/**
+ * Temporary interface for mocking billing invoice.
+ */
+interface BillingInvoiceInterface {
+  public function id();
+  public function get(string $field);
+}
+
+/**
+ * Temporary interface for mocking verifactu service.
+ */
+interface VerifactuRecordServiceInterface {
+  public function createFromBillingInvoice(object $invoice);
+}
+
+/**
+ * Temporary interface for mocking facturae service.
+ */
+interface FacturaeXmlServiceInterface {
+  public function generateFromBillingInvoice(object $invoice);
+}
+
+/**
+ * Temporary interface for mocking einvoice service.
+ */
+interface EinvoiceDeliveryServiceInterface {
+  public function createFromBillingInvoice(object $invoice);
+}
+
+/**
+ * Temporary interface for mocking fiscal result entities.
+ */
+interface FiscalResultEntityInterface {
+  public function id();
 }

@@ -51,12 +51,12 @@ class JarabaLexCopilotAgentTest extends UnitTestCase {
   }
 
   /**
-   * Tests that getIdentifier() returns 'jarabalex_copilot'.
+   * Tests that getAgentId() returns 'jarabalex_copilot'.
    *
-   * @covers ::getIdentifier
+   * @covers ::getAgentId
    */
-  public function testGetIdentifier(): void {
-    $this->assertSame('jarabalex_copilot', $this->agent->getIdentifier());
+  public function testGetAgentId(): void {
+    $this->assertSame('jarabalex_copilot', $this->agent->getAgentId());
   }
 
   /**

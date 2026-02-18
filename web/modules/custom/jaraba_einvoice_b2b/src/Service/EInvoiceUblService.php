@@ -661,11 +661,34 @@ class EInvoiceUblService {
         'name' => $sellerName ?? '',
         'tax_id' => $sellerTaxId ?? '',
       ],
+    // Payment means.
+    $paymentMeansCode = $this->xpathValue($xpath, '//cac:PaymentMeans/cbc:PaymentMeansCode');
+    $iban = $this->xpathValue($xpath, '//cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID');
+    $paymentMeans = $paymentMeansCode || $iban ? [
+      'code' => $paymentMeansCode ?? '30',
+      'iban' => $iban,
+    ] : [];
+
+    return new EN16931Model(
+      invoiceNumber: $invoiceNumber ?? '',
+      issueDate: $issueDate ?? '',
+      invoiceTypeCode: (int) ($typeCode ?: ($isCreditNote ? 381 : 380)),
+      currencyCode: $currency,
+      taxPointDate: $this->xpathValue($xpath, "//{$prefix}:*/cbc:TaxPointDate"),
+      dueDate: $dueDate,
+      buyerReference: $this->xpathValue($xpath, "//{$prefix}:*/cbc:BuyerReference"),
+      projectReference: $this->xpathValue($xpath, '//cac:ProjectReference/cbc:ID'),
+      contractReference: $this->xpathValue($xpath, '//cac:ContractDocumentReference/cbc:ID'),
+      precedingInvoiceReference: $this->xpathValue($xpath, '//cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID'),
+      seller: [
+        'name' => $sellerName ?? '',
+        'tax_id' => $sellerTaxId ?? '',
+      ],
       buyer: [
         'name' => $buyerName ?? '',
         'tax_id' => $buyerTaxId ?? '',
       ],
-      paymentMeans: [],
+      paymentMeans: $paymentMeans,
       paymentTerms: [],
       lines: $lines,
       taxTotals: $taxTotals,

@@ -178,7 +178,11 @@
     {# Powered by (configurable) #}
     {% if ts.footer_show_powered_by|default(true) %}
       <div class="landing-footer__powered">
-        <span>{% trans %}Powered by{% endtrans %} <a href="https://jaraba.es" target="_blank" rel="noopener">Jaraba Impact Platform</a></span>
+        <span>{% trans %}Powered by{% endtrans %} 
+          <a href="{{ ts.footer_powered_url|default('https://jaraba.io') }}" target="_blank" rel="noopener">
+            {{ ts.footer_powered_text|default('Jaraba Impact Platform'|t) }}
+          </a>
+        </span>
       </div>
     {% endif %}
 
