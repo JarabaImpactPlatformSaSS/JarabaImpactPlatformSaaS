@@ -126,6 +126,13 @@ class TemplatePickerController extends ControllerBase
             'emprendimiento' => $this->t('Emprendimiento'),
         ];
 
+        // Ordenar categorías alfabéticamente por su etiqueta traducida.
+        uksort($categories, function (string $a, string $b) use ($category_labels): int {
+            $labelA = (string) ($category_labels[$a] ?? $a);
+            $labelB = (string) ($category_labels[$b] ?? $b);
+            return strnatcasecmp($labelA, $labelB);
+        });
+
         $build = [
             '#theme' => 'page_builder_template_picker',
             '#categories' => $categories,
