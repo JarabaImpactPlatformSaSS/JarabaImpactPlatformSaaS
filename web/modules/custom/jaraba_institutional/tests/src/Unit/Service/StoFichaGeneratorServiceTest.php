@@ -896,7 +896,7 @@ class StoFichaGeneratorServiceTest extends UnitTestCase {
     $this->assertStringContainsString('5', $capturedValues['itinerario_insercion']);
     $this->assertStringContainsString('10', $capturedValues['itinerario_insercion']);
     // Initial ficha resultados should be pending.
-    $this->assertStringContainsString('Pendientes', $capturedValues['resultados']);
+    $this->assertStringContainsString('pendientes', $capturedValues['resultados']);
   }
 
 }

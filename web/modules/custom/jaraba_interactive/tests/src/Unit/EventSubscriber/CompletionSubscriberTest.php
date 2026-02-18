@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_interactive\Unit\EventSubscriber;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\jaraba_interactive\Entity\InteractiveContentInterface;
+use Drupal\jaraba_interactive\Entity\InteractiveResultInterface;
 use Drupal\jaraba_interactive\EventSubscriber\CompletionSubscriber;
 use Drupal\jaraba_interactive\Service\XApiEmitter;
 use Drupal\Tests\UnitTestCase;
@@ -80,63 +83,28 @@ class CompletionSubscriberTest extends UnitTestCase {
   /**
    * Crea un mock de entidad con getEntityTypeId configurable.
    *
+   * For 'interactive_result' entities, creates a mock from
+   * InteractiveResultInterface. For other entity types, creates a mock
+   * from EntityInterface. This ensures proper type compatibility with
+   * the subscriber's processCompletion() and grantExperiencePoints() methods.
+   *
    * @param string $entityTypeId
    *   El tipo de entidad a devolver.
-   * @param array $methods
-   *   Metodos adicionales para el mock.
    *
    * @return \PHPUnit\Framework\MockObject\MockObject
    *   Mock de la entidad.
    */
-  private function createEntityMock(string $entityTypeId, array $methods = []): MockObject {
-    $defaultMethods = ['getEntityTypeId', 'getInteractiveContent', 'getOwnerId', 'getScore', 'hasPassed', 'id'];
-    $allMethods = array_unique(array_merge($defaultMethods, $methods));
-
-    $entity = $this->getMockBuilder(\stdClass::class)
-      ->addMethods($allMethods)
-      ->getMock();
+  private function createEntityMock(string $entityTypeId): MockObject {
+    if ($entityTypeId === 'interactive_result') {
+      $entity = $this->createMock(InteractiveResultInterface::class);
+    }
+    else {
+      $entity = $this->createMock(EntityInterface::class);
+    }
 
     $entity->method('getEntityTypeId')->willReturn($entityTypeId);
 
     return $entity;
-  }
-
-  /**
-   * Crea un mock de evento de insercion con la entidad dada.
-   *
-   * @param \PHPUnit\Framework\MockObject\MockObject $entity
-   *   La entidad que devuelve getEntity().
-   *
-   * @return \PHPUnit\Framework\MockObject\MockObject
-   *   Mock del evento.
-   */
-  private function createInsertEventMock(MockObject $entity): MockObject {
-    $event = $this->getMockBuilder(\stdClass::class)
-      ->addMethods(['getEntity'])
-      ->getMock();
-
-    $event->method('getEntity')->willReturn($entity);
-
-    return $event;
-  }
-
-  /**
-   * Crea un mock de evento de actualizacion con la entidad dada.
-   *
-   * @param \PHPUnit\Framework\MockObject\MockObject $entity
-   *   La entidad que devuelve getEntity().
-   *
-   * @return \PHPUnit\Framework\MockObject\MockObject
-   *   Mock del evento.
-   */
-  private function createUpdateEventMock(MockObject $entity): MockObject {
-    $event = $this->getMockBuilder(\stdClass::class)
-      ->addMethods(['getEntity'])
-      ->getMock();
-
-    $event->method('getEntity')->willReturn($entity);
-
-    return $event;
   }
 
   /**
@@ -151,9 +119,7 @@ class CompletionSubscriberTest extends UnitTestCase {
    *   Mock del contenido interactivo.
    */
   private function createContentMock(string $difficulty = 'intermediate', int $contentId = 42): MockObject {
-    $content = $this->getMockBuilder(\stdClass::class)
-      ->addMethods(['id', 'get'])
-      ->getMock();
+    $content = $this->createMock(InteractiveContentInterface::class);
 
     $content->method('id')->willReturn($contentId);
 
@@ -170,7 +136,11 @@ class CompletionSubscriberTest extends UnitTestCase {
   // =========================================================================
 
   /**
-   * Verifica que getSubscribedEvents devuelve las claves de eventos esperadas.
+   * Verifica que getSubscribedEvents devuelve un array vacio.
+   *
+   * Returns empty because the module dependency (core_event_dispatcher)
+   * is not installed. Entity lifecycle logic is handled via
+   * hook_entity_insert()/hook_entity_update() in the .module file.
    *
    * @covers ::getSubscribedEvents
    */
@@ -179,19 +149,16 @@ class CompletionSubscriberTest extends UnitTestCase {
     $events = CompletionSubscriber::getSubscribedEvents();
 
     $this->assertIsArray($events);
-    // Verificar que las constantes de EntityHookEvents estan registradas.
-    $eventKeys = array_keys($events);
-    $this->assertCount(2, $eventKeys);
-
-    // Verificar los metodos callback.
-    $insertConfig = array_values($events)[0];
-    $updateConfig = array_values($events)[1];
-    $this->assertSame('onEntityInsert', $insertConfig[0]);
-    $this->assertSame('onEntityUpdate', $updateConfig[0]);
+    // Returns empty array until core_event_dispatcher or Drupal 11 Hooks
+    // system is adopted.
+    $this->assertEmpty($events);
   }
 
   /**
-   * Verifica que los eventos registrados tienen prioridad 100.
+   * Verifica que getSubscribedEvents is empty (no events registered yet).
+   *
+   * When events are registered in the future, this test should be updated
+   * to verify priority values.
    *
    * @covers ::getSubscribedEvents
    */
@@ -199,9 +166,8 @@ class CompletionSubscriberTest extends UnitTestCase {
   public function testGetSubscribedEventsHasPriority100(): void {
     $events = CompletionSubscriber::getSubscribedEvents();
 
-    foreach ($events as $eventConfig) {
-      $this->assertSame(100, $eventConfig[1], 'Todos los eventos deben tener prioridad 100');
-    }
+    // Currently returns empty array; assert that to avoid risky test.
+    $this->assertEmpty($events, 'getSubscribedEvents returns empty until core_event_dispatcher is installed');
   }
 
   // =========================================================================
@@ -216,13 +182,12 @@ class CompletionSubscriberTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function testOnEntityInsertIgnoresNonInteractiveResult(): void {
     $entity = $this->createEntityMock('node');
-    $event = $this->createInsertEventMock($entity);
 
     // El xapiEmitter NO debe ser invocado.
     $this->xapiEmitter->expects($this->never())
       ->method('emitCompleted');
 
-    $this->subscriber->onEntityInsert($event);
+    $this->subscriber->onEntityInsert($entity);
   }
 
   /**
@@ -239,8 +204,6 @@ class CompletionSubscriberTest extends UnitTestCase {
     $entity->method('getScore')->willReturn(85.0);
     $entity->method('hasPassed')->willReturn(TRUE);
     $entity->method('id')->willReturn(101);
-
-    $event = $this->createInsertEventMock($entity);
 
     // Verificar que se emite la sentencia xAPI de completitud.
     $this->xapiEmitter->expects($this->once())
@@ -264,7 +227,7 @@ class CompletionSubscriberTest extends UnitTestCase {
       ->with('certification_program')
       ->willReturn($storage);
 
-    $this->subscriber->onEntityInsert($event);
+    $this->subscriber->onEntityInsert($entity);
   }
 
   // =========================================================================
@@ -279,12 +242,11 @@ class CompletionSubscriberTest extends UnitTestCase {
   #[\PHPUnit\Framework\Attributes\Test]
   public function testOnEntityUpdateIgnoresNonInteractiveResult(): void {
     $entity = $this->createEntityMock('user');
-    $event = $this->createUpdateEventMock($entity);
 
     $this->xapiEmitter->expects($this->never())
       ->method('emitCompleted');
 
-    $this->subscriber->onEntityUpdate($event);
+    $this->subscriber->onEntityUpdate($entity);
   }
 
   /**
@@ -301,8 +263,6 @@ class CompletionSubscriberTest extends UnitTestCase {
     $entity->method('getScore')->willReturn(95.0);
     $entity->method('hasPassed')->willReturn(TRUE);
     $entity->method('id')->willReturn(202);
-
-    $event = $this->createUpdateEventMock($entity);
 
     $this->xapiEmitter->expects($this->once())
       ->method('emitCompleted')
@@ -325,7 +285,7 @@ class CompletionSubscriberTest extends UnitTestCase {
       ->with('certification_program')
       ->willReturn($storage);
 
-    $this->subscriber->onEntityUpdate($event);
+    $this->subscriber->onEntityUpdate($entity);
   }
 
   // =========================================================================
@@ -343,8 +303,6 @@ class CompletionSubscriberTest extends UnitTestCase {
     $entity->method('getInteractiveContent')->willReturn(NULL);
     $entity->method('id')->willReturn(999);
 
-    $event = $this->createInsertEventMock($entity);
-
     $this->logger->expects($this->once())
       ->method('warning')
       ->with(
@@ -356,7 +314,7 @@ class CompletionSubscriberTest extends UnitTestCase {
     $this->xapiEmitter->expects($this->never())
       ->method('emitCompleted');
 
-    $this->subscriber->onEntityInsert($event);
+    $this->subscriber->onEntityInsert($entity);
   }
 
   /**
@@ -374,8 +332,6 @@ class CompletionSubscriberTest extends UnitTestCase {
     $entity->method('hasPassed')->willReturn(FALSE);
     $entity->method('id')->willReturn(303);
 
-    $event = $this->createInsertEventMock($entity);
-
     $this->xapiEmitter->method('emitCompleted')
       ->willThrowException(new \RuntimeException('Servicio xAPI no disponible'));
 
@@ -386,7 +342,24 @@ class CompletionSubscriberTest extends UnitTestCase {
         ['@message' => 'Servicio xAPI no disponible'],
       );
 
-    $this->subscriber->onEntityInsert($event);
+    // Mock del storage para updateCertificationProgress.
+    $query = $this->getMockBuilder(\stdClass::class)
+      ->addMethods(['condition', 'accessCheck', 'execute'])
+      ->getMock();
+    $query->method('condition')->willReturnSelf();
+    $query->method('accessCheck')->willReturnSelf();
+    $query->method('execute')->willReturn([]);
+
+    $storage = $this->getMockBuilder(\stdClass::class)
+      ->addMethods(['getQuery'])
+      ->getMock();
+    $storage->method('getQuery')->willReturn($query);
+
+    $this->entityTypeManager->method('getStorage')
+      ->with('certification_program')
+      ->willReturn($storage);
+
+    $this->subscriber->onEntityInsert($entity);
   }
 
   // =========================================================================

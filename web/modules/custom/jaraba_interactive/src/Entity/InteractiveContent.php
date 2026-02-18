@@ -62,7 +62,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.interactive_content.settings",
  * )
  */
-class InteractiveContent extends ContentEntityBase implements EntityOwnerInterface
+class InteractiveContent extends ContentEntityBase implements EntityOwnerInterface, InteractiveContentInterface
 {
 
     use EntityOwnerTrait;

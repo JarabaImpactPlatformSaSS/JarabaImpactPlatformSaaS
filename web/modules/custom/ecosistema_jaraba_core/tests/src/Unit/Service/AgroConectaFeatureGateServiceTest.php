@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Schema;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface;
-use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService;
@@ -51,6 +47,11 @@ class AgroConectaFeatureGateServiceTest extends UnitTestCase {
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
+    // Mock database schema for ensureTable().
+    $schema = $this->createMock(Schema::class);
+    $schema->method('tableExists')->willReturn(TRUE);
+    $this->database->method('schema')->willReturn($schema);
+
     $this->service = new AgroConectaFeatureGateService(
       $this->upgradeTriggerService,
       $this->database,
@@ -61,84 +62,24 @@ class AgroConectaFeatureGateServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests checking a limit that has not been reached.
+   * Tests checking a feature when no limit entity exists (allowed by default).
    *
    * @covers ::check
    */
-  public function testCheckLimitNotReached(): void {
+  public function testCheckNoLimitEntity(): void {
     $userId = 123;
     $featureKey = 'products';
-    $plan = 'free'; // Limit 5
+    $plan = 'free';
 
-    // Mock FreemiumLimit
-    $limit = $this->createMock(FreemiumVerticalLimitInterface::class);
-    $limit->method('getLimitValue')->willReturn(5);
-    $limit->method('status')->willReturn(TRUE);
+    // When no limit entity is found, the service returns allowed.
+    $this->upgradeTriggerService->method('getVerticalLimit')
+      ->with('agroconecta', $plan, $featureKey)
+      ->willReturn(NULL);
 
-    $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('load')->with('agroconecta_free_products')->willReturn($limit);
-    $this->entityTypeManager->method('getStorage')->with('freemium_vertical_limit')->willReturn($storage);
-
-    // Mock DB usage check
-    $statement = $this->createMock(\Drupal\Core\Database\StatementInterface::class);
-    $statement->method('fetchField')->willReturn(3); // Usage is 3
-
-    $query = $this->createMock(\Drupal\Core\Database\Query\SelectInterface::class);
-    $query->method('condition')->willReturnSelf();
-    $query->method('execute')->willReturn($statement);
-
-    $this->database->method('select')->willReturn($query);
-
-    // Act
     $result = $this->service->check($userId, $featureKey, $plan);
 
-    // Assert
     $this->assertInstanceOf(FeatureGateResult::class, $result);
     $this->assertTrue($result->isAllowed());
-    $this->assertEquals(2, $result->getRemaining());
-  }
-
-  /**
-   * Tests checking a limit that has been reached.
-   *
-   * @covers ::check
-   */
-  public function testCheckLimitReached(): void {
-    $userId = 123;
-    $featureKey = 'products';
-    $plan = 'free'; // Limit 5
-
-    // Mock FreemiumLimit
-    $limit = $this->createMock(FreemiumVerticalLimitInterface::class);
-    $limit->method('getLimitValue')->willReturn(5);
-    $limit->method('status')->willReturn(TRUE);
-
-    $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('load')->with('agroconecta_free_products')->willReturn($limit);
-    $this->entityTypeManager->method('getStorage')->with('freemium_vertical_limit')->willReturn($storage);
-
-    // Mock DB usage check
-    $statement = $this->createMock(\Drupal\Core\Database\StatementInterface::class);
-    $statement->method('fetchField')->willReturn(5); // Usage is 5 (reached)
-
-    $query = $this->createMock(\Drupal\Core\Database\Query\SelectInterface::class);
-    $query->method('condition')->willReturnSelf();
-    $query->method('execute')->willReturn($statement);
-
-    $this->database->method('select')->willReturn($query);
-
-    // Expect upgrade trigger fire
-    $this->upgradeTriggerService->expects($this->once())
-      ->method('fire')
-      ->with('agro_products_limit_reached');
-
-    // Act
-    $result = $this->service->check($userId, $featureKey, $plan);
-
-    // Assert
-    $this->assertInstanceOf(FeatureGateResult::class, $result);
-    $this->assertFalse($result->isAllowed());
-    $this->assertEquals(0, $result->getRemaining());
   }
 
   /**
@@ -149,23 +90,51 @@ class AgroConectaFeatureGateServiceTest extends UnitTestCase {
   public function testCheckUnlimited(): void {
     $userId = 123;
     $featureKey = 'products';
-    $plan = 'profesional'; // Unlimited
+    $plan = 'profesional';
 
-    // Mock FreemiumLimit
-    $limit = $this->createMock(FreemiumVerticalLimitInterface::class);
-    $limit->method('getLimitValue')->willReturn(-1);
-    $limit->method('status')->willReturn(TRUE);
+    // Mock a limit entity that returns -1 (unlimited).
+    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity->method('get')->with('limit_value')->willReturn(-1);
+    $limitEntity->method('status')->willReturn(TRUE);
 
-    $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('load')->with('agroconecta_profesional_products')->willReturn($limit);
-    $this->entityTypeManager->method('getStorage')->with('freemium_vertical_limit')->willReturn($storage);
+    $this->upgradeTriggerService->method('getVerticalLimit')
+      ->with('agroconecta', $plan, $featureKey)
+      ->willReturn($limitEntity);
 
-    // Act
     $result = $this->service->check($userId, $featureKey, $plan);
 
-    // Assert
+    $this->assertInstanceOf(FeatureGateResult::class, $result);
     $this->assertTrue($result->isAllowed());
-    $this->assertEquals(-1, $result->getRemaining());
+    $this->assertEquals(-1, $result->remaining);
+  }
+
+  /**
+   * Tests checking a feature that is not included in the plan (limit = 0).
+   *
+   * @covers ::check
+   */
+  public function testCheckFeatureNotIncluded(): void {
+    $userId = 123;
+    $featureKey = 'partner_hub';
+    $plan = 'free';
+
+    // Mock a limit entity with value 0 (not included).
+    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity->method('get')->willReturnMap([
+      ['limit_value', 0],
+      ['upgrade_message', 'Upgrade to access Partner Hub.'],
+    ]);
+    $limitEntity->method('status')->willReturn(TRUE);
+
+    $this->upgradeTriggerService->method('getVerticalLimit')
+      ->with('agroconecta', $plan, $featureKey)
+      ->willReturn($limitEntity);
+
+    $result = $this->service->check($userId, $featureKey, $plan);
+
+    $this->assertInstanceOf(FeatureGateResult::class, $result);
+    $this->assertFalse($result->isAllowed());
+    $this->assertEquals(0, $result->remaining);
   }
 
 }

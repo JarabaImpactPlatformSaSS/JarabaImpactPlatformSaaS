@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\jaraba_predictive\Unit\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -91,9 +92,8 @@ class LeadScorerServiceTest extends UnitTestCase {
     $userId = 10;
 
     // --- User storage: user exists and has recent access ---
-    $accessField = $this->createMock(FieldItemListInterface::class);
-    $accessField->value = time() - (2 * 86400);
-    $userEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $accessField = (object) ['value' => time() - (2 * 86400)];
+    $userEntity = $this->createMock(ContentEntityInterface::class);
     $userEntity->method('get')->with('access')->willReturn($accessField);
 
     $userStorage = $this->createMock(EntityStorageInterface::class);
@@ -111,7 +111,7 @@ class LeadScorerServiceTest extends UnitTestCase {
     // No existing lead score found.
     $leadQuery->method('execute')->willReturn([]);
 
-    $leadScoreEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $leadScoreEntity = $this->createMock(ContentEntityInterface::class);
     $leadScoreEntity->expects($this->once())->method('save');
 
     $leadStorage = $this->createMock(EntityStorageInterface::class);
@@ -137,9 +137,8 @@ class LeadScorerServiceTest extends UnitTestCase {
     $userId = 20;
 
     // User entity with recent access.
-    $accessField = $this->createMock(FieldItemListInterface::class);
-    $accessField->value = time();
-    $userEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $accessField = (object) ['value' => time()];
+    $userEntity = $this->createMock(ContentEntityInterface::class);
     $userEntity->method('get')->with('access')->willReturn($accessField);
 
     $userStorage = $this->createMock(EntityStorageInterface::class);
@@ -157,7 +156,7 @@ class LeadScorerServiceTest extends UnitTestCase {
     // Existing lead score ID found.
     $leadQuery->method('execute')->willReturn([50]);
 
-    $existingEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $existingEntity = $this->createMock(ContentEntityInterface::class);
     // set() must be called for updated fields.
     $existingEntity->expects($this->atLeast(4))->method('set');
     $existingEntity->expects($this->once())->method('save');
@@ -186,9 +185,8 @@ class LeadScorerServiceTest extends UnitTestCase {
   public function testScoreUserLogsResult(): void {
     $userId = 30;
 
-    $accessField = $this->createMock(FieldItemListInterface::class);
-    $accessField->value = time() - (10 * 86400);
-    $userEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $accessField = (object) ['value' => time() - (10 * 86400)];
+    $userEntity = $this->createMock(ContentEntityInterface::class);
     $userEntity->method('get')->with('access')->willReturn($accessField);
 
     $userStorage = $this->createMock(EntityStorageInterface::class);
@@ -204,7 +202,7 @@ class LeadScorerServiceTest extends UnitTestCase {
     $leadQuery->method('range')->willReturnSelf();
     $leadQuery->method('execute')->willReturn([]);
 
-    $leadScoreEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $leadScoreEntity = $this->createMock(ContentEntityInterface::class);
     $leadScoreEntity->method('save')->willReturn(1);
 
     $leadStorage = $this->createMock(EntityStorageInterface::class);
@@ -458,9 +456,8 @@ class LeadScorerServiceTest extends UnitTestCase {
     $userId = 55;
 
     // User with zero access time -- triggers 5.0 engagement score.
-    $accessField = $this->createMock(FieldItemListInterface::class);
-    $accessField->value = 0;
-    $userEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $accessField = (object) ['value' => 0];
+    $userEntity = $this->createMock(ContentEntityInterface::class);
     $userEntity->method('get')->with('access')->willReturn($accessField);
 
     $userStorage = $this->createMock(EntityStorageInterface::class);
@@ -477,7 +474,7 @@ class LeadScorerServiceTest extends UnitTestCase {
     $leadQuery->method('execute')->willReturn([]);
 
     $createdValues = [];
-    $leadScoreEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $leadScoreEntity = $this->createMock(ContentEntityInterface::class);
     $leadScoreEntity->method('save')->willReturn(1);
 
     $leadStorage = $this->createMock(EntityStorageInterface::class);
@@ -516,43 +513,19 @@ class LeadScorerServiceTest extends UnitTestCase {
     string $calculatedAt,
     string $created,
   ): object {
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
     $entity->method('id')->willReturn($id);
-
-    $userIdField = $this->createMock(FieldItemListInterface::class);
-    $userIdField->target_id = $userTargetId;
-
-    $totalScoreField = $this->createMock(FieldItemListInterface::class);
-    $totalScoreField->value = $totalScore;
-
-    $qualField = $this->createMock(FieldItemListInterface::class);
-    $qualField->value = $qualification;
-
-    $breakdownField = $this->createMock(FieldItemListInterface::class);
-    $breakdownField->value = $scoreBreakdown;
-
-    $lastActivityField = $this->createMock(FieldItemListInterface::class);
-    $lastActivityField->value = $lastActivity;
-
-    $modelField = $this->createMock(FieldItemListInterface::class);
-    $modelField->value = $modelVersion;
-
-    $calculatedAtField = $this->createMock(FieldItemListInterface::class);
-    $calculatedAtField->value = $calculatedAt;
-
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = $created;
 
     $entity->method('get')
       ->willReturnMap([
-        ['user_id', $userIdField],
-        ['total_score', $totalScoreField],
-        ['qualification', $qualField],
-        ['score_breakdown', $breakdownField],
-        ['last_activity', $lastActivityField],
-        ['model_version', $modelField],
-        ['calculated_at', $calculatedAtField],
-        ['created', $createdField],
+        ['user_id', (object) ['target_id' => $userTargetId, 'value' => $userTargetId]],
+        ['total_score', (object) ['value' => $totalScore]],
+        ['qualification', (object) ['value' => $qualification]],
+        ['score_breakdown', (object) ['value' => $scoreBreakdown]],
+        ['last_activity', (object) ['value' => $lastActivity]],
+        ['model_version', (object) ['value' => $modelVersion]],
+        ['calculated_at', (object) ['value' => $calculatedAt]],
+        ['created', (object) ['value' => $created]],
       ]);
 
     return $entity;

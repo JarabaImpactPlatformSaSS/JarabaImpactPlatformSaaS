@@ -339,8 +339,7 @@ XML;
     $entity = $this->createMock(ContentEntityInterface::class);
 
     // Created 1 hour ago -- well within the default 24-hour window.
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = time() - 3600;
+    $createdField = (object) ['value' => time() - 3600];
     $entity->method('get')
       ->with('created')
       ->willReturn($createdField);
@@ -365,8 +364,7 @@ XML;
     $entity = $this->createMock(ContentEntityInterface::class);
 
     // Created 48 hours ago -- beyond the default 24-hour window.
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = time() - (48 * 3600);
+    $createdField = (object) ['value' => time() - (48 * 3600)];
     $entity->method('get')
       ->with('created')
       ->willReturn($createdField);
@@ -391,8 +389,7 @@ XML;
     $entity = $this->createMock(ContentEntityInterface::class);
 
     // Created 2 hours ago. With a 1-hour cache window, this should be expired.
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = time() - (2 * 3600);
+    $createdField = (object) ['value' => time() - (2 * 3600)];
     $entity->method('get')
       ->with('created')
       ->willReturn($createdField);

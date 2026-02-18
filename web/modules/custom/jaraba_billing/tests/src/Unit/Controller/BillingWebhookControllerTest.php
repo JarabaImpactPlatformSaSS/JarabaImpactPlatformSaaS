@@ -142,7 +142,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $this->assertEquals(200, $response->getStatusCode());
 
     $body = json_decode($response->getContent(), TRUE);
-    $this->assertEquals('ignored', $body['status']);
+    $this->assertEquals('ignored', $body['data']['status']);
   }
 
   /**
@@ -218,7 +218,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $this->assertEquals(200, $response->getStatusCode());
 
     $body = json_decode($response->getContent(), TRUE);
-    $this->assertEquals('processed', $body['status']);
+    $this->assertEquals('processed', $body['data']['status']);
   }
 
   /**
@@ -247,7 +247,7 @@ class BillingWebhookControllerTest extends UnitTestCase {
     $this->assertEquals(200, $response->getStatusCode());
 
     $body = json_decode($response->getContent(), TRUE);
-    $this->assertEquals('processed', $body['status']);
+    $this->assertEquals('processed', $body['data']['status']);
   }
 
   /**

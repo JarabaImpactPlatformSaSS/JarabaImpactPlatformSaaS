@@ -6,10 +6,10 @@ namespace Drupal\Tests\jaraba_predictive\Unit\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_predictive\Service\ChurnPredictorService;
 use Drupal\jaraba_predictive\Service\FeatureStoreService;
@@ -135,9 +135,8 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $groupStorage->method('load')->with($tenantId)->willReturn($tenantEntity);
 
     // --- User storage for inactivity score ---
-    $accessField = $this->createMock(FieldItemListInterface::class);
-    $accessField->value = time() - (5 * 86400);
-    $userEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $accessField = (object) ['value' => time() - (5 * 86400)];
+    $userEntity = $this->createMock(ContentEntityInterface::class);
     $userEntity->method('get')->with('access')->willReturn($accessField);
 
     $userQuery = $this->createMock(QueryInterface::class);
@@ -240,9 +239,8 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     $groupStorage->method('load')->with($tenantId)->willReturn($tenantEntity);
 
     // User storage: zero last-access produces 90.0 inactivity score.
-    $accessField = $this->createMock(FieldItemListInterface::class);
-    $accessField->value = 0;
-    $userEntity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $accessField = (object) ['value' => 0];
+    $userEntity = $this->createMock(ContentEntityInterface::class);
     $userEntity->method('get')->with('access')->willReturn($accessField);
 
     $userQuery = $this->createMock(QueryInterface::class);
@@ -491,23 +489,14 @@ class ChurnPredictorServiceTest extends UnitTestCase {
    * Helper: creates a mock ChurnPrediction entity for trend queries.
    */
   protected function createPredictionEntity(int $id, string $createdDate, int $riskScore, string $riskLevel): object {
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
     $entity->method('id')->willReturn($id);
-
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = $createdDate;
-
-    $riskScoreField = $this->createMock(FieldItemListInterface::class);
-    $riskScoreField->value = $riskScore;
-
-    $riskLevelField = $this->createMock(FieldItemListInterface::class);
-    $riskLevelField->value = $riskLevel;
 
     $entity->method('get')
       ->willReturnMap([
-        ['created', $createdField],
-        ['risk_score', $riskScoreField],
-        ['risk_level', $riskLevelField],
+        ['created', (object) ['value' => $createdDate]],
+        ['risk_score', (object) ['value' => $riskScore]],
+        ['risk_level', (object) ['value' => $riskLevel]],
       ]);
 
     return $entity;
@@ -526,39 +515,18 @@ class ChurnPredictorServiceTest extends UnitTestCase {
     string $modelVersion,
     string $created,
   ): object {
-    $entity = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    $entity = $this->createMock(ContentEntityInterface::class);
     $entity->method('id')->willReturn($id);
-
-    $tenantField = $this->createMock(FieldItemListInterface::class);
-    $tenantField->target_id = $tenantTargetId;
-
-    $riskScoreField = $this->createMock(FieldItemListInterface::class);
-    $riskScoreField->value = $riskScore;
-
-    $riskLevelField = $this->createMock(FieldItemListInterface::class);
-    $riskLevelField->value = $riskLevel;
-
-    $factorsField = $this->createMock(FieldItemListInterface::class);
-    $factorsField->value = $contributingFactors;
-
-    $actionsField = $this->createMock(FieldItemListInterface::class);
-    $actionsField->value = $recommendedActions;
-
-    $modelField = $this->createMock(FieldItemListInterface::class);
-    $modelField->value = $modelVersion;
-
-    $createdField = $this->createMock(FieldItemListInterface::class);
-    $createdField->value = $created;
 
     $entity->method('get')
       ->willReturnMap([
-        ['tenant_id', $tenantField],
-        ['risk_score', $riskScoreField],
-        ['risk_level', $riskLevelField],
-        ['contributing_factors', $factorsField],
-        ['recommended_actions', $actionsField],
-        ['model_version', $modelField],
-        ['created', $createdField],
+        ['tenant_id', (object) ['target_id' => $tenantTargetId, 'value' => $tenantTargetId]],
+        ['risk_score', (object) ['value' => $riskScore]],
+        ['risk_level', (object) ['value' => $riskLevel]],
+        ['contributing_factors', (object) ['value' => $contributingFactors]],
+        ['recommended_actions', (object) ['value' => $recommendedActions]],
+        ['model_version', (object) ['value' => $modelVersion]],
+        ['created', (object) ['value' => $created]],
       ]);
 
     return $entity;
