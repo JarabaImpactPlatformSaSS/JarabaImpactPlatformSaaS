@@ -50,6 +50,11 @@ Desktop.ini
 NUL
 
 # ----- ENVIRONMENT -----
+# Temporary configuration files
+temp_settings_local.php
+fix_settings.php
+
+# Local configuration
 .env
 .env.local
 .env.*.local
