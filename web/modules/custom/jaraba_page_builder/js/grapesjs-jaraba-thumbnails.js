@@ -726,15 +726,15 @@
     //    Icono: Horizonte con sol + plántula brotando
     thumbnails['agroconecta_hero'] = svg(
         // Sol naciente — semicírculo con rayos
-        `<circle cx="12" cy="18" r="6" fill="currentColor" opacity="0.15"/>` +
-        `<path d="M6 18a6 6 0 0112 0" fill="currentColor" opacity="0.25"/>` +
+        `<circle cx="12" cy="18" r="6" fill="#4CAF50" opacity="0.15"/>` +
+        `<path d="M6 18a6 6 0 0112 0" fill="#2E7D32" opacity="0.25"/>` +
         `<path d="M6 18a6 6 0 0112 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>` +
         // Rayos solares
         stroke('M12 10v-2') +
         stroke('M7.76 13.76l-1.42-1.42') +
         stroke('M16.24 13.76l1.42-1.42') +
         // Plántula central
-        `<path d="M12 22v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>` +
+        `<path d="M12 22v-6" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>` +
         `<path d="M9 17c0-2 3-3 3-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
         `<path d="M15 17c0-2-3-3-3-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
         // Línea de tierra
@@ -746,14 +746,14 @@
     //    Icono: Hoja orgánica con check de certificación
     thumbnails['agroconecta_features'] = svg(
         // Hoja grande
-        `<path d="M17 2c0 8-5 13-13 13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>` +
-        `<path d="M17 2C17 10 12 15 4 15c0-8 5-13 13-13z" fill="currentColor" opacity="0.2"/>` +
+        `<path d="M17 2c0 8-5 13-13 13" stroke="#2E7D32" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+        `<path d="M17 2C17 10 12 15 4 15c0-8 5-13 13-13z" fill="#4CAF50" opacity="0.2"/>` +
         `<path d="M17 2C17 10 12 15 4 15c0-8 5-13 13-13z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
         // Nervadura de la hoja
         `<path d="M4 15C8 11 12 6 17 2" stroke="currentColor" stroke-width="1" fill="none" opacity="0.4" stroke-linecap="round"/>` +
         // Grid de 3 mini-checks
-        `<path d="M14 14l1.5 1.5 3-3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
-        `<path d="M14 19l1.5 1.5 3-3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path d="M14 14l1.5 1.5 3-3" stroke="#2E7D32" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path d="M14 19l1.5 1.5 3-3" stroke="#2E7D32" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
         // Tallo base
         `<path d="M4 15l2 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>`
     );
@@ -763,15 +763,15 @@
     //    Icono: Sello con estrella y cinta
     thumbnails['agroconecta_content'] = svg(
         // Sello circular
-        `<circle cx="12" cy="10" r="7" fill="currentColor" opacity="0.15"/>` +
+        `<circle cx="12" cy="10" r="7" fill="#2E7D32" opacity="0.15"/>` +
         `<circle cx="12" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/>` +
         `<circle cx="12" cy="10" r="4.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5" stroke-dasharray="2 2"/>` +
         // Estrella de certificación
-        `<path d="M12 6.5l1.12 2.27 2.5.37-1.81 1.76.43 2.5L12 12.38l-2.24 1.02.43-2.5-1.81-1.76 2.5-.37z" fill="currentColor" opacity="0.35"/>` +
+        `<path d="M12 6.5l1.12 2.27 2.5.37-1.81 1.76.43 2.5L12 12.38l-2.24 1.02.43-2.5-1.81-1.76 2.5-.37z" fill="#4CAF50" opacity="0.35"/>` +
         `<path d="M12 6.5l1.12 2.27 2.5.37-1.81 1.76.43 2.5L12 12.38l-2.24 1.02.43-2.5-1.81-1.76 2.5-.37z" stroke="currentColor" stroke-width="1" fill="none"/>` +
         // Cintas colgantes
-        `<path d="M9 17l-2 5 3-2 3 2-2-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
-        `<path d="M15 17l-2 5 3-2 3 2-2-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+        `<path d="M9 17l-2 5 3-2 3 2-2-5" stroke="#2E7D32" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path d="M15 17l-2 5 3-2 3 2-2-5" stroke="#2E7D32" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
     );
     thumbnails['template-agroconecta_content'] = thumbnails['agroconecta_content'];
 
@@ -779,13 +779,13 @@
     //    Icono: Canasta/cesta con productos + mano
     thumbnails['agroconecta_cta'] = svg(
         // Cesta
-        `<path d="M5 10h14l-1.5 9H6.5z" fill="currentColor" opacity="0.2"/>` +
+        `<path d="M5 10h14l-1.5 9H6.5z" fill="#2E7D32" opacity="0.2"/>` +
         `<path d="M5 10h14l-1.5 9H6.5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>` +
         // Asa de la cesta
-        `<path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+        `<path d="M8 10V7a4 4 0 018 0v3" stroke="#2E7D32" stroke-width="2" fill="none" stroke-linecap="round"/>` +
         // Productos asomando (formas orgánicas)
-        `<circle cx="10" cy="8" r="1.5" fill="currentColor" opacity="0.3"/>` +
-        `<circle cx="14" cy="7.5" r="1" fill="currentColor" opacity="0.3"/>` +
+        `<circle cx="10" cy="8" r="1.5" fill="#4CAF50" opacity="0.3"/>` +
+        `<circle cx="14" cy="7.5" r="1" fill="#4CAF50" opacity="0.3"/>` +
         // Líneas de la cesta
         `<path d="M7 14h10M7.5 17h9" stroke="currentColor" stroke-width="1" fill="none" opacity="0.4" stroke-linecap="round"/>` +
         // Flecha apuntando → acción directa
@@ -798,13 +798,13 @@
     //    Icono: Burbuja de pregunta con hoja
     thumbnails['agroconecta_faq'] = svg(
         // Burbuja de diálogo grande
-        `<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" fill="currentColor" opacity="0.15"/>` +
+        `<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" fill="#4CAF50" opacity="0.15"/>` +
         `<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Signo de interrogación orgánico
-        `<path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+        `<path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" stroke="#2E7D32" stroke-width="2" fill="none" stroke-linecap="round"/>` +
         `<circle cx="12" cy="17" r="0.5" fill="currentColor"/>` +
         // Mini hoja decorativa
-        `<path d="M18 3c0 2-1.5 3.5-3.5 3.5 0-2 1.5-3.5 3.5-3.5z" fill="currentColor" opacity="0.3"/>` +
+        `<path d="M18 3c0 2-1.5 3.5-3.5 3.5 0-2 1.5-3.5 3.5-3.5z" fill="#2E7D32" opacity="0.3"/>` +
         `<path d="M18 3c0 2-1.5 3.5-3.5 3.5 0-2 1.5-3.5 3.5-3.5z" stroke="currentColor" stroke-width="1" fill="none"/>`
     );
     thumbnails['template-agroconecta_faq'] = thumbnails['agroconecta_faq'];
@@ -813,13 +813,13 @@
     //    Icono: Cámara/lente con hoja
     thumbnails['agroconecta_gallery'] = svg(
         // Cuerpo de cámara
-        `<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" fill="currentColor" opacity="0.15"/>` +
+        `<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" fill="#2E7D32" opacity="0.15"/>` +
         `<path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Lente
-        `<circle cx="12" cy="13" r="4" fill="currentColor" opacity="0.2"/>` +
+        `<circle cx="12" cy="13" r="4" fill="#4CAF50" opacity="0.2"/>` +
         `<circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Mini hoja dentro de la lente
-        `<path d="M14 11c0 2-1 3-3 3 0-2 1-3 3-3z" fill="currentColor" opacity="0.4"/>` +
+        `<path d="M14 11c0 2-1 3-3 3 0-2 1-3 3-3z" fill="#2E7D32" opacity="0.4"/>` +
         `<path d="M14 11c0 2-1 3-3 3 0-2 1-3 3-3z" stroke="currentColor" stroke-width="0.75" fill="none"/>`
     );
     thumbnails['template-agroconecta_gallery'] = thumbnails['agroconecta_gallery'];
@@ -828,13 +828,13 @@
     //    Icono: Pin de mapa con planta dentro
     thumbnails['agroconecta_map'] = svg(
         // Pin grande
-        `<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" fill="currentColor" opacity="0.15"/>` +
+        `<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" fill="#2E7D32" opacity="0.15"/>` +
         `<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Círculo interior del pin
-        `<circle cx="12" cy="10" r="3.5" fill="currentColor" opacity="0.2"/>` +
+        `<circle cx="12" cy="10" r="3.5" fill="#4CAF50" opacity="0.2"/>` +
         `<circle cx="12" cy="10" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
         // Plántula dentro del pin
-        `<path d="M12 12v-3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
+        `<path d="M12 12v-3" stroke="#2E7D32" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
         `<path d="M10.5 9.5c0-1 1.5-1.5 1.5-2.5" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round"/>` +
         `<path d="M13.5 9.5c0-1-1.5-1.5-1.5-2.5" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round"/>`
     );
@@ -844,20 +844,20 @@
     //    Icono: Cajón/crate de madera con productos
     thumbnails['agroconecta_pricing'] = svg(
         // Caja principal con perspectiva
-        `<path d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" fill="currentColor" opacity="0.15"/>` +
+        `<path d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" fill="#2E7D32" opacity="0.15"/>` +
         `<path d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Tapa de la caja
-        `<rect x="1" y="5" width="22" height="5" rx="1" fill="currentColor" opacity="0.25"/>` +
+        `<rect x="1" y="5" width="22" height="5" rx="1" fill="#4CAF50" opacity="0.25"/>` +
         `<rect x="1" y="5" width="22" height="5" rx="1" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Línea central del lazo
         `<path d="M12 10v8" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5"/>` +
         // Productos asomando arriba
-        `<circle cx="8" cy="4" r="2" fill="currentColor" opacity="0.25"/>` +
+        `<circle cx="8" cy="4" r="2" fill="#2E7D32" opacity="0.25"/>` +
         `<circle cx="8" cy="4" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
-        `<circle cx="14" cy="3.5" r="1.5" fill="currentColor" opacity="0.25"/>` +
+        `<circle cx="14" cy="3.5" r="1.5" fill="#2E7D32" opacity="0.25"/>` +
         `<circle cx="14" cy="3.5" r="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
         // Etiqueta de precio
-        `<path d="M16 14h3v3h-3z" fill="currentColor" opacity="0.3"/>` +
+        `<path d="M16 14h3v3h-3z" fill="#4CAF50" opacity="0.3"/>` +
         `<path d="M16 14h3v3h-3z" stroke="currentColor" stroke-width="1" fill="none"/>`
     );
     thumbnails['template-agroconecta_pricing'] = thumbnails['agroconecta_pricing'];
@@ -866,16 +866,16 @@
     //    Icono: Manos estrechándose con espigas de trigo
     thumbnails['agroconecta_social_proof'] = svg(
         // Espiga de trigo izquierda
-        `<path d="M4 2c0 2 1 3 2 4-1 0-2 1-2 3 0-2 1-3 2-4-1 0-2-1-2-3z" fill="currentColor" opacity="0.3"/>` +
+        `<path d="M4 2c0 2 1 3 2 4-1 0-2 1-2 3 0-2 1-3 2-4-1 0-2-1-2-3z" fill="#2E7D32" opacity="0.3"/>` +
         `<path d="M3 5v6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
         // Espiga de trigo derecha
-        `<path d="M20 2c0 2-1 3-2 4 1 0 2 1 2 3 0-2-1-3-2-4 1 0 2-1 2-3z" fill="currentColor" opacity="0.3"/>` +
+        `<path d="M20 2c0 2-1 3-2 4 1 0 2 1 2 3 0-2-1-3-2-4 1 0 2-1 2-3z" fill="#2E7D32" opacity="0.3"/>` +
         `<path d="M21 5v6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
         // Escudo central
-        `<path d="M12 22s7-3.5 7-8.5V6l-7-3-7 3v7.5c0 5 7 8.5 7 8.5z" fill="currentColor" opacity="0.15"/>` +
+        `<path d="M12 22s7-3.5 7-8.5V6l-7-3-7 3v7.5c0 5 7 8.5 7 8.5z" fill="#4CAF50" opacity="0.15"/>` +
         `<path d="M12 22s7-3.5 7-8.5V6l-7-3-7 3v7.5c0 5 7 8.5 7 8.5z" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Check de confianza dentro del escudo
-        `<path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+        `<path d="M9 12l2 2 4-4" stroke="#2E7D32" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
     );
     thumbnails['template-agroconecta_social_proof'] = thumbnails['agroconecta_social_proof'];
 
@@ -883,15 +883,15 @@
     //    Icono: Gráfico de barras con flecha ascendente y plántula
     thumbnails['agroconecta_stats'] = svg(
         // Barras del gráfico
-        `<rect x="3" y="14" width="4" height="7" rx="1" fill="currentColor" opacity="0.2"/>` +
+        `<rect x="3" y="14" width="4" height="7" rx="1" fill="#2E7D32" opacity="0.2"/>` +
         `<rect x="3" y="14" width="4" height="7" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
-        `<rect x="10" y="10" width="4" height="11" rx="1" fill="currentColor" opacity="0.2"/>` +
+        `<rect x="10" y="10" width="4" height="11" rx="1" fill="#2E7D32" opacity="0.2"/>` +
         `<rect x="10" y="10" width="4" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
-        `<rect x="17" y="6" width="4" height="15" rx="1" fill="currentColor" opacity="0.2"/>` +
+        `<rect x="17" y="6" width="4" height="15" rx="1" fill="#2E7D32" opacity="0.2"/>` +
         `<rect x="17" y="6" width="4" height="15" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>` +
         // Flecha ascendente cruzando las barras
-        `<path d="M2 18L8 12l4 2 8-8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
-        `<path d="M17 4h3v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+        `<path d="M2 18L8 12l4 2 8-8" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path d="M17 4h3v3" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
     );
     thumbnails['template-agroconecta_stats'] = thumbnails['agroconecta_stats'];
 
@@ -899,13 +899,13 @@
     //    Icono: Comillas de cita grandes con hoja decorativa (≈ Testimonios 3D)
     thumbnails['agroconecta_testimonials'] = svg(
         // Comilla izquierda grande, estilo orgánico
-        `<path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" fill="currentColor" opacity="0.2"/>` +
+        `<path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" fill="#2E7D32" opacity="0.2"/>` +
         `<path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Comilla derecha
-        `<path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" fill="currentColor" opacity="0.2"/>` +
+        `<path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" fill="#2E7D32" opacity="0.2"/>` +
         `<path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" stroke="currentColor" stroke-width="2" fill="none"/>` +
         // Hoja decorativa superior
-        `<path d="M20 1c0 2-1.5 3.5-3.5 3.5 0-2 1.5-3.5 3.5-3.5z" fill="currentColor" opacity="0.35"/>` +
+        `<path d="M20 1c0 2-1.5 3.5-3.5 3.5 0-2 1.5-3.5 3.5-3.5z" fill="#4CAF50" opacity="0.35"/>` +
         `<path d="M20 1c0 2-1.5 3.5-3.5 3.5 0-2 1.5-3.5 3.5-3.5z" stroke="currentColor" stroke-width="1" fill="none"/>`
     );
     thumbnails['template-agroconecta_testimonials'] = thumbnails['agroconecta_testimonials'];
@@ -915,7 +915,7 @@
         stroke('M8 12l4-4 4 4') +
         bg('M7 18c-2 0-4-1-4-3s2-4 5-4c.5-3 3-5 5-5s4 2 5 5c3 0 5 2 5 4s-2 3-4 3') +
         stroke('M7 18c-2 0-4-1-4-3s2-4 5-4c.5-3 3-5 5-5s4 2 5 5c3 0 5 2 5 4s-2 3-4 3') +
-        `<path d="M12 22c-1 0-3-.5-3-2s2-2 3-2 3 0 3 2-2 2-3 2z" fill="currentColor" opacity="0.3"/>`
+        `<path d="M12 22c-1 0-3-.5-3-2s2-2 3-2 3 0 3 2-2 2-3 2z" fill="#4CAF50" opacity="0.3"/>`
     );
 
     thumbnails['_cat_comercioconecta'] = svg(
@@ -994,19 +994,57 @@
         'shopping-cart': 'product-showcase',
         'map-embed': 'map-locations',
         'premium-block': 'glassmorphism-cards',
+
+        // AGROCONECTA PREMIUM PREVIEWS
+        'agroconecta_hero': 'agroconecta-hero',
+        'template-agroconecta_hero': 'agroconecta-hero',
+        'jaraba-agroconecta_hero': 'agroconecta-hero',
+        'agroconecta_features': 'agroconecta-features',
+        'template-agroconecta_features': 'agroconecta-features',
+        'jaraba-agroconecta_features': 'agroconecta-features',
+        'agroconecta_content': 'agroconecta-content',
+        'template-agroconecta_content': 'agroconecta-content',
+        'jaraba-agroconecta_content': 'agroconecta-content',
+        'agroconecta_cta': 'agroconecta-cta',
+        'template-agroconecta_cta': 'agroconecta-cta',
+        'jaraba-agroconecta_cta': 'agroconecta-cta',
+        'agroconecta_faq': 'agroconecta-faq',
+        'template-agroconecta_faq': 'agroconecta-faq',
+        'jaraba-agroconecta_faq': 'agroconecta-faq',
+        'agroconecta_gallery': 'agroconecta-gallery',
+        'template-agroconecta_gallery': 'agroconecta-gallery',
+        'jaraba-agroconecta_gallery': 'agroconecta-gallery',
+        'agroconecta_map': 'agroconecta-map',
+        'template-agroconecta_map': 'agroconecta-map',
+        'jaraba-agroconecta_map': 'agroconecta-map',
+        'agroconecta_pricing': 'agroconecta-pricing',
+        'template-agroconecta_pricing': 'agroconecta-pricing',
+        'jaraba-agroconecta_pricing': 'agroconecta-pricing',
+        'agroconecta_social_proof': 'agroconecta-social-proof',
+        'template-agroconecta_social_proof': 'agroconecta-social-proof',
+        'jaraba-agroconecta_social_proof': 'agroconecta-social-proof',
+        'agroconecta_stats': 'agroconecta-stats',
+        'template-agroconecta_stats': 'agroconecta-stats',
+        'jaraba-agroconecta_stats': 'agroconecta-stats',
+        'agroconecta_testimonials': 'agroconecta-testimonials',
+        'template-agroconecta_testimonials': 'agroconecta-testimonials',
+        'jaraba-agroconecta_testimonials': 'agroconecta-testimonials',
     };
 
     /**
-     * Genera HTML <img> para un thumbnail PNG.
+     * Genera HTML <img> para un thumbnail PNG con estilo PREMIUM.
      *
      * @param {string} pngFile Nombre del archivo (sin extensión).
      * @param {string} alt Texto alternativo.
      * @return {string} HTML img tag.
      */
     function makePngMedia(pngFile, alt) {
-        return '<img src="' + pngBasePath + pngFile + '.png" '
+        return '<div class="jaraba-png-wrapper" style="padding: 4px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.3s ease;">'
+            + '<img src="' + pngBasePath + pngFile + '.png" '
             + 'alt="' + alt + '" width="120" height="80" loading="lazy" '
-            + 'style="border-radius:6px; object-fit:cover; width:100%; height:auto;" />';
+            + 'style="border-radius:6px; object-fit:cover; width:100%; height:auto; display:block; transition: transform 0.3s ease;" '
+            + 'onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" />'
+            + '</div>';
     }
 
     // =========================================================================

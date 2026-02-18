@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_servicios_conecta\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;

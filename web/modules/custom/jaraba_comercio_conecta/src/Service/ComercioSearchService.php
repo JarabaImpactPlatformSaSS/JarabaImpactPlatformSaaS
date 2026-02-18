@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_comercio_conecta\Service;
 
 use Drupal\Core\Database\Connection;
