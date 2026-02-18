@@ -554,7 +554,11 @@ class TemplateRegistryService
 
                 if ($loader->exists($twigPath)) {
                     $previewData = $template['preview_data'] ?? [];
-                    return $twig->render($twigPath, $previewData);
+                    // FIX C4: Pasar datos como 'content' (genéricos) Y planos (verticales).
+                    // Los templates genéricos acceden {{ content.title }},
+                    // los verticales acceden {{ title }}.
+                    $twigVars = array_merge($previewData, ['content' => $previewData]);
+                    return $twig->render($twigPath, $twigVars);
                 }
             } catch (\Exception $e) {
                 $this->logger->warning(

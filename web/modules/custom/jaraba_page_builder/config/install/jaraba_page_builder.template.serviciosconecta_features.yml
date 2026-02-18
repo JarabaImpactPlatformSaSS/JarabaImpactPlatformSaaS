@@ -31,6 +31,15 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    columns:
+      type: integer
+      title: 'Columnas'
+      enum: [2, 3, 4]
+      default: 3
   required:
     - title
 plans_required:

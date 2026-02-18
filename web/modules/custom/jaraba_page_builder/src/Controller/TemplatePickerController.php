@@ -265,7 +265,9 @@ class TemplatePickerController extends ControllerBase
         try {
             /** @var \Twig\Environment $twig */
             $twig = \Drupal::service('twig');
-            return $twig->render($template_path, ['content' => $preview_data]);
+            // FIX C3/C4: Pasar datos como 'content' (genéricos) Y planos (verticales).
+            $twigVars = array_merge($preview_data, ['content' => $preview_data]);
+            return $twig->render($template_path, $twigVars);
         } catch (\Exception $e) {
             \Drupal::logger('jaraba_page_builder')->error('Error renderizando iframe preview: @message', [
                 '@message' => $e->getMessage(),
@@ -337,6 +339,18 @@ class TemplatePickerController extends ControllerBase
         // Obtener URL del CSS del módulo ecosistema_jaraba_core (estilos premium).
         $core_module_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core');
         $core_css_url = '/' . $core_module_path . '/css/ecosistema-jaraba-core.css';
+
+        // FIX A5: CSS del Page Builder necesarios para que los bloques se rendericen
+        // correctamente en el iframe de preview.
+        $pb_module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
+        $pb_css_url = '/' . $pb_module_path . '/css/jaraba-page-builder.css';
+        $pb_core_css_url = '/' . $pb_module_path . '/css/page-builder-core.css';
+        $pb_navigation_css_url = '/' . $pb_module_path . '/css/navigation.css';
+        $pb_product_card_css_url = '/' . $pb_module_path . '/css/product-card.css';
+        $pb_social_links_css_url = '/' . $pb_module_path . '/css/social-links.css';
+        $pb_contact_form_css_url = '/' . $pb_module_path . '/css/contact-form.css';
+        $pb_aceternity_css_url = '/' . $pb_module_path . '/css/premium/aceternity.css';
+        $pb_magic_ui_css_url = '/' . $pb_module_path . '/css/premium/magic-ui.css';
 
         $label = $template->label();
 
@@ -483,8 +497,19 @@ CSS;
     <meta charset="UTF-8">
     <meta name="viewport" content="width={$viewport}, initial-scale=1.0">
     <title>{$label} - Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{$css_url}">
     <link rel="stylesheet" href="{$core_css_url}">
+    <link rel="stylesheet" href="{$pb_css_url}">
+    <link rel="stylesheet" href="{$pb_core_css_url}">
+    <link rel="stylesheet" href="{$pb_navigation_css_url}">
+    <link rel="stylesheet" href="{$pb_product_card_css_url}">
+    <link rel="stylesheet" href="{$pb_social_links_css_url}">
+    <link rel="stylesheet" href="{$pb_contact_form_css_url}">
+    <link rel="stylesheet" href="{$pb_aceternity_css_url}">
+    <link rel="stylesheet" href="{$pb_magic_ui_css_url}">
     <style>
         {$baseStyles}
         {$additionalStyles}

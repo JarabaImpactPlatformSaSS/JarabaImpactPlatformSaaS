@@ -160,6 +160,27 @@
          * @return {Promise<boolean>} true si el guardado fue exitoso.
          */
         async save() {
+            // FIX C1: Si GrapesJS está activo, delegar al StorageManager de GrapesJS
+            // que envía HTML/CSS completo. Esta ruta legacy solo enviaba UUIDs de
+            // secciones sin contenido HTML, lo que podía borrar el canvas_data.
+            if (window.JarabaCanvasEditor && window.JarabaCanvasEditor.store) {
+                this.showSaveStatus(Drupal.t('Guardando...'));
+                try {
+                    await window.JarabaCanvasEditor.store();
+                    this.isDirty = false;
+                    this.showSaveStatus(Drupal.t('Guardado correctamente'));
+                    setTimeout(() => this.hideSaveStatus(), 2500);
+                    return true;
+                } catch (error) {
+                    this.showSaveStatus(Drupal.t('Error al guardar'), true);
+                    console.error('Canvas save error:', error);
+                    setTimeout(() => this.hideSaveStatus(), 4000);
+                    return false;
+                }
+            }
+
+            // Fallback legacy: solo se ejecuta si GrapesJS NO está cargado
+            // (modo config editor sin canvas visual).
             this.showSaveStatus(Drupal.t('Guardando...'));
 
             try {

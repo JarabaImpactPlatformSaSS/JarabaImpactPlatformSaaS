@@ -31,6 +31,18 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    toggle_discount:
+      type: boolean
+      title: 'Mostrar descuento'
+      default: false
+    toggle_label_monthly:
+      type: string
+      title: 'Etiqueta mensual'
+      default: 'Mensual'
+    toggle_label_weekly:
+      type: string
+      title: 'Etiqueta semanal'
+      default: 'Semanal'
     plans:
       type: array
       items:

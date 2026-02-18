@@ -1,50 +1,16 @@
 # =============================================================================
 # TRIVY IGNORE FILE
 # =============================================================================
-# Ignora hallazgos que son falsos positivos o aceptados por diseño.
-# =============================================================================
 
-# Hallazgo: Stripe Test Key en modulo contribuido (commerce_stripe)
-# Motivo: Es una clave de prueba oficial del modulo para sus propios tests unitarios.
-sk_test_4g69Cl9vOTJxe7bUmy5TRgWE00ytQmCnep
+# Ignorar vulnerabilidades en fixtures de tests de Drupal Core (sitios falsos)
+web/core/modules/package_manager/tests/fixtures/fake_site/composer.lock
 
-# Hallazgo: Patrones sk_test_xxx en documentacion y ejemplos
-# Motivo: Son marcadores de posicion en archivos Markdown y scripts de ejemplo.
-sk_test_xxx
-sk_test_123456
-sk_test_123
-sk_live_...
-sk_live_abc123xyz789
-sk_live_abc123
-sk_live_xxx
-sk-ant-xxxxx
-sk-xxxxx
-AIzaxxxxx
-sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxx
-sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx
-sk-proj-your-key-here
-sk-ant-your-key-here
-sk-ant-your-api-key
-sk-your-api-key
-sk-your_openai_key_here
-sk-ant-your_anthropic_key_here
-AIza-mock-google-ai-key-replace-me
-sk_test_mock_stripe_secret_key_replace_me
-sk_test_mock_key
-sk_test_mock_secret_key
-whsec_xxx
-whsec_mock_stripe_webhook_secret_replace_me
+# Ignorar archivos de palabras de corrector ortográfico que contienen claves de test
+web/modules/contrib/commerce_stripe/.cspell-project-words.txt
 
-# Hallazgo: Qdrant dev key en lando.yml
-# Motivo: Clave de desarrollo por defecto para entorno local.
-jaraba-dev-qdrant-key-2026
-
-# Hallazgo: Puppeteer version antigua en dependencias de desarrollo del theme.
-# Motivo: Usado por 'critical' para generacion de CSS critico en build-time.
-# CVE-2024-37890 (ws) - Ya parcheado en ws 6.2.3 (usado por puppeteer 2.1.1)
+# Vulnerabilidades específicas aceptadas en dependencias de desarrollo
+CVE-2024-55637
+CVE-2024-55638
 CVE-2024-37890
 CVE-2024-37891
 CVE-2023-26136
@@ -52,8 +18,7 @@ CVE-2022-37601
 CVE-2024-28863
 CVE-2021-23362
 CVE-2023-26159
-CVE-2024-37890
-
-# Hallazgo: Cypress version antigua en modulo contribuido (leaflet-geoman-free)
-# Motivo: Dependencia de desarrollo de un plugin de mapa. No afecta a produccion.
 CVE-2022-23647
+CVE-2024-21538
+CVE-2024-24786
+CVE-2023-45133

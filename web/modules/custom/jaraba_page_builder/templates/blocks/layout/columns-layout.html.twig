@@ -14,6 +14,7 @@
 {% set gap = content.gap|default('medium') %}
 
 <section class="jaraba-columns jaraba-columns--{{ bg_class }} jaraba-columns--{{ layout }} jaraba-columns--gap-{{ gap }} jaraba-block"
+         data-block-type="layout_columns_layout"
          {% if content.reverse_mobile %}data-reverse-mobile{% endif %}>
   <div class="jaraba-block__container">
     <div class="jaraba-columns__wrapper">

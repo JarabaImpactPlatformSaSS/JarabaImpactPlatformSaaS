@@ -13,7 +13,8 @@
 {% set width_class = content.max_width|default('medium') %}
 {% set align_class = content.alignment|default('left') %}
 
-<section class="jaraba-rich-text jaraba-rich-text--{{ bg_class }} jaraba-block">
+<section class="jaraba-rich-text jaraba-rich-text--{{ bg_class }} jaraba-block"
+         data-block-type="content_rich_text">
   <div class="jaraba-block__container">
     <div class="jaraba-rich-text__wrapper jaraba-rich-text__wrapper--{{ width_class }} jaraba-rich-text__wrapper--{{ align_class }}">
       

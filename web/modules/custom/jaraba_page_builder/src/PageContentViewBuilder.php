@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder;
 
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
 
@@ -90,8 +89,10 @@ class PageContentViewBuilder extends EntityViewBuilder
             $renderedHtml = $canvasData['html'] ?? '';
         }
 
-        // AUDIT-SEC-003: Sanitizar HTML antes de renderizar con |raw.
-        $renderedHtml = Xss::filterAdmin($renderedHtml);
+        // FIX C2: Sanitizar HTML con lista blanca ampliada para Page Builder.
+        // Xss::filterAdmin() eliminaba svg, form, input, button, video, iframe, canvas, picture
+        // que son necesarios para los bloques interactivos y premium.
+        $renderedHtml = $this->sanitizePageBuilderHtml($renderedHtml);
 
         if (!empty($renderedHtml)) {
             // Renderizar el HTML del canvas
@@ -265,13 +266,49 @@ class PageContentViewBuilder extends EntityViewBuilder
             if (is_array($value)) {
                 $sanitized[$key] = $this->sanitizeContentData($value);
             } elseif (is_string($value) && in_array($key, $htmlFields, TRUE)) {
-                $sanitized[$key] = Xss::filterAdmin($value);
+                $sanitized[$key] = $this->sanitizePageBuilderHtml($value);
             } else {
                 $sanitized[$key] = $value;
             }
         }
 
         return $sanitized;
+    }
+
+    /**
+     * Sanitiza HTML con lista blanca ampliada para el Page Builder.
+     *
+     * FIX C2: Xss::filterAdmin() eliminaba etiquetas necesarias para bloques
+     * premium e interactivos (svg, form, input, button, video, iframe, canvas, picture).
+     * Este método permite esas etiquetas pero elimina vectores XSS peligrosos:
+     * scripts, event handlers (on*), y URLs javascript:.
+     *
+     * @param string $html
+     *   HTML a sanitizar.
+     *
+     * @return string
+     *   HTML sanitizado con etiquetas multimedia/interactivas preservadas.
+     */
+    protected function sanitizePageBuilderHtml(string $html): string
+    {
+        if (empty($html)) {
+            return '';
+        }
+
+        // Eliminar <script> tags y su contenido.
+        $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
+
+        // Eliminar event handlers on* (onclick, onerror, onload, etc.).
+        $html = preg_replace('/\s+on\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
+
+        // Eliminar atributos javascript: en href/src/action/data/formaction.
+        $html = preg_replace('/\s+(href|src|action|data|formaction)\s*=\s*(?:"javascript:[^"]*"|\'javascript:[^\']*\')/i', '', $html);
+
+        // Eliminar <object> y <embed> (vectores Flash/plugin).
+        $html = preg_replace('/<object\b[^>]*>.*?<\/object>/is', '', $html);
+        $html = preg_replace('/<embed\b[^>]*\/?>/i', '', $html);
+
+        return $html;
     }
 
     /**

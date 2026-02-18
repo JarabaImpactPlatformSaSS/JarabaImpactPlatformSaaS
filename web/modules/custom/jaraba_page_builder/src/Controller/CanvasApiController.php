@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Controller;
 
-use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\jaraba_page_builder\Entity\PageTemplate;
@@ -110,11 +109,11 @@ class CanvasApiController extends ControllerBase
             }
 
             // Validar estructura mínima.
-            // AUDIT-SEC-003: Sanitizar HTML y CSS ANTES de almacenar.
+            // FIX C2: Sanitizar HTML con método permisivo (no Xss::filterAdmin).
             $canvasData = [
                 'components' => $data['components'] ?? [],
                 'styles' => $data['styles'] ?? [],
-                'html' => Xss::filterAdmin($data['html'] ?? ''),
+                'html' => $this->sanitizePageBuilderHtml($data['html'] ?? ''),
                 'css' => $this->sanitizeCss($data['css'] ?? ''),
                 'updated_at' => date('c'),
             ];
@@ -306,9 +305,11 @@ class CanvasApiController extends ControllerBase
             }
 
             // Renderizar el template Twig con datos de ejemplo.
+            // FIX C3/C4: Pasar datos como 'content' (genéricos) Y planos (verticales).
             /** @var \Twig\Environment $twig */
             $twig = \Drupal::service('twig');
-            return $twig->render($twigPath, ['content' => $previewData]);
+            $twigVars = array_merge($previewData, ['content' => $previewData]);
+            return $twig->render($twigPath, $twigVars);
 
         } catch (\Exception $e) {
             $this->getLogger('jaraba_page_builder')->warning(
@@ -416,17 +417,9 @@ class CanvasApiController extends ControllerBase
      */
     protected function getTemplateSchema(PageTemplate $template): array
     {
-        $schema = [];
-
-        // Obtener schema desde método de la entidad si existe.
-        if (method_exists($template, 'getSchema')) {
-            $schemaValue = $template->getSchema();
-            if ($schemaValue) {
-                $schema = json_decode($schemaValue, TRUE) ?? [];
-            }
-        }
-
-        return $schema;
+        // FIX C5: getFieldsSchema() retorna array directamente (no JSON string).
+        // El método getSchema() no existe en PageTemplate.
+        return $template->getFieldsSchema();
     }
 
     /**
@@ -466,14 +459,61 @@ class CanvasApiController extends ControllerBase
      */
     protected function sanitizeHtml(string $html): string
     {
-        // Paso 1: Sanitización XSS robusta via Drupal core.
-        $html = Xss::filterAdmin($html);
+        // Paso 1: Sanitización XSS con lista blanca ampliada para Page Builder.
+        $html = $this->sanitizePageBuilderHtml($html);
 
         // Paso 2: Limpiar atributos residuales de GrapesJS editor.
         $html = preg_replace('/\s+data-gjs-[^=]+="[^"]*"/i', '', $html);
-        $html = preg_replace('/\s+class="[^"]*gjs-[^"]*"/i', '', $html);
+
+        // FIX A1: Solo eliminar clases gjs-*, preservando las demás clases del usuario.
+        $html = preg_replace_callback(
+            '/\sclass="([^"]*)"/i',
+            function ($matches) {
+                $classes = preg_split('/\s+/', $matches[1]);
+                $filtered = array_filter($classes, fn($c) => !str_starts_with($c, 'gjs-'));
+                if (empty($filtered)) {
+                    return '';
+                }
+                return ' class="' . implode(' ', $filtered) . '"';
+            },
+            $html
+        );
 
         return trim($html);
+    }
+
+    /**
+     * Sanitiza HTML con lista blanca ampliada para el Page Builder.
+     *
+     * FIX C2: Reemplaza Xss::filterAdmin() que eliminaba svg, form, input,
+     * button, video, iframe, canvas, picture necesarios para bloques premium.
+     *
+     * @param string $html
+     *   HTML a sanitizar.
+     *
+     * @return string
+     *   HTML sanitizado.
+     */
+    protected function sanitizePageBuilderHtml(string $html): string
+    {
+        if (empty($html)) {
+            return '';
+        }
+
+        // Eliminar <script> tags y su contenido.
+        $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
+
+        // Eliminar event handlers on* (onclick, onerror, onload, etc.).
+        $html = preg_replace('/\s+on\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
+
+        // Eliminar atributos javascript: en href/src/action/data/formaction.
+        $html = preg_replace('/\s+(href|src|action|data|formaction)\s*=\s*(?:"javascript:[^"]*"|\'javascript:[^\']*\')/i', '', $html);
+
+        // Eliminar <object> y <embed> (vectores Flash/plugin).
+        $html = preg_replace('/<object\b[^>]*>.*?<\/object>/is', '', $html);
+        $html = preg_replace('/<embed\b[^>]*\/?>/i', '', $html);
+
+        return $html;
     }
 
     /**

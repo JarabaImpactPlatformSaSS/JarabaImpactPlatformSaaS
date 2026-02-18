@@ -6,6 +6,7 @@
  # Grid 2 cols: mapa embed + info de contacto lateral
  #}
 <section class="pb-section pb-section--map pb-section--empleabilidad"
+         data-block-type="empleabilidad_map"
          aria-label="{{ title|default('Encuéntranos')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__map-embed">
@@ -19,14 +20,18 @@
       <h2 class="pb-section__title">{{ title|default('Visítanos')|t }}</h2>
       <p class="pb-section__subtitle">{{ subtitle|default('Estamos aquí para ayudarte en tu desarrollo profesional.')|t }}</p>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#128205;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '24px' }) }}
+          </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Dirección'|t }}</div>
           <div class="pb-section__contact-value">{{ address|default('Centro de Formación, Calle del Trabajo 15, Tu Ciudad')|t }}</div>
         </div>
       </div>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#128222;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px' }) }}
+          </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Teléfono'|t }}</div>
           <div class="pb-section__contact-value">
@@ -35,7 +40,9 @@
         </div>
       </div>
       <div class="pb-section__contact-item">
-        <div class="pb-section__contact-icon" aria-hidden="true">&#9993;</div>
+        <div class="pb-section__contact-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'envelope', { variant: 'duotone', size: '24px' }) }}
+          </div>
         <div>
           <div class="pb-section__contact-label">{{ 'Email'|t }}</div>
           <div class="pb-section__contact-value">

@@ -14,6 +14,7 @@
 {% set style = content.style|default('cards') %}
 
 <section class="jaraba-countdown jaraba-countdown--{{ bg_class }} jaraba-countdown--{{ style }} jaraba-block"
+         data-block-type="cta_countdown_timer"
          data-target-date="{{ content.target_date }}"
          data-end-action="{{ content.end_action|default('show_message') }}"
          data-end-message="{{ content.end_message }}"

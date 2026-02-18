@@ -106,7 +106,6 @@ jobs:
         uses: actions/checkout@v4
 
       # AUDIT-SEC-N10: Trivy must block on CRITICAL/HIGH vulnerabilities.
-      # TEMPORAL: exit-code 0 para depuración.
       - name: Run Trivy vulnerability scanner
         id: trivy
         uses: aquasecurity/trivy-action@0.28.0
@@ -115,35 +114,46 @@ jobs:
           scan-ref: '.'
           scanners: 'vuln,secret'
           severity: 'CRITICAL,HIGH'
-          format: 'table'
-          output: 'trivy-debug.txt'
-          exit-code: '0'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          trivy-config: 'trivy.yaml'
+        continue-on-error: false
+
+      - name: Upload Trivy SARIF to GitHub Security tab
+        # NOTE: Requires GitHub Advanced Security (GHAS). For private repos
+        # on personal accounts this step will silently fail. Results are
+        # printed in the step summary below as a fallback.
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'trivy-filesystem'
+        if: always()
         continue-on-error: true
 
-      - name: Display Trivy findings in logs
-        run: |
-          echo "=== TRIVY DEBUG FINDINGS ==="
-          if [ -f trivy-debug.txt ]; then
-            cat trivy-debug.txt
-          else
-            echo "No findings file generated."
-          fi
-          echo "============================"
+      - name: Trivy table output (fallback for repos without GHAS)
+        if: always()
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          scanners: 'vuln,secret'
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+          output: 'trivy-table.txt'
+          exit-code: '0'
+          trivy-config: 'trivy.yaml'
 
-      - name: Trivy summary
+      - name: Append Trivy table to step summary
         if: always()
         run: |
-          echo "## Trivy Filesystem Scan" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if grep -q "Total: [1-9]" trivy-debug.txt 2>/dev/null; then
-            echo "**WARNING:** CRITICAL/HIGH vulnerabilities or secrets detected." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No CRITICAL/HIGH vulnerabilities found." >> $GITHUB_STEP_SUMMARY
+          if [ -f trivy-table.txt ] && [ -s trivy-table.txt ]; then
+            echo '## Trivy Detailed Results' >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat trivy-table.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
           fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Scan type:** filesystem" >> $GITHUB_STEP_SUMMARY
-          echo "- **Checks:** vulnerabilities + secrets" >> $GITHUB_STEP_SUMMARY
-          echo "- **Severity filter:** CRITICAL, HIGH" >> $GITHUB_STEP_SUMMARY
 
   # ===========================================
   # AUDIT-SEC-N11: JOB 3: SAST — PHPStan Security Analysis

@@ -16,6 +16,7 @@
 {% set allow_multiple = content.allow_multiple|default(false) %}
 
 <section class="jaraba-accordion jaraba-accordion--{{ bg_class }} jaraba-accordion--{{ style }} jaraba-block"
+         data-block-type="content_accordion_content"
          data-allow-multiple="{{ allow_multiple ? 'true' : 'false' }}">
   <div class="jaraba-block__container">
     

@@ -11,6 +11,7 @@
 {% set threshold = content.threshold|default(0.2) %}
 
 <section class="jaraba-scroll-reveal jaraba-scroll-reveal--{{ bg_class }} jaraba-block jaraba-block--premium"
+         data-block-type="premium_scroll_reveal"
          data-stagger="{{ stagger ? 'true' : 'false' }}"
          data-threshold="{{ threshold }}">
   <div class="jaraba-block__container">

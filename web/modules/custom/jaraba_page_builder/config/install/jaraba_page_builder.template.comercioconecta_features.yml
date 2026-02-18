@@ -47,6 +47,10 @@ fields_schema:
       type: string
       title: 'URL del Boton Secundario'
       format: uri
+    columns:
+      type: integer
+      title: 'Columnas'
+      default: 3
     features:
       type: array
       items:

@@ -31,6 +31,14 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    layout:
+      type: string
+      title: 'Layout'
+      enum:
+        - grid
+        - masonry
+        - carousel
+      default: grid
     gallery:
       type: array
       items:

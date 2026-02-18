@@ -1,5 +1,14 @@
 # Librerías del módulo Page Builder
 
+# FIX A4: Librería global para páginas publicadas del Page Builder.
+# Referenciada por PageContentViewBuilder::view() para asegurar que
+# los estilos base se carguen en todas las páginas renderizadas.
+global:
+  version: 1.x
+  dependencies:
+    - jaraba_page_builder/page-builder
+    - jaraba_page_builder/page-builder-core
+
 # Dashboard principal del Page Builder - Hub Central
 page-builder-dashboard:
   version: 1.0

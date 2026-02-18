@@ -31,6 +31,14 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    average_rating:
+      type: number
+      title: 'Valoracion media'
+      default: 4.8
+    total_reviews:
+      type: integer
+      title: 'Total de resenas'
+      default: 150
     logos:
       type: array
       items:

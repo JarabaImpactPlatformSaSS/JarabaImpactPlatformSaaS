@@ -15,11 +15,12 @@
 {% set height = content.height|default('tall') %}
 {% set has_scroll = content.scroll_indicator|default(true) %}
 
-<section class="jaraba-video-hero jaraba-video-hero--{{ height }} jaraba-video-hero--align-{{ alignment }} jaraba-block jaraba-block--premium">
+<section class="jaraba-video-bg-hero jaraba-video-bg-hero--{{ height }} jaraba-video-bg-hero--align-{{ alignment }} jaraba-block jaraba-block--premium"
+         data-block-type="premium_video_background_hero">
   
   {# Video Background #}
-  <div class="jaraba-video-hero__bg">
-    <video class="jaraba-video-hero__video"
+  <div class="jaraba-video-bg-hero__bg">
+    <video class="jaraba-video-bg-hero__video"
            autoplay
            muted
            loop
@@ -29,46 +30,46 @@
     </video>
     
     {# Overlay #}
-    <div class="jaraba-video-hero__overlay jaraba-video-hero__overlay--{{ overlay }}" 
+    <div class="jaraba-video-bg-hero__overlay jaraba-video-bg-hero__overlay--{{ overlay }}" 
          style="--overlay-opacity: {{ opacity / 100 }};"></div>
   </div>
   
   {# Content #}
-  <div class="jaraba-video-hero__content">
+  <div class="jaraba-video-bg-hero__content">
     <div class="jaraba-block__container">
-      <div class="jaraba-video-hero__inner">
+      <div class="jaraba-video-bg-hero__inner">
         
         {# Badge (optional decorative) #}
-        <div class="jaraba-video-hero__badge">
-          <span class="jaraba-video-hero__badge-dot"></span>
+        <div class="jaraba-video-bg-hero__badge">
+          <span class="jaraba-video-bg-hero__badge-dot"></span>
           {% trans %}Premium Experience{% endtrans %}
         </div>
         
         {# Title #}
         {% if content.title %}
-          <h1 class="jaraba-video-hero__title">
+          <h1 class="jaraba-video-bg-hero__title">
             {{ content.title }}
           </h1>
         {% endif %}
         
         {# Subtitle #}
         {% if content.subtitle %}
-          <p class="jaraba-video-hero__subtitle">
+          <p class="jaraba-video-bg-hero__subtitle">
             {{ content.subtitle }}
           </p>
         {% endif %}
         
         {# CTAs #}
         {% if content.cta_text or content.secondary_cta_text %}
-          <div class="jaraba-video-hero__ctas">
+          <div class="jaraba-video-bg-hero__ctas">
             {% if content.cta_text %}
-              <a href="{{ content.cta_url|default('#') }}" class="jaraba-video-hero__cta jaraba-video-hero__cta--primary">
+              <a href="{{ content.cta_url|default('#') }}" class="jaraba-video-bg-hero__cta jaraba-video-bg-hero__cta--primary">
                 {{ content.cta_text }}
                 {{ jaraba_icon('ui', 'arrow-right', { size: '20px' }) }}
               </a>
             {% endif %}
             {% if content.secondary_cta_text %}
-              <a href="{{ content.secondary_cta_url|default('#') }}" class="jaraba-video-hero__cta jaraba-video-hero__cta--secondary">
+              <a href="{{ content.secondary_cta_url|default('#') }}" class="jaraba-video-bg-hero__cta jaraba-video-bg-hero__cta--secondary">
                 {{ jaraba_icon('ui', 'play', { size: '20px' }) }}
                 {{ content.secondary_cta_text }}
               </a>
@@ -82,15 +83,15 @@
   
   {# Scroll Indicator #}
   {% if has_scroll %}
-    <div class="jaraba-video-hero__scroll-indicator" aria-hidden="true">
-      <div class="jaraba-video-hero__scroll-mouse">
-        <div class="jaraba-video-hero__scroll-wheel"></div>
+    <div class="jaraba-video-bg-hero__scroll-indicator" aria-hidden="true">
+      <div class="jaraba-video-bg-hero__scroll-mouse">
+        <div class="jaraba-video-bg-hero__scroll-wheel"></div>
       </div>
-      <span class="jaraba-video-hero__scroll-text">{% trans %}Scroll{% endtrans %}</span>
+      <span class="jaraba-video-bg-hero__scroll-text">{% trans %}Scroll{% endtrans %}</span>
     </div>
   {% endif %}
   
   {# Decorative Bottom Fade #}
-  <div class="jaraba-video-hero__bottom-fade"></div>
+  <div class="jaraba-video-bg-hero__bottom-fade"></div>
   
 </section>

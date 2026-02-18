@@ -32,7 +32,8 @@
   {% set embed_url = content.video_url %}
 {% endif %}
 
-<section class="jaraba-video-embed jaraba-video-embed--{{ bg_class }} jaraba-video-embed--{{ layout }} jaraba-block">
+<section class="jaraba-video-embed jaraba-video-embed--{{ bg_class }} jaraba-video-embed--{{ layout }} jaraba-block"
+         data-block-type="media_video_embed">
   <div class="jaraba-block__container">
     
     {% if content.title %}

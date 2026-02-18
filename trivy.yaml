@@ -1,0 +1,42 @@
+# Trivy Configuration File
+# ═══════════════════════════════════════════════════════════════════
+
+# Escaneo de sistema de archivos
+scan:
+  type: 'fs'
+  ref: '.'
+
+# Scanners activos
+scanners:
+  - vuln
+  - secret
+
+# Configuración de vulnerabilidades
+vulnerability:
+  ignore-policy: .trivyignore
+
+# Gravedad que bloquea la build
+severity:
+  - HIGH
+  - CRITICAL
+
+# Exclusiones de directorios
+exclude-dirs:
+  - web/core/modules/*/tests/fixtures
+  - web/core/tests/fixtures
+  - vendor
+  - node_modules
+  - .git
+
+# Exclusiones de archivos específicos
+exclude-files:
+  - web/modules/contrib/commerce_stripe/.cspell-project-words.txt
+  - .trivyignore
+  - trivy.yaml
+
+# Configuración de secretos
+secret:
+  # Reglas de excepción para secretos
+  allow-rules:
+    - id: stripe-secret-token
+    - id: generic-api-key

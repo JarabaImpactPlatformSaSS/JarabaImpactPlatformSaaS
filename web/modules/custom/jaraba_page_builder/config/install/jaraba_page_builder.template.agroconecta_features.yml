@@ -31,6 +31,10 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    columns:
+      type: integer
+      title: 'Columnas'
+      default: 3
     features:
       type: array
       items:

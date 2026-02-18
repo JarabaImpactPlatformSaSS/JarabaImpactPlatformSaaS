@@ -15,7 +15,8 @@
 {% set columns = content.columns|default(3) %}
 {% set card_style = content.card_style|default('full') %}
 
-<section class="jaraba-profiles jaraba-profiles--{{ bg_class }} jaraba-profiles--{{ card_style }} jaraba-block">
+<section class="jaraba-profiles jaraba-profiles--{{ bg_class }} jaraba-profiles--{{ card_style }} jaraba-block"
+         data-block-type="content_profile_cards">
   <div class="jaraba-block__container">
     
     <header class="jaraba-profiles__header">

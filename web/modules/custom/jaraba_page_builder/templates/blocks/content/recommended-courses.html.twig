@@ -23,7 +23,8 @@
 {% set layout = content.layout|default('carousel') %}
 {% set columns = content.columns|default(3) %}
 
-<section class="jaraba-recommended-courses jaraba-recommended-courses--{{ bg_class }} jaraba-recommended-courses--{{ layout }} jaraba-block">
+<section class="jaraba-recommended-courses jaraba-recommended-courses--{{ bg_class }} jaraba-recommended-courses--{{ layout }} jaraba-block"
+         data-block-type="content_recommended_courses">
   <div class="jaraba-block__container">
     
     {# Header #}

@@ -16,7 +16,8 @@
 {% set image_size = content.image_size|default('medium') %}
 {% set vertical_align = content.vertical_align|default('center') %}
 
-<section class="jaraba-image-text jaraba-image-text--{{ bg_class }} jaraba-image-text--image-{{ image_position }} jaraba-image-text--size-{{ image_size }} jaraba-block">
+<section class="jaraba-image-text jaraba-image-text--{{ bg_class }} jaraba-image-text--image-{{ image_position }} jaraba-image-text--size-{{ image_size }} jaraba-block"
+         data-block-type="content_image_text_block">
   <div class="jaraba-block__container">
     <div class="jaraba-image-text__wrapper jaraba-image-text__wrapper--valign-{{ vertical_align }}">
       

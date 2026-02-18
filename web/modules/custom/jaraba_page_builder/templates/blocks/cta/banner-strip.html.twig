@@ -15,6 +15,7 @@
 {% set position = content.position|default('inline') %}
 
 <aside class="jaraba-banner jaraba-banner--{{ style }} jaraba-banner--{{ position }}"
+       data-block-type="cta_banner_strip"
        role="alert"
        {% if content.dismissible %}data-dismissible{% endif %}>
   <div class="jaraba-banner__inner">

@@ -17,8 +17,9 @@
  */
 #}
 
-<section 
-  class="jaraba-hero jaraba-hero--fullscreen"
+<section
+  class="jaraba-hero jaraba-hero--fullscreen jaraba-block"
+  data-block-type="hero_fullscreen"
   style="
     --hero-overlay-opacity: {{ (content.overlay_opacity|default(50)) / 100 }};
     {% if content.background_image %}
@@ -30,7 +31,7 @@
   <div class="jaraba-hero__overlay"></div>
 
   {# Contenido #}
-  <div class="jaraba-hero__content container">
+  <div class="jaraba-hero__content jaraba-block__container">
     {% if content.eyebrow %}
       <span class="jaraba-hero__eyebrow">{{ content.eyebrow }}</span>
     {% endif %}
@@ -44,13 +45,13 @@
     {# CTAs #}
     <div class="jaraba-hero__actions">
       {% if content.cta_primary_text and content.cta_primary_url %}
-        <a href="{{ content.cta_primary_url }}" class="btn-primary btn-primary--large">
+        <a href="{{ content.cta_primary_url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
           {{ content.cta_primary_text }}
         </a>
       {% endif %}
 
       {% if content.cta_secondary_text and content.cta_secondary_url %}
-        <a href="{{ content.cta_secondary_url }}" class="btn-secondary btn-secondary--large">
+        <a href="{{ content.cta_secondary_url }}" class="jaraba-btn jaraba-btn--ghost jaraba-btn--lg">
           {{ content.cta_secondary_text }}
         </a>
       {% endif %}

@@ -15,7 +15,7 @@
 {% set style_class = content.style|default('cards') %}
 {% set testimonials = content.testimonials|default([]) %}
 
-<section class="jaraba-block jaraba-testimonials jaraba-testimonials--{{ bg_class }} jaraba-testimonials--{{ style_class }}"
+<section class="jaraba-testimonials jaraba-testimonials--{{ bg_class }} jaraba-testimonials--{{ style_class }} jaraba-block"
          data-block-type="testimonials_slider"
          data-autoplay="{{ content.autoplay ? 'true' : 'false' }}"
          data-autoplay-speed="{{ content.autoplay_speed|default(5) }}">

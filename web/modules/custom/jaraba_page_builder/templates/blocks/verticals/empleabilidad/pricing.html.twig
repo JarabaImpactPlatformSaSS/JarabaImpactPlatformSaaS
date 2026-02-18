@@ -6,6 +6,7 @@
  # Header + 3 pricing cards con precio, features list y CTA
  #}
 <section class="pb-section pb-section--pricing pb-section--empleabilidad"
+         data-block-type="empleabilidad_pricing"
          aria-label="{{ title|default('Nuestros Planes')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__header">
@@ -30,7 +31,10 @@
           <div class="pb-section__pricing-period">{{ plan.period|default('/mes')|t }}</div>
           <ul class="pb-section__pricing-features">
             {% for feature in plan.features|default([]) %}
-              <li>{{ feature|t }}</li>
+              <li>
+                <span class="pb-section__pricing-check" aria-hidden="true">{{ jaraba_icon('ui', 'check', { size: '16px', color: 'success' }) }}</span>
+                {{ feature|t }}
+              </li>
             {% endfor %}
           </ul>
           <a href="{{ plan.url|default('#') }}" class="pb-section__cta pb-section__cta--primary">

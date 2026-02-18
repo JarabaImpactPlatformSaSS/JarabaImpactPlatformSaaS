@@ -8,13 +8,14 @@
  # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
 <section class="pb-section pb-section--hero pb-section--comercioconecta jaraba-block jaraba-block--premium"
+         data-block-type="comercioconecta_hero"
          aria-label="{{ title|default('Escaparate de Tienda')|t }}"
          data-effect="fade-up"
          {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__hero-content">
       <span class="pb-section__eyebrow">{{ eyebrow|default('ComercioConecta')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Lleva tu tienda al siguiente nivel')|t }}</h2>
+      <h1 class="pb-section__title">{{ title|default('Lleva tu tienda al siguiente nivel')|t }}</h1>
       <p class="pb-section__subtitle">{{ subtitle|default('Herramientas digitales para impulsar tus ventas, conectar con clientes y hacer crecer tu negocio local.')|t }}</p>
       <div class="pb-section__actions">
         <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">

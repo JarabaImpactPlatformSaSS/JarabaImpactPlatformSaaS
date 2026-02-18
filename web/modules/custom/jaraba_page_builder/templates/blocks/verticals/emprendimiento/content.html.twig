@@ -6,6 +6,7 @@
  # Grid 2 columnas: texto + media
  #}
 <section class="pb-section pb-section--content pb-section--emprendimiento"
+         data-block-type="emprendimiento_content"
          aria-label="{{ title|default('Tu Proyecto')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__text">
@@ -27,7 +28,9 @@
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#128161;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'lightbulb', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

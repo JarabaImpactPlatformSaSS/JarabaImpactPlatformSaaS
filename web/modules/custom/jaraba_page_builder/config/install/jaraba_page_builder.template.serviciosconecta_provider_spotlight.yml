@@ -77,6 +77,16 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    cred_items:
+      type: array
+      title: 'Elementos de credenciales'
+      items:
+        type: object
+    service_items:
+      type: array
+      title: 'Elementos de servicios'
+      items:
+        type: object
   required:
     - title
     - provider_name
