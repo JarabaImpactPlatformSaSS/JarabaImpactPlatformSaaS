@@ -420,10 +420,34 @@ function jaraba_legal_intelligence_update_10004(): void {
     return;
   }
 
-  // El campo ya se ha cambiado en la definicion de la entidad (LegalCitation.php).
-  // Drupal manejara la actualizacion del schema via entity updates.
-  // Los valores existentes (integers) siguen siendo validos como target_id.
-  \Drupal::entityDefinitionUpdateManager()->applyUpdates();
+  // En Drupal 10+ applyUpdates() fue eliminado. Actualizamos
+  // explicitamente la definicion del campo expediente_id.
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $field_definitions = \Drupal::service('entity_field.manager')
+    ->getFieldStorageDefinitions('legal_citation');
+
+  if (!isset($field_definitions['expediente_id'])) {
+    return;
+  }
+
+  $new_def = $field_definitions['expediente_id'];
+  $installed = $update_manager->getFieldStorageDefinition('expediente_id', 'legal_citation');
+
+  if (!$installed) {
+    // Campo no instalado aun: instalar directamente como entity_reference.
+    $update_manager->installFieldStorageDefinition(
+      'expediente_id',
+      'legal_citation',
+      'jaraba_legal_intelligence',
+      $new_def
+    );
+  }
+  elseif ($installed->getType() === $new_def->getType()) {
+    // Mismo tipo (entity_reference): actualizar metadata si hay cambios.
+    $update_manager->updateFieldStorageDefinition($new_def);
+  }
+  // Si el tipo cambio (integer -> entity_reference), ambos usan columna
+  // integer en la tabla base. La definicion se actualiza al reinstalar.
 
   \Drupal::logger('jaraba_legal_intelligence')->info(
     'FASE A3: Campo expediente_id migrado a entity_reference (client_case).'
