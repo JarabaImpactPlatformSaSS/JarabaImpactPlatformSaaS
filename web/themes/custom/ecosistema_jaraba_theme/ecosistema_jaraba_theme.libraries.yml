@@ -17,14 +17,8 @@ admin-settings:
   css:
     theme:
       css/admin-settings.css: {}
-  js:
-    js/admin-settings.js: {}
 
-breadcrumbs:
-  version: 1.0.0
-  css:
-    theme:
-      css/breadcrumbs.css: {}
+# Breadcrumbs styles are included in global-styling (main.css)
 
 back-to-top:
   version: 1.0.0
