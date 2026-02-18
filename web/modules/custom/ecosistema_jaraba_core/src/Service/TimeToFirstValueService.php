@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Servicio de métricas Time-to-First-Value (TTFV).
@@ -50,6 +51,7 @@ class TimeToFirstValueService
     public function __construct(
         protected Connection $database,
         protected AccountProxyInterface $currentUser,
+        protected ?TenantContextService $tenantContext = NULL,
     ) {
     }
 
@@ -282,22 +284,24 @@ class TimeToFirstValueService
      */
     public function getAggregateTTFVMetrics(?int $tenantId = NULL): array
     {
-        // AUDIT-SEC-N13: Resolver tenant desde contexto si no se proporciona.
+        // AUDIT-SEC-N13: Resolver tenant desde contexto DI (no service locator).
+        // Si tenantId=0 (anónimo/sin contexto), retornar vacío para evitar
+        // fuga de métricas cross-tenant.
         if ($tenantId === NULL) {
-            $tenantId = $this->currentUser->id() > 0
-                ? (int) (\Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId() ?? 0)
+            $tenantId = $this->tenantContext
+                ? (int) ($this->tenantContext->getCurrentTenantId() ?? 0)
                 : 0;
+        }
+
+        if ($tenantId <= 0) {
+            return [];
         }
 
         // Promedios de TTFV por evento (últimos 30 días).
         $thirtyDaysAgo = time() - (30 * 24 * 60 * 60);
 
-        $args = [':since' => $thirtyDaysAgo];
-        $tenantFilter = '';
-        if ($tenantId > 0) {
-            $tenantFilter = 'AND e.tenant_id = :tenant_id';
-            $args[':tenant_id'] = $tenantId;
-        }
+        $args = [':since' => $thirtyDaysAgo, ':tenant_id' => $tenantId];
+        $tenantFilter = 'AND e.tenant_id = :tenant_id';
 
         $results = $this->database->query("
       SELECT

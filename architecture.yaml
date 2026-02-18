@@ -9,8 +9,9 @@
 #   - Disaster Recovery Planning
 #
 # Versión: 1.0.0
-# Última actualización: 2026-01-11
+# Última actualización: 2026-02-18
 # Sprint: Level 5 - Sprint 4 (Architecture as Code)
+# AUDIT-SPEC-N04: Cache section reconciled with settings.php Redis config
 # =============================================================================
 
 version: "1.0"
@@ -161,19 +162,38 @@ services:
       retries: 3
 
   # ---------------------------------------------------------------------------
-  # CACHE (Future: Redis)
+  # CACHE
+  # AUDIT-SPEC-N04: Reconciled with actual Redis config in settings.php
   # ---------------------------------------------------------------------------
   cache:
-    type: database-cache  # Current: Drupal DB cache
-    future: redis
-    
+    # Redis is enabled conditionally when REDIS_HOST env var is set
+    # and the PhpRedis extension is available. Falls back to database cache.
+    type: redis          # Production / Lando (when REDIS_HOST is defined)
+    fallback: database   # When Redis is unavailable
+    interface: PhpRedis
+
     config:
-      backend: Drupal\Core\Cache\DatabaseBackend
-      bins:
-        - cache_default
-        - cache_render
-        - cache_page
-        - cache_dynamic_page_cache
+      production:
+        backend: cache.backend.redis
+        host_env: REDIS_HOST       # IONOS production env var
+        port_env: REDIS_PORT       # Defaults to 6379
+        password_env: REDIS_PASSWORD
+        prefix: jaraba_
+      development:
+        backend: cache.backend.redis  # Lando: REDIS_HOST=redis via .lando.yml
+        host: redis
+        port: 6379
+        prefix: jaraba_
+      fallback:
+        backend: cache.backend.database
+
+    bins:
+      default: cache.backend.redis
+      ai_embeddings: cache.backend.redis
+      ai_recommendations: cache.backend.redis
+      ai_tenant_knowledge: cache.backend.redis
+      matching_results: cache.backend.redis
+      copilot_responses: cache.backend.redis
 
 # =============================================================================
 # SELF-HEALING

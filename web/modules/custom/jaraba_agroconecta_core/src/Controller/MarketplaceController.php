@@ -30,7 +30,7 @@ class MarketplaceController extends ControllerBase
     public static function create(ContainerInterface $container): static
     {
         $instance = new static();
-        $instance->marketplace = $container->get('jaraba_agroconecta.marketplace_service');
+        $instance->marketplace = $container->get('jaraba_agroconecta_core.marketplace_service'); // AUDIT-CONS-N05: canonical prefix
         return $instance;
     }
 

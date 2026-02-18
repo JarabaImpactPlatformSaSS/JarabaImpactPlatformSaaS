@@ -105,7 +105,7 @@
   'use strict';
 
   // Cargar datos del gráfico vía API.
-  fetch('/api/pixels/stats/chart-data')
+  fetch('/api/v1/pixels/stats/chart-data') // AUDIT-CONS-N07: Added API versioning prefix.
     .then(response => response.json())
     .then(data => {
       if (!data.success) return;

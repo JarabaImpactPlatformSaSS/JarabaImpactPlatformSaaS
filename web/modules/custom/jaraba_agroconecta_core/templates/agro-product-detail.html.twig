@@ -13,12 +13,13 @@
 #}
 
 <article class="agro-product-detail">
-  {# === Imagen del producto === #}
+  {# === Imagen del producto — AUDIT-PERF-N16: eager porque es LCP hero image === #}
   <div class="agro-product-detail__gallery">
     {% if product.image.entity %}
       <img class="agro-product-detail__image"
            src="{{ file_url(product.image.entity.fileuri) }}"
-           alt="{{ product.name.value }}">
+           alt="{{ product.name.value }}"
+           loading="eager">
     {% else %}
       <div class="agro-product-detail__image agro-product-detail__image--placeholder"></div>
     {% endif %}
@@ -98,7 +99,8 @@
 
   {# === Volver al marketplace === #}
   <div class="agro-product-detail__back">
-    <a href="{{ path('jaraba_agroconecta.marketplace') }}" class="agro-btn agro-btn--secondary">
+    {# AUDIT-CONS-N05: canonical route prefix #}
+    <a href="{{ path('jaraba_agroconecta_core.marketplace') }}" class="agro-btn agro-btn--secondary">
       ← {% trans %}Volver al marketplace{% endtrans %}
     </a>
   </div>

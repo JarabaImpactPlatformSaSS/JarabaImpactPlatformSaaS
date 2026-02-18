@@ -38,6 +38,9 @@ class AdminCenterAlertService {
     'expansion_opportunity' => 'Oportunidad de Expansión',
     'ltv_cac_warning' => 'LTV:CAC Bajo',
     'payback_exceeded' => 'Payback Excedido',
+    'cold_chain_breach' => 'Rotura Cadena de Frío',
+    'carrier_outage' => 'Fallo de Transportista',
+    'traceability_gap' => 'Gap de Trazabilidad',
   ];
 
   /**

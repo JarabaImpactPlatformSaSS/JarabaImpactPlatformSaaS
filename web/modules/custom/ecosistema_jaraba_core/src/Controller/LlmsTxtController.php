@@ -188,8 +188,8 @@ Todas las páginas de productos incluyen Schema.org JSON-LD con:
 
 La plataforma expone APIs REST para integraciones:
 
-- /api/pricing/{vertical}: Precios públicos por vertical (GET, público)
-- /api/products: Catálogo de productos (requiere autenticación)
+- /api/v1/pricing/{vertical}: Precios públicos por vertical (GET, público)
+- /api/v1/marketplace/products: Catálogo de productos (requiere autenticación)
 
 ## Notas para LLMs
 

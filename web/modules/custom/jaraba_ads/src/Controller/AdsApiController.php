@@ -382,13 +382,14 @@ class AdsApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON response.
    */
+  // AUDIT-CONS-N08: Standardized JSON envelope.
   protected function successResponse($data, array $meta = []): JsonResponse {
     $meta['timestamp'] = time();
 
     return new JsonResponse([
+      'success' => TRUE,
       'data' => $data,
       'meta' => $meta,
-      'errors' => [],
     ], 200);
   }
 
@@ -407,15 +408,10 @@ class AdsApiController extends ControllerBase {
    */
   protected function errorResponse(string $message, string $code, int $status): JsonResponse {
     return new JsonResponse([
-      'data' => NULL,
-      'meta' => [
-        'timestamp' => time(),
-      ],
-      'errors' => [
-        [
-          'code' => $code,
-          'message' => $message,
-        ],
+      'success' => FALSE,
+      'error' => [
+        'code' => $code,
+        'message' => $message,
       ],
     ], $status);
   }

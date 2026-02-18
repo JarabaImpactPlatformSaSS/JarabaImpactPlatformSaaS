@@ -8,6 +8,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Servicio de Feature Gating para el vertical Emprendimiento.
@@ -53,6 +54,7 @@ class EmprendimientoFeatureGateService {
     protected Connection $database,
     protected AccountProxyInterface $currentUser,
     protected LoggerInterface $logger,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {
   }
 
@@ -108,7 +110,7 @@ class EmprendimientoFeatureGateService {
       // Fire upgrade trigger on denial.
       // Plan Elevación Emprendimiento v2 — Fase 7 (G7).
       try {
-        $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+        $tenant = $this->tenantContext->getCurrentTenant();
         if ($tenant) {
           $this->upgradeTriggerService->fire('limit_reached', $tenant, [
             'feature_key' => $featureKey,
@@ -200,8 +202,7 @@ class EmprendimientoFeatureGateService {
    */
   public function getUserPlan(int $userId): string {
     try {
-      /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenantContext = $this->tenantContext;
       $tenant = $tenantContext->getCurrentTenant();
 
       if ($tenant) {

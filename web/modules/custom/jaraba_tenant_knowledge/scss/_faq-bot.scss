@@ -1,3 +1,4 @@
+// AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace
 // ==========================================================================
 // FAQ BOT WIDGET (G114-4)
 // ==========================================================================
@@ -15,11 +16,11 @@
 // ==========================================================================
 
 .faq-bot {
-  --faq-fab-size: 56px;
-  --faq-panel-width: 380px;
-  --faq-panel-height: 520px;
-  --faq-color-primary: var(--ej-color-innovacion, #{$ej-color-innovation-fallback});
-  --faq-color-primary-dark: #008B87;
+  --ej-faq-fab-size: 56px;
+  --ej-faq-panel-width: 380px;
+  --ej-faq-panel-height: 520px;
+  --ej-faq-color-primary: var(--ej-color-innovacion, #{$ej-color-innovation-fallback});
+  --ej-faq-color-primary-dark: #008B87;
 
   position: fixed;
   bottom: var(--ej-spacing-lg, 24px);
@@ -29,10 +30,10 @@
 }
 
 .faq-bot__fab {
-  width: var(--faq-fab-size);
-  height: var(--faq-fab-size);
+  width: var(--ej-faq-fab-size);
+  height: var(--ej-faq-fab-size);
   border-radius: 50%;
-  background: var(--faq-color-primary);
+  background: var(--ej-faq-color-primary);
   border: none;
   cursor: pointer;
   box-shadow: var(--ej-shadow-lg, 0 4px 20px rgba(0, 0, 0, 0.2));
@@ -59,7 +60,7 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: var(--faq-color-primary);
+  background: var(--ej-faq-color-primary);
   animation: faq-bot-pulse 2s infinite;
   z-index: -1;
 }
@@ -81,10 +82,10 @@
 
 .faq-bot__panel {
   position: absolute;
-  bottom: calc(var(--faq-fab-size) + var(--ej-spacing-md, 16px));
+  bottom: calc(var(--ej-faq-fab-size) + var(--ej-spacing-md, 16px));
   right: 0;
-  width: var(--faq-panel-width);
-  max-height: var(--faq-panel-height);
+  width: var(--ej-faq-panel-width);
+  max-height: var(--ej-faq-panel-height);
   background: var(--ej-bg-surface, #fff);
   border-radius: var(--ej-radius-lg, 16px);
   box-shadow: var(--ej-shadow-xl, 0 10px 40px rgba(0, 0, 0, 0.15));
@@ -112,7 +113,7 @@
   align-items: center;
   gap: var(--ej-spacing-sm, 12px);
   padding: var(--ej-spacing-md, 16px) var(--ej-spacing-lg, 20px);
-  background: linear-gradient(135deg, var(--faq-color-primary), var(--faq-color-primary-dark));
+  background: linear-gradient(135deg, var(--ej-faq-color-primary), var(--ej-faq-color-primary-dark));
   color: #fff;
   min-height: 64px;
 }
@@ -231,7 +232,7 @@
   line-height: 1.5;
 
   .faq-bot__message--user & {
-    background: var(--faq-color-primary);
+    background: var(--ej-faq-color-primary);
     color: #fff;
     border-bottom-right-radius: 4px;
   }
@@ -244,7 +245,7 @@
 }
 
 .faq-bot__link {
-  color: var(--faq-color-primary);
+  color: var(--ej-faq-color-primary);
   text-decoration: underline;
 
   .faq-bot__message--user & {
@@ -274,7 +275,7 @@
   display: inline-block;
   padding: 2px 8px;
   background: rgba(0, 169, 165, 0.08);
-  color: var(--faq-color-primary);
+  color: var(--ej-faq-color-primary);
   border-radius: 4px;
   text-decoration: none;
   font-size: 0.6875rem;
@@ -307,9 +308,9 @@
   text-align: left;
 
   &:hover {
-    border-color: var(--faq-color-primary);
+    border-color: var(--ej-faq-color-primary);
     background: rgba(0, 169, 165, 0.05);
-    color: var(--faq-color-primary);
+    color: var(--ej-faq-color-primary);
   }
 }
 
@@ -443,7 +444,7 @@
   transition: border-color 0.2s;
 
   &:focus {
-    border-color: var(--faq-color-primary);
+    border-color: var(--ej-faq-color-primary);
   }
 }
 
@@ -451,7 +452,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--faq-color-primary);
+  background: var(--ej-faq-color-primary);
   border: none;
   color: #fff;
   cursor: pointer;
@@ -472,8 +473,8 @@
 
 @media (max-width: 480px) {
   .faq-bot {
-    --faq-panel-width: calc(100vw - 32px);
-    --faq-panel-height: 70vh;
+    --ej-faq-panel-width: calc(100vw - 32px);
+    --ej-faq-panel-height: 70vh;
     bottom: var(--ej-spacing-md, 16px);
     right: var(--ej-spacing-md, 16px);
   }

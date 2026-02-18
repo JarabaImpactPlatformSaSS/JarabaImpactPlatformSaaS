@@ -78,9 +78,10 @@ class AccessibilityApiController extends ControllerBase {
     $data = json_decode($content, TRUE);
 
     if (empty($data['html'])) {
+      // AUDIT-CONS-N08: Standardized JSON envelope.
       return new JsonResponse([
-        'status' => 'error',
-        'message' => $this->t('El campo html es obligatorio'),
+        'success' => FALSE,
+        'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('El campo html es obligatorio')],
       ], 400);
     }
 
@@ -90,16 +91,17 @@ class AccessibilityApiController extends ControllerBase {
     // Limitar tamano del HTML para evitar DoS.
     if (strlen($html) > 500000) {
       return new JsonResponse([
-        'status' => 'error',
-        'message' => $this->t('El HTML excede el tamano maximo permitido (500KB)'),
+        'success' => FALSE,
+        'error' => ['code' => 'PAYLOAD_TOO_LARGE', 'message' => (string) $this->t('El HTML excede el tamano maximo permitido (500KB)')],
       ], 413);
     }
 
     $result = $this->accessibilityValidator->validate($html, $block_type);
 
     return new JsonResponse([
-      'status' => 'ok',
+      'success' => TRUE,
       'data' => $result,
+      'meta' => ['timestamp' => time()],
     ]);
   }
 

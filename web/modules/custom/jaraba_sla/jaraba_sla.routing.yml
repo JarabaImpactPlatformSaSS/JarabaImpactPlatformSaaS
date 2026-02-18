@@ -1,0 +1,74 @@
+jaraba_sla.settings:
+  path: '/admin/config/jaraba/sla'
+  defaults:
+    _form: '\Drupal\jaraba_sla\Form\SlaSettingsForm'
+    _title: 'SLA Management Settings'
+  requirements:
+    _permission: 'administer sla'
+
+jaraba_sla.api.agreements:
+  path: '/api/v1/sla/agreements'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::listAgreements'
+  requirements:
+    _permission: 'view sla dashboard'
+  methods: [GET]
+
+jaraba_sla.api.agreement_detail:
+  path: '/api/v1/sla/agreements/{agreement_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::agreementDetail'
+  requirements:
+    _permission: 'view sla dashboard'
+    agreement_id: \d+
+  methods: [GET]
+
+jaraba_sla.api.measurements:
+  path: '/api/v1/sla/measurements'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::listMeasurements'
+  requirements:
+    _permission: 'view sla dashboard'
+  methods: [GET]
+
+jaraba_sla.api.status:
+  path: '/api/v1/sla/status'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::statusData'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+jaraba_sla.api.postmortem_create:
+  path: '/api/v1/sla/postmortem'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::createPostmortem'
+  requirements:
+    _permission: 'manage postmortems'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+jaraba_sla.api.postmortems:
+  path: '/api/v1/sla/postmortems'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::listPostmortems'
+  requirements:
+    _permission: 'view sla dashboard'
+  methods: [GET]
+
+jaraba_sla.api.report:
+  path: '/api/v1/sla/report/{period}'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::monthlyReport'
+  requirements:
+    _permission: 'view sla dashboard'
+    period: '\d{4}-\d{2}'
+  methods: [GET]
+
+jaraba_sla.status_page:
+  path: '/status-page'
+  defaults:
+    _controller: '\Drupal\jaraba_sla\Controller\StatusPageController::page'
+    _title: 'System Status'
+  requirements:
+    _access: 'TRUE'

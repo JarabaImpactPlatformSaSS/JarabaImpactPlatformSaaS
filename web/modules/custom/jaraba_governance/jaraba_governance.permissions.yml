@@ -1,0 +1,17 @@
+administer data governance:
+  title: 'Administer Data Governance'
+  restrict access: true
+view data classification:
+  title: 'View data classification'
+manage retention policies:
+  title: 'Manage retention policies'
+view data lineage:
+  title: 'View data lineage'
+process erasure requests:
+  title: 'Process erasure requests'
+  restrict access: true
+export user data:
+  title: 'Export user data (GDPR portability)'
+run data masking:
+  title: 'Run data masking for staging'
+  restrict access: true

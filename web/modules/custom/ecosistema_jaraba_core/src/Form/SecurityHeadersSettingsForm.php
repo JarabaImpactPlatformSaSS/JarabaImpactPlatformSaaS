@@ -11,7 +11,8 @@ use Drupal\Core\Form\FormStateInterface;
  * SEC-08: Formulario de configuración de headers de seguridad.
  *
  * ESTRUCTURA:
- * Permite configurar CORS, CSP y HSTS desde la interfaz de administración
+ * Permite configurar CORS, CSP, HSTS, Permissions-Policy, Referrer-Policy
+ * y X-Permitted-Cross-Domain-Policies desde la interfaz de administración
  * sin necesidad de tocar código ni archivos de configuración.
  *
  * LÓGICA:
@@ -24,6 +25,7 @@ use Drupal\Core\Form\FormStateInterface;
  * - SecurityHeadersSubscriber <- lee la config
  *
  * @see docs/tecnicos/auditorias/20260206-Auditoria_Profunda_SaaS_Multidimensional_v1_Claude.md (SEC-08)
+ * @see docs/implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md (SEC-N16, SEC-N17, SEC-N18)
  */
 class SecurityHeadersSettingsForm extends ConfigFormBase
 {
@@ -114,6 +116,71 @@ class SecurityHeadersSettingsForm extends ConfigFormBase
             '#default_value' => $config->get('hsts.enabled') ?? FALSE,
         ];
 
+        // ═══════════════════════════════════════════════════
+        // AUDIT-SEC-N16: Permissions-Policy
+        // ═══════════════════════════════════════════════════
+        $form['permissions_policy'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Permissions-Policy (AUDIT-SEC-N16)'),
+            '#open' => FALSE,
+        ];
+
+        $form['permissions_policy']['permissions_policy_value'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('Permissions-Policy'),
+            '#description' => $this->t('Controla acceso a APIs del navegador. Default: camera=(), microphone=(), geolocation=(self), payment=(self). geolocation(self) es necesario para click-and-collect; payment(self) para Stripe checkout.'),
+            '#default_value' => $config->get('permissions_policy') ?: 'camera=(), microphone=(), geolocation=(self), payment=(self)',
+            '#maxlength' => 512,
+        ];
+
+        // ═══════════════════════════════════════════════════
+        // AUDIT-SEC-N17: Referrer-Policy
+        // ═══════════════════════════════════════════════════
+        $form['referrer_policy'] = [
+            '#type' => 'details',
+            '#title' => $this->t('Referrer-Policy (AUDIT-SEC-N17)'),
+            '#open' => FALSE,
+        ];
+
+        $form['referrer_policy']['referrer_policy_value'] = [
+            '#type' => 'select',
+            '#title' => $this->t('Referrer-Policy'),
+            '#description' => $this->t('Controla qué información del referrer se envía. strict-origin-when-cross-origin es el valor recomendado.'),
+            '#options' => [
+                'no-referrer' => 'no-referrer',
+                'no-referrer-when-downgrade' => 'no-referrer-when-downgrade',
+                'origin' => 'origin',
+                'origin-when-cross-origin' => 'origin-when-cross-origin',
+                'same-origin' => 'same-origin',
+                'strict-origin' => 'strict-origin',
+                'strict-origin-when-cross-origin' => 'strict-origin-when-cross-origin',
+                'unsafe-url' => 'unsafe-url',
+            ],
+            '#default_value' => $config->get('referrer_policy') ?: 'strict-origin-when-cross-origin',
+        ];
+
+        // ═══════════════════════════════════════════════════
+        // AUDIT-SEC-N18: X-Permitted-Cross-Domain-Policies
+        // ═══════════════════════════════════════════════════
+        $form['cross_domain_policies'] = [
+            '#type' => 'details',
+            '#title' => $this->t('X-Permitted-Cross-Domain-Policies (AUDIT-SEC-N18)'),
+            '#open' => FALSE,
+        ];
+
+        $form['cross_domain_policies']['cross_domain_policies_value'] = [
+            '#type' => 'select',
+            '#title' => $this->t('X-Permitted-Cross-Domain-Policies'),
+            '#description' => $this->t('Controla si Adobe Flash/Acrobat pueden cargar datos cross-domain. "none" bloquea todas las políticas.'),
+            '#options' => [
+                'none' => 'none',
+                'master-only' => 'master-only',
+                'by-content-type' => 'by-content-type',
+                'all' => 'all',
+            ],
+            '#default_value' => $config->get('cross_domain_policies') ?: 'none',
+        ];
+
         return parent::buildForm($form, $form_state);
     }
 
@@ -127,6 +194,12 @@ class SecurityHeadersSettingsForm extends ConfigFormBase
             ->set('csp.enabled', (bool) $form_state->getValue('csp_enabled'))
             ->set('csp.policy', $form_state->getValue('csp_policy'))
             ->set('hsts.enabled', (bool) $form_state->getValue('hsts_enabled'))
+            // AUDIT-SEC-N16: Permissions-Policy configurable.
+            ->set('permissions_policy', $form_state->getValue('permissions_policy_value'))
+            // AUDIT-SEC-N17: Referrer-Policy configurable.
+            ->set('referrer_policy', $form_state->getValue('referrer_policy_value'))
+            // AUDIT-SEC-N18: X-Permitted-Cross-Domain-Policies configurable.
+            ->set('cross_domain_policies', $form_state->getValue('cross_domain_policies_value'))
             ->save();
 
         parent::submitForm($form, $form_state);

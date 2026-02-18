@@ -7,6 +7,7 @@ namespace Drupal\jaraba_comercio_conecta\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 class CartService {
 
@@ -14,6 +15,7 @@ class CartService {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected AccountProxyInterface $currentUser,
     protected LoggerInterface $logger,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   public function getOrCreateCart(?string $session_id = NULL, ?int $tenant_id = NULL): object {
@@ -227,8 +229,8 @@ class CartService {
   }
 
   protected function getTenantId(): int {
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    if ($this->tenantContext !== NULL) {
+      $tenant_context = $this->tenantContext;
       $tenant = $tenant_context->getCurrentTenant();
       if ($tenant) {
         return (int) $tenant->id();

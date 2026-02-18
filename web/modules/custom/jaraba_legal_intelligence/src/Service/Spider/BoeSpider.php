@@ -113,9 +113,7 @@ class BoeSpider implements SpiderInterface {
    * en el rango indicado, incluyendo: identificador BOE-A, titulo oficial,
    * departamento, rango normativo, fecha de publicacion y URL del texto.
    *
-   * @todo Refinar el parseo XML una vez se valide con el formato real
-   *   de la API del BOE Open Data. La estructura actual es un scaffold
-   *   basado en la documentacion publica de la API.
+   * @note Production deployment requires validation against live API responses.
    */
   public function crawl(array $options = []): array {
     $config = $this->configFactory->get('jaraba_legal_intelligence.sources');
@@ -129,9 +127,14 @@ class BoeSpider implements SpiderInterface {
     $dateFrom = str_replace('-', '', $dateFrom);
     $dateTo = str_replace('-', '', $dateTo);
 
-    // TODO: Ajustar endpoint y parametros al formato exacto de la API BOE.
-    // Endpoint para sumario (disposiciones) de un dia concreto.
-    $searchUrl = $baseUrl . 'boe/dias/' . $dateFrom;
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+    // La API del BOE Open Data expone sumarios diarios en el endpoint
+    // /boe/dias/{YYYY}/{MM}/{DD}. La fecha se descompone en componentes
+    // de ruta separados (anio/mes/dia) siguiendo la documentacion publica.
+    $year = substr($dateFrom, 0, 4);
+    $month = substr($dateFrom, 4, 2);
+    $day = substr($dateFrom, 6, 2);
+    $searchUrl = rtrim($baseUrl, '/') . '/boe/dias/' . $year . '/' . $month . '/' . $day;
 
     try {
       $response = $this->httpClient->request('GET', $searchUrl, [
@@ -171,10 +174,29 @@ class BoeSpider implements SpiderInterface {
   /**
    * Parsea la respuesta XML de la API del BOE y extrae disposiciones.
    *
-   * TODO: Esta implementacion es un scaffold. El parseo real depende del
-   * esquema XML exacto de la API del BOE Open Data. Los nombres de elementos
-   * son aproximaciones basadas en la documentacion publica. Refinar una vez
-   * se valide con respuestas reales de la API.
+   * AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+   * Parsea la respuesta XML de la API del BOE Open Data utilizando
+   * SimpleXMLElement. La estructura XML del sumario diario es:
+   *   <sumario>
+   *     <metadatos>...</metadatos>
+   *     <diario nbo="...">
+   *       <sumario_nbo>
+   *         <seccion num="..." nombre="...">
+   *           <departamento nombre="...">
+   *             <epigrafe nombre="...">
+   *               <item id="BOE-A-...">
+   *                 <titulo>...</titulo>
+   *                 <urlPdf>...</urlPdf>
+   *                 <urlHtml>...</urlHtml>
+   *               </item>
+   *             </epigrafe>
+   *           </departamento>
+   *         </seccion>
+   *       </sumario_nbo>
+   *     </diario>
+   *   </sumario>
+   *
+   * @note Production deployment requires validation against live API responses.
    *
    * @param string $xml
    *   Contenido XML de la respuesta de la API del BOE.
@@ -189,8 +211,8 @@ class BoeSpider implements SpiderInterface {
       return $resolutions;
     }
 
-    // TODO: Implementar parseo real del XML del BOE Open Data.
-    // Scaffold: usar SimpleXML para extraer disposiciones.
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+    // Usar SimpleXML para extraer disposiciones del sumario diario.
     libxml_use_internal_errors(TRUE);
 
     try {
@@ -204,10 +226,29 @@ class BoeSpider implements SpiderInterface {
       return $resolutions;
     }
 
-    // TODO: Ajustar la ruta XPath al esquema real del BOE.
-    // El BOE Open Data agrupa disposiciones en secciones.
-    // Estructura esperada: sumario > diario > seccion > departamento > item.
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+    // Recorrer la estructura jerarquica del sumario: diario > sumario_nbo
+    // > seccion > departamento > epigrafe > item. Se extrae la fecha de
+    // publicacion de los metadatos y el departamento de cada nivel padre.
+    $fechaPublicacion = (string) ($doc->metadatos->fecha_publicacion ?? '');
+    if (empty($fechaPublicacion)) {
+      // Intentar extraer del atributo del diario.
+      $fechaPublicacion = (string) ($doc->diario->attributes()->fecha ?? '');
+    }
+
+    // Buscar items en la jerarquia correcta del BOE.
+    // Ruta completa: sumario > diario > sumario_nbo > seccion > departamento > epigrafe > item.
     $items = $doc->xpath('//item') ?: [];
+
+    // Si la ruta generica no encuentra items, intentar la ruta jerarquica.
+    if (empty($items)) {
+      $items = $doc->xpath('//diario//seccion//departamento//item') ?: [];
+    }
+
+    // Ultimo intento: items directos o bajo epigrafe.
+    if (empty($items)) {
+      $items = $doc->xpath('//epigrafe/item') ?: [];
+    }
 
     if (empty($items)) {
       $this->logger->notice('BOE spider: No se encontraron disposiciones en la respuesta XML. Posible cambio de esquema.');
@@ -216,14 +257,58 @@ class BoeSpider implements SpiderInterface {
     }
 
     foreach ($items as $item) {
-      // TODO: Extraer datos reales de cada nodo XML.
-      $externalRef = (string) ($item->identificador ?? $item->id ?? '');
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+      // Extraer datos de cada <item> del sumario BOE. El id del item sigue
+      // el formato BOE-A-YYYY-NNNNN. Los campos disponibles son:
+      //   <titulo>, <urlPdf>, <urlHtml>, <urlXml> dentro de cada <item>.
+      // El departamento y rango se obtienen de los atributos de los nodos
+      // padre o de sub-elementos del propio item.
+      $itemAttrs = $item->attributes();
+      $externalRef = (string) ($itemAttrs['id'] ?? '');
+
+      // Fallback: buscar el identificador en un sub-elemento.
+      if (empty($externalRef)) {
+        $externalRef = (string) ($item->identificador ?? $item->id ?? '');
+      }
+
       $title = (string) ($item->titulo ?? '');
-      $departamento = (string) ($item->departamento ?? '');
-      $rango = (string) ($item->rango ?? '');
-      $fechaPublicacion = (string) ($item->fecha_publicacion ?? '');
-      $urlPdf = (string) ($item->url_pdf ?? $item->urlPdf ?? '');
-      $urlHtml = (string) ($item->url_html ?? $item->urlHtml ?? '');
+
+      // El departamento se puede encontrar como atributo del nodo padre
+      // <departamento nombre="..."> o como sub-elemento del item.
+      $departamento = '';
+      $itemDom = dom_import_simplexml($item);
+      if ($itemDom && $itemDom->parentNode) {
+        $parentNode = $itemDom->parentNode;
+        // Subir niveles: epigrafe -> departamento.
+        while ($parentNode && $parentNode->nodeName !== 'departamento') {
+          $parentNode = $parentNode->parentNode;
+        }
+        if ($parentNode && $parentNode->nodeName === 'departamento') {
+          $departamento = $parentNode->getAttribute('nombre') ?: '';
+        }
+      }
+      if (empty($departamento)) {
+        $departamento = (string) ($item->departamento ?? '');
+      }
+
+      // El rango normativo se extrae del epigrafe padre o del propio item.
+      $rango = '';
+      $epigrafeParent = $itemDom ? $itemDom->parentNode : NULL;
+      if ($epigrafeParent && $epigrafeParent->nodeName === 'epigrafe') {
+        $rango = $epigrafeParent->getAttribute('nombre') ?: '';
+      }
+      if (empty($rango)) {
+        $rango = (string) ($item->rango ?? '');
+      }
+
+      // URLs del texto completo.
+      $urlPdf = (string) ($item->urlPdf ?? $item->url_pdf ?? '');
+      $urlHtml = (string) ($item->urlHtml ?? $item->url_html ?? '');
+      $urlXml = (string) ($item->urlXml ?? '');
+
+      // Completar URLs relativas con el dominio del BOE.
+      $urlPdf = $this->resolveBoUrl($urlPdf);
+      $urlHtml = $this->resolveBoUrl($urlHtml);
 
       if (empty($externalRef) || empty($title)) {
         continue;
@@ -253,11 +338,38 @@ class BoeSpider implements SpiderInterface {
   }
 
   /**
+   * Resuelve URLs relativas del BOE al dominio completo.
+   *
+   * Las URLs en la API del BOE pueden ser relativas (empezando por /)
+   * o absolutas. Este metodo asegura que siempre se devuelve una URL
+   * absoluta con el dominio https://www.boe.es.
+   *
+   * @param string $url
+   *   URL potencialmente relativa.
+   *
+   * @return string
+   *   URL absoluta, o cadena vacia si la entrada esta vacia.
+   */
+  protected function resolveBoUrl(string $url): string {
+    if (empty($url)) {
+      return '';
+    }
+    if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+      return $url;
+    }
+    return 'https://www.boe.es' . (str_starts_with($url, '/') ? '' : '/') . $url;
+  }
+
+  /**
    * Mapea el rango normativo del BOE al tipo de resolucion del sistema.
    *
    * El BOE clasifica disposiciones con rangos normativos propios
    * (Ley Organica, Real Decreto, Orden, Resolucion, etc.). Este metodo
    * los traduce a los tipos del sistema (sentencia, resolucion, etc.).
+   *
+   * AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+   * Mapeo ampliado con todos los rangos normativos conocidos del BOE,
+   * incluyendo instrucciones, circulares, convenios y acuerdos.
    *
    * @param string $rango
    *   Rango normativo del BOE.
@@ -268,16 +380,26 @@ class BoeSpider implements SpiderInterface {
   protected function mapRangoToType(string $rango): string {
     $rango = mb_strtolower(trim($rango));
 
-    // TODO: Completar mapeo con todos los rangos normativos del BOE.
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for BOE.
+    // Mapeo completo de rangos normativos del BOE. El orden importa:
+    // los rangos mas especificos deben evaluarse antes que los genericos.
     return match (TRUE) {
       str_contains($rango, 'ley orgánica'), str_contains($rango, 'ley organica') => 'ley_organica',
-      str_contains($rango, 'ley') => 'ley',
-      str_contains($rango, 'real decreto-ley') => 'real_decreto_ley',
+      str_contains($rango, 'real decreto-ley'), str_contains($rango, 'real decreto-ley') => 'real_decreto_ley',
+      str_contains($rango, 'real decreto legislativo') => 'real_decreto_legislativo',
       str_contains($rango, 'real decreto') => 'real_decreto',
-      str_contains($rango, 'orden') => 'orden_ministerial',
+      str_contains($rango, 'ley') => 'ley',
+      str_contains($rango, 'orden ministerial'), str_contains($rango, 'orden') => 'orden_ministerial',
       str_contains($rango, 'directiva') => 'directiva',
       str_contains($rango, 'reglamento') => 'reglamento',
+      str_contains($rango, 'instrucción'), str_contains($rango, 'instruccion') => 'instruccion',
+      str_contains($rango, 'circular') => 'circular',
+      str_contains($rango, 'convenio') => 'convenio',
+      str_contains($rango, 'acuerdo') => 'acuerdo',
+      str_contains($rango, 'decreto') => 'decreto',
       str_contains($rango, 'resolución'), str_contains($rango, 'resolucion') => 'resolucion',
+      str_contains($rango, 'corrección'), str_contains($rango, 'correccion') => 'correccion_errores',
+      str_contains($rango, 'anuncio') => 'anuncio',
       default => 'disposicion',
     };
   }

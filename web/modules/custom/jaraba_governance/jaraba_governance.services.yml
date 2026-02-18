@@ -1,0 +1,78 @@
+services:
+
+  # ===========================================
+  # LOGGING
+  # ===========================================
+
+  logger.channel.jaraba_governance:
+    parent: logger.channel_base
+    arguments: ['jaraba_governance']
+
+  # ===========================================
+  # DATA CLASSIFIER SERVICE
+  # ===========================================
+
+  # Manages data classification levels per entity type / field.
+  # Determines PII, sensitivity, encryption, masking and cross-border rules.
+  jaraba_governance.classifier:
+    class: Drupal\jaraba_governance\Service\DataClassifierService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+
+  # ===========================================
+  # RETENTION POLICY SERVICE
+  # ===========================================
+
+  # Executes data retention policies: delete, anonymize, or archive
+  # entities past their configured retention period.
+  jaraba_governance.retention:
+    class: Drupal\jaraba_governance\Service\RetentionPolicyService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@database'
+      - '@logger.channel.jaraba_governance'
+
+  # ===========================================
+  # DATA LINEAGE SERVICE
+  # ===========================================
+
+  # Records and queries append-only data lineage events.
+  # Provides full audit trail per entity.
+  jaraba_governance.lineage:
+    class: Drupal\jaraba_governance\Service\DataLineageService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+      - '@database'
+
+  # ===========================================
+  # ERASURE SERVICE (GDPR Art. 17)
+  # ===========================================
+
+  # Manages GDPR erasure requests, data export (portability),
+  # and right-to-be-forgotten processing.
+  jaraba_governance.erasure:
+    class: Drupal\jaraba_governance\Service\ErasureService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@database'
+      - '@logger.channel.jaraba_governance'
+      - '@file_system'
+
+  # ===========================================
+  # DATA MASKING SERVICE
+  # ===========================================
+
+  # Applies data masking rules to PII fields for dev/staging copies.
+  # Supports email templating, faker-based name/NIF/IBAN/phone/address.
+  jaraba_governance.masking:
+    class: Drupal\jaraba_governance\Service\DataMaskingService
+    arguments:
+      - '@database'
+      - '@config.factory'
+      - '@logger.channel.jaraba_governance'

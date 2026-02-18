@@ -66,21 +66,22 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
         $signatureHeader = $request->headers->get('X-Hub-Signature-256', '');
         if (!$this->verifyHmacSignature($rawPayload, $signatureHeader)) {
             $this->logger->warning('WhatsApp webhook: firma HMAC inválida.');
-            return new JsonResponse(['error' => 'Invalid signature'], 403);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 403);
         }
 
         $payload = json_decode($rawPayload, TRUE);
         if (empty($payload)) {
-            return new JsonResponse(['error' => 'Invalid payload'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid payload']], 400);
         }
 
         try {
             $result = $this->whatsappService->handleIncomingMessage($payload);
-            return new JsonResponse($result);
+            return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
         }
         catch (\Exception $e) {
             $this->logger->error('WhatsApp webhook error: @error', ['@error' => $e->getMessage()]);
-            return new JsonResponse(['error' => 'Processing failed'], 500);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Processing failed']], 500);
         }
     }
 
@@ -111,7 +112,7 @@ class WhatsAppWebhookController extends ControllerBase implements ContainerInjec
         }
 
         $this->logger->warning('WhatsApp webhook verificación fallida.');
-        return new JsonResponse(['error' => 'Verification failed'], 403);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Verification failed']], 403);
     }
 
     /**

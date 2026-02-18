@@ -40,7 +40,7 @@ class PromotionApiController extends ControllerBase implements ContainerInjectio
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.promotion_service'),
+            $container->get('jaraba_agroconecta_core.promotion_service'), // AUDIT-CONS-N05: canonical prefix
             $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }

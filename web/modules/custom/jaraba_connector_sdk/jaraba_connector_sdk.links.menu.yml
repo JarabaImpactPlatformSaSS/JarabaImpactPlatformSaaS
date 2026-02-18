@@ -1,0 +1,6 @@
+jaraba_connector_sdk.settings:
+  title: 'Connector SDK'
+  description: 'Configure connector SDK certification pipeline and revenue sharing.'
+  route_name: jaraba_connector_sdk.settings
+  parent: system.admin_config
+  weight: 20

@@ -1,0 +1,11 @@
+administer sla:
+  title: 'Administer SLA'
+  restrict access: true
+manage sla agreements:
+  title: 'Manage SLA agreements'
+view sla dashboard:
+  title: 'View SLA dashboard'
+view status page:
+  title: 'View status page'
+manage postmortems:
+  title: 'Manage postmortems'

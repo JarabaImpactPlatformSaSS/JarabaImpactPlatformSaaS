@@ -119,15 +119,13 @@ class OrderController extends ControllerBase {
       $data[] = $this->serializeOrder($order);
     }
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => [
+    return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
         'total' => $result['total'],
         'page' => $result['page'],
         'per_page' => $result['per_page'],
         'total_pages' => $result['total_pages'],
-      ],
-    ]);
+      ]]);
   }
 
   public function apiGetOrder(int $order_id): JsonResponse {
@@ -156,7 +154,7 @@ class OrderController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $order_data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $order_data, 'meta' => ['timestamp' => time()]]);
   }
 
   public function apiUpdateStatus(int $order_id, Request $request): JsonResponse {
@@ -172,7 +170,7 @@ class OrderController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('Transicion de estado no valida.')], 400);
     }
 
-    return new JsonResponse(['data' => ['status' => $new_status, 'order_id' => $order_id]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => $new_status, 'order_id' => $order_id], 'meta' => ['timestamp' => time()]]);
   }
 
   protected function serializeOrder(object $order): array {

@@ -3,9 +3,26 @@
 # Actions: IGNORE, WARN, FAIL
 # Reference: https://www.zaproxy.org/docs/docker/baseline-scan/
 # AUDIT-SEC-N09: Reglas críticas en FAIL, no WARN.
+# AUDIT-SEC-N19: Reglas ampliadas para SQL injection, XSS, IDOR, headers.
 10003	FAIL	Vulnerable JS Library
 10038	FAIL	Content Security Policy (CSP) Header Not Set
 10098	FAIL	Cross-Domain Misconfiguration
 10202	WARN	Absence of Anti-CSRF Tokens
 10049	WARN	Storable and Cacheable Content
 90033	WARN	Loosely Scoped Cookie
+40012	FAIL	Cross Site Scripting (Reflected)
+40014	FAIL	Cross Site Scripting (Persistent)
+40018	FAIL	SQL Injection
+40019	FAIL	SQL Injection (MySQL)
+40020	FAIL	SQL Injection (Hypersonic)
+40021	FAIL	SQL Injection (Oracle)
+40022	FAIL	SQL Injection (PostgreSQL)
+10010	FAIL	Cookie No HttpOnly Flag
+10011	FAIL	Cookie Without Secure Flag
+10015	FAIL	Incomplete or No Cache-control Header Set
+10017	WARN	Cross-Domain JavaScript Source File Inclusion
+10020	FAIL	X-Frame-Options Header
+10021	FAIL	X-Content-Type-Options Header Missing
+10035	FAIL	Strict-Transport-Security Header
+10036	WARN	Server Leaks Version Information
+90022	FAIL	Application Error Disclosure

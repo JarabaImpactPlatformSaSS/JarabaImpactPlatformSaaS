@@ -8,6 +8,9 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
  * Control de acceso para entidades de Tenant Knowledge.
@@ -23,6 +26,23 @@ use Drupal\Core\Session\AccountInterface;
  */
 class TenantKnowledgeAccessControlHandler extends EntityAccessControlHandler
 {
+
+
+    /**
+     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+     */
+    protected ?TenantContextService $tenantContext = NULL;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+        $instance = parent::createInstance($container, $entity_type);
+        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
+            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+        }
+        return $instance;
+    }
 
     /**
      * {@inheritdoc}
@@ -81,9 +101,8 @@ class TenantKnowledgeAccessControlHandler extends EntityAccessControlHandler
     protected function getUserTenantId(AccountInterface $account): ?int
     {
         // Usar el servicio de contexto de tenant si está disponible.
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

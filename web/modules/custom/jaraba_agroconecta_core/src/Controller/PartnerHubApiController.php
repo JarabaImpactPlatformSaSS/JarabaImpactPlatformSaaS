@@ -89,10 +89,11 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
         );
 
         if (isset($result['error'])) {
-            return new JsonResponse($result, 409);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => $result], 409);
         }
 
-        return new JsonResponse($result, 201);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]], 201);
     }
 
     /**
@@ -107,7 +108,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
         $limit = min((int) $request->query->get('limit', 20), 100);
 
         $result = $this->partnerService()->getPartnersByProducer($producerId, $page, $limit);
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -195,7 +196,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
 
         $result = $this->partnerService()->uploadDocument($data, $tenantId);
-        return new JsonResponse($result, 201);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]], 201);
     }
 
     /**
@@ -210,7 +211,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
         $limit = min((int) $request->query->get('limit', 20), 100);
 
         $result = $this->partnerService()->getDocumentsByProducer($producerId, $page, $limit);
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -229,7 +230,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
             ], 404);
         }
 
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -259,7 +260,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
     {
         $producerId = (int) $request->query->get('producer_id', $this->currentUser()->id());
         $result = $this->partnerService()->getProducerAnalytics($producerId);
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
 }

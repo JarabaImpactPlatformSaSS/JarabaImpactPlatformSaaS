@@ -7,6 +7,7 @@ namespace Drupal\jaraba_tenant_knowledge\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Flood\FloodInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_tenant_knowledge\Service\FaqBotService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,6 +37,7 @@ class FaqBotApiController extends ControllerBase {
     protected FloodInterface $flood,
     protected FaqBotService $faqBotService,
     EntityTypeManagerInterface $entityTypeManager,
+    protected TenantContextService $tenantContext,
   ) {
     $this->entityTypeManager = $entityTypeManager;
   }
@@ -48,6 +50,7 @@ class FaqBotApiController extends ControllerBase {
       $container->get('flood'),
       $container->get('jaraba_tenant_knowledge.faq_bot'),
       $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
     );
   }
 
@@ -82,7 +85,16 @@ class FaqBotApiController extends ControllerBase {
     $content = json_decode($request->getContent(), TRUE);
     $message = trim($content['message'] ?? '');
     $sessionId = $content['session_id'] ?? NULL;
-    $tenantId = (int) ($content['tenant_id'] ?? 0);
+
+    // AUDIT-SEC-N07: Resolver tenant_id desde el contexto del servidor (host),
+    // NO desde el body del cliente. Previene IDOR cross-tenant en KB.
+    $tenantId = (int) $this->tenantContext->getCurrentTenantId();
+    if ($tenantId <= 0) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('No se pudo determinar el tenant.'),
+      ], 403);
+    }
 
     // Validar mensaje.
     if (empty($message)) {
@@ -94,23 +106,6 @@ class FaqBotApiController extends ControllerBase {
 
     if (mb_strlen($message) > 500) {
       $message = mb_substr($message, 0, 500);
-    }
-
-    // AUDIT-SEC-N07: Validar que el tenant_id existe realmente en el sistema.
-    // Un atacante podría enviar cualquier tenant_id para acceder a la KB de otro tenant.
-    if ($tenantId <= 0) {
-      return new JsonResponse([
-        'success' => FALSE,
-        'error' => (string) $this->t('Identificador de tenant no válido.'),
-      ], 400);
-    }
-
-    $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
-    if (!$tenant || !$tenant->isPublished()) {
-      return new JsonResponse([
-        'success' => FALSE,
-        'error' => (string) $this->t('Tenant no encontrado.'),
-      ], 404);
     }
 
     // Llamar al servicio.
@@ -135,6 +130,16 @@ class FaqBotApiController extends ControllerBase {
    *   Respuesta JSON.
    */
   public function feedback(Request $request): JsonResponse {
+    // AUDIT-SEC-N15: Rate limiting en feedback para prevenir spam/flood.
+    $clientIp = $request->getClientIp();
+    if (!$this->flood->isAllowed('faq_bot_feedback', 20, 60, $clientIp)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => (string) $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.'),
+      ], 429);
+    }
+    $this->flood->register('faq_bot_feedback', 60, $clientIp);
+
     $content = json_decode($request->getContent(), TRUE);
 
     $rating = $content['rating'] ?? NULL;

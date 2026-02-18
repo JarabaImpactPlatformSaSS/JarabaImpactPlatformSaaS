@@ -111,15 +111,18 @@ class AiFieldGeneratorController extends ControllerBase implements ContainerInje
     {
         // Verificar que sea POST.
         if ($request->getMethod() !== 'POST') {
+            // AUDIT-CONS-N08: Standardized JSON envelope.
             return new JsonResponse([
-                'error' => $this->t('Método no permitido.')->render(),
+                'success' => FALSE,
+                'error' => ['code' => 'METHOD_NOT_ALLOWED', 'message' => $this->t('Método no permitido.')->render()],
             ], 405);
         }
 
         // Verificar permisos.
         if (!$this->currentUser()->hasPermission('access page builder')) {
             return new JsonResponse([
-                'error' => $this->t('Acceso denegado.')->render(),
+                'success' => FALSE,
+                'error' => ['code' => 'ACCESS_DENIED', 'message' => $this->t('Acceso denegado.')->render()],
             ], 403);
         }
 
@@ -129,7 +132,8 @@ class AiFieldGeneratorController extends ControllerBase implements ContainerInje
         // Validar campos requeridos.
         if (empty($data['field_name']) && empty($data['field_label'])) {
             return new JsonResponse([
-                'error' => $this->t('Campo no especificado.')->render(),
+                'success' => FALSE,
+                'error' => ['code' => 'VALIDATION_ERROR', 'message' => $this->t('Campo no especificado.')->render()],
             ], 400);
         }
 
@@ -142,9 +146,13 @@ class AiFieldGeneratorController extends ControllerBase implements ContainerInje
 
             // Respuesta exitosa.
             return new JsonResponse([
-                'content' => $content,
-                'field_name' => $data['field_name'] ?? '',
-                'generated_at' => date('c'),
+                'success' => TRUE,
+                'data' => [
+                    'content' => $content,
+                    'field_name' => $data['field_name'] ?? '',
+                    'generated_at' => date('c'),
+                ],
+                'meta' => ['timestamp' => time()],
             ]);
 
         } catch (\Exception $e) {
@@ -155,7 +163,8 @@ class AiFieldGeneratorController extends ControllerBase implements ContainerInje
             );
 
             return new JsonResponse([
-                'error' => $this->t('Error al generar contenido. Inténtalo de nuevo.')->render(),
+                'success' => FALSE,
+                'error' => ['code' => 'INTERNAL_ERROR', 'message' => $this->t('Error al generar contenido. Inténtalo de nuevo.')->render()],
             ], 500);
         }
     }

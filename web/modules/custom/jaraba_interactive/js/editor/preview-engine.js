@@ -10,96 +10,114 @@
  * previsualizar el contenido en distintos dispositivos.
  *
  * Sintaxis: Clase PreviewEngine registrada globalmente.
+ *
+ * AUDIT-CONS-N12: Migrated from IIFE to Drupal.behaviors for AJAX compatibility.
  */
 
-(function (Drupal) {
+(function (Drupal, once) {
   'use strict';
 
   /**
-   * Motor de preview en iframe.
+   * Behavior para registrar la clase PreviewEngine.
    *
-   * @param {HTMLIFrameElement} iframe - El elemento iframe de preview.
-   * @param {string} baseUrl - URL base del player.
+   * AUDIT-CONS-N12: Drupal.behaviors ensures the class is available
+   * after AJAX-loaded content. once() prevents re-registration.
+   *
+   * @type {Drupal~behavior}
    */
-  Drupal.PreviewEngine = class {
-    constructor(iframe, baseUrl) {
-      this.iframe = iframe;
-      this.baseUrl = baseUrl;
-      this.currentViewport = 'desktop';
-      this.refreshTimer = null;
-      this.isLoading = false;
-    }
+  Drupal.behaviors.jarabaPreviewEngine = {
+    attach: function (context) {
+      // AUDIT-CONS-N12: Register class once, available for all AJAX contexts.
+      once('jaraba-preview-engine', 'body', context).forEach(function () {
 
-    /**
-     * Carga el contenido en el iframe.
-     *
-     * @param {string} url - URL del contenido a previsualizar.
-     */
-    load(url) {
-      if (this.isLoading) return;
-      this.isLoading = true;
+        /**
+         * Motor de preview en iframe.
+         *
+         * @param {HTMLIFrameElement} iframe - El elemento iframe de preview.
+         * @param {string} baseUrl - URL base del player.
+         */
+        Drupal.PreviewEngine = class {
+          constructor(iframe, baseUrl) {
+            this.iframe = iframe;
+            this.baseUrl = baseUrl;
+            this.currentViewport = 'desktop';
+            this.refreshTimer = null;
+            this.isLoading = false;
+          }
 
-      this.iframe.onload = () => {
-        this.isLoading = false;
-        this.applyViewport(this.currentViewport);
-      };
+          /**
+           * Carga el contenido en el iframe.
+           *
+           * @param {string} url - URL del contenido a previsualizar.
+           */
+          load(url) {
+            if (this.isLoading) return;
+            this.isLoading = true;
 
-      this.iframe.src = url || this.baseUrl;
-    }
+            this.iframe.onload = () => {
+              this.isLoading = false;
+              this.applyViewport(this.currentViewport);
+            };
 
-    /**
-     * Refresca el preview con debounce.
-     *
-     * @param {number} delay - Delay en milisegundos.
-     */
-    refresh(delay) {
-      delay = delay || 500;
-      clearTimeout(this.refreshTimer);
-      this.refreshTimer = setTimeout(() => {
-        this.load(this.baseUrl + '?_preview=' + Date.now());
-      }, delay);
-    }
+            this.iframe.src = url || this.baseUrl;
+          }
 
-    /**
-     * Aplica un viewport al iframe.
-     *
-     * @param {string} viewport - desktop, tablet o mobile.
-     */
-    applyViewport(viewport) {
-      this.currentViewport = viewport;
+          /**
+           * Refresca el preview con debounce.
+           *
+           * @param {number} delay - Delay en milisegundos.
+           */
+          refresh(delay) {
+            delay = delay || 500;
+            clearTimeout(this.refreshTimer);
+            this.refreshTimer = setTimeout(() => {
+              this.load(this.baseUrl + '?_preview=' + Date.now());
+            }, delay);
+          }
 
-      var viewports = {
-        desktop: { width: '100%', height: '100%' },
-        tablet: { width: '768px', height: '1024px' },
-        mobile: { width: '375px', height: '667px' },
-      };
+          /**
+           * Aplica un viewport al iframe.
+           *
+           * @param {string} viewport - desktop, tablet o mobile.
+           */
+          applyViewport(viewport) {
+            this.currentViewport = viewport;
 
-      var size = viewports[viewport] || viewports.desktop;
-      this.iframe.style.width = size.width;
-      this.iframe.style.height = size.height;
-    }
+            var viewports = {
+              desktop: { width: '100%', height: '100%' },
+              tablet: { width: '768px', height: '1024px' },
+              mobile: { width: '375px', height: '667px' },
+            };
 
-    /**
-     * Envia datos al iframe via PostMessage.
-     *
-     * @param {Object} data - Datos a enviar.
-     */
-    postMessage(data) {
-      if (this.iframe.contentWindow) {
-        this.iframe.contentWindow.postMessage({
-          source: 'jaraba-interactive-editor',
-          ...data,
-        }, '*');
-      }
-    }
+            var size = viewports[viewport] || viewports.desktop;
+            this.iframe.style.width = size.width;
+            this.iframe.style.height = size.height;
+          }
 
-    /**
-     * Destruye el motor de preview.
-     */
-    destroy() {
-      clearTimeout(this.refreshTimer);
-      this.iframe.src = 'about:blank';
+          /**
+           * Envia datos al iframe via PostMessage.
+           *
+           * @param {Object} data - Datos a enviar.
+           */
+          postMessage(data) {
+            if (this.iframe.contentWindow) {
+              this.iframe.contentWindow.postMessage(Object.assign({
+                source: 'jaraba-interactive-editor',
+              }, data), '*');
+            }
+          }
+
+          /**
+           * Destruye el motor de preview.
+           */
+          destroy() {
+            clearTimeout(this.refreshTimer);
+            this.iframe.src = 'about:blank';
+          }
+        };
+
+      });
     }
   };
 
-})(Drupal);
+})(Drupal, once);

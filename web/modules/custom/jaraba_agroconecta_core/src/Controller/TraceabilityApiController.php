@@ -42,8 +42,8 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.traceability_service'),
-            $container->get('jaraba_agroconecta.qr_service'),
+            $container->get('jaraba_agroconecta_core.traceability_service'), // AUDIT-CONS-N05: canonical prefix
+            $container->get('jaraba_agroconecta_core.qr_service'), // AUDIT-CONS-N05: canonical prefix
             $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
@@ -59,11 +59,12 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $batch = $this->traceabilityService->findBatchByCode($code);
         if (!$batch) {
-            return new JsonResponse(['error' => 'Lote no encontrado.'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Lote no encontrado.']], 404);
         }
 
         $data = $this->traceabilityService->getBatchTraceability((int) $batch->id());
-        return new JsonResponse($data);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -73,7 +74,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $data = json_decode($request->getContent(), TRUE);
         if (!$data || empty($data['batch_id']) || empty($data['event_type'])) {
-            return new JsonResponse(['error' => 'batch_id y event_type son requeridos.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'batch_id y event_type son requeridos.']], 400);
         }
 
         $event = $this->traceabilityService->addTraceEvent(
@@ -83,7 +84,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
         );
 
         if (!$event) {
-            return new JsonResponse(['error' => 'No se pudo crear el evento (lote sellado o inexistente).'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No se pudo crear el evento (lote sellado o inexistente).']], 400);
         }
 
         return new JsonResponse(['event' => $event], 201);
@@ -95,7 +96,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     public function verifyIntegrity(int $batch_id): JsonResponse
     {
         $result = $this->traceabilityService->verifyChainIntegrity($batch_id);
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -105,7 +106,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $data = json_decode($request->getContent(), TRUE);
         if (!$data || empty($data['batch_id'])) {
-            return new JsonResponse(['error' => 'batch_id es requerido.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'batch_id es requerido.']], 400);
         }
 
         $proof = $this->traceabilityService->createIntegrityProof(
@@ -114,7 +115,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
         );
 
         if (!$proof) {
-            return new JsonResponse(['error' => 'No se pudo crear la prueba.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No se pudo crear la prueba.']], 400);
         }
 
         return new JsonResponse(['proof' => $proof], 201);
@@ -131,7 +132,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $data = json_decode($request->getContent(), TRUE);
         if (!$data || empty($data['type']) || empty($data['target_id'])) {
-            return new JsonResponse(['error' => 'type y target_id son requeridos.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'type y target_id son requeridos.']], 400);
         }
 
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
@@ -145,7 +146,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
         };
 
         if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
+            return new JsonResponse(['success' => FALSE, 'error' => $result], 400);
         }
 
         return new JsonResponse(['qr' => $result], 201);
@@ -158,15 +159,15 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $data = json_decode($request->getContent(), TRUE);
         if (!$data || empty($data['qr_code_id'])) {
-            return new JsonResponse(['error' => 'qr_code_id es requerido.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'qr_code_id es requerido.']], 400);
         }
 
         $scan = $this->qrService->trackScan((int) $data['qr_code_id'], $request);
         if (!$scan) {
-            return new JsonResponse(['error' => 'QR no encontrado o inactivo.'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'QR no encontrado o inactivo.']], 404);
         }
 
-        return new JsonResponse($scan, 201);
+        return new JsonResponse(['success' => TRUE, 'data' => $scan, 'meta' => ['timestamp' => time()]], 201);
     }
 
     /**
@@ -176,7 +177,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $data = json_decode($request->getContent(), TRUE);
         if (!$data || empty($data['qr_code_id']) || empty($data['email'])) {
-            return new JsonResponse(['error' => 'qr_code_id y email son requeridos.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'qr_code_id y email son requeridos.']], 400);
         }
 
         $lead = $this->qrService->captureLead(
@@ -186,7 +187,7 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
         );
 
         if (!$lead) {
-            return new JsonResponse(['error' => 'No se pudo capturar el lead.'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'No se pudo capturar el lead.']], 400);
         }
 
         return new JsonResponse(['lead' => $lead], 201);
@@ -199,10 +200,10 @@ class TraceabilityApiController extends ControllerBase implements ContainerInjec
     {
         $analytics = $this->qrService->getQrAnalytics($qr_id);
         if (empty($analytics)) {
-            return new JsonResponse(['error' => 'QR no encontrado.'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'QR no encontrado.']], 404);
         }
 
-        return new JsonResponse($analytics);
+        return new JsonResponse(['success' => TRUE, 'data' => $analytics, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

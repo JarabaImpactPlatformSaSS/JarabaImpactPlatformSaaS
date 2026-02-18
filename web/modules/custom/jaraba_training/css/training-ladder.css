@@ -1,3 +1,4 @@
+/* AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace */
 /**
  * @file
  * Estilos para la Escalera de Valor.
@@ -7,9 +8,9 @@
 
 /* === VARIABLES LOCALES === */
 .training-ladder {
-    --ladder-level-height: 200px;
-    --ladder-level-gap: 1.5rem;
-    --ladder-card-width: 280px;
+    --ej-ladder-level-height: 200px;
+    --ej-ladder-level-gap: 1.5rem;
+    --ej-ladder-card-width: 280px;
 }
 
 /* === CONTENEDOR PRINCIPAL === */
@@ -41,7 +42,7 @@
 .ladder-levels {
     display: flex;
     flex-direction: column;
-    gap: var(--ladder-level-gap);
+    gap: var(--ej-ladder-level-gap);
 }
 
 .ladder-level {
@@ -114,7 +115,7 @@
     border: 1px solid var(--ej-color-border, #e5e5e5);
     border-radius: var(--ej-border-radius-md, 8px);
     padding: var(--ej-spacing-md, 1rem);
-    min-width: var(--ladder-card-width);
+    min-width: var(--ej-ladder-card-width);
     transition: all 0.2s ease;
 }
 

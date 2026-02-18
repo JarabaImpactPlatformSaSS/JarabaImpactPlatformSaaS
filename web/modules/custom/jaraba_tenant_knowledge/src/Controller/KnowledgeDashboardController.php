@@ -7,6 +7,7 @@ namespace Drupal\jaraba_tenant_knowledge\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * CONTROLLER DASHBOARD DE KNOWLEDGE TRAINING
@@ -32,6 +33,7 @@ class KnowledgeDashboardController extends ControllerBase
      */
     public function __construct(
         protected TenantKnowledgeManager $knowledgeManager,
+        protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
     }
 
@@ -42,6 +44,7 @@ class KnowledgeDashboardController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_tenant_knowledge.manager'),
+            $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
         );
     }
 
@@ -407,8 +410,8 @@ class KnowledgeDashboardController extends ControllerBase
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

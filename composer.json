@@ -76,7 +76,9 @@
         "mglaman/phpstan-drupal": "^1.2",
         "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan-deprecation-rules": "^1.1",
-        "phpunit/phpunit": "^11.0"
+        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpunit/phpunit": "^11.0",
+        "spaze/phpstan-disallowed-calls": "^3.5"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -153,7 +155,7 @@
         ],
         "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
         "test": "phpunit -c web/modules/custom/ecosistema_jaraba_core/phpunit.xml",
-        "phpstan": "phpstan analyse web/modules/custom --level=5",
+        "phpstan": "phpstan analyse -c phpstan.neon --no-progress",
         "sass": "cd web/modules/custom/ecosistema_jaraba_core && npx sass scss/main.scss css/ecosistema-jaraba-core.css --style=compressed"
     }
 }

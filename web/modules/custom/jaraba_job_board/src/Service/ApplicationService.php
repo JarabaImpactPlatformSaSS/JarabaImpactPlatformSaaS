@@ -11,6 +11,7 @@ use Drupal\jaraba_job_board\Entity\JobApplication;
 use Drupal\jaraba_job_board\Entity\JobApplicationInterface;
 use Drupal\jaraba_job_board\Entity\JobPostingInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Service for managing job applications.
@@ -53,8 +54,10 @@ class ApplicationService
         AccountProxyInterface $current_user,
         JobPostingService $job_posting_service,
         LoggerChannelFactoryInterface $logger_factory,
-        EventDispatcherInterface $event_dispatcher
+        EventDispatcherInterface $event_dispatcher,
+        TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
+        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
         $this->entityTypeManager = $entity_type_manager;
         $this->currentUser = $current_user;
         $this->jobPostingService = $job_posting_service;
@@ -90,8 +93,7 @@ class ApplicationService
 
                 // Fire upgrade trigger (Plan Elevación Empleabilidad v1 — Fase 5).
                 try {
-                    /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-                    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                    $tenantContext = $this->tenantContext;
                     $tenant = $tenantContext->getCurrentTenant();
                     if ($tenant) {
                         /** @var \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService $upgradeTrigger */
@@ -162,8 +164,7 @@ class ApplicationService
 
             // 5-application engagement milestone → upgrade trigger.
             if ($totalApps === 5) {
-                /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-                $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                $tenantContext = $this->tenantContext;
                 $tenant = $tenantContext->getCurrentTenant();
                 if ($tenant) {
                     \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')

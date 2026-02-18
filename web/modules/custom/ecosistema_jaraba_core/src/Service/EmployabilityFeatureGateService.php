@@ -8,6 +8,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Servicio de Feature Gating para el vertical Empleabilidad.
@@ -53,6 +54,7 @@ class EmployabilityFeatureGateService {
     protected Connection $database,
     protected AccountProxyInterface $currentUser,
     protected LoggerInterface $logger,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {
   }
 
@@ -178,8 +180,7 @@ class EmployabilityFeatureGateService {
    */
   public function getUserPlan(int $userId): string {
     try {
-      /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenantContext = $this->tenantContext;
       $tenant = $tenantContext->getCurrentTenant();
 
       if ($tenant) {

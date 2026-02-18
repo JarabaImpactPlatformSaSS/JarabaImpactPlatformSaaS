@@ -1,0 +1,23 @@
+fcm_server_key: ''
+fcm_project_id: ''
+fcm_sender_id: ''
+apns_certificate: ''
+apns_key_id: ''
+apns_team_id: ''
+push_channels:
+  jobs:
+    enabled: true
+    max_per_day: 3
+  orders:
+    enabled: true
+    max_per_day: 0
+  alerts:
+    enabled: true
+    max_per_day: 0
+  marketing:
+    enabled: true
+    max_per_day: 1
+  general:
+    enabled: true
+    max_per_day: 0
+deep_link_base_url: ''

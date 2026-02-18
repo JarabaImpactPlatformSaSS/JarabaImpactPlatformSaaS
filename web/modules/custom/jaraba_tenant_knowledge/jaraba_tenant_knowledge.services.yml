@@ -6,6 +6,7 @@ services:
       - '@jaraba_rag.qdrant_client'
       - '@ai.provider'
       - '@logger.channel.jaraba_tenant_knowledge'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   jaraba_tenant_knowledge.indexer:
     class: Drupal\jaraba_tenant_knowledge\Service\KnowledgeIndexerService

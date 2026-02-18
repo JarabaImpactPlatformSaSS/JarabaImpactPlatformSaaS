@@ -1,3 +1,4 @@
+/* AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace */
 /**
  * @file
  * Estilos del widget de chat del Copiloto de Emprendimiento.
@@ -9,24 +10,24 @@
 // Widget Container
 // ============================
 .copilot-chat {
-  --cc-bg: var(--ej-color-background, #ffffff);
-  --cc-bg-secondary: var(--ej-color-background-secondary, #f8fafc);
-  --cc-text: var(--ej-color-text, #1e293b);
-  --cc-text-secondary: var(--ej-color-text-secondary, #64748b);
-  --cc-border: var(--ej-color-border, #e2e8f0);
-  --cc-primary: var(--ej-color-primary, #FF8C42);
-  --cc-radius: var(--ej-radius-lg, 12px);
-  --cc-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.15));
+  --ej-cc-bg: var(--ej-color-background, #ffffff);
+  --ej-cc-bg-secondary: var(--ej-color-background-secondary, #f8fafc);
+  --ej-cc-text: var(--ej-color-text, #1e293b);
+  --ej-cc-text-secondary: var(--ej-color-text-secondary, #64748b);
+  --ej-cc-border: var(--ej-color-border, #e2e8f0);
+  --ej-cc-primary: var(--ej-color-primary, #FF8C42);
+  --ej-cc-radius: var(--ej-radius-lg, 12px);
+  --ej-cc-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.15));
 
   font-family: var(--ej-font-family, 'Inter', system-ui, sans-serif);
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: var(--cc-radius);
+  border-radius: var(--ej-cc-radius);
   overflow: hidden;
-  background: var(--cc-bg);
-  border: 1px solid var(--cc-border);
-  box-shadow: var(--cc-shadow);
+  background: var(--ej-cc-bg);
+  border: 1px solid var(--ej-cc-border);
+  box-shadow: var(--ej-cc-shadow);
 
   // FAB position (default).
   &--fab {
@@ -70,14 +71,14 @@
   width: 56px;
   height: 56px;
   border-radius: var(--ej-radius-full, 50%);
-  background: var(--cc-primary);
+  background: var(--ej-cc-primary);
   color: #ffffff;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--cc-shadow);
+  box-shadow: var(--ej-cc-shadow);
   z-index: 999;
   transition: transform 0.2s ease, background 0.2s ease;
 
@@ -98,7 +99,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-md, 16px);
-  background: var(--cc-primary);
+  background: var(--ej-cc-primary);
   color: #ffffff;
   flex-shrink: 0;
 }
@@ -130,10 +131,10 @@
   align-items: center;
   gap: var(--ej-spacing-xs, 6px);
   padding: var(--ej-spacing-xs, 6px) var(--ej-spacing-md, 16px);
-  background: var(--cc-bg-secondary);
-  border-bottom: 1px solid var(--cc-border);
+  background: var(--ej-cc-bg-secondary);
+  border-bottom: 1px solid var(--ej-cc-border);
   font-size: var(--ej-font-size-xs, 0.75rem);
-  color: var(--cc-text-secondary);
+  color: var(--ej-cc-text-secondary);
   opacity: 0;
   transition: opacity 0.3s ease;
 
@@ -182,7 +183,7 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--cc-border);
+    background: var(--ej-cc-border);
     border-radius: 3px;
   }
 }
@@ -199,7 +200,7 @@
     align-self: flex-end;
 
     .copilot-chat__message-content {
-      background: var(--cc-primary);
+      background: var(--ej-cc-primary);
       color: #ffffff;
       border-radius: var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) 0 var(--ej-radius-md, 8px);
     }
@@ -209,8 +210,8 @@
     align-self: flex-start;
 
     .copilot-chat__message-content {
-      background: var(--cc-bg-secondary);
-      color: var(--cc-text);
+      background: var(--ej-cc-bg-secondary);
+      color: var(--ej-cc-text);
       border-radius: var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) var(--ej-radius-md, 8px) 0;
     }
   }
@@ -257,7 +258,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--cc-text-secondary);
+    background: var(--ej-cc-text-secondary);
     animation: copilot-dot-bounce 1.4s infinite ease-in-out both;
 
     &:nth-child(1) { animation-delay: -0.32s; }
@@ -268,7 +269,7 @@
 
 .copilot-chat__thinking-text {
   font-size: var(--ej-font-size-xs, 0.75rem);
-  color: var(--cc-text-secondary);
+  color: var(--ej-cc-text-secondary);
   font-style: italic;
 }
 
@@ -284,7 +285,7 @@
   display: inline-block;
   width: 2px;
   height: 1em;
-  background: var(--cc-primary);
+  background: var(--ej-cc-primary);
   margin-left: 2px;
   animation: copilot-cursor-blink 1s infinite;
   vertical-align: text-bottom;
@@ -307,8 +308,8 @@
 
 .copilot-chat__suggestion-btn {
   background: transparent;
-  border: 1px solid var(--cc-primary);
-  color: var(--cc-primary);
+  border: 1px solid var(--ej-cc-primary);
+  color: var(--ej-cc-primary);
   padding: var(--ej-spacing-xs, 4px) var(--ej-spacing-sm, 10px);
   border-radius: var(--ej-radius-full, 20px);
   font-size: var(--ej-font-size-xs, 0.75rem);
@@ -316,7 +317,7 @@
   transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
-    background: var(--cc-primary);
+    background: var(--ej-cc-primary);
     color: #ffffff;
   }
 }
@@ -335,12 +336,12 @@
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: var(--cc-text-secondary);
+  color: var(--ej-cc-text-secondary);
   border-radius: 4px;
   transition: color 0.2s ease, background 0.2s ease;
 
   &:hover {
-    background: var(--cc-bg-secondary);
+    background: var(--ej-cc-bg-secondary);
   }
 
   &--up:hover { color: var(--ej-color-success, #10b981); }
@@ -361,19 +362,19 @@
   align-items: center;
   gap: var(--ej-spacing-xs, 8px);
   padding: var(--ej-spacing-sm, 12px) var(--ej-spacing-md, 16px);
-  border-top: 1px solid var(--cc-border);
-  background: var(--cc-bg);
+  border-top: 1px solid var(--ej-cc-border);
+  background: var(--ej-cc-bg);
   flex-shrink: 0;
 }
 
 .copilot-chat__input-field {
   flex: 1;
-  border: 1px solid var(--cc-border);
+  border: 1px solid var(--ej-cc-border);
   border-radius: var(--ej-radius-md, 8px);
   padding: var(--ej-spacing-xs, 8px) var(--ej-spacing-sm, 12px);
   font-size: var(--ej-font-size-sm, 0.875rem);
-  background: var(--cc-bg);
-  color: var(--cc-text);
+  background: var(--ej-cc-bg);
+  color: var(--ej-cc-text);
   outline: none;
   resize: none;
   min-height: 40px;
@@ -381,12 +382,12 @@
   font-family: inherit;
 
   &:focus {
-    border-color: var(--cc-primary);
+    border-color: var(--ej-cc-primary);
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--ej-color-accent, #FF8C42) 15%, transparent);
   }
 
   &::placeholder {
-    color: var(--cc-text-secondary);
+    color: var(--ej-cc-text-secondary);
   }
 }
 
@@ -394,7 +395,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--ej-radius-md, 8px);
-  background: var(--cc-primary);
+  background: var(--ej-cc-primary);
   color: #ffffff;
   border: none;
   cursor: pointer;

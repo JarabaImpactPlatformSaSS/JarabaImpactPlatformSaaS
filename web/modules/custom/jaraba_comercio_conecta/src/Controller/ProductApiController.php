@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controller REST API para productos y comerciantes.
@@ -36,6 +37,7 @@ class ProductApiController extends ControllerBase {
   public function __construct(
     protected MarketplaceService $marketplaceService,
     protected ProductRetailService $productService,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   /**
@@ -45,6 +47,7 @@ class ProductApiController extends ControllerBase {
     return new static(
       $container->get('jaraba_comercio_conecta.marketplace'),
       $container->get('jaraba_comercio_conecta.product_retail'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -78,15 +81,13 @@ class ProductApiController extends ControllerBase {
       $data[] = $this->serializeProduct($product);
     }
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => [
+    return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
         'total' => $result['total'],
         'page' => $result['page'],
         'per_page' => $result['per_page'],
         'total_pages' => $result['total_pages'],
-      ],
-    ]);
+      ]]);
   }
 
   /**
@@ -118,7 +119,7 @@ class ProductApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -189,7 +190,7 @@ class ProductApiController extends ControllerBase {
 
     $product->save();
 
-    return new JsonResponse(['data' => $this->serializeProduct($product)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeProduct($product), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -217,7 +218,7 @@ class ProductApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -243,7 +244,7 @@ class ProductApiController extends ControllerBase {
       (int) $content['quantity']
     );
 
-    return new JsonResponse(['status' => 'ok']);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'ok'], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -268,7 +269,7 @@ class ProductApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -372,7 +373,7 @@ class ProductApiController extends ControllerBase {
       usort($data, fn($a, $b) => $a['distance_km'] <=> $b['distance_km']);
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -404,8 +405,8 @@ class ProductApiController extends ControllerBase {
    *   ID del tenant.
    */
   protected function getTenantId(): int {
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    if ($this->tenantContext !== NULL) {
+      $tenant_context = $this->tenantContext;
       $tenant = $tenant_context->getCurrentTenant();
       if ($tenant) {
         return (int) $tenant->id();

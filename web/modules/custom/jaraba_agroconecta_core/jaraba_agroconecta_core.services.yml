@@ -1,10 +1,13 @@
+# AUDIT-CONS-N05: Normalized all service IDs from jaraba_agroconecta.* to jaraba_agroconecta_core.*
+# to match the canonical module name.
 # Servicios del módulo AgroConecta Core
 services:
   logger.channel.jaraba_agroconecta_core:
     parent: logger.channel_base
     arguments: ['jaraba_agroconecta_core']
 
-  jaraba_agroconecta.product_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.product_service -> jaraba_agroconecta_core.product_service
+  jaraba_agroconecta_core.product_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProductAgroService
     arguments:
       - '@entity_type.manager'
@@ -12,22 +15,25 @@ services:
       - '@logger.factory'
       - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
-  jaraba_agroconecta.producer_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.producer_service -> jaraba_agroconecta_core.producer_service
+  jaraba_agroconecta_core.producer_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProducerProfileService
     arguments:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.factory'
 
-  jaraba_agroconecta.marketplace_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.marketplace_service -> jaraba_agroconecta_core.marketplace_service
+  jaraba_agroconecta_core.marketplace_service:
     class: Drupal\jaraba_agroconecta_core\Service\MarketplaceService
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@jaraba_agroconecta.product_service'
-      - '@jaraba_agroconecta.producer_service'
+      - '@jaraba_agroconecta_core.product_service'
+      - '@jaraba_agroconecta_core.producer_service'
 
-  jaraba_agroconecta.order_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.order_service -> jaraba_agroconecta_core.order_service
+  jaraba_agroconecta_core.order_service:
     class: Drupal\jaraba_agroconecta_core\Service\OrderService
     arguments:
       - '@entity_type.manager'
@@ -35,7 +41,8 @@ services:
       - '@logger.factory'
       - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
-  jaraba_agroconecta.stripe_payment_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.stripe_payment_service -> jaraba_agroconecta_core.stripe_payment_service
+  jaraba_agroconecta_core.stripe_payment_service:
     class: Drupal\jaraba_agroconecta_core\Service\StripePaymentService
     arguments:
       - '@jaraba_foc.stripe_connect'
@@ -44,7 +51,8 @@ services:
       - '@config.factory'
       - '@ecosistema_jaraba_core.agroconecta_feature_gate'
 
-  jaraba_agroconecta.producer_dashboard_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.producer_dashboard_service -> jaraba_agroconecta_core.producer_dashboard_service
+  jaraba_agroconecta_core.producer_dashboard_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProducerDashboardService
     arguments:
       - '@entity_type.manager'
@@ -53,14 +61,16 @@ services:
 
   # Fase 4: Reviews + Notificaciones
 
-  jaraba_agroconecta.review_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.review_service -> jaraba_agroconecta_core.review_service
+  jaraba_agroconecta_core.review_service:
     class: Drupal\jaraba_agroconecta_core\Service\ReviewAgroService
     arguments:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.factory'
 
-  jaraba_agroconecta.notification_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.notification_service -> jaraba_agroconecta_core.notification_service
+  jaraba_agroconecta_core.notification_service:
     class: Drupal\jaraba_agroconecta_core\Service\NotificationService
     arguments:
       - '@entity_type.manager'
@@ -70,7 +80,8 @@ services:
 
   # Fase 5: Search & Discovery
 
-  jaraba_agroconecta.search_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.search_service -> jaraba_agroconecta_core.search_service
+  jaraba_agroconecta_core.search_service:
     class: Drupal\jaraba_agroconecta_core\Service\AgroSearchService
     arguments:
       - '@entity_type.manager'
@@ -79,7 +90,8 @@ services:
 
   # Fase 5: Promotions & Coupons
 
-  jaraba_agroconecta.promotion_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.promotion_service -> jaraba_agroconecta_core.promotion_service
+  jaraba_agroconecta_core.promotion_service:
     class: Drupal\jaraba_agroconecta_core\Service\PromotionService
     arguments:
       - '@entity_type.manager'
@@ -88,33 +100,57 @@ services:
 
   # Fase 5: Shipping Core
 
-  jaraba_agroconecta.shipping_service:
-    class: Drupal\jaraba_agroconecta_core\Service\ShippingService
+  # AUDIT-CONS-N05: jaraba_agroconecta.shipping_service -> jaraba_agroconecta_core.shipping_service
+  jaraba_agroconecta_core.shipping_service:
+    class: Drupal\jaraba_agroconecta_core\Service\AgroShippingService
     arguments:
       - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_agroconecta_core'
+      - '@jaraba_agroconecta_core.carrier_manager'
+
+  jaraba_agroconecta_core.carrier_manager:
+    class: Drupal\jaraba_agroconecta_core\Shipping\CarrierManager
+
+  jaraba_agroconecta_core.carrier_mrw:
+    class: Drupal\jaraba_agroconecta_core\Shipping\MrwCarrierAdapter
+    arguments: ['@http_client', '@logger.channel.jaraba_agroconecta_core']
+    tags:
+      - { name: jaraba_agroconecta_core_carrier }
+
+  jaraba_agroconecta_core.carrier_seur:
+    class: Drupal\jaraba_agroconecta_core\Shipping\SeurCarrierAdapter
+    arguments: ['@http_client', '@logger.channel.jaraba_agroconecta_core']
+    tags:
+      - { name: jaraba_agroconecta_core_carrier }
 
   # Fase 6: Traceability + QR
 
-  jaraba_agroconecta.traceability_service:
-    class: Drupal\jaraba_agroconecta_core\Service\TraceabilityService
+  # AUDIT-CONS-N05: jaraba_agroconecta.traceability_service -> jaraba_agroconecta_core.traceability_service
+  jaraba_agroconecta_core.traceability_service:
+    class: Drupal\jaraba_agroconecta_core\Service\AgroTraceabilityService
     arguments:
       - '@entity_type.manager'
+      - '@logger.factory'
 
-  jaraba_agroconecta.qr_service:
-    class: Drupal\jaraba_agroconecta_core\Service\QrService
+  # AUDIT-CONS-N05: jaraba_agroconecta.qr_service -> jaraba_agroconecta_core.qr_service
+  jaraba_agroconecta_core.qr_service:
+    class: Drupal\jaraba_agroconecta_core\Service\QrAgroService
     arguments:
       - '@entity_type.manager'
 
   # Fase 7: Analytics
 
-  jaraba_agroconecta.analytics_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.analytics_service -> jaraba_agroconecta_core.analytics_service
+  jaraba_agroconecta_core.analytics_service:
     class: Drupal\jaraba_agroconecta_core\Service\AgroAnalyticsService
     arguments:
       - '@entity_type.manager'
 
   # Fase 9: Producer Copilot
 
-  jaraba_agroconecta.copilot_service:
+  # AUDIT-CONS-N05: jaraba_agroconecta.copilot_service -> jaraba_agroconecta_core.copilot_service
+  jaraba_agroconecta_core.copilot_service:
     class: Drupal\jaraba_agroconecta_core\Service\ProducerCopilotService
     arguments:
       - '@entity_type.manager'
@@ -123,7 +159,8 @@ services:
 
   # Fase 9: Demand Forecaster (Doc 67 §4.4)
 
-  jaraba_agroconecta.demand_forecaster:
+  # AUDIT-CONS-N05: jaraba_agroconecta.demand_forecaster -> jaraba_agroconecta_core.demand_forecaster
+  jaraba_agroconecta_core.demand_forecaster:
     class: Drupal\jaraba_agroconecta_core\Service\DemandForecasterService
     arguments:
       - '@entity_type.manager'
@@ -132,7 +169,8 @@ services:
 
   # Fase 9: Market Intelligence (Doc 67 §4.4)
 
-  jaraba_agroconecta.market_spy:
+  # AUDIT-CONS-N05: jaraba_agroconecta.market_spy -> jaraba_agroconecta_core.market_spy
+  jaraba_agroconecta_core.market_spy:
     class: Drupal\jaraba_agroconecta_core\Service\MarketSpyService
     arguments:
       - '@entity_type.manager'
@@ -184,7 +222,8 @@ services:
       - '@entity_type.manager'
 
   # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 2: CopilotBridge
-  jaraba_agroconecta.copilot_bridge:
+  # AUDIT-CONS-N05: jaraba_agroconecta.copilot_bridge -> jaraba_agroconecta_core.copilot_bridge
+  jaraba_agroconecta_core.copilot_bridge:
     class: Drupal\jaraba_agroconecta_core\Service\AgroConectaCopilotBridgeService
     arguments:
       - '@entity_type.manager'

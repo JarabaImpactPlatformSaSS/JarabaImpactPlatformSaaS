@@ -9,6 +9,7 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\jaraba_candidate\Entity\CandidateProfileInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Service for building CVs from candidate profiles.
@@ -63,8 +64,10 @@ class CvBuilderService
         CandidateProfileService $profile_service,
         RendererInterface $renderer,
         FileSystemInterface $file_system,
-        LoggerChannelFactoryInterface $logger_factory
+        LoggerChannelFactoryInterface $logger_factory,
+        TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
+        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
         $this->entityTypeManager = $entity_type_manager;
         $this->profileService = $profile_service;
         $this->renderer = $renderer;
@@ -95,8 +98,7 @@ class CvBuilderService
             if (!$gateResult->isAllowed()) {
                 // Fire upgrade trigger (Plan Elevación Empleabilidad v1 — Fase 5).
                 try {
-                    /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-                    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                    $tenantContext = $this->tenantContext;
                     $tenant = $tenantContext->getCurrentTenant();
                     if ($tenant) {
                         \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')

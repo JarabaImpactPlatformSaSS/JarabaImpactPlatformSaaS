@@ -13,6 +13,7 @@ use Drupal\jaraba_integrations\Entity\Connector;
 use Drupal\jaraba_integrations\Service\ConnectorRegistryService;
 use Drupal\jaraba_integrations\Service\ConnectorInstallerService;
 use Drupal\jaraba_integrations\Service\ConnectorHealthCheckService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador frontend para el dashboard de integraciones del tenant.
@@ -33,6 +34,7 @@ class IntegrationDashboardController extends ControllerBase implements Container
     protected ConnectorRegistryService $connectorRegistry,
     protected ConnectorInstallerService $connectorInstaller,
     protected ConnectorHealthCheckService $healthCheck,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   /**
@@ -43,6 +45,7 @@ class IntegrationDashboardController extends ControllerBase implements Container
       $container->get('jaraba_integrations.connector_registry'),
       $container->get('jaraba_integrations.connector_installer'),
       $container->get('jaraba_integrations.health_check'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -239,7 +242,7 @@ class IntegrationDashboardController extends ControllerBase implements Container
   protected function getTenantId(): ?string {
     // Usar el servicio de contexto de tenant de ecosistema_jaraba_core.
     try {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenant_context = $this->tenantContext;
       $tenant = $tenant_context->getCurrentTenant();
       if ($tenant) {
         $group = $tenant->getGroup();

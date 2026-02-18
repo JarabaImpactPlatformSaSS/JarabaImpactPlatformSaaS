@@ -50,7 +50,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Obtiene el documento PDF para firmar.
    *
-   * Endpoint: GET /api/autofirma/documento/{document_id}
+   * Endpoint: GET /api/v1/autofirma/documento/{document_id}
    *
    * @param string $document_id
    *   ID del documento a firmar.
@@ -142,7 +142,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Recibe el documento firmado desde AutoFirma.
    *
-   * Endpoint: POST /api/autofirma/firmar
+   * Endpoint: POST /api/v1/autofirma/firmar
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   La petición HTTP con el documento firmado.
@@ -286,7 +286,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Obtiene el estado de un documento.
    *
-   * Endpoint: GET /api/autofirma/estado/{document_id}
+   * Endpoint: GET /api/v1/autofirma/estado/{document_id}
    *
    * @param string $document_id
    *   ID del documento.
@@ -334,7 +334,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Verifica la disponibilidad de AutoFirma.
    *
-   * Endpoint: GET /api/autofirma/check
+   * Endpoint: GET /api/v1/autofirma/check
    *
    * Devuelve información para el cliente sobre cómo conectar.
    *
@@ -357,7 +357,7 @@ class AutoFirmaController extends ControllerBase
   /**
    * Genera un documento PDF para firma.
    *
-   * Endpoint: POST /api/autofirma/generar
+   * Endpoint: POST /api/v1/autofirma/generar
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   Petición con datos del documento a generar.

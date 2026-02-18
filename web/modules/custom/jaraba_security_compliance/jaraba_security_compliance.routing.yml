@@ -57,6 +57,58 @@ jaraba_security_compliance.api.policies:
     _permission: 'manage security policies'
   methods: [GET]
 
+# N3 Enterprise Compliance API routes.
+jaraba_security_compliance.api.risk_register:
+  path: '/api/v1/compliance/risk-register'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::getRiskRegister'
+  requirements:
+    _permission: 'manage risk assessments'
+  methods: [GET]
+
+jaraba_security_compliance.api.risk_assessment:
+  path: '/api/v1/compliance/risk-assessment'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::createRiskAssessment'
+  requirements:
+    _permission: 'manage risk assessments'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+jaraba_security_compliance.api.ens_measures:
+  path: '/api/v1/compliance/ens/measures'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::getEnsMeasures'
+  requirements:
+    _permission: 'view ens compliance'
+  methods: [GET]
+
+jaraba_security_compliance.api.ens_seed:
+  path: '/api/v1/compliance/ens/seed'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::seedEnsMeasures'
+  requirements:
+    _permission: 'administer security compliance'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+jaraba_security_compliance.api.soc2_controls:
+  path: '/api/v1/compliance/soc2/controls'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::getSoc2Controls'
+  requirements:
+    _permission: 'view compliance status'
+  methods: [GET]
+
+jaraba_security_compliance.api.compliance_report:
+  path: '/api/v1/compliance/report/{framework}'
+  defaults:
+    _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::getComplianceReport'
+  requirements:
+    _permission: 'generate compliance reports'
+    framework: 'soc2|iso27001|ens|gdpr'
+  methods: [GET]
+
 # Settings form.
 jaraba_security_compliance.settings:
   path: '/admin/config/security/compliance-settings'

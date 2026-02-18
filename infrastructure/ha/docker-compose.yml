@@ -1,0 +1,424 @@
+# =============================================================================
+# Jaraba Impact Platform - HA Stack Docker Compose (Dev/Testing)
+# N3 Enterprise Class - Doc 197 - High Availability Infrastructure
+# =============================================================================
+# Local testing environment for the full HA stack:
+#   - 3x MariaDB Galera nodes
+#   - 1x ProxySQL (read/write splitting)
+#   - 1x HAProxy (application load balancer)
+#   - 3x Redis (1 master + 2 replicas)
+#   - 3x Redis Sentinel
+#   - 1x Health check container
+#   - 1x Prometheus + Grafana (monitoring)
+#
+# Usage:
+#   docker-compose up -d
+#   docker-compose logs -f
+#   docker-compose down -v
+# =============================================================================
+
+version: "3.8"
+
+x-galera-common: &galera-common
+  image: mariadb:10.11
+  restart: unless-stopped
+  environment: &galera-env
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-jaraba_root_dev}
+    MYSQL_DATABASE: drupal
+    MYSQL_USER: ${DRUPAL_DB_USER:-drupal}
+    MYSQL_PASSWORD: ${DRUPAL_DB_PASSWORD:-drupal_dev}
+    REPLICATION_USER: ${REPLICATION_USER:-repl}
+    REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-repl_dev}
+  networks:
+    - jaraba-ha
+
+x-redis-common: &redis-common
+  image: redis:7-alpine
+  restart: unless-stopped
+  networks:
+    - jaraba-ha
+
+services:
+  # ---------------------------------------------------------------------------
+  # MariaDB Galera Cluster (3 nodes)
+  # ---------------------------------------------------------------------------
+  galera-node1:
+    <<: *galera-common
+    container_name: galera-node1
+    hostname: node1.db.jaraba.io
+    ports:
+      - "3307:3306"
+    volumes:
+      - galera-node1-data:/var/lib/mysql
+      - ./mariadb/galera.cnf:/etc/mysql/mariadb.conf.d/90-galera.cnf:ro
+    environment:
+      <<: *galera-env
+      NODE_IP: galera-node1
+    command: >
+      --wsrep-cluster-address=gcomm://
+      --wsrep-node-name=node1
+      --wsrep-node-address=galera-node1
+      --wsrep-cluster-name=jaraba_cluster
+      --wsrep-on=ON
+      --wsrep-provider=/usr/lib/galera/libgalera_smm.so
+      --wsrep-sst-method=rsync
+      --binlog-format=ROW
+      --default-storage-engine=InnoDB
+      --innodb-autoinc-lock-mode=2
+      --innodb-flush-log-at-trx-commit=2
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mariadb", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-jaraba_root_dev}", "-e", "SHOW STATUS LIKE 'wsrep_ready'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  galera-node2:
+    <<: *galera-common
+    container_name: galera-node2
+    hostname: node2.db.jaraba.io
+    ports:
+      - "3308:3306"
+    volumes:
+      - galera-node2-data:/var/lib/mysql
+      - ./mariadb/galera.cnf:/etc/mysql/mariadb.conf.d/90-galera.cnf:ro
+    environment:
+      <<: *galera-env
+      NODE_IP: galera-node2
+    command: >
+      --wsrep-cluster-address=gcomm://galera-node1,galera-node2,galera-node3
+      --wsrep-node-name=node2
+      --wsrep-node-address=galera-node2
+      --wsrep-cluster-name=jaraba_cluster
+      --wsrep-on=ON
+      --wsrep-provider=/usr/lib/galera/libgalera_smm.so
+      --wsrep-sst-method=rsync
+      --binlog-format=ROW
+      --default-storage-engine=InnoDB
+      --innodb-autoinc-lock-mode=2
+      --innodb-flush-log-at-trx-commit=2
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    depends_on:
+      galera-node1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mariadb", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-jaraba_root_dev}", "-e", "SHOW STATUS LIKE 'wsrep_ready'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  galera-node3:
+    <<: *galera-common
+    container_name: galera-node3
+    hostname: node3.db.jaraba.io
+    ports:
+      - "3309:3306"
+    volumes:
+      - galera-node3-data:/var/lib/mysql
+      - ./mariadb/galera.cnf:/etc/mysql/mariadb.conf.d/90-galera.cnf:ro
+    environment:
+      <<: *galera-env
+      NODE_IP: galera-node3
+    command: >
+      --wsrep-cluster-address=gcomm://galera-node1,galera-node2,galera-node3
+      --wsrep-node-name=node3
+      --wsrep-node-address=galera-node3
+      --wsrep-cluster-name=jaraba_cluster
+      --wsrep-on=ON
+      --wsrep-provider=/usr/lib/galera/libgalera_smm.so
+      --wsrep-sst-method=rsync
+      --binlog-format=ROW
+      --default-storage-engine=InnoDB
+      --innodb-autoinc-lock-mode=2
+      --innodb-flush-log-at-trx-commit=2
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    depends_on:
+      galera-node1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mariadb", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-jaraba_root_dev}", "-e", "SHOW STATUS LIKE 'wsrep_ready'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
+  # ProxySQL
+  # ---------------------------------------------------------------------------
+  proxysql:
+    image: proxysql/proxysql:2.5
+    container_name: proxysql
+    hostname: proxysql.jaraba.io
+    ports:
+      - "6033:6033"   # MySQL protocol (apps connect here)
+      - "6032:6032"   # Admin interface
+      - "6080:6080"   # Web UI
+    volumes:
+      - ./proxysql/proxysql.cnf:/etc/proxysql.cnf:ro
+      - proxysql-data:/var/lib/proxysql
+    environment:
+      PROXYSQL_ADMIN_PASSWORD: ${PROXYSQL_ADMIN_PASSWORD:-admin_dev}
+      PROXYSQL_STATS_PASSWORD: ${PROXYSQL_STATS_PASSWORD:-stats_dev}
+      MONITOR_USER: ${MONITOR_USER:-monitor}
+      MONITOR_PASSWORD: ${MONITOR_PASSWORD:-monitor_dev}
+      DRUPAL_DB_USER: ${DRUPAL_DB_USER:-drupal}
+      DRUPAL_DB_PASSWORD: ${DRUPAL_DB_PASSWORD:-drupal_dev}
+    depends_on:
+      galera-node1:
+        condition: service_healthy
+      galera-node2:
+        condition: service_healthy
+      galera-node3:
+        condition: service_healthy
+    networks:
+      jaraba-ha:
+        aliases:
+          - node1.db.jaraba.io
+          - node2.db.jaraba.io
+          - node3.db.jaraba.io
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # HAProxy
+  # ---------------------------------------------------------------------------
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: haproxy
+    hostname: haproxy.jaraba.io
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8404:8404"  # Stats
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    environment:
+      HAPROXY_STATS_USER: ${HAPROXY_STATS_USER:-admin}
+      HAPROXY_STATS_PASSWORD: ${HAPROXY_STATS_PASSWORD:-admin_dev}
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Redis Master
+  # ---------------------------------------------------------------------------
+  redis-master:
+    <<: *redis-common
+    container_name: redis-master
+    hostname: redis-master.jaraba.io
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis-master-data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD:-redis_dev} --masterauth ${REDIS_PASSWORD:-redis_dev}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_dev}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Redis Replicas
+  # ---------------------------------------------------------------------------
+  redis-replica1:
+    <<: *redis-common
+    container_name: redis-replica1
+    hostname: redis-replica1.jaraba.io
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis-replica1-data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD:-redis_dev} --masterauth ${REDIS_PASSWORD:-redis_dev} --replicaof redis-master 6379
+    depends_on:
+      redis-master:
+        condition: service_healthy
+
+  redis-replica2:
+    <<: *redis-common
+    container_name: redis-replica2
+    hostname: redis-replica2.jaraba.io
+    ports:
+      - "6381:6379"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis-replica2-data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD:-redis_dev} --masterauth ${REDIS_PASSWORD:-redis_dev} --replicaof redis-master 6379
+    depends_on:
+      redis-master:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Redis Sentinels (3 instances for quorum)
+  # ---------------------------------------------------------------------------
+  sentinel1:
+    image: redis:7-alpine
+    container_name: sentinel1
+    hostname: sentinel1.jaraba.io
+    ports:
+      - "26379:26379"
+    volumes:
+      - ./redis/sentinel.conf:/etc/redis/sentinel.conf.template:ro
+    command: >
+      sh -c "cp /etc/redis/sentinel.conf.template /tmp/sentinel.conf &&
+             sed -i 's/\$${REDIS_PASSWORD}/${REDIS_PASSWORD:-redis_dev}/g' /tmp/sentinel.conf &&
+             sed -i 's/redis-master.jaraba.io/redis-master/g' /tmp/sentinel.conf &&
+             sed -i 's/daemonize yes/daemonize no/g' /tmp/sentinel.conf &&
+             redis-sentinel /tmp/sentinel.conf"
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+  sentinel2:
+    image: redis:7-alpine
+    container_name: sentinel2
+    hostname: sentinel2.jaraba.io
+    ports:
+      - "26380:26379"
+    volumes:
+      - ./redis/sentinel.conf:/etc/redis/sentinel.conf.template:ro
+    command: >
+      sh -c "cp /etc/redis/sentinel.conf.template /tmp/sentinel.conf &&
+             sed -i 's/\$${REDIS_PASSWORD}/${REDIS_PASSWORD:-redis_dev}/g' /tmp/sentinel.conf &&
+             sed -i 's/redis-master.jaraba.io/redis-master/g' /tmp/sentinel.conf &&
+             sed -i 's/daemonize yes/daemonize no/g' /tmp/sentinel.conf &&
+             redis-sentinel /tmp/sentinel.conf"
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+  sentinel3:
+    image: redis:7-alpine
+    container_name: sentinel3
+    hostname: sentinel3.jaraba.io
+    ports:
+      - "26381:26379"
+    volumes:
+      - ./redis/sentinel.conf:/etc/redis/sentinel.conf.template:ro
+    command: >
+      sh -c "cp /etc/redis/sentinel.conf.template /tmp/sentinel.conf &&
+             sed -i 's/\$${REDIS_PASSWORD}/${REDIS_PASSWORD:-redis_dev}/g' /tmp/sentinel.conf &&
+             sed -i 's/redis-master.jaraba.io/redis-master/g' /tmp/sentinel.conf &&
+             sed -i 's/daemonize yes/daemonize no/g' /tmp/sentinel.conf &&
+             redis-sentinel /tmp/sentinel.conf"
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Health Check Container
+  # ---------------------------------------------------------------------------
+  healthcheck:
+    image: curlimages/curl:latest
+    container_name: ha-healthcheck
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "=== Jaraba HA Stack Health Check ==="
+        while true; do
+          echo "--- $$(date) ---"
+
+          # Galera cluster
+          echo -n "Galera node1: "
+          mariadb -h galera-node1 -u root -p$${MYSQL_ROOT_PASSWORD:-jaraba_root_dev} -e "SHOW STATUS LIKE 'wsrep_cluster_size'" 2>/dev/null | tail -1 || echo "UNREACHABLE"
+
+          # ProxySQL
+          echo -n "ProxySQL: "
+          mariadb -h proxysql -P 6033 -u $${DRUPAL_DB_USER:-drupal} -p$${DRUPAL_DB_PASSWORD:-drupal_dev} -e "SELECT 1" 2>/dev/null && echo "OK" || echo "UNREACHABLE"
+
+          # Redis
+          echo -n "Redis master: "
+          redis-cli -h redis-master -a $${REDIS_PASSWORD:-redis_dev} ping 2>/dev/null || echo "UNREACHABLE"
+
+          echo -n "Sentinel1: "
+          redis-cli -h sentinel1 -p 26379 sentinel master jaraba-master 2>/dev/null | head -4 || echo "UNREACHABLE"
+
+          sleep 30
+        done
+    depends_on:
+      - galera-node1
+      - galera-node2
+      - galera-node3
+      - proxysql
+      - redis-master
+      - sentinel1
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Prometheus (Monitoring)
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+      - "--web.enable-lifecycle"
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Grafana (Dashboards)
+  # ---------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/ha-stack.json:ro
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin_dev}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ha-stack.json
+    networks:
+      - jaraba-ha
+    restart: unless-stopped
+
+# ---------------------------------------------------------------------------
+# Networks
+# ---------------------------------------------------------------------------
+networks:
+  jaraba-ha:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ---------------------------------------------------------------------------
+# Volumes
+# ---------------------------------------------------------------------------
+volumes:
+  galera-node1-data:
+  galera-node2-data:
+  galera-node3-data:
+  proxysql-data:
+  redis-master-data:
+  redis-replica1-data:
+  redis-replica2-data:
+  prometheus-data:
+  grafana-data:

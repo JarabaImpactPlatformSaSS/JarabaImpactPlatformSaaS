@@ -74,6 +74,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # =====================================================================
   # CheckoutService: Flujo de checkout multi-step

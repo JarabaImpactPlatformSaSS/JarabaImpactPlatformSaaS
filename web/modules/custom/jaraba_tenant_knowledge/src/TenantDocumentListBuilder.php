@@ -6,6 +6,9 @@ namespace Drupal\jaraba_tenant_knowledge;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
  * LIST BUILDER PARA DOCUMENTOS DEL TENANT
@@ -16,6 +19,23 @@ use Drupal\Core\Entity\EntityListBuilder;
  */
 class TenantDocumentListBuilder extends EntityListBuilder
 {
+
+
+    /**
+     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+     */
+    protected ?TenantContextService $tenantContext = NULL;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+        $instance = parent::createInstance($container, $entity_type);
+        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
+            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+        }
+        return $instance;
+    }
 
     /**
      * {@inheritdoc}
@@ -84,8 +104,8 @@ class TenantDocumentListBuilder extends EntityListBuilder
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

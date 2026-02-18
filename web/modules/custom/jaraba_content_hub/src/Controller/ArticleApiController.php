@@ -20,11 +20,12 @@ use Symfony\Component\HttpFoundation\Request;
  * y sistemas de terceros.
  *
  * ENDPOINTS:
- * - GET /api/content-hub/articles: Listar artículos publicados
- * - GET /api/content-hub/articles/{uuid}: Obtener artículo por UUID
- * - POST /api/content-hub/articles: Crear nuevo artículo
- * - PATCH /api/content-hub/articles/{uuid}: Actualizar artículo
- * - POST /api/content-hub/articles/{uuid}/publish: Publicar artículo
+ * - GET /api/v1/content/articles: Listar artículos publicados
+ * - GET /api/v1/content/articles/{uuid}: Obtener artículo por UUID
+ * - POST /api/v1/content/articles: Crear nuevo artículo
+ * - PATCH /api/v1/content/articles/{uuid}: Actualizar artículo
+ * - POST /api/v1/content/articles/{uuid}/publish: Publicar artículo
+ * AUDIT-CONS-N07: Added API versioning prefix.
  *
  * ARQUITECTURA:
  * - Utiliza ArticleService para lógica de negocio
@@ -116,14 +117,11 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
             ];
         }
 
-        return new JsonResponse([
-            'data' => $data,
-            'meta' => [
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
                 'count' => count($data),
                 'offset' => $offset,
                 'limit' => $limit,
-            ],
-        ]);
+            ]]);
     }
 
     /**
@@ -143,14 +141,14 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
         $article = $this->articleService->getByUuid($uuid);
 
         if (!$article) {
-            return new JsonResponse(['error' => 'Artículo no encontrado'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
         }
 
         $category_entity = $article->get('category')->entity;
         $author = $article->getOwner();
 
-        return new JsonResponse([
-            'data' => [
+        return new JsonResponse(['success' => TRUE, 'data' => [
                 'uuid' => $article->uuid(),
                 'title' => $article->getTitle(),
                 'slug' => $article->getSlug(),
@@ -204,7 +202,7 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['title'])) {
-            return new JsonResponse(['error' => 'El título es requerido'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El título es requerido']], 400);
         }
 
         try {
@@ -215,11 +213,9 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
                     'uuid' => $article->uuid(),
                     'title' => $article->getTitle(),
                     'status' => $article->getPublicationStatus(),
-                ],
-                'message' => 'Artículo creado exitosamente',
-            ], 201);
+                ], 'meta' => ['timestamp' => time()]], 201);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
         }
     }
 
@@ -243,7 +239,7 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
         $article = $this->articleService->getByUuid($uuid);
 
         if (!$article) {
-            return new JsonResponse(['error' => 'Artículo no encontrado'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
         }
 
         $data = json_decode($request->getContent(), TRUE);
@@ -258,14 +254,11 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
 
         $article->save();
 
-        return new JsonResponse([
-            'data' => [
+        return new JsonResponse(['success' => TRUE, 'data' => [
                 'uuid' => $article->uuid(),
                 'title' => $article->getTitle(),
                 'status' => $article->getPublicationStatus(),
-            ],
-            'message' => 'Artículo actualizado exitosamente',
-        ]);
+            ], 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -285,7 +278,7 @@ class ArticleApiController extends ControllerBase implements ContainerInjectionI
         $success = $this->articleService->publish($uuid);
 
         if (!$success) {
-            return new JsonResponse(['error' => 'Artículo no encontrado'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Artículo no encontrado']], 404);
         }
 
         return new JsonResponse([

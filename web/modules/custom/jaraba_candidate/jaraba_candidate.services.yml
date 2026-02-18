@@ -19,6 +19,7 @@ services:
       - '@renderer'
       - '@file_system'
       - '@logger.factory'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   jaraba_candidate.skills:
     class: Drupal\jaraba_candidate\Service\SkillsService

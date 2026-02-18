@@ -42,7 +42,7 @@ class AgroSearchService
         protected Connection $database,
         LoggerChannelFactoryInterface $loggerFactory,
     ) {
-        $this->logger = $loggerFactory->get('jaraba_agroconecta.search');
+        $this->logger = $loggerFactory->get('jaraba_agroconecta_core.search'); // AUDIT-CONS-N05: canonical prefix
     }
 
     /**

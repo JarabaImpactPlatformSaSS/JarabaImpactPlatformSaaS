@@ -39,15 +39,16 @@ slide-panel:
     - core/drupal
     - core/once
 
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 riasec:
   version: 1.x
   js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
     js/riasec-chart.js: {}
   dependencies:
     - jaraba_self_discovery/global
     - core/once
     - core/drupal.ajax
+    - ecosistema_jaraba_core/chartjs
 
 # Modal CRUD actions — Plan Elevación Empleabilidad Fase 2
 modal-actions:

@@ -37,7 +37,7 @@ class CopilotStreamController extends ControllerBase {
   }
 
   /**
-   * POST /api/copilot/chat/stream - Streaming SSE endpoint.
+   * POST /api/v1/copilot/chat/stream - Streaming SSE endpoint. (AUDIT-CONS-N07)
    */
   public function stream(Request $request): StreamedResponse|JsonResponse {
     $data = json_decode($request->getContent(), TRUE);

@@ -43,7 +43,7 @@ class SearchApiController extends ControllerBase implements ContainerInjectionIn
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.search_service'),
+            $container->get('jaraba_agroconecta_core.search_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 
@@ -81,7 +81,7 @@ class SearchApiController extends ControllerBase implements ContainerInjectionIn
 
         $results = $this->searchService->searchProducts($query, $filters, $sort, $limit, $offset);
 
-        return new JsonResponse($results);
+        return new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -141,7 +141,7 @@ class SearchApiController extends ControllerBase implements ContainerInjectionIn
 
         $results = $this->searchService->getProductsByCategory($category_id, $sort, $limit, $offset);
 
-        return new JsonResponse($results);
+        return new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -180,10 +180,11 @@ class SearchApiController extends ControllerBase implements ContainerInjectionIn
         $results = $this->searchService->resolveCollection($collection_id, $limit, $offset);
 
         if (!$results['collection']) {
-            return new JsonResponse(['error' => 'Colección no encontrada.'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Colección no encontrada.']], 404);
         }
 
-        return new JsonResponse($results);
+        return new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => ['timestamp' => time()]]);
     }
 
 }

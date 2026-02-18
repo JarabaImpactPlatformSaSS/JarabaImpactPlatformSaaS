@@ -50,7 +50,7 @@ class CartApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   public function addItem(Request $request): JsonResponse {
@@ -126,7 +126,8 @@ class CartApiController extends ControllerBase {
     $result = $this->cartService->applyCoupon($cart, $coupon_code);
 
     if (!$result['success']) {
-      return new JsonResponse(['error' => $result['message']], 400);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['message']]], 400);
     }
 
     return new JsonResponse([

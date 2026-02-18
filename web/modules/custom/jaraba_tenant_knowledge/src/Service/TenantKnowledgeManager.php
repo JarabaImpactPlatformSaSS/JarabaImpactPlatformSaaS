@@ -9,6 +9,7 @@ use Drupal\jaraba_rag\Client\QdrantDirectClient;
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\jaraba_tenant_knowledge\Entity\TenantKnowledgeConfig;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * SERVICIO MANAGER DE CONOCIMIENTO DEL TENANT
@@ -36,6 +37,7 @@ class TenantKnowledgeManager
         protected QdrantDirectClient $qdrantClient,
         protected AiProviderPluginManager $aiProvider,
         protected LoggerInterface $logger,
+        protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
     }
 
@@ -245,9 +247,8 @@ class TenantKnowledgeManager
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

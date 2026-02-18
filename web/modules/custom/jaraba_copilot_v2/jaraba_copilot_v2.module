@@ -441,6 +441,7 @@ function _jaraba_copilot_v2_sync_to_crm(\Drupal\Core\Entity\EntityInterface $ent
 
       if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
         try {
+          // @todo CONS-N10: Move to service class for proper DI.
           $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
           if ($tenant) {
             $values['tenant_id'] = $tenant->id();

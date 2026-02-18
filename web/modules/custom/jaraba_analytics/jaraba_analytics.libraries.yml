@@ -1,6 +1,7 @@
 # Librerías del módulo Jaraba Analytics.
 
 # Tracker JavaScript principal.
+# AUDIT-CONS-N12: Added core/once dependency for Drupal.behaviors migration.
 analytics-tracker:
   version: 1.0
   js:
@@ -10,6 +11,7 @@ analytics-tracker:
   dependencies:
     - core/drupal
     - core/drupalSettings
+    - core/once
 
 # Dashboard con Chart.js.
 # CSS está en el tema (ecosistema_jaraba_theme) para cumplir con directrices.
@@ -24,13 +26,11 @@ analytics-dashboard:
     - jaraba_analytics/chartjs
     - ecosistema_jaraba_theme/global
 
-# Chart.js CDN.
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 chartjs:
   version: 4.4.1
-  js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js:
-      type: external
-      minified: true
+  dependencies:
+    - ecosistema_jaraba_core/chartjs
 
 # Banner de Consentimiento GDPR.
 consent-banner:

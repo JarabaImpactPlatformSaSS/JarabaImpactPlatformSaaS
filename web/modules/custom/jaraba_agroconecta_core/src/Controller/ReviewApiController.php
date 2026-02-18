@@ -46,7 +46,7 @@ class ReviewApiController extends ControllerBase implements ContainerInjectionIn
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.review_service'),
+            $container->get('jaraba_agroconecta_core.review_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 

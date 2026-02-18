@@ -18,3 +18,15 @@ manage security policies:
 view compliance status:
   title: 'Ver estado de compliance'
   description: 'Permite ver el dashboard de compliance y estado de frameworks.'
+
+manage risk assessments:
+  title: 'Gestionar evaluaciones de riesgo'
+  description: 'Permite crear, editar y consultar evaluaciones de riesgo ISO 27001.'
+
+view ens compliance:
+  title: 'Ver compliance ENS'
+  description: 'Permite ver el estado de cumplimiento del Esquema Nacional de Seguridad.'
+
+generate compliance reports:
+  title: 'Generar informes de compliance'
+  description: 'Permite generar informes de compliance para auditorias externas.'

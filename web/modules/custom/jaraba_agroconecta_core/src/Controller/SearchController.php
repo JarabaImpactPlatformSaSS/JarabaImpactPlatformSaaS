@@ -41,7 +41,7 @@ class SearchController extends ControllerBase implements ContainerInjectionInter
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.search_service'),
+            $container->get('jaraba_agroconecta_core.search_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 

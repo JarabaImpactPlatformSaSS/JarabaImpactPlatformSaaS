@@ -25,6 +25,7 @@ class AdminCenterController extends ControllerBase {
   public function __construct(
     protected LoggerInterface $logger,
     protected AdminCenterAggregatorService $aggregator,
+    protected ?object $auditLog = NULL,
   ) {}
 
   /**
@@ -34,6 +35,7 @@ class AdminCenterController extends ControllerBase {
     return new static(
       $container->get('logger.channel.ecosistema_jaraba_core'),
       $container->get('ecosistema_jaraba_core.admin_center_aggregator'),
+      $container->has('jaraba_security_compliance.audit_log') ? $container->get('jaraba_security_compliance.audit_log') : NULL,
     );
   }
 
@@ -289,6 +291,14 @@ class AdminCenterController extends ControllerBase {
         return new JsonResponse(['success' => TRUE, 'data' => []]);
       }
 
+      // Registro de Auditoría (Fase D Compliance).
+      if ($this->auditLog) {
+        $this->auditLog->log('admin_search', "Super Admin buscó: $query", [
+          'user_id' => $this->currentUser()->id(),
+          'ip' => $request->getClientIp(),
+        ]);
+      }
+
       $results = [];
 
       // Buscar tenants (groups type tenant).
@@ -296,6 +306,12 @@ class AdminCenterController extends ControllerBase {
 
       // Buscar usuarios.
       $this->searchUsers($query, $results);
+
+      // Buscar envíos Agro (Fase 5).
+      $this->searchShipments($query, $results);
+
+      // Buscar lotes Agro (Fase 6).
+      $this->searchBatches($query, $results);
 
       // Limitar resultados.
       $results = array_slice($results, 0, 15);
@@ -368,6 +384,62 @@ class AdminCenterController extends ControllerBase {
     catch (\Exception $e) {
       // Silently skip.
     }
+  }
+
+  /**
+   * Busca envíos por número de seguimiento o ID.
+   */
+  protected function searchShipments(string $query, array &$results): void {
+    try {
+      if (!$this->entityTypeManager()->hasDefinition('agro_shipment')) return;
+      $storage = $this->entityTypeManager()->getStorage('agro_shipment');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition($storage->getQuery()->orConditionGroup()
+          ->condition('shipment_number', '%' . $query . '%', 'LIKE')
+          ->condition('tracking_number', '%' . $query . '%', 'LIKE')
+        )
+        ->range(0, 5)
+        ->execute();
+
+      foreach ($storage->loadMultiple($ids) as $shipment) {
+        $results[] = [
+          'type' => 'shipment',
+          'id' => $shipment->id(),
+          'label' => $shipment->getShipmentNumber(),
+          'url' => $shipment->toUrl('canonical')->toString(),
+          'icon' => 'truck',
+          'meta' => $shipment->getCarrierId(),
+        ];
+      }
+    }
+    catch (\Exception $e) {}
+  }
+
+  /**
+   * Busca lotes por código.
+   */
+  protected function searchBatches(string $query, array &$results): void {
+    try {
+      if (!$this->entityTypeManager()->hasDefinition('agro_batch')) return;
+      $storage = $this->entityTypeManager()->getStorage('agro_batch');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('batch_code', '%' . $query . '%', 'LIKE')
+        ->range(0, 5)
+        ->execute();
+
+      foreach ($storage->loadMultiple($ids) as $batch) {
+        $results[] = [
+          'type' => 'batch',
+          'id' => $batch->id(),
+          'label' => $batch->get('batch_code')->value,
+          'url' => $batch->toUrl('canonical')->toString(),
+          'icon' => 'box',
+        ];
+      }
+    }
+    catch (\Exception $e) {}
   }
 
 }

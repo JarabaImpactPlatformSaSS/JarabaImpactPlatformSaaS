@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador REST API para eventos de marketing.
@@ -43,6 +44,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class EventApiController extends ControllerBase {
 
+
+  /**
+   * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+   */
+  protected TenantContextService $tenantContext;
   /**
    * Servicio de registro de asistentes.
    *
@@ -105,6 +111,9 @@ class EventApiController extends ControllerBase {
       // Canal de log puede no estar disponible todavía.
     }
 
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+
+
     return $instance;
   }
 
@@ -121,7 +130,7 @@ class EventApiController extends ControllerBase {
    */
   protected function getCurrentTenantId(): ?int {
     try {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenant_context = $this->tenantContext;
       $tenant_id = $tenant_context->getCurrentTenantId();
       if ($tenant_id) {
         return (int) $tenant_id;

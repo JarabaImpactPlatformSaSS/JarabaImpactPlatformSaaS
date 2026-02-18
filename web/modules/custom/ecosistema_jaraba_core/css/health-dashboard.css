@@ -1,6 +1,7 @@
+/* AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace */
 /**
  * Health Dashboard - Premium Admin CSS
- * 
+ *
  * Modern, dark-themed dashboard with glassmorphism effects
  * for a premium SaaS admin experience.
  */
@@ -10,16 +11,16 @@
    ============================================================================ */
 
 :root {
-  --health-bg: #0f172a;
-  --health-card-bg: rgba(30, 41, 59, 0.8);
-  --health-border: rgba(148, 163, 184, 0.1);
-  --health-text: #e2e8f0;
-  --health-text-muted: #94a3b8;
-  --health-primary: #3b82f6;
-  --health-success: #22c55e;
-  --health-warning: #f59e0b;
-  --health-critical: #ef4444;
-  --health-gradient: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+  --ej-health-bg: #0f172a;
+  --ej-health-card-bg: rgba(30, 41, 59, 0.8);
+  --ej-health-border: rgba(148, 163, 184, 0.1);
+  --ej-health-text: #e2e8f0;
+  --ej-health-text-muted: #94a3b8;
+  --ej-health-primary: #3b82f6;
+  --ej-health-success: #22c55e;
+  --ej-health-warning: #f59e0b;
+  --ej-health-critical: #ef4444;
+  --ej-health-gradient: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
 }
 
 /* ============================================================================
@@ -28,10 +29,10 @@
 
 .health-dashboard {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--health-bg);
+  background: var(--ej-health-bg);
   min-height: 100vh;
   padding: 2rem;
-  color: var(--health-text);
+  color: var(--ej-health-text);
 }
 
 /* ============================================================================
@@ -44,7 +45,7 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--health-border);
+  border-bottom: 1px solid var(--ej-health-border);
 }
 
 .health-header__title {
@@ -61,7 +62,7 @@
 }
 
 .health-header__subtitle {
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
   margin: 0.5rem 0 0 0;
   font-size: 0.95rem;
 }
@@ -74,7 +75,7 @@
 
 .health-header__updated {
   font-size: 0.85rem;
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
 }
 
 /* ============================================================================
@@ -95,7 +96,7 @@
 }
 
 .btn-primary {
-  background: var(--health-primary);
+  background: var(--ej-health-primary);
   color: white;
 }
 
@@ -121,14 +122,14 @@
 }
 
 .metric-card {
-  background: var(--health-card-bg);
+  background: var(--ej-health-card-bg);
   backdrop-filter: blur(10px);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  border: 1px solid var(--health-border);
+  border: 1px solid var(--ej-health-border);
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -157,12 +158,12 @@
 
 .metric-card__label {
   font-size: 0.85rem;
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
   margin-top: 0.25rem;
 }
 
 .metric-card__link {
-  color: var(--health-primary);
+  color: var(--ej-health-primary);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -180,9 +181,9 @@
   height: 100%;
 }
 
-.metric-card__indicator--good { background: var(--health-success); }
-.metric-card__indicator--warning { background: var(--health-warning); }
-.metric-card__indicator--critical { background: var(--health-critical); }
+.metric-card__indicator--good { background: var(--ej-health-success); }
+.metric-card__indicator--warning { background: var(--ej-health-warning); }
+.metric-card__indicator--critical { background: var(--ej-health-critical); }
 
 /* ============================================================================
    Section Headers
@@ -216,11 +217,11 @@
 }
 
 .service-card {
-  background: var(--health-card-bg);
+  background: var(--ej-health-card-bg);
   backdrop-filter: blur(10px);
   border-radius: 0.875rem;
   padding: 1.25rem;
-  border: 1px solid var(--health-border);
+  border: 1px solid var(--ej-health-border);
   transition: all 0.2s ease;
 }
 
@@ -230,15 +231,15 @@
 }
 
 .service-card--healthy {
-  border-left: 4px solid var(--health-success);
+  border-left: 4px solid var(--ej-health-success);
 }
 
 .service-card--warning {
-  border-left: 4px solid var(--health-warning);
+  border-left: 4px solid var(--ej-health-warning);
 }
 
 .service-card--critical {
-  border-left: 4px solid var(--health-critical);
+  border-left: 4px solid var(--ej-health-critical);
 }
 
 .service-card__header {
@@ -263,17 +264,17 @@
 
 .service-card__status-badge--healthy {
   background: rgba(34, 197, 94, 0.2);
-  color: var(--health-success);
+  color: var(--ej-health-success);
 }
 
 .service-card__status-badge--warning {
   background: rgba(245, 158, 11, 0.2);
-  color: var(--health-warning);
+  color: var(--ej-health-warning);
 }
 
 .service-card__status-badge--critical {
   background: rgba(239, 68, 68, 0.2);
-  color: var(--health-critical);
+  color: var(--ej-health-critical);
 }
 
 .service-card__name {
@@ -284,21 +285,21 @@
 
 .service-card__message {
   font-size: 0.875rem;
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
   margin: 0;
 }
 
 .service-card__latency {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--health-border);
+  border-top: 1px solid var(--ej-health-border);
   font-size: 0.8rem;
   display: flex;
   justify-content: space-between;
 }
 
 .service-card__latency-label {
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
 }
 
 .service-card__latency-value {
@@ -311,10 +312,10 @@
    ============================================================================ */
 
 .checks-table {
-  background: var(--health-card-bg);
+  background: var(--ej-health-card-bg);
   backdrop-filter: blur(10px);
   border-radius: 0.875rem;
-  border: 1px solid var(--health-border);
+  border: 1px solid var(--ej-health-border);
   overflow: hidden;
 }
 
@@ -338,11 +339,11 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
 }
 
 .table--modern tbody tr {
-  border-top: 1px solid var(--health-border);
+  border-top: 1px solid var(--ej-health-border);
   transition: background 0.15s ease;
 }
 
@@ -353,7 +354,7 @@
 .check-row__time {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.85rem;
-  color: var(--health-text-muted);
+  color: var(--ej-health-text-muted);
 }
 
 .result-badge {
@@ -368,17 +369,17 @@
 
 .result-badge--pass {
   background: rgba(34, 197, 94, 0.15);
-  color: var(--health-success);
+  color: var(--ej-health-success);
 }
 
 .result-badge--fail {
   background: rgba(239, 68, 68, 0.15);
-  color: var(--health-critical);
+  color: var(--ej-health-critical);
 }
 
 .result-badge--recovery {
   background: rgba(59, 130, 246, 0.15);
-  color: var(--health-primary);
+  color: var(--ej-health-primary);
 }
 
 /* ============================================================================
@@ -401,7 +402,7 @@
   font-size: 0.875rem;
   text-decoration: none;
   transition: all 0.2s ease;
-  border: 1px solid var(--health-border);
+  border: 1px solid var(--ej-health-border);
 }
 
 .action-btn__icon {
@@ -409,9 +410,9 @@
 }
 
 .action-btn--primary {
-  background: var(--health-primary);
+  background: var(--ej-health-primary);
   color: white;
-  border-color: var(--health-primary);
+  border-color: var(--ej-health-primary);
 }
 
 .action-btn--primary:hover {
@@ -422,7 +423,7 @@
 
 .action-btn--secondary {
   background: transparent;
-  color: var(--health-text);
+  color: var(--ej-health-text);
 }
 
 .action-btn--secondary:hover {

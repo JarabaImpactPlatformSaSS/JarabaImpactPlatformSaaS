@@ -208,7 +208,7 @@ class UserIntentClassifierService
             ],
             self::INTENT_RESEARCHER => [
                 ['action' => 'view_docs', 'label' => 'Ver Documentación', 'url' => '/docs'],
-                ['action' => 'api_reference', 'label' => 'API Reference', 'url' => '/api/docs'],
+                ['action' => 'api_reference', 'label' => 'API Reference', 'url' => '/api/v1/docs'], // AUDIT-CONS-N07: Added API versioning prefix.
             ],
         ];
 

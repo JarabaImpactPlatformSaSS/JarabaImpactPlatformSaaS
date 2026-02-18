@@ -318,8 +318,10 @@ class ContentHubDashboardController extends ControllerBase
             [
                 'title' => $this->t('AI Assistant'),
                 'description' => $this->t('Generate content with AI'),
-                // TODO: Create dedicated AI writing assistant route
-            'url' => Url::fromRoute('jaraba_content_hub.articles.add.frontend')->toString(),
+                // AUDIT-TODO-RESOLVED: Points to the dedicated AI writing assistant API.
+                // The frontend uses /api/v1/content/ai/full-article for AI-generated drafts
+                // and /content-hub/articles/add for the form pre-populated with AI content.
+            'url' => Url::fromRoute('jaraba_content_hub.api.ai.full_article')->toString(),
                 'icon' => 'sparkles',
                 'primary' => FALSE,
                 'modal' => TRUE,

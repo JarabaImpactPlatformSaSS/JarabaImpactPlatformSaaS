@@ -1,3 +1,4 @@
+// AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace
 // =================================================================
 // JARABA INTERACTIVE - Dashboard Styles
 // =================================================================
@@ -412,7 +413,7 @@ details {
 
 // pb-card--insight variant (for Smart Import button)
 .pb-card--insight {
-    --card-gradient-start: #6366f1;
-    --card-gradient-end: #8b5cf6;
-    --card-border-color: rgba(99, 102, 241, 0.3);
+    --ej-card-gradient-start: #6366f1;
+    --ej-card-gradient-end: #8b5cf6;
+    --ej-card-border-color: rgba(99, 102, 241, 0.3);
 }

@@ -1,0 +1,7 @@
+status-page:
+  version: 1.x
+  css:
+    theme:
+      css/status-page.css: {}
+  dependencies:
+    - core/drupalSettings

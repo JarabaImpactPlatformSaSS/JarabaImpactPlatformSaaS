@@ -1,0 +1,318 @@
+/**
+ * @file
+ * Status page styles for Jaraba SLA Management.
+ *
+ * Uses --ej-* custom properties from the Ecosistema Jaraba design system.
+ */
+
+/* =========================================================================
+   STATUS PAGE LAYOUT
+   ========================================================================= */
+
+.sla-status-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: var(--ej-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+/* =========================================================================
+   STATUS BANNER
+   ========================================================================= */
+
+.sla-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-radius: var(--ej-border-radius, 8px);
+  margin-bottom: 2rem;
+}
+
+.sla-status-banner--operational {
+  background: var(--ej-success-bg, #d4edda);
+  border: 1px solid var(--ej-success-border, #c3e6cb);
+  color: var(--ej-success-text, #155724);
+}
+
+.sla-status-banner--degraded {
+  background: var(--ej-warning-bg, #fff3cd);
+  border: 1px solid var(--ej-warning-border, #ffc107);
+  color: var(--ej-warning-text, #856404);
+}
+
+.sla-status-banner--major_outage {
+  background: var(--ej-danger-bg, #f8d7da);
+  border: 1px solid var(--ej-danger-border, #f5c6cb);
+  color: var(--ej-danger-text, #721c24);
+}
+
+.sla-status-banner__icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.sla-status-banner__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* =========================================================================
+   COMPONENT STATUS CARDS
+   ========================================================================= */
+
+.sla-components {
+  margin-bottom: 2.5rem;
+}
+
+.sla-components__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.sla-components__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sla-component-card {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--ej-border-light, #e9ecef);
+  gap: 0.75rem;
+}
+
+.sla-component-card:last-child {
+  border-bottom: none;
+}
+
+.sla-component-card__indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sla-component-card--up .sla-component-card__indicator {
+  background: var(--ej-success, #28a745);
+}
+
+.sla-component-card--degraded .sla-component-card__indicator {
+  background: var(--ej-warning, #ffc107);
+}
+
+.sla-component-card--down .sla-component-card__indicator {
+  background: var(--ej-danger, #dc3545);
+}
+
+.sla-component-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sla-component-card__name {
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.sla-component-card__status {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+.sla-component-card__response {
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #6c757d);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   RECENT INCIDENTS
+   ========================================================================= */
+
+.sla-incidents {
+  margin-bottom: 2.5rem;
+}
+
+.sla-incidents__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.sla-incidents__title small {
+  font-weight: 400;
+  color: var(--ej-text-secondary, #6c757d);
+  font-size: 0.8125rem;
+}
+
+.sla-incidents__empty {
+  color: var(--ej-text-secondary, #6c757d);
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+.sla-incidents__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sla-incident {
+  padding: 1rem;
+  border-radius: var(--ej-border-radius, 8px);
+  border-left: 4px solid var(--ej-border-light, #e9ecef);
+  background: var(--ej-bg-surface, #f8f9fa);
+}
+
+.sla-incident--sev1 {
+  border-left-color: var(--ej-danger, #dc3545);
+}
+
+.sla-incident--sev2 {
+  border-left-color: var(--ej-warning, #ffc107);
+}
+
+.sla-incident--sev3 {
+  border-left-color: var(--ej-info, #17a2b8);
+}
+
+.sla-incident--sev4 {
+  border-left-color: var(--ej-text-secondary, #6c757d);
+}
+
+.sla-incident__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sla-incident__severity {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  background: var(--ej-bg-muted, #e9ecef);
+}
+
+.sla-incident__title {
+  font-weight: 500;
+  flex: 1;
+}
+
+.sla-incident__status {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.sla-incident__status--resolved,
+.sla-incident__status--postmortem {
+  background: var(--ej-success-bg, #d4edda);
+  color: var(--ej-success-text, #155724);
+}
+
+.sla-incident__status--investigating,
+.sla-incident__status--identified {
+  background: var(--ej-warning-bg, #fff3cd);
+  color: var(--ej-warning-text, #856404);
+}
+
+.sla-incident__status--monitoring {
+  background: var(--ej-info-bg, #d1ecf1);
+  color: var(--ej-info-text, #0c5460);
+}
+
+.sla-incident__meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  color: var(--ej-text-secondary, #6c757d);
+}
+
+/* =========================================================================
+   UPTIME HISTORY
+   ========================================================================= */
+
+.sla-uptime-history {
+  margin-bottom: 2rem;
+}
+
+.sla-uptime-history__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--ej-text-primary, #1a1a2e);
+}
+
+.sla-uptime-history__title small {
+  font-weight: 400;
+  color: var(--ej-text-secondary, #6c757d);
+  font-size: 0.8125rem;
+}
+
+.sla-uptime-history__bars {
+  display: flex;
+  gap: 2px;
+  height: 32px;
+  align-items: flex-end;
+}
+
+.sla-uptime-history__bar {
+  flex: 1;
+  min-width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  transition: opacity 0.15s ease;
+}
+
+.sla-uptime-history__bar:hover {
+  opacity: 0.75;
+}
+
+.sla-uptime-history__bar--up {
+  background: var(--ej-success, #28a745);
+}
+
+.sla-uptime-history__bar--degraded {
+  background: var(--ej-warning, #ffc107);
+}
+
+.sla-uptime-history__bar--down {
+  background: var(--ej-danger, #dc3545);
+}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 600px) {
+  .sla-status-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .sla-status-banner {
+    padding: 1rem;
+  }
+
+  .sla-incident__header {
+    flex-wrap: wrap;
+  }
+
+  .sla-incident__meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}

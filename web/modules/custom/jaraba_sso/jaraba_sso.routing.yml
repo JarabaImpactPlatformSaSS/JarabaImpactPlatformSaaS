@@ -1,0 +1,177 @@
+# Routes for jaraba_sso module — Doc 199 (SSO SAML/SCIM).
+
+# =============================================================================
+# ADMIN SETTINGS
+# =============================================================================
+
+jaraba_sso.admin.settings:
+  path: '/admin/config/jaraba/sso'
+  defaults:
+    _form: '\Drupal\jaraba_sso\Form\SsoSettingsForm'
+    _title: 'SSO Configuration'
+  requirements:
+    _permission: 'administer sso'
+
+# =============================================================================
+# REST API — SSO PROVIDER CRUD
+# =============================================================================
+
+jaraba_sso.api.providers.list:
+  path: '/api/v1/sso/providers'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoApiController::listProviders'
+  requirements:
+    _permission: 'view sso config'
+  methods: [GET]
+
+jaraba_sso.api.providers.create:
+  path: '/api/v1/sso/providers'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoApiController::createProvider'
+  requirements:
+    _permission: 'manage sso providers'
+    _csrf_request_header_token: 'TRUE'
+  methods: [POST]
+
+jaraba_sso.api.providers.update:
+  path: '/api/v1/sso/providers/{provider_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoApiController::updateProvider'
+  requirements:
+    _permission: 'manage sso providers'
+    _csrf_request_header_token: 'TRUE'
+    provider_id: '\d+'
+  methods: [PATCH]
+
+jaraba_sso.api.providers.delete:
+  path: '/api/v1/sso/providers/{provider_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoApiController::deleteProvider'
+  requirements:
+    _permission: 'manage sso providers'
+    _csrf_request_header_token: 'TRUE'
+    provider_id: '\d+'
+  methods: [DELETE]
+
+# =============================================================================
+# SSO LOGIN FLOW
+# =============================================================================
+
+jaraba_sso.login:
+  path: '/sso/login/{provider_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoLoginController::login'
+    _title: 'SSO Login'
+  requirements:
+    _access: 'TRUE'
+    provider_id: '\d+'
+
+jaraba_sso.acs:
+  path: '/sso/acs'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoLoginController::acs'
+    _title: 'SAML ACS'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+
+jaraba_sso.sls:
+  path: '/sso/sls'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoLoginController::sls'
+    _title: 'SAML SLS'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+jaraba_sso.oidc.callback:
+  path: '/sso/oidc/callback'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoLoginController::oidcCallback'
+    _title: 'OIDC Callback'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+jaraba_sso.metadata:
+  path: '/api/v1/sso/metadata/{provider_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoLoginController::metadata'
+    _title: 'SP Metadata'
+  requirements:
+    _access: 'TRUE'
+    provider_id: '\d+'
+  methods: [GET]
+
+# =============================================================================
+# SCIM 2.0 ENDPOINTS (RFC 7643 / 7644)
+# =============================================================================
+
+jaraba_sso.scim.users:
+  path: '/scim/v2/Users'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\ScimApiController::usersEndpoint'
+  requirements:
+    _permission: 'administer sso'
+  methods: [GET, POST]
+
+jaraba_sso.scim.user:
+  path: '/scim/v2/Users/{scim_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\ScimApiController::userEndpoint'
+  requirements:
+    _permission: 'administer sso'
+  methods: [GET, PUT, PATCH, DELETE]
+
+jaraba_sso.scim.groups:
+  path: '/scim/v2/Groups'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\ScimApiController::groupsEndpoint'
+  requirements:
+    _permission: 'administer sso'
+  methods: [GET, POST]
+
+jaraba_sso.scim.group:
+  path: '/scim/v2/Groups/{scim_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\ScimApiController::groupEndpoint'
+  requirements:
+    _permission: 'administer sso'
+  methods: [GET, PUT, PATCH, DELETE]
+
+jaraba_sso.scim.service_provider_config:
+  path: '/scim/v2/ServiceProviderConfig'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\ScimApiController::serviceProviderConfig'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+jaraba_sso.scim.schemas:
+  path: '/scim/v2/Schemas'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\ScimApiController::schemas'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+# =============================================================================
+# MFA POLICY API
+# =============================================================================
+
+jaraba_sso.api.mfa.get:
+  path: '/api/v1/sso/mfa/policy'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoApiController::getMfaPolicy'
+  requirements:
+    _permission: 'view sso config'
+  methods: [GET]
+
+jaraba_sso.api.mfa.set:
+  path: '/api/v1/sso/mfa/policy'
+  defaults:
+    _controller: '\Drupal\jaraba_sso\Controller\SsoApiController::setMfaPolicy'
+  requirements:
+    _permission: 'manage mfa policies'
+    _csrf_request_header_token: 'TRUE'
+  methods: [POST]

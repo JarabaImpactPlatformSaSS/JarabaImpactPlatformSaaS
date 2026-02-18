@@ -92,6 +92,12 @@ entity.shipping_method_agro.add_form:
   appears_on:
     - entity.shipping_method_agro.collection
 
+entity.agro_shipment.add_form:
+  title: 'Registrar Envío'
+  route_name: entity.agro_shipment.add_form
+  appears_on:
+    - entity.agro_shipment.collection
+
 # Fase 6: Traceability + QR
 
 entity.agro_batch.add:

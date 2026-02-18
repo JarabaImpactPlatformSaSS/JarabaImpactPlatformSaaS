@@ -7,6 +7,7 @@ namespace Drupal\jaraba_copilot_v2\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\key\KeyRepositoryInterface;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Trait\RetryableHttpClientTrait;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 
@@ -21,6 +22,8 @@ use GuzzleHttp\Exception\RequestException;
  */
 class ClaudeApiService
 {
+
+    use RetryableHttpClientTrait;
 
     /**
      * URL base de la API de Anthropic.
@@ -157,7 +160,7 @@ class ClaudeApiService
             ],
         ];
 
-        $response = $this->httpClient->request('POST', self::API_URL, [
+        $response = $this->requestWithRetry('POST', self::API_URL, [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'x-api-key' => $this->getApiKey(),

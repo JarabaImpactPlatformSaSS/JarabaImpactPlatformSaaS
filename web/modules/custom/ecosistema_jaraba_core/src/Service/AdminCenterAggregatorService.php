@@ -87,6 +87,13 @@ class AdminCenterAggregatorService {
         'trend' => 0,
         'sparkline' => [],
       ],
+      'gmv_total' => [
+        'value' => 0,
+        'label' => $this->t('GMV Total'),
+        'format' => 'currency',
+        'trend' => 0,
+        'sparkline' => [],
+      ],
       'tenants' => [
         'value' => 0,
         'label' => $this->t('Tenants'),
@@ -177,6 +184,36 @@ class AdminCenterAggregatorService {
       $this->logger->warning('Error contando MAU: @error', [
         '@error' => $e->getMessage(),
       ]);
+    }
+
+    // GMV Total (Agregado de marketplaces).
+    try {
+      $gmv = 0;
+      if ($this->database->schema()->tableExists('agro_suborder')) {
+        $gmv += (float) $this->database->select('agro_suborder', 's')
+          ->condition('s.state', ['paid', 'shipped', 'delivered', 'completed'], 'IN')
+          ->addExpression('SUM(subtotal)', 'total')
+          ->execute()
+          ->fetchField();
+      }
+      if ($this->database->schema()->tableExists('order_retail')) {
+        $gmv += (float) $this->database->select('order_retail', 'or')
+          ->condition('or.state', ['paid', 'shipped', 'delivered', 'completed'], 'IN')
+          ->addExpression('SUM(total_price)', 'total')
+          ->execute()
+          ->fetchField();
+      }
+      if ($this->database->schema()->tableExists('servicios_booking')) {
+        $gmv += (float) $this->database->select('servicios_booking', 'sb')
+          ->condition('sb.status', ['paid', 'confirmed', 'completed'], 'IN')
+          ->addExpression('SUM(total_price)', 'total')
+          ->execute()
+          ->fetchField();
+      }
+      $kpis['gmv_total']['value'] = $gmv;
+    }
+    catch (\Exception $e) {
+      $this->logger->warning('Error calculando GMV total: @error', ['@error' => $e->getMessage()]);
     }
 
     // Health Avg (jaraba_customer_success module).
@@ -399,6 +436,8 @@ class AdminCenterAggregatorService {
           'jaraba_billing',
           'jaraba_foc',
           'jaraba_customer_success',
+          'jaraba_agroconecta_core',
+          'jaraba_comercio_conecta',
         ], 'IN')
         ->orderBy('w.timestamp', 'DESC')
         ->range(0, 10)

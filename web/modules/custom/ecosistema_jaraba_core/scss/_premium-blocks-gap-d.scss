@@ -1,3 +1,4 @@
+// AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace
 // =============================================================================
 // Premium Blocks - Gap D (Clase Mundial)
 // =============================================================================
@@ -74,7 +75,7 @@
 
         // Apilamiento 3D con rotación y offset
         transform:
-            translateZ(calc(var(--card-index) * -40px)) translateY(calc(var(--card-index) * 20px)) translateX(calc(var(--card-index) * 15px)) rotateY(calc(var(--card-index) * -5deg)) rotateX(calc(var(--card-index) * 2deg));
+            translateZ(calc(var(--ej-card-index) * -40px)) translateY(calc(var(--ej-card-index) * 20px)) translateX(calc(var(--ej-card-index) * 15px)) rotateY(calc(var(--ej-card-index) * -5deg)) rotateX(calc(var(--ej-card-index) * 2deg));
 
         &:hover {
             transform:
@@ -302,23 +303,23 @@
         inset: 0;
 
         &--dark {
-            background: rgba(0, 0, 0, var(--overlay-opacity, 0.6));
+            background: rgba(0, 0, 0, var(--ej-overlay-opacity, 0.6));
         }
 
         &--light {
-            background: rgba(255, 255, 255, var(--overlay-opacity, 0.6));
+            background: rgba(255, 255, 255, var(--ej-overlay-opacity, 0.6));
         }
 
         &--gradient {
             background: linear-gradient(135deg,
-                    rgba(35, 61, 99, var(--overlay-opacity, 0.8)) 0%,
-                    rgba(0, 169, 165, calc(var(--overlay-opacity, 0.6) * 0.7)) 100%);
+                    rgba(35, 61, 99, var(--ej-overlay-opacity, 0.8)) 0%,
+                    rgba(0, 169, 165, calc(var(--ej-overlay-opacity, 0.6) * 0.7)) 100%);
         }
 
         &--brand {
             background: linear-gradient(135deg,
-                    rgba(35, 61, 99, var(--overlay-opacity, 0.9)) 0%,
-                    rgba(255, 140, 66, calc(var(--overlay-opacity, 0.6) * 0.5)) 100%);
+                    rgba(35, 61, 99, var(--ej-overlay-opacity, 0.9)) 0%,
+                    rgba(255, 140, 66, calc(var(--ej-overlay-opacity, 0.6) * 0.5)) 100%);
         }
     }
 
@@ -1081,13 +1082,13 @@
 
     // Color variants
     &--primary {
-        --glow-color: rgba(0, 220, 220, 1);
-        --glow-color-soft: rgba(0, 200, 200, 0.6);
+        --ej-glow-color: rgba(0, 220, 220, 1);
+        --ej-glow-color-soft: rgba(0, 200, 200, 0.6);
     }
 
     &--secondary {
-        --glow-color: rgba(139, 92, 246, 1);
-        --glow-color-soft: rgba(139, 92, 246, 0.6);
+        --ej-glow-color: rgba(139, 92, 246, 1);
+        --ej-glow-color-soft: rgba(139, 92, 246, 0.6);
 
         &::before {
             background: linear-gradient(135deg,
@@ -1106,8 +1107,8 @@
     }
 
     &--success {
-        --glow-color: rgba(16, 185, 129, 1);
-        --glow-color-soft: rgba(16, 185, 129, 0.6);
+        --ej-glow-color: rgba(16, 185, 129, 1);
+        --ej-glow-color-soft: rgba(16, 185, 129, 0.6);
 
         &::before {
             background: linear-gradient(135deg,
@@ -1127,13 +1128,13 @@
 
     &__icon {
         margin-bottom: 1rem;
-        color: var(--glow-color, rgba(0, 220, 220, 1));
-        filter: drop-shadow(0 0 8px var(--glow-color-soft, rgba(0, 200, 200, 0.6)));
+        color: var(--ej-glow-color, rgba(0, 220, 220, 1));
+        filter: drop-shadow(0 0 8px var(--ej-glow-color-soft, rgba(0, 200, 200, 0.6)));
         transition: filter 0.3s;
     }
 
     &:hover &__icon {
-        filter: drop-shadow(0 0 16px var(--glow-color-soft, rgba(0, 200, 200, 0.8)));
+        filter: drop-shadow(0 0 16px var(--ej-glow-color-soft, rgba(0, 200, 200, 0.8)));
     }
 
     &__title {
@@ -1154,7 +1155,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        color: var(--glow-color, rgba(0, 220, 220, 1));
+        color: var(--ej-glow-color, rgba(0, 220, 220, 1));
         font-weight: 600;
         font-size: 0.9rem;
         text-decoration: none;
@@ -1162,7 +1163,7 @@
 
         &:hover {
             gap: 0.75rem;
-            filter: drop-shadow(0 0 8px var(--glow-color-soft, rgba(0, 200, 200, 0.6)));
+            filter: drop-shadow(0 0 8px var(--ej-glow-color-soft, rgba(0, 200, 200, 0.6)));
         }
     }
 }
@@ -1747,8 +1748,8 @@
         box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
         left: 50%;
         top: 0;
-        transform: translateX(-50%) rotate(calc(360deg / var(--total) * var(--index))) translateY(-50%);
-        transform-origin: center calc(100% + (var(--index) * 0px));
+        transform: translateX(-50%) rotate(calc(360deg / var(--ej-total) * var(--ej-index))) translateY(-50%);
+        transform-origin: center calc(100% + (var(--ej-index) * 0px));
 
         img {
             width: 30px;
@@ -1817,7 +1818,7 @@
     &__overlay {
         position: absolute;
         inset: 0;
-        background: rgba(0, 0, 0, var(--overlay-opacity, 0.5));
+        background: rgba(0, 0, 0, var(--ej-overlay-opacity, 0.5));
         z-index: 1;
     }
 
@@ -2330,7 +2331,7 @@
         inset: 0;
         pointer-events: none;
         // Radial gradient spotlight effect
-        background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        background: radial-gradient(circle at var(--ej-mouse-x, 50%) var(--ej-mouse-y, 50%),
                 rgba(139, 92, 246, 0.3) 0%,
                 rgba(59, 130, 246, 0.1) 25%,
                 transparent 50%);
@@ -2637,19 +2638,19 @@
         inset: 0;
 
         &--solid {
-            background: rgba(0, 0, 0, var(--overlay-opacity, 0.6));
+            background: rgba(0, 0, 0, var(--ej-overlay-opacity, 0.6));
         }
 
         &--gradient {
             background: linear-gradient(135deg,
-                    rgba(0, 0, 0, var(--overlay-opacity, 0.6)) 0%,
-                    rgba(15, 23, 42, var(--overlay-opacity, 0.6)) 100%);
+                    rgba(0, 0, 0, var(--ej-overlay-opacity, 0.6)) 0%,
+                    rgba(15, 23, 42, var(--ej-overlay-opacity, 0.6)) 100%);
         }
 
         &--corporate {
             background: linear-gradient(135deg,
-                    rgba(35, 61, 99, var(--overlay-opacity, 0.8)) 0%,
-                    rgba(15, 23, 42, var(--overlay-opacity, 0.7)) 100%);
+                    rgba(35, 61, 99, var(--ej-overlay-opacity, 0.8)) 0%,
+                    rgba(15, 23, 42, var(--ej-overlay-opacity, 0.7)) 100%);
         }
     }
 

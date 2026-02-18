@@ -43,8 +43,10 @@ jobs:
           restore-keys: |
             composer-
 
+      # AUDIT-SEC-N11: Install WITH dev dependencies so PHPStan security
+      # extensions (phpstan-strict-rules, phpstan-disallowed-calls) are available.
       - name: Install Composer dependencies
-        run: composer install --no-dev --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress
 
       - name: PHP CodeSniffer (Drupal Standard)
         run: |
@@ -53,9 +55,13 @@ jobs:
             --ignore=*/vendor/*,*/node_modules/* \
             web/modules/custom
 
-      - name: PHPStan Static Analysis
+      # AUDIT-SEC-N11: SAST enhancement — PHPStan with security rules.
+      # Uses phpstan.neon (level 6 + phpstan-security.neon) for full
+      # security-focused static analysis on every PR.
+      # MUST NOT have continue-on-error: true — SAST failures block the build.
+      - name: PHPStan Static Analysis (Level 6 + Security Rules)
         run: |
-          phpstan analyse web/modules/custom --level=5 --no-progress --error-format=github
+          vendor/bin/phpstan analyse -c phpstan.neon --no-progress --error-format=github
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -175,6 +181,7 @@ jobs:
       - name: Composer Audit
         run: composer audit --no-dev
 
+      # AUDIT-SEC-N10: Trivy must block on CRITICAL/HIGH vulnerabilities.
       - name: Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -182,7 +189,6 @@ jobs:
           scan-ref: '.'
           security-checks: 'vuln,secret'
           severity: 'CRITICAL,HIGH'
-          # AUDIT-SEC-N10: exit-code 1 para fallar el build con vulnerabilidades.
           exit-code: '1'
 
   # ===========================================

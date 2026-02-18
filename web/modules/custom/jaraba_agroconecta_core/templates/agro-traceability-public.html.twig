@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * Template para la página pública de trazabilidad AgroConecta.
+ *
+ * Variables:
+ * - batch: Entidad AgroBatch.
+ * - producer: Entidad ProducerProfile.
+ * - product: Entidad ProductAgro.
+ * - events: Array de entidades TraceEventAgro.
+ */
+#}
+<div class="agro-traceability">
+  <header class="agro-traceability__header">
+    <div class="agro-traceability__hero">
+      <div class="agro-traceability__product-info">
+        <h1 class="agro-traceability__title">{{ product.label }}</h1>
+        <div class="agro-traceability__batch-badge">
+          {{ 'Lote:'|t }} <strong>{{ batch.getBatchCode }}</strong>
+        </div>
+      </div>
+      <div class="agro-traceability__integrity-shield" title="{{ 'Cadena de custodia verificada'|t }}">
+        {{ jaraba_icon('actions', 'shield-check', {'variant': 'duotone'}) }}
+      </div>
+    </div>
+  </header>
+
+  <section class="agro-traceability__producer">
+    <div class="agro-traceability__section-title">{{ 'Producido por'|t }}</div>
+    <div class="agro-traceability__producer-card">
+      <div class="agro-traceability__producer-logo">
+        {% if producer.field_logo.entity %}
+          <img src="{{ file_url(producer.field_logo.entity.fileuri) }}" alt="{{ producer.label }}">
+        {% else %}
+          <div class="agro-traceability__producer-initial">{{ producer.label|first }}</div>
+        {% endif %}
+      </div>
+      <div class="agro-traceability__producer-details">
+        <h2 class="agro-traceability__producer-name">{{ producer.label }}</h2>
+        <p class="agro-traceability__producer-location">
+          {{ jaraba_icon('actions', 'map-pin') }}
+          {{ producer.origin.value }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <main class="agro-traceability__timeline">
+    <div class="agro-traceability__section-title">{{ 'Historia del Producto'|t }}</div>
+    
+    <div class="agro-traceability__events">
+      {% for event in events %}
+        <div class="agro-traceability__event" data-type="{{ event.getEventType }}">
+          <div class="agro-traceability__event-icon">
+            {% set icon_map = {
+              'siembra': 'seedling',
+              'riego': 'droplet',
+              'tratamiento': 'flask',
+              'cosecha': 'harvest',
+              'procesado': 'factory',
+              'envasado': 'box',
+              'envio': 'truck',
+              'entregado': 'home'
+            } %}
+            {{ jaraba_icon('actions', icon_map[event.getEventType]|default('info-circle'), {'variant': 'duotone'}) }}
+          </div>
+          <div class="agro-traceability__event-content">
+            <div class="agro-traceability__event-header">
+              <span class="agro-traceability__event-type">{{ event.event_type.value|capitalize }}</span>
+              <time class="agro-traceability__event-date">{{ event.event_timestamp.value|date('d M Y, H:i') }}</time>
+            </div>
+            <p class="agro-traceability__event-desc">{{ event.description.value }}</p>
+            {% if event.location.value %}
+              <div class="agro-traceability__event-location">
+                {{ jaraba_icon('actions', 'map-pin') }} {{ event.location.value }}
+              </div>
+            {% endif %}
+            <div class="agro-traceability__event-hash" title="{{ 'Hash SHA-256'|t }}">
+              <code>{{ event.getEventHash|truncate(12) }}...</code>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </main>
+
+  <footer class="agro-traceability__footer">
+    <div class="agro-traceability__verification">
+      <p>{{ 'Este producto ha sido certificado mediante la plataforma Jaraba Impact.'|t }}</p>
+      <div class="agro-traceability__chain-hash">
+        {{ 'Hash Global del Lote:'|t }} <code>{{ batch.getChainHash }}</code>
+      </div>
+    </div>
+  </footer>
+</div>

@@ -12,11 +12,12 @@
 <div class="servicios-provider-detail">
   {# Cabecera del profesional #}
   <header class="servicios-provider-detail__header">
+    {# AUDIT-PERF-N16: eager porque es hero cover image above-the-fold #}
     {% if provider.cover_image.entity %}
       <div class="servicios-provider-detail__cover">
         <img src="{{ file_url(provider.cover_image.entity.fileuri) }}"
              alt="{{ provider.display_name.value }}"
-             loading="lazy" />
+             loading="eager" />
       </div>
     {% endif %}
 

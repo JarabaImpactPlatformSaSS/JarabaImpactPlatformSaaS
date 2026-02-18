@@ -9,6 +9,7 @@ use Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador público del Centro de Ayuda.
@@ -42,7 +43,9 @@ class HelpCenterController extends ControllerBase {
    */
   public function __construct(
     TenantKnowledgeManager $knowledge_manager,
+    TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {
+    $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
     $this->knowledgeManager = $knowledge_manager;
   }
 
@@ -52,6 +55,7 @@ class HelpCenterController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_tenant_knowledge.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -143,8 +147,8 @@ class HelpCenterController extends ControllerBase {
     }
 
     // Resolver tenant ID.
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    if ($this->tenantContext !== NULL) {
+      $tenantContext = $this->tenantContext;
       $tenant = $tenantContext->getCurrentTenant();
       if ($tenant) {
         $faqBotTenantId = (int) $tenant->id();

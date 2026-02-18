@@ -1,0 +1,119 @@
+# AUDIT-SEC-N11: SAST enhancement — Security-focused PHPStan rules
+#
+# This file contains security-specific static analysis rules for the
+# Jaraba Impact Platform. It detects common vulnerability patterns
+# in Drupal custom modules: SQL injection, XSS, insecure deserialization,
+# unsafe function calls, and missing access checks.
+#
+# Requires: phpstan/phpstan-strict-rules, spaze/phpstan-disallowed-calls
+# Included automatically by phpstan.neon.
+
+includes:
+  # AUDIT-SEC-N11: Strict type-safety rules — catches type coercion issues
+  # that can lead to auth bypass or privilege escalation.
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+  # AUDIT-SEC-N11: Dangerous function detection — bans eval, exec, etc.
+  - vendor/spaze/phpstan-disallowed-calls/extension.neon
+
+parameters:
+  # -------------------------------------------------------
+  # Drupal-specific security rules (mglaman/phpstan-drupal)
+  # -------------------------------------------------------
+  drupal:
+    rules:
+      # Ensure AccessResult is used correctly in access handlers.
+      accessResultConditionRule: true
+      # Ensure DependencySerializationTrait properties are safe.
+      dependencySerializationTraitPropertyRule: true
+      # Ensure plugin managers follow safe patterns.
+      pluginManagerInspectionRule: true
+
+  # -------------------------------------------------------
+  # Forbidden dangerous function calls (spaze/phpstan-disallowed-calls)
+  # -------------------------------------------------------
+  # These functions are security-sensitive and must never appear
+  # in custom module code. Use Drupal APIs instead.
+  disallowedFunctionCalls:
+    -
+      function: 'eval()'
+      message: 'eval() is a critical security risk (code injection). Never use it.'
+    -
+      function: 'assert()'
+      message: 'assert() can execute arbitrary code in older PHP. Use proper validation.'
+    -
+      function: 'exec()'
+      message: 'exec() allows OS command injection. Use Symfony Process if truly needed.'
+    -
+      function: 'shell_exec()'
+      message: 'shell_exec() allows OS command injection. Use Symfony Process if truly needed.'
+    -
+      function: 'system()'
+      message: 'system() allows OS command injection. Use Symfony Process if truly needed.'
+    -
+      function: 'passthru()'
+      message: 'passthru() allows OS command injection. Use Symfony Process if truly needed.'
+    -
+      function: 'proc_open()'
+      message: 'proc_open() allows OS command injection. Use Symfony Process if truly needed.'
+    -
+      function: 'popen()'
+      message: 'popen() allows OS command injection. Use Symfony Process if truly needed.'
+    -
+      function: 'unserialize()'
+      message: 'unserialize() is vulnerable to PHP object injection. Use json_decode() or \Drupal\Component\Serialization\Yaml::decode().'
+    -
+      function: 'extract()'
+      message: 'extract() can overwrite variables — security risk in web context.'
+    -
+      function: 'dl()'
+      message: 'dl() dynamically loads PHP extensions — never use in web context.'
+    -
+      function: 'putenv()'
+      message: 'putenv() modifies environment variables at runtime — security risk.'
+    -
+      function: 'parse_str()'
+      message: 'parse_str() without second argument overwrites variables. Use the Request object.'
+    -
+      function: 'compact()'
+      message: 'compact() creates variables from strings, obscuring taint analysis.'
+    -
+      function: 'var_dump()'
+      message: 'var_dump() is a debug function — must not be in production code.'
+    -
+      function: 'print_r()'
+      message: 'print_r() is a debug function — must not be in production code.'
+      allowIn:
+        - web/modules/custom/*/tests/*
+    -
+      function: 'phpinfo()'
+      message: 'phpinfo() leaks server configuration — critical information disclosure.'
+    -
+      function: 'md5()'
+      message: 'md5() is cryptographically broken. Use hash("sha256", ...) or password_hash() for passwords.'
+      allowIn:
+        - web/modules/custom/*/tests/*
+    -
+      function: 'sha1()'
+      message: 'sha1() is cryptographically weak. Use hash("sha256", ...) or password_hash() for passwords.'
+      allowIn:
+        - web/modules/custom/*/tests/*
+
+  # -------------------------------------------------------
+  # Forbidden dangerous method calls
+  # -------------------------------------------------------
+  disallowedMethodCalls:
+    -
+      method: 'Drupal\Core\Database\Connection::query()'
+      message: 'Use parameterised queries via select()/insert()/update()/delete() to prevent SQL injection. Direct query() is only acceptable with fully static SQL.'
+      allowIn:
+        - '*.install'
+
+  # -------------------------------------------------------
+  # phpstan-strict-rules overrides
+  # -------------------------------------------------------
+  # The strict rules are intentionally enabled without blanket
+  # ignores so they catch loose comparisons (== vs ===) that
+  # are a common source of type-juggling auth-bypass bugs.
+  # If specific strict rules create too much noise, add targeted
+  # ignoreErrors entries here rather than disabling the entire
+  # ruleset.

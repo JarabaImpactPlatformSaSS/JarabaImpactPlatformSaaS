@@ -1,0 +1,19 @@
+stripe_connect_enabled: false
+stripe_connect_client_id: ''
+revenue_tiers:
+  standard:
+    developer_pct: 70
+    platform_pct: 30
+    requirement: 'Certified connector'
+  premium:
+    developer_pct: 80
+    platform_pct: 20
+    requirement: 'Rating > 4.5 and 100+ installs'
+  strategic:
+    developer_pct: 85
+    platform_pct: 15
+    requirement: 'Partnership agreement'
+certification_auto_tests:
+  security_scan: true
+  performance_test: true
+  api_compliance: true

@@ -71,7 +71,7 @@
         couponBtn.disabled = true;
         couponBtn.textContent = Drupal.t('Aplicando...');
 
-        fetch('/api/comercio/cart/coupon', {
+        fetch('/api/v1/comercio/cart/coupon', { // AUDIT-CONS-N07: Added API versioning prefix.
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -158,7 +158,7 @@
    * @param {number} quantity - Nueva cantidad.
    */
   function _comercioUpdateCartItem(itemId, quantity) {
-    fetch('/api/comercio/cart/items/' + itemId + '/quantity', {
+    fetch('/api/v1/comercio/cart/update/' + itemId, { // AUDIT-CONS-N07: Added API versioning prefix.
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

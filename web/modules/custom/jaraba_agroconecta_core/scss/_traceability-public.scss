@@ -1,0 +1,238 @@
+/**
+ * Trazabilidad Pública AgroConecta.
+ * Diseño Clase Mundial orientado al consumidor final.
+ */
+.agro-traceability {
+  --at-primary: var(--ej-color-agro, #556B2F);
+  --at-accent: var(--ej-color-accent, #FF8C42);
+  --at-bg: #FAFAF5;
+  --at-card-bg: #FFFFFF;
+  --at-border: color-mix(in srgb, var(--at-primary) 10%, transparent);
+
+  background: var(--at-bg);
+  min-height: 100vh;
+  font-family: var(--ej-font-body, system-ui);
+  color: var(--ej-color-text, #2D3436);
+  padding-bottom: 2rem;
+
+  &__header {
+    background: linear-gradient(135deg, var(--at-primary), color-mix(in srgb, var(--at-primary) 80%, black));
+    color: white;
+    padding: 3rem 1.5rem;
+    border-radius: 0 0 24px 24px;
+    margin-bottom: -2rem;
+  }
+
+  &__hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit');
+    font-size: 1.75rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  &__batch-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    display: inline-block;
+  }
+
+  &__integrity-shield {
+    font-size: 2.5rem;
+    color: var(--at-accent);
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
+  }
+
+  &__section-title {
+    font-family: var(--ej-font-heading, 'Outfit');
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-secondary);
+    margin-bottom: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1.5rem;
+  }
+
+  &__producer {
+    max-width: 600px;
+    margin: 3rem auto 2rem;
+    padding: 0 1.5rem;
+  }
+
+  &__producer-card {
+    background: var(--at-card-bg);
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid var(--at-border);
+  }
+
+  &__producer-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--at-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__producer-initial {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--at-primary);
+  }
+
+  &__producer-name {
+    font-size: 1.125rem;
+    margin: 0 0 0.25rem 0;
+  }
+
+  &__producer-location {
+    font-size: 0.875rem;
+    color: var(--ej-color-text-secondary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__timeline {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  &__events {
+    position: relative;
+    padding-left: 1rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--at-border);
+    }
+  }
+
+  &__event {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 2rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 0.5rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--at-primary);
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px var(--at-border);
+    }
+  }
+
+  &__event-icon {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--at-primary);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    z-index: 1;
+  }
+
+  &__event-content {
+    background: var(--at-card-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--at-border);
+  }
+
+  &__event-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  &__event-type {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: var(--at-primary);
+  }
+
+  &__event-date {
+    font-size: 0.75rem;
+    color: var(--ej-color-text-secondary);
+  }
+
+  &__event-desc {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+  }
+
+  &__event-hash {
+    font-size: 0.7rem;
+    color: var(--ej-color-text-secondary);
+    background: var(--at-bg);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  &__footer {
+    max-width: 600px;
+    margin: 3rem auto 0;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  &__verification {
+    font-size: 0.8rem;
+    color: var(--ej-color-text-secondary);
+    padding: 1.5rem;
+    border-top: 1px dashed var(--at-border);
+  }
+
+  &__chain-hash {
+    word-break: break-all;
+    font-family: monospace;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    border: 1px solid var(--at-border);
+  }
+}

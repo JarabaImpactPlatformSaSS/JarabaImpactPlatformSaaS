@@ -1,0 +1,66 @@
+jaraba_connector_sdk.settings:
+  type: config_object
+  label: 'Connector SDK settings'
+  mapping:
+    stripe_connect_enabled:
+      type: boolean
+      label: 'Stripe Connect enabled'
+    stripe_connect_client_id:
+      type: string
+      label: 'Stripe Connect client ID'
+    revenue_tiers:
+      type: mapping
+      label: 'Revenue sharing tiers'
+      mapping:
+        standard:
+          type: mapping
+          label: 'Standard tier'
+          mapping:
+            developer_pct:
+              type: integer
+              label: 'Developer percentage'
+            platform_pct:
+              type: integer
+              label: 'Platform percentage'
+            requirement:
+              type: string
+              label: 'Tier requirement'
+        premium:
+          type: mapping
+          label: 'Premium tier'
+          mapping:
+            developer_pct:
+              type: integer
+              label: 'Developer percentage'
+            platform_pct:
+              type: integer
+              label: 'Platform percentage'
+            requirement:
+              type: string
+              label: 'Tier requirement'
+        strategic:
+          type: mapping
+          label: 'Strategic tier'
+          mapping:
+            developer_pct:
+              type: integer
+              label: 'Developer percentage'
+            platform_pct:
+              type: integer
+              label: 'Platform percentage'
+            requirement:
+              type: string
+              label: 'Tier requirement'
+    certification_auto_tests:
+      type: mapping
+      label: 'Certification auto tests'
+      mapping:
+        security_scan:
+          type: boolean
+          label: 'Security scan enabled'
+        performance_test:
+          type: boolean
+          label: 'Performance test enabled'
+        api_compliance:
+          type: boolean
+          label: 'API compliance check enabled'

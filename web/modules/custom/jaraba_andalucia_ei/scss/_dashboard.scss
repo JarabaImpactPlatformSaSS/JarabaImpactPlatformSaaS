@@ -1,496 +1,1263 @@
+/* AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace */
 /**
  * @file
- * Estilos del dashboard Andalucía +ei.
+ * Premium SCSS para el dashboard Andalucía +ei.
  *
- * DIRECTRIZ: Usa Design Tokens con CSS Custom Properties (var(--ej-*))
+ * DIRECTRIZ: Premium Card Pattern + Glassmorphism + Micro-animaciones
  * - P4-COLOR-001: Paleta Jaraba exclusivamente
  * - P4-COLOR-002: color-mix() en lugar de rgba() para transparencias
- * - SCSS-DART-001: Compilación con Dart Sass moderno
- *
- * COMPILACIÓN:
- * docker exec jarabasaas_appserver_1 bash -c \
- *   "cd /app/web/modules/custom/jaraba_andalucia_ei && npx sass scss/main.scss css/andalucia-ei.css --style=compressed"
+ * - PREMIUM-001: Glassmorphism cards con shine effect
+ * - PREMIUM-002: Hover 3D lift con cubic-bezier
+ * - PREMIUM-003: Stagger entrance animations
  */
 
 // =============================================================================
-// Variables locales basadas en tokens globales
-// Scope: .andalucia-ei-dashboard
+// KEYFRAME ANIMATIONS
+// =============================================================================
+
+@keyframes aei-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aei-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes aei-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes aei-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes aei-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes aei-gauge-fill {
+  from { stroke-dashoffset: 326.7; }
+}
+
+// =============================================================================
+// DESIGN TOKENS (Scoped)
 // =============================================================================
 
 .andalucia-ei-dashboard {
-  --aei-color-primary: var(--ej-color-impulse, #FF8C42);
-  --aei-color-secondary: var(--ej-color-innovation, #00A9A5);
-  --aei-color-corporate: var(--ej-color-corporate, #233D63);
-  --aei-bg-surface: var(--ej-bg-surface, #ffffff);
-  --aei-color-text: var(--ej-text-primary, #334155);
-  --aei-color-muted: var(--ej-text-secondary, #64748b);
-  --aei-radius: var(--ej-radius-base, 12px);
-  --aei-border-color: var(--ej-border-color, #e5e7eb);
-  --aei-bg-hover: var(--ej-bg-hover, #f8fafc);
+  // Core palette
+  --aei-primary: var(--ej-color-impulse, #FF8C42);
+  --aei-secondary: var(--ej-color-innovation, #00A9A5);
+  --aei-corporate: var(--ej-color-corporate, #233D63);
+  --aei-azul-profundo: var(--ej-color-azul-profundo, #003366);
+
+  // Surfaces
+  --aei-surface: var(--ej-bg-surface, #ffffff);
+  --aei-surface-glass: rgba(255, 255, 255, 0.85);
+  --aei-surface-glass-strong: rgba(255, 255, 255, 0.95);
+  --aei-bg-body: var(--ej-bg-body, #f0f2f5);
   --aei-bg-subtle: var(--ej-bg-subtle, #f1f5f9);
+  --aei-bg-hover: var(--ej-bg-hover, #f8fafc);
+
+  // Text
+  --aei-text: var(--ej-text-primary, #334155);
+  --aei-text-muted: var(--ej-text-secondary, #64748b);
+  --aei-text-light: rgba(255, 255, 255, 0.95);
+
+  // Borders & Shadows
+  --aei-border: var(--ej-border-color, #e5e7eb);
+  --aei-radius: var(--ej-radius-xl, 16px);
+  --aei-radius-sm: var(--ej-radius-base, 12px);
+  --aei-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --aei-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --aei-shadow-card-hover: 0 20px 40px rgba(35, 61, 99, 0.12), 0 8px 16px rgba(35, 61, 99, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+
+  // Font
+  --aei-font: var(--ej-font-family, 'Outfit', sans-serif);
+  --aei-font-headings: var(--ej-font-headings, 'Outfit', sans-serif);
+
+  font-family: var(--aei-font);
+  background: var(--aei-bg-body);
+  min-height: 100vh;
 }
 
 // =============================================================================
-// Hero Section
+// STAGGER ENTRANCE ANIMATION
 // =============================================================================
 
-.andalucia-ei-hero {
+.aei-animate-in {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
+// HERO PREMIUM
+// =============================================================================
+
+.aei-hero {
+  position: relative;
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  overflow: hidden;
   background: linear-gradient(
     135deg,
-    var(--ej-color-corporate, #233D63) 0%,
-    color-mix(in srgb, var(--ej-color-corporate, #233D63) 75%, black) 100%
+    var(--aei-corporate) 0%,
+    var(--aei-azul-profundo) 50%,
+    color-mix(in srgb, var(--aei-corporate) 80%, black) 100%
   );
-  color: #fff;
-  padding: 4rem 2rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  background-size: 200% 200%;
+  animation: aei-gradient-shift 12s ease infinite;
 
-  .hero-title {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 700;
-    margin: 0 0 1rem;
-    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
-  }
-
-  .hero-subtitle {
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    opacity: 0.9;
-    margin: 0;
-    max-width: 600px;
-    margin-inline: auto;
-  }
-
-  .hero-decoration {
+  &__particles {
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-      circle at 80% 20%,
-      color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 15%, transparent) 0%,
-      transparent 50%
-    );
+    width: 100%;
+    height: 100%;
+    z-index: 1;
     pointer-events: none;
   }
-}
 
-// =============================================================================
-// Dashboard Grid
-// =============================================================================
-
-.participant-dashboard {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-// =============================================================================
-// Dashboard Cards
-// =============================================================================
-
-.dashboard-card {
-  background: var(--aei-bg-surface);
-  border-radius: var(--aei-radius);
-  box-shadow: 0 4px 20px color-mix(in srgb, black 8%, transparent);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px color-mix(in srgb, black 12%, transparent);
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 75% 25%, color-mix(in srgb, var(--aei-primary) 18%, transparent) 0%, transparent 55%),
+      radial-gradient(ellipse at 25% 75%, color-mix(in srgb, var(--aei-secondary) 12%, transparent) 0%, transparent 55%);
+    z-index: 2;
+    pointer-events: none;
   }
 
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid color-mix(in srgb, black 6%, transparent);
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, black 2%, transparent),
-      transparent
-    );
+  &__content {
+    position: relative;
+    z-index: 3;
+    max-width: 700px;
+    margin: 0 auto;
+  }
 
-    h2 {
-      margin: 0;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: var(--aei-color-corporate);
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 1rem;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--aei-text-light);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-family: var(--aei-font-headings);
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  &__accent {
+    background: linear-gradient(135deg, var(--aei-primary), #FFB347);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  &__subtitle {
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0 0 0.75rem;
+    font-weight: 400;
+  }
+
+  &__description {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+    max-width: 520px;
+    margin-inline: auto;
+    line-height: 1.6;
+  }
+
+  &__decoration {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--aei-bg-body);
+    clip-path: ellipse(55% 100% at 50% 100%);
+    z-index: 4;
+  }
+}
+
+// =============================================================================
+// DASHBOARD LAYOUT
+// =============================================================================
+
+.aei-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  &__metrics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// =============================================================================
+// PREMIUM CARD (Glassmorphism + Shine + 3D Lift)
+// =============================================================================
+
+.aei-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.90) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--aei-radius);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--aei-shadow-card);
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--aei-shadow-card-hover);
+
+    .aei-card__shine {
+      left: 150%;
     }
   }
 
-  .card-icon {
-    font-size: 1.5rem;
+  // Shine effect
+  &__shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transition: left 0.6s ease;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  &__header {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--aei-corporate);
+      letter-spacing: -0.01em;
+    }
   }
 
-  .card-body {
-    padding: 1.5rem;
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    flex-shrink: 0;
+
+    &--progress { background: color-mix(in srgb, var(--aei-primary) 12%, transparent); }
+    &--health   { background: color-mix(in srgb, var(--aei-secondary) 12%, transparent); }
+    &--hours    { background: color-mix(in srgb, var(--aei-corporate) 10%, transparent); }
+    &--training { background: color-mix(in srgb, var(--aei-azul-profundo) 10%, transparent); }
+    &--actions  { background: color-mix(in srgb, var(--aei-primary) 12%, transparent); }
+  }
+
+  &__body {
+    padding: 0.5rem 1.5rem 1.5rem;
   }
 }
 
 // =============================================================================
-// Progress Stats
+// FASE BADGE & JOURNEY TIMELINE
 // =============================================================================
 
-.progress-stat {
+.aei-progress-overview {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
 }
 
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--aei-color-muted);
-}
+.aei-fase-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-
-  &.fase-atencion {
-    color: var(--ej-color-warning, #F59E0B);
+  &--atencion {
+    background: color-mix(in srgb, var(--ej-color-warning, #F59E0B) 14%, transparent);
+    color: #92400E;
+    border: 1px solid color-mix(in srgb, var(--ej-color-warning, #F59E0B) 30%, transparent);
   }
 
-  &.fase-insercion {
-    color: var(--ej-color-success, #10B981);
+  &--insercion {
+    background: color-mix(in srgb, var(--ej-color-success, #10B981) 14%, transparent);
+    color: #065F46;
+    border: 1px solid color-mix(in srgb, var(--ej-color-success, #10B981) 30%, transparent);
   }
 
-  &.fase-baja {
-    color: var(--ej-color-danger, #EF4444);
+  &--baja {
+    background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 14%, transparent);
+    color: #991B1B;
+    border: 1px solid color-mix(in srgb, var(--ej-color-danger, #EF4444) 30%, transparent);
   }
 }
 
-// =============================================================================
-// Hours Grid
-// =============================================================================
-
-.hours-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  text-align: center;
+.aei-journey-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.5rem 0;
 }
 
-.hour-item {
+.aei-timeline-step {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.35rem;
+  position: relative;
 }
 
-.hour-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--aei-color-primary);
+.aei-timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--aei-border);
+  border: 2px solid var(--aei-border);
+  transition: all 0.3s ease;
+
+  .aei-timeline-step--done & {
+    background: var(--aei-secondary);
+    border-color: var(--aei-secondary);
+  }
+
+  .aei-timeline-step--active & {
+    background: var(--aei-primary);
+    border-color: var(--aei-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--aei-primary) 20%, transparent);
+  }
 }
 
-.hour-label {
-  font-size: 0.75rem;
-  color: var(--aei-color-muted);
+.aei-timeline-label {
+  font-size: 0.7rem;
+  color: var(--aei-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+
+  .aei-timeline-step--active & {
+    color: var(--aei-primary);
+    font-weight: 600;
+  }
+
+  .aei-timeline-step--done & {
+    color: var(--aei-secondary);
+  }
+}
+
+.aei-timeline-connector {
+  flex: 1;
+  height: 2px;
+  min-width: 30px;
+  background: var(--aei-border);
+  margin: 0 0.25rem;
+  margin-bottom: 1.25rem; // offset for label
+  transition: background 0.3s ease;
+
+  &--done {
+    background: linear-gradient(90deg, var(--aei-secondary), var(--aei-primary));
+  }
+}
+
+// =============================================================================
+// HEALTH SCORE GAUGE
+// =============================================================================
+
+.aei-health-gauge {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.aei-gauge-svg {
+  width: 120px;
+  height: 120px;
+}
+
+.aei-gauge-bg {
+  stroke: var(--aei-border);
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.aei-gauge-fill {
+  stroke: url(#aei-gauge-gradient);
+  stroke: var(--aei-secondary);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  animation: aei-gauge-fill 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.aei-gauge-number {
+  font-size: 2rem;
+  font-weight: 800;
+  fill: var(--aei-corporate);
+  font-family: var(--aei-font-headings);
+}
+
+.aei-gauge-label-text {
+  font-size: 0.6rem;
+  fill: var(--aei-text-muted);
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 // =============================================================================
-// Training Progress
+// HOURS METRICS
 // =============================================================================
 
-.training-progress {
+.aei-hours-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.aei-hour-metric {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.25rem 0.75rem;
+  align-items: center;
+
+  &__icon {
+    grid-row: 1 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--aei-bg-subtle);
+  }
+
+  &__data {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  &__value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--aei-corporate);
+    font-family: var(--aei-font-headings);
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    color: var(--aei-text-muted);
+    font-weight: 500;
+  }
+
+  &__bar {
+    height: 4px;
+    background: var(--aei-bg-subtle);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &--ia     { background: linear-gradient(90deg, var(--aei-primary), #FFB347); }
+    &--mentor { background: linear-gradient(90deg, var(--aei-corporate), #4A6FA5); }
+    &--total  { background: linear-gradient(90deg, var(--aei-secondary), #00D4AA); }
+  }
+}
+
+// =============================================================================
+// TRAINING PROGRESS
+// =============================================================================
+
+.aei-training-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  &__value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--aei-corporate);
+    font-family: var(--aei-font-headings);
+  }
+
+  &__unit {
+    font-size: 0.85rem;
+    color: var(--aei-text-muted);
+    font-weight: 400;
+  }
+
+  &__bar {
+    position: relative;
+    height: 14px;
+    background: var(--aei-bg-subtle);
+    border-radius: 7px;
+    overflow: visible;
+  }
+
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--aei-primary), var(--aei-secondary));
+    border-radius: 7px;
+    transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    z-index: 1;
+
+    // Shimmer animation on fill
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 7px;
+      background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+      background-size: 200% 100%;
+      animation: aei-shimmer 2.5s ease infinite;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__pct {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--aei-text-muted);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--complete {
+      color: var(--ej-color-success, #10B981);
+    }
+  }
+}
+
+.aei-training-milestone {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+
+  &__dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--aei-text-muted);
+  }
+}
+
+// =============================================================================
+// QUICK ACTIONS PREMIUM
+// =============================================================================
+
+.aei-quick-actions {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.progress-bar {
-  height: 12px;
-  background: var(--aei-border-color);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--aei-color-primary), var(--aei-color-secondary));
-  border-radius: 6px;
-  transition: width 0.3s ease;
-}
-
-.progress-text {
-  font-size: 0.875rem;
-  color: var(--aei-color-muted);
-}
-
-// =============================================================================
-// Quick Actions
-// =============================================================================
-
-.quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.action-btn {
+.aei-action {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 500;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--aei-radius-sm);
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
 
-  &.action-primary {
-    background: linear-gradient(
-      135deg,
-      var(--aei-color-primary) 0%,
-      color-mix(in srgb, var(--ej-color-impulse, #FF8C42) 85%, black) 100%
-    );
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  &__desc {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  &__arrow {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+    opacity: 0.5;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(4px);
+    opacity: 1;
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, var(--aei-primary) 0%, #E67935 100%);
     color: #fff;
 
+    .aei-action__icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
     &:hover {
-      filter: brightness(1.1);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 30%, transparent);
       transform: translateX(4px);
     }
   }
 
-  &.action-secondary {
-    background: var(--aei-bg-surface);
-    border: 1px solid var(--aei-border-color);
-    color: var(--aei-color-text);
+  &--secondary {
+    background: var(--aei-surface);
+    border: 1px solid var(--aei-border);
+    color: var(--aei-text);
+
+    .aei-action__icon {
+      background: var(--aei-bg-subtle);
+    }
 
     &:hover {
+      border-color: var(--aei-primary);
       background: var(--aei-bg-hover);
-      border-color: var(--aei-color-primary);
       transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
   }
 }
 
 // =============================================================================
-// Empty State (usuario no inscrito)
+// CROSS-VERTICAL BRIDGES
 // =============================================================================
 
-.not-enrolled {
-  padding: 4rem 2rem;
-}
-
-.empty-state {
-  max-width: 400px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 3rem 2rem;
-  background: var(--aei-bg-surface);
-  border-radius: var(--aei-radius);
-  box-shadow: 0 4px 20px color-mix(in srgb, black 8%, transparent);
-
-  .empty-icon {
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 1rem;
-  }
-
-  h2 {
-    font-size: 1.25rem;
-    color: var(--aei-color-corporate);
-    margin: 0 0 0.5rem;
-  }
-
-  p {
-    color: var(--aei-color-muted);
-    margin: 0 0 1.5rem;
-  }
-
-  .btn-primary {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background: var(--aei-color-primary);
-    color: #fff;
-    border-radius: 8px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-
-    &:hover {
-      filter: brightness(1.1);
-    }
-  }
-}
-
-// =============================================================================
-// Admin Section (gestión de participantes)
-// =============================================================================
-
-.andalucia-ei-admin {
-  padding: 2rem;
+.aei-bridges {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 2rem 1.5rem;
 
-  .admin-header {
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--aei-corporate);
+    margin: 0 0 1rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+.aei-bridge-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  background: var(--aei-surface-glass-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--aei-radius-sm);
+  border-left: 4px solid var(--aei-primary);
+  box-shadow: var(--aei-shadow-sm);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 15%, transparent);
+    transform: translateY(-2px);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: flex;
+  }
+
+  &__message {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--aei-text);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__cta {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--aei-primary);
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  &__dismiss {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--aei-text-muted);
+    padding: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover &__dismiss {
+    opacity: 1;
+  }
+}
+
+// =============================================================================
+// PROACTIVE AI FAB
+// =============================================================================
+
+.aei-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+
+  &__trigger {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 35%, transparent);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 32px color-mix(in srgb, var(--aei-primary) 45%, transparent);
+    }
+  }
+
+  &__pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--aei-primary);
+    animation: aei-pulse-ring 2s ease infinite;
+  }
+
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 0;
+    width: 280px;
+    padding: 1rem;
+    background: var(--aei-surface);
+    border-radius: var(--aei-radius-sm);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--aei-border);
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      right: 22px;
+      width: 12px;
+      height: 12px;
+      background: var(--aei-surface);
+      border-right: 1px solid var(--aei-border);
+      border-bottom: 1px solid var(--aei-border);
+      transform: rotate(45deg);
+    }
+  }
+
+  &--open &__tooltip {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  &__tooltip-text {
+    font-size: 0.875rem;
+    color: var(--aei-text);
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+  }
+
+  &__tooltip-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--aei-primary);
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// =============================================================================
+// EMPTY STATE PREMIUM
+// =============================================================================
+
+.aei-empty-state {
+  padding: 5rem 2rem;
+
+  &__card {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 3rem 2.5rem;
+    background: linear-gradient(135deg, rgba(255,255,255,0.97), rgba(248,250,252,0.92));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--aei-radius);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: var(--aei-shadow-card);
+  }
+
+  &__icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--aei-primary) 12%, transparent), color-mix(in srgb, var(--aei-secondary) 8%, transparent));
+    margin-bottom: 1.5rem;
+    animation: aei-float 4s ease-in-out infinite;
+  }
+
+  &__title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--aei-corporate);
+    margin: 0 0 0.75rem;
+    font-family: var(--aei-font-headings);
+  }
+
+  &__desc {
+    font-size: 0.925rem;
+    color: var(--aei-text-muted);
+    margin: 0 0 1.75rem;
+    line-height: 1.6;
+  }
+
+  &__features {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  &__feature {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--aei-text);
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    color: #fff;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
+
+    &:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 40%, transparent);
+    }
+
+    &-arrow {
+      transition: transform 0.3s ease;
+    }
+
+    &:hover &-arrow {
+      transform: translateX(4px);
+    }
+  }
+}
+
+// =============================================================================
+// ADMIN SECTION PREMIUM
+// =============================================================================
+
+.aei-admin {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem 3rem;
+
+  &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--aei-border);
+  }
+
+  &__title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 
     h2 {
       margin: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--aei-color-corporate);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--aei-corporate);
+      font-family: var(--aei-font-headings);
     }
   }
 
-  .admin-filters {
+  &__add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.25rem;
+    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--aei-primary) 25%, transparent);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px color-mix(in srgb, var(--aei-primary) 35%, transparent);
+    }
+  }
+
+  &__add-icon {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  &__filters {
     display: flex;
     gap: 1rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
-
-    select {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--aei-border-color);
-      border-radius: 6px;
-      background: var(--aei-bg-surface);
-      color: var(--aei-color-text);
-      font-size: 0.875rem;
-    }
   }
 
-  .participants-table {
-    width: 100%;
-    border-collapse: collapse;
+  &__table-wrapper {
+    background: var(--aei-surface-glass-strong);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--aei-radius);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: var(--aei-shadow-card);
+    overflow: hidden;
+  }
+}
 
-    th,
-    td {
-      padding: 0.75rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--aei-border-color);
+.aei-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--aei-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--aei-border);
+    border-radius: 8px;
+    background: var(--aei-surface);
+    color: var(--aei-text);
+    font-size: 0.875rem;
+    font-family: var(--aei-font);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--aei-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--aei-primary) 12%, transparent);
     }
+  }
+}
 
-    th {
-      font-weight: 600;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--aei-color-muted);
+.aei-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: linear-gradient(
+      to bottom,
+      var(--aei-bg-subtle),
+      color-mix(in srgb, var(--aei-bg-subtle) 60%, transparent)
+    );
+  }
+
+  th {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--aei-text-muted);
+    border-bottom: 1px solid var(--aei-border);
+  }
+
+  td {
+    padding: 0.85rem 1rem;
+    font-size: 0.875rem;
+    color: var(--aei-text);
+    border-bottom: 1px solid color-mix(in srgb, var(--aei-border) 50%, transparent);
+  }
+
+  tbody tr {
+    transition: background 0.15s ease;
+
+    &:hover {
       background: var(--aei-bg-hover);
     }
 
-    td {
-      font-size: 0.875rem;
-      color: var(--aei-color-text);
-    }
-
-    tbody tr:hover {
-      background: var(--aei-bg-hover);
+    &:last-child td {
+      border-bottom: none;
     }
   }
 
-  .participants-pagination {
+  &__pagination {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 1.5rem;
+    padding: 1rem;
+    border-top: 1px solid var(--aei-border);
   }
 }
 
 // =============================================================================
-// Cross-Vertical Bridges (Fase 6 — placeholder)
-// =============================================================================
-
-.cross-vertical-bridges {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  padding: 1.5rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.bridge-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  background: var(--aei-bg-surface);
-  border-radius: var(--aei-radius);
-  border-left: 4px solid var(--ej-color-impulse, #FF8C42);
-  box-shadow: 0 2px 8px color-mix(in srgb, black 6%, transparent);
-
-  .bridge-icon {
-    flex-shrink: 0;
-    display: flex;
-  }
-
-  .bridge-message {
-    flex: 1;
-    font-size: 0.875rem;
-    color: var(--aei-color-text);
-    margin: 0;
-  }
-
-  .bridge-dismiss {
-    flex-shrink: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--aei-color-muted);
-    padding: 0.25rem;
-
-    &:hover {
-      color: var(--aei-color-text);
-    }
-  }
-}
-
-// =============================================================================
-// Responsive
+// RESPONSIVE
 // =============================================================================
 
 @media (max-width: 768px) {
-  .andalucia-ei-hero {
-    padding: 2.5rem 1.5rem;
+  .aei-hero {
+    padding: 3.5rem 1.5rem 3rem;
   }
 
-  .participant-dashboard {
+  .aei-dashboard {
     padding: 1.5rem 1rem;
+    gap: 1rem;
+
+    &__top-row,
+    &__metrics-row {
+      grid-template-columns: 1fr;
+    }
   }
 
-  .hours-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+  .aei-card {
+    &:hover {
+      transform: none;
+    }
   }
 
-  .hour-item {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--aei-bg-subtle);
+  .aei-hour-metric {
+    grid-template-columns: auto 1fr;
   }
 
-  .hour-value {
-    font-size: 1.25rem;
+  .aei-journey-timeline {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
   }
 
-  .andalucia-ei-admin {
-    padding: 1.5rem 1rem;
+  .aei-timeline-connector {
+    min-width: 16px;
+  }
 
-    .admin-header {
+  .aei-quick-actions {
+    gap: 0.5rem;
+  }
+
+  .aei-bridges {
+    padding: 0 1rem 1.5rem;
+  }
+
+  .aei-fab {
+    bottom: 1.5rem;
+    right: 1.5rem;
+
+    &__tooltip {
+      width: 240px;
+      right: -0.5rem;
+    }
+  }
+
+  .aei-empty-state {
+    padding: 3rem 1rem;
+
+    &__features {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+  }
+
+  .aei-admin {
+    padding: 1rem 1rem 2rem;
+
+    &__header {
       flex-direction: column;
       gap: 1rem;
       align-items: flex-start;
     }
 
-    .participants-table-wrapper {
+    &__table-wrapper {
       overflow-x: auto;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .aei-hero {
+    padding: 2.5rem 1rem 2rem;
+
+    &__badge {
+      font-size: 0.7rem;
+    }
+  }
+
+  .aei-card__body {
+    padding: 0.5rem 1rem 1.25rem;
+  }
+
+  .aei-action {
+    padding: 0.85rem 1rem;
   }
 }

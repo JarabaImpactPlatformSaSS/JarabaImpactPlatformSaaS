@@ -1422,6 +1422,7 @@ function _ecosistema_jaraba_core_check_usage_limits() {
   $tenantIds = $query->execute();
 
   /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+  // @todo CONS-N10: Move to service class for proper DI.
   $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
 
   $alertThreshold80 = 0.80;
@@ -2360,6 +2361,7 @@ function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterfac
       if ($store) {
         $storeOwner = $store->getOwner();
         if ($storeOwner) {
+          // @todo CONS-N10: Move to service class for proper DI.
           $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
           $tenant = $tenantContext->getTenantForUser($storeOwner);
         }

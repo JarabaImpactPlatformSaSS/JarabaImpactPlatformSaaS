@@ -1,0 +1,79 @@
+jaraba_mobile.settings:
+  type: config_object
+  label: 'Jaraba Mobile settings'
+  mapping:
+    fcm_server_key:
+      type: string
+      label: 'FCM Server Key'
+    fcm_project_id:
+      type: string
+      label: 'FCM Project ID'
+    fcm_sender_id:
+      type: string
+      label: 'FCM Sender ID'
+    apns_certificate:
+      type: string
+      label: 'APNs Certificate path'
+    apns_key_id:
+      type: string
+      label: 'APNs Key ID'
+    apns_team_id:
+      type: string
+      label: 'APNs Team ID'
+    push_channels:
+      type: mapping
+      label: 'Push notification channels'
+      mapping:
+        jobs:
+          type: mapping
+          label: 'Jobs channel'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            max_per_day:
+              type: integer
+              label: 'Max notifications per day (0 = unlimited)'
+        orders:
+          type: mapping
+          label: 'Orders channel'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            max_per_day:
+              type: integer
+              label: 'Max notifications per day (0 = unlimited)'
+        alerts:
+          type: mapping
+          label: 'Alerts channel'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            max_per_day:
+              type: integer
+              label: 'Max notifications per day (0 = unlimited)'
+        marketing:
+          type: mapping
+          label: 'Marketing channel'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            max_per_day:
+              type: integer
+              label: 'Max notifications per day (0 = unlimited)'
+        general:
+          type: mapping
+          label: 'General channel'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            max_per_day:
+              type: integer
+              label: 'Max notifications per day (0 = unlimited)'
+    deep_link_base_url:
+      type: string
+      label: 'Deep link base URL'

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\jaraba_integrations\Service\ConnectorRegistryService;
 use Drupal\jaraba_integrations\Service\ConnectorInstallerService;
 use Drupal\jaraba_integrations\Service\ConnectorHealthCheckService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * REST API controller para conectores.
@@ -29,6 +30,7 @@ class ConnectorApiController extends ControllerBase {
     protected ConnectorRegistryService $connectorRegistry,
     protected ConnectorInstallerService $connectorInstaller,
     protected ConnectorHealthCheckService $healthCheck,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   /**
@@ -39,6 +41,7 @@ class ConnectorApiController extends ControllerBase {
       $container->get('jaraba_integrations.connector_registry'),
       $container->get('jaraba_integrations.connector_installer'),
       $container->get('jaraba_integrations.health_check'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -61,10 +64,7 @@ class ConnectorApiController extends ControllerBase {
 
     $data = array_map(fn($c) => $this->serializeConnector($c), $connectors);
 
-    return new JsonResponse([
-      'data' => array_values($data),
-      'meta' => ['total' => count($data)],
-    ]);
+    return new JsonResponse(['success' => TRUE, 'data' => array_values($data), 'meta' => ['total' => count($data)]]);
   }
 
   /**
@@ -75,11 +75,11 @@ class ConnectorApiController extends ControllerBase {
     $connector = $storage->load($connector_id);
 
     if (!$connector) {
-      return new JsonResponse(['error' => 'Connector not found'], 404);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not found']], 404);
     }
 
-    return new JsonResponse([
-      'data' => $this->serializeConnector($connector),
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeConnector($connector),
     ]);
   }
 
@@ -91,17 +91,17 @@ class ConnectorApiController extends ControllerBase {
     $connector = $storage->load($connector_id);
 
     if (!$connector) {
-      return new JsonResponse(['error' => 'Connector not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not found']], 404);
     }
 
     $tenant_id = $this->getTenantId();
     if (!$tenant_id) {
-      return new JsonResponse(['error' => 'Tenant context required'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Tenant context required']], 400);
     }
 
     $installation = $this->connectorInstaller->install($connector, $tenant_id);
     if (!$installation) {
-      return new JsonResponse(['error' => 'Connector already installed'], 409);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector already installed']], 409);
     }
 
     return new JsonResponse([
@@ -109,9 +109,7 @@ class ConnectorApiController extends ControllerBase {
         'id' => $installation->id(),
         'connector_id' => $connector_id,
         'status' => $installation->getInstallationStatus(),
-      ],
-      'message' => 'Connector installed successfully',
-    ], 201);
+      ], 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -122,19 +120,19 @@ class ConnectorApiController extends ControllerBase {
     $connector = $storage->load($connector_id);
 
     if (!$connector) {
-      return new JsonResponse(['error' => 'Connector not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not found']], 404);
     }
 
     $tenant_id = $this->getTenantId();
     if (!$tenant_id) {
-      return new JsonResponse(['error' => 'Tenant context required'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Tenant context required']], 400);
     }
 
     if ($this->connectorInstaller->uninstall($connector, $tenant_id)) {
-      return new JsonResponse(['message' => 'Connector uninstalled successfully']);
+      return new JsonResponse(['success' => TRUE, 'data' => ['message' => 'Connector uninstalled successfully'], 'meta' => ['timestamp' => time()]]);
     }
 
-    return new JsonResponse(['error' => 'Connector not installed'], 404);
+    return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not installed']], 404);
   }
 
   /**
@@ -145,22 +143,22 @@ class ConnectorApiController extends ControllerBase {
     $connector = $storage->load($connector_id);
 
     if (!$connector) {
-      return new JsonResponse(['error' => 'Connector not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not found']], 404);
     }
 
     $tenant_id = $this->getTenantId();
     if (!$tenant_id) {
-      return new JsonResponse(['error' => 'Tenant context required'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Tenant context required']], 400);
     }
 
     $installation = $this->connectorInstaller->getInstallation($connector, $tenant_id);
     if (!$installation) {
-      return new JsonResponse(['error' => 'Connector not installed'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Connector not installed']], 404);
     }
 
     $result = $this->healthCheck->checkInstallation($installation);
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -188,7 +186,7 @@ class ConnectorApiController extends ControllerBase {
    */
   protected function getTenantId(): ?string {
     try {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenant_context = $this->tenantContext;
       $tenant = $tenant_context->getCurrentTenant();
       if ($tenant) {
         $group = $tenant->getGroup();

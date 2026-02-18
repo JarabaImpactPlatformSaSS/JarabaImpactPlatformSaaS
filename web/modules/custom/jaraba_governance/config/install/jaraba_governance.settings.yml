@@ -1,0 +1,57 @@
+retention_policies:
+  session_logs:
+    entity_type: 'session_log'
+    retention_days: 90
+    action: delete
+  inactive_users:
+    entity_type: 'user'
+    retention_days: 730
+    action: anonymize
+    grace_days: 30
+  cvs:
+    entity_type: 'candidate_cv'
+    retention_days: 730
+    action: anonymize
+  fiscal_invoices:
+    entity_type: 'invoice'
+    retention_days: 1460
+    action: archive
+    legal_basis: 'LGT Art. 66'
+  legal_records:
+    entity_type: 'legal_case'
+    retention_days: 1825
+    action: archive
+    legal_basis: 'Ley 2/2023'
+  backups:
+    retention_days: 30
+    action: delete
+  anonymized:
+    retention_days: 0
+    action: keep
+
+masking_rules:
+  email: 'user{id}@test.jaraba.dev'
+  nombre: faker_name
+  nif: faker_nif
+  iban: faker_iban
+  telefono: faker_phone
+  direccion: faker_address
+
+classification_levels:
+  C1_PUBLIC:
+    label: 'Public'
+    encryption_required: false
+    masking_required: false
+  C2_INTERNAL:
+    label: 'Internal'
+    encryption_required: false
+    masking_required: true
+  C3_CONFIDENTIAL:
+    label: 'Confidential'
+    encryption_required: true
+    masking_required: true
+  C4_RESTRICTED:
+    label: 'Restricted'
+    encryption_required: true
+    masking_required: true
+    cross_border_restricted: true

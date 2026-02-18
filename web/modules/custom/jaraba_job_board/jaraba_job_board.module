@@ -576,6 +576,7 @@ function _jaraba_job_board_award_status_credits(EntityInterface $application, st
   if (in_array($status, ['shortlisted', 'hired'])) {
     try {
       if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context') && \Drupal::hasService('ecosistema_jaraba_core.upgrade_trigger')) {
+        // @todo CONS-N10: Move to service class for proper DI.
         $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
         if ($tenant) {
           $triggerType = $status === 'hired' ? 'first_milestone' : 'status_change';
@@ -1028,6 +1029,7 @@ function _jaraba_job_board_sync_to_crm(EntityInterface $application, string $sta
 
       if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
         try {
+          // @todo CONS-N10: Move to service class for proper DI.
           $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
           if ($tenant) {
             $values['tenant_id'] = $tenant->id();

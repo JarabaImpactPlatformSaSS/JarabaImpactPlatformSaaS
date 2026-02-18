@@ -1,0 +1,31 @@
+services:
+  jaraba_sla.calculator:
+    class: Drupal\jaraba_sla\Service\SlaCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@database'
+  jaraba_sla.uptime_monitor:
+    class: Drupal\jaraba_sla\Service\UptimeMonitorService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_sla'
+  jaraba_sla.credit_engine:
+    class: Drupal\jaraba_sla\Service\SlaCreditEngineService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+      - '@logger.channel.jaraba_sla'
+  jaraba_sla.postmortem:
+    class: Drupal\jaraba_sla\Service\PostmortemService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+  logger.channel.jaraba_sla:
+    parent: logger.channel_base
+    arguments: ['jaraba_sla']

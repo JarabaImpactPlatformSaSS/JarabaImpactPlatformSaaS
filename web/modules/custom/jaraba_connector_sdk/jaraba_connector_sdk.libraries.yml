@@ -1,0 +1,4 @@
+marketplace:
+  css:
+    theme:
+      css/connector-marketplace.css: {}

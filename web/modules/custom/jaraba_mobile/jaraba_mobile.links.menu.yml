@@ -1,0 +1,6 @@
+jaraba_mobile.settings:
+  title: 'Jaraba Mobile'
+  description: 'Configure mobile app backend: devices, push notifications, deep links.'
+  route_name: jaraba_mobile.settings
+  parent: system.admin_config
+  weight: 60

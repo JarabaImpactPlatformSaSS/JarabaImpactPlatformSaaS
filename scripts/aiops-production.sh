@@ -13,7 +13,8 @@
 # =============================================================================
 
 # Configuración
-SITE_URL="https://plataformadeecosistemas.com"
+# AUDIT-SEC-N17: Production URL must come from environment variable, not hardcoded.
+SITE_URL="${SITE_URL:?ERROR: SITE_URL env var is required. Export it before running this script.}"
 DRUSH_CMD="/usr/bin/php8.4-cli vendor/bin/drush.php"
 LOG_FILE="/var/log/jaraba-aiops.log"
 NOTIFY_EMAIL="contacto@pepejaraba.es"

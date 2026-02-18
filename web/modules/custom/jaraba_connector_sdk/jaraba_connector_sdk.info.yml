@@ -1,0 +1,10 @@
+name: 'Jaraba Connector SDK'
+type: module
+description: 'Third-party connector SDK with certification pipeline, marketplace, and revenue sharing.'
+package: 'Jaraba Platform'
+core_version_requirement: ^11
+dependencies:
+  - jaraba_integrations:jaraba_integrations
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:user
+lifecycle: stable

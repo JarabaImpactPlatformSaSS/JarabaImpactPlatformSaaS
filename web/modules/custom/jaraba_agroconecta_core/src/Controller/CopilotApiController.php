@@ -37,9 +37,9 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.copilot_service'),
-            $container->get('jaraba_agroconecta.demand_forecaster'),
-            $container->get('jaraba_agroconecta.market_spy'),
+            $container->get('jaraba_agroconecta_core.copilot_service'), // AUDIT-CONS-N05: canonical prefix
+            $container->get('jaraba_agroconecta_core.demand_forecaster'), // AUDIT-CONS-N05: canonical prefix
+            $container->get('jaraba_agroconecta_core.market_spy'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 

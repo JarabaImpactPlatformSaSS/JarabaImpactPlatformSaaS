@@ -42,7 +42,7 @@ class SandboxController extends ControllerBase
     }
 
     /**
-     * POST /api/sandbox/create - Crear nuevo sandbox.
+     * POST /api/v1/sandbox/create - Crear nuevo sandbox. (AUDIT-CONS-N07)
      */
     public function createSandbox(Request $request): JsonResponse
     {
@@ -59,7 +59,7 @@ class SandboxController extends ControllerBase
     }
 
     /**
-     * GET /api/sandbox/{id} - Obtener datos del sandbox.
+     * GET /api/v1/sandbox/{id} - Obtener datos del sandbox. (AUDIT-CONS-N07)
      */
     public function get(string $id): JsonResponse
     {
@@ -79,7 +79,7 @@ class SandboxController extends ControllerBase
     }
 
     /**
-     * POST /api/sandbox/{id}/track - Registrar engagement.
+     * POST /api/v1/sandbox/{id}/track - Registrar engagement. (AUDIT-CONS-N07)
      */
     public function track(Request $request, string $id): JsonResponse
     {
@@ -96,7 +96,7 @@ class SandboxController extends ControllerBase
     }
 
     /**
-     * POST /api/sandbox/{id}/convert - Convertir a cuenta real.
+     * POST /api/v1/sandbox/{id}/convert - Convertir a cuenta real. (AUDIT-CONS-N07)
      */
     public function convert(Request $request, string $id): JsonResponse
     {
@@ -108,7 +108,7 @@ class SandboxController extends ControllerBase
     }
 
     /**
-     * GET /api/sandbox/templates - Listar templates disponibles.
+     * GET /api/v1/sandbox/templates - Listar templates disponibles. (AUDIT-CONS-N07)
      */
     public function templates(): JsonResponse
     {
@@ -121,7 +121,7 @@ class SandboxController extends ControllerBase
     }
 
     /**
-     * GET /api/sandbox/stats - Estadísticas de sandboxes.
+     * GET /api/v1/sandbox/stats - Estadísticas de sandboxes. (AUDIT-CONS-N07)
      */
     public function stats(): JsonResponse
     {

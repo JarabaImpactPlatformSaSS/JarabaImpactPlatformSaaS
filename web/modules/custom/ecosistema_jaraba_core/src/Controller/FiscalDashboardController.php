@@ -9,6 +9,7 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\ecosistema_jaraba_core\Service\FiscalComplianceService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controller for the unified Fiscal Compliance Dashboard.
@@ -28,6 +29,7 @@ class FiscalDashboardController extends ControllerBase implements ContainerInjec
     protected ?object $faceClient = NULL,
     protected ?object $paymentStatusService = NULL,
     protected ?object $certificateManager = NULL,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   /**
@@ -60,6 +62,7 @@ class FiscalDashboardController extends ControllerBase implements ContainerInjec
       $faceClient,
       $paymentStatusService,
       $certificateManager,
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -320,7 +323,7 @@ class FiscalDashboardController extends ControllerBase implements ContainerInjec
    */
   protected function resolveCurrentTenantId(): string {
     try {
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenantContext = $this->tenantContext;
       $tenant = $tenantContext->getCurrentTenant();
       if ($tenant) {
         return (string) $tenant->id();

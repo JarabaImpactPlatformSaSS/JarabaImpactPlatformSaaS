@@ -47,7 +47,7 @@ class OrderApiController extends ControllerBase implements ContainerInjectionInt
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.order_service'),
+            $container->get('jaraba_agroconecta_core.order_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 

@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador API REST del programa de referidos (v2).
@@ -70,7 +71,9 @@ class ReferralApiController extends ControllerBase {
     ReferralTrackingService $tracking,
     LoggerInterface $logger,
     EntityTypeManagerInterface $entity_type_manager,
+    TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {
+    $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
     $this->rewardProcessing = $reward_processing;
     $this->leaderboard = $leaderboard;
     $this->tracking = $tracking;
@@ -88,6 +91,7 @@ class ReferralApiController extends ControllerBase {
       $container->get('jaraba_referral.tracking'),
       $container->get('logger.channel.jaraba_referral'),
       $container->get('entity_type.manager'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -104,7 +108,7 @@ class ReferralApiController extends ControllerBase {
    */
   protected function getCurrentTenantId(): int {
     try {
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenantContext = $this->tenantContext;
       if (method_exists($tenantContext, 'getCurrentTenantId')) {
         return (int) $tenantContext->getCurrentTenantId();
       }
@@ -156,16 +160,12 @@ class ReferralApiController extends ControllerBase {
         ];
       }
 
-      return new JsonResponse([
-        'data' => $data,
-        'meta' => ['count' => count($data)],
-      ]);
+      return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['count' => count($data)]]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error listando programas de referidos: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error obteniendo programas de referidos.']],
-      ], 500);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo programas de referidos.']], 500);
     }
   }
 
@@ -204,16 +204,11 @@ class ReferralApiController extends ControllerBase {
         ];
       }
 
-      return new JsonResponse([
-        'data' => $data,
-        'meta' => ['count' => count($data)],
-      ]);
+      return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['count' => count($data)]]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error listando códigos de referido: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error obteniendo códigos de referido.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo códigos de referido.']], 500);
     }
   }
 
@@ -234,9 +229,7 @@ class ReferralApiController extends ControllerBase {
       $tenantId = $this->getCurrentTenantId();
 
       if (empty($programId)) {
-        return new JsonResponse([
-          'errors' => [['message' => 'El campo program_id es obligatorio.']],
-        ], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El campo program_id es obligatorio.']], 400);
       }
 
       // Verificar que el programa existe y está activo.
@@ -244,9 +237,7 @@ class ReferralApiController extends ControllerBase {
       $program = $programStorage->load($programId);
 
       if (!$program || !$program->get('is_active')->value) {
-        return new JsonResponse([
-          'errors' => [['message' => 'Programa de referidos no encontrado o inactivo.']],
-        ], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Programa de referidos no encontrado o inactivo.']], 404);
       }
 
       // Generar código alfanumérico único.
@@ -269,8 +260,7 @@ class ReferralApiController extends ControllerBase {
 
       $baseUrl = $request->getSchemeAndHttpHost();
 
-      return new JsonResponse([
-        'data' => [
+      return new JsonResponse(['success' => TRUE, 'data' => [
           'id' => (int) $codeEntity->id(),
           'code' => $codeString,
           'share_url' => $baseUrl . '/ref/' . $codeString,
@@ -280,9 +270,7 @@ class ReferralApiController extends ControllerBase {
     }
     catch (\Exception $e) {
       $this->logger->error('Error generando código de referido: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error generando código de referido.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error generando código de referido.']], 500);
     }
   }
 
@@ -298,15 +286,11 @@ class ReferralApiController extends ControllerBase {
       $leaderboard = $this->leaderboard->getLeaderboard($tenantId);
 
       return new JsonResponse([
-        'data' => $leaderboard,
-        'meta' => ['count' => count($leaderboard), 'tenant_id' => $tenantId],
-      ]);
+        'data' => $leaderboard, 'meta' => ['count' => count($leaderboard), 'tenant_id' => $tenantId]]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error obteniendo leaderboard: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error obteniendo leaderboard.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo leaderboard.']], 500);
     }
   }
 
@@ -321,16 +305,11 @@ class ReferralApiController extends ControllerBase {
       $uid = (int) $this->currentUser()->id();
       $rewards = $this->rewardProcessing->getRewardsForUser($uid);
 
-      return new JsonResponse([
-        'data' => $rewards,
-        'meta' => ['count' => count($rewards)],
-      ]);
+      return new JsonResponse(['success' => TRUE, 'data' => $rewards, 'meta' => ['count' => count($rewards)]]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error listando recompensas: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error obteniendo recompensas.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo recompensas.']], 500);
     }
   }
 
@@ -349,9 +328,7 @@ class ReferralApiController extends ControllerBase {
       $code = $content['code'] ?? '';
 
       if (empty($code)) {
-        return new JsonResponse([
-          'errors' => [['message' => 'El campo code es obligatorio.']],
-        ], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El campo code es obligatorio.']], 400);
       }
 
       $context = [
@@ -362,15 +339,12 @@ class ReferralApiController extends ControllerBase {
 
       $result = $this->tracking->trackClick($code, $context);
 
-      return new JsonResponse([
-        'data' => ['tracked' => $result],
+      return new JsonResponse(['success' => TRUE, 'data' => ['tracked' => $result],
       ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error registrando click: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error registrando click.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error registrando click.']], 500);
     }
   }
 
@@ -390,9 +364,7 @@ class ReferralApiController extends ControllerBase {
       $newUserId = (int) ($content['user_id'] ?? 0);
 
       if (empty($code) || $newUserId <= 0) {
-        return new JsonResponse([
-          'errors' => [['message' => 'Los campos code y user_id son obligatorios.']],
-        ], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos code y user_id son obligatorios.']], 400);
       }
 
       $result = $this->tracking->trackSignup($code, $newUserId);
@@ -403,9 +375,7 @@ class ReferralApiController extends ControllerBase {
     }
     catch (\Exception $e) {
       $this->logger->error('Error registrando signup: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error registrando signup.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error registrando signup.']], 500);
     }
   }
 
@@ -426,9 +396,7 @@ class ReferralApiController extends ControllerBase {
       $value = (float) ($content['value'] ?? 0);
 
       if (empty($code) || $userId <= 0) {
-        return new JsonResponse([
-          'errors' => [['message' => 'Los campos code y user_id son obligatorios.']],
-        ], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Los campos code y user_id son obligatorios.']], 400);
       }
 
       $result = $this->tracking->trackConversion($code, $userId, $value);
@@ -439,9 +407,7 @@ class ReferralApiController extends ControllerBase {
     }
     catch (\Exception $e) {
       $this->logger->error('Error registrando conversión: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error registrando conversión.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error registrando conversión.']], 500);
     }
   }
 
@@ -482,15 +448,11 @@ class ReferralApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'data' => $data,
-        'meta' => ['count' => count($data)],
-      ]);
+        'data' => $data, 'meta' => ['count' => count($data)]]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error listando referidos: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error obteniendo referidos.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo referidos.']], 500);
     }
   }
 
@@ -510,23 +472,18 @@ class ReferralApiController extends ControllerBase {
       $action = $content['action'] ?? 'confirm';
 
       if (empty($code)) {
-        return new JsonResponse([
-          'errors' => [['message' => 'El campo code es obligatorio.']],
-        ], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'El campo code es obligatorio.']], 400);
       }
 
       $uid = (int) $this->currentUser()->id();
       $result = $this->rewardProcessing->processReferral($code, $uid, $action);
 
-      return new JsonResponse([
-        'data' => ['processed' => $result, 'action' => $action],
+      return new JsonResponse(['success' => TRUE, 'data' => ['processed' => $result, 'action' => $action],
       ]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error procesando referido: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error procesando referido.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error procesando referido.']], 500);
     }
   }
 
@@ -559,15 +516,11 @@ class ReferralApiController extends ControllerBase {
           'tracking' => $trackingStats,
           'leaderboard' => $leaderboardStats,
           'pending_rewards' => count($pendingRewards),
-        ],
-        'meta' => ['tenant_id' => $tenantId],
-      ]);
+        ], 'meta' => ['tenant_id' => $tenantId]]);
     }
     catch (\Exception $e) {
       $this->logger->error('Error obteniendo estadísticas: @error', ['@error' => $e->getMessage()]);
-      return new JsonResponse([
-        'errors' => [['message' => 'Error obteniendo estadísticas.']],
-      ], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Error obteniendo estadísticas.']], 500);
     }
   }
 

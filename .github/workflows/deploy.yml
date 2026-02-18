@@ -2,7 +2,7 @@
 # DEPLOY A PRODUCCIÓN (IONOS)
 # ==============================================
 # Pipeline PRINCIPAL de deploy a producción.
-# Host: plataformadeecosistemas.com (IONOS shared hosting)
+# Host: IONOS shared hosting (URL in secrets.PRODUCTION_URL)
 # Estrategia: git-based deploy con maintenance mode.
 #
 # Flujo: Lint → Test → Backup → Deploy → Smoke Test
@@ -32,6 +32,8 @@ on:
 
 env:
   PHP_VERSION: '8.4'
+  # AUDIT-SEC-N17: IONOS host/user come from env vars here for SSH;
+  # PRODUCTION_URL must come from GitHub Secrets, not hardcoded.
   IONOS_HOST: 'access834313033.webspace-data.io'
   IONOS_USER: 'u101456434'
   SITE_DIR: '~/JarabaImpactPlatformSaaS'
@@ -368,6 +370,9 @@ jobs:
 
       - name: Diagnose web PHP configuration
         continue-on-error: true
+        # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
           REMOTE_USER="${{ env.IONOS_USER }}"
           REMOTE_HOST="${{ env.IONOS_HOST }}"
@@ -433,7 +438,7 @@ jobs:
 
           echo "=== Web PHP Diagnostic (via HTTPS) ==="
           sleep 3
-          DIAG_RESULT=$(curl -sf "https://plataformadeecosistemas.com/${DIAG_FILE}" 2>&1 || echo "CURL_FAILED")
+          DIAG_RESULT=$(curl -sf "${PRODUCTION_URL}/${DIAG_FILE}" 2>&1 || echo "CURL_FAILED")
           echo "$DIAG_RESULT"
 
           # Extract key info
@@ -458,7 +463,7 @@ jobs:
           elif [ "$WEB_PHP" = "unknown" ]; then
             echo "⚠️ Could not reach diagnostic page — web PHP may be completely broken"
             echo "Checking response headers..."
-            curl -sI "https://plataformadeecosistemas.com/${DIAG_FILE}" 2>&1
+            curl -sI "${PRODUCTION_URL}/${DIAG_FILE}" 2>&1
           else
             echo "✅ Web and CLI PHP versions match: $WEB_PHP"
           fi
@@ -466,13 +471,13 @@ jobs:
           echo ""
           echo "=== Drupal Bootstrap Test (via HTTPS) ==="
           sleep 2
-          BOOT_RESULT=$(curl -sf "https://plataformadeecosistemas.com/_boot_test.php" 2>&1 || echo "BOOT_TEST_FAILED")
+          BOOT_RESULT=$(curl -sf "${PRODUCTION_URL}/_boot_test.php" 2>&1 || echo "BOOT_TEST_FAILED")
           echo "$BOOT_RESULT"
 
           if echo "$BOOT_RESULT" | grep -q "BOOT_TEST_FAILED"; then
             echo ""
             echo "⚠️ Boot test page also failed. Checking headers..."
-            curl -sI "https://plataformadeecosistemas.com/_boot_test.php" 2>&1
+            curl -sI "${PRODUCTION_URL}/_boot_test.php" 2>&1
           fi
 
           # Check PHP error log
@@ -488,12 +493,12 @@ jobs:
           # Test mod_rewrite with a known Drupal path
           echo ""
           echo "=== mod_rewrite test: /user/login ==="
-          LOGIN_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://plataformadeecosistemas.com/user/login" 2>/dev/null || echo '000')
+          LOGIN_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}/user/login" 2>/dev/null || echo '000')
           echo "HTTP status for /user/login: $LOGIN_CODE"
           if [ "$LOGIN_CODE" = "500" ]; then
             echo "⚠️ /user/login also returns 500 — mod_rewrite is likely broken"
             echo "Checking response headers..."
-            curl -sI "https://plataformadeecosistemas.com/user/login" 2>&1
+            curl -sI "${PRODUCTION_URL}/user/login" 2>&1
           elif [ "$LOGIN_CODE" = "200" ] || [ "$LOGIN_CODE" = "403" ]; then
             echo "✅ mod_rewrite is working for /user/login"
           fi
@@ -503,12 +508,20 @@ jobs:
           echo "✅ Diagnostic files cleaned up"
 
       - name: Smoke test - Platform status endpoint
+        # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
           echo "⏳ Esperando 10s para estabilización post-deploy..."
           sleep 10
 
+          if [ -z "$PRODUCTION_URL" ]; then
+            echo "::error::PRODUCTION_URL secret is not configured. Set it in Settings → Secrets → Actions."
+            exit 1
+          fi
+
           # Path changed from /health to /api/v1/platform/status to avoid IONOS WAF blocking.
-          HEALTH_URL="https://plataformadeecosistemas.com/api/v1/platform/status"
+          HEALTH_URL="${PRODUCTION_URL}/api/v1/platform/status"
 
           echo "🔍 Verificando platform status endpoint..."
           for i in 1 2 3; do
@@ -536,14 +549,17 @@ jobs:
           curl -sI "$HEALTH_URL" 2>&1
           echo ""
           echo "=== Full response headers for / ==="
-          curl -sI https://plataformadeecosistemas.com/ 2>&1
+          curl -sI "${PRODUCTION_URL}/" 2>&1
 
           exit 1
 
       - name: Smoke test - Homepage
         if: success()
+        # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://plataformadeecosistemas.com)
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}")
           if [ "$HTTP_STATUS" != "200" ]; then
             echo "⚠️ Homepage returned HTTP $HTTP_STATUS (non-blocking)"
           else

@@ -32,7 +32,8 @@ COMPOSER="${COMPOSER:-$PHP_CLI $HOME/bin/composer.phar}"
 DRUSH="${DRUSH:-$PHP_CLI $PROJECT_DIR/vendor/bin/drush.php}"
 
 # URLs y endpoints
-SITE_URL="${SITE_URL:-https://plataformadeecosistemas.com}"
+# AUDIT-SEC-N17: Production URL must come from environment variable, not hardcoded.
+SITE_URL="${SITE_URL:?ERROR: SITE_URL env var is required. Export it before running this script.}"
 QDRANT_HOST="${QDRANT_HOST:-http://localhost:6333}"
 STRIPE_API_URL="https://api.stripe.com/v1/balance"
 

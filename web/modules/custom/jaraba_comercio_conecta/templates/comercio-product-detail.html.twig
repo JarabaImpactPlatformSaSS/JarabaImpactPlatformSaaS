@@ -55,12 +55,13 @@
       <div class="comercio-product-detail__gallery">
         {% if product.get('images').entity %}
           <div class="comercio-gallery">
-            {# Imagen principal #}
+            {# Imagen principal — AUDIT-PERF-N16: eager porque es LCP hero image #}
             <div class="comercio-gallery__main">
               <img class="comercio-gallery__image"
                    src="{{ file_url(product.get('images').0.entity.fileuri) }}"
                    alt="{{ product.get('title').value }}"
                    itemprop="image"
+                   loading="eager"
                    id="comercio-main-image">
             </div>
 
@@ -230,10 +231,12 @@
   {# === Página de comerciante (sin producto) === #}
   <div class="comercio-merchant-page container">
     <div class="comercio-merchant-page__header">
+      {# AUDIT-PERF-N16: eager porque es hero cover image de la página de merchant #}
       {% if merchant.get('cover_image').entity %}
         <img class="comercio-merchant-page__cover"
              src="{{ file_url(merchant.get('cover_image').entity.fileuri) }}"
-             alt="{{ merchant.get('business_name').value }}">
+             alt="{{ merchant.get('business_name').value }}"
+             loading="eager">
       {% endif %}
 
       <div class="comercio-merchant-page__info">

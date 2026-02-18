@@ -122,8 +122,15 @@ $DRUSH cr
 # =============================================================================
 # VERIFICACIÓN
 # =============================================================================
+# AUDIT-SEC-N17: Production URL must come from environment variable, not hardcoded.
+if [ -z "$PRODUCTION_URL" ]; then
+    log_error "PRODUCTION_URL env var is not set. Export it before running this script."
+    log_error "Example: export PRODUCTION_URL=https://your-production-domain.com"
+    exit 1
+fi
+
 log_info "Verificando sitio..."
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://plataformadeecosistemas.com/" 2>/dev/null || echo "000")
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${PRODUCTION_URL}/" 2>/dev/null || echo "000")
 if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "302" ]; then
     log_info "Sitio respondiendo correctamente (HTTP $HTTP_CODE)"
 else

@@ -1,8 +1,9 @@
 # ==============================================
 # SECURITY SCAN - ESCANEO DE SEGURIDAD AUTOMATIZADO
 # ==============================================
-# Ejecuta auditorias de dependencias, escaneo de vulnerabilidades
-# y analisis DAST contra el entorno de staging.
+# Ejecuta auditorias de dependencias, escaneo de vulnerabilidades,
+# SAST (PHPStan security rules) y analisis DAST contra el entorno de staging.
+# AUDIT-SEC-N11: Added SAST job with PHPStan Level 6 + security rules.
 #
 # Triggers:
 # - Diario a las 02:00 UTC (cron)
@@ -104,6 +105,7 @@ jobs:
       - name: Checkout codigo
         uses: actions/checkout@v4
 
+      # AUDIT-SEC-N10: Trivy must block on CRITICAL/HIGH vulnerabilities.
       - name: Run Trivy vulnerability scanner
         id: trivy
         uses: aquasecurity/trivy-action@0.28.0
@@ -114,13 +116,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
           format: 'sarif'
           output: 'trivy-results.sarif'
-          # AUDIT-SEC-N10: exit-code 1 detecta vulnerabilidades.
-          # continue-on-error: las dependencias de terceros (Drupal core,
-          # Symfony) pueden tener CVEs pendientes de upstream que no
-          # podemos resolver inmediatamente. Los resultados se suben
-          # al Security tab de GitHub para seguimiento.
           exit-code: '1'
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload Trivy SARIF to GitHub Security tab
         # NOTE: Requires GitHub Advanced Security (GHAS). For private repos
@@ -173,7 +170,61 @@ jobs:
           echo "- **Severity filter:** CRITICAL, HIGH" >> $GITHUB_STEP_SUMMARY
 
   # ===========================================
-  # JOB 3: OWASP ZAP BASELINE SCAN
+  # AUDIT-SEC-N11: JOB 3: SAST — PHPStan Security Analysis
+  # ===========================================
+  sast-phpstan:
+    name: SAST - PHPStan Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, bcmath, gd
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-
+
+      # AUDIT-SEC-N11: Dev dependencies needed for phpstan-strict-rules
+      # and phpstan-disallowed-calls security extensions.
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      # AUDIT-SEC-N11: SAST with security rules.
+      # Uses phpstan.neon (level 6) + phpstan-security.neon which includes:
+      # - phpstan/phpstan-strict-rules (type-safety, loose comparison detection)
+      # - spaze/phpstan-disallowed-calls (bans eval, exec, unserialize, etc.)
+      # - mglaman/phpstan-drupal security rules (access checks, DI patterns)
+      # MUST NOT have continue-on-error: true — SAST failures are blocking.
+      - name: PHPStan Security Analysis (Level 6)
+        run: |
+          echo "## SAST - PHPStan Security Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if vendor/bin/phpstan analyse -c phpstan.neon --no-progress --error-format=github 2>&1 | tee phpstan-security.txt; then
+            echo "**PASSED** - No security-relevant issues found at Level 6." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**FAILED** - Security or type-safety issues detected. See errors above." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Detected Issues" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -20 phpstan-security.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  # ===========================================
+  # JOB 4: OWASP ZAP BASELINE SCAN
   # ===========================================
   zap-scan:
     name: OWASP ZAP Baseline
@@ -221,12 +272,13 @@ jobs:
           echo "Full report available in workflow artifacts." >> $GITHUB_STEP_SUMMARY
 
   # ===========================================
-  # JOB 4: SECURITY REPORT & NOTIFICATIONS
+  # JOB 5: SECURITY REPORT & NOTIFICATIONS
   # ===========================================
   security-report:
     name: Security Report
     runs-on: ubuntu-latest
-    needs: [dependency-audit, trivy-scan]
+    # AUDIT-SEC-N11: Added sast-phpstan to the dependency list.
+    needs: [dependency-audit, trivy-scan, sast-phpstan]
     if: always()
 
     steps:
@@ -243,9 +295,10 @@ jobs:
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Dependency Audit | ${{ needs.dependency-audit.result == 'success' && 'Passed' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Trivy Filesystem | ${{ needs.trivy-scan.result == 'success' && 'Passed' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| SAST PHPStan Security | ${{ needs.sast-phpstan.result == 'success' && 'Passed' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Notify Slack on failure
-        if: failure() || needs.dependency-audit.result == 'failure' || needs.trivy-scan.result == 'failure'
+        if: failure() || needs.dependency-audit.result == 'failure' || needs.trivy-scan.result == 'failure' || needs.sast-phpstan.result == 'failure'
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |
@@ -255,7 +308,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Security Scan Failed*\n*Branch:* `${{ github.ref_name }}`\n*Trigger:* ${{ github.event_name }}\n*Commit:* `${{ github.sha }}`\n\n*Results:*\n- Dependency Audit: ${{ needs.dependency-audit.result }}\n- Trivy Scan: ${{ needs.trivy-scan.result }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+                    "text": "*Security Scan Failed*\n*Branch:* `${{ github.ref_name }}`\n*Trigger:* ${{ github.event_name }}\n*Commit:* `${{ github.sha }}`\n\n*Results:*\n- Dependency Audit: ${{ needs.dependency-audit.result }}\n- Trivy Scan: ${{ needs.trivy-scan.result }}\n- SAST PHPStan: ${{ needs.sast-phpstan.result }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
                   }
                 }
               ]

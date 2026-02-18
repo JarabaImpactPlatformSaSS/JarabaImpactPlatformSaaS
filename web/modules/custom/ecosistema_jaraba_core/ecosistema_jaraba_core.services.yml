@@ -645,6 +645,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # ===========================================
   # EMPRENDIMIENTO FEATURE GATE (Plan Elevación Emprendimiento v1 — Fase 4)
@@ -661,6 +662,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # ===========================================
   # ANDALUCÍA +EI FEATURE GATE (Plan Elevación Andalucía +ei v1 — Fase 4)
@@ -677,6 +679,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # ===========================================
   # JARABALEX FEATURE GATE (Plan Elevación JarabaLex v1 — Fase 4)
@@ -693,6 +696,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # Plan Elevación JarabaLex v1 — Fase 6: Email Sequences.
   ecosistema_jaraba_core.jarabalex_email_sequence:
@@ -1148,6 +1152,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 7: Email Sequences.
   ecosistema_jaraba_core.agroconecta_email_sequence:
@@ -1204,6 +1209,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # Plan Elevacion ComercioConecta Clase Mundial v1 — Fase 14: Email Sequences.
   ecosistema_jaraba_core.comercioconecta_email_sequence:
@@ -1273,6 +1279,7 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
 
   # ===========================================
   # SERVICIOSCONECTA COPILOT BRIDGE (Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 2)

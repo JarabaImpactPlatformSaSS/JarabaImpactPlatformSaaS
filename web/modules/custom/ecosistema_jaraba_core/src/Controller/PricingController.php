@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * Todos los endpoints son públicos y con cache agresivo.
  *
  * @example
- * GET /api/pricing/agroconecta
+ * GET /api/v1/pricing/agroconecta
  * Retorna los planes disponibles con precios para AgroConecta.
  */
 class PricingController extends ControllerBase

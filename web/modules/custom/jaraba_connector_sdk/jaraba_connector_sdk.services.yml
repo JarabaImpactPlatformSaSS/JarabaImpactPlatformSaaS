@@ -1,0 +1,28 @@
+services:
+  jaraba_connector_sdk.certifier:
+    class: Drupal\jaraba_connector_sdk\Service\ConnectorCertifierService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_connector_sdk'
+
+  jaraba_connector_sdk.marketplace:
+    class: Drupal\jaraba_connector_sdk\Service\MarketplaceService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@jaraba_integrations.connector_registry'
+      - '@jaraba_integrations.connector_installer'
+
+  jaraba_connector_sdk.revenue_share:
+    class: Drupal\jaraba_connector_sdk\Service\RevenueShareService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_connector_sdk'
+
+  logger.channel.jaraba_connector_sdk:
+    parent: logger.channel_base
+    arguments: ['jaraba_connector_sdk']

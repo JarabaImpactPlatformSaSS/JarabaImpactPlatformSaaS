@@ -105,7 +105,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - `ComplianceDashboardController` en `/admin/seguridad`: 25+ controles, 4 frameworks (SOC 2, ISO 27001, ENS, GDPR)
   - Frontend: compliance-dashboard.css/js, template Twig, auto-refresh 30s
 - **Advanced Analytics** ⭐: Cohort Analysis + Funnel Tracking (✅):
-  - `jaraba_analytics`: 2 Content Entities nuevas (CohortDefinition, FunnelDefinition)
+  - `jaraba_analytics`: 8 Content Entities (CohortDefinition, FunnelDefinition, AnalyticsEvent, AnalyticsDaily, AnalyticsDashboard, CustomReport, DashboardWidget, ScheduledReport) <!-- AUDIT-SPEC-N02 -->
   - 2 Services (CohortAnalysisService, FunnelTrackingService), 2 API Controllers REST
   - Frontend: templates Twig, JS interactivo, heatmap retención, visualización funnel
 - **Billing SaaS** ⭐: Ciclo completo Stripe Billing (✅ Clase Mundial):
@@ -182,11 +182,11 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - `jaraba_customer_success` ✅ (extendido): +5 Controllers (NpsSurvey, NpsApi, HealthDetail, ChurnMatrix, ExpansionPipeline), +10 Templates, +5 JS, +5 SCSS. 65 archivos total
   - `jaraba_tenant_knowledge` ✅ (extendido): +3 Entities (KbArticle, KbCategory, KbVideo), +3 Services (SemanticSearch, ArticleManager, KbAnalytics), Help Center público. 91 archivos total
   - `jaraba_security_compliance` ✅ (nuevo, migración): 3 Entities (AuditLog migrada, ComplianceAssessment, SecurityPolicy), 4 Services (PolicyEnforcer, ComplianceTracker, DataRetention, AuditLog), SOC 2 readiness. 40 archivos
-  - `jaraba_analytics` ✅ (extendido): +3 Entities (AnalyticsDashboard, ScheduledReport, DashboardWidget), +3 Services (DashboardManager, ReportScheduler, DataService), Dashboard Builder drag-drop. 86 archivos total
+  - `jaraba_analytics` ✅ (extendido): 8 Entities total (CohortDefinition, FunnelDefinition, AnalyticsEvent, AnalyticsDaily, AnalyticsDashboard, CustomReport, DashboardWidget, ScheduledReport), +3 Services (DashboardManager, ReportScheduler, DataService), Dashboard Builder drag-drop. 86 archivos total <!-- AUDIT-SPEC-N02 -->
   - `jaraba_whitelabel` ✅ (nuevo, migración): 4 Entities (WhitelabelConfig, CustomDomain, WhitelabelEmailTemplate, WhitelabelReseller), 5 Services (ConfigResolver, DomainManager, EmailRenderer, ResellerManager, BrandedPdf), EventSubscriber (domain resolution). 54 archivos
   - **Total**: 542 archivos, 32 Content Entities, 42+ Services, 25+ Controllers, ~60 Templates Twig, ~30 JS files, ~25 CSS files, 22 unit test files
-- **Credentials System** ⭐: Open Badge 3.0 completo + Stackable + Cross-Vertical (✅ Clase Mundial):
-  - `jaraba_credentials` ✅: 6 Content Entities (IssuerProfile, CredentialTemplate, IssuedCredential, RevocationEntry, CredentialStack, UserStackProgress), 11 Services (CryptographyService Ed25519, OpenBadgeBuilder JSON-LD, CredentialIssuer, CredentialVerifier, QrCodeGenerator, RevocationService, StackEvaluationService, StackProgressTracker, AccessibilityAuditService, LmsIntegration, PdfGenerator), 3 Controllers (CredentialsApi, StacksApi, Verify). 45+ archivos
+- **Credentials System** ⭐: Open Badge 3.0 completo + Stackable + Cross-Vertical (✅ Clase Mundial): <!-- AUDIT-SPEC-N09: 8 entities total (6 core + 2 cross-vertical) -->
+  - `jaraba_credentials` ✅: 6 Content Entities core (IssuerProfile, CredentialTemplate, IssuedCredential, RevocationEntry, CredentialStack, UserStackProgress), 11 Services (CryptographyService Ed25519, OpenBadgeBuilder JSON-LD, CredentialIssuer, CredentialVerifier, QrCodeGenerator, RevocationService, StackEvaluationService, StackProgressTracker, AccessibilityAuditService, LmsIntegration, PdfGenerator), 3 Controllers (CredentialsApi, StacksApi, Verify). 45+ archivos
   - `jaraba_credentials_emprendimiento` ✅ (submódulo): 15 credential template YAMLs (12 badges + 3 diplomas progresivos), 3 Services (EmprendimientoCredentialService 15 tipos, ExpertiseService 5 niveles, JourneyTracker 6 fases), 1 Controller API, 1 EventSubscriber. 29 archivos
   - `jaraba_credentials_cross_vertical` ✅ (submódulo): 2 Content Entities (CrossVerticalRule, CrossVerticalProgress), 2 Services (CrossVerticalEvaluator, VerticalActivityTracker), rareza visual (common/rare/epic/legendary), cron diario. 22 archivos
   - **WCAG 2.1 AA**: focus-visible, prefers-reduced-motion, keyboard navigation, ARIA completo en todos los templates
@@ -197,6 +197,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - BrandVoiceTrainerService: Qdrant collection `jaraba_brand_voice` (1536 dims), feedback loop (approve/reject/edit), alineación coseno, refinamiento LLM
   - PromptExperimentService: experiment_type='prompt_variant', integrado con jaraba_ab_testing (StatisticalEngineService + QualityEvaluatorService auto-conversion score>=0.7)
   - MultiModal Preparation: PHP interfaces (MultiModalInputInterface, MultiModalOutputInterface), exception custom, bridge stub para futuro Whisper/ElevenLabs/DALL-E
+  - `ai_provider_google_gemini` ✅: Proveedor Google AI Studio (Gemini API) para módulo ai:ai. Configuración via Key module <!-- AUDIT-SPEC-N01 -->
 - **Scaling Infrastructure (F10)** ⭐: Backup per-tenant + k6 + Prometheus (✅ Completado):
   - `scripts/restore_tenant.sh`: 4 comandos (backup/restore/list/tables), auto-descubre 159+ tablas con tenant_id via INFORMATION_SCHEMA
   - `tests/performance/multi_tenant_load_test.js`: k6, 4 escenarios, 7 custom metrics, tenant isolation check, breakpoint 100 VUs
@@ -867,7 +868,7 @@ Cliente paga €100 → Stripe retiene €3.20 (fees)
 ### 2.9 Servicios Q1 2026 - Vertical Emprendimiento Digital
 
 > **Estado**: ✅ Implementado — Clase Mundial (Specs 20260121a-e 100% cerradas + Gaps cerrados)
-> **Módulo**: `jaraba_copilot_v2` (22 API endpoints, 14+ servicios, 3 frontend pages, widget chat SSE, triggers BD, métricas P50/P99)
+> **Módulo**: `jaraba_copilot_v2` (22 API endpoints, 21 servicios, 3 frontend pages, widget chat SSE, triggers BD, métricas P50/P99) <!-- AUDIT-SPEC-N08: servicios actualizado de 14 a 21 -->
 > **Programa**: Andalucía +ei v2.0
 
 **Entregables Copiloto v2 (✅ 100% Implementado — Specs 20260121 + Gaps cerrados):**
@@ -880,7 +881,7 @@ Cliente paga €100 → Stripe retiene €3.20 (fees)
 | **OpenAPI** | `openapi_copiloto_v2.yaml` | ✅ |
 | **Módulo Drupal completo** | `web/modules/custom/jaraba_copilot_v2/` | ✅ |
 | **22 API Endpoints REST** | HypothesisApi, ExperimentApi, BmcApi, EntrepreneurApi, History, Knowledge | ✅ |
-| **14+ Servicios Producción** | HypothesisPrioritization, BmcValidation, LearningCard, ModeDetector (BD+fallback), CopilotOrchestrator (métricas), etc. | ✅ |
+| **21 Servicios Producción** | HypothesisPrioritization, BmcValidation, LearningCard, ModeDetector (BD+fallback), CopilotOrchestrator (métricas), ClaudeApi, CopilotCache, EntrepreneurContext, NormativeRAG, TestCardGenerator, VPC, PivotDetector, etc. | ✅ | <!-- AUDIT-SPEC-N08 -->
 | **5 Access Handlers + ListBuilders** | EntrepreneurProfile, Hypothesis, Experiment, Learning, FieldExit | ✅ |
 | **BMC Dashboard Frontend** | `/emprendimiento/bmc` — Grid 5×3 bloques, semáforos, Impact Points | ✅ |
 | **Hypothesis Manager Frontend** | `/emprendimiento/hipotesis` — CRUD modal, filtros, ICE Score | ✅ |

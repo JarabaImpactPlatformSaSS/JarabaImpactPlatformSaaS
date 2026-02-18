@@ -12,9 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
  * Controlador para API REST de consentimientos GDPR.
  *
  * Endpoints:
- * - GET /api/consent/status: Estado actual del visitante.
- * - POST /api/consent/grant: Guardar consentimiento.
- * - POST /api/consent/revoke: Revocar consentimiento.
+ * - GET /api/v1/consent/status: Estado actual del visitante.
+ * - POST /api/v1/consent/grant: Guardar consentimiento.
+ * - POST /api/v1/consent/revoke: Revocar consentimiento.
+ * AUDIT-CONS-N07: Added API versioning prefix.
  */
 class ConsentController extends ControllerBase
 {

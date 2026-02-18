@@ -1,0 +1,119 @@
+# =============================================================================
+# Jaraba Impact Platform - ProxySQL Configuration
+# N3 Enterprise Class - Doc 197 - High Availability Infrastructure
+# =============================================================================
+# Read/write splitting, connection pooling, query caching, and Galera-aware
+# health checking.  ProxySQL sits between HAProxy/app servers and the
+# Galera cluster, routing writes to a single primary and reads across all
+# nodes for horizontal read scaling.
+# =============================================================================
+
+datadir="/var/lib/proxysql"
+
+# ---------------------------------------------------------------------------
+# Admin Interface
+# ---------------------------------------------------------------------------
+admin_variables=
+{
+    admin_credentials="admin:${PROXYSQL_ADMIN_PASSWORD}"
+    mysql_ifaces="0.0.0.0:6032"
+    refresh_interval=2000
+    web_enabled=true
+    web_port=6080
+    stats_credentials="stats:${PROXYSQL_STATS_PASSWORD}"
+}
+
+# ---------------------------------------------------------------------------
+# MySQL Variables - connection handling, monitoring, Galera integration
+# ---------------------------------------------------------------------------
+mysql_variables=
+{
+    threads=4
+    max_connections=2048
+    default_query_delay=0
+    default_query_timeout=36000000
+    have_compress=true
+    poll_timeout=2000
+    interfaces="0.0.0.0:6033;/tmp/proxysql.sock"
+    default_schema="drupal"
+    stacksize=1048576
+    server_version="10.11.6-MariaDB"
+    connect_timeout_server=3000
+    monitor_username="${MONITOR_USER}"
+    monitor_password="${MONITOR_PASSWORD}"
+    monitor_history=600000
+    monitor_connect_interval=60000
+    monitor_ping_interval=10000
+    monitor_read_only_interval=1500
+    monitor_read_only_timeout=500
+    ping_interval_server_msec=120000
+    commands_stats=true
+    sessions_sort=true
+    connect_retries_on_failure=10
+    monitor_galera_healthcheck_interval=5000
+    monitor_galera_healthcheck_timeout=800
+    connection_max_age_ms=3600000
+    free_connections_pct=10
+    query_cache_size_MB=256
+}
+
+# ---------------------------------------------------------------------------
+# Server Definitions
+# Hostgroup 10 = writers (single primary)
+# Hostgroup 20 = readers  (all nodes, balanced)
+# Hostgroup 30 = backup writers (failover candidates)
+# Hostgroup 40 = offline  (maintenance / failed nodes)
+# ---------------------------------------------------------------------------
+mysql_servers =
+(
+    { address="node1.db.jaraba.io", port=3306, hostgroup=10, max_connections=200, weight=1000 },
+    { address="node1.db.jaraba.io", port=3306, hostgroup=20, max_connections=200, weight=333 },
+    { address="node2.db.jaraba.io", port=3306, hostgroup=20, max_connections=200, weight=333 },
+    { address="node3.db.jaraba.io", port=3306, hostgroup=20, max_connections=200, weight=334 }
+)
+
+# ---------------------------------------------------------------------------
+# Query Rules
+# Evaluated in rule_id order.  First match with apply=1 wins.
+# ---------------------------------------------------------------------------
+mysql_query_rules =
+(
+    # Drupal cache table reads - aggressively cached (60 s TTL)
+    { rule_id=100, active=1, match_pattern="^SELECT.*FROM cache_", destination_hostgroup=20, cache_ttl=60000, apply=1 },
+
+    # SELECT ... FOR UPDATE -> writer (row-level locks require primary)
+    { rule_id=200, active=1, match_pattern="^SELECT .* FOR UPDATE", destination_hostgroup=10, apply=1 },
+
+    # Plain SELECTs -> reader pool
+    { rule_id=300, active=1, match_pattern="^SELECT", destination_hostgroup=20, apply=1 },
+
+    # Everything else (INSERT, UPDATE, DELETE, DDL) -> writer
+    { rule_id=400, active=1, match_pattern=".*", destination_hostgroup=10, apply=1 }
+)
+
+# ---------------------------------------------------------------------------
+# Application User
+# ---------------------------------------------------------------------------
+mysql_users =
+(
+    { username="${DRUPAL_DB_USER}", password="${DRUPAL_DB_PASSWORD}", default_hostgroup=10, max_connections=500, transaction_persistent=1 }
+)
+
+# ---------------------------------------------------------------------------
+# Galera Hostgroup Manager
+# ProxySQL natively understands Galera state (wsrep_local_state) and
+# will automatically promote / demote / offline nodes.
+# ---------------------------------------------------------------------------
+mysql_galera_hostgroups =
+(
+    {
+        writer_hostgroup=10,
+        backup_writer_hostgroup=30,
+        reader_hostgroup=20,
+        offline_hostgroup=40,
+        active=1,
+        max_writers=1,
+        writer_is_also_reader=1,
+        max_transactions_behind=30
+    }
+)

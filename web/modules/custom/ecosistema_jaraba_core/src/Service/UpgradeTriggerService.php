@@ -438,6 +438,75 @@ class UpgradeTriggerService
                     ]),
                 ];
 
+            // AgroConecta v1 — Fase 0+1.
+            case 'agro_products_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 5);
+                return [
+                    'title' => $this->t('Has alcanzado el límite de productos'),
+                    'message' => $this->t('Tu plan actual te permite publicar hasta @limit productos. Actualiza a Starter para publicar hasta 25 productos y aumentar tus ventas.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_orders_per_month_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 10);
+                return [
+                    'title' => $this->t('Has alcanzado el límite de pedidos mensuales'),
+                    'message' => $this->t('¡Tu negocio está creciendo! Has recibido @limit pedidos este mes. Actualiza tu plan para procesar pedidos sin límites y no perder ninguna venta.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_copilot_uses_per_month_limit_reached':
+                return [
+                    'title' => $this->t('Has agotado tus consultas al Copiloto IA'),
+                    'message' => $this->t('Has utilizado todas tus consultas de inteligencia artificial este mes. El plan @plan te ofrece mucha más capacidad para optimizar tu producción y ventas.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_photos_per_product_limit_reached':
+                return [
+                    'title' => $this->t('Límite de fotos por producto alcanzado'),
+                    'message' => $this->t('Las imágenes venden. El plan @plan te permite subir más fotos por producto para mostrar la calidad de tu género desde todos los ángulos.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_traceability_qr_limit_reached':
+                return [
+                    'title' => $this->t('Trazabilidad QR no disponible'),
+                    'message' => $this->t('La generación de códigos QR de trazabilidad para el consumidor final está disponible en el plan @plan. Genera confianza mostrando el origen de tus productos.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_partner_hub_limit_reached':
+                return [
+                    'title' => $this->t('Acceso al Partner Hub B2B restringido'),
+                    'message' => $this->t('Conecta con distribuidores y restaurantes a través del Partner Hub. Esta funcionalidad exclusiva está disponible en el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_analytics_advanced_limit_reached':
+                return [
+                    'title' => $this->t('Analítica avanzada no disponible'),
+                    'message' => $this->t('Toma decisiones basadas en datos. Los informes detallados de tendencias de mercado y comportamiento del consumidor están disponibles en el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'agro_demand_forecaster_limit_reached':
+                return [
+                    'title' => $this->t('Predicción de demanda no disponible'),
+                    'message' => $this->t('Adelántate al mercado. La herramienta de predicción de demanda basada en IA para planificar tu producción está disponible en el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
             // ComercioConecta v1 — Fase 2.
             case 'comercio_product_limit_reached':
                 $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 10);
@@ -650,6 +719,63 @@ class UpgradeTriggerService
             'name' => 'code',
             'variant' => 'duotone',
             'color' => 'azul-corporativo',
+        ];
+
+        $icons['api_blocked'] = [
+            'category' => 'actions',
+            'name' => 'code',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+
+        // AgroConecta v1 — Fase 0+1.
+        $icons['agro_products_limit_reached'] = [
+            'category' => 'commerce',
+            'name' => 'shopping-bag',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['agro_orders_per_month_limit_reached'] = [
+            'category' => 'commerce',
+            'name' => 'shopping-cart',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
+        ];
+        $icons['agro_copilot_uses_per_month_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'robot',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['agro_photos_per_product_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'image',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['agro_traceability_qr_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'qr-code',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
+        ];
+        $icons['agro_partner_hub_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'network',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['agro_analytics_advanced_limit_reached'] = [
+            'category' => 'analytics',
+            'name' => 'chart-bar',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['agro_demand_forecaster_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'trending-up',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
         ];
 
         // ComercioConecta v1 — Fase 2.

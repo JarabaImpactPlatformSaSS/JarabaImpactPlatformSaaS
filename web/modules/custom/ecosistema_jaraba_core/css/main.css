@@ -1,3 +1,4 @@
+/* AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace */
 @charset "UTF-8";
 :root {
   --ej-color-primary: #2E7D32;
@@ -5818,12 +5819,12 @@ button.quick-action {
   }
 }
 :root {
-  --cd-glass-bg: rgba(255, 255, 255, 0.85);
-  --cd-glass-border: rgba(255, 255, 255, 0.3);
-  --cd-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --cd-radius: 1rem;
-  --cd-radius-lg: 1.5rem;
-  --cd-transition: all 0.3s ease;
+  --ej-cd-glass-bg: rgba(255, 255, 255, 0.85);
+  --ej-cd-glass-border: rgba(255, 255, 255, 0.3);
+  --ej-cd-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --ej-cd-radius: 1rem;
+  --ej-cd-radius-lg: 1.5rem;
+  --ej-cd-transition: all 0.3s ease;
 }
 
 .career-dashboard {
@@ -5836,28 +5837,28 @@ button.quick-action {
   font-family: var(--ej-font-primary, "Inter", sans-serif);
 }
 .career-dashboard--phase-1 {
-  --phase-color: var(--ej-color-error, #ef4444);
+  --ej-phase-color: var(--ej-color-error, #ef4444);
 }
 .career-dashboard--phase-2 {
-  --phase-color: var(--ej-color-warning, #f97316);
+  --ej-phase-color: var(--ej-color-warning, #f97316);
 }
 .career-dashboard--phase-3 {
-  --phase-color: var(--ej-color-warning, #eab308);
+  --ej-phase-color: var(--ej-color-warning, #eab308);
 }
 .career-dashboard--phase-4 {
-  --phase-color: var(--ej-color-success, #22c55e);
+  --ej-phase-color: var(--ej-color-success, #22c55e);
 }
 .career-dashboard--phase-5 {
-  --phase-color: var(--ej-color-secondary, #8b5cf6);
+  --ej-phase-color: var(--ej-color-secondary, #8b5cf6);
 }
 
 .card--glassmorphism, .product-card, .dashboard-header {
-  background: var(--cd-glass-bg);
+  background: var(--ej-cd-glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--cd-glass-border);
-  border-radius: var(--cd-radius);
-  box-shadow: var(--cd-shadow);
+  border: 1px solid var(--ej-cd-glass-border);
+  border-radius: var(--ej-cd-radius);
+  box-shadow: var(--ej-cd-shadow);
 }
 
 .dashboard-header {
@@ -5865,7 +5866,7 @@ button.quick-action {
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--phase-color) 0%, rgba(255, 255, 255, 0.95) 50%);
+  background: linear-gradient(135deg, var(--ej-phase-color) 0%, rgba(255, 255, 255, 0.95) 50%);
   animation: fadeInDown 0.5s ease-out;
 }
 .dashboard-header .header-content {
@@ -5879,7 +5880,7 @@ button.quick-action {
   align-items: center;
   padding: 0.75rem 1rem;
   background: white;
-  border-radius: var(--cd-radius);
+  border-radius: var(--ej-cd-radius);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .dashboard-header .phase-badge .phase-emoji {
@@ -5890,7 +5891,7 @@ button.quick-action {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--phase-color);
+  color: var(--ej-phase-color);
 }
 .dashboard-header .user-greeting h2 {
   margin: 0;
@@ -5920,7 +5921,7 @@ button.quick-action {
 }
 .progress-ring__progress {
   fill: none;
-  stroke: var(--phase-color, #0ea5e9);
+  stroke: var(--ej-phase-color, #0ea5e9);
   stroke-width: 8;
   stroke-linecap: round;
   stroke-dasharray: 339.292;
@@ -5937,7 +5938,7 @@ button.quick-action {
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--phase-color, #0ea5e9);
+  color: var(--ej-phase-color, #0ea5e9);
 }
 .progress-ring__text .progress-label {
   font-size: 0.625rem;
@@ -6025,7 +6026,7 @@ button.quick-action {
   border: 1px solid var(--ej-border-color, #e5e7eb);
   border-radius: 2rem;
   font-size: 0.8125rem;
-  transition: var(--cd-transition);
+  transition: var(--ej-cd-transition);
 }
 .gap-chip:hover {
   background: var(--ej-gray-50, #f9fafb);
@@ -6063,10 +6064,10 @@ button.quick-action {
 }
 
 .itinerary-card {
-  --itinerary-color: var(--ej-color-primary, #0ea5e9);
+  --ej-itinerary-color: var(--ej-color-primary, #0ea5e9);
   padding: 0;
   overflow: hidden;
-  transition: var(--cd-transition);
+  transition: var(--ej-cd-transition);
 }
 .itinerary-card:hover {
   transform: translateY(-4px);
@@ -6077,7 +6078,7 @@ button.quick-action {
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--itinerary-color) 0%, color-mix(in srgb, var(--itinerary-color) 80%, white) 100%);
+  background: linear-gradient(135deg, var(--ej-itinerary-color) 0%, color-mix(in srgb, var(--ej-itinerary-color) 80%, white) 100%);
   color: white;
 }
 .itinerary-card .itinerary-header .itinerary-icon {
@@ -6121,7 +6122,7 @@ button.quick-action {
   font-size: 0.75rem;
   font-weight: 600;
   color: white;
-  background: var(--itinerary-color);
+  background: var(--ej-itinerary-color);
   border-radius: 50%;
 }
 .itinerary-card .itinerary-steps .step .step-text {
@@ -6136,14 +6137,14 @@ button.quick-action {
   padding: 0.875rem 1rem;
   background: var(--ej-gray-50, #f9fafb);
   border-top: 1px solid var(--ej-border-color, #e5e7eb);
-  color: var(--itinerary-color);
+  color: var(--ej-itinerary-color);
   text-decoration: none;
   font-size: 0.8125rem;
   font-weight: 500;
-  transition: var(--cd-transition);
+  transition: var(--ej-cd-transition);
 }
 .itinerary-card .itinerary-cta:hover {
-  background: var(--itinerary-color);
+  background: var(--ej-itinerary-color);
   color: white;
 }
 .itinerary-card .itinerary-cta .cta-text {
@@ -6177,14 +6178,14 @@ button.quick-action {
   padding: 1.25rem;
   text-decoration: none;
   color: inherit;
-  transition: var(--cd-transition);
+  transition: var(--ej-cd-transition);
 }
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 .product-card--highlight {
-  border: 2px solid var(--phase-color, #0ea5e9);
+  border: 2px solid var(--ej-phase-color, #0ea5e9);
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, white 100%);
 }
 .product-card .product-icon {
@@ -6216,7 +6217,7 @@ button.quick-action {
 }
 .product-card .product-meta .product-price {
   font-weight: 600;
-  color: var(--phase-color, #0ea5e9);
+  color: var(--ej-phase-color, #0ea5e9);
 }
 
 .actions-section {
@@ -6241,7 +6242,7 @@ button.quick-action {
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: var(--cd-transition);
+  transition: var(--ej-cd-transition);
 }
 .action-button:hover {
   transform: translateY(-2px);
@@ -6285,14 +6286,14 @@ button.quick-action {
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, var(--phase-color, #0ea5e9) 0%, color-mix(in srgb, var(--phase-color, #0ea5e9) 70%, #1f2937) 100%);
+  background: linear-gradient(135deg, var(--ej-phase-color, #0ea5e9) 0%, color-mix(in srgb, var(--ej-phase-color, #0ea5e9) 70%, #1f2937) 100%);
   color: white;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 600;
   border-radius: 3rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  transition: var(--cd-transition);
+  transition: var(--ej-cd-transition);
 }
 .primary-cta:hover {
   transform: translateY(-2px) scale(1.02);
@@ -6354,19 +6355,19 @@ button.quick-action {
   font-family: var(--ej-font-primary, "Inter", sans-serif);
 }
 .recruiter-dashboard--phase-1 {
-  --phase-color: #fbbf24;
+  --ej-phase-color: #fbbf24;
 }
 .recruiter-dashboard--phase-2 {
-  --phase-color: #f97316;
+  --ej-phase-color: #f97316;
 }
 .recruiter-dashboard--phase-3 {
-  --phase-color: #22c55e;
+  --ej-phase-color: #22c55e;
 }
 .recruiter-dashboard--phase-4 {
-  --phase-color: #059669;
+  --ej-phase-color: #059669;
 }
 .recruiter-dashboard--phase-5 {
-  --phase-color: #0d9488;
+  --ej-phase-color: #0d9488;
 }
 
 .dashboard-header--recruiter {
@@ -6380,7 +6381,7 @@ button.quick-action {
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--phase-color, #059669) 0%, rgba(255, 255, 255, 0.95) 40%);
+  background: linear-gradient(135deg, var(--ej-phase-color, #059669) 0%, rgba(255, 255, 255, 0.95) 40%);
   animation: fadeInDown 0.5s ease-out;
 }
 .dashboard-header--recruiter .header-content {
@@ -6394,7 +6395,7 @@ button.quick-action {
   align-items: center;
   padding: 0.75rem 1rem;
   background: white;
-  border-radius: var(--cd-radius, 1rem);
+  border-radius: var(--ej-cd-radius, 1rem);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .dashboard-header--recruiter .header-content .phase-badge .phase-emoji {
@@ -6405,7 +6406,7 @@ button.quick-action {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--phase-color, #059669);
+  color: var(--ej-phase-color, #059669);
 }
 .dashboard-header--recruiter .header-content .user-greeting h2 {
   margin: 0;
@@ -6460,7 +6461,7 @@ button.quick-action {
   color: #6b7280;
 }
 .kpi-card--highlight {
-  background: linear-gradient(135deg, var(--phase-color, #059669) 0%, color-mix(in srgb, var(--phase-color, #059669) 70%, white) 100%);
+  background: linear-gradient(135deg, var(--ej-phase-color, #059669) 0%, color-mix(in srgb, var(--ej-phase-color, #059669) 70%, white) 100%);
   color: white;
 }
 .kpi-card--highlight .kpi-value {
@@ -6526,7 +6527,7 @@ button.quick-action {
 }
 
 .path-card {
-  --path-color: #059669;
+  --ej-path-color: #059669;
   padding: 0;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -6540,7 +6541,7 @@ button.quick-action {
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--path-color) 0%, color-mix(in srgb, var(--path-color) 80%, white) 100%);
+  background: linear-gradient(135deg, var(--ej-path-color) 0%, color-mix(in srgb, var(--ej-path-color) 80%, white) 100%);
   color: white;
 }
 .path-card .path-header .path-icon {
@@ -6584,7 +6585,7 @@ button.quick-action {
   font-size: 0.75rem;
   font-weight: 600;
   color: white;
-  background: var(--path-color);
+  background: var(--ej-path-color);
   border-radius: 50%;
 }
 .path-card .path-steps .step .step-text {
@@ -6599,14 +6600,14 @@ button.quick-action {
   padding: 0.875rem 1rem;
   background: #f9fafb;
   border-top: 1px solid #e5e7eb;
-  color: var(--path-color);
+  color: var(--ej-path-color);
   text-decoration: none;
   font-size: 0.8125rem;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 .path-card .path-cta:hover {
-  background: var(--path-color);
+  background: var(--ej-path-color);
   color: white;
 }
 .path-card .path-cta .cta-text {
@@ -6649,7 +6650,7 @@ button.quick-action {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 .tool-card--highlight {
-  border: 2px solid var(--phase-color, #059669);
+  border: 2px solid var(--ej-phase-color, #059669);
   background: linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, white 100%);
 }
 .tool-card .tool-icon {
@@ -6674,7 +6675,7 @@ button.quick-action {
 .tool-card .tool-content .tool-price {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--phase-color, #059669);
+  color: var(--ej-phase-color, #059669);
 }
 
 @media (max-width: 640px) {
@@ -10658,9 +10659,9 @@ button.quick-action {
   }
 }
 .contextual-copilot {
-  --fab-size: 56px;
-  --panel-width: 380px;
-  --panel-height: 500px;
+  --ej-fab-size: 56px;
+  --ej-panel-width: 380px;
+  --ej-panel-height: 500px;
   position: fixed;
   bottom: var(--ej-spacing-lg, 24px);
   right: var(--ej-spacing-lg, 24px);
@@ -10669,8 +10670,8 @@ button.quick-action {
 }
 
 .copilot-fab {
-  width: var(--fab-size);
-  height: var(--fab-size);
+  width: var(--ej-fab-size);
+  height: var(--ej-fab-size);
   border-radius: 50%;
   background: var(--ej-color-impulse, #FF8C42);
   border: none;
@@ -10712,10 +10713,10 @@ button.quick-action {
 }
 .copilot-panel {
   position: absolute;
-  bottom: calc(var(--fab-size) + var(--ej-spacing-md, 16px));
+  bottom: calc(var(--ej-fab-size) + var(--ej-spacing-md, 16px));
   right: 0;
-  width: var(--panel-width);
-  max-height: var(--panel-height);
+  width: var(--ej-panel-width);
+  max-height: var(--ej-panel-height);
   background: var(--ej-bg-surface, #fff);
   border-radius: var(--ej-radius-lg, 16px);
   box-shadow: var(--ej-shadow-xl, 0 10px 40px rgba(0, 0, 0, 0.15));
@@ -11016,8 +11017,8 @@ button.quick-action {
 
 @media (max-width: 480px) {
   .contextual-copilot {
-    --panel-width: calc(100vw - 32px);
-    --panel-height: 70vh;
+    --ej-panel-width: calc(100vw - 32px);
+    --ej-panel-height: 70vh;
     bottom: var(--ej-spacing-md, 16px);
     right: var(--ej-spacing-md, 16px);
   }
@@ -12423,7 +12424,7 @@ body.mobile-menu-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, var(--vertical-color, var(--ej-color-impulse, #FF8C42)) 100%);
+  background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42)) 100%);
   color: #fff;
   text-align: center;
   padding: 4rem 2rem;
@@ -12578,13 +12579,13 @@ body.mobile-menu-open {
   width: 64px;
   height: 64px;
   margin-inline: auto;
-  background: var(--vertical-color-light, rgba(255, 140, 66, 0.1));
+  background: var(--ej-vertical-color-light, rgba(255, 140, 66, 0.1));
   border-radius: 16px;
 }
 .vertical-benefit__icon svg {
   width: 32px;
   height: 32px;
-  color: var(--vertical-color, var(--ej-color-impulse, #FF8C42));
+  color: var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42));
 }
 
 .vertical-benefit__title {
@@ -12625,23 +12626,23 @@ body.mobile-menu-open {
 
 .vertical-landing--empleo,
 .vertical-landing--talento {
-  --vertical-color: var(--ej-color-innovation, #00A9A5);
-  --vertical-color-light: rgba(0, 169, 165, 0.1);
+  --ej-vertical-color: var(--ej-color-innovation, #00A9A5);
+  --ej-vertical-color-light: rgba(0, 169, 165, 0.1);
 }
 
 .vertical-landing--emprender {
-  --vertical-color: var(--ej-color-impulse, #FF8C42);
-  --vertical-color-light: rgba(255, 140, 66, 0.1);
+  --ej-vertical-color: var(--ej-color-impulse, #FF8C42);
+  --ej-vertical-color-light: rgba(255, 140, 66, 0.1);
 }
 
 .vertical-landing--comercio {
-  --vertical-color: var(--ej-color-success, #10B981);
-  --vertical-color-light: rgba(16, 185, 129, 0.1);
+  --ej-vertical-color: var(--ej-color-success, #10B981);
+  --ej-vertical-color-light: rgba(16, 185, 129, 0.1);
 }
 
 .vertical-landing--instituciones {
-  --vertical-color: var(--ej-color-corporate, #233D63);
-  --vertical-color-light: rgba(35, 61, 99, 0.1);
+  --ej-vertical-color: var(--ej-color-corporate, #233D63);
+  --ej-vertical-color-light: rgba(35, 61, 99, 0.1);
 }
 
 @keyframes fadeInUp {
@@ -14050,7 +14051,7 @@ body.experiments-dashboard-page .dashboard-wrapper {
   overflow: hidden;
   cursor: pointer;
   transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  transform: translateZ(calc(var(--card-index) * -40px)) translateY(calc(var(--card-index) * 20px)) translateX(calc(var(--card-index) * 15px)) rotateY(calc(var(--card-index) * -5deg)) rotateX(calc(var(--card-index) * 2deg));
+  transform: translateZ(calc(var(--ej-card-index) * -40px)) translateY(calc(var(--ej-card-index) * 20px)) translateX(calc(var(--ej-card-index) * 15px)) rotateY(calc(var(--ej-card-index) * -5deg)) rotateX(calc(var(--ej-card-index) * 2deg));
 }
 .jaraba-card-stack__card:hover {
   transform: translateZ(60px) translateY(-15px) rotateY(0deg) rotateX(0deg) scale(1.08);
@@ -14234,16 +14235,16 @@ body.experiments-dashboard-page .dashboard-wrapper {
   inset: 0;
 }
 .jaraba-video-hero__overlay--dark {
-  background: rgba(0, 0, 0, var(--overlay-opacity, 0.6));
+  background: rgba(0, 0, 0, var(--ej-overlay-opacity, 0.6));
 }
 .jaraba-video-hero__overlay--light {
-  background: rgba(255, 255, 255, var(--overlay-opacity, 0.6));
+  background: rgba(255, 255, 255, var(--ej-overlay-opacity, 0.6));
 }
 .jaraba-video-hero__overlay--gradient {
-  background: linear-gradient(135deg, rgba(35, 61, 99, var(--overlay-opacity, 0.8)) 0%, rgba(0, 169, 165, calc(var(--overlay-opacity, 0.6) * 0.7)) 100%);
+  background: linear-gradient(135deg, rgba(35, 61, 99, var(--ej-overlay-opacity, 0.8)) 0%, rgba(0, 169, 165, calc(var(--ej-overlay-opacity, 0.6) * 0.7)) 100%);
 }
 .jaraba-video-hero__overlay--brand {
-  background: linear-gradient(135deg, rgba(35, 61, 99, var(--overlay-opacity, 0.9)) 0%, rgba(255, 140, 66, calc(var(--overlay-opacity, 0.6) * 0.5)) 100%);
+  background: linear-gradient(135deg, rgba(35, 61, 99, var(--ej-overlay-opacity, 0.9)) 0%, rgba(255, 140, 66, calc(var(--ej-overlay-opacity, 0.6) * 0.5)) 100%);
 }
 .jaraba-video-hero__content {
   position: relative;
@@ -14997,12 +14998,12 @@ body.experiments-dashboard-page .dashboard-wrapper {
   box-shadow: inset 0 0 50px rgba(0, 220, 220, 0.2);
 }
 .jaraba-glow-card--primary {
-  --glow-color: rgba(0, 220, 220, 1);
-  --glow-color-soft: rgba(0, 200, 200, 0.6);
+  --ej-glow-color: rgba(0, 220, 220, 1);
+  --ej-glow-color-soft: rgba(0, 200, 200, 0.6);
 }
 .jaraba-glow-card--secondary {
-  --glow-color: rgba(139, 92, 246, 1);
-  --glow-color-soft: rgba(139, 92, 246, 0.6);
+  --ej-glow-color: rgba(139, 92, 246, 1);
+  --ej-glow-color-soft: rgba(139, 92, 246, 0.6);
 }
 .jaraba-glow-card--secondary::before {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.6) 0%, rgba(100, 60, 200, 0.3) 50%, rgba(139, 92, 246, 0.6) 100%);
@@ -15012,8 +15013,8 @@ body.experiments-dashboard-page .dashboard-wrapper {
   box-shadow: 0 0 40px rgba(139, 92, 246, 0.4), 0 0 80px rgba(100, 60, 200, 0.2), 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 .jaraba-glow-card--success {
-  --glow-color: rgba(16, 185, 129, 1);
-  --glow-color-soft: rgba(16, 185, 129, 0.6);
+  --ej-glow-color: rgba(16, 185, 129, 1);
+  --ej-glow-color-soft: rgba(16, 185, 129, 0.6);
 }
 .jaraba-glow-card--success::before {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.6) 0%, rgba(10, 150, 100, 0.3) 50%, rgba(16, 185, 129, 0.6) 100%);
@@ -15024,12 +15025,12 @@ body.experiments-dashboard-page .dashboard-wrapper {
 }
 .jaraba-glow-card__icon {
   margin-bottom: 1rem;
-  color: var(--glow-color, rgb(0, 220, 220));
-  filter: drop-shadow(0 0 8px var(--glow-color-soft, rgba(0, 200, 200, 0.6)));
+  color: var(--ej-glow-color, rgb(0, 220, 220));
+  filter: drop-shadow(0 0 8px var(--ej-glow-color-soft, rgba(0, 200, 200, 0.6)));
   transition: filter 0.3s;
 }
 .jaraba-glow-card:hover .jaraba-glow-card__icon {
-  filter: drop-shadow(0 0 16px var(--glow-color-soft, rgba(0, 200, 200, 0.8)));
+  filter: drop-shadow(0 0 16px var(--ej-glow-color-soft, rgba(0, 200, 200, 0.8)));
 }
 .jaraba-glow-card__title {
   font-size: 1.25rem;
@@ -15047,7 +15048,7 @@ body.experiments-dashboard-page .dashboard-wrapper {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--glow-color, rgb(0, 220, 220));
+  color: var(--ej-glow-color, rgb(0, 220, 220));
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
@@ -15055,7 +15056,7 @@ body.experiments-dashboard-page .dashboard-wrapper {
 }
 .jaraba-glow-card__link:hover {
   gap: 0.75rem;
-  filter: drop-shadow(0 0 8px var(--glow-color-soft, rgba(0, 200, 200, 0.6)));
+  filter: drop-shadow(0 0 8px var(--ej-glow-color-soft, rgba(0, 200, 200, 0.6)));
 }
 
 .jaraba-glow-cards--intensity-low .jaraba-glow-card:hover {
@@ -15508,8 +15509,8 @@ body.experiments-dashboard-page .dashboard-wrapper {
   box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
   left: 50%;
   top: 0;
-  transform: translateX(-50%) rotate(calc(360deg / var(--total) * var(--index))) translateY(-50%);
-  transform-origin: center calc(100% + var(--index) * 0px);
+  transform: translateX(-50%) rotate(calc(360deg / var(--ej-total) * var(--ej-index))) translateY(-50%);
+  transform-origin: center calc(100% + var(--ej-index) * 0px);
 }
 .jaraba-orbit__item img {
   width: 30px;
@@ -15562,7 +15563,7 @@ body.experiments-dashboard-page .dashboard-wrapper {
 .jaraba-parallax-hero__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, var(--overlay-opacity, 0.5));
+  background: rgba(0, 0, 0, var(--ej-overlay-opacity, 0.5));
   z-index: 1;
 }
 .jaraba-parallax-hero__particles {
@@ -15940,7 +15941,7 @@ body.experiments-dashboard-page .dashboard-wrapper {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.1) 25%, transparent 50%);
+  background: radial-gradient(circle at var(--ej-mouse-x, 50%) var(--ej-mouse-y, 50%), rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.1) 25%, transparent 50%);
   transition: background 0.1s ease-out;
 }
 .jaraba-spotlight__content {
@@ -16168,13 +16169,13 @@ body.experiments-dashboard-page .dashboard-wrapper {
   inset: 0;
 }
 .jaraba-video-hero__overlay--solid {
-  background: rgba(0, 0, 0, var(--overlay-opacity, 0.6));
+  background: rgba(0, 0, 0, var(--ej-overlay-opacity, 0.6));
 }
 .jaraba-video-hero__overlay--gradient {
-  background: linear-gradient(135deg, rgba(0, 0, 0, var(--overlay-opacity, 0.6)) 0%, rgba(15, 23, 42, var(--overlay-opacity, 0.6)) 100%);
+  background: linear-gradient(135deg, rgba(0, 0, 0, var(--ej-overlay-opacity, 0.6)) 0%, rgba(15, 23, 42, var(--ej-overlay-opacity, 0.6)) 100%);
 }
 .jaraba-video-hero__overlay--corporate {
-  background: linear-gradient(135deg, rgba(35, 61, 99, var(--overlay-opacity, 0.8)) 0%, rgba(15, 23, 42, var(--overlay-opacity, 0.7)) 100%);
+  background: linear-gradient(135deg, rgba(35, 61, 99, var(--ej-overlay-opacity, 0.8)) 0%, rgba(15, 23, 42, var(--ej-overlay-opacity, 0.7)) 100%);
 }
 .jaraba-video-hero__content {
   position: relative;

@@ -66,15 +66,12 @@ class DiagnosticApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse([
-            'data' => $items,
-            'meta' => [
+        return new JsonResponse(['success' => TRUE, 'data' => $items, 'meta' => [
                 'total' => (int) $total,
                 'page' => $page,
                 'limit' => $limit,
                 'pages' => ceil($total / $limit),
-            ],
-        ]);
+            ]]);
     }
 
     /**
@@ -87,7 +84,8 @@ class DiagnosticApiController extends ControllerBase
         $diagnostic = $this->loadByUuid($uuid);
 
         if (!$diagnostic) {
-            return new JsonResponse(['error' => 'Diagnostic not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
         return new JsonResponse([
@@ -138,7 +136,7 @@ class DiagnosticApiController extends ControllerBase
         $diagnostic = $this->loadByUuid($uuid);
 
         if (!$diagnostic) {
-            return new JsonResponse(['error' => 'Diagnostic not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
         $data = json_decode($request->getContent(), TRUE);
@@ -168,13 +166,13 @@ class DiagnosticApiController extends ControllerBase
         $diagnostic = $this->loadByUuid($uuid);
 
         if (!$diagnostic) {
-            return new JsonResponse(['error' => 'Diagnostic not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['answers'])) {
-            return new JsonResponse(['error' => 'answers is required'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'answers is required']], 400);
         }
 
         // Procesar respuestas y calcular scores
@@ -203,7 +201,7 @@ class DiagnosticApiController extends ControllerBase
         $diagnostic = $this->loadByUuid($uuid);
 
         if (!$diagnostic) {
-            return new JsonResponse(['error' => 'Diagnostic not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
         $priorityGaps = json_decode($diagnostic->get('priority_gaps')->value ?? '[]', TRUE);
@@ -230,7 +228,7 @@ class DiagnosticApiController extends ControllerBase
         $diagnostic = $this->loadByUuid($uuid);
 
         if (!$diagnostic) {
-            return new JsonResponse(['error' => 'Diagnostic not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
         // Query diagnostic_result entity to extract scores_by_section from JSON field.

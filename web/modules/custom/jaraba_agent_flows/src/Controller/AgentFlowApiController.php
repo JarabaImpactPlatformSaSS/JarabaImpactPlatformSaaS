@@ -98,9 +98,11 @@ class AgentFlowApiController extends ControllerBase {
       $ids = $query->execute();
 
       if (empty($ids)) {
+        // AUDIT-CONS-N08: Standardized JSON envelope.
         return new JsonResponse([
-          'flows' => [],
-          'total' => 0,
+          'success' => TRUE,
+          'data' => [],
+          'meta' => ['total' => 0, 'timestamp' => time()],
         ]);
       }
 
@@ -123,14 +125,15 @@ class AgentFlowApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'flows' => $flows,
-        'total' => count($flows),
+        'success' => TRUE,
+        'data' => $flows,
+        'meta' => ['total' => count($flows), 'timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
-        'error' => 'Error al listar flujos.',
-        'message' => $e->getMessage(),
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Error al listar flujos.'],
       ], 500);
     }
   }
@@ -155,32 +158,37 @@ class AgentFlowApiController extends ControllerBase {
 
       if (!$entity) {
         return new JsonResponse([
-          'error' => 'Flujo no encontrado.',
+          'success' => FALSE,
+          'error' => ['code' => 'NOT_FOUND', 'message' => 'Flujo no encontrado.'],
         ], 404);
       }
 
       $metrics = $this->metricsService->getFlowMetrics($flow_id);
 
       return new JsonResponse([
-        'id' => (int) $entity->id(),
-        'name' => $entity->label(),
-        'description' => $entity->get('description')->value ?? '',
-        'flow_status' => $entity->get('flow_status')->value,
-        'trigger_type' => $entity->get('trigger_type')->value,
-        'trigger_config' => $entity->getDecodedTriggerConfig(),
-        'flow_config' => $entity->getDecodedFlowConfig(),
-        'execution_count' => (int) ($entity->get('execution_count')->value ?? 0),
-        'last_execution' => (int) ($entity->get('last_execution')->value ?? 0),
-        'tenant_id' => $entity->get('tenant_id')->target_id ? (int) $entity->get('tenant_id')->target_id : NULL,
-        'created' => (int) $entity->get('created')->value,
-        'changed' => (int) $entity->get('changed')->value,
-        'metrics' => $metrics,
+        'success' => TRUE,
+        'data' => [
+          'id' => (int) $entity->id(),
+          'name' => $entity->label(),
+          'description' => $entity->get('description')->value ?? '',
+          'flow_status' => $entity->get('flow_status')->value,
+          'trigger_type' => $entity->get('trigger_type')->value,
+          'trigger_config' => $entity->getDecodedTriggerConfig(),
+          'flow_config' => $entity->getDecodedFlowConfig(),
+          'execution_count' => (int) ($entity->get('execution_count')->value ?? 0),
+          'last_execution' => (int) ($entity->get('last_execution')->value ?? 0),
+          'tenant_id' => $entity->get('tenant_id')->target_id ? (int) $entity->get('tenant_id')->target_id : NULL,
+          'created' => (int) $entity->get('created')->value,
+          'changed' => (int) $entity->get('changed')->value,
+          'metrics' => $metrics,
+        ],
+        'meta' => ['timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
-        'error' => 'Error al obtener flujo.',
-        'message' => $e->getMessage(),
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Error al obtener flujo.'],
       ], 500);
     }
   }
@@ -202,24 +210,29 @@ class AgentFlowApiController extends ControllerBase {
 
       if ($executionId === NULL) {
         return new JsonResponse([
-          'error' => 'No se pudo ejecutar el flujo. Verifica que existe y esta activo.',
+          'success' => FALSE,
+          'error' => ['code' => 'EXECUTION_FAILED', 'message' => 'No se pudo ejecutar el flujo. Verifica que existe y esta activo.'],
         ], 400);
       }
 
       $result = $this->executionService->getExecutionResult($executionId);
 
       return new JsonResponse([
-        'execution_id' => $executionId,
-        'flow_id' => $flow_id,
-        'status' => $result['execution_status'] ?? 'unknown',
-        'duration_ms' => $result['duration_ms'] ?? 0,
-        'result' => $result,
+        'success' => TRUE,
+        'data' => [
+          'execution_id' => $executionId,
+          'flow_id' => $flow_id,
+          'status' => $result['execution_status'] ?? 'unknown',
+          'duration_ms' => $result['duration_ms'] ?? 0,
+          'result' => $result,
+        ],
+        'meta' => ['timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
-        'error' => 'Error al ejecutar flujo.',
-        'message' => $e->getMessage(),
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Error al ejecutar flujo.'],
       ], 500);
     }
   }
@@ -247,8 +260,9 @@ class AgentFlowApiController extends ControllerBase {
 
       if (empty($ids)) {
         return new JsonResponse([
-          'executions' => [],
-          'total' => 0,
+          'success' => TRUE,
+          'data' => [],
+          'meta' => ['total' => 0, 'flow_id' => $flow_id, 'timestamp' => time()],
         ]);
       }
 
@@ -270,15 +284,15 @@ class AgentFlowApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'executions' => $executions,
-        'total' => count($executions),
-        'flow_id' => $flow_id,
+        'success' => TRUE,
+        'data' => $executions,
+        'meta' => ['total' => count($executions), 'flow_id' => $flow_id, 'timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
-        'error' => 'Error al obtener ejecuciones.',
-        'message' => $e->getMessage(),
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Error al obtener ejecuciones.'],
       ], 500);
     }
   }
@@ -300,14 +314,15 @@ class AgentFlowApiController extends ControllerBase {
       $templates = $this->templateService->getTemplates($vertical);
 
       return new JsonResponse([
-        'templates' => $templates,
-        'total' => count($templates),
+        'success' => TRUE,
+        'data' => $templates,
+        'meta' => ['total' => count($templates), 'timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
-        'error' => 'Error al obtener templates.',
-        'message' => $e->getMessage(),
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Error al obtener templates.'],
       ], 500);
     }
   }

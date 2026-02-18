@@ -71,7 +71,8 @@ class PageConfigApiController extends ControllerBase
   protected function handleGet($page): JsonResponse
   {
     $data = $this->buildPageConfigData($page);
-    return new JsonResponse($data);
+    return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -178,7 +179,7 @@ class PageConfigApiController extends ControllerBase
     $data = $this->buildPageConfigData($page);
     $data['saved'] = TRUE;
 
-    return new JsonResponse($data);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**

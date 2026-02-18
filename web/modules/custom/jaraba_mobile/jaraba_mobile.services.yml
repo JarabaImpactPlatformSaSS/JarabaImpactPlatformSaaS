@@ -1,0 +1,27 @@
+services:
+  logger.channel.jaraba_mobile:
+    parent: logger.channel_base
+    arguments: ['jaraba_mobile']
+
+  jaraba_mobile.device_registry:
+    class: Drupal\jaraba_mobile\Service\DeviceRegistryService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+
+  jaraba_mobile.push_sender:
+    class: Drupal\jaraba_mobile\Service\PushSenderService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_mobile'
+
+  jaraba_mobile.deep_link_resolver:
+    class: Drupal\jaraba_mobile\Service\DeepLinkResolverService
+    arguments:
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@router.route_provider'
+      - '@request_stack'

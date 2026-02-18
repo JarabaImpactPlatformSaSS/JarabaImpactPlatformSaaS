@@ -10,6 +10,7 @@ use Drupal\jaraba_business_tools\Service\CanvasAiService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * API Controller for Business Model Canvas.
@@ -746,13 +747,48 @@ class CanvasApiController extends ControllerBase
     /**
      * GET /api/v1/canvas/{id}/export/pdf - Export as PDF.
      */
-    public function exportPdf(int $id): JsonResponse
+    public function exportPdf(int $id): Response
     {
-        // TODO: Implement PDF export with Puppeteer.
-        return new JsonResponse([
-            'message' => 'PDF export not yet implemented',
-            'url' => '/canvas/' . $id . '/pdf',
-        ], 501);
+        // AUDIT-TODO-RESOLVED: PDF generation implemented.
+        $canvasData = $this->canvasService->getCanvasWithBlocks($id);
+
+        if (!$canvasData || !$this->checkAccess($canvasData['canvas'])) {
+            return new JsonResponse(['error' => 'Canvas not found or access denied'], 404);
+        }
+
+        try {
+            $canvas = $canvasData['canvas'];
+            $blocks = $canvasData['blocks'];
+            $html = $this->renderCanvasPdfHtml($canvas, $blocks);
+
+            // Use DOMPDF if available, otherwise return HTML with print-friendly headers.
+            if (class_exists('\Dompdf\Dompdf')) {
+                $dompdf = new \Dompdf\Dompdf(['isRemoteEnabled' => FALSE]);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'landscape');
+                $dompdf->render();
+                $pdfContent = $dompdf->output();
+
+                $safeTitle = preg_replace('/[^a-zA-Z0-9_-]/', '_', $canvas->getTitle());
+                return new Response($pdfContent, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="canvas-' . $safeTitle . '.pdf"',
+                    'Content-Length' => strlen($pdfContent),
+                ]);
+            }
+
+            // Fallback: return HTML response suitable for browser print-to-PDF.
+            $safeTitle = preg_replace('/[^a-zA-Z0-9_-]/', '_', $canvas->getTitle());
+            return new Response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+                'Content-Disposition' => 'inline; filename="canvas-' . $safeTitle . '.html"',
+            ]);
+        } catch (\Throwable $e) {
+            \Drupal::logger('jaraba_business_tools')->error('Canvas PDF export error: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+            return new JsonResponse(['error' => 'Error generating PDF: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -818,6 +854,181 @@ class CanvasApiController extends ControllerBase
         ]);
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+    /**
+     * Renders the HTML content for a Business Model Canvas PDF export.
+     *
+     * Produces a landscape A4 layout with the standard 9-block BMC grid.
+     *
+     * @param object $canvas
+     *   The BusinessModelCanvas entity.
+     * @param array $blocks
+     *   Associative array of block_type => CanvasBlock entity.
+     *
+     * @return string
+     *   The rendered HTML string with print-friendly CSS.
+     */
+    protected function renderCanvasPdfHtml(object $canvas, array $blocks): string
+    {
+        $title = htmlspecialchars($canvas->getTitle(), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars($canvas->get('description')->value ?? '', ENT_QUOTES, 'UTF-8');
+        $sector = htmlspecialchars($canvas->get('sector')->value ?? '', ENT_QUOTES, 'UTF-8');
+        $stage = htmlspecialchars($canvas->get('business_stage')->value ?? '', ENT_QUOTES, 'UTF-8');
+        $version = (int) ($canvas->getVersion() ?? 1);
+        $completeness = (int) ($canvas->getCompletenessScore() ?? 0);
+        $dateGenerated = date('d/m/Y H:i');
+
+        // Block type labels in Spanish following the standard BMC layout.
+        $blockLabels = [
+            'key_partners' => 'Socios Clave',
+            'key_activities' => 'Actividades Clave',
+            'key_resources' => 'Recursos Clave',
+            'value_propositions' => 'Propuesta de Valor',
+            'customer_relationships' => 'Relaciones con Clientes',
+            'channels' => 'Canales',
+            'customer_segments' => 'Segmentos de Clientes',
+            'cost_structure' => 'Estructura de Costes',
+            'revenue_streams' => 'Fuentes de Ingresos',
+        ];
+
+        // Block colors for visual distinction.
+        $blockColors = [
+            'key_partners' => '#e0f2fe',
+            'key_activities' => '#fef3c7',
+            'key_resources' => '#fce7f3',
+            'value_propositions' => '#d1fae5',
+            'customer_relationships' => '#ede9fe',
+            'channels' => '#fed7aa',
+            'customer_segments' => '#e0e7ff',
+            'cost_structure' => '#fecaca',
+            'revenue_streams' => '#bbf7d0',
+        ];
+
+        // Render block items.
+        $renderBlock = function (string $type) use ($blocks, $blockLabels, $blockColors): string {
+            $label = $blockLabels[$type] ?? $type;
+            $bgColor = $blockColors[$type] ?? '#f8fafc';
+            $items = [];
+
+            if (isset($blocks[$type])) {
+                $blockItems = $blocks[$type]->getItems();
+                if (is_array($blockItems)) {
+                    foreach ($blockItems as $item) {
+                        $text = is_array($item) ? ($item['text'] ?? '') : (string) $item;
+                        if (!empty($text)) {
+                            $items[] = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+                        }
+                    }
+                }
+            }
+
+            $itemsHtml = empty($items)
+                ? '<p class="empty-block">Sin elementos</p>'
+                : '<ul>' . implode('', array_map(fn($i) => "<li>{$i}</li>", $items)) . '</ul>';
+
+            return <<<BLOCK
+            <div class="bmc-block" style="background:{$bgColor};">
+              <h3>{$label}</h3>
+              {$itemsHtml}
+            </div>
+BLOCK;
+        };
+
+        $keyPartnersHtml = $renderBlock('key_partners');
+        $keyActivitiesHtml = $renderBlock('key_activities');
+        $keyResourcesHtml = $renderBlock('key_resources');
+        $valuePropsHtml = $renderBlock('value_propositions');
+        $customerRelsHtml = $renderBlock('customer_relationships');
+        $channelsHtml = $renderBlock('channels');
+        $customerSegHtml = $renderBlock('customer_segments');
+        $costStructHtml = $renderBlock('cost_structure');
+        $revenueHtml = $renderBlock('revenue_streams');
+
+        return <<<HTML
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Business Model Canvas - {$title}</title>
+  <style>
+    @page { margin: 10mm; size: A4 landscape; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10px; color: #333; line-height: 1.4; }
+    .pdf-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 10px; border-bottom: 3px solid #6366f1; margin-bottom: 10px; }
+    .pdf-header h1 { font-size: 18px; color: #6366f1; }
+    .pdf-header .meta { text-align: right; font-size: 9px; color: #666; }
+    .pdf-header .meta span { display: inline-block; margin-left: 10px; padding: 2px 8px; background: #eef2ff; border-radius: 10px; font-size: 9px; }
+
+    .bmc-grid {
+      display: grid;
+      grid-template-columns: 1fr 0.5fr 0.5fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 4px;
+      height: calc(100vh - 80px);
+      min-height: 450px;
+    }
+
+    /* BMC layout positions */
+    .bmc-grid > :nth-child(1) { grid-column: 1; grid-row: 1 / 4; }         /* Key Partners */
+    .bmc-grid > :nth-child(2) { grid-column: 2; grid-row: 1 / 3; }         /* Key Activities */
+    .bmc-grid > :nth-child(3) { grid-column: 2; grid-row: 3; }              /* Key Resources */
+    .bmc-grid > :nth-child(4) { grid-column: 3; grid-row: 1 / 4; }         /* Value Propositions */
+    .bmc-grid > :nth-child(5) { grid-column: 4; grid-row: 1 / 3; }         /* Customer Relationships */
+    .bmc-grid > :nth-child(6) { grid-column: 4; grid-row: 3; }              /* Channels */
+    .bmc-grid > :nth-child(7) { grid-column: 5; grid-row: 1 / 4; }         /* Customer Segments */
+    .bmc-grid > :nth-child(8) { grid-column: 1 / 4; grid-row: 4; }         /* Cost Structure */
+    .bmc-grid > :nth-child(9) { grid-column: 4 / 6; grid-row: 4; }         /* Revenue Streams */
+
+    /* Adjust grid to 4 rows for bottom sections */
+    .bmc-grid {
+      grid-template-rows: 1fr 1fr 1fr 0.8fr;
+    }
+
+    .bmc-block { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; overflow: hidden; }
+    .bmc-block h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+    .bmc-block ul { list-style: none; padding: 0; }
+    .bmc-block li { padding: 3px 0; font-size: 9px; border-bottom: 1px dotted #e2e8f0; }
+    .bmc-block li:last-child { border-bottom: none; }
+    .empty-block { color: #94a3b8; font-style: italic; font-size: 9px; }
+
+    .pdf-footer { margin-top: 8px; text-align: center; font-size: 8px; color: #94a3b8; }
+    @media print { body { margin: 0; } }
+  </style>
+</head>
+<body>
+  <div class="pdf-header">
+    <div>
+      <h1>{$title}</h1>
+      <p style="font-size:10px; color:#64748b; margin-top:2px;">{$description}</p>
+    </div>
+    <div class="meta">
+      <span>Sector: {$sector}</span>
+      <span>Fase: {$stage}</span>
+      <span>v{$version}</span>
+      <span>Completitud: {$completeness}%</span>
+      <br><span style="margin-top:4px;">{$dateGenerated}</span>
+    </div>
+  </div>
+
+  <div class="bmc-grid">
+    {$keyPartnersHtml}
+    {$keyActivitiesHtml}
+    {$keyResourcesHtml}
+    {$valuePropsHtml}
+    {$customerRelsHtml}
+    {$channelsHtml}
+    {$customerSegHtml}
+    {$costStructHtml}
+    {$revenueHtml}
+  </div>
+
+  <div class="pdf-footer">
+    Business Model Canvas &mdash; Generado por Jaraba Impact Platform
+  </div>
+</body>
+</html>
+HTML;
     }
 
     /**

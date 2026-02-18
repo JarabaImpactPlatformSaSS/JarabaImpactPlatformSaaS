@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_calendar\Controller;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Url;
+use Drupal\jaraba_legal_calendar\Service\CalendarSyncService;
 use Drupal\jaraba_legal_calendar\Service\DeadlineCalculatorService;
 use Drupal\jaraba_legal_calendar\Service\LegalAgendaService;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +30,10 @@ class CalendarApiController extends ControllerBase {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected DeadlineCalculatorService $deadlineCalculator,
     protected LegalAgendaService $agenda,
+    protected ClientInterface $httpClient,
+    protected ConfigFactoryInterface $configFactory,
+    protected CalendarSyncService $calendarSync,
+    protected LoggerInterface $logger,
   ) {}
 
   /**
@@ -34,6 +44,10 @@ class CalendarApiController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('jaraba_legal_calendar.deadline_calculator'),
       $container->get('jaraba_legal_calendar.agenda'),
+      $container->get('http_client'),
+      $container->get('config.factory'),
+      $container->get('jaraba_legal_calendar.calendar_sync'),
+      $container->get('logger.channel.jaraba_legal_calendar'),
     );
   }
 
@@ -65,7 +79,7 @@ class CalendarApiController extends ControllerBase {
       $data[] = $this->serializeDeadline($entity);
     }
 
-    return new JsonResponse(['data' => $data, 'meta' => ['total' => $count, 'limit' => $limit, 'offset' => $offset]]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['total' => $count, 'limit' => $limit, 'offset' => $offset]]);
   }
 
   /**
@@ -74,14 +88,15 @@ class CalendarApiController extends ControllerBase {
   public function storeDeadline(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['title']) || empty($content['case_id']) || empty($content['due_date'])) {
-      return new JsonResponse(['error' => 'Campos obligatorios: title, case_id, due_date.'], 400);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos obligatorios: title, case_id, due_date.']], 400);
     }
 
     $storage = $this->entityTypeManager->getStorage('legal_deadline');
     $entity = $storage->create($content);
     $entity->save();
 
-    return new JsonResponse(['data' => $this->serializeDeadline($entity)], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDeadline($entity)], 201);
   }
 
   /**
@@ -90,7 +105,7 @@ class CalendarApiController extends ControllerBase {
   public function computeDeadline(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['base_date']) || empty($content['rule'])) {
-      return new JsonResponse(['error' => 'Campos obligatorios: base_date, rule.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos obligatorios: base_date, rule.']], 400);
     }
 
     $baseDate = new \DateTimeImmutable($content['base_date']);
@@ -98,12 +113,14 @@ class CalendarApiController extends ControllerBase {
     $computed = $this->deadlineCalculator->computeDeadline($baseDate, $content['rule'], $jurisdiction);
 
     return new JsonResponse([
+      'success' => TRUE,
       'data' => [
         'base_date' => $baseDate->format('Y-m-d\TH:i:s'),
         'rule' => $content['rule'],
         'jurisdiction' => $jurisdiction,
         'computed_date' => $computed->format('Y-m-d\TH:i:s'),
       ],
+      'meta' => ['timestamp' => time()],
     ]);
   }
 
@@ -113,7 +130,7 @@ class CalendarApiController extends ControllerBase {
   public function updateDeadline(string $uuid, Request $request): JsonResponse {
     $entity = $this->loadByUuid('legal_deadline', $uuid);
     if (!$entity) {
-      return new JsonResponse(['error' => 'Plazo no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Plazo no encontrado.']], 404);
     }
 
     $content = json_decode($request->getContent(), TRUE);
@@ -124,7 +141,7 @@ class CalendarApiController extends ControllerBase {
     }
     $entity->save();
 
-    return new JsonResponse(['data' => $this->serializeDeadline($entity)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDeadline($entity), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -133,14 +150,14 @@ class CalendarApiController extends ControllerBase {
   public function completeDeadline(string $uuid): JsonResponse {
     $entity = $this->loadByUuid('legal_deadline', $uuid);
     if (!$entity) {
-      return new JsonResponse(['error' => 'Plazo no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Plazo no encontrado.']], 404);
     }
 
     $entity->set('status', 'completed');
     $entity->set('completed_at', date('Y-m-d\TH:i:s'));
     $entity->save();
 
-    return new JsonResponse(['data' => $this->serializeDeadline($entity)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDeadline($entity), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -166,7 +183,7 @@ class CalendarApiController extends ControllerBase {
       $data[] = $this->serializeHearing($entity);
     }
 
-    return new JsonResponse(['data' => $data, 'meta' => ['total' => $count, 'limit' => $limit, 'offset' => $offset]]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['total' => $count, 'limit' => $limit, 'offset' => $offset, 'timestamp' => time()]]);
   }
 
   /**
@@ -175,14 +192,14 @@ class CalendarApiController extends ControllerBase {
   public function storeHearing(Request $request): JsonResponse {
     $content = json_decode($request->getContent(), TRUE);
     if (empty($content['title']) || empty($content['case_id']) || empty($content['scheduled_at']) || empty($content['court'])) {
-      return new JsonResponse(['error' => 'Campos obligatorios: title, case_id, scheduled_at, court.'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos obligatorios: title, case_id, scheduled_at, court.']], 400);
     }
 
     $storage = $this->entityTypeManager->getStorage('court_hearing');
     $entity = $storage->create($content);
     $entity->save();
 
-    return new JsonResponse(['data' => $this->serializeHearing($entity)], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeHearing($entity), 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -191,7 +208,7 @@ class CalendarApiController extends ControllerBase {
   public function updateHearing(string $uuid, Request $request): JsonResponse {
     $entity = $this->loadByUuid('court_hearing', $uuid);
     if (!$entity) {
-      return new JsonResponse(['error' => 'Senalado no encontrado.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Senalado no encontrado.']], 404);
     }
 
     $content = json_decode($request->getContent(), TRUE);
@@ -202,7 +219,7 @@ class CalendarApiController extends ControllerBase {
     }
     $entity->save();
 
-    return new JsonResponse(['data' => $this->serializeHearing($entity)]);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeHearing($entity), 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -214,10 +231,12 @@ class CalendarApiController extends ControllerBase {
     $hearings = $this->agenda->getHearings($days);
 
     return new JsonResponse([
+      'success' => TRUE,
       'data' => [
         'deadlines' => array_map([$this, 'serializeDeadline'], $deadlines),
         'hearings' => array_map([$this, 'serializeHearing'], $hearings),
       ],
+      'meta' => ['timestamp' => time()],
     ]);
   }
 
@@ -231,6 +250,7 @@ class CalendarApiController extends ControllerBase {
     $dayView = $this->agenda->getDayView($startDate);
 
     return new JsonResponse([
+      'success' => TRUE,
       'data' => [
         'year' => $year,
         'month' => $month,
@@ -239,6 +259,7 @@ class CalendarApiController extends ControllerBase {
         'deadlines' => array_map([$this, 'serializeDeadline'], $dayView['deadlines']),
         'hearings' => array_map([$this, 'serializeHearing'], $dayView['hearings']),
       ],
+      'meta' => ['timestamp' => time()],
     ]);
   }
 
@@ -262,39 +283,315 @@ class CalendarApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
    * GET /api/v1/legal/calendar/google/auth — OAuth Google redirect.
    */
   public function googleAuth(): JsonResponse {
-    // TODO: Implementar OAuth 2.0 redirect a Google.
-    return new JsonResponse(['data' => ['redirect_url' => 'https://accounts.google.com/o/oauth2/v2/auth']]);
+    // AUDIT-TODO-RESOLVED: Calendar OAuth integration.
+    $config = $this->configFactory->get('jaraba_legal_calendar.settings');
+    $clientId = $config->get('google_client_id');
+    if (empty($clientId)) {
+      $this->logger->error('Google OAuth client_id not configured.');
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_CONFIG_ERROR', 'message' => (string) $this->t('Google OAuth is not configured.')],
+      ], 500);
+    }
+
+    $redirectUri = Url::fromRoute('jaraba_legal_calendar.api.google.callback', [], ['absolute' => TRUE])->toString();
+    $state = bin2hex(random_bytes(16));
+    $session = \Drupal::request()->getSession();
+    $session->set('jaraba_legal_calendar_oauth_state', $state);
+
+    $params = [
+      'client_id' => $clientId,
+      'redirect_uri' => $redirectUri,
+      'response_type' => 'code',
+      'scope' => 'https://www.googleapis.com/auth/calendar',
+      'access_type' => 'offline',
+      'prompt' => 'consent',
+      'state' => $state,
+    ];
+    $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($params);
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => ['redirect_url' => $authUrl],
+      'meta' => ['timestamp' => time()],
+    ]);
   }
 
   /**
    * GET /api/v1/legal/calendar/google/callback — OAuth Google callback.
    */
   public function googleCallback(Request $request): JsonResponse {
-    // TODO: Implementar intercambio de authorization code por tokens.
-    return new JsonResponse(['data' => ['status' => 'connected']]);
+    // AUDIT-TODO-RESOLVED: Calendar OAuth integration.
+    $code = $request->query->get('code');
+    $state = $request->query->get('state');
+    $error = $request->query->get('error');
+
+    if ($error) {
+      $this->logger->warning('Google OAuth denied: @error', ['@error' => $error]);
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_DENIED', 'message' => (string) $this->t('Google authorization was denied.')],
+      ], 403);
+    }
+
+    if (empty($code) || empty($state)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_INVALID', 'message' => (string) $this->t('Missing authorization code or state parameter.')],
+      ], 400);
+    }
+
+    // Validate CSRF state token.
+    $session = $request->getSession();
+    $storedState = $session->get('jaraba_legal_calendar_oauth_state');
+    $session->remove('jaraba_legal_calendar_oauth_state');
+    if (!hash_equals((string) $storedState, $state)) {
+      $this->logger->warning('Google OAuth state mismatch (CSRF protection).');
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_STATE_MISMATCH', 'message' => (string) $this->t('Invalid OAuth state. Please retry the authorization.')],
+      ], 403);
+    }
+
+    $config = $this->configFactory->get('jaraba_legal_calendar.settings');
+    $redirectUri = Url::fromRoute('jaraba_legal_calendar.api.google.callback', [], ['absolute' => TRUE])->toString();
+
+    try {
+      $response = $this->httpClient->request('POST', 'https://oauth2.googleapis.com/token', [
+        'form_params' => [
+          'code' => $code,
+          'client_id' => $config->get('google_client_id'),
+          'client_secret' => $config->get('google_client_secret'),
+          'redirect_uri' => $redirectUri,
+          'grant_type' => 'authorization_code',
+        ],
+      ]);
+      $tokens = json_decode((string) $response->getBody(), TRUE);
+    }
+    catch (GuzzleException $e) {
+      $this->logger->error('Google token exchange failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_TOKEN_ERROR', 'message' => (string) $this->t('Failed to exchange authorization code for tokens.')],
+      ], 502);
+    }
+
+    if (empty($tokens['access_token'])) {
+      $this->logger->error('Google token response missing access_token.');
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_TOKEN_ERROR', 'message' => (string) $this->t('Invalid token response from Google.')],
+      ], 502);
+    }
+
+    // Fetch user email from Google userinfo for the connection record.
+    $accountEmail = '';
+    try {
+      $userinfoResp = $this->httpClient->request('GET', 'https://www.googleapis.com/oauth2/v2/userinfo', [
+        'headers' => ['Authorization' => 'Bearer ' . $tokens['access_token']],
+      ]);
+      $userinfo = json_decode((string) $userinfoResp->getBody(), TRUE);
+      $accountEmail = $userinfo['email'] ?? '';
+    }
+    catch (GuzzleException $e) {
+      $this->logger->warning('Could not fetch Google userinfo: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    // Calculate token expiry.
+    $expiresAt = new \DateTime();
+    $expiresAt->modify('+' . ((int) ($tokens['expires_in'] ?? 3600)) . ' seconds');
+
+    // Create or update CalendarConnection entity.
+    $storage = $this->entityTypeManager->getStorage('calendar_connection');
+    $currentUser = \Drupal::currentUser();
+    $connection = $storage->create([
+      'provider_id' => $currentUser->id(),
+      'platform' => 'google',
+      'account_email' => $accountEmail,
+      'access_token' => $tokens['access_token'],
+      'refresh_token' => $tokens['refresh_token'] ?? '',
+      'token_expires_at' => $expiresAt->format('Y-m-d\TH:i:s'),
+      'scopes' => ['https://www.googleapis.com/auth/calendar'],
+      'status' => 'active',
+    ]);
+    $connection->save();
+
+    $this->logger->info('Google Calendar connected for user @uid (@email).', [
+      '@uid' => $currentUser->id(),
+      '@email' => $accountEmail,
+    ]);
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'status' => 'connected',
+        'platform' => 'google',
+        'account_email' => $accountEmail,
+        'connection_id' => (int) $connection->id(),
+      ],
+      'meta' => ['timestamp' => time()],
+    ]);
   }
 
   /**
    * GET /api/v1/legal/calendar/microsoft/auth — OAuth Microsoft redirect.
    */
   public function microsoftAuth(): JsonResponse {
-    // TODO: Implementar OAuth 2.0 redirect a Microsoft.
-    return new JsonResponse(['data' => ['redirect_url' => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize']]);
+    // AUDIT-TODO-RESOLVED: Calendar OAuth integration.
+    $config = $this->configFactory->get('jaraba_legal_calendar.settings');
+    $clientId = $config->get('microsoft_client_id');
+    if (empty($clientId)) {
+      $this->logger->error('Microsoft OAuth client_id not configured.');
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_CONFIG_ERROR', 'message' => (string) $this->t('Microsoft OAuth is not configured.')],
+      ], 500);
+    }
+
+    $redirectUri = Url::fromRoute('jaraba_legal_calendar.api.microsoft.callback', [], ['absolute' => TRUE])->toString();
+    $state = bin2hex(random_bytes(16));
+    $session = \Drupal::request()->getSession();
+    $session->set('jaraba_legal_calendar_ms_oauth_state', $state);
+
+    $params = [
+      'client_id' => $clientId,
+      'redirect_uri' => $redirectUri,
+      'response_type' => 'code',
+      'scope' => 'Calendars.ReadWrite offline_access',
+      'state' => $state,
+    ];
+    $authUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?' . http_build_query($params);
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => ['redirect_url' => $authUrl],
+      'meta' => ['timestamp' => time()],
+    ]);
   }
 
   /**
    * GET /api/v1/legal/calendar/microsoft/callback — OAuth Microsoft callback.
    */
   public function microsoftCallback(Request $request): JsonResponse {
-    // TODO: Implementar intercambio de authorization code por tokens.
-    return new JsonResponse(['data' => ['status' => 'connected']]);
+    // AUDIT-TODO-RESOLVED: Calendar OAuth integration.
+    $code = $request->query->get('code');
+    $state = $request->query->get('state');
+    $error = $request->query->get('error');
+
+    if ($error) {
+      $errorDesc = $request->query->get('error_description', '');
+      $this->logger->warning('Microsoft OAuth denied: @error - @desc', ['@error' => $error, '@desc' => $errorDesc]);
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_DENIED', 'message' => (string) $this->t('Microsoft authorization was denied.')],
+      ], 403);
+    }
+
+    if (empty($code) || empty($state)) {
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_INVALID', 'message' => (string) $this->t('Missing authorization code or state parameter.')],
+      ], 400);
+    }
+
+    // Validate CSRF state token.
+    $session = $request->getSession();
+    $storedState = $session->get('jaraba_legal_calendar_ms_oauth_state');
+    $session->remove('jaraba_legal_calendar_ms_oauth_state');
+    if (!hash_equals((string) $storedState, $state)) {
+      $this->logger->warning('Microsoft OAuth state mismatch (CSRF protection).');
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_STATE_MISMATCH', 'message' => (string) $this->t('Invalid OAuth state. Please retry the authorization.')],
+      ], 403);
+    }
+
+    $config = $this->configFactory->get('jaraba_legal_calendar.settings');
+    $redirectUri = Url::fromRoute('jaraba_legal_calendar.api.microsoft.callback', [], ['absolute' => TRUE])->toString();
+
+    try {
+      $response = $this->httpClient->request('POST', 'https://login.microsoftonline.com/common/oauth2/v2.0/token', [
+        'form_params' => [
+          'code' => $code,
+          'client_id' => $config->get('microsoft_client_id'),
+          'client_secret' => $config->get('microsoft_client_secret'),
+          'redirect_uri' => $redirectUri,
+          'grant_type' => 'authorization_code',
+          'scope' => 'Calendars.ReadWrite offline_access',
+        ],
+      ]);
+      $tokens = json_decode((string) $response->getBody(), TRUE);
+    }
+    catch (GuzzleException $e) {
+      $this->logger->error('Microsoft token exchange failed: @msg', ['@msg' => $e->getMessage()]);
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_TOKEN_ERROR', 'message' => (string) $this->t('Failed to exchange authorization code for tokens.')],
+      ], 502);
+    }
+
+    if (empty($tokens['access_token'])) {
+      $this->logger->error('Microsoft token response missing access_token.');
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'OAUTH_TOKEN_ERROR', 'message' => (string) $this->t('Invalid token response from Microsoft.')],
+      ], 502);
+    }
+
+    // Fetch user profile from Microsoft Graph for the connection record.
+    $accountEmail = '';
+    try {
+      $profileResp = $this->httpClient->request('GET', 'https://graph.microsoft.com/v1.0/me', [
+        'headers' => ['Authorization' => 'Bearer ' . $tokens['access_token']],
+      ]);
+      $profile = json_decode((string) $profileResp->getBody(), TRUE);
+      $accountEmail = $profile['mail'] ?? $profile['userPrincipalName'] ?? '';
+    }
+    catch (GuzzleException $e) {
+      $this->logger->warning('Could not fetch Microsoft profile: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    // Calculate token expiry.
+    $expiresAt = new \DateTime();
+    $expiresAt->modify('+' . ((int) ($tokens['expires_in'] ?? 3600)) . ' seconds');
+
+    // Create CalendarConnection entity.
+    $storage = $this->entityTypeManager->getStorage('calendar_connection');
+    $currentUser = \Drupal::currentUser();
+    $connection = $storage->create([
+      'provider_id' => $currentUser->id(),
+      'platform' => 'microsoft',
+      'account_email' => $accountEmail,
+      'access_token' => $tokens['access_token'],
+      'refresh_token' => $tokens['refresh_token'] ?? '',
+      'token_expires_at' => $expiresAt->format('Y-m-d\TH:i:s'),
+      'scopes' => ['Calendars.ReadWrite', 'offline_access'],
+      'status' => 'active',
+    ]);
+    $connection->save();
+
+    $this->logger->info('Microsoft Calendar connected for user @uid (@email).', [
+      '@uid' => $currentUser->id(),
+      '@email' => $accountEmail,
+    ]);
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'status' => 'connected',
+        'platform' => 'microsoft',
+        'account_email' => $accountEmail,
+        'connection_id' => (int) $connection->id(),
+      ],
+      'meta' => ['timestamp' => time()],
+    ]);
   }
 
   /**
@@ -304,18 +601,40 @@ class CalendarApiController extends ControllerBase {
     $storage = $this->entityTypeManager->getStorage('calendar_connection');
     $entity = $storage->load($id);
     if (!$entity) {
-      return new JsonResponse(['error' => 'Conexion no encontrada.'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Conexion no encontrada.']], 404);
     }
     $entity->delete();
-    return new JsonResponse(['data' => ['deleted' => TRUE]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['deleted' => TRUE], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
    * POST /api/v1/legal/calendar/sync/{calendarId}/refresh — Forzar sync.
    */
   public function forceSync(int $calendarId): JsonResponse {
-    // TODO: Invocar CalendarSyncService::syncFromExternal().
-    return new JsonResponse(['data' => ['synced' => TRUE, 'calendar_id' => $calendarId]]);
+    // AUDIT-TODO-RESOLVED: Calendar OAuth integration.
+    try {
+      $syncedCount = $this->calendarSync->syncFromExternal($calendarId);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Force sync failed for calendar @id: @msg', [
+        '@id' => $calendarId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return new JsonResponse([
+        'success' => FALSE,
+        'error' => ['code' => 'SYNC_ERROR', 'message' => (string) $this->t('Synchronization failed. Please try again later.')],
+      ], 500);
+    }
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'synced' => TRUE,
+        'calendar_id' => $calendarId,
+        'events_synced' => $syncedCount,
+      ],
+      'meta' => ['timestamp' => time()],
+    ]);
   }
 
   /**

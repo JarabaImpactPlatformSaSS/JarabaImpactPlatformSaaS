@@ -85,7 +85,8 @@ class EmployabilityDiagnosticController extends ControllerBase {
     $data = json_decode($content, TRUE);
 
     if (!$data) {
-      return new JsonResponse(['error' => $this->t('Datos invalidos.')], 400);
+      // AUDIT-CONS-N08: Standardized JSON envelope.
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'INVALID_BODY', 'message' => (string) $this->t('Datos invalidos.')]], 400);
     }
 
     // Validar respuestas.
@@ -94,7 +95,7 @@ class EmployabilityDiagnosticController extends ControllerBase {
     $qEstrategia = (int) ($data['q_estrategia'] ?? 0);
 
     if ($qLinkedin < 1 || $qLinkedin > 5 || $qCvAts < 1 || $qCvAts > 5 || $qEstrategia < 1 || $qEstrategia > 5) {
-      return new JsonResponse(['error' => $this->t('Las respuestas deben estar entre 1 y 5.')], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('Las respuestas deben estar entre 1 y 5.')]], 400);
     }
 
     // Calcular score y perfil.
@@ -125,18 +126,22 @@ class EmployabilityDiagnosticController extends ControllerBase {
     $diagnostic->save();
 
     return new JsonResponse([
-      'uuid' => $diagnostic->uuid(),
-      'token' => $anonymousToken,
-      'results_url' => Url::fromRoute('jaraba_diagnostic.employability.results', [
+      'success' => TRUE,
+      'data' => [
         'uuid' => $diagnostic->uuid(),
-      ])->toString(),
-      'score' => $result['score'],
-      'profile_type' => $result['profile_type'],
-      'profile_label' => $result['profile_label'],
-      'profile_description' => $result['profile_description'],
-      'primary_gap' => $result['primary_gap'],
-      'dimension_scores' => $result['dimension_scores'],
-      'recommendations' => $result['recommendations'],
+        'token' => $anonymousToken,
+        'results_url' => Url::fromRoute('jaraba_diagnostic.employability.results', [
+          'uuid' => $diagnostic->uuid(),
+        ])->toString(),
+        'score' => $result['score'],
+        'profile_type' => $result['profile_type'],
+        'profile_label' => $result['profile_label'],
+        'profile_description' => $result['profile_description'],
+        'primary_gap' => $result['primary_gap'],
+        'dimension_scores' => $result['dimension_scores'],
+        'recommendations' => $result['recommendations'],
+      ],
+      'meta' => ['timestamp' => time()],
     ]);
   }
 

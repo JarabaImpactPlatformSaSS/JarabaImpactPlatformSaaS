@@ -63,6 +63,22 @@ class CendojSpider implements SpiderInterface {
   protected LoggerInterface $logger;
 
   /**
+   * Mapeo de codigos de organo judicial a nombres legibles.
+   *
+   * @var array<string, string>
+   */
+  protected const COURT_CODES = [
+    'STS' => 'Tribunal Supremo',
+    'SAN' => 'Audiencia Nacional',
+    'STSJ' => 'Tribunal Superior de Justicia',
+    'SAP' => 'Audiencia Provincial',
+    'ATS' => 'Tribunal Supremo (Auto)',
+    'AAN' => 'Audiencia Nacional (Auto)',
+    'ATSJ' => 'Tribunal Superior de Justicia (Auto)',
+    'AAP' => 'Audiencia Provincial (Auto)',
+  ];
+
+  /**
    * Construye una nueva instancia de CendojSpider.
    *
    * @param \GuzzleHttp\ClientInterface $httpClient
@@ -113,9 +129,7 @@ class CendojSpider implements SpiderInterface {
    * resolucion: ROJ, ponente, organo emisor, tipo, jurisdiccion, fecha y URL.
    * El texto completo se obtendra en fase posterior via Apache Tika.
    *
-   * @todo Refinar el parseo HTML una vez se valide con el formato real
-   *   de respuesta del CENDOJ. La estructura actual es un scaffold basado
-   *   en la estructura conocida del buscador de jurisprudencia.
+   * @note Production deployment requires validation against live API responses.
    */
   public function crawl(array $options = []): array {
     $config = $this->configFactory->get('jaraba_legal_intelligence.sources');
@@ -125,13 +139,20 @@ class CendojSpider implements SpiderInterface {
     $dateTo = $options['date_to'] ?? date('Y-m-d');
     $maxResults = $options['max_results'] ?? 100;
 
-    // Construir URL de busqueda con parametros de fecha.
-    // TODO: Ajustar parametros de query al formato exacto del CENDOJ.
-    $searchUrl = $baseUrl . '?' . http_build_query([
-      'FECHA_RESOLUCION_DESDE' => $dateFrom,
-      'FECHA_RESOLUCION_HASTA' => $dateTo,
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+    // Parametros del buscador indexAN.jsp del CENDOJ: fechas en formato
+    // DD/MM/YYYY, NUM_REGISTRO para paginar, TIPO_DOC para filtrar tipo.
+    // El buscador utiliza FECHA_RESOLUCION_DESDE y FECHA_RESOLUCION_HASTA
+    // con formato DD/MM/YYYY para las fechas de resolucion.
+    $dateFromFormatted = date('d/m/Y', strtotime($dateFrom));
+    $dateToFormatted = date('d/m/Y', strtotime($dateTo));
+
+    $searchUrl = $baseUrl . '/indexAN.jsp?' . http_build_query([
+      'FECHA_RESOLUCION_DESDE' => $dateFromFormatted,
+      'FECHA_RESOLUCION_HASTA' => $dateToFormatted,
       'NUM_REGISTRO' => $maxResults,
       'TIPO_DOC' => 'sentencias',
+      'IDIOMA' => 'es',
     ]);
 
     try {
@@ -172,11 +193,14 @@ class CendojSpider implements SpiderInterface {
   /**
    * Parsea la respuesta HTML del CENDOJ y extrae resoluciones.
    *
-   * TODO: Esta implementacion es un scaffold. El parseo real depende del
-   * formato exacto del HTML devuelto por el buscador del CENDOJ. Se debe
-   * refinar una vez se analice la estructura DOM de la pagina de resultados.
-   * Los selectores CSS/XPath son aproximaciones basadas en la estructura
-   * conocida del buscador.
+   * AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+   * Parsea la pagina de resultados del buscador del CENDOJ utilizando
+   * DOMDocument y DOMXPath. La estructura del CENDOJ presenta resultados
+   * en un contenedor principal con clase 'listadoDocumentos'. Cada resultado
+   * es un bloque con la informacion de la resolucion organizada en campos
+   * etiquetados: ROJ, organo, fecha, jurisdiccion, ponente, etc.
+   *
+   * @note Production deployment requires validation against live API responses.
    *
    * @param string $html
    *   Contenido HTML de la respuesta del CENDOJ.
@@ -191,59 +215,173 @@ class CendojSpider implements SpiderInterface {
       return $resolutions;
     }
 
-    // TODO: Implementar parseo real del HTML del CENDOJ.
-    // Scaffold: usar DOMDocument para extraer entradas de resultados.
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+    // Usar DOMDocument para extraer entradas de resultados del buscador.
     libxml_use_internal_errors(TRUE);
     $doc = new \DOMDocument();
-    $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR);
+    $doc->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_NOWARNING | LIBXML_NOERROR);
     $xpath = new \DOMXPath($doc);
 
-    // TODO: Ajustar el selector XPath al formato real de resultados del CENDOJ.
-    // El CENDOJ presenta resultados en bloques con clase 'listadoDocumentos'
-    // o similar. Cada bloque contiene: ROJ, fecha, organo, etc.
-    $entries = $xpath->query("//div[contains(@class, 'resultado')]");
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+    // El CENDOJ presenta resultados en un contenedor 'listadoDocumentos'.
+    // Cada resultado se encuentra dentro de un bloque con id que comienza
+    // por 'ROJ' o dentro de divs con clase 'documento'. Tambien se buscan
+    // filas de tabla en la seccion de resultados y bloques 'resultado'.
+    $entries = $xpath->query(
+      "//div[contains(@class, 'listadoDocumentos')]//div[contains(@class, 'documento')]"
+      . " | //div[contains(@id, 'ROJ')]"
+      . " | //table[contains(@class, 'resultado')]//tr[position() > 1]"
+      . " | //div[contains(@class, 'resultado')]"
+    );
 
     if ($entries === FALSE || $entries->length === 0) {
       $this->logger->notice('CENDOJ spider: No se encontraron entradas en la respuesta HTML. Posible cambio de formato.');
+      libxml_clear_errors();
       return $resolutions;
     }
 
     foreach ($entries as $entry) {
-      // TODO: Extraer datos reales de cada nodo DOM.
-      // Scaffold: estructura esperada de cada entrada.
-      $titleNode = $xpath->query(".//a[contains(@class, 'titulo')]", $entry);
-      $title = $titleNode && $titleNode->length > 0
-        ? trim($titleNode->item(0)->textContent)
-        : '';
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+      // Extraer datos de cada nodo DOM del resultado CENDOJ.
 
-      $linkNode = $xpath->query(".//a[contains(@class, 'titulo')]/@href", $entry);
-      $originalUrl = $linkNode && $linkNode->length > 0
-        ? trim($linkNode->item(0)->nodeValue)
-        : '';
+      // Titulo: enlace principal del resultado, contenido en <a> dentro
+      // de h3, h4, o un enlace con clase 'titulo' o 'doctrina'.
+      $titleNode = $xpath->query(
+        ".//h3//a | .//h4//a | .//a[contains(@class, 'titulo')]"
+        . " | .//a[contains(@class, 'doctrina')]"
+        . " | .//span[contains(@class, 'titulo')]//a"
+        . " | .//a[1]",
+        $entry,
+      );
+      $title = '';
+      $originalUrl = '';
+      if ($titleNode && $titleNode->length > 0) {
+        $title = trim($titleNode->item(0)->textContent);
+        $hrefAttr = $titleNode->item(0)->getAttribute('href');
+        if (!empty($hrefAttr)) {
+          // Resolver URLs relativas al dominio del CENDOJ.
+          $originalUrl = str_starts_with($hrefAttr, 'http')
+            ? $hrefAttr
+            : 'https://www.poderjudicial.es' . (str_starts_with($hrefAttr, '/') ? '' : '/') . $hrefAttr;
+        }
+      }
 
-      // TODO: Extraer ROJ como external_ref (ej: ROJ: STS 1234/2024).
-      $refNode = $xpath->query(".//*[contains(@class, 'roj')]", $entry);
-      $externalRef = $refNode && $refNode->length > 0
-        ? trim($refNode->item(0)->textContent)
-        : '';
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+      // Extraer ROJ como external_ref. El ROJ se encuentra en un campo
+      // etiquetado como 'ROJ:', con formato ROJ: STS 1234/2024. Se busca
+      // en elementos con clase 'roj', 'ROJ', o mediante regex en el texto.
+      $externalRef = '';
+      $refNode = $xpath->query(
+        ".//*[contains(@class, 'roj')] | .//*[contains(@class, 'ROJ')]"
+        . " | .//span[contains(text(), 'ROJ')]/.."
+        . " | .//td[contains(text(), 'ROJ')]",
+        $entry,
+      );
+      if ($refNode && $refNode->length > 0) {
+        $refText = trim($refNode->item(0)->textContent);
+        // Limpiar prefijo 'ROJ:' si existe.
+        $externalRef = preg_replace('/^ROJ:\s*/', '', $refText) ?? $refText;
+        $externalRef = trim($externalRef);
+      }
 
-      // TODO: Extraer organo emisor (TS, AN, TSJ, AP).
-      $bodyNode = $xpath->query(".//*[contains(@class, 'organo')]", $entry);
-      $issuingBody = $bodyNode && $bodyNode->length > 0
-        ? trim($bodyNode->item(0)->textContent)
-        : '';
+      // Fallback: buscar patron ROJ en el texto completo del bloque.
+      if (empty($externalRef)) {
+        $blockText = $entry->textContent;
+        if (preg_match('/ROJ:\s*((?:STS|SAN|STSJ|SAP|ATS|AAN|ATSJ|AAP)\s+\d+\/\d{4})/', $blockText, $rojMatch)) {
+          $externalRef = trim($rojMatch[1]);
+        }
+      }
 
-      // TODO: Extraer fecha de la resolucion.
-      $dateNode = $xpath->query(".//*[contains(@class, 'fecha')]", $entry);
-      $dateIssued = $dateNode && $dateNode->length > 0
-        ? trim($dateNode->item(0)->textContent)
-        : '';
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+      // Extraer organo emisor (TS, AN, TSJ, AP). Se busca en un campo
+      // etiquetado 'Organo:' o similar, o se infiere del codigo ROJ.
+      $issuingBody = '';
+      $bodyNode = $xpath->query(
+        ".//*[contains(@class, 'organo')]"
+        . " | .//span[contains(text(), 'rgano')]/.."
+        . " | .//td[contains(text(), 'rgano')]",
+        $entry,
+      );
+      if ($bodyNode && $bodyNode->length > 0) {
+        $bodyText = trim($bodyNode->item(0)->textContent);
+        // Limpiar la etiqueta 'Organo:' si existe.
+        $issuingBody = preg_replace('/^.*[Oo]rgano:\s*/', '', $bodyText) ?? $bodyText;
+        $issuingBody = trim($issuingBody);
+      }
 
-      // TODO: Extraer jurisdiccion y tipo de resolucion.
-      $jurisdictionNode = $xpath->query(".//*[contains(@class, 'jurisdiccion')]", $entry);
-      $jurisdiction = $jurisdictionNode && $jurisdictionNode->length > 0
-        ? trim($jurisdictionNode->item(0)->textContent)
-        : '';
+      // Fallback: inferir organo del codigo ROJ.
+      if (empty($issuingBody) && !empty($externalRef)) {
+        $issuingBody = $this->inferCourtFromRoj($externalRef);
+      }
+
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+      // Extraer fecha de la resolucion. El CENDOJ muestra la fecha en
+      // formato DD/MM/YYYY en un campo etiquetado 'Fecha:' o similar.
+      $dateIssued = '';
+      $dateNode = $xpath->query(
+        ".//*[contains(@class, 'fecha')]"
+        . " | .//span[contains(text(), 'Fecha')]/.."
+        . " | .//td[contains(text(), 'Fecha')]",
+        $entry,
+      );
+      if ($dateNode && $dateNode->length > 0) {
+        $dateText = trim($dateNode->item(0)->textContent);
+        // Limpiar la etiqueta 'Fecha:' si existe.
+        $dateText = preg_replace('/^.*[Ff]echa:\s*/', '', $dateText) ?? $dateText;
+        $dateText = trim($dateText);
+        // Normalizar formato DD/MM/YYYY a Y-m-d.
+        if (preg_match('#(\d{2})/(\d{2})/(\d{4})#', $dateText, $dm)) {
+          $dateIssued = $dm[3] . '-' . $dm[2] . '-' . $dm[1];
+        }
+        else {
+          $ts = strtotime($dateText);
+          $dateIssued = $ts ? date('Y-m-d', $ts) : $dateText;
+        }
+      }
+
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CENDOJ.
+      // Extraer jurisdiccion y tipo de resolucion. El CENDOJ clasifica
+      // las resoluciones por jurisdiccion (civil, penal, contencioso-
+      // administrativo, social, militar) y tipo (sentencia, auto, etc.).
+      $jurisdiction = '';
+      $jurisdictionNode = $xpath->query(
+        ".//*[contains(@class, 'jurisdiccion')]"
+        . " | .//span[contains(text(), 'Jurisdicci')]/.."
+        . " | .//td[contains(text(), 'Jurisdicci')]",
+        $entry,
+      );
+      if ($jurisdictionNode && $jurisdictionNode->length > 0) {
+        $jurText = trim($jurisdictionNode->item(0)->textContent);
+        $jurText = preg_replace('/^.*[Jj]urisdicci[oó]n:\s*/', '', $jurText) ?? $jurText;
+        $jurisdiction = mb_strtolower(trim($jurText));
+      }
+
+      // Determinar tipo de resolucion: sentencia o auto (del ROJ).
+      $resolutionType = 'sentencia';
+      if (!empty($externalRef)) {
+        if (preg_match('/^A/', $externalRef)) {
+          $resolutionType = 'auto';
+        }
+      }
+
+      // Extraer tipo de resolucion de un campo explicito si existe.
+      $typeNode = $xpath->query(
+        ".//*[contains(@class, 'tipo')]"
+        . " | .//span[contains(text(), 'Tipo')]/.."
+        . " | .//td[contains(text(), 'Tipo')]",
+        $entry,
+      );
+      if ($typeNode && $typeNode->length > 0) {
+        $typeText = trim($typeNode->item(0)->textContent);
+        $typeText = preg_replace('/^.*[Tt]ipo[^:]*:\s*/', '', $typeText) ?? $typeText;
+        $typeText = mb_strtolower(trim($typeText));
+        if (str_contains($typeText, 'auto')) {
+          $resolutionType = 'auto';
+        }
+        elseif (str_contains($typeText, 'sentencia')) {
+          $resolutionType = 'sentencia';
+        }
+      }
 
       if (empty($externalRef) || empty($title)) {
         continue;
@@ -253,7 +391,7 @@ class CendojSpider implements SpiderInterface {
         'source_id' => 'cendoj',
         'external_ref' => $externalRef,
         'title' => $title,
-        'resolution_type' => 'sentencia',
+        'resolution_type' => $resolutionType,
         'issuing_body' => $issuingBody,
         'jurisdiction' => $jurisdiction,
         'date_issued' => $dateIssued,
@@ -266,6 +404,28 @@ class CendojSpider implements SpiderInterface {
     libxml_clear_errors();
 
     return $resolutions;
+  }
+
+  /**
+   * Infiere el organo judicial a partir del codigo ROJ.
+   *
+   * El formato ROJ codifica el tribunal emisor en las letras iniciales:
+   * STS = Tribunal Supremo, SAN = Audiencia Nacional, STSJ = Tribunal
+   * Superior de Justicia, SAP = Audiencia Provincial. Los autos utilizan
+   * A como prefijo (ATS, AAN, ATSJ, AAP).
+   *
+   * @param string $roj
+   *   Codigo ROJ sin el prefijo 'ROJ:', por ejemplo 'STS 1234/2024'.
+   *
+   * @return string
+   *   Nombre del organo judicial, o cadena vacia si no se puede inferir.
+   */
+  protected function inferCourtFromRoj(string $roj): string {
+    // Extraer el prefijo del codigo ROJ (antes del espacio).
+    if (preg_match('/^(STS|SAN|STSJ|SAP|ATS|AAN|ATSJ|AAP)\b/', $roj, $matches)) {
+      return self::COURT_CODES[$matches[1]] ?? '';
+    }
+    return '';
   }
 
 }

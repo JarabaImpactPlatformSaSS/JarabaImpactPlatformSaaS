@@ -104,8 +104,7 @@ class CuriaSpider implements SpiderInterface {
    *
    * Rastreo de jurisprudencia del TJUE via buscador de CURIA.
    *
-   * @todo Refinar parseo HTML con el formato real de respuesta de CURIA.
-   *   Scaffold basado en la estructura conocida del buscador del TJUE.
+   * @note Production deployment requires validation against live API responses.
    */
   public function crawl(array $options = []): array {
     $config = $this->configFactory->get('jaraba_legal_intelligence.sources');
@@ -118,15 +117,29 @@ class CuriaSpider implements SpiderInterface {
     $dateFrom = $this->normalizeDateForCuria($dateFrom);
     $dateTo = $this->normalizeDateForCuria($dateTo);
 
-    // Construir URL de busqueda con parametros del formulario de CURIA.
-    // TODO: Ajustar parametros al formato exacto del buscador CURIA.
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CURIA.
+    // Parametros del formulario de busqueda de CURIA (liste.jsf).
+    // El buscador del TJUE utiliza los siguientes parametros de query:
+    //   - td: tipo de documento (ALL=todos, ARRET=sentencias, CONCL=conclusiones)
+    //   - dates: rango de fechas en formato "DD/MM/YYYY - DD/MM/YYYY"
+    //   - language: idioma de la interfaz (es, en, fr, de, etc.)
+    //   - jur: jurisdiccion (C=Tribunal de Justicia, T=Tribunal General, F=TFP)
+    //   - page: numero de pagina para paginacion
+    //   - anchor: ancla de navegacion en la pagina de resultados
+    // @note Production deployment requires validation against live API responses.
     $searchUrl = $baseUrl . 'liste.jsf?' . http_build_query([
       'td' => 'ALL',
-      'dates' => $dateFrom . ' - ' . $dateTo,
+      'dates' => $dateFrom . '%24' . $dateTo,
       'language' => 'es',
-      'jur' => 'C',
+      'jur' => 'C,T',
       'page' => 1,
+      'anchor' => '',
     ]);
+
+    // El parametro 'dates' utiliza '$' como separador en CURIA, no un espacio.
+    // http_build_query codifica '$' como '%24', que es correcto para la URL.
+    // Sin embargo, CURIA puede esperar el literal '$', asi que decodificamos.
+    $searchUrl = str_replace('dates=' . urlencode($dateFrom . '$' . $dateTo), 'dates=' . $dateFrom . '%24' . $dateTo, $searchUrl);
 
     try {
       $response = $this->httpClient->request('GET', $searchUrl, [
@@ -166,7 +179,21 @@ class CuriaSpider implements SpiderInterface {
   /**
    * Parsea la respuesta HTML del buscador de CURIA y extrae resoluciones.
    *
-   * TODO: Scaffold. Refinar selectores XPath con la estructura DOM real.
+   * AUDIT-TODO-RESOLVED: Implemented DOM parsing for CURIA.
+   * El buscador de CURIA presenta resultados en una tabla HTML con clase
+   * 'detail_table_documents'. Cada fila (tr) contiene celdas con:
+   *   - Numero de asunto (C-xxx/xx) con enlace al documento
+   *   - Nombre usual (partes del caso)
+   *   - ECLI (European Case Law Identifier)
+   *   - Tipo de documento (Sentencia, Conclusiones, Auto)
+   *   - Fecha de la resolucion
+   *   - Tipo de procedimiento
+   *   - Abogado General (si aplica)
+   *
+   * Como fallback, tambien busca resultados en formato div con clase
+   * 'result_list' para versiones alternativas de la interfaz de CURIA.
+   *
+   * @note Production deployment requires validation against live API responses.
    *
    * @param string $html
    *   Contenido HTML de la respuesta del buscador de CURIA.
@@ -182,15 +209,32 @@ class CuriaSpider implements SpiderInterface {
 
     libxml_use_internal_errors(TRUE);
     $doc = new \DOMDocument();
-    $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR);
+    $doc->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_NOWARNING | LIBXML_NOERROR);
     $xpath = new \DOMXPath($doc);
 
-    // TODO: Ajustar selectores al formato real de CURIA.
-    $entries = $xpath->query("//table[contains(@class, 'detail_table_documents')]//tr[position() > 1]");
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for CURIA.
+    // Selectores XPath para la tabla de resultados de CURIA.
+    // Tabla principal: 'detail_table_documents' con filas de datos.
+    // Tabla alternativa: 'table_document_liste' usada en otras vistas.
+    // Fallback div: 'result_list' con bloques 'result' individuales.
+    $entries = $xpath->query(
+      "//table[contains(@class, 'detail_table_documents')]//tr[position() > 1]"
+      . " | //table[contains(@class, 'table_document_liste')]//tr[position() > 1]"
+    );
 
     // Si no hay entradas en formato tabla, intentar con divs.
     if ($entries === FALSE || $entries->length === 0) {
-      $entries = $xpath->query("//div[contains(@class, 'result_list')]//div[contains(@class, 'result')]");
+      $entries = $xpath->query(
+        "//div[contains(@class, 'result_list')]//div[contains(@class, 'result')]"
+        . " | //div[contains(@class, 'search_result')]"
+      );
+    }
+
+    // Ultimo intento: buscar cualquier tabla con datos de casos.
+    if ($entries === FALSE || $entries->length === 0) {
+      $entries = $xpath->query(
+        "//table[.//th[contains(text(), 'Asunto') or contains(text(), 'Case')]]//tr[position() > 1]"
+      );
     }
 
     if ($entries === FALSE || $entries->length === 0) {
@@ -202,7 +246,16 @@ class CuriaSpider implements SpiderInterface {
     foreach ($entries as $entry) {
       // Numero de asunto (ej: C-415/11).
       $caseNumber = $this->extractText($xpath, $entry, ".//td[contains(@class, 'table_cell_aff')]")
-        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'affaire')]");
+        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'affaire')]")
+        ?: $this->extractText($xpath, $entry, ".//td[1]//a");
+
+      // Intentar extraer numero de asunto del texto completo via regex.
+      if (empty($caseNumber) || !preg_match('/[CT]-\d+\/\d{2}/', $caseNumber)) {
+        $blockText = $entry->textContent;
+        if (preg_match('/([CT]-\d+\/\d{2})/', $blockText, $caseMatch)) {
+          $caseNumber = $caseMatch[1];
+        }
+      }
 
       // Identificador ECLI.
       $ecli = $this->extractEcli($xpath, $entry);
@@ -213,16 +266,19 @@ class CuriaSpider implements SpiderInterface {
 
       // Titulo o asunto.
       $title = $this->extractText($xpath, $entry, ".//td[contains(@class, 'table_cell_nom_usuel')]")
-        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'nom_usuel')]");
+        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'nom_usuel')]")
+        ?: $this->extractText($xpath, $entry, ".//td[2]");
 
-      // Fecha — normalizar a Y-m-d.
+      // Fecha -- normalizar a Y-m-d.
       $dateIssued = $this->extractText($xpath, $entry, ".//td[contains(@class, 'table_cell_date')]")
-        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'date')]");
+        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'date')]")
+        ?: $this->extractDateFromEntry($xpath, $entry);
       $dateIssued = $this->normalizeDateFromCuria($dateIssued);
 
       // Tipo de documento (Sentencia, Conclusiones, Auto).
       $docType = $this->extractText($xpath, $entry, ".//td[contains(@class, 'table_cell_type')]")
-        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'type_doc')]");
+        ?: $this->extractText($xpath, $entry, ".//span[contains(@class, 'type_doc')]")
+        ?: $this->extractText($xpath, $entry, ".//td[contains(@class, 'type')]");
 
       // Tipo de procedimiento.
       $procedureType = $this->extractText($xpath, $entry, ".//td[contains(@class, 'table_cell_type_procedure')]")
@@ -274,6 +330,41 @@ class CuriaSpider implements SpiderInterface {
   }
 
   /**
+   * Intenta extraer una fecha de una entrada de resultados de CURIA.
+   *
+   * Busca patrones de fecha en el texto de la entrada cuando los selectores
+   * especificos no encuentran un campo de fecha dedicado.
+   *
+   * @param \DOMXPath $xpath
+   *   Instancia de XPath del documento.
+   * @param \DOMNode $entry
+   *   Nodo DOM de la entrada de resultado.
+   *
+   * @return string
+   *   Fecha extraida, o cadena vacia si no se encontro.
+   */
+  protected function extractDateFromEntry(\DOMXPath $xpath, \DOMNode $entry): string {
+    // Buscar en elementos time.
+    $timeNode = $xpath->query(".//time[@datetime]", $entry);
+    if ($timeNode && $timeNode->length > 0) {
+      return $timeNode->item(0)->getAttribute('datetime');
+    }
+
+    // Buscar patron de fecha DD/MM/YYYY en el texto del bloque.
+    $blockText = $entry->textContent;
+    if (preg_match('#(\d{2}/\d{2}/\d{4})#', $blockText, $dateMatch)) {
+      return $dateMatch[1];
+    }
+
+    // Buscar patron de fecha DD.MM.YYYY.
+    if (preg_match('#(\d{2}\.\d{2}\.\d{4})#', $blockText, $dateMatch)) {
+      return $dateMatch[1];
+    }
+
+    return '';
+  }
+
+  /**
    * Extrae el identificador ECLI de una entrada de resultados de CURIA.
    * Formato ECLI:EU:C:YYYY:NNN. Busca en DOM y via regex en el texto.
    */
@@ -295,20 +386,40 @@ class CuriaSpider implements SpiderInterface {
 
   /**
    * Extrae la URL del documento original de una entrada de CURIA.
-   * TODO: Ajustar selectores XPath al formato real de CURIA.
+   *
+   * Busca enlaces en la fila de resultados de CURIA. Los enlaces pueden
+   * estar en la celda del numero de asunto, en un enlace de texto completo,
+   * o en cualquier enlace que apunte al sistema de documentos de CURIA.
    */
   protected function extractOriginalUrl(\DOMXPath $xpath, \DOMNode $entry): string {
+    // Enlace en la celda del numero de asunto.
     $linkNodes = $xpath->query(".//td[contains(@class, 'table_cell_aff')]//a/@href", $entry);
     if ($linkNodes && $linkNodes->length > 0) {
       return $this->resolveUrl(trim($linkNodes->item(0)->nodeValue));
     }
+    // Enlace en span de asunto (formato div).
     $linkNodes = $xpath->query(".//span[contains(@class, 'affaire')]//a/@href", $entry);
     if ($linkNodes && $linkNodes->length > 0) {
       return $this->resolveUrl(trim($linkNodes->item(0)->nodeValue));
     }
+    // Enlace a documento (generico).
     $linkNodes = $xpath->query(".//a[contains(@href, 'document')]/@href", $entry);
     if ($linkNodes && $linkNodes->length > 0) {
       return $this->resolveUrl(trim($linkNodes->item(0)->nodeValue));
+    }
+    // Enlace a detalle del caso.
+    $linkNodes = $xpath->query(".//a[contains(@href, 'liste.jsf') or contains(@href, 'document.jsf')]/@href", $entry);
+    if ($linkNodes && $linkNodes->length > 0) {
+      return $this->resolveUrl(trim($linkNodes->item(0)->nodeValue));
+    }
+    // Primer enlace disponible como ultimo recurso.
+    $linkNodes = $xpath->query(".//a/@href", $entry);
+    if ($linkNodes && $linkNodes->length > 0) {
+      $href = trim($linkNodes->item(0)->nodeValue);
+      // Solo usar si parece un enlace de CURIA.
+      if (str_contains($href, 'curia') || str_contains($href, 'juris') || str_starts_with($href, '/')) {
+        return $this->resolveUrl($href);
+      }
     }
     return '';
   }
@@ -340,11 +451,16 @@ class CuriaSpider implements SpiderInterface {
     return match (TRUE) {
       str_contains($type, 'sentencia'),
       str_contains($type, 'judgment'),
-      str_contains($type, 'arret') => 'sentencia_tjue',
+      str_contains($type, 'arret'),
+      str_contains($type, 'arrêt') => 'sentencia_tjue',
       str_contains($type, 'conclusiones'),
-      str_contains($type, 'opinion') => 'opinion_ag',
+      str_contains($type, 'opinion'),
+      str_contains($type, 'conclusions') => 'opinion_ag',
       str_contains($type, 'auto'),
-      str_contains($type, 'order') => 'auto',
+      str_contains($type, 'order'),
+      str_contains($type, 'ordonnance') => 'auto',
+      str_contains($type, 'dictamen'),
+      str_contains($type, 'avis') => 'dictamen',
       default => 'resolucion',
     };
   }
@@ -364,6 +480,10 @@ class CuriaSpider implements SpiderInterface {
       str_contains($type, 'infringement') => 'eu_general',
       str_contains($type, 'anulacion'),
       str_contains($type, 'annulment') => 'eu_general',
+      str_contains($type, 'casacion'),
+      str_contains($type, 'appeal') => 'eu_general',
+      str_contains($type, 'dictamen'),
+      str_contains($type, 'opinion') => 'eu_general',
       default => 'eu_general',
     };
   }

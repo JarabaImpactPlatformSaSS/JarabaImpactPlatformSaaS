@@ -53,7 +53,8 @@ class HealthDashboardController extends ControllerBase
     public function healthApi()
     {
         $health_status = $this->getHealthStatus();
-        return new JsonResponse($health_status);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $health_status, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

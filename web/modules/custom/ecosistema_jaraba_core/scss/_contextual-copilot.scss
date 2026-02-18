@@ -1,3 +1,4 @@
+// AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace
 // ==========================================================================
 // CONTEXTUAL COPILOT FAB
 // ==========================================================================
@@ -14,9 +15,9 @@
 // ==========================================================================
 
 .contextual-copilot {
-    --fab-size: 56px;
-    --panel-width: 380px;
-    --panel-height: 500px;
+    --ej-fab-size: 56px;
+    --ej-panel-width: 380px;
+    --ej-panel-height: 500px;
 
     position: fixed;
     bottom: var(--ej-spacing-lg, 24px);
@@ -26,8 +27,8 @@
 }
 
 .copilot-fab {
-    width: var(--fab-size);
-    height: var(--fab-size);
+    width: var(--ej-fab-size);
+    height: var(--ej-fab-size);
     border-radius: 50%;
     background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
     border: none;
@@ -79,10 +80,10 @@
 
 .copilot-panel {
     position: absolute;
-    bottom: calc(var(--fab-size) + var(--ej-spacing-md, 16px));
+    bottom: calc(var(--ej-fab-size) + var(--ej-spacing-md, 16px));
     right: 0;
-    width: var(--panel-width);
-    max-height: var(--panel-height);
+    width: var(--ej-panel-width);
+    max-height: var(--ej-panel-height);
     background: var(--ej-bg-surface, #fff);
     border-radius: var(--ej-radius-lg, 16px);
     box-shadow: var(--ej-shadow-xl, 0 10px 40px rgba(0, 0, 0, 0.15));
@@ -440,8 +441,8 @@
 
 @media (max-width: 480px) {
     .contextual-copilot {
-        --panel-width: calc(100vw - 32px);
-        --panel-height: 70vh;
+        --ej-panel-width: calc(100vw - 32px);
+        --ej-panel-height: 70vh;
         bottom: var(--ej-spacing-md, 16px);
         right: var(--ej-spacing-md, 16px);
     }

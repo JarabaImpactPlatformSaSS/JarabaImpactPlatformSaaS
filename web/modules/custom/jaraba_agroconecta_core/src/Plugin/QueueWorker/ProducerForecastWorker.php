@@ -44,8 +44,8 @@ class ProducerForecastWorker extends QueueWorkerBase implements ContainerFactory
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('jaraba_agroconecta.demand_forecaster'),
-      $container->get('jaraba_agroconecta.market_spy'),
+      $container->get('jaraba_agroconecta_core.demand_forecaster'), // AUDIT-CONS-N05: canonical prefix
+      $container->get('jaraba_agroconecta_core.market_spy'), // AUDIT-CONS-N05: canonical prefix
       $container->get('logger.channel.jaraba_agroconecta_core'),
     );
   }

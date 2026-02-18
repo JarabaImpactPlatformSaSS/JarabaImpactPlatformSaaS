@@ -23,7 +23,8 @@ set -uo pipefail
 PROJECT_DIR="${PROJECT_DIR:-$HOME/JarabaImpactPlatformSaaS}"
 PHP_CLI="${PHP_CLI:-/usr/bin/php8.4-cli}"
 DRUSH="${DRUSH:-$PHP_CLI $PROJECT_DIR/vendor/bin/drush.php}"
-SITE_URL="${SITE_URL:-https://plataformadeecosistemas.com}"
+# AUDIT-SEC-N17: Production URL must come from environment variable, not hardcoded.
+SITE_URL="${SITE_URL:?ERROR: SITE_URL env var is required. Export it before running this script.}"
 
 # Timeouts (segundos)
 HTTP_CONNECT_TIMEOUT=10

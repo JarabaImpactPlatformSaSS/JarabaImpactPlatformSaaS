@@ -1,0 +1,10 @@
+administer sso:
+  title: 'Administer SSO configuration'
+  restrict access: true
+manage sso providers:
+  title: 'Manage SSO identity providers'
+view sso config:
+  title: 'View SSO configuration'
+manage mfa policies:
+  title: 'Manage MFA policies'
+  restrict access: true

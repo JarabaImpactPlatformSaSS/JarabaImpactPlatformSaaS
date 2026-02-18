@@ -130,15 +130,15 @@ class MarketplaceController extends ControllerBase {
         ];
       }
 
+      // AUDIT-CONS-N08: Standardized JSON envelope.
       return new JsonResponse([
-        'results' => $results,
-        'total' => count($results),
-        'page' => $page,
-        'limit' => $limit,
+        'success' => TRUE,
+        'data' => $results,
+        'meta' => ['total' => count($results), 'page' => $page, 'limit' => $limit, 'timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => $this->t('Error al buscar conectores.')], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'INTERNAL_ERROR', 'message' => (string) $this->t('Error al buscar conectores.')]], 500);
     }
   }
 
