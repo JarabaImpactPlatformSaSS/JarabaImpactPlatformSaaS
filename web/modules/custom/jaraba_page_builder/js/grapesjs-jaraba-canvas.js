@@ -40,6 +40,8 @@
         canvas: {
             // Estilos externos inyectados en el <head> del iframe
             styles: [
+                // Core CSS: Design system tokens, componentes .ej-*, glassmorphism, botones, cards.
+                '/modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css',
                 // FE-07: CSS compilado del tema (main.css era un duplicado eliminado en PERF-02).
                 '/themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css',
                 // CSS compilado de bloques del Page Builder (features, faq, stats, tabs, countdown, timeline, testimonials-3d, pricing).
@@ -529,8 +531,9 @@
             themeLink.href = '/themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css';
             doc.head.appendChild(themeLink);
 
-            // 3. Inyectar CSS de bloques del Page Builder
+            // 3. Inyectar CSS del core y bloques del Page Builder
             const pbCssFiles = [
+                '/modules/custom/ecosistema_jaraba_core/css/ecosistema-jaraba-core.css',
                 '/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css',
                 '/modules/custom/jaraba_page_builder/css/page-builder-core.css',
                 '/modules/custom/jaraba_page_builder/css/navigation.css',
