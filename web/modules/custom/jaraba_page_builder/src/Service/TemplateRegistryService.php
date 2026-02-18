@@ -2,9 +2,9 @@
 
 namespace Drupal\jaraba_page_builder\Service;
 
-use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
@@ -178,6 +178,13 @@ class TemplateRegistryService
     protected LoggerInterface $logger;
 
     /**
+     * El entity type manager.
+     *
+     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+     */
+    protected EntityTypeManagerInterface $entityTypeManager;
+
+    /**
      * Templates cargados en memoria.
      *
      * @var array|null
@@ -193,7 +200,8 @@ class TemplateRegistryService
         ModuleHandlerInterface $module_handler,
         TenantContextService $tenant_context,
         AccountInterface $current_user,
-        LoggerChannelFactoryInterface $logger_factory
+        LoggerChannelFactoryInterface $logger_factory,
+        EntityTypeManagerInterface $entity_type_manager
     ) {
         $this->cache = $cache;
         $this->configFactory = $config_factory;
@@ -201,6 +209,7 @@ class TemplateRegistryService
         $this->tenantContext = $tenant_context;
         $this->currentUser = $current_user;
         $this->logger = $logger_factory->get('jaraba_page_builder');
+        $this->entityTypeManager = $entity_type_manager;
     }
 
     /**
@@ -324,7 +333,7 @@ class TemplateRegistryService
             $isLocked = $isPremium && !$this->isTemplateAccessible($template, $currentPlan);
 
             $blocks[] = [
-                'id' => 'template-' . $id,
+                'id' => 'jaraba-' . $id,
                 'label' => $template['label'] ?? $id,
                 'category' => $template['category'] ?? 'content',
                 'content' => $this->renderTemplatePreview($template),
@@ -476,29 +485,35 @@ class TemplateRegistryService
             return $this->loadedTemplates;
         }
 
-        // Cargar desde archivos de configuración.
+        // FIX 6: Cargar desde entity storage en vez de YAML crudo.
+        // Esto garantiza consistencia con cambios hechos via admin UI.
         $templates = [];
-        $modulePath = $this->moduleHandler->getModule('jaraba_page_builder')->getPath();
-        $configPath = $modulePath . '/config/install';
 
-        if (is_dir($configPath)) {
-            $files = glob($configPath . '/jaraba_page_builder.template.*.yml');
+        try {
+            /** @var \Drupal\jaraba_page_builder\PageTemplateInterface[] $entities */
+            $entities = $this->entityTypeManager
+                ->getStorage('page_template')
+                ->loadMultiple();
 
-            foreach ($files as $file) {
-                try {
-                    $content = file_get_contents($file);
-                    $data = Yaml::decode($content);
-
-                    if (!empty($data['id'])) {
-                        $templates[$data['id']] = $data;
-                    }
-                } catch (\Exception $e) {
-                    $this->logger->error('Error loading template from @file: @message', [
-                        '@file' => $file,
-                        '@message' => $e->getMessage(),
-                    ]);
-                }
+            foreach ($entities as $entity) {
+                $templates[$entity->id()] = [
+                    'id' => $entity->id(),
+                    'label' => $entity->label(),
+                    'description' => $entity->getDescription(),
+                    'category' => $entity->getCategory(),
+                    'twig_template' => $entity->getTwigTemplate(),
+                    'fields_schema' => $entity->getFieldsSchema(),
+                    'plans_required' => $entity->getPlansRequired(),
+                    'is_premium' => $entity->isPremium(),
+                    'preview_image' => $entity->getPreviewImage(),
+                    'preview_data' => $entity->getPreviewData(),
+                    'weight' => $entity->get('weight') ?? 0,
+                ];
             }
+        } catch (\Exception $e) {
+            $this->logger->error('Error loading templates from entity storage: @message', [
+                '@message' => $e->getMessage(),
+            ]);
         }
 
         // Permitir que otros módulos añadan templates.

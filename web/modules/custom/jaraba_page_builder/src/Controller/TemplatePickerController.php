@@ -95,22 +95,35 @@ class TemplatePickerController extends ControllerBase
         // Etiquetas de categorías traducibles para el template.
         // @see docs/00_DIRECTRICES_PROYECTO.md (Internacionalización)
         $category_labels = [
-            'cta' => $this->t('Call to Action'),
+            'hero' => $this->t('Hero'),
             'content' => $this->t('Content'),
-            'premium' => $this->t('Premium'),
+            'cta' => $this->t('Call to Action'),
             'features' => $this->t('Features'),
+            'testimonials' => $this->t('Testimonials'),
+            'pricing' => $this->t('Pricing'),
+            'contact' => $this->t('Contact'),
+            'gallery' => $this->t('Gallery'),
+            'commerce' => $this->t('Commerce'),
+            'social' => $this->t('Social'),
+            'advanced' => $this->t('Advanced'),
+            'premium' => $this->t('Premium'),
             'layout' => $this->t('Layout'),
             'forms' => $this->t('Forms'),
             'conversion' => $this->t('Conversion'),
             'events' => $this->t('Events'),
-            'hero' => $this->t('Hero'),
             'media' => $this->t('Media'),
             'trust' => $this->t('Trust'),
             'maps' => $this->t('Maps'),
             'social_proof' => $this->t('Social Proof'),
-            'pricing' => $this->t('Pricing'),
-            'commerce' => $this->t('Commerce'),
             'stats' => $this->t('Statistics'),
+            'team' => $this->t('Team'),
+            'timeline' => $this->t('Timeline'),
+            // Categorías verticales.
+            'agroconecta' => $this->t('AgroConecta'),
+            'comercioconecta' => $this->t('ComercioConecta'),
+            'serviciosconecta' => $this->t('ServiciosConecta'),
+            'empleabilidad' => $this->t('Empleabilidad'),
+            'emprendimiento' => $this->t('Emprendimiento'),
         ];
 
         $build = [
@@ -340,6 +353,9 @@ class TemplatePickerController extends ControllerBase
         $core_module_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core');
         $core_css_url = '/' . $core_module_path . '/css/ecosistema-jaraba-core.css';
 
+        // FIX 4: Obtener Design Tokens del tenant para inyectar en el iframe.
+        $design_tokens_css = $this->buildDesignTokensCss();
+
         // FIX A5: CSS del Page Builder necesarios para que los bloques se rendericen
         // correctamente en el iframe de preview.
         $pb_module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
@@ -499,7 +515,7 @@ CSS;
     <title>{$label} - Preview</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{$css_url}">
     <link rel="stylesheet" href="{$core_css_url}">
     <link rel="stylesheet" href="{$pb_css_url}">
@@ -511,6 +527,7 @@ CSS;
     <link rel="stylesheet" href="{$pb_aceternity_css_url}">
     <link rel="stylesheet" href="{$pb_magic_ui_css_url}">
     <style>
+        {$design_tokens_css}
         {$baseStyles}
         {$additionalStyles}
     </style>
@@ -882,6 +899,50 @@ HTML;
         }
 
         return $items;
+    }
+
+    /**
+     * Builds a CSS :root block with the tenant's design tokens.
+     *
+     * Mirrors the logic in CanvasEditorController::getDesignTokens() so the
+     * Template Picker iframe renders with the same tenant-specific colors and
+     * fonts as the GrapesJS canvas.
+     *
+     * @return string
+     *   CSS string (may be empty if no tenant or no tokens).
+     */
+    protected function buildDesignTokensCss(): string
+    {
+        $tenant = $this->tenantResolver->getCurrentTenant();
+
+        if (!$tenant) {
+            return '';
+        }
+
+        $tokens = [];
+
+        if (method_exists($tenant, 'hasField')) {
+            if ($tenant->hasField('color_primary') && !$tenant->get('color_primary')->isEmpty()) {
+                $tokens['color-primary'] = $tenant->get('color_primary')->value;
+            }
+            if ($tenant->hasField('color_secondary') && !$tenant->get('color_secondary')->isEmpty()) {
+                $tokens['color-secondary'] = $tenant->get('color_secondary')->value;
+            }
+            if ($tenant->hasField('font_family') && !$tenant->get('font_family')->isEmpty()) {
+                $tokens['font-family'] = $tenant->get('font_family')->value;
+            }
+        }
+
+        if (empty($tokens)) {
+            return '';
+        }
+
+        $vars = '';
+        foreach ($tokens as $key => $value) {
+            $vars .= "  --{$key}: {$value};\n";
+        }
+
+        return ":root {\n{$vars}}\n";
     }
 
 }

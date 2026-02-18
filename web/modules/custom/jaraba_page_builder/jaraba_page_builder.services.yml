@@ -82,6 +82,7 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@current_user'
       - '@logger.factory'
+      - '@entity_type.manager'
 
   # Persistencia del estado del Onboarding Tour del Canvas Editor.
   # Usa user.data de Drupal para sincronización entre dispositivos.
