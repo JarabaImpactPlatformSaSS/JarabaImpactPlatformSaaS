@@ -15,6 +15,8 @@ sk_test_123456
 sk_test_123
 sk_live_...
 sk_live_abc123xyz789
+sk_live_abc123
+sk_live_xxx
 sk-ant-xxxxx
 sk-xxxxx
 AIzaxxxxx
@@ -43,6 +45,13 @@ jaraba-dev-qdrant-key-2026
 # Hallazgo: Puppeteer version antigua en dependencias de desarrollo del theme.
 # Motivo: Usado por 'critical' para generacion de CSS critico en build-time.
 # CVE-2024-37890 (ws) - Ya parcheado en ws 6.2.3 (usado por puppeteer 2.1.1)
+CVE-2024-37890
+CVE-2024-37891
+CVE-2023-26136
+CVE-2022-37601
+CVE-2024-28863
+CVE-2021-23362
+CVE-2023-26159
 CVE-2024-37890
 
 # Hallazgo: Cypress version antigua en modulo contribuido (leaflet-geoman-free)
