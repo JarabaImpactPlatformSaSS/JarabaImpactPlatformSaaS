@@ -1,10 +1,28 @@
 # Trivy Configuration File
 # ═══════════════════════════════════════════════════════════════════
 
-# Scanners activos
-scanners:
-  - vuln
-  - secret
+# Configuracion de escaneo
+# En Trivy v0.50+, scanners/skip-dirs/skip-files van bajo 'scan:'
+scan:
+  scanners:
+    - vuln
+    - secret
+  # Exclusiones de directorios
+  # Excluimos dependencias de terceros (Drupal core, contrib, vendor, node_modules)
+  # ya que sus vulnerabilidades no son controlables por nuestro codigo.
+  # Nuestros modulos custom (web/modules/custom/*) SI se escanean.
+  skip-dirs:
+    - web/core
+    - web/modules/contrib
+    - vendor
+    - node_modules
+    - .git
+    - phpstan-tmp
+  # Exclusiones de archivos específicos
+  skip-files:
+    - web/modules/contrib/commerce_stripe/.cspell-project-words.txt
+    - .trivyignore
+    - trivy.yaml
 
 # Configuración de vulnerabilidades
 vulnerability:
@@ -15,27 +33,8 @@ severity:
   - HIGH
   - CRITICAL
 
-# Exclusiones de directorios (skip-dirs es el nombre correcto en Trivy v0.50+)
-# Excluimos dependencias de terceros (Drupal core, contrib, vendor, node_modules)
-# ya que sus vulnerabilidades no son controlables por nuestro codigo.
-# Nuestros modulos custom (web/modules/custom/*) SI se escanean.
-skip-dirs:
-  - web/core
-  - web/modules/contrib
-  - vendor
-  - node_modules
-  - .git
-  - phpstan-tmp
-
-# Exclusiones de archivos específicos
-skip-files:
-  - web/modules/contrib/commerce_stripe/.cspell-project-words.txt
-  - .trivyignore
-  - trivy.yaml
-
 # Configuración de secretos
 secret:
-  # Reglas de excepción para secretos
   allow-rules:
     - id: stripe-secret-token
     - id: generic-api-key
