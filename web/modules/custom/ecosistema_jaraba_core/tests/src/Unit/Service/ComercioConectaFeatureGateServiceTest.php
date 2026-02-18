@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Schema;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface;
 use Drupal\ecosistema_jaraba_core\Service\ComercioConectaFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService;
@@ -49,6 +47,11 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
 
+    // Mock database schema for ensureTable().
+    $schema = $this->createMock(Schema::class);
+    $schema->method('tableExists')->willReturn(TRUE);
+    $this->database->method('schema')->willReturn($schema);
+
     $this->service = new ComercioConectaFeatureGateService(
       $this->upgradeTriggerService,
       $this->database,
@@ -59,44 +62,76 @@ class ComercioConectaFeatureGateServiceTest extends UnitTestCase {
   }
 
   /**
-   * Tests checking a limit that has been reached.
+   * Tests checking a feature when no limit entity exists (allowed by default).
    *
    * @covers ::check
    */
-  public function testCheckLimitReached(): void {
+  public function testCheckNoLimitEntity(): void {
     $userId = 123;
-    $featureKey = 'product';
+    $featureKey = 'products';
     $plan = 'free';
 
-    // Mock FreemiumLimit
-    $limit = $this->createMock(FreemiumVerticalLimitInterface::class);
-    $limit->method('getLimitValue')->willReturn(10);
-    $limit->method('status')->willReturn(TRUE);
+    $this->upgradeTriggerService->method('getVerticalLimit')
+      ->with('comercioconecta', $plan, $featureKey)
+      ->willReturn(NULL);
 
-    $storage = $this->createMock(EntityStorageInterface::class);
-    $storage->method('load')->with('comercio_free_product')->willReturn($limit);
-    $this->entityTypeManager->method('getStorage')->with('freemium_vertical_limit')->willReturn($storage);
-
-    // Mock DB usage check
-    $statement = $this->createMock(\Drupal\Core\Database\StatementInterface::class);
-    $statement->method('fetchField')->willReturn(10);
-
-    $query = $this->createMock(\Drupal\Core\Database\Query\SelectInterface::class);
-    $query->method('condition')->willReturnSelf();
-    $query->method('execute')->willReturn($statement);
-
-    $this->database->method('select')->willReturn($query);
-
-    // Expect upgrade trigger fire
-    $this->upgradeTriggerService->expects($this->once())
-      ->method('fire')
-      ->with('comercio_product_limit_reached');
-
-    // Act
     $result = $this->service->check($userId, $featureKey, $plan);
 
-    // Assert
+    $this->assertInstanceOf(FeatureGateResult::class, $result);
+    $this->assertTrue($result->isAllowed());
+  }
+
+  /**
+   * Tests checking an unlimited feature (-1).
+   *
+   * @covers ::check
+   */
+  public function testCheckUnlimited(): void {
+    $userId = 123;
+    $featureKey = 'products';
+    $plan = 'profesional';
+
+    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity->method('get')->with('limit_value')->willReturn(-1);
+    $limitEntity->method('status')->willReturn(TRUE);
+
+    $this->upgradeTriggerService->method('getVerticalLimit')
+      ->with('comercioconecta', $plan, $featureKey)
+      ->willReturn($limitEntity);
+
+    $result = $this->service->check($userId, $featureKey, $plan);
+
+    $this->assertInstanceOf(FeatureGateResult::class, $result);
+    $this->assertTrue($result->isAllowed());
+    $this->assertEquals(-1, $result->remaining);
+  }
+
+  /**
+   * Tests checking a feature not included in the plan (limit = 0).
+   *
+   * @covers ::check
+   */
+  public function testCheckFeatureNotIncluded(): void {
+    $userId = 123;
+    $featureKey = 'pos_integration';
+    $plan = 'free';
+
+    $limitEntity = $this->createMock(\Drupal\ecosistema_jaraba_core\Entity\FreemiumVerticalLimitInterface::class);
+    $limitEntity->method('get')->willReturnMap([
+      ['limit_value', 0],
+      ['upgrade_message', 'Upgrade to access POS integration.'],
+    ]);
+    $limitEntity->method('status')->willReturn(TRUE);
+
+    $this->upgradeTriggerService->method('getVerticalLimit')
+      ->with('comercioconecta', $plan, $featureKey)
+      ->willReturn($limitEntity);
+
+    $result = $this->service->check($userId, $featureKey, $plan);
+
+    $this->assertInstanceOf(FeatureGateResult::class, $result);
     $this->assertFalse($result->isAllowed());
+    $this->assertEquals(0, $result->remaining);
   }
 
 }

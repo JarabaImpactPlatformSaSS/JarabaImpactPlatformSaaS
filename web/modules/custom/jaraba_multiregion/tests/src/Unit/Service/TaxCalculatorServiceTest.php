@@ -103,27 +103,12 @@ class TaxCalculatorServiceTest extends UnitTestCase {
 
     $entity->method('get')
       ->willReturnCallback(function (string $fieldName) use ($standardRate, $digitalServicesRate, $effectiveTo) {
-        $fieldItem = $this->createMock(FieldItemListInterface::class);
-
-        switch ($fieldName) {
-          case 'standard_rate':
-            $fieldItem->value = $standardRate;
-            break;
-
-          case 'digital_services_rate':
-            $fieldItem->value = $digitalServicesRate;
-            break;
-
-          case 'effective_to':
-            $fieldItem->value = $effectiveTo;
-            break;
-
-          default:
-            $fieldItem->value = NULL;
-            break;
-        }
-
-        return $fieldItem;
+        return match ($fieldName) {
+          'standard_rate' => (object) ['value' => $standardRate],
+          'digital_services_rate' => (object) ['value' => $digitalServicesRate],
+          'effective_to' => (object) ['value' => $effectiveTo],
+          default => (object) ['value' => NULL],
+        };
       });
 
     return $entity;
@@ -300,8 +285,26 @@ class TaxCalculatorServiceTest extends UnitTestCase {
    * @covers ::calculate
    */
   public function testCalculateExceptionReturnsErrorResult(): void {
-    $this->storage->method('getQuery')
-      ->willThrowException(new \RuntimeException('Database connection lost'));
+    // Create a tax rule entity that passes getTaxRule()'s effective_to check
+    // but throws when calculate() accesses standard_rate.
+    $brokenEntity = $this->createMock(ContentEntityInterface::class);
+    $brokenEntity->method('get')
+      ->willReturnCallback(function (string $fieldName) {
+        if ($fieldName === 'effective_to') {
+          return (object) ['value' => NULL];
+        }
+        throw new \RuntimeException('Database connection lost');
+      });
+
+    $query = $this->createMock(QueryInterface::class);
+    $query->method('accessCheck')->willReturnSelf();
+    $query->method('condition')->willReturnSelf();
+    $query->method('sort')->willReturnSelf();
+    $query->method('range')->willReturnSelf();
+    $query->method('execute')->willReturn([99]);
+
+    $this->storage->method('getQuery')->willReturn($query);
+    $this->storage->method('load')->with(99)->willReturn($brokenEntity);
 
     $this->logger->expects($this->atLeastOnce())
       ->method('error');
@@ -406,8 +409,7 @@ class TaxCalculatorServiceTest extends UnitTestCase {
       ->with('oss_registered')
       ->willReturn(TRUE);
 
-    $ossField = $this->createMock(FieldItemListInterface::class);
-    $ossField->value = TRUE;
+    $ossField = (object) ['value' => TRUE];
     $region->method('get')
       ->with('oss_registered')
       ->willReturn($ossField);

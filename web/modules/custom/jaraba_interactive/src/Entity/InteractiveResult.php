@@ -46,7 +46,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.interactive_result.settings",
  * )
  */
-class InteractiveResult extends ContentEntityBase implements EntityOwnerInterface
+class InteractiveResult extends ContentEntityBase implements EntityOwnerInterface, InteractiveResultInterface
 {
 
     use EntityOwnerTrait;
@@ -54,10 +54,10 @@ class InteractiveResult extends ContentEntityBase implements EntityOwnerInterfac
     /**
      * Obtiene el contenido interactivo asociado.
      *
-     * @return \Drupal\jaraba_interactive\Entity\InteractiveContent|null
+     * @return \Drupal\jaraba_interactive\Entity\InteractiveContentInterface|null
      *   La entidad de contenido interactivo o NULL.
      */
-    public function getInteractiveContent(): ?InteractiveContent
+    public function getInteractiveContent(): ?InteractiveContentInterface
     {
         return $this->get('content_id')->entity;
     }

@@ -120,7 +120,18 @@ class FeatureStoreService {
       'job_posting_velocity' => $this->calculateJobPostingVelocity($tenantId),
       'calculated_at' => date('Y-m-d\TH:i:s'),
     ];
-...
+
+    // Almacenar en cache de memoria.
+    $memoryCache[$cacheKey] = $features;
+
+    $this->logger->debug('Features calculated for tenant @id: @features', [
+      '@id' => $tenantId,
+      '@features' => json_encode($features),
+    ]);
+
+    return $features;
+  }
+
   /**
    * Calcula la velocidad de publicación de ofertas (últimos 30 días).
    * Específico para el vertical de Empleo.
@@ -141,17 +152,6 @@ class FeatureStoreService {
     catch (\Exception $e) {
       return 0;
     }
-  }
-
-    // Almacenar en cache de memoria.
-    $memoryCache[$cacheKey] = $features;
-
-    $this->logger->debug('Features calculated for tenant @id: @features', [
-      '@id' => $tenantId,
-      '@features' => json_encode($features),
-    ]);
-
-    return $features;
   }
 
   /**

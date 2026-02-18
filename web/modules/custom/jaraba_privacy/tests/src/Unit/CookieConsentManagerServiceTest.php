@@ -121,6 +121,20 @@ class CookieConsentManagerServiceTest extends UnitTestCase {
    * @covers ::getCurrentConsent
    */
   public function testGetCurrentConsentReturnsNullWithoutIdentifiers(): void {
+    // The service calls getStorage() before checking identifiers,
+    // so we must provide a mock storage with getQuery().
+    $storage = $this->createMock(EntityStorageInterface::class);
+    $query = $this->createMock(QueryInterface::class);
+
+    $this->entityTypeManager->method('getStorage')
+      ->with('cookie_consent')
+      ->willReturn($storage);
+
+    $storage->method('getQuery')->willReturn($query);
+    $query->method('accessCheck')->willReturnSelf();
+    $query->method('sort')->willReturnSelf();
+    $query->method('range')->willReturnSelf();
+
     $result = $this->service->getCurrentConsent(NULL, NULL);
     $this->assertNull($result);
   }

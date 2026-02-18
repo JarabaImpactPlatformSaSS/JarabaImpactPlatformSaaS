@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\ecosistema_jaraba_core\Service\JarabaLexFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\ValueObject\FeatureGateResult;
 use Drupal\jaraba_legal_intelligence\Entity\LegalResolution;
 use Drupal\jaraba_legal_intelligence\Service\LegalCitationService;
 use Drupal\Tests\UnitTestCase;
@@ -88,6 +89,8 @@ class LegalCitationServiceTest extends UnitTestCase {
     $this->tenantContext = $this->createMock(TenantContextService::class);
     $this->logger = $this->createMock(LoggerInterface::class);
     $this->featureGate = $this->createMock(JarabaLexFeatureGateService::class);
+    $this->featureGate->method('check')
+      ->willReturn(FeatureGateResult::allowed('citation_insert', 'pro'));
 
     $this->resolutionStorage = $this->createMock(EntityStorageInterface::class);
     $this->bookmarkStorage = $this->createMock(EntityStorageInterface::class);
@@ -128,17 +131,18 @@ class LegalCitationServiceTest extends UnitTestCase {
   public function testGenerateCitationValidFormats(): void {
     $validFormats = ['formal', 'resumida', 'bibliografica', 'nota_al_pie'];
 
+    // Create a single mock entity that handles any format via callback.
+    $entity = $this->createMock(LegalResolution::class);
+    $entity->method('formatCitation')
+      ->willReturnCallback(function (string $format): string {
+        return 'Citation text in ' . $format . ' format';
+      });
+
+    $this->resolutionStorage->method('load')
+      ->with(42)
+      ->willReturn($entity);
+
     foreach ($validFormats as $format) {
-      // Create a fresh mock entity for each format.
-      $entity = $this->createMock(LegalResolution::class);
-      $entity->method('formatCitation')
-        ->with($format)
-        ->willReturn('Citation text in ' . $format . ' format');
-
-      $this->resolutionStorage->method('load')
-        ->with(42)
-        ->willReturn($entity);
-
       $result = $this->service->generateCitation(42, $format);
 
       $this->assertTrue($result['success'], "Format '{$format}' should succeed.");

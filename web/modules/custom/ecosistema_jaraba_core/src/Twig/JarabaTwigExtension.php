@@ -56,7 +56,8 @@ class JarabaTwigExtension extends AbstractExtension
     /**
      * {@inheritdoc}
      */
-    public function getFilters(): array {
+    public function getFilters(): array
+    {
         return [
             new TwigFilter('safe_html', [$this, 'filterSafeHtml'], [
                 'is_safe' => ['html'],
@@ -79,7 +80,8 @@ class JarabaTwigExtension extends AbstractExtension
      * @return string
      *   HTML sanitizado.
      */
-    public function filterSafeHtml(?string $html): string {
+    public function filterSafeHtml(?string $html): string
+    {
         if ($html === NULL || $html === '') {
             return '';
         }
@@ -136,7 +138,7 @@ class JarabaTwigExtension extends AbstractExtension
     public function renderIcon(string $category, string $name, array $options = []): string
     {
         $variant = $options['variant'] ?? 'outline';
-        $size = $options['size'] ?? '24px';
+        $size = (string) ($options['size'] ?? '24px');
         $class = $options['class'] ?? '';
         $colorInput = $options['color'] ?? '';
 
@@ -157,8 +159,8 @@ class JarabaTwigExtension extends AbstractExtension
             $fallback = $this->getFallbackEmoji($category, $name);
             return sprintf(
                 '<span class="jaraba-icon jaraba-icon--fallback jaraba-icon--%s jaraba-icon--%s" style="font-size: %s; display: inline-block; vertical-align: middle;">%s</span>',
-                htmlspecialchars($category),
-                htmlspecialchars($name),
+                htmlspecialchars((string) $category),
+                htmlspecialchars((string) $name),
                 htmlspecialchars($size),
                 $fallback
             );
@@ -195,9 +197,9 @@ class JarabaTwigExtension extends AbstractExtension
         return sprintf(
             '<img src="%s" alt="%s" class="%s" style="%s" loading="lazy" aria-hidden="true" />',
             $path,
-            htmlspecialchars("{$name}"),
-            htmlspecialchars($classAttr),
-            htmlspecialchars($styleAttr)
+            htmlspecialchars((string) $name),
+            htmlspecialchars((string) $classAttr),
+            htmlspecialchars((string) $styleAttr)
         );
     }
 

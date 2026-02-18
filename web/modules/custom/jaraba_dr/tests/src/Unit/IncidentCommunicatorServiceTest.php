@@ -63,6 +63,11 @@ class IncidentCommunicatorServiceTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set up Drupal container for TranslatableMarkup::__toString().
+    $container = new \Drupal\Core\DependencyInjection\ContainerBuilder();
+    $container->set('string_translation', $this->getStringTranslationStub());
+    \Drupal::setContainer($container);
+
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
 
     $config = $this->createMock(ImmutableConfig::class);
@@ -205,8 +210,9 @@ class IncidentCommunicatorServiceTest extends UnitTestCase {
       ->with('dr_incident')
       ->willReturn($storage);
 
-    // Crear mock de incidente con severidad P2.
-    $incident = $this->createMock(\Drupal\Core\Entity\EntityInterface::class);
+    // Crear mock de incidente con severidad P2 usando la entidad concreta
+    // para disponer de get() (ContentEntityBase) y getCommunicationLogDecoded().
+    $incident = $this->createMock(\Drupal\jaraba_dr\Entity\DrIncident::class);
     $incident->method('id')->willReturn('5');
 
     // Mock de campos del incidente.
@@ -234,8 +240,6 @@ class IncidentCommunicatorServiceTest extends UnitTestCase {
       ->willReturn($queue);
 
     // El addCommunicationLog necesita cargar de nuevo el incidente.
-    $communicationLogField = new \stdClass();
-    $communicationLogField->value = '[]';
     $incident->method('getCommunicationLogDecoded')->willReturn([]);
 
     $result = $this->service->notifyIncident(5, 'Incidente de prueba P2');

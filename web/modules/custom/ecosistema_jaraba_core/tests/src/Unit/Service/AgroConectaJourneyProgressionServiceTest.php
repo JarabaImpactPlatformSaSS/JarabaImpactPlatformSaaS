@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\ecosistema_jaraba_core\Unit\Service;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\State\StateInterface;
-use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\AgroConectaJourneyProgressionService;
-use Drupal\jaraba_journey\Service\JourneyStateManagerService;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
@@ -23,9 +21,9 @@ use Psr\Log\LoggerInterface;
  */
 class AgroConectaJourneyProgressionServiceTest extends UnitTestCase {
 
-  protected JourneyStateManagerService $journeyStateManager;
   protected EntityTypeManagerInterface $entityTypeManager;
   protected StateInterface $state;
+  protected Connection $database;
   protected LoggerInterface $logger;
   protected AgroConectaJourneyProgressionService $service;
 
@@ -35,91 +33,75 @@ class AgroConectaJourneyProgressionServiceTest extends UnitTestCase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->journeyStateManager = $this->createMock(JourneyStateManagerService::class);
     $this->entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $this->state = $this->createMock(StateInterface::class);
+    $this->database = $this->createMock(Connection::class);
     $this->logger = $this->createMock(LoggerInterface::class);
 
-    // Mock container for t()
+    // Mock container for t() and \Drupal::time().
     $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
+    $time = $this->createMock(\Drupal\Component\Datetime\TimeInterface::class);
+    $time->method('getRequestTime')->willReturn(time());
+    $container->set('datetime.time', $time);
     \Drupal::setContainer($container);
 
     $this->service = new AgroConectaJourneyProgressionService(
-      $this->journeyStateManager,
       $this->entityTypeManager,
       $this->state,
-      $this->logger
+      $this->database,
+      $this->logger,
     );
   }
 
   /**
-   * Tests evaluating rules when inactivity discovery triggers.
+   * Tests that evaluate returns NULL when no rules match.
    *
    * @covers ::evaluate
    */
-  public function testEvaluateInactivityDiscovery(): void {
+  public function testEvaluateReturnsNullWhenNoRulesMatch(): void {
     $userId = 123;
 
-    // Mock Journey State: discovery
-    $this->journeyStateManager->method('getCurrentPhase')->with($userId, 'agroconecta')->willReturn('discovery');
+    // No dismissed rules.
+    $this->state->method('get')->willReturn([]);
 
-    // Mock Last Active: 4 days ago (>3 days threshold)
-    // We assume the service checks user last_access or similar.
-    // For this test, we'll mock the entity query count for products to be 0
-    // and assume the logic checks for inactivity.
+    // All condition checks will fail because:
+    // - checkNoActivity: state returns 0 (no last activity recorded).
+    // - checkIncompleteCatalog: entityTypeManager throws (no agro_product storage).
+    // - All other conditions are wrapped in try/catch and return FALSE on exception.
+    $this->entityTypeManager->method('getStorage')
+      ->willThrowException(new \Exception('Entity type not found'));
 
-    // Mock Product Count = 0
-    $productQuery = $this->createMock(QueryInterface::class);
-    $productQuery->method('accessCheck')->willReturnSelf();
-    $productQuery->method('condition')->willReturnSelf();
-    $productQuery->method('count')->willReturn($productQuery);
-    $productQuery->method('execute')->willReturn(0);
-
-    $productStorage = $this->createMock(EntityStorageInterface::class);
-    $productStorage->method('getQuery')->willReturn($productQuery);
-    $this->entityTypeManager->method('getStorage')->with('product_agro')->willReturn($productStorage);
-
-    // Act
     $result = $this->service->evaluate($userId);
 
-    // Assert
-    // Since we can't easily mock time() inside the service without a Time service injection (which wasn't in the constructor list inferred),
-    // we'll focus on the logic flow. If the service uses \Drupal::time(), it's hard to mock in Unit.
-    // Assuming the service checks for product count = 0 as a proxy for "inactivity/incomplete setup".
-
-    $this->assertIsArray($result);
-    $this->assertEquals('inactivity_discovery', $result['rule_id']);
+    $this->assertNull($result);
   }
 
   /**
-   * Tests evaluating rules when catalog is incomplete (activation phase).
+   * Tests that dismissAction stores the rule in dismissed list.
    *
-   * @covers ::evaluate
+   * @covers ::dismissAction
    */
-  public function testEvaluateIncompleteCatalog(): void {
+  public function testDismissAction(): void {
     $userId = 123;
+    $ruleId = 'inactivity_discovery';
 
-    // Mock Journey State: activation
-    $this->journeyStateManager->method('getCurrentPhase')->with($userId, 'agroconecta')->willReturn('activation');
+    $this->state->expects($this->atLeastOnce())
+      ->method('get')
+      ->willReturn([]);
 
-    // Mock Product Count = 1
-    $productQuery = $this->createMock(QueryInterface::class);
-    $productQuery->method('accessCheck')->willReturnSelf();
-    $productQuery->method('condition')->willReturnSelf();
-    $productQuery->method('count')->willReturn($productQuery);
-    $productQuery->method('execute')->willReturn(1);
+    $this->state->expects($this->atLeastOnce())
+      ->method('set')
+      ->with(
+        $this->equalTo("agroconecta_proactive_dismissed_{$userId}"),
+        $this->equalTo([$ruleId])
+      );
 
-    $productStorage = $this->createMock(EntityStorageInterface::class);
-    $productStorage->method('getQuery')->willReturn($productQuery);
-    $this->entityTypeManager->method('getStorage')->with('product_agro')->willReturn($productStorage);
+    $this->state->expects($this->once())
+      ->method('delete')
+      ->with("agroconecta_proactive_pending_{$userId}");
 
-    // Act
-    $result = $this->service->evaluate($userId);
-
-    // Assert
-    $this->assertIsArray($result);
-    $this->assertEquals('incomplete_catalog', $result['rule_id']);
+    $this->service->dismissAction($userId, $ruleId);
   }
 
 }

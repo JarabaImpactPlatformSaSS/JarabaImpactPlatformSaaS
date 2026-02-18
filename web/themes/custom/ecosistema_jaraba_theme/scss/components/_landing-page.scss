@@ -557,17 +557,17 @@ body.menu-open {
         justify-content: center;
         flex-wrap: wrap;
         gap: 0.5rem;
-        margin-top: 2rem;
-        padding: 0.75rem 1.5rem;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-top: 3rem;
+        padding: 0.75rem 1.75rem;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 100px;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         animation: fade-in-up 0.8s ease-out 0.4s both;
         max-width: fit-content;
         margin-inline: auto;
-        color: rgba(255, 255, 255, 0.92);
+        color: #fff;
     }
 
     &__trust-badge {
@@ -577,7 +577,7 @@ body.menu-open {
         font-family: var(--ej-font-body, 'Outfit', sans-serif);
         font-size: 0.8rem;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.92);
+        color: #fff;
         letter-spacing: 0.02em;
         white-space: nowrap;
 

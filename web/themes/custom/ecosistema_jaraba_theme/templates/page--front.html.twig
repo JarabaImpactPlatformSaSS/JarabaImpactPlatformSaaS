@@ -34,6 +34,12 @@
   <title>{{ head_title|safe_join(' | ') }}</title>
   <css-placeholder token="{{ placeholder_token }}">
   <js-placeholder token="{{ placeholder_token }}">
+  
+  {# SEO Avanzado — Datos Estructurados Schema.org #}
+  {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' with {
+    site_name: site_name,
+    logo: logo
+  } %}
 </head>
 
 <body{{ attributes.addClass('page-front', 'landing-page') }}>

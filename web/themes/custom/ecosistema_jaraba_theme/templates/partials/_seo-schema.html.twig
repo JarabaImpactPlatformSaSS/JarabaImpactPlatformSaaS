@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * _seo-schema.html.twig
+ *
+ * Genera datos estructurados (Schema.org) en formato JSON-LD.
+ * Ayuda a Google a entender que el sitio es una Organización y SaaS.
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_url = url('<front>', {}, {absolute: true}) %}
+{% set logo_url = logo ? logo : (site_url ~ 'themes/custom/ecosistema_jaraba_theme/logo.svg') %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ site_name }}",
+  "url": "{{ site_url }}",
+  "logo": "{{ logo_url }}",
+  "description": "{{ 'Plataforma SaaS de impacto para la gestión de ecosistemas locales.'|t }}",
+  "sameAs": [
+    "https://facebook.com/JarabaImpact",
+    "https://x.com/JarabaEcosistema",
+    "https://linkedin.com/company/jaraba-impact"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+34-900-000-000",
+    "contactType": "customer service",
+    "areaServed": "ES",
+    "availableLanguage": "Spanish"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "{{ site_name }}",
+  "url": "{{ site_url }}",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "All",
+  "abstract": "{{ 'Conecta talento, negocios y emprendedores con inteligencia artificial.'|t }}",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  }
+}
+</script>
