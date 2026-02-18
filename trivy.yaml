@@ -1,11 +1,6 @@
 # Trivy Configuration File
 # ═══════════════════════════════════════════════════════════════════
 
-# Escaneo de sistema de archivos
-scan:
-  type: 'fs'
-  ref: '.'
-
 # Scanners activos
 scanners:
   - vuln
@@ -20,19 +15,20 @@ severity:
   - HIGH
   - CRITICAL
 
-# Exclusiones de directorios
+# Exclusiones de directorios (skip-dirs es el nombre correcto en Trivy v0.50+)
 # Excluimos dependencias de terceros (Drupal core, contrib, vendor, node_modules)
 # ya que sus vulnerabilidades no son controlables por nuestro codigo.
 # Nuestros modulos custom (web/modules/custom/*) SI se escanean.
-exclude-dirs:
+skip-dirs:
   - web/core
   - web/modules/contrib
   - vendor
   - node_modules
   - .git
+  - phpstan-tmp
 
 # Exclusiones de archivos específicos
-exclude-files:
+skip-files:
   - web/modules/contrib/commerce_stripe/.cspell-project-words.txt
   - .trivyignore
   - trivy.yaml
