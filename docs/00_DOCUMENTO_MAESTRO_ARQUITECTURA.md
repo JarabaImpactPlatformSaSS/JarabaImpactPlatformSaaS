@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v53.0
+## Jaraba Impact Platform SaaS v55.0
 
 **Fecha:** 2026-02-18
-**Versión:** 53.0.0 (The Unified & Stabilized SaaS — 100% Tests Green)
-**Estado:** Producción (Stabilized Master)
+**Versión:** 55.0.0 (Page Builder Template Consistency — 129 Templates Resynced)
+**Estado:** Producción (Template Pipeline Unified)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -57,7 +57,9 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
-| 2026-02-18 | **53.0.0** | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
+| 2026-02-18 | **55.0.0** | **Page Builder Template Consistency:** 129 templates resynced con preview_image, metadatos corregidos, preview_data rico para 55 verticales. Pipelines Canvas Editor y Template Picker unificados (status filter, icon keys, default category). Update hook 9006 aplicado. Fix de `applyUpdates()` eliminado en Drupal 10+ para Legal Intelligence. |
+| 2026-02-18 | 54.0.0 | **CI/CD Hardening:** Corrección de trivy.yaml (claves `scan.skip-dirs`), deploy resiliente con fallback SSH. Security Scan y Deploy en verde. |
+| 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 53.0.0 | **Fecha:** 2026-02-18 | **Autor:** IA Asistente
+> **Versión:** 54.0.0 | **Fecha:** 2026-02-18 | **Autor:** IA Asistente
