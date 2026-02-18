@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: serviciosconecta_booking_widget
 label: 'ServiciosConecta: Widget de Reservas'
-description: 'Seccion widget de reservas con calendario, lista de servicios y CTA para profesionales de servicios.'
+description: 'Sección widget de reservas con calendario, lista de servicios y CTA para profesionales de servicios.'
 category: serviciosconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/booking_widget.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -32,11 +32,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     services:
       type: array

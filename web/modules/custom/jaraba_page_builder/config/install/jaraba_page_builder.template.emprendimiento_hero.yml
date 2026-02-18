@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_hero
 label: 'Emprendimiento: Lanzamiento Startup'
-description: 'Seccion seccion hero principal especializada para emprendedores.'
+description: 'Sección hero principal especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/hero.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,19 +28,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -49,10 +49,16 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-hero.png'
 weight: 44
 preview_data:
-  title: 'Lanzamiento Startup'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion seccion hero principal.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Emprendimiento
+  title: Convierte tu idea en un negocio real
+  subtitle: Metodología, financiación y mentores para lanzar tu proyecto con garantías
+  description: 'Ecosistema completo de apoyo al emprendimiento: desde la validación de tu idea hasta la escalabilidad de tu negocio, con metodología probada y red de mentores.'
+  image: ''
+  cta_text: Validar mi idea
+  cta_url: /validar
+  cta_secondary_text: Conocer el programa
+  cta_secondary_url: /programa
+  background_image: ''

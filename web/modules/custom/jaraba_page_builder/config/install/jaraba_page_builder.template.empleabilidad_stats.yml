@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: empleabilidad_stats
 label: 'Empleabilidad: Metricas de Colocacion'
-description: 'Seccion metricas de impacto especializada para buscadores de empleo.'
+description: 'Sección métricas de impacto especializada para buscadores de empleo.'
 category: empleabilidad
 twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/stats.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,30 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/empleabilidad-stats.png'
 weight: 41
 preview_data:
-  title: 'Metricas de Colocacion'
-  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
-  description: 'Descripcion de ejemplo para la seccion metricas de impacto.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Resultados
+  title: Resultados que avalan nuestra metodología
+  subtitle: Cifras reales del impacto de nuestros programas de empleabilidad.
+  stats:
+    -
+      number: '+1.500'
+      label: Candidatos colocados
+      prefix: ''
+      suffix: ''
+    -
+      number: '87'
+      label: Tasa de inserción
+      prefix: ''
+      suffix: '%'
+    -
+      number: '+120'
+      label: Empresas colaboradoras
+      prefix: ''
+      suffix: ''
+    -
+      number: '4.9'
+      label: Valoración media
+      prefix: ''
+      suffix: /5

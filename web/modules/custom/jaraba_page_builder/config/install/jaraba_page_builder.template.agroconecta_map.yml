@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_map
 label: 'AgroConecta: Ubicacion de la Finca'
-description: 'Seccion ubicacion y cobertura especializada para productores agricolas.'
+description: 'Sección ubicación y cobertura especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/map.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -44,11 +44,11 @@ fields_schema:
       format: email
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     working_hours:
       type: array
@@ -75,8 +75,19 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-map.png'
 weight: 7
 preview_data:
-  title: 'Ubicacion de la Finca'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion ubicacion y cobertura.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Ubicación
+  title: Visita nuestra finca
+  subtitle: Te esperamos para que conozcas de primera mano nuestros cultivos.
+  map_embed: ''
+  address: Camino Rural de la Vega, s/n, Jaraba, Zaragoza
+  phone: +34 976 000 000
+  email: 'info@agroconecta.es'
+  working_hours:
+    -
+      days: Lunes a Viernes
+      open: '08:00'
+      close: '14:00'
+    -
+      days: Sábados
+      open: '09:00'
+      close: '13:00'

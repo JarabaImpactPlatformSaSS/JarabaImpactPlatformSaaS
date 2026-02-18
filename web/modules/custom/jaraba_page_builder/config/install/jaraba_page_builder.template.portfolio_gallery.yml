@@ -85,6 +85,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/portfolio-gallery.png'
 preview_data:
   eyebrow: "OUR WORK"
   title: "Featured Projects"

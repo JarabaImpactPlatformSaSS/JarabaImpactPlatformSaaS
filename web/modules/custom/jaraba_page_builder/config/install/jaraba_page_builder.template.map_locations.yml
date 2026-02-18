@@ -95,6 +95,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/map-locations.png'
 preview_data:
   title: "Find Us"
   subtitle: "Visit our offices around the world"

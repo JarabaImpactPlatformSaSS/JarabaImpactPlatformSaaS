@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_hero
 label: 'AgroConecta: Escaparate del Productor'
-description: 'Seccion seccion hero principal especializada para productores agricolas.'
+description: 'Sección hero principal especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/hero.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     background_image:
       type: string
@@ -40,11 +40,11 @@ fields_schema:
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -57,8 +57,13 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-hero.png'
 weight: 0
 preview_data:
-  title: 'Escaparate del Productor'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion seccion hero principal.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: AgroConecta
+  title: Del campo a tu mesa, sin intermediarios
+  subtitle: Conectamos productores locales con consumidores conscientes
+  description: Plataforma digital que impulsa la agricultura sostenible, conectando directamente a productores del campo con compradores que valoran la calidad y el origen de los alimentos.
+  image: ''
+  cta_text: Explorar productos
+  cta_url: /productos
+  cta_secondary_text: Conocer productores
+  cta_secondary_url: /productores
+  background_image: ''

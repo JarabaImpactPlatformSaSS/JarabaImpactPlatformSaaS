@@ -66,6 +66,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/typewriter-text.png'
 preview_data:
   prefix: "We help you "
   phrases:

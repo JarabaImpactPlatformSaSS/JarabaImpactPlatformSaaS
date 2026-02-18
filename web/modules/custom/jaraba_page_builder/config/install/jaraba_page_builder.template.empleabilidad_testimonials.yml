@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: empleabilidad_testimonials
 label: 'Empleabilidad: Historias de Exito'
-description: 'Seccion historias de exito especializada para buscadores de empleo.'
+description: 'Sección historias de éxito especializada para buscadores de empleo.'
 category: empleabilidad
 twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/testimonials.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,31 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/empleabilidad-testimonials.png'
 weight: 35
 preview_data:
-  title: 'Historias de Exito'
-  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
-  description: 'Descripcion de ejemplo para la seccion historias de exito.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Testimonios
+  title: Lo que dicen quienes han confiado en nosotros
+  subtitle: Historias reales de transformación profesional.
+  testimonials:
+    -
+      quote: Después de 8 meses en paro, el programa de empleabilidad me dio las herramientas y la confianza para conseguir un puesto acorde a mi perfil.
+      name: David Moreno
+      role: Técnico de marketing
+      rating: 5
+      avatar: ''
+      initials: DM
+    -
+      quote: La formación en análisis de datos fue exactamente lo que necesitaba. En tres meses pasé de administrativa a analista junior.
+      name: Lucía Fernández
+      role: Analista de datos
+      rating: 5
+      avatar: ''
+      initials: LF
+    -
+      quote: Mi orientadora me ayudó a redefinir mi marca personal. Ahora recibo ofertas de empresas que antes ni me consideraban.
+      name: Roberto Vega
+      role: Project Manager
+      rating: 5
+      avatar: ''
+      initials: RV

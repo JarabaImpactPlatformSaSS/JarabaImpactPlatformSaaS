@@ -86,6 +86,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/icon-cards.png'
 preview_data:
   eyebrow: "FEATURES"
   title: "What We Offer"

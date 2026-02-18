@@ -70,6 +70,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/social-proof.png'
 preview_data:
   title: "Trusted by Industry Leaders"
   items:

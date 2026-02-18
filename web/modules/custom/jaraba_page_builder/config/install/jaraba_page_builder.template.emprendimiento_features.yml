@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_features
 label: 'Emprendimiento: Lean Canvas'
-description: 'Seccion rejilla de caracteristicas especializada para emprendedores.'
+description: 'Sección rejilla de características especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/features.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,26 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-features.png'
 weight: 45
 preview_data:
-  title: 'Lean Canvas'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion rejilla de caracteristicas.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Servicios
+  title: Todo lo que necesitas para emprender
+  subtitle: Herramientas, formación y conexiones para cada fase de tu proyecto.
+  columns: 3
+  features:
+    -
+      icon: lightbulb
+      icon_category: ui
+      title: Validación de ideas
+      desc: Metodologías probadas para validar tu modelo de negocio antes de invertir.
+    -
+      icon: euro
+      icon_category: analytics
+      title: Acceso a financiación
+      desc: Conecta con inversores, fondos y programas de ayudas para emprendedores.
+    -
+      icon: handshake
+      icon_category: business
+      title: Red de mentores
+      desc: Emprendedores experimentados te guían en cada etapa de tu proyecto.

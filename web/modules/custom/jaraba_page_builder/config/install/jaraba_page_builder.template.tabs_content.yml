@@ -65,6 +65,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/tabs-content.png'
 preview_data:
   title: "Explore Our Features"
   tabs:

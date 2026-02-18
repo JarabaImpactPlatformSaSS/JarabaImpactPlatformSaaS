@@ -48,6 +48,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/banner-strip.png'
 preview_data:
   text: "🎉 Spring Sale! Get 25% off all plans with code SPRING25"
   cta_text: "Shop Now →"

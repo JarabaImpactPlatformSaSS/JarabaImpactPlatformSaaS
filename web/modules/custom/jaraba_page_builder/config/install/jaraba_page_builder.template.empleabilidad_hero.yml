@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: empleabilidad_hero
 label: 'Empleabilidad: Perfil del Candidato'
-description: 'Seccion seccion hero principal especializada para buscadores de empleo.'
+description: 'Sección hero principal especializada para buscadores de empleo.'
 category: empleabilidad
 twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/hero.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,19 +28,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -49,10 +49,16 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/empleabilidad-hero.png'
 weight: 33
 preview_data:
-  title: 'Perfil del Candidato'
-  subtitle: 'Subtitulo de ejemplo para Empleabilidad'
-  description: 'Descripcion de ejemplo para la seccion seccion hero principal.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Empleabilidad
+  title: Impulsa tu carrera profesional
+  subtitle: Formación, orientación y oportunidades laborales para construir el futuro que mereces
+  description: Plataforma integral de empleabilidad que conecta talento con oportunidades, ofreciendo formación personalizada, orientación profesional y acceso a ofertas de empleo cualificadas.
+  image: ''
+  cta_text: Crear mi perfil
+  cta_url: /registro
+  cta_secondary_text: Explorar ofertas
+  cta_secondary_url: /ofertas
+  background_image: ''

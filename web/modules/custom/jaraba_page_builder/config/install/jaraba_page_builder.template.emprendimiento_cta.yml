@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_cta
 label: 'Emprendimiento: Validar Idea'
-description: 'Seccion seccion de conversion especializada para emprendedores.'
+description: 'Sección de conversión especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/cta.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,19 +28,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
   required:
     - title
@@ -49,10 +49,15 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-cta.png'
 weight: 47
 preview_data:
-  title: 'Validar Idea'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion seccion de conversion.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Lanza tu proyecto
+  title: ¿Tienes una idea de negocio? Valídala con nosotros
+  subtitle: Accede a mentores, financiación y herramientas para convertir tu visión en realidad.
+  cta_text: Aplicar al programa
+  cta_url: /aplicar
+  cta_secondary_text: Agendar sesión
+  cta_secondary_url: /sesion
+  countdown_date: ''
+  background_image: ''

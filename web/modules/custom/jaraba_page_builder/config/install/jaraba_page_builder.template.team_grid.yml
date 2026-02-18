@@ -78,6 +78,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/team-grid.png'
 preview_data:
   eyebrow: "OUR TEAM"
   title: "Meet Our Experts"

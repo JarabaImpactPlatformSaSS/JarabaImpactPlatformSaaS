@@ -48,6 +48,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/alert-banner.png'
 preview_data:
   message: "🚀 New Feature Available! Check out our latest updates and improvements."
   type: info

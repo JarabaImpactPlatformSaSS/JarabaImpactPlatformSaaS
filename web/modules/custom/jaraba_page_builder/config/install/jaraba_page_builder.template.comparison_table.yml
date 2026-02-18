@@ -79,6 +79,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comparison-table.png'
 preview_data:
   title: "Compare Our Plans"
   subtitle: "Choose the perfect plan for your needs"

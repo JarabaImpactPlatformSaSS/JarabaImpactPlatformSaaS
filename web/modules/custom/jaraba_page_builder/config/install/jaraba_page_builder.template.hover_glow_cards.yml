@@ -61,6 +61,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/hover-glow-cards.png'
 preview_data:
   title: "Premium Features"
   subtitle: "Hover over cards to see the glow effect"

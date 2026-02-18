@@ -64,6 +64,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/animated-counter.png'
 preview_data:
   title: "Our Achievements"
   subtitle: "Numbers that speak for themselves"

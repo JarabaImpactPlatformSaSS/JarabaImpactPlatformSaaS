@@ -105,6 +105,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/blog-cards.png'
 preview_data:
   eyebrow: "FROM THE BLOG"
   title: "Latest Articles"

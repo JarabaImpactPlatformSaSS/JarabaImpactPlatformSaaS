@@ -67,6 +67,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/image-text-block.png'
 preview_data:
   eyebrow: "ABOUT US"
   title: "We're Building the Future of Work"

@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: comercioconecta_pricing
 label: 'ComercioConecta: Niveles de Producto'
-description: 'Seccion tabla de precios especializada para comercios y tiendas.'
+description: 'Sección tabla de precios especializada para comercios y tiendas.'
 category: comercioconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/pricing.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     eyebrow:
       type: string
@@ -36,19 +36,19 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     cta_secondary_text:
       type: string
-      title: 'Texto del Boton Secundario'
+      title: 'Texto del Botón Secundario'
       maxLength: 50
     cta_secondary_url:
       type: string
-      title: 'URL del Boton Secundario'
+      title: 'URL del Botón Secundario'
       format: uri
     plans:
       type: array
@@ -90,8 +90,46 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-pricing.png'
 weight: 17
 preview_data:
-  title: 'Elige el plan perfecto para tu tienda'
-  subtitle: 'Planes flexibles que crecen con tu negocio.'
-  eyebrow: 'Planes'
-  cta_text: 'Comparar planes'
-  cta_url: '/comercio/planes'
+  eyebrow: Planes
+  title: Elige el plan perfecto para tu tienda
+  subtitle: Planes flexibles que crecen con tu negocio.
+  show_toggle: false
+  plans:
+    -
+      name: Básico
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Empezar gratis
+      url: /registro
+      features:
+        - Hasta 25 productos
+        - Plantilla estándar
+        - Pagos con tarjeta
+    -
+      name: Profesional
+      price: 29€
+      period: /mes
+      featured: true
+      badge: Más popular
+      cta: Elegir plan
+      url: /planes/profesional
+      features:
+        - Productos ilimitados
+        - Dominio propio
+        - SEO avanzado
+        - Cupones y descuentos
+    -
+      name: Enterprise
+      price: 79€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/enterprise
+      features:
+        - Todo de Profesional
+        - Multi-tienda
+        - API completa
+        - Soporte 24/7

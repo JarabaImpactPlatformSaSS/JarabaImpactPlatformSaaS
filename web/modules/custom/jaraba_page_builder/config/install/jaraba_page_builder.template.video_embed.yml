@@ -55,6 +55,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/video-embed.png'
 preview_data:
   title: "See Our Platform in Action"
   description: "Watch how our tools can transform your workflow in just 2 minutes."

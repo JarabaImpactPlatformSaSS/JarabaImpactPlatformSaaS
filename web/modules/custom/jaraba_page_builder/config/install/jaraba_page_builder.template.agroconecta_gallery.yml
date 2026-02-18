@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_gallery
 label: 'AgroConecta: Linea del Tiempo Cosecha'
-description: 'Seccion galeria visual especializada para productores agricolas.'
+description: 'Sección galería visual especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/gallery.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     layout:
       type: string
@@ -67,8 +67,24 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-gallery.png'
 weight: 5
 preview_data:
-  title: 'Linea del Tiempo Cosecha'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion galeria visual.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Galería
+  title: Nuestros productos destacados
+  subtitle: Descubre la variedad y calidad de nuestro catálogo.
+  layout: grid
+  gallery:
+    -
+      src: ''
+      alt: Huerta ecológica de tomates
+      caption: Tomates ecológicos de temporada
+    -
+      src: ''
+      alt: Aceite de oliva virgen extra
+      caption: Aceite de oliva de primera presión en frío
+    -
+      src: ''
+      alt: Queso artesanal de cabra
+      caption: Queso artesanal con leche de pastoreo
+    -
+      src: ''
+      alt: Miel de romero
+      caption: Miel cruda de romero de la Sierra

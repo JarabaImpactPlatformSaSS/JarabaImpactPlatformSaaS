@@ -372,3 +372,65 @@ function jaraba_page_builder_update_9005(&$sandbox) {
     '@updated' => $updated,
   ]);
 }
+
+/**
+ * Resync all 129 template configs: preview_image, metadata fixes, rich preview_data.
+ *
+ * This update imports corrected YAML files that include:
+ * - preview_image linked for all 129 templates
+ * - 4 missing serviciosconecta PNGs created
+ * - "Seccion seccion" typo fixed in 15 descriptions
+ * - Tildes added to all 59 vertical descriptions
+ * - Duplicate label fixed on serviciosconecta_testimonials
+ * - Rich preview_data with domain-specific content for 55 vertical templates
+ */
+function jaraba_page_builder_update_9006(&$sandbox) {
+  $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
+  $config_path = $module_path . '/config/install';
+  $pattern = $config_path . '/jaraba_page_builder.template.*.yml';
+  $files = glob($pattern);
+
+  $imported = 0;
+  $updated = 0;
+  $errors = 0;
+
+  foreach ($files as $file) {
+    $yaml_content = file_get_contents($file);
+    if (!$yaml_content) {
+      $errors++;
+      continue;
+    }
+
+    $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+    if (empty($data['id'])) {
+      $errors++;
+      continue;
+    }
+
+    // Guarantee Drupal config headers.
+    $data += [
+      'langcode' => 'es',
+      'status' => TRUE,
+      'dependencies' => [],
+    ];
+
+    $config_name = 'jaraba_page_builder.template.' . $data['id'];
+    $config = \Drupal::configFactory()->getEditable($config_name);
+
+    if ($config->isNew()) {
+      $imported++;
+    }
+    else {
+      $updated++;
+    }
+
+    $config->setData($data)->save();
+  }
+
+  return t('Template configs resynced — new: @imported, updated: @updated, errors: @errors (of @total files).', [
+    '@imported' => $imported,
+    '@updated' => $updated,
+    '@errors' => $errors,
+    '@total' => count($files),
+  ]);
+}

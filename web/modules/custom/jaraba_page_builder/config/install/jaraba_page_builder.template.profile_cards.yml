@@ -68,6 +68,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/profile-cards.png'
 preview_data:
   title: "Meet Our Experts"
   subtitle: "Industry leaders ready to help you succeed"

@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_stats
 label: 'Emprendimiento: Metricas Startup'
-description: 'Seccion metricas de impacto especializada para emprendedores.'
+description: 'Sección métricas de impacto especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/stats.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,30 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-stats.png'
 weight: 52
 preview_data:
-  title: 'Metricas Startup'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion metricas de impacto.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Impacto
+  title: Nuestros números hablan
+  subtitle: Resultados reales del ecosistema emprendedor de Jaraba.
+  stats:
+    -
+      number: '+200'
+      label: Startups aceleradas
+      prefix: ''
+      suffix: ''
+    -
+      number: '72'
+      label: Tasa de supervivencia
+      prefix: ''
+      suffix: '%'
+    -
+      number: 5.2M
+      label: Inversión captada
+      prefix: ''
+      suffix: €
+    -
+      number: '+850'
+      label: Empleos generados
+      prefix: ''
+      suffix: ''

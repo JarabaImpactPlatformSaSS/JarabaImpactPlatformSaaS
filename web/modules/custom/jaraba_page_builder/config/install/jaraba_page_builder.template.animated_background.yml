@@ -68,6 +68,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/animated-background.png'
 preview_data:
   title: "Welcome to the Future"
   subtitle: "Experience our cutting-edge platform"

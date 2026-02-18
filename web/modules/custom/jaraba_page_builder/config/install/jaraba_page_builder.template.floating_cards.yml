@@ -55,6 +55,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/floating-cards.png'
 preview_data:
   title: "Explore Our Services"
   subtitle: "Hover to experience the 3D floating effect"

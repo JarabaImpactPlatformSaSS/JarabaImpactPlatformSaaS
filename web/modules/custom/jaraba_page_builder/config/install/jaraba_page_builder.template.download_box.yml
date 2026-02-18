@@ -61,6 +61,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/download-box.png'
 preview_data:
   eyebrow: "FREE RESOURCE"
   title: "The Ultimate Growth Guide 2026"

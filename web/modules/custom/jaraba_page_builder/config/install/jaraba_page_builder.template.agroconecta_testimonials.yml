@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: agroconecta_testimonials
 label: 'AgroConecta: Historia del Productor'
-description: 'Seccion historias de exito especializada para productores agricolas.'
+description: 'Sección historias de éxito especializada para productores agrícolas.'
 category: agroconecta
 twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/testimonials.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
     testimonials:
       type: array
@@ -65,8 +65,28 @@ animation: fade-up
 preview_image: '/modules/custom/jaraba_page_builder/images/previews/agroconecta-testimonials.png'
 weight: 2
 preview_data:
-  title: 'Historia del Productor'
-  subtitle: 'Subtitulo de ejemplo para AgroConecta'
-  description: 'Descripcion de ejemplo para la seccion historias de exito.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Testimonios
+  title: Lo que dicen nuestros productores
+  subtitle: Historias reales de agricultores que han transformado su negocio.
+  testimonials:
+    -
+      quote: AgroConecta me permitió dejar de depender de los intermediarios. Ahora fijo mis propios precios y mis clientes saben exactamente de dónde viene su comida.
+      name: Carmen Ruiz
+      role: Horticultora ecológica
+      rating: 5
+      avatar: ''
+      initials: CR
+    -
+      quote: La plataforma es muy intuitiva. En una semana ya tenía mi tienda online funcionando y recibiendo pedidos de toda la comarca.
+      name: Pedro Sánchez
+      role: Apicultor artesanal
+      rating: 5
+      avatar: ''
+      initials: PS
+    -
+      quote: El soporte es excepcional. Me ayudaron a optimizar mis envíos y ahora mis productos llegan frescos a cualquier punto de España.
+      name: Ana Martínez
+      role: Productora de lácteos
+      rating: 4
+      avatar: ''
+      initials: AM

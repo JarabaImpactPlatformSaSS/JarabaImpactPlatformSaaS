@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_social_proof
 label: 'Emprendimiento: Red de Mentores'
-description: 'Seccion credibilidad y confianza especializada para emprendedores.'
+description: 'Sección credibilidad y confianza especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/social_proof.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,31 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-social-proof.png'
 weight: 54
 preview_data:
-  title: 'Red de Mentores'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion credibilidad y confianza.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: Ecosistema
+  title: Partners que nos acompañan
+  subtitle: Instituciones y empresas que apoyan nuestro ecosistema emprendedor.
+  average_rating: 4.8
+  total_reviews: 89
+  reviews:
+    -
+      text: El programa de aceleración fue clave para conseguir nuestra primera ronda de inversión de 300K€.
+      author: Andrea Soler
+      role: CEO de TechGrow
+    -
+      text: Los mentores del programa me ahorraron meses de errores. Su experiencia es invaluable.
+      author: Daniel Ruiz
+      role: Fundador de EcoDelivery
+  logos:
+    -
+      src: ''
+      alt: Fondo de inversión
+    -
+      src: ''
+      alt: Aceleradora tecnológica
+    -
+      src: ''
+      alt: Gobierno de Aragón
+  badges: []

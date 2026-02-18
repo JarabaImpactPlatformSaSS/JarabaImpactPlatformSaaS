@@ -95,6 +95,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/event-calendar.png'
 preview_data:
   title: "Upcoming Events"
   subtitle: "Join us for inspiring workshops and networking"

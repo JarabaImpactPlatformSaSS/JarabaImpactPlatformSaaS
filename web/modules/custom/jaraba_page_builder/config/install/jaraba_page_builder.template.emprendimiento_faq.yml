@@ -3,7 +3,7 @@ status: true
 dependencies: {}
 id: emprendimiento_faq
 label: 'Emprendimiento: Proceso de Validacion'
-description: 'Seccion preguntas frecuentes especializada para emprendedores.'
+description: 'Sección preguntas frecuentes especializada para emprendedores.'
 category: emprendimiento
 twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/faq.html.twig'
 fields_schema:
@@ -12,11 +12,11 @@ fields_schema:
   properties:
     title:
       type: string
-      title: 'Titulo'
+      title: 'Título'
       maxLength: 150
     subtitle:
       type: string
-      title: 'Subtitulo'
+      title: 'Subtítulo'
       maxLength: 300
     description:
       type: string
@@ -28,11 +28,11 @@ fields_schema:
       format: image
     cta_text:
       type: string
-      title: 'Texto del Boton'
+      title: 'Texto del Botón'
       maxLength: 50
     cta_url:
       type: string
-      title: 'URL del Boton'
+      title: 'URL del Botón'
       format: uri
   required:
     - title
@@ -41,10 +41,19 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/emprendimiento-faq.png'
 weight: 53
 preview_data:
-  title: 'Proceso de Validacion'
-  subtitle: 'Subtitulo de ejemplo para Emprendimiento'
-  description: 'Descripcion de ejemplo para la seccion preguntas frecuentes.'
-  cta_text: 'Comenzar'
-  cta_url: '/'
+  eyebrow: FAQ
+  title: Preguntas frecuentes
+  subtitle: Todo lo que necesitas saber para emprender con nosotros.
+  faqs:
+    -
+      question: ¿Necesito tener una empresa constituida?
+      answer: No. Puedes aplicar con solo una idea. Te acompañamos en todo el proceso, incluyendo la constitución legal cuando sea el momento adecuado.
+    -
+      question: ¿Cómo accedo a financiación?
+      answer: Conectamos a los emprendedores con inversores ángeles, fondos de venture capital y programas de subvenciones públicas. Además te preparamos para presentar tu pitch.
+    -
+      question: ¿Cuánto dura el programa de aceleración?
+      answer: El programa estándar dura 6 meses, con sesiones semanales de mentoring, workshops mensuales y acceso ilimitado a nuestra plataforma y red de contactos.

@@ -67,6 +67,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/cards-grid.png'
 preview_data:
   eyebrow: "SOLUTIONS"
   title: "Solutions for Every Need"

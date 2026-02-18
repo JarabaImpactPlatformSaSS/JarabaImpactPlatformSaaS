@@ -76,6 +76,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/particle-hero.png'
 preview_data:
   title: "Innovation Starts Here"
   subtitle: "The most advanced platform for modern businesses"

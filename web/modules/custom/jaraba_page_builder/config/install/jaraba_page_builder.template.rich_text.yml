@@ -48,6 +48,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/rich-text.png'
 preview_data:
   title: "Our Commitment to Quality"
   content: "<p>At our core, we believe that software should empower people, not complicate their lives. That's why we've spent years refining our platform to be both incredibly powerful and surprisingly simple to use.</p>\n<h3>What Sets Us Apart</h3>\n<p>Unlike other solutions that require weeks of training, our platform can be learned in hours. But don't let that simplicity fool you—under the hood, you'll find enterprise-grade features that scale with your business.</p>\n<ul>\n<li><strong>Intuitive Design:</strong> Clean interfaces that make sense from day one</li>\n<li><strong>Powerful Features:</strong> Advanced capabilities when you need them</li>\n<li><strong>Reliable Support:</strong> Expert help available 24/7</li>\n</ul>\n<p>Ready to experience the difference? <a href='#'>Start your free trial today</a>.</p>"
