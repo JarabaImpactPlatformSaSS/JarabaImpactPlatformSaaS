@@ -1,7 +1,7 @@
 # DIRECTRICES DE DESARROLLO - JARABA IMPACT PLATFORM
 
 > **Documento Central de Referencia Obligatoria**
-> Versión: 1.0 | Fecha: Enero 2026
+> Versión: 2.0 | Fecha: Febrero 2026
 
 ---
 
@@ -69,6 +69,33 @@ Este checklist DEBE revisarse antes de cualquier commit o PR.
 - [ ] **Logger**: Usar `@logger.channel.{module}`
 - [ ] **Config**: No hardcodear valores, usar `ConfigFactory`
 
+### 8. CI/CD y Security Scanning
+
+- [ ] **Trivy config**: Las claves `skip-dirs`/`skip-files` van bajo el bloque `scan:` (NO al nivel raíz)
+- [ ] **Exclusiones**: vendor/, web/core/, web/modules/contrib/ y node_modules/ DEBEN estar en `scan.skip-dirs`
+- [ ] **Verificar logs**: Confirmar que "Number of language-specific files" no incluye archivos de terceros
+- [ ] **Smoke tests**: Deben tener fallback SSH/Drush cuando `PRODUCTION_URL` no está disponible
+- [ ] **Secrets en workflows**: Validar existencia antes de usar; emitir `::warning::` si falta, no `::error::`
+
+### 9. Page Builder Templates (Config Entities YAML)
+
+- [ ] **preview_image obligatorio**: Todo YAML DEBE incluir `preview_image: '/modules/custom/jaraba_page_builder/images/previews/{id-con-guiones}.png'`
+- [ ] **PNG existente**: Verificar que el PNG referenciado existe en disco. Si falta, crear placeholder (800x600)
+- [ ] **preview_data rico**: Templates verticales DEBEN incluir arrays con 3+ items del dominio (features, testimonials, faqs, stats, plans, gallery)
+- [ ] **Cabeceras Drupal**: Todo YAML DEBE tener `langcode: es`, `status: true`, `dependencies: {}`
+- [ ] **fields_schema coherente**: Los campos en `fields_schema` DEBEN coincidir con las variables usadas en el Twig template
+- [ ] **Categoría correcta**: Usar machine names (`hero`, `cta`, `content`, `agroconecta`, etc.), NO labels en español
+- [ ] **Tildes en descripciones**: Usar `Sección`, no `Seccion`; `métricas`, no `metricas`
+- [ ] **Update hook**: Tras modificar YAMLs de `config/install/`, crear update hook para resync en BD activa
+- [ ] **Validación YAML**: Verificar sintaxis con `python3 -c "import yaml; yaml.safe_load(open('file.yml'))"`
+
+### 10. Drupal 10+ Entity Definition Updates
+
+- [ ] **NO usar `applyUpdates()`**: Fue eliminado en Drupal 10+. Usar llamadas explícitas
+- [ ] **Instalar campo**: `$updateManager->installFieldStorageDefinition($name, $entity_type, $module, $definition)`
+- [ ] **Actualizar campo**: `$updateManager->updateFieldStorageDefinition($definition)` (solo si el tipo no cambia)
+- [ ] **Verificar antes**: Siempre comprobar con `getFieldStorageDefinition()` si el campo ya existe y su tipo
+
 ---
 
 ## 📁 Referencias a Workflows
@@ -92,8 +119,11 @@ Para guías detalladas, consultar:
 - [ ] Iconos: `jaraba_icon('cat', 'name', {opts})` — sin emojis Unicode
 - [ ] SDC: component.yml + twig + scss
 - [ ] Compilado: `npm run build` + `drush cr`
+- [ ] CI/CD: trivy.yaml `scan.skip-dirs` correctos, smoke tests con fallback
+- [ ] Page Builder: `preview_image` en YAML, PNG existe, `preview_data` rico
+- [ ] Entity updates: NO `applyUpdates()`, usar install/update explícito
 ```
 
 ---
 
-*Última actualización: 2026-02-12*
+*Última actualización: 2026-02-18*
