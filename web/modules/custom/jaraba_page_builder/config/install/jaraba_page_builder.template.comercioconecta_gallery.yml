@@ -1,4 +1,7 @@
-id: 'comercioconecta_gallery'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_gallery
 label: 'ComercioConecta: Showcase de Productos'
 description: 'Seccion galeria visual especializada para comercios y tiendas.'
 category: comercioconecta

@@ -1,4 +1,7 @@
-id: 'agroconecta_gallery'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_gallery
 label: 'AgroConecta: Linea del Tiempo Cosecha'
 description: 'Seccion galeria visual especializada para productores agricolas.'
 category: agroconecta

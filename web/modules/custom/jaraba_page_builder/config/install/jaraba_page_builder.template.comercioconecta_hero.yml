@@ -1,4 +1,7 @@
-id: 'comercioconecta_hero'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_hero
 label: 'ComercioConecta: Escaparate de Tienda'
 description: 'Seccion seccion hero principal especializada para comercios y tiendas.'
 category: comercioconecta

@@ -1,4 +1,7 @@
-id: 'serviciosconecta_content'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_content
 label: 'ServiciosConecta: Expertise y Trayectoria'
 description: 'Seccion seccion narrativa especializada para profesionales de servicios.'
 category: serviciosconecta

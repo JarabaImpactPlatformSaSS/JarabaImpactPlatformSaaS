@@ -1,4 +1,7 @@
-id: 'empleabilidad_content'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_content
 label: 'Empleabilidad: Constructor de CV'
 description: 'Seccion seccion narrativa especializada para buscadores de empleo.'
 category: empleabilidad

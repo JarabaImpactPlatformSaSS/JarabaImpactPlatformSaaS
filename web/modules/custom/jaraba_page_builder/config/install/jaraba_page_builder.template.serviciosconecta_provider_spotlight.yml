@@ -1,4 +1,7 @@
-id: 'serviciosconecta_provider_spotlight'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_provider_spotlight
 label: 'ServiciosConecta: Perfil Destacado del Profesional'
 description: 'Seccion perfil destacado de profesional con credenciales, valoracion y servicios ofrecidos.'
 category: serviciosconecta

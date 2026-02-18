@@ -1,4 +1,7 @@
-id: 'comercioconecta_cta'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_cta
 label: 'ComercioConecta: Agregar al Carrito'
 description: 'Seccion seccion de conversion especializada para comercios y tiendas.'
 category: comercioconecta

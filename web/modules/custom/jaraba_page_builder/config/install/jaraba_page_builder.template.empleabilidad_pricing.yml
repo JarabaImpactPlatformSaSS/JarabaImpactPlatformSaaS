@@ -1,4 +1,7 @@
-id: 'empleabilidad_pricing'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_pricing
 label: 'Empleabilidad: Funciones Premium'
 description: 'Seccion tabla de precios especializada para buscadores de empleo.'
 category: empleabilidad

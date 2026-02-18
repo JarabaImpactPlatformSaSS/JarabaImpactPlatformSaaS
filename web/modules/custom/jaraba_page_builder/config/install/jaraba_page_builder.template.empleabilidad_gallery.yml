@@ -1,4 +1,7 @@
-id: 'empleabilidad_gallery'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_gallery
 label: 'Empleabilidad: Timeline de Carrera'
 description: 'Seccion galeria visual especializada para buscadores de empleo.'
 category: empleabilidad

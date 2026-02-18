@@ -1,4 +1,7 @@
-id: 'serviciosconecta_social_proof'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_social_proof
 label: 'ServiciosConecta: Acreditaciones'
 description: 'Seccion credibilidad y confianza especializada para profesionales de servicios.'
 category: serviciosconecta

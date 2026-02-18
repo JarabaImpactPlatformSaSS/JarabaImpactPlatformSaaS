@@ -1,4 +1,7 @@
-id: 'comercioconecta_social_proof'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_social_proof
 label: 'ComercioConecta: Sellos de Confianza'
 description: 'Seccion credibilidad y confianza especializada para comercios y tiendas.'
 category: comercioconecta

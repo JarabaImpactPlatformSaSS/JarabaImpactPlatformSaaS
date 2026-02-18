@@ -1,4 +1,7 @@
-id: 'empleabilidad_testimonials'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_testimonials
 label: 'Empleabilidad: Historias de Exito'
 description: 'Seccion historias de exito especializada para buscadores de empleo.'
 category: empleabilidad

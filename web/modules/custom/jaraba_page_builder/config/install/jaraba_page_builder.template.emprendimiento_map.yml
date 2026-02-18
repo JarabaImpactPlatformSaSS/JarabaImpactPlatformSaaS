@@ -1,4 +1,7 @@
-id: 'emprendimiento_map'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_map
 label: 'Emprendimiento: Ecosistema de Partners'
 description: 'Seccion ubicacion y cobertura especializada para emprendedores.'
 category: emprendimiento

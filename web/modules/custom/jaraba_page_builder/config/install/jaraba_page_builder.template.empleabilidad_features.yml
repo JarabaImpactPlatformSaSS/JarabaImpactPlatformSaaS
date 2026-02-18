@@ -1,4 +1,7 @@
-id: 'empleabilidad_features'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_features
 label: 'Empleabilidad: Competencias Destacadas'
 description: 'Seccion rejilla de caracteristicas especializada para buscadores de empleo.'
 category: empleabilidad

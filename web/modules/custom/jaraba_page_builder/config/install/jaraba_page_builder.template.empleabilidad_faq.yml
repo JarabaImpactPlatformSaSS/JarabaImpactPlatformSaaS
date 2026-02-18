@@ -1,4 +1,7 @@
-id: 'empleabilidad_faq'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_faq
 label: 'Empleabilidad: Consejos de Busqueda'
 description: 'Seccion preguntas frecuentes especializada para buscadores de empleo.'
 category: empleabilidad

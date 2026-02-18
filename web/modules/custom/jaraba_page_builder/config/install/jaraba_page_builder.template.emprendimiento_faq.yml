@@ -1,4 +1,7 @@
-id: 'emprendimiento_faq'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_faq
 label: 'Emprendimiento: Proceso de Validacion'
 description: 'Seccion preguntas frecuentes especializada para emprendedores.'
 category: emprendimiento

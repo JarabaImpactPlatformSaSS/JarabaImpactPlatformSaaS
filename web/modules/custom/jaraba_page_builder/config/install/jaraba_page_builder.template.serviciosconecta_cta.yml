@@ -1,4 +1,7 @@
-id: 'serviciosconecta_cta'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_cta
 label: 'ServiciosConecta: Reservar Consulta'
 description: 'Seccion seccion de conversion especializada para profesionales de servicios.'
 category: serviciosconecta

@@ -1,4 +1,7 @@
-id: 'emprendimiento_stats'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_stats
 label: 'Emprendimiento: Metricas Startup'
 description: 'Seccion metricas de impacto especializada para emprendedores.'
 category: emprendimiento

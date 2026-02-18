@@ -1,4 +1,7 @@
-id: 'agroconecta_stats'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_stats
 label: 'AgroConecta: Metricas de Impacto'
 description: 'Seccion metricas de impacto especializada para productores agricolas.'
 category: agroconecta

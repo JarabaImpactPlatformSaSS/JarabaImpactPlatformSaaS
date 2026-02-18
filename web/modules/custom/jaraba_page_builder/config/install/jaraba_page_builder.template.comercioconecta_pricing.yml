@@ -1,4 +1,7 @@
-id: 'comercioconecta_pricing'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_pricing
 label: 'ComercioConecta: Niveles de Producto'
 description: 'Seccion tabla de precios especializada para comercios y tiendas.'
 category: comercioconecta

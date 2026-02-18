@@ -1,4 +1,7 @@
-id: 'agroconecta_map'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_map
 label: 'AgroConecta: Ubicacion de la Finca'
 description: 'Seccion ubicacion y cobertura especializada para productores agricolas.'
 category: agroconecta

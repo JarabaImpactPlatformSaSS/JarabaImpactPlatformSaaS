@@ -1,4 +1,7 @@
-id: 'serviciosconecta_map'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_map
 label: 'ServiciosConecta: Areas de Cobertura'
 description: 'Seccion ubicacion y cobertura especializada para profesionales de servicios.'
 category: serviciosconecta

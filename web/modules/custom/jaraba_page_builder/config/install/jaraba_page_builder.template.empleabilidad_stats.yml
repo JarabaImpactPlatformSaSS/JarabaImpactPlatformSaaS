@@ -1,4 +1,7 @@
-id: 'empleabilidad_stats'
+langcode: es
+status: true
+dependencies: {}
+id: empleabilidad_stats
 label: 'Empleabilidad: Metricas de Colocacion'
 description: 'Seccion metricas de impacto especializada para buscadores de empleo.'
 category: empleabilidad

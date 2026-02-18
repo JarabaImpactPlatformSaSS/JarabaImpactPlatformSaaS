@@ -1,4 +1,7 @@
-id: 'emprendimiento_hero'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_hero
 label: 'Emprendimiento: Lanzamiento Startup'
 description: 'Seccion seccion hero principal especializada para emprendedores.'
 category: emprendimiento

@@ -1,4 +1,7 @@
-id: 'comercioconecta_stats'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_stats
 label: 'ComercioConecta: Metricas de Ventas'
 description: 'Seccion metricas de impacto especializada para comercios y tiendas.'
 category: comercioconecta

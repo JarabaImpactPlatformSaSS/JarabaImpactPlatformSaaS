@@ -1,4 +1,7 @@
-id: 'emprendimiento_cta'
+langcode: es
+status: true
+dependencies: {}
+id: emprendimiento_cta
 label: 'Emprendimiento: Validar Idea'
 description: 'Seccion seccion de conversion especializada para emprendedores.'
 category: emprendimiento

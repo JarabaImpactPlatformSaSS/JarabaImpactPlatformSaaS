@@ -1,4 +1,7 @@
-id: 'serviciosconecta_booking_widget'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_booking_widget
 label: 'ServiciosConecta: Widget de Reservas'
 description: 'Seccion widget de reservas con calendario, lista de servicios y CTA para profesionales de servicios.'
 category: serviciosconecta

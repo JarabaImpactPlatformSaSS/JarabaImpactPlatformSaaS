@@ -1,4 +1,7 @@
-id: 'serviciosconecta_trust_badges'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_trust_badges
 label: 'ServiciosConecta: Sellos de Confianza'
 description: 'Seccion sellos de confianza con verificacion, certificacion, seguro y firma digital.'
 category: serviciosconecta

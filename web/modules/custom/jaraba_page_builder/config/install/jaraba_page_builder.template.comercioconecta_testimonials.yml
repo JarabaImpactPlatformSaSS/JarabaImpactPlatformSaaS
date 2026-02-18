@@ -1,4 +1,7 @@
-id: 'comercioconecta_testimonials'
+langcode: es
+status: true
+dependencies: {}
+id: comercioconecta_testimonials
 label: 'ComercioConecta: Resenas de Clientes'
 description: 'Seccion historias de exito especializada para comercios y tiendas.'
 category: comercioconecta

@@ -1,4 +1,7 @@
-id: 'serviciosconecta_testimonials'
+langcode: es
+status: true
+dependencies: {}
+id: serviciosconecta_testimonials
 label: 'ServiciosConecta: Casos de Exito'
 description: 'Seccion historias de exito especializada para profesionales de servicios.'
 category: serviciosconecta

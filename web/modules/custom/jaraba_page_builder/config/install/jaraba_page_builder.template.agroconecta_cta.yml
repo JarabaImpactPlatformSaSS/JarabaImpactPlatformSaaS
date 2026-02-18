@@ -1,4 +1,7 @@
-id: 'agroconecta_cta'
+langcode: es
+status: true
+dependencies: {}
+id: agroconecta_cta
 label: 'AgroConecta: Pedido Directo'
 description: 'Seccion seccion de conversion especializada para productores agricolas.'
 category: agroconecta
