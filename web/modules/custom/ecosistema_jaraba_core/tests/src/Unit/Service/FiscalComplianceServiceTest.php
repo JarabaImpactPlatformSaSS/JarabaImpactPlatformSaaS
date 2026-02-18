@@ -93,7 +93,7 @@ class FiscalComplianceServiceTest extends UnitTestCase {
    * @covers ::calculateScore
    */
   public function testVerifactuChainOkGives20Points(): void {
-    $hashService = $this->createMock(\stdClass::class);
+    $hashService = $this->createMock(FiscalHashServiceInterface::class);
     $chainResult = new class {
 
       public function toArray(): array {
@@ -119,7 +119,7 @@ class FiscalComplianceServiceTest extends UnitTestCase {
    * @covers ::calculateScore
    */
   public function testVerifactuBrokenChainGives0Points(): void {
-    $hashService = $this->createMock(\stdClass::class);
+    $hashService = $this->createMock(FiscalHashServiceInterface::class);
     $chainResult = new class {
 
       public function toArray(): array {
@@ -146,7 +146,7 @@ class FiscalComplianceServiceTest extends UnitTestCase {
    * @covers ::calculateScore
    */
   public function testCertificateExpiredGives0Points(): void {
-    $certManager = $this->createMock(\stdClass::class);
+    $certManager = $this->createMock(FiscalCertificateManagerInterface::class);
     $certResult = new class {
 
       public function toArray(): array {
@@ -169,7 +169,7 @@ class FiscalComplianceServiceTest extends UnitTestCase {
    * @covers ::calculateScore
    */
   public function testCertificateNearExpiryGives10Points(): void {
-    $certManager = $this->createMock(\stdClass::class);
+    $certManager = $this->createMock(FiscalCertificateManagerInterface::class);
     $certResult = new class {
 
       public function toArray(): array {
@@ -226,7 +226,7 @@ class FiscalComplianceServiceTest extends UnitTestCase {
    * @covers ::getInstalledModules
    */
   public function testGetInstalledModulesReflectsInjection(): void {
-    $hashService = $this->createMock(\stdClass::class);
+    $hashService = $this->createMock(FiscalHashServiceInterface::class);
     $faceClient = $this->createMock(\stdClass::class);
 
     $service = $this->createService(
@@ -262,7 +262,7 @@ class FiscalComplianceServiceTest extends UnitTestCase {
    * @covers ::calculateScore
    */
   public function testHashServiceExceptionGives0Points(): void {
-    $hashService = $this->createMock(\stdClass::class);
+    $hashService = $this->createMock(FiscalHashServiceInterface::class);
     $hashService->method('verifyChainIntegrity')
       ->willThrowException(new \RuntimeException('Connection failed'));
 
@@ -293,5 +293,23 @@ class FiscalComplianceServiceTest extends UnitTestCase {
       ->with($entityType)
       ->willReturn($storage);
   }
+
+}
+
+/**
+ * Temporary interface for mocking hash service.
+ */
+interface FiscalHashServiceInterface {
+
+  public function verifyChainIntegrity();
+
+}
+
+/**
+ * Temporary interface for mocking certificate manager.
+ */
+interface FiscalCertificateManagerInterface {
+
+  public function validateTenantCertificate(string $tenantId);
 
 }

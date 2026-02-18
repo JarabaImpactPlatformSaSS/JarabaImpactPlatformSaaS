@@ -67,6 +67,13 @@ class JarabaLexFeatureGateServiceTest extends UnitTestCase {
   protected $schema;
 
   /**
+   * Mock tenant context.
+   *
+   * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService|\PHPUnit\Framework\MockObject\MockObject
+   */
+  protected $tenantContext;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -76,6 +83,7 @@ class JarabaLexFeatureGateServiceTest extends UnitTestCase {
     $this->database = $this->createMock(Connection::class);
     $this->currentUser = $this->createMock(AccountProxyInterface::class);
     $this->logger = $this->createMock(LoggerInterface::class);
+    $this->tenantContext = $this->createMock(\Drupal\ecosistema_jaraba_core\Service\TenantContextService::class);
 
     // Schema mock: table always exists to avoid CREATE TABLE calls.
     $this->schema = $this->createMock(Schema::class);
@@ -87,6 +95,7 @@ class JarabaLexFeatureGateServiceTest extends UnitTestCase {
       $this->database,
       $this->currentUser,
       $this->logger,
+      $this->tenantContext,
     );
   }
 

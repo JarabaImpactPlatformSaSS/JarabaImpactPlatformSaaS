@@ -97,18 +97,25 @@ class ComplianceAggregatorService {
    */
   public function getComplianceOverview(): array {
     $kpis = $this->collectAllKpis();
+    $flatKpis = [];
+    foreach ($kpis as $moduleKpis) {
+      foreach ($moduleKpis as $kpi) {
+        $flatKpis[] = $kpi;
+      }
+    }
+
     $score = $this->calculateGlobalScore($kpis);
     $alerts = $this->generateAlerts($kpis);
 
     return [
       'score' => $score,
       'grade' => $this->scoreToGrade($score),
-      'kpis' => $kpis,
+      'kpis' => $flatKpis,
       'alerts' => $alerts,
       'modules' => [
-        'jaraba_privacy' => $this->dpaManager !== NULL,
-        'jaraba_legal' => $this->tosManager !== NULL,
-        'jaraba_dr' => $this->backupVerifier !== NULL,
+        ['key' => 'jaraba_privacy', 'installed' => $this->dpaManager !== NULL],
+        ['key' => 'jaraba_legal', 'installed' => $this->tosManager !== NULL],
+        ['key' => 'jaraba_dr', 'installed' => $this->backupVerifier !== NULL],
       ],
       'generated_at' => time(),
     ];
@@ -136,7 +143,7 @@ class ComplianceAggregatorService {
    */
   protected function collectPrivacyKpis(): array {
     if (!$this->dpaManager) {
-      return $this->unavailableKpis(['dpa_coverage', 'arco_pol_sla', 'cookie_consent_rate']);
+      return $this->unavailableKpis(['dpa_coverage', 'arco_pol_sla', 'cookie_consent_rate'], 'jaraba_privacy');
     }
 
     return [
@@ -154,7 +161,7 @@ class ComplianceAggregatorService {
    */
   protected function collectLegalKpis(): array {
     if (!$this->tosManager) {
-      return $this->unavailableKpis(['tos_acceptance_rate', 'sla_compliance', 'aup_violations']);
+      return $this->unavailableKpis(['tos_acceptance_rate', 'sla_compliance', 'aup_violations'], 'jaraba_legal');
     }
 
     return [
@@ -172,7 +179,7 @@ class ComplianceAggregatorService {
    */
   protected function collectDrKpis(): array {
     if (!$this->backupVerifier) {
-      return $this->unavailableKpis(['backup_health', 'dr_test_coverage', 'status_page_uptime']);
+      return $this->unavailableKpis(['backup_health', 'dr_test_coverage', 'status_page_uptime'], 'jaraba_dr');
     }
 
     return [
@@ -189,7 +196,7 @@ class ComplianceAggregatorService {
     try {
       $totalTenants = $this->countActiveTenants();
       if ($totalTenants === 0) {
-        return $this->kpi('dpa_coverage', 100, '%', (string) $this->t('DPA Coverage'));
+        return $this->kpi('dpa_coverage', 100, (string) $this->t('DPA Coverage'), 'jaraba_privacy');
       }
 
       $tenantsWithDpa = 0;
@@ -204,11 +211,11 @@ class ComplianceAggregatorService {
         ? (int) round(($tenantsWithDpa / $totalTenants) * 100)
         : 0;
 
-      return $this->kpi('dpa_coverage', $percentage, '%', (string) $this->t('DPA Coverage'));
+      return $this->kpi('dpa_coverage', $percentage, (string) $this->t('DPA Coverage'), 'jaraba_privacy');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando DPA coverage: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('dpa_coverage', 0, '%', (string) $this->t('DPA Coverage'), 'error');
+      return $this->kpi('dpa_coverage', 0, (string) $this->t('DPA Coverage'), 'jaraba_privacy', 'error');
     }
   }
 
@@ -224,7 +231,7 @@ class ComplianceAggregatorService {
       $total = (int) $totalQuery->execute();
 
       if ($total === 0) {
-        return $this->kpi('arco_pol_sla', 100, '%', (string) $this->t('ARCO-POL SLA'));
+        return $this->kpi('arco_pol_sla', 100, (string) $this->t('ARCO-POL SLA'), 'jaraba_privacy');
       }
 
       $withinDeadline = (int) $storage->getQuery()
@@ -244,11 +251,11 @@ class ComplianceAggregatorService {
         ? (int) round(($withinDeadline / $resolved) * 100)
         : 100;
 
-      return $this->kpi('arco_pol_sla', $percentage, '%', (string) $this->t('ARCO-POL SLA'));
+      return $this->kpi('arco_pol_sla', $percentage, (string) $this->t('ARCO-POL SLA'), 'jaraba_privacy');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando ARCO-POL SLA: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('arco_pol_sla', 0, '%', (string) $this->t('ARCO-POL SLA'), 'error');
+      return $this->kpi('arco_pol_sla', 0, (string) $this->t('ARCO-POL SLA'), 'jaraba_privacy', 'error');
     }
   }
 
@@ -273,11 +280,11 @@ class ComplianceAggregatorService {
         ? (int) round(($activeConsents / $totalConsents) * 100)
         : 0;
 
-      return $this->kpi('cookie_consent_rate', $percentage, '%', (string) $this->t('Cookie Consent Rate'));
+      return $this->kpi('cookie_consent_rate', $percentage, (string) $this->t('Cookie Consent Rate'), 'jaraba_privacy');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando cookie consent rate: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('cookie_consent_rate', 0, '%', (string) $this->t('Cookie Consent Rate'), 'error');
+      return $this->kpi('cookie_consent_rate', 0, (string) $this->t('Cookie Consent Rate'), 'jaraba_privacy', 'error');
     }
   }
 
@@ -288,7 +295,7 @@ class ComplianceAggregatorService {
     try {
       $totalTenants = $this->countActiveTenants();
       if ($totalTenants === 0) {
-        return $this->kpi('tos_acceptance_rate', 100, '%', (string) $this->t('ToS Acceptance Rate'));
+        return $this->kpi('tos_acceptance_rate', 100, (string) $this->t('ToS Acceptance Rate'), 'jaraba_legal');
       }
 
       $storage = $this->entityTypeManager->getStorage('service_agreement');
@@ -301,11 +308,11 @@ class ComplianceAggregatorService {
       $percentage = (int) round(($acceptedCount / $totalTenants) * 100);
       $percentage = min($percentage, 100);
 
-      return $this->kpi('tos_acceptance_rate', $percentage, '%', (string) $this->t('ToS Acceptance Rate'));
+      return $this->kpi('tos_acceptance_rate', $percentage, (string) $this->t('ToS Acceptance Rate'), 'jaraba_legal');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando ToS acceptance rate: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('tos_acceptance_rate', 0, '%', (string) $this->t('ToS Acceptance Rate'), 'error');
+      return $this->kpi('tos_acceptance_rate', 0, (string) $this->t('ToS Acceptance Rate'), 'jaraba_legal', 'error');
     }
   }
 
@@ -321,7 +328,7 @@ class ComplianceAggregatorService {
         ->execute();
 
       if ($totalRecords === 0) {
-        return $this->kpi('sla_compliance', 100, '%', (string) $this->t('SLA Compliance'));
+        return $this->kpi('sla_compliance', 100, (string) $this->t('SLA Compliance'), 'jaraba_legal');
       }
 
       $compliantRecords = (int) $storage->getQuery()
@@ -332,11 +339,11 @@ class ComplianceAggregatorService {
 
       $percentage = (int) round(($compliantRecords / $totalRecords) * 100);
 
-      return $this->kpi('sla_compliance', $percentage, '%', (string) $this->t('SLA Compliance'));
+      return $this->kpi('sla_compliance', $percentage, (string) $this->t('SLA Compliance'), 'jaraba_legal');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando SLA compliance: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('sla_compliance', 0, '%', (string) $this->t('SLA Compliance'), 'error');
+      return $this->kpi('sla_compliance', 0, (string) $this->t('SLA Compliance'), 'jaraba_legal', 'error');
     }
   }
 
@@ -357,11 +364,11 @@ class ComplianceAggregatorService {
       // Para AUP violations, menor es mejor. Invertir para score.
       $score = $count === 0 ? 100 : max(0, 100 - ($count * 10));
 
-      return $this->kpi('aup_violations', $score, 'count', (string) $this->t('AUP Violations'), 'ok', $count);
+      return $this->kpi('aup_violations', $score, (string) $this->t('AUP Violations'), 'jaraba_legal', 'ok');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando AUP violations: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('aup_violations', 0, 'count', (string) $this->t('AUP Violations'), 'error');
+      return $this->kpi('aup_violations', 0, (string) $this->t('AUP Violations'), 'jaraba_legal', 'error');
     }
   }
 
@@ -377,7 +384,7 @@ class ComplianceAggregatorService {
         ->execute();
 
       if ($totalVerifications === 0) {
-        return $this->kpi('backup_health', 100, '%', (string) $this->t('Backup Health'));
+        return $this->kpi('backup_health', 100, (string) $this->t('Backup Health'), 'jaraba_dr');
       }
 
       $passedVerifications = (int) $storage->getQuery()
@@ -388,11 +395,11 @@ class ComplianceAggregatorService {
 
       $percentage = (int) round(($passedVerifications / $totalVerifications) * 100);
 
-      return $this->kpi('backup_health', $percentage, '%', (string) $this->t('Backup Health'));
+      return $this->kpi('backup_health', $percentage, (string) $this->t('Backup Health'), 'jaraba_dr');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando backup health: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('backup_health', 0, '%', (string) $this->t('Backup Health'), 'error');
+      return $this->kpi('backup_health', 0, (string) $this->t('Backup Health'), 'jaraba_dr', 'error');
     }
   }
 
@@ -414,11 +421,11 @@ class ComplianceAggregatorService {
       $targetTests = 2;
       $percentage = min(100, (int) round(($executedTests / $targetTests) * 100));
 
-      return $this->kpi('dr_test_coverage', $percentage, '%', (string) $this->t('DR Test Coverage'));
+      return $this->kpi('dr_test_coverage', $percentage, (string) $this->t('DR Test Coverage'), 'jaraba_dr');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando DR test coverage: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('dr_test_coverage', 0, '%', (string) $this->t('DR Test Coverage'), 'error');
+      return $this->kpi('dr_test_coverage', 0, (string) $this->t('DR Test Coverage'), 'jaraba_dr', 'error');
     }
   }
 
@@ -432,7 +439,7 @@ class ComplianceAggregatorService {
         $components = $overview['components'] ?? [];
 
         if (empty($components)) {
-          return $this->kpi('status_page_uptime', 100, '%', (string) $this->t('Status Page Uptime'));
+          return $this->kpi('status_page_uptime', 100, (string) $this->t('Status Page Uptime'), 'jaraba_dr');
         }
 
         $totalUptime = 0;
@@ -442,14 +449,14 @@ class ComplianceAggregatorService {
         }
 
         $avgUptime = (int) round($totalUptime / count($components));
-        return $this->kpi('status_page_uptime', $avgUptime, '%', (string) $this->t('Status Page Uptime'));
+        return $this->kpi('status_page_uptime', $avgUptime, (string) $this->t('Status Page Uptime'), 'jaraba_dr');
       }
 
-      return $this->kpi('status_page_uptime', 100, '%', (string) $this->t('Status Page Uptime'));
+      return $this->kpi('status_page_uptime', 100, (string) $this->t('Status Page Uptime'), 'jaraba_dr');
     }
     catch (\Exception $e) {
       $this->logger->warning('Error calculando status page uptime: @error', ['@error' => $e->getMessage()]);
-      return $this->kpi('status_page_uptime', 0, '%', (string) $this->t('Status Page Uptime'), 'error');
+      return $this->kpi('status_page_uptime', 0, (string) $this->t('Status Page Uptime'), 'jaraba_dr', 'error');
     }
   }
 
@@ -465,11 +472,20 @@ class ComplianceAggregatorService {
   public function calculateGlobalScore(array $kpis): int {
     $totalScore = 0;
     $totalKpis = 0;
+    $installedModules = 0;
+
+    if ($this->dpaManager !== NULL) $installedModules++;
+    if ($this->tosManager !== NULL) $installedModules++;
+    if ($this->backupVerifier !== NULL) $installedModules++;
+
+    if ($installedModules === 0) {
+      return 0;
+    }
 
     foreach ($kpis as $moduleKpis) {
       foreach ($moduleKpis as $kpi) {
         if ($kpi['status'] !== 'not_available') {
-          $totalScore += $kpi['score'];
+          $totalScore += $kpi['value'];
           $totalKpis++;
         }
       }
@@ -500,29 +516,29 @@ class ComplianceAggregatorService {
           continue;
         }
 
-        if ($kpi['score'] < self::CRITICAL_THRESHOLD) {
+        if ($kpi['value'] < self::CRITICAL_THRESHOLD) {
           $alerts[] = [
             'severity' => 'critical',
             'module' => $module,
             'kpi_id' => $kpiId,
             'label' => $kpi['label'],
-            'score' => $kpi['score'],
+            'score' => $kpi['value'],
             'message' => (string) $this->t('@label esta en estado critico: @score%', [
               '@label' => $kpi['label'],
-              '@score' => $kpi['score'],
+              '@score' => $kpi['value'],
             ]),
           ];
         }
-        elseif ($kpi['score'] < self::WARNING_THRESHOLD) {
+        elseif ($kpi['value'] < self::WARNING_THRESHOLD) {
           $alerts[] = [
             'severity' => 'warning',
             'module' => $module,
             'kpi_id' => $kpiId,
             'label' => $kpi['label'],
-            'score' => $kpi['score'],
+            'score' => $kpi['value'],
             'message' => (string) $this->t('@label requiere atencion: @score%', [
               '@label' => $kpi['label'],
-              '@score' => $kpi['score'],
+              '@score' => $kpi['value'],
             ]),
           ];
         }
@@ -541,9 +557,9 @@ class ComplianceAggregatorService {
   protected function scoreToGrade(int $score): string {
     return match (TRUE) {
       $score >= 90 => 'A',
-      $score >= 80 => 'B',
-      $score >= 70 => 'C',
-      $score >= 60 => 'D',
+      $score >= 75 => 'B',
+      $score >= 60 => 'C',
+      $score >= 40 => 'D',
       default => 'F',
     };
   }
@@ -551,35 +567,33 @@ class ComplianceAggregatorService {
   /**
    * Construye un array de KPI estandarizado.
    */
-  protected function kpi(string $id, int $score, string $unit, string $label, string $status = 'ok', ?int $rawValue = NULL): array {
+  protected function kpi(string $id, int $score, string $label, string $module, string $status = 'ok'): array {
     if ($status === 'ok') {
       $status = $score >= self::WARNING_THRESHOLD ? 'ok'
         : ($score >= self::CRITICAL_THRESHOLD ? 'warning' : 'critical');
     }
 
     return [
-      'id' => $id,
-      'score' => $score,
-      'unit' => $unit,
+      'key' => $id,
+      'value' => $score,
       'label' => $label,
       'status' => $status,
-      'raw_value' => $rawValue,
+      'module' => $module,
     ];
   }
 
   /**
    * Genera KPIs con estado 'not_available' para modulos no instalados.
    */
-  protected function unavailableKpis(array $kpiIds): array {
+  protected function unavailableKpis(array $kpiIds, string $module): array {
     $result = [];
     foreach ($kpiIds as $id) {
       $result[$id] = [
-        'id' => $id,
-        'score' => 0,
-        'unit' => '%',
+        'key' => $id,
+        'value' => 0,
         'label' => $id,
         'status' => 'not_available',
-        'raw_value' => NULL,
+        'module' => $module,
       ];
     }
     return $result;

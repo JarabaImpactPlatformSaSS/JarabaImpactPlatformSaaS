@@ -38,9 +38,9 @@
     &__particles {
         position: absolute;
         inset: 0;
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100vw;
         display: block;
         z-index: 1;
         pointer-events: none;
@@ -126,9 +126,9 @@
     }
 }
 
-// Variante solicitud: padding más reducido
+// Variante solicitud: padding ajustado para header fijo (~60px)
 .aei-hero--solicitud {
-    padding: 3.5rem 2rem 3rem;
+    padding: 7rem 2rem 3.5rem;
 
     .aei-hero__title {
         font-size: clamp(1.75rem, 4vw, 2.75rem);
@@ -146,6 +146,7 @@
     background: var(--ej-bg-body, #f8f9fc);
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
     overflow-x: hidden;
+    max-width: 100vw;
 }
 
 // === CONTENT GRID ===
