@@ -154,6 +154,27 @@ class AnalyticsDailyAgro extends ContentEntityBase implements EntityChangedInter
             ->setLabel(t('Leads QR'))
             ->setDefaultValue(0);
 
+        // Fase 7: Logística & Trazabilidad Avanzada.
+        $fields['shipments_count'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Envíos totales'))
+            ->setDefaultValue(0);
+
+        $fields['avg_delivery_time'] = BaseFieldDefinition::create('decimal')
+            ->setLabel(t('Tiempo entrega medio (h)'))
+            ->setSetting('precision', 6)
+            ->setSetting('scale', 2)
+            ->setDefaultValue(0);
+
+        $fields['cold_chain_alerts'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Alertas cadena frío'))
+            ->setDefaultValue(0);
+
+        $fields['qr_conversion_rate'] = BaseFieldDefinition::create('decimal')
+            ->setLabel(t('Conversión QR (%)'))
+            ->setSetting('precision', 5)
+            ->setSetting('scale', 2)
+            ->setDefaultValue(0);
+
         // Metadatos extra en JSON.
         $fields['extra_metrics'] = BaseFieldDefinition::create('string_long')
             ->setLabel(t('Métricas extra'))

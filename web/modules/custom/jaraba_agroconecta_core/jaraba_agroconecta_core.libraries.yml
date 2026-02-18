@@ -46,6 +46,7 @@ agroconecta.checkout:
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
 
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 agroconecta.producer:
   version: 1.0
   css:
@@ -53,12 +54,12 @@ agroconecta.producer:
       css/agroconecta.css: {}
   js:
     js/producer-portal.js: {}
-    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js: { type: external, minified: true }
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
+    - ecosistema_jaraba_core/chartjs
 
 agroconecta.customer:
   version: 1.0
@@ -138,6 +139,7 @@ agroconecta.traceability:
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
 
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 agroconecta.analytics:
   version: 1.0
   css:
@@ -145,12 +147,12 @@ agroconecta.analytics:
       css/agroconecta.css: {}
   js:
     js/analytics.js: {}
-    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js: { type: external, minified: true }
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
+    - ecosistema_jaraba_core/chartjs
 
 agroconecta.copilot:
   version: 1.0
@@ -178,6 +180,7 @@ agroconecta.sales-chat:
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
 
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 agroconecta.qr-dashboard:
   version: 1.0
   css:
@@ -185,12 +188,12 @@ agroconecta.qr-dashboard:
       css/agroconecta.css: {}
   js:
     js/qr-dashboard.js: {}
-    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js: { type: external, minified: true }
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
+    - ecosistema_jaraba_core/chartjs
 
 agroconecta.lead-capture:
   version: 1.0
@@ -203,6 +206,15 @@ agroconecta.lead-capture:
     - core/drupal
     - core/once
     - jaraba_agroconecta_core/agroconecta.frontend
+
+jaraba_agroconecta_core/traceability-public:
+  version: 1.0
+  css:
+    theme:
+      css/agroconecta.css: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_theme/global-styling
 
 agroconecta.partner-hub:
   version: 1.0

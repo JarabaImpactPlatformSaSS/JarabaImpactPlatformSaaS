@@ -65,12 +65,12 @@
     </div>
   </header>
 
-  {# Imagen destacada #}
+  {# Imagen destacada — AUDIT-PERF-N16: eager porque es LCP hero image del blog post #}
   {% if post.get('featured_image').entity %}
     <figure class="blog-detail__featured-image">
       <img src="{{ file_url(post.get('featured_image').entity.getFileUri()) }}"
            alt="{{ post.get('featured_image_alt').value|default(post.getTitle()) }}"
-           loading="lazy"
+           loading="eager"
            itemprop="image" />
     </figure>
   {% endif %}

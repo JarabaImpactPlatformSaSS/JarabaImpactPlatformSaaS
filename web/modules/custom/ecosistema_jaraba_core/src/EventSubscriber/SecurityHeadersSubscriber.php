@@ -22,12 +22,17 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * - CSP: Política de seguridad de contenido que previene XSS
  * - X-Frame-Options: Previene clickjacking
  * - HSTS: Fuerza HTTPS en producción
+ * - AUDIT-SEC-N16: Permissions-Policy restrictiva (camera, microphone off;
+ *   geolocation y payment solo self)
+ * - AUDIT-SEC-N17: Referrer-Policy strict-origin-when-cross-origin
+ * - AUDIT-SEC-N18: X-Permitted-Cross-Domain-Policies: none
  *
  * RELACIONES:
- * - SecurityHeadersSubscriber <- RateLimitSettingsForm (configuración)
+ * - SecurityHeadersSubscriber <- SecurityHeadersSettingsForm (configuración)
  * - SecurityHeadersSubscriber -> KernelEvents::RESPONSE
  *
  * @see docs/tecnicos/auditorias/20260206-Auditoria_Profunda_SaaS_Multidimensional_v1_Claude.md (SEC-08)
+ * @see docs/implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md (SEC-N16, SEC-N17, SEC-N18)
  */
 class SecurityHeadersSubscriber implements EventSubscriberInterface
 {
@@ -117,8 +122,26 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
         // ═══════════════════════════════════════════════════
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
+        // AUDIT-SEC-N17: Referrer-Policy — controla qué información de referrer
+        // se envía con las solicitudes. strict-origin-when-cross-origin envía el
+        // origen completo en same-origin, solo el origen en cross-origin HTTPS,
+        // y nada en downgrade HTTPS→HTTP.
+        $referrerPolicy = $config->get('referrer_policy') ?: 'strict-origin-when-cross-origin';
+        $response->headers->set('Referrer-Policy', $referrerPolicy);
+
+        // AUDIT-SEC-N16: Permissions-Policy — restringe acceso a APIs del
+        // navegador. camera y microphone deshabilitados; geolocation y payment
+        // permitidos solo para el propio origen (necesarios para click-and-collect
+        // y checkout Stripe respectivamente).
+        $permissionsPolicy = $config->get('permissions_policy') ?: 'camera=(), microphone=(), geolocation=(self), payment=(self)';
+        $response->headers->set('Permissions-Policy', $permissionsPolicy);
+
+        // AUDIT-SEC-N18: X-Permitted-Cross-Domain-Policies — previene que
+        // Adobe Flash/Acrobat carguen datos cross-domain desde este servidor.
+        // Valor 'none' bloquea todas las políticas cross-domain.
+        $crossDomainPolicies = $config->get('cross_domain_policies') ?: 'none';
+        $response->headers->set('X-Permitted-Cross-Domain-Policies', $crossDomainPolicies);
 
         // HSTS solo en producción (no en desarrollo local).
         $hstsEnabled = $config->get('hsts.enabled') ?? FALSE;

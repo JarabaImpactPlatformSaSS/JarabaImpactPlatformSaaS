@@ -57,10 +57,7 @@ class LexnetApiController extends ControllerBase {
 
     $result = $this->syncService->listNotifications($filters, $limit, $offset);
 
-    return new JsonResponse([
-      'data' => $result['items'],
-      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
-    ]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result['items'], 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
   }
 
   /**
@@ -70,10 +67,11 @@ class LexnetApiController extends ControllerBase {
     $result = $this->syncService->fetchNotifications();
 
     if (isset($result['error'])) {
-      return new JsonResponse(['error' => $result['error']], 500);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 500);
     }
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result]);
   }
 
   /**
@@ -83,14 +81,14 @@ class LexnetApiController extends ControllerBase {
     try {
       $notification = $this->entityTypeManager->getStorage('lexnet_notification')->load($id);
       if (!$notification) {
-        return new JsonResponse(['error' => 'Notificacion no encontrada.'], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Notificacion no encontrada.']], 404);
       }
 
       $cases = $this->entityTypeManager->getStorage('client_case')
         ->loadByProperties(['uuid' => $case_uuid]);
       $case = reset($cases);
       if (!$case) {
-        return new JsonResponse(['error' => 'Expediente no encontrado.'], 404);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Expediente no encontrado.']], 404);
       }
 
       $notification->set('case_id', $case->id());
@@ -111,10 +109,10 @@ class LexnetApiController extends ControllerBase {
         }
       }
 
-      return new JsonResponse(['data' => $this->syncService->serializeNotification($notification)]);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->syncService->serializeNotification($notification), 'meta' => ['timestamp' => time()]]);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
     }
   }
 
@@ -125,10 +123,10 @@ class LexnetApiController extends ControllerBase {
     $result = $this->syncService->acknowledgeNotification($id);
 
     if (isset($result['error'])) {
-      return new JsonResponse(['error' => $result['error']], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
     }
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -137,7 +135,7 @@ class LexnetApiController extends ControllerBase {
   public function storeSubmission(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE) ?? [];
     if (empty($data['case_id']) || empty($data['subject']) || empty($data['court'])) {
-      return new JsonResponse(['error' => 'Campos requeridos: case_id, subject, court.'], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Campos requeridos: case_id, subject, court.']], 422);
     }
 
     try {
@@ -155,10 +153,10 @@ class LexnetApiController extends ControllerBase {
       ]);
       $submission->save();
 
-      return new JsonResponse(['data' => $this->submissionService->serializeSubmission($submission)], 201);
+      return new JsonResponse(['success' => TRUE, 'data' => $this->submissionService->serializeSubmission($submission), 'meta' => ['timestamp' => time()]], 201);
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => $e->getMessage()], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
     }
   }
 
@@ -180,9 +178,7 @@ class LexnetApiController extends ControllerBase {
     $result = $this->submissionService->listSubmissions($filters, $limit, $offset);
 
     return new JsonResponse([
-      'data' => $result['items'],
-      'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset],
-    ]);
+      'data' => $result['items'], 'meta' => ['total' => $result['total'], 'limit' => $limit, 'offset' => $offset]]);
   }
 
   /**
@@ -192,10 +188,10 @@ class LexnetApiController extends ControllerBase {
     $result = $this->submissionService->submit($id);
 
     if (isset($result['error'])) {
-      return new JsonResponse(['error' => $result['error']], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
     }
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -205,10 +201,10 @@ class LexnetApiController extends ControllerBase {
     $result = $this->submissionService->checkStatus($id);
 
     if (isset($result['error'])) {
-      return new JsonResponse(['error' => $result['error']], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['error']]], 422);
     }
 
-    return new JsonResponse(['data' => $result]);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
   }
 
 }

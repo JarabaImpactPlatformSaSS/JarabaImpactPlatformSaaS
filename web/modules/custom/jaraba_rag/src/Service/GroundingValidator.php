@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\jaraba_rag\Service;
 
 use Drupal\ai\AiProviderPluginManager;
+use Drupal\ai\OperationType\Chat\ChatInput;
+use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
@@ -338,12 +340,75 @@ Responde SOLO con:
 Respuesta:
 PROMPT;
 
-        // @todo Llamar al LLM y parsear respuesta
-        return [
-            'verdict' => self::NEUTRAL,
-            'confidence' => 0.5,
-            'source' => NULL,
-        ];
+        // AUDIT-TODO-RESOLVED: LLM-based NLI validation via Drupal AI module.
+        try {
+            $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+
+            if (!$defaults) {
+                $this->loggerFactory->get('jaraba_rag')->warning(
+                    'No chat AI provider configured for NLI grounding validation.'
+                );
+                return [
+                    'verdict' => self::NEUTRAL,
+                    'confidence' => 0.5,
+                    'source' => NULL,
+                ];
+            }
+
+            /** @var \Drupal\ai\OperationType\Chat\ChatInterface $provider */
+            $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+
+            $provider->setConfiguration([
+                'temperature' => 0.0,
+                'max_tokens' => 50,
+            ]);
+
+            $chatInput = new ChatInput([
+                new ChatMessage('system', 'You are a Natural Language Inference classifier. Respond with ONLY one word: ENTAILED, NEUTRAL, or CONTRADICTED.'),
+                new ChatMessage('user', $prompt),
+            ]);
+
+            $modelId = $defaults['model_id'] ?? 'gpt-4o-mini';
+            $result = $provider->chat($chatInput, $modelId);
+            $responseText = trim($result->getNormalized()->getText());
+
+            // Parse the NLI verdict from the LLM response.
+            $responseUpper = strtoupper($responseText);
+            $verdict = self::NEUTRAL;
+            $confidence = 0.5;
+
+            if (str_contains($responseUpper, 'ENTAILED')) {
+                $verdict = self::ENTAILED;
+                $confidence = 0.9;
+            }
+            elseif (str_contains($responseUpper, 'CONTRADICTED')) {
+                $verdict = self::CONTRADICTED;
+                $confidence = 0.9;
+            }
+            elseif (str_contains($responseUpper, 'NEUTRAL')) {
+                $verdict = self::NEUTRAL;
+                $confidence = 0.6;
+            }
+
+            return [
+                'verdict' => $verdict,
+                'confidence' => $confidence,
+                'source' => NULL,
+            ];
+        }
+        catch (\Exception $e) {
+            $this->loggerFactory->get('jaraba_rag')->error(
+                'NLI grounding validation LLM call failed: @msg',
+                ['@msg' => $e->getMessage()]
+            );
+
+            // Fallback to NEUTRAL on error rather than blocking the response.
+            return [
+                'verdict' => self::NEUTRAL,
+                'confidence' => 0.5,
+                'source' => NULL,
+            ];
+        }
     }
 
     /**

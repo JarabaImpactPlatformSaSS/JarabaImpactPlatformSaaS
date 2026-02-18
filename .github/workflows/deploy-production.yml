@@ -147,9 +147,14 @@ jobs:
 
       - name: Verify Production Health
         run: |
+          # AUDIT-SEC-N17: Production URL must come from GitHub Secrets, not hardcoded.
+          if [ -z "$PRODUCTION_URL" ]; then
+            echo "::error::PRODUCTION_URL secret is not configured. Set it in Settings → Secrets → Actions."
+            exit 1
+          fi
           echo "Verificando producción..."
           for i in {1..10}; do
-            if curl -sf https://jaraba.io/health; then
+            if curl -sf "${PRODUCTION_URL}/health"; then
               echo "✅ Producción está respondiendo correctamente"
               exit 0
             fi
@@ -158,6 +163,8 @@ jobs:
           done
           echo "❌ Producción no responde - INICIANDO ROLLBACK"
           exit 1
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
 
   # ===========================================
   # JOB 4: POST-DEPLOY
@@ -188,7 +195,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "🚀 *Production Deploy Successful*\n*Version:* `${{ github.ref_name }}`\n*URL:* https://jaraba.io"
+                    "text": "🚀 *Production Deploy Successful*\n*Version:* `${{ github.ref_name }}`\n*URL:* ${{ secrets.PRODUCTION_URL }}"
                   }
                 }
               ]

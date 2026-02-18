@@ -148,7 +148,7 @@
               {{ jaraba_icon('actions', 'refresh', { size: '16px' }) }}
               {{ 'Test'|t }}
             </button>
-            <a href="/api/pixels/config-form/{{ key }}" 
+            <a href="/api/v1/pixels/config-form/{{ key }}" {# AUDIT-CONS-N07 #} 
                data-slide-panel="medium"
                data-slide-panel-title="{% trans %}Editar{% endtrans %} {{ platform.name }}"
                class="btn btn--primary btn--sm">
@@ -156,7 +156,7 @@
               {{ 'Editar'|t }}
             </a>
           {% else %}
-            <a href="/api/pixels/config-form/{{ key }}" 
+            <a href="/api/v1/pixels/config-form/{{ key }}" {# AUDIT-CONS-N07 #} 
                data-slide-panel="medium"
                data-slide-panel-title="{% trans %}Configurar{% endtrans %} {{ platform.name }}"
                class="btn btn--primary btn--sm">

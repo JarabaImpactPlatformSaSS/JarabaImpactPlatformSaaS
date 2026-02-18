@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for the Jaraba Connector SDK module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_connector_sdk_theme(): array {
+  return [
+    'connector_marketplace' => [
+      'variables' => [
+        'connectors' => [],
+        'total' => 0,
+      ],
+      'template' => 'connector-marketplace',
+      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_connector_sdk') . '/templates',
+    ],
+    'connector_tile' => [
+      'variables' => [
+        'connector' => [],
+      ],
+      'template' => 'connector-tile',
+      'path' => \Drupal::service('extension.list.module')->getPath('jaraba_connector_sdk') . '/templates',
+    ],
+  ];
+}

@@ -10,6 +10,7 @@ use Drupal\jaraba_tenant_knowledge\Service\KbArticleManagerService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador público del Centro de Ayuda KB.
@@ -45,7 +46,9 @@ class KbHelpCenterController extends ControllerBase {
     EntityTypeManagerInterface $entityTypeManager,
     KbArticleManagerService $article_manager,
     LoggerInterface $logger,
+    TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {
+    $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
     $this->entityTypeManager = $entityTypeManager;
     $this->articleManager = $article_manager;
     $this->kbLogger = $logger;
@@ -59,6 +62,7 @@ class KbHelpCenterController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('jaraba_tenant_knowledge.kb_manager'),
       $container->get('logger.channel.jaraba_tenant_knowledge'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -365,8 +369,8 @@ class KbHelpCenterController extends ControllerBase {
    * Obtiene el tenant ID actual.
    */
   protected function getCurrentTenantId(): ?int {
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    if ($this->tenantContext !== NULL) {
+      $tenantContext = $this->tenantContext;
       $tenant = $tenantContext->getCurrentTenant();
       return $tenant ? (int) $tenant->id() : NULL;
     }

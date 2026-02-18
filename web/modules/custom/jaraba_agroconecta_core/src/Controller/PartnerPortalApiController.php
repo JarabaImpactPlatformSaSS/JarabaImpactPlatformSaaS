@@ -55,7 +55,8 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
@@ -70,19 +71,23 @@ class PartnerPortalApiController extends ControllerBase
         $documents = $this->partnerService()->getAccessibleDocuments($relationship);
         $products = $this->partnerService()->getAccessibleProducts($relationship);
 
+        // AUDIT-CONS-N08: Standardized JSON envelope.
         return new JsonResponse([
-            'partner' => [
-                'name' => $relationship->getPartnerName(),
-                'type' => $relationship->getPartnerType(),
-                'access_level' => $relationship->getAccessLevel(),
-                'last_access' => $relationship->get('last_access_at')->value,
+            'success' => TRUE,
+            'data' => [
+                'partner' => [
+                    'name' => $relationship->getPartnerName(),
+                    'type' => $relationship->getPartnerType(),
+                    'access_level' => $relationship->getAccessLevel(),
+                    'last_access' => $relationship->get('last_access_at')->value,
+                ],
+                'producer' => [
+                    'name' => $producer ? $producer->label() : '-',
+                ],
+                'products' => $products,
+                'documents' => $documents,
             ],
-            'producer' => [
-                'name' => $producer ? $producer->label() : '-',
-            ],
-            'products' => $products,
-            'documents' => $documents,
-            'total_documents' => count($documents),
+            'meta' => ['total_documents' => count($documents), 'timestamp' => time()],
         ]);
     }
 
@@ -96,12 +101,13 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
         $products = $this->partnerService()->getAccessibleProducts($relationship);
-        return new JsonResponse(['products' => $products]);
+        return new JsonResponse(['success' => TRUE, 'data' => $products, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -114,7 +120,8 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
@@ -122,7 +129,8 @@ class PartnerPortalApiController extends ControllerBase
         $allowedProducts = $relationship->getAllowedProducts();
         if ($allowedProducts !== NULL && !in_array($product_id, $allowedProducts, TRUE)) {
             return new JsonResponse([
-                'error' => $this->t('No tiene acceso a este producto.'),
+                'success' => FALSE,
+                'error' => ['code' => 'ACCESS_DENIED', 'message' => (string) $this->t('No tiene acceso a este producto.')],
             ], 403);
         }
 
@@ -131,7 +139,7 @@ class PartnerPortalApiController extends ControllerBase
             return $doc['product_id'] === $product_id;
         });
 
-        return new JsonResponse(['documents' => array_values($productDocs)]);
+        return new JsonResponse(['success' => TRUE, 'data' => array_values($productDocs), 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -144,12 +152,13 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
         $documents = $this->partnerService()->getAccessibleDocuments($relationship);
-        return new JsonResponse(['documents' => $documents]);
+        return new JsonResponse(['success' => TRUE, 'data' => $documents, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -162,7 +171,8 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
@@ -172,7 +182,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (empty($entities)) {
             return new JsonResponse([
-                'error' => $this->t('Documento no encontrado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => (string) $this->t('Documento no encontrado.')],
             ], 404);
         }
 
@@ -186,7 +197,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if ($partnerLevel < $requiredLevel) {
             return new JsonResponse([
-                'error' => $this->t('Nivel de acceso insuficiente para este documento.'),
+                'success' => FALSE,
+                'error' => ['code' => 'ACCESS_DENIED', 'message' => (string) $this->t('Nivel de acceso insuficiente para este documento.')],
             ], 403);
         }
 
@@ -196,7 +208,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (!$file) {
             return new JsonResponse([
-                'error' => $this->t('Archivo no disponible.'),
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => (string) $this->t('Archivo no disponible.')],
             ], 404);
         }
 
@@ -215,7 +228,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (!$realpath || !file_exists($realpath)) {
             return new JsonResponse([
-                'error' => $this->t('Archivo no encontrado en el sistema de archivos.'),
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => (string) $this->t('Archivo no encontrado en el sistema de archivos.')],
             ], 404);
         }
 
@@ -237,7 +251,8 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
@@ -248,7 +263,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (empty($productDocs)) {
             return new JsonResponse([
-                'error' => $this->t('No hay documentos disponibles para este producto.'),
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => (string) $this->t('No hay documentos disponibles para este producto.')],
             ], 404);
         }
 
@@ -265,7 +281,8 @@ class PartnerPortalApiController extends ControllerBase
         $relationship = $this->validateToken($token);
         if (!$relationship) {
             return new JsonResponse([
-                'error' => $this->t('Token de acceso no válido o expirado.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INVALID_TOKEN', 'message' => (string) $this->t('Token de acceso no válido o expirado.')],
             ], 403);
         }
 
@@ -273,7 +290,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (empty($documents)) {
             return new JsonResponse([
-                'error' => $this->t('No hay documentos disponibles.'),
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => (string) $this->t('No hay documentos disponibles.')],
             ], 404);
         }
 
@@ -291,7 +309,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (empty($data['email'])) {
             return new JsonResponse([
-                'error' => $this->t('El campo email es obligatorio.'),
+                'success' => FALSE,
+                'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('El campo email es obligatorio.')],
             ], 400);
         }
 
@@ -304,7 +323,9 @@ class PartnerPortalApiController extends ControllerBase
 
         // Siempre devolver respuesta positiva por seguridad (no revelar existencia).
         return new JsonResponse([
-            'message' => $this->t('Si existe una cuenta asociada, recibirá un email con el enlace de acceso.'),
+            'success' => TRUE,
+            'data' => ['message' => (string) $this->t('Si existe una cuenta asociada, recibirá un email con el enlace de acceso.')],
+            'meta' => ['timestamp' => time()],
         ]);
     }
 
@@ -334,7 +355,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if ($zip->open($zipPath, \ZipArchive::CREATE) !== TRUE) {
             return new JsonResponse([
-                'error' => $this->t('Error al generar el archivo ZIP.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INTERNAL_ERROR', 'message' => (string) $this->t('Error al generar el archivo ZIP.')],
             ], 500);
         }
 
@@ -368,7 +390,8 @@ class PartnerPortalApiController extends ControllerBase
 
         if (!file_exists($zipPath)) {
             return new JsonResponse([
-                'error' => $this->t('Error al generar el archivo ZIP.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INTERNAL_ERROR', 'message' => (string) $this->t('Error al generar el archivo ZIP.')],
             ], 500);
         }
 

@@ -117,6 +117,7 @@ function jaraba_tenant_export_preprocess_page(array &$variables): void {
   }
 
   /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+  // @todo CONS-N10: Move to service class for proper DI.
   $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
   /** @var \Drupal\jaraba_tenant_export\Service\TenantExportService $exportService */
   $exportService = \Drupal::service('jaraba_tenant_export.export_service');

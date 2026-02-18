@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager;
 use Drupal\jaraba_tenant_knowledge\Service\KnowledgeIndexerService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * CONTROLLER API REST DE KNOWLEDGE TRAINING
@@ -31,6 +32,7 @@ class KnowledgeApiController extends ControllerBase
     public function __construct(
         protected TenantKnowledgeManager $knowledgeManager,
         protected KnowledgeIndexerService $indexer,
+        protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
     }
 
@@ -42,6 +44,7 @@ class KnowledgeApiController extends ControllerBase
         return new static(
             $container->get('jaraba_tenant_knowledge.manager'),
             $container->get('jaraba_tenant_knowledge.indexer'),
+            $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
         );
     }
 
@@ -140,8 +143,8 @@ class KnowledgeApiController extends ControllerBase
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

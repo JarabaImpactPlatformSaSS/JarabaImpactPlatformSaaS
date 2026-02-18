@@ -127,6 +127,35 @@ class FaseTransitionManager
     }
 
     /**
+     * Comprueba si un participante puede transitar a fase Inserción.
+     *
+     * @param mixed $participant
+     *   La entidad participante.
+     *
+     * @return bool
+     *   TRUE si cumple los requisitos mínimos.
+     */
+    public function canTransitToInsercion($participant): bool
+    {
+        try {
+            if (method_exists($participant, 'canTransitToInsercion')) {
+                return $participant->canTransitToInsercion();
+            }
+
+            // Fallback: comprobar horas manualmente.
+            $horasOrientacion = (float) ($participant->get('horas_orientacion_ind')->value ?? 0)
+                + (float) ($participant->get('horas_orientacion_grup')->value ?? 0)
+                + (float) ($participant->get('horas_mentoria_ia')->value ?? 0)
+                + (float) ($participant->get('horas_mentoria_humana')->value ?? 0);
+            $horasFormacion = (float) ($participant->get('horas_formacion')->value ?? 0);
+
+            return $horasOrientacion >= 10 && $horasFormacion >= 50;
+        } catch (\Throwable $e) {
+            return FALSE;
+        }
+    }
+
+    /**
      * Obtiene los participantes que pueden transitar a Inserción.
      *
      * @return array

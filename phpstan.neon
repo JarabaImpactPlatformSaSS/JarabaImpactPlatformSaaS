@@ -1,14 +1,21 @@
+# AUDIT-SEC-N11: SAST enhancement — PHPStan configuration
+# Level raised from 5 to 6 for stronger type-safety and security checks.
+# Security-specific rules included via phpstan-security.neon.
 includes:
   - phpstan-baseline.neon
+  - phpstan-security.neon
 
 parameters:
-  level: 5
+  # AUDIT-SEC-N11: Level 6 enables union type checks, stricter return types,
+  # and better detection of unsafe type coercions relevant to security.
+  level: 6
 
   paths:
     - web/modules/custom
 
   excludePaths:
     - '*/tests/fixtures/*.php'
+    - '*/node_modules/*'
     # Contrib-like module with missing Google AI dependencies.
     - web/modules/custom/ai_provider_google_gemini
 

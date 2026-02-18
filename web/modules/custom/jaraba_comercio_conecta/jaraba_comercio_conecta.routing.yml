@@ -420,6 +420,7 @@ jaraba_comercio_conecta.api.wishlist.add:
   methods: [POST]
   requirements:
     _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE' # AUDIT-SEC-N08: Added CSRF token validation.
 
 jaraba_comercio_conecta.api.wishlist.remove:
   path: '/api/v1/comercio/wishlist/remove'
@@ -428,6 +429,7 @@ jaraba_comercio_conecta.api.wishlist.remove:
   methods: [DELETE]
   requirements:
     _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE' # AUDIT-SEC-N08: Added CSRF token validation.
 
 # --- Settings Routes F8: Search + Local SEO ---
 
@@ -510,6 +512,7 @@ jaraba_comercio_conecta.api.flash_offers.claim:
   methods: [POST]
   requirements:
     _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE' # AUDIT-SEC-N08: Added CSRF token validation.
     offer_id: '\d+'
 
 jaraba_comercio_conecta.api.flash_offers.redeem:
@@ -603,6 +606,7 @@ jaraba_comercio_conecta.api.notifications.read:
   methods: [POST]
   requirements:
     _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE' # AUDIT-SEC-N08: Added CSRF token validation.
     log_id: '\d+'
 
 jaraba_comercio_conecta.api.notifications.preferences:
@@ -620,6 +624,7 @@ jaraba_comercio_conecta.api.notifications.preferences.update:
   methods: [POST]
   requirements:
     _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE' # AUDIT-SEC-N08: Added CSRF token validation.
 
 # --- API REST: Copilot Proactive Actions ---
 # GET: check pending proactive action, POST: dismiss action

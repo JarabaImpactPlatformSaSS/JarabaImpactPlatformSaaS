@@ -9,6 +9,7 @@ use Drupal\jaraba_content_hub\Service\RecommendationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controller for article recommendation API endpoints.
@@ -35,7 +36,8 @@ class RecommendationController extends ControllerBase
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_content_hub.recommendation_service')
+            $container->get('jaraba_content_hub.recommendation_service'),
+            $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
         );
     }
 
@@ -56,8 +58,8 @@ class RecommendationController extends ControllerBase
         $limit = min(max($limit, 1), 20);
 
         $tenantId = 0;
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenantId = $tenantContext->getCurrentTenantId() ?? 0;
         }
 

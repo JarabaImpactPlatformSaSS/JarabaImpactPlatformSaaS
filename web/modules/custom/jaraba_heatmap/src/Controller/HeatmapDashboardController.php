@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\jaraba_heatmap\Service\HeatmapAggregatorService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controller for the Heatmap Analytics Dashboard.
@@ -29,6 +30,12 @@ class HeatmapDashboardController extends ControllerBase {
    */
   protected HeatmapAggregatorService $aggregator;
 
+  // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+  /**
+   * Tenant context service.
+   */
+  protected TenantContextService $tenantContext;
+
   /**
    * Constructs a HeatmapDashboardController.
    *
@@ -36,13 +43,18 @@ class HeatmapDashboardController extends ControllerBase {
    *   Database connection.
    * @param \Drupal\jaraba_heatmap\Service\HeatmapAggregatorService $aggregator
    *   Aggregator service.
+   * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext
+   *   Tenant context service.
    */
   public function __construct(
     Connection $database,
     HeatmapAggregatorService $aggregator,
+    TenantContextService $tenantContext, // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
   ) {
     $this->database = $database;
     $this->aggregator = $aggregator;
+    // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+    $this->tenantContext = $tenantContext;
   }
 
   /**
@@ -52,6 +64,7 @@ class HeatmapDashboardController extends ControllerBase {
     return new static(
       $container->get('database'),
       $container->get('jaraba_heatmap.aggregator'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
     );
   }
 
@@ -62,7 +75,11 @@ class HeatmapDashboardController extends ControllerBase {
    *   A render array.
    */
   public function dashboard(): array {
+    // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
     $tenantId = $this->getTenantId();
+    if ($tenantId <= 0) {
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException('Tenant context required.');
+    }
 
     // Load tracked pages with basic metrics.
     $pages = $this->getTrackedPages($tenantId);
@@ -80,7 +97,7 @@ class HeatmapDashboardController extends ControllerBase {
         'drupalSettings' => [
           'jarabaHeatmap' => [
             'tenantId' => $tenantId,
-            'apiBase' => '/api/heatmap',
+            'apiBase' => '/api/v1/heatmap', // AUDIT-CONS-N07: Added API versioning prefix.
           ],
         ],
       ],
@@ -188,19 +205,16 @@ class HeatmapDashboardController extends ControllerBase {
   }
 
   /**
-   * Gets the tenant ID from context.
+   * Gets the tenant ID from server-side context.
+   *
+   * AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+   * Never uses client-supplied tenant_id.
    *
    * @return int
    *   Tenant ID or 0.
    */
   protected function getTenantId(): int {
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
-      if ($tenant) {
-        return (int) $tenant->id();
-      }
-    }
-    return 0;
+    return (int) ($this->tenantContext->getCurrentTenantId() ?? 0);
   }
 
 }

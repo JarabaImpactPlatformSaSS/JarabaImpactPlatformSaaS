@@ -40,7 +40,8 @@ DRUSH="${DRUSH:-$PHP_CLI $PROJECT_DIR/vendor/bin/drush.php}"
 COMPOSER="${COMPOSER:-$PHP_CLI $HOME/bin/composer.phar}"
 
 # URLs
-SITE_URL="${SITE_URL:-https://plataformadeecosistemas.com}"
+# AUDIT-SEC-N17: Production URL must come from environment variable, not hardcoded.
+SITE_URL="${SITE_URL:?ERROR: SITE_URL env var is required. Export it before running this script.}"
 
 # Slack webhook (configurar con variable de entorno)
 SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"
@@ -223,7 +224,7 @@ for arg in "$@"; do
             echo ""
             echo "Variables de entorno:"
             echo "  SLACK_WEBHOOK_URL    URL del webhook de Slack para notificaciones"
-            echo "  SITE_URL             URL del sitio (default: https://plataformadeecosistemas.com)"
+            echo "  SITE_URL             URL del sitio (REQUIRED, no default — set via env var)"
             echo "  BACKUP_DIR           Directorio de backups (default: ~/backups)"
             exit 0
             ;;

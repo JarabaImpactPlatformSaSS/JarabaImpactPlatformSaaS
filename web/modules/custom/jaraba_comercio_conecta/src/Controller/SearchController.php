@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Controller para busqueda y autocomplete del marketplace.
  *
- * Estructura: Gestiona las rutas /api/comercio/search,
- *   /api/comercio/autocomplete y /comercio/buscar.
+ * Estructura: Gestiona las rutas /api/v1/comercio/search,
+ *   /api/v1/comercio/search/autocomplete y /comercio/buscar. (AUDIT-CONS-N07)
  *   Las rutas API devuelven JSON con data envelope.
  *   La pagina frontend devuelve render array con template Twig.
  */
@@ -51,10 +51,10 @@ class SearchController extends ControllerBase {
     $limit = min(100, max(1, (int) $request->query->get('limit', 20)));
 
     if (empty($query)) {
+      // AUDIT-CONS-N08: Standardized JSON envelope.
       return new JsonResponse([
-        'status' => 'error',
-        'message' => 'El parametro q es obligatorio.',
-        'data' => [],
+        'success' => FALSE,
+        'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'El parametro q es obligatorio.'],
       ], 400);
     }
 
@@ -77,12 +77,13 @@ class SearchController extends ControllerBase {
     $this->searchService->logSearch($query, count($results), $uid, $session_id, $lat_float, $lng_float, $filters);
 
     return new JsonResponse([
-      'status' => 'ok',
+      'success' => TRUE,
       'data' => $results,
       'meta' => [
         'query' => $query,
         'count' => count($results),
         'limit' => $limit,
+        'timestamp' => time(),
       ],
     ]);
   }
@@ -101,16 +102,18 @@ class SearchController extends ControllerBase {
 
     if (mb_strlen($query) < 2) {
       return new JsonResponse([
-        'status' => 'ok',
+        'success' => TRUE,
         'data' => [],
+        'meta' => ['timestamp' => time()],
       ]);
     }
 
     $suggestions = $this->searchService->autocomplete($query);
 
     return new JsonResponse([
-      'status' => 'ok',
+      'success' => TRUE,
       'data' => $suggestions,
+      'meta' => ['timestamp' => time()],
     ]);
   }
 

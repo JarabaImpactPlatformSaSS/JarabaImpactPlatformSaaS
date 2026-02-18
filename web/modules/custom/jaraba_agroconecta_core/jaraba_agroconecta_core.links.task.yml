@@ -99,6 +99,42 @@ entity.shipping_method_agro.collection:
   base_route: system.admin_content
   weight: 55
 
+entity.agro_shipment.collection:
+  title: 'Envíos'
+  route_name: entity.agro_shipment.collection
+  base_route: system.admin_content
+  weight: 56
+
+# Pestañas de detalle para Envíos
+
+entity.agro_shipment.canonical:
+  route_name: entity.agro_shipment.canonical
+  base_route: entity.agro_shipment.canonical
+  title: 'Ver'
+
+entity.agro_shipment.edit_form:
+  route_name: entity.agro_shipment.edit_form
+  base_route: entity.agro_shipment.canonical
+  title: 'Editar'
+
+entity.agro_shipment.delete_form:
+  route_name: entity.agro_shipment.delete_form
+  base_route: entity.agro_shipment.canonical
+  title: 'Eliminar'
+
+# Zonas y Tarifas (Tabs en Structure)
+
+entity.agro_shipping_zone.collection_struct:
+  route_name: entity.agro_shipping_zone.collection
+  title: 'Zonas de Envío'
+  base_route: entity.agro_shipping_zone.collection
+
+entity.agro_shipping_rate.collection_struct:
+  route_name: entity.agro_shipping_rate.collection
+  title: 'Tarifas de Envío'
+  base_route: entity.agro_shipping_zone.collection
+  weight: 10
+
 # Fase 6: Traceability + QR
 
 entity.agro_batch.collection.tab:

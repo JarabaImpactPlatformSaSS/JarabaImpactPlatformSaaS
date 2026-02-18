@@ -335,7 +335,7 @@ class AndaluciaEiJourneyProgressionService {
       $manager = \Drupal::service('jaraba_andalucia_ei.fase_transition_manager');
       return $manager->canTransitToInsercion($participant);
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       return FALSE;
     }
   }

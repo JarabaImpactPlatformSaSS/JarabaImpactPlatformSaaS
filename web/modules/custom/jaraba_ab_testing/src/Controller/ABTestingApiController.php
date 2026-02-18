@@ -130,7 +130,8 @@ class ABTestingApiController extends ControllerBase {
       ], 404);
     }
 
-    return new JsonResponse(['data' => $assignment]);
+    return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $assignment, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -190,7 +191,7 @@ class ABTestingApiController extends ControllerBase {
       ], 404);
     }
 
-    return new JsonResponse(['data' => $detail]);
+    return new JsonResponse(['success' => TRUE, 'data' => $detail, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -229,7 +230,7 @@ class ABTestingApiController extends ControllerBase {
       ], 500);
     }
 
-    return new JsonResponse(['data' => $result], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -262,7 +263,7 @@ class ABTestingApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -289,7 +290,7 @@ class ABTestingApiController extends ControllerBase {
       ], 404);
     }
 
-    return new JsonResponse(['data' => $results]);
+    return new JsonResponse(['success' => TRUE, 'data' => $results, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -310,7 +311,7 @@ class ABTestingApiController extends ControllerBase {
 
     $shouldStop = $this->resultCalculation->checkAutoStop($experiment_id);
 
-    return new JsonResponse(['data' => ['should_stop' => $shouldStop]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['should_stop' => $shouldStop], 'meta' => ['timestamp' => time()]]);
   }
 
   /**

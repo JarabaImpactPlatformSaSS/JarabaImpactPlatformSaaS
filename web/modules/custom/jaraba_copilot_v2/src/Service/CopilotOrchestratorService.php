@@ -8,6 +8,7 @@ use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\jaraba_self_discovery\Service\SelfDiscoveryContextService;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Servicio de orquestación multiproveedor para el Copiloto de Emprendimiento.
@@ -140,8 +141,10 @@ class CopilotOrchestratorService
         ?NormativeRAGService $normativeRag = NULL,
         ?CopilotCacheService $cacheService = NULL,
         ?EntrepreneurContextService $entrepreneurContext = NULL,
-        ?SelfDiscoveryContextService $selfDiscoveryContext = NULL
+        ?SelfDiscoveryContextService $selfDiscoveryContext = NULL,
+        TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
+        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
         $this->aiProvider = $aiProvider;
         $this->configFactory = $configFactory;
         $this->logger = $logger;
@@ -643,12 +646,12 @@ class CopilotOrchestratorService
             }
 
             // Obtener tenant del usuario actual.
-            if (!\Drupal::hasService('ecosistema_jaraba_core.tenant_resolver')) {
+            if (!$this->tenantContext !== NULL) {
                 return '';
             }
 
             /** @var \Drupal\ecosistema_jaraba_core\Service\TenantResolverService $tenantResolver */
-            $tenantResolver = \Drupal::service('ecosistema_jaraba_core.tenant_resolver');
+            $tenantResolver = $this->tenantContext;
             $tenant = $tenantResolver->getCurrentTenant();
 
             if (!$tenant) {

@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Jaraba SSO — Enterprise SAML 2.0, OIDC, SCIM 2.0, JIT provisioning, MFA enforcement.
+ *
+ * Doc 199 — N3 Enterprise Class.
+ */

@@ -43,8 +43,8 @@ class CheckoutController extends ControllerBase implements ContainerInjectionInt
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.order_service'),
-            $container->get('jaraba_agroconecta.stripe_payment_service'),
+            $container->get('jaraba_agroconecta_core.order_service'), // AUDIT-CONS-N05: canonical prefix
+            $container->get('jaraba_agroconecta_core.stripe_payment_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 

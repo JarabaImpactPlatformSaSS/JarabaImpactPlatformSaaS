@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\jaraba_integrations\Entity\Connector;
 use Drupal\jaraba_integrations\Service\ConnectorInstallerService;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Formulario de configuración de un conector instalado.
@@ -26,6 +27,7 @@ class ConnectorConfigurationForm extends FormBase {
 
   public function __construct(
     protected ConnectorInstallerService $connectorInstaller,
+    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   /**
@@ -34,6 +36,7 @@ class ConnectorConfigurationForm extends FormBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('jaraba_integrations.connector_installer'),
+      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
@@ -240,7 +243,7 @@ class ConnectorConfigurationForm extends FormBase {
    */
   protected function getTenantId(): ?string {
     try {
-      $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+      $tenant_context = $this->tenantContext;
       $tenant = $tenant_context->getCurrentTenant();
       if ($tenant) {
         $group = $tenant->getGroup();

@@ -743,8 +743,8 @@ ecosistema_jaraba_core.demo_api_convert:
 # ===========================================================================
 # API REST V1 - API-FIRST ARCHITECTURE (Q1 2027)
 # ===========================================================================
-# Documentación: /api/docs
-# Spec OpenAPI: /api/openapi.yaml
+# Documentación: /api/v1/docs  (AUDIT-CONS-N07)
+# Spec OpenAPI: /api/v1/openapi.yaml  (AUDIT-CONS-N07)
 # ===========================================================================
 
 # Documentación Swagger UI

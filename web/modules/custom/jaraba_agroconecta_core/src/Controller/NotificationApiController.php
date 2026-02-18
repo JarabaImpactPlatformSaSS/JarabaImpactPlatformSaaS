@@ -44,7 +44,7 @@ class NotificationApiController extends ControllerBase implements ContainerInjec
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.notification_service'),
+            $container->get('jaraba_agroconecta_core.notification_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 

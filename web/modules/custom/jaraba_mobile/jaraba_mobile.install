@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Jaraba Mobile module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_install().
+ *
+ * Sets default configuration values on module install.
+ */
+function jaraba_mobile_install(): void {
+  $config = \Drupal::configFactory()->getEditable('jaraba_mobile.settings');
+
+  // Ensure defaults are set if not already present from config/install.
+  if (empty($config->get('push_channels'))) {
+    $config->set('push_channels', [
+      'jobs' => ['enabled' => TRUE, 'max_per_day' => 3],
+      'orders' => ['enabled' => TRUE, 'max_per_day' => 0],
+      'alerts' => ['enabled' => TRUE, 'max_per_day' => 0],
+      'marketing' => ['enabled' => TRUE, 'max_per_day' => 1],
+      'general' => ['enabled' => TRUE, 'max_per_day' => 0],
+    ]);
+  }
+
+  $config->save(TRUE);
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Cleans up configuration on module uninstall.
+ */
+function jaraba_mobile_uninstall(): void {
+  \Drupal::configFactory()->getEditable('jaraba_mobile.settings')->delete();
+}

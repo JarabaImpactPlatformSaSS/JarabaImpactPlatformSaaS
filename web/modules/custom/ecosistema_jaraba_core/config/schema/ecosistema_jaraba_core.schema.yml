@@ -68,6 +68,18 @@ ecosistema_jaraba_core.security_headers:
       sequence:
         type: string
         label: 'Origin URL'
+    # AUDIT-SEC-N16: Permissions-Policy header value.
+    permissions_policy:
+      type: string
+      label: 'Permissions-Policy header value'
+    # AUDIT-SEC-N17: Referrer-Policy header value.
+    referrer_policy:
+      type: string
+      label: 'Referrer-Policy header value'
+    # AUDIT-SEC-N18: X-Permitted-Cross-Domain-Policies header value.
+    cross_domain_policies:
+      type: string
+      label: 'X-Permitted-Cross-Domain-Policies header value'
 
 ecosistema_jaraba_core.stripe:
   type: config_object

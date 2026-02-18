@@ -1,0 +1,130 @@
+/**
+ * @file
+ * Admin dashboard styles for Jaraba Mobile.
+ *
+ * Uses --ej-* custom properties from the Ecosistema Jaraba design system.
+ */
+
+.page-mobile-admin .layout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-md, 1.5rem);
+}
+
+/* Device list table */
+.mobile-device-list .views-table,
+.mobile-device-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--ej-spacing-sm, 1rem);
+}
+
+.mobile-device-list th {
+  background-color: var(--ej-color-surface-secondary, #f5f5f5);
+  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 1rem);
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--ej-color-text-secondary, #555);
+  border-bottom: 2px solid var(--ej-color-border, #ddd);
+}
+
+.mobile-device-list td {
+  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 1rem);
+  border-bottom: 1px solid var(--ej-color-border, #eee);
+  font-size: 0.875rem;
+}
+
+/* Push notification history */
+.push-history-list th {
+  background-color: var(--ej-color-surface-secondary, #f5f5f5);
+  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 1rem);
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-bottom: 2px solid var(--ej-color-border, #ddd);
+}
+
+.push-history-list td {
+  padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 1rem);
+  border-bottom: 1px solid var(--ej-color-border, #eee);
+  font-size: 0.875rem;
+}
+
+/* Status badges */
+.mobile-status-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--ej-radius-sm, 4px);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.mobile-status-badge--active,
+.mobile-status-badge--delivered {
+  background-color: var(--ej-color-success-light, #e8f5e9);
+  color: var(--ej-color-success, #2e7d32);
+}
+
+.mobile-status-badge--inactive,
+.mobile-status-badge--failed {
+  background-color: var(--ej-color-error-light, #ffebee);
+  color: var(--ej-color-error, #c62828);
+}
+
+.mobile-status-badge--queued,
+.mobile-status-badge--sent {
+  background-color: var(--ej-color-info-light, #e3f2fd);
+  color: var(--ej-color-info, #1565c0);
+}
+
+.mobile-status-badge--opened {
+  background-color: var(--ej-color-warning-light, #fff3e0);
+  color: var(--ej-color-warning, #e65100);
+}
+
+/* Settings form */
+.mobile-settings-form .form-item {
+  margin-bottom: var(--ej-spacing-md, 1.5rem);
+}
+
+.mobile-settings-form fieldset {
+  border: 1px solid var(--ej-color-border, #ddd);
+  border-radius: var(--ej-radius-md, 8px);
+  padding: var(--ej-spacing-md, 1.5rem);
+  margin-bottom: var(--ej-spacing-md, 1.5rem);
+}
+
+.mobile-settings-form fieldset legend {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ej-color-text-primary, #333);
+  padding: 0 var(--ej-spacing-xs, 0.5rem);
+}
+
+/* Platform icons in device list */
+.platform-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.platform-icon--ios::before {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background: var(--ej-color-text-secondary, #555);
+  mask-size: contain;
+}
+
+.platform-icon--android::before {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background: var(--ej-color-text-secondary, #555);
+  mask-size: contain;
+}

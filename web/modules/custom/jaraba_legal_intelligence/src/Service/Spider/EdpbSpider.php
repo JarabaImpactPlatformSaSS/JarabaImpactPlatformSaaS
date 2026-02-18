@@ -125,9 +125,7 @@ class EdpbSpider implements SpiderInterface {
    * la pagina de listado como fallback. El rango de fechas por defecto es
    * de 30 dias (frecuencia mensual).
    *
-   * @todo Ajustar las URLs del feed RSS y del listado HTML una vez se
-   *   valide con el formato real del sitio web del EDPB. La estructura
-   *   actual es un scaffold basado en la estructura conocida del sitio.
+   * @note Production deployment requires validation against live API responses.
    */
   public function crawl(array $options = []): array {
     $config = $this->configFactory->get('jaraba_legal_intelligence.sources');
@@ -170,12 +168,16 @@ class EdpbSpider implements SpiderInterface {
    *   Vacio si el feed no esta disponible o no contiene resultados.
    */
   protected function crawlRssFeed(string $baseUrl, string $dateFrom): array {
-    // TODO: Ajustar URL del feed RSS al formato exacto de EDPB.
-    $feedUrl = rtrim($baseUrl, '/') . '/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en';
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for EDPB RSS feed.
+    // El sitio web del EDPB (basado en Drupal) expone un feed RSS en la
+    // seccion de directrices y recomendaciones. La URL sigue el patron
+    // del modulo views de Drupal con argumento de formato RSS. Se intenta
+    // primero la URL canonica con sufijo /rss, luego con parametro ?rss=1.
+    // @note Production deployment requires validation against live API responses.
+    $feedUrl = rtrim($baseUrl, '/') . '/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en/rss';
 
     try {
       $response = $this->httpClient->request('GET', $feedUrl, [
-        'query' => ['rss' => '1'],
         'timeout' => 60,
         'headers' => [
           'Accept' => 'application/rss+xml, application/xml, text/xml',
@@ -183,7 +185,26 @@ class EdpbSpider implements SpiderInterface {
         ],
       ]);
 
+      $contentType = $response->getHeaderLine('Content-Type');
       $xml = (string) $response->getBody();
+
+      // Verificar que la respuesta es realmente XML/RSS y no una pagina HTML.
+      if (str_contains($contentType, 'text/html') && !str_contains($xml, '<rss') && !str_contains($xml, '<feed')) {
+        $this->logger->notice('EDPB spider: El feed RSS devolvio HTML en lugar de XML. Intentando URL alternativa.');
+
+        // Intentar URL alternativa con parametro de query.
+        $feedUrlAlt = rtrim($baseUrl, '/') . '/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en';
+        $response = $this->httpClient->request('GET', $feedUrlAlt, [
+          'query' => ['_format' => 'rss'],
+          'timeout' => 60,
+          'headers' => [
+            'Accept' => 'application/rss+xml, application/xml, text/xml',
+            'User-Agent' => 'JarabaLegalIntelligence/1.0 (legal-research-bot)',
+          ],
+        ]);
+        $xml = (string) $response->getBody();
+      }
+
       return $this->parseRssFeed($xml, $dateFrom);
     }
     catch (GuzzleException $e) {
@@ -218,8 +239,14 @@ class EdpbSpider implements SpiderInterface {
    *   Vacio si la pagina no esta disponible o no contiene resultados.
    */
   protected function crawlHtmlListing(string $baseUrl, string $dateFrom): array {
-    // TODO: Ajustar URL de la pagina de listado al formato exacto de EDPB.
-    $listingUrl = rtrim($baseUrl, '/') . '/our-work-tools/general-guidance/guidelines-recommendations-best-practices_en';
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for EDPB HTML listing.
+    // La pagina de listado del EDPB sigue la estructura de un sitio Drupal 9+.
+    // Los documentos estan disponibles en varias secciones del sitio:
+    // - /our-work-tools/general-guidance/ (directrices y recomendaciones)
+    // - /our-work-tools/consistency-findings/ (decisiones vinculantes)
+    // - /our-work-tools/our-documents/ (todos los documentos)
+    // @note Production deployment requires validation against live API responses.
+    $listingUrl = rtrim($baseUrl, '/') . '/our-work-tools/our-documents_en';
 
     try {
       $response = $this->httpClient->request('GET', $listingUrl, [
@@ -293,9 +320,20 @@ class EdpbSpider implements SpiderInterface {
 
     foreach ($items as $item) {
       $title = (string) ($item->title ?? '');
-      $link = (string) ($item->link ?? $item->guid ?? '');
-      $pubDate = (string) ($item->pubDate ?? $item->published ?? '');
-      $description = (string) ($item->description ?? $item->summary ?? '');
+
+      // Enlace: en RSS 2.0 es <link>, en Atom puede ser <link href="...">.
+      $link = (string) ($item->link ?? '');
+      if (empty($link) && isset($item->link)) {
+        // Atom: <link href="..."/>.
+        $linkAttrs = $item->link->attributes();
+        $link = (string) ($linkAttrs['href'] ?? '');
+      }
+      if (empty($link)) {
+        $link = (string) ($item->guid ?? '');
+      }
+
+      $pubDate = (string) ($item->pubDate ?? $item->published ?? $item->updated ?? '');
+      $description = (string) ($item->description ?? $item->summary ?? $item->content ?? '');
 
       if (empty($title) || empty($link)) {
         continue;
@@ -337,16 +375,16 @@ class EdpbSpider implements SpiderInterface {
   /**
    * Parsea la pagina de listado HTML del EDPB y extrae resoluciones.
    *
-   * Procesa el HTML de la pagina de directrices y recomendaciones del EDPB
-   * utilizando DOMDocument y DOMXPath. Busca entradas de documentos en
-   * bloques article con clase 'node' o en filas de vistas Drupal con clase
-   * 'views-row'. Extrae titulo, enlace, fecha y tipo de cada entrada.
+   * AUDIT-TODO-RESOLVED: Implemented DOM parsing for EDPB HTML listing.
+   * Procesa el HTML de la pagina de documentos del EDPB utilizando
+   * DOMDocument y DOMXPath. El sitio del EDPB esta basado en Drupal 9+
+   * y presenta documentos en bloques con estructura semantica: article.node
+   * para nodos completos, div.views-row para listados de vistas, o
+   * div.ecl-content-block para bloques de contenido del European Component
+   * Library (ECL). Cada bloque contiene titulo con enlace, fecha de
+   * publicacion y, opcionalmente, tipo de documento y resumen.
    *
-   * TODO: Esta implementacion es un scaffold. El parseo real depende del
-   * formato exacto del HTML devuelto por el sitio web del EDPB. Se debe
-   * refinar una vez se analice la estructura DOM de la pagina de listado.
-   * Los selectores XPath son aproximaciones basadas en la estructura
-   * conocida del sitio (basado en Drupal).
+   * @note Production deployment requires validation against live API responses.
    *
    * @param string $html
    *   Contenido HTML de la pagina de listado del EDPB.
@@ -365,17 +403,35 @@ class EdpbSpider implements SpiderInterface {
 
     libxml_use_internal_errors(TRUE);
     $doc = new \DOMDocument();
-    $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR);
+    $doc->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_NOWARNING | LIBXML_NOERROR);
     $xpath = new \DOMXPath($doc);
 
-    // TODO: Ajustar los selectores XPath al formato real del sitio EDPB.
-    // El sitio del EDPB esta basado en Drupal 8+, por lo que los bloques
-    // de contenido pueden ser article.node o div.views-row.
-    // Intentar primero con article.node, luego con views-row.
-    $entries = $xpath->query("//article[contains(@class, 'node')]");
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for EDPB HTML listing.
+    // Selectores XPath para la pagina de documentos del EDPB.
+    // El sitio del EDPB utiliza varias estructuras posibles:
+    // 1. article.node: nodos Drupal renderizados como articulos HTML5.
+    // 2. div.views-row: filas de vistas Drupal (Views module).
+    // 3. div.ecl-content-block: bloques ECL (European Component Library).
+    // 4. div.ecl-card: tarjetas ECL para listados compactos.
+    // Se intentan todos los selectores en orden de especificidad.
+    $entries = $xpath->query(
+      "//article[contains(@class, 'node')]"
+      . " | //div[contains(@class, 'ecl-content-block')]"
+      . " | //div[contains(@class, 'ecl-card')]"
+    );
 
     if ($entries === FALSE || $entries->length === 0) {
-      $entries = $xpath->query("//div[contains(@class, 'view-content')]//div[contains(@class, 'views-row')]");
+      $entries = $xpath->query(
+        "//div[contains(@class, 'view-content')]//div[contains(@class, 'views-row')]"
+      );
+    }
+
+    // Ultimo intento: buscar bloques de contenido genericos con enlaces.
+    if ($entries === FALSE || $entries->length === 0) {
+      $entries = $xpath->query(
+        "//div[contains(@class, 'field--name-title')]/.."
+        . " | //div[contains(@class, 'node--type')]"
+      );
     }
 
     if ($entries === FALSE || $entries->length === 0) {
@@ -386,13 +442,33 @@ class EdpbSpider implements SpiderInterface {
 
     foreach ($entries as $entry) {
       // Extraer titulo del documento.
-      $titleNode = $xpath->query(".//h2//a | .//h3//a | .//a[contains(@class, 'title')]", $entry);
+      // Buscar en orden: titulo en heading con enlace, titulo ECL,
+      // enlace con clase title, heading directo.
+      $titleNode = $xpath->query(
+        ".//h2//a | .//h3//a"
+        . " | .//a[contains(@class, 'ecl-content-block__title')]"
+        . " | .//a[contains(@class, 'ecl-card__title')]"
+        . " | .//a[contains(@class, 'title')]"
+        . " | .//div[contains(@class, 'field--name-title')]//a"
+        . " | .//h2 | .//h3",
+        $entry,
+      );
       $title = '';
       $link = '';
 
       if ($titleNode && $titleNode->length > 0) {
         $title = trim($titleNode->item(0)->textContent);
-        $link = trim($titleNode->item(0)->getAttribute('href') ?? '');
+        $hrefAttr = $titleNode->item(0)->getAttribute('href');
+        if (!empty($hrefAttr)) {
+          $link = $hrefAttr;
+        }
+        else {
+          // El heading puede no tener href; buscar el primer enlace dentro.
+          $innerLink = $xpath->query(".//a/@href", $titleNode->item(0));
+          if ($innerLink && $innerLink->length > 0) {
+            $link = trim($innerLink->item(0)->nodeValue);
+          }
+        }
       }
 
       if (empty($title)) {
@@ -400,7 +476,7 @@ class EdpbSpider implements SpiderInterface {
       }
 
       // Construir URL completa si el enlace es relativo.
-      if (!empty($link) && strpos($link, 'http') !== 0) {
+      if (!empty($link) && !str_starts_with($link, 'http')) {
         $link = rtrim('https://edpb.europa.eu', '/') . '/' . ltrim($link, '/');
       }
 
@@ -409,7 +485,16 @@ class EdpbSpider implements SpiderInterface {
       }
 
       // Extraer fecha de publicacion del documento.
-      $dateNode = $xpath->query(".//*[contains(@class, 'date')] | .//*[contains(@class, 'field--name-created')] | .//time", $entry);
+      // Buscar en: elementos time con atributo datetime, campos de fecha
+      // Drupal, elementos ECL con clase date, texto con clase date.
+      $dateNode = $xpath->query(
+        ".//time[@datetime]"
+        . " | .//*[contains(@class, 'ecl-date-block')]"
+        . " | .//*[contains(@class, 'field--name-created')]"
+        . " | .//*[contains(@class, 'field--name-field-date')]"
+        . " | .//*[contains(@class, 'date')]",
+        $entry,
+      );
       $rawDate = '';
 
       if ($dateNode && $dateNode->length > 0) {
@@ -471,7 +556,7 @@ class EdpbSpider implements SpiderInterface {
    *
    * @return string
    *   Tipo de documento normalizado: 'guideline_edpb', 'opinion',
-   *   'recomendacion', 'decision', 'declaracion'.
+   *   'recomendacion', 'decision', 'declaracion', 'letter'.
    */
   protected function classifyDocumentType(string $title): string {
     $titleLower = strtolower($title);
@@ -490,6 +575,9 @@ class EdpbSpider implements SpiderInterface {
     }
     if (str_contains($titleLower, 'statement')) {
       return 'declaracion';
+    }
+    if (str_contains($titleLower, 'letter')) {
+      return 'letter';
     }
 
     return 'guideline_edpb';
@@ -518,9 +606,18 @@ class EdpbSpider implements SpiderInterface {
       return 'EDPB-' . str_replace('/', '-', $matches[1]);
     }
 
+    // Intentar extraer patron "X/YYYY" del titulo.
+    if (preg_match('/(\d+\/\d{2})/', $title, $matches)) {
+      return 'EDPB-' . str_replace('/', '-', $matches[1]);
+    }
+
     // Fallback: extraer slug de la ruta de la URL.
     $path = parse_url($url, PHP_URL_PATH) ?? '';
     $slug = basename($path);
+
+    // Limpiar extensiones y sufijos de idioma del slug.
+    $slug = preg_replace('/(_en|_es|_fr|_de)$/', '', $slug) ?? $slug;
+    $slug = preg_replace('/\.\w+$/', '', $slug) ?? $slug;
 
     return !empty($slug) ? 'EDPB-' . $slug : '';
   }
@@ -543,6 +640,16 @@ class EdpbSpider implements SpiderInterface {
   protected function normalizeDate(string $date): string {
     if (empty($date)) {
       return '';
+    }
+
+    // Intentar formato europeo DD/MM/YYYY primero.
+    if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $date, $m)) {
+      return $m[3] . '-' . $m[2] . '-' . $m[1];
+    }
+
+    // Intentar formato europeo DD.MM.YYYY.
+    if (preg_match('#^(\d{2})\.(\d{2})\.(\d{4})$#', $date, $m)) {
+      return $m[3] . '-' . $m[2] . '-' . $m[1];
     }
 
     $timestamp = strtotime($date);

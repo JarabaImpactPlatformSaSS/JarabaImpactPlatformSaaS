@@ -31,7 +31,7 @@ class ProjectionApiController extends ControllerBase
             $projections[] = $this->serializeProjection($projection);
         }
 
-        return new JsonResponse(['data' => $projections]);
+        return new JsonResponse(['success' => TRUE, 'data' => $projections]);
     }
 
     /**
@@ -42,7 +42,8 @@ class ProjectionApiController extends ControllerBase
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['title'])) {
-            return new JsonResponse(['error' => 'Title is required'], 400);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Title is required']], 400);
         }
 
         $storage = $this->entityTypeManager()->getStorage('financial_projection');
@@ -59,9 +60,7 @@ class ProjectionApiController extends ControllerBase
         $projection->save();
 
         return new JsonResponse([
-            'data' => $this->serializeProjection($projection),
-            'message' => 'Projection created successfully',
-        ], 201);
+            'data' => $this->serializeProjection($projection), 'meta' => ['timestamp' => time()]], 201);
     }
 
     /**
@@ -73,14 +72,14 @@ class ProjectionApiController extends ControllerBase
         $projection = $storage->load($id);
 
         if (!$projection) {
-            return new JsonResponse(['error' => 'Projection not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Projection not found']], 404);
         }
 
         if ($projection->getOwnerId() != $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
-        return new JsonResponse(['data' => $this->serializeProjection($projection)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $this->serializeProjection($projection)]);
     }
 
     /**
@@ -92,11 +91,11 @@ class ProjectionApiController extends ControllerBase
         $projection = $storage->load($id);
 
         if (!$projection) {
-            return new JsonResponse(['error' => 'Projection not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Projection not found']], 404);
         }
 
         if ($projection->getOwnerId() != $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         $data = json_decode($request->getContent(), TRUE);
@@ -122,9 +121,7 @@ class ProjectionApiController extends ControllerBase
         $projection->save();
 
         return new JsonResponse([
-            'data' => $this->serializeProjection($projection),
-            'message' => 'Projection updated',
-        ]);
+            'data' => $this->serializeProjection($projection), 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -136,11 +133,11 @@ class ProjectionApiController extends ControllerBase
         $projection = $storage->load($id);
 
         if (!$projection) {
-            return new JsonResponse(['error' => 'Projection not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Projection not found']], 404);
         }
 
         if ($projection->getOwnerId() != $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         $period = $projection->getPeriodMonths();

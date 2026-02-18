@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * API REST Controller para Jaraba Impact Platform.
  *
  * Proporciona endpoints REST versionados para integración externa.
- * Documentación: /api/docs
+ * Documentación: /api/v1/docs (AUDIT-CONS-N07)
  */
 class ApiController extends ControllerBase
 {
@@ -61,7 +61,8 @@ class ApiController extends ControllerBase
         $specPath = $modulePath . '/openapi/openapi.yaml';
 
         if (!file_exists($specPath)) {
-            return new JsonResponse(['error' => 'OpenAPI spec not found'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'OpenAPI spec not found']], 404);
         }
 
         $content = file_get_contents($specPath);
@@ -101,7 +102,7 @@ class ApiController extends ControllerBase
                 ],
             ];
 
-            return new JsonResponse($data);
+            return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
 
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
@@ -178,7 +179,7 @@ class ApiController extends ControllerBase
                 'limits' => $limits,
             ];
 
-            return new JsonResponse($usage);
+            return new JsonResponse(['success' => TRUE, 'data' => $usage, 'meta' => ['timestamp' => time()]]);
 
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
@@ -215,7 +216,7 @@ class ApiController extends ControllerBase
                 ];
             }
 
-            return new JsonResponse(['data' => $data]);
+            return new JsonResponse(['success' => TRUE, 'data' => $data]);
 
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
@@ -243,13 +244,11 @@ class ApiController extends ControllerBase
             $products = $this->getDemoProducts($category, $search, $limit);
 
             return new JsonResponse([
-                'data' => $products,
-                'meta' => [
+                'data' => $products, 'meta' => [
                     'total' => count($products),
                     'limit' => $limit,
                     'offset' => $offset,
-                ],
-            ]);
+                ]]);
 
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
@@ -268,7 +267,7 @@ class ApiController extends ControllerBase
             ['slug' => 'cosmetica', 'name' => 'Cosmética Natural', 'icon' => '🌿', 'count' => 12],
         ];
 
-        return new JsonResponse(['data' => $categories]);
+        return new JsonResponse(['success' => TRUE, 'data' => $categories, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

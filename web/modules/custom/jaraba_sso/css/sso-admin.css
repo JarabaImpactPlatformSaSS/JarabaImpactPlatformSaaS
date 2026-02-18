@@ -1,0 +1,129 @@
+/**
+ * @file
+ * SSO Admin Dashboard Styles — jaraba_sso.
+ *
+ * Styles for the SSO configuration admin form.
+ * Uses Federated Design Tokens from ecosistema_jaraba_core.
+ */
+
+/* ============================================
+   ADMIN FORM
+   ============================================ */
+
+.jaraba-sso-admin .form-item {
+  margin-bottom: var(--ej-spacing-md, 1rem);
+}
+
+.jaraba-sso-admin details {
+  border: 1px solid var(--ej-border-color, #ddd);
+  border-radius: var(--ej-border-radius, 8px);
+  padding: var(--ej-spacing-md, 1rem);
+  margin-bottom: var(--ej-spacing-lg, 1.5rem);
+}
+
+.jaraba-sso-admin details summary {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ej-text-primary, #1a1a2e);
+  cursor: pointer;
+  padding: var(--ej-spacing-sm, 0.5rem) 0;
+}
+
+.jaraba-sso-admin textarea {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875rem;
+}
+
+.jaraba-sso-admin .description {
+  font-size: 0.85rem;
+  color: var(--ej-text-secondary, #6b7280);
+  margin-top: 0.25rem;
+}
+
+/* ============================================
+   PROVIDER LIST TABLE
+   ============================================ */
+
+.sso-providers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--ej-spacing-md, 1rem) 0;
+}
+
+.sso-providers-table th,
+.sso-providers-table td {
+  padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+  text-align: left;
+  border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+}
+
+.sso-providers-table th {
+  font-weight: 600;
+  color: var(--ej-text-secondary, #6b7280);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sso-provider-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.sso-provider-badge--saml {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.sso-provider-badge--oidc {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sso-provider-badge--active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sso-provider-badge--inactive {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+/* ============================================
+   MFA POLICY SECTION
+   ============================================ */
+
+.mfa-policy-card {
+  background: var(--ej-bg-surface, #ffffff);
+  border: 1px solid var(--ej-border-color, #e5e7eb);
+  border-radius: var(--ej-border-radius, 8px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  margin: var(--ej-spacing-md, 1rem) 0;
+}
+
+.mfa-policy-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--ej-spacing-sm, 0.5rem);
+}
+
+.mfa-policy-card__enforcement {
+  display: flex;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  flex-wrap: wrap;
+  margin: var(--ej-spacing-sm, 0.5rem) 0;
+}
+
+.mfa-method-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: var(--ej-bg-accent, #f0f4ff);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--ej-text-primary, #1a1a2e);
+}

@@ -7,6 +7,8 @@ namespace Drupal\jaraba_tenant_knowledge\Form;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * FORMULARIO POLÍTICA EN SLIDE-PANEL
@@ -20,6 +22,23 @@ use Drupal\Core\Url;
  */
 class TenantPolicyForm extends ContentEntityForm
 {
+
+
+    /**
+     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+     */
+    protected ?TenantContextService $tenantContext = NULL;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container) {
+        $instance = parent::create($container);
+        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
+            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+        }
+        return $instance;
+    }
 
     /**
      * Templates predefinidos por tipo de política.
@@ -179,8 +198,8 @@ class TenantPolicyForm extends ContentEntityForm
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

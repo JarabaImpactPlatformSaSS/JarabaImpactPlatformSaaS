@@ -130,11 +130,99 @@ class LexnetSyncService {
         return $response;
       }
 
-      // TODO: Descargar y almacenar en private://lexnet/attachments/.
+      // AUDIT-TODO-RESOLVED: Download and store LexNET attachments in private file system.
+      $attachments = $response['data'] ?? $response['attachments'] ?? [];
+      $fileSystem = \Drupal::service('file_system');
+      $savedFiles = [];
+      $destinationDir = 'private://lexnet/attachments/' . $externalId;
+
+      // Ensure the destination directory exists.
+      $fileSystem->prepareDirectory($destinationDir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY | \Drupal\Core\File\FileSystemInterface::MODIFY_PERMISSIONS);
+
+      foreach ($attachments as $attachment) {
+        try {
+          $attachmentId = $attachment['id'] ?? $attachment['attachment_id'] ?? NULL;
+          $filename = $attachment['filename'] ?? $attachment['name'] ?? ('attachment_' . ($attachmentId ?? bin2hex(random_bytes(4))));
+
+          // Sanitize filename to prevent path traversal.
+          $filename = basename($filename);
+
+          // Get the file content: either base64-encoded in the response, or via a download URL.
+          $fileContent = NULL;
+
+          if (!empty($attachment['content'])) {
+            // Content is base64-encoded in the API response.
+            $fileContent = base64_decode($attachment['content'], TRUE);
+          }
+          elseif (!empty($attachment['download_url'])) {
+            // Fetch from the provided download URL via the LexNET API client.
+            $downloadResponse = $this->apiClient->request('GET', $attachment['download_url']);
+            if (!isset($downloadResponse['error']) && !empty($downloadResponse['content'])) {
+              $fileContent = base64_decode($downloadResponse['content'], TRUE);
+            }
+          }
+          elseif ($attachmentId) {
+            // Fetch by attachment ID.
+            $downloadResponse = $this->apiClient->request(
+              'GET',
+              "notifications/{$externalId}/attachments/{$attachmentId}/download"
+            );
+            if (!isset($downloadResponse['error']) && !empty($downloadResponse['content'])) {
+              $fileContent = base64_decode($downloadResponse['content'], TRUE);
+            }
+          }
+
+          if ($fileContent === NULL || $fileContent === FALSE) {
+            $this->logger->warning('Could not retrieve content for attachment @name (notification @nid).', [
+              '@name' => $filename,
+              '@nid' => $notificationId,
+            ]);
+            continue;
+          }
+
+          // Save the file to the private file system.
+          $destination = $destinationDir . '/' . $filename;
+          $savedPath = $fileSystem->saveData($fileContent, $destination, \Drupal\Core\File\FileSystemInterface::EXISTS_RENAME);
+
+          if ($savedPath) {
+            $savedFiles[] = [
+              'filename' => $filename,
+              'path' => $savedPath,
+              'size' => strlen($fileContent),
+              'attachment_id' => $attachmentId,
+            ];
+
+            $this->logger->info('LexNET attachment saved: @file for notification @nid.', [
+              '@file' => $savedPath,
+              '@nid' => $notificationId,
+            ]);
+          }
+          else {
+            $this->logger->error('Failed to save LexNET attachment @name to @dest.', [
+              '@name' => $filename,
+              '@dest' => $destination,
+            ]);
+          }
+        }
+        catch (\Exception $attachmentEx) {
+          $this->logger->error('Error downloading LexNET attachment: @msg', [
+            '@msg' => $attachmentEx->getMessage(),
+          ]);
+        }
+      }
+
+      // Update the notification entity to record attachment downloads.
+      if (!empty($savedFiles)) {
+        $notification->set('attachments_downloaded', TRUE);
+        $notification->save();
+      }
+
       return [
         'id' => $notificationId,
-        'attachments_count' => count($response['data'] ?? []),
-        'status' => 'pending_download',
+        'attachments_count' => count($attachments),
+        'downloaded_count' => count($savedFiles),
+        'files' => $savedFiles,
+        'status' => count($savedFiles) > 0 ? 'downloaded' : 'no_content',
       ];
     }
     catch (\Exception $e) {

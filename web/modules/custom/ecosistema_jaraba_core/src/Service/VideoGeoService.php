@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use GuzzleHttp\ClientInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Video Content GEO Service.
@@ -18,6 +21,34 @@ class VideoGeoService
 {
 
     use StringTranslationTrait;
+
+    /**
+     * HTTP client for API calls.
+     */
+    protected ClientInterface $httpClient;
+
+    /**
+     * Config factory.
+     */
+    protected ConfigFactoryInterface $configFactory;
+
+    /**
+     * Logger.
+     */
+    protected LoggerInterface $logger;
+
+    /**
+     * Constructs a VideoGeoService object.
+     */
+    public function __construct(
+        ClientInterface $httpClient,
+        ConfigFactoryInterface $configFactory,
+        LoggerInterface $logger,
+    ) {
+        $this->httpClient = $httpClient;
+        $this->configFactory = $configFactory;
+        $this->logger = $logger;
+    }
 
     /**
      * Genera Schema.org VideoObject para un video.
@@ -120,9 +151,90 @@ class VideoGeoService
      */
     public function extractTranscript(string $videoUrl): ?string
     {
-        // TODO: Integrar con servicio de transcripción (Whisper API).
-        // Por ahora, retornar placeholder.
-        return "Transcripción del video pendiente de generar.";
+        // AUDIT-TODO-RESOLVED: OpenAI Whisper API integration for audio transcription.
+        try {
+            $config = $this->configFactory->get('ecosistema_jaraba_core.settings');
+            $openaiApiKey = $config->get('openai_api_key')
+                ?: getenv('OPENAI_API_KEY');
+
+            if (empty($openaiApiKey)) {
+                $this->logger->warning('OpenAI API key not configured for Whisper transcription.');
+                return NULL;
+            }
+
+            // Download the audio/video file to a temporary location.
+            $tempFile = \Drupal::service('file_system')->tempnam('temporary://', 'whisper_');
+            $downloadResponse = $this->httpClient->request('GET', $videoUrl, [
+                'sink' => $tempFile,
+                'timeout' => 120,
+            ]);
+
+            $realPath = \Drupal::service('file_system')->realpath($tempFile);
+            if (!$realPath || !file_exists($realPath)) {
+                $this->logger->error('Failed to download video for transcription: @url', [
+                    '@url' => $videoUrl,
+                ]);
+                return NULL;
+            }
+
+            // Determine the file extension from the URL for the filename hint.
+            $pathInfo = pathinfo(parse_url($videoUrl, PHP_URL_PATH) ?: 'audio.mp4');
+            $extension = $pathInfo['extension'] ?? 'mp4';
+            $filename = 'audio.' . $extension;
+
+            // Call OpenAI Whisper API with multipart form data.
+            $whisperResponse = $this->httpClient->request('POST', 'https://api.openai.com/v1/audio/transcriptions', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $openaiApiKey,
+                ],
+                'multipart' => [
+                    [
+                        'name' => 'file',
+                        'contents' => fopen($realPath, 'r'),
+                        'filename' => $filename,
+                    ],
+                    [
+                        'name' => 'model',
+                        'contents' => 'whisper-1',
+                    ],
+                    [
+                        'name' => 'language',
+                        'contents' => 'es',
+                    ],
+                    [
+                        'name' => 'response_format',
+                        'contents' => 'text',
+                    ],
+                ],
+                'timeout' => 300,
+            ]);
+
+            // Clean up temp file.
+            @unlink($realPath);
+
+            $transcript = trim((string) $whisperResponse->getBody());
+
+            if (empty($transcript)) {
+                $this->logger->info('Whisper returned empty transcript for @url', [
+                    '@url' => $videoUrl,
+                ]);
+                return NULL;
+            }
+
+            $this->logger->info('Whisper transcription completed for @url (@len chars).', [
+                '@url' => $videoUrl,
+                '@len' => mb_strlen($transcript),
+            ]);
+
+            return $transcript;
+        }
+        catch (\Exception $e) {
+            $this->logger->error('Whisper transcription error for @url: @msg', [
+                '@url' => $videoUrl,
+                '@msg' => $e->getMessage(),
+            ]);
+            return NULL;
+        }
     }
 
     /**

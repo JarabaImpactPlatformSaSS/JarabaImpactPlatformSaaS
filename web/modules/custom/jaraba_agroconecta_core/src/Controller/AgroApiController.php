@@ -37,8 +37,8 @@ class AgroApiController extends ControllerBase
     public static function create(ContainerInterface $container): static
     {
         $instance = new static();
-        $instance->productService = $container->get('jaraba_agroconecta.product_service');
-        $instance->producerService = $container->get('jaraba_agroconecta.producer_service');
+        $instance->productService = $container->get('jaraba_agroconecta_core.product_service'); // AUDIT-CONS-N05: canonical prefix
+        $instance->producerService = $container->get('jaraba_agroconecta_core.producer_service'); // AUDIT-CONS-N05: canonical prefix
         return $instance;
     }
 
@@ -68,7 +68,8 @@ class AgroApiController extends ControllerBase
             'data' => array_map([$this, 'serializeProduct'], $products),
         ];
 
-        return new JsonResponse($data);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -107,7 +108,7 @@ class AgroApiController extends ControllerBase
             'data' => array_map([$this, 'serializeProducer'], $producers),
         ];
 
-        return new JsonResponse($data);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

@@ -24,7 +24,7 @@ use Drupal\jaraba_integrations\Service\OauthServerService;
  * SEGURIDAD:
  * - Validación de client_id + redirect_uri en authorize.
  * - Authorization code one-time-use, expira en 10 min.
- * - PKCE support pendiente (v2).
+ * - PKCE (RFC 7636) obligatorio para clientes públicos (SPA/mobile).
  */
 class OauthController extends ControllerBase {
 
@@ -53,6 +53,10 @@ class OauthController extends ControllerBase {
     $scope = $request->query->get('scope', 'read');
     $state = $request->query->get('state', '');
 
+    // AUDIT-SEC-N12: PKCE parameters (RFC 7636).
+    $code_challenge = $request->query->get('code_challenge', '');
+    $code_challenge_method = $request->query->get('code_challenge_method', 'S256');
+
     // Validar parámetros.
     if ($response_type !== 'code') {
       return [
@@ -68,6 +72,22 @@ class OauthController extends ControllerBase {
       ];
     }
 
+    // AUDIT-SEC-N12: PKCE obligatorio para clientes públicos (sin secret).
+    $isPublicClient = method_exists($client, 'isPublic') && $client->isPublic();
+    if ($isPublicClient && empty($code_challenge)) {
+      return new JsonResponse([
+        'error' => 'invalid_request',
+        'error_description' => 'PKCE code_challenge is required for public clients (RFC 7636).',
+      ], 400);
+    }
+
+    if (!empty($code_challenge) && !in_array($code_challenge_method, ['S256', 'plain'], TRUE)) {
+      return new JsonResponse([
+        'error' => 'invalid_request',
+        'error_description' => 'Unsupported code_challenge_method. Use S256 or plain.',
+      ], 400);
+    }
+
     $scopes = array_map('trim', explode(' ', $scope));
 
     // Si el usuario ya consintió (POST), generar code y redirigir.
@@ -75,7 +95,9 @@ class OauthController extends ControllerBase {
       $code = $this->oauthServer->generateAuthorizationCode(
         $client,
         (int) $this->currentUser()->id(),
-        $scopes
+        $scopes,
+        $code_challenge,
+        $code_challenge_method
       );
 
       $callback = $redirect_uri . '?code=' . urlencode($code);
@@ -117,15 +139,24 @@ class OauthController extends ControllerBase {
     $code = $request->request->get('code', '');
     $client_id = $request->request->get('client_id', '');
     $client_secret = $request->request->get('client_secret', '');
+    $code_verifier = $request->request->get('code_verifier', '');
 
-    if (empty($code) || empty($client_id) || empty($client_secret)) {
+    // AUDIT-SEC-N12: client_secret es opcional cuando code_verifier presente (PKCE).
+    if (empty($code) || empty($client_id)) {
       return new JsonResponse([
         'error' => 'invalid_request',
-        'error_description' => 'Missing required parameters: code, client_id, client_secret.',
+        'error_description' => 'Missing required parameters: code, client_id.',
       ], 400);
     }
 
-    $tokens = $this->oauthServer->exchangeCode($code, $client_id, $client_secret);
+    if (empty($client_secret) && empty($code_verifier)) {
+      return new JsonResponse([
+        'error' => 'invalid_request',
+        'error_description' => 'Either client_secret or code_verifier (PKCE) is required.',
+      ], 400);
+    }
+
+    $tokens = $this->oauthServer->exchangeCode($code, $client_id, $client_secret, $code_verifier);
 
     if (!$tokens) {
       return new JsonResponse([
@@ -134,7 +165,8 @@ class OauthController extends ControllerBase {
       ], 400);
     }
 
-    return new JsonResponse($tokens);
+    return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $tokens, 'meta' => ['timestamp' => time()]]);
   }
 
   /**

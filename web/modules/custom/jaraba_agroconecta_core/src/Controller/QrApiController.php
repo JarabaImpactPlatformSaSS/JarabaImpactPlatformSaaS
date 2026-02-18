@@ -43,7 +43,7 @@ class QrApiController extends ControllerBase implements ContainerInjectionInterf
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.qr_service'),
+            $container->get('jaraba_agroconecta_core.qr_service'), // AUDIT-CONS-N05: canonical prefix
             $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
@@ -121,7 +121,8 @@ class QrApiController extends ControllerBase implements ContainerInjectionInterf
 
         $result = $this->qrService->updateQrCode($qr_id, $data);
         if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => $result], 400);
         }
 
         return new JsonResponse(['qr' => $result]);
@@ -175,7 +176,7 @@ class QrApiController extends ControllerBase implements ContainerInjectionInterf
 
         $data = $this->qrService->getProducerDashboard($tenantId, $period);
 
-        return new JsonResponse($data);
+        return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     // ===================================================

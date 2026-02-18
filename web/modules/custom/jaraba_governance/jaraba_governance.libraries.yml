@@ -1,0 +1,7 @@
+dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/governance-dashboard.css: {}
+  dependencies:
+    - core/drupal

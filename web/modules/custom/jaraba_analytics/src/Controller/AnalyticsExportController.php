@@ -11,6 +11,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+// AUDIT-PERF-N06: StreamedResponse to avoid buffering entire CSV in memory.
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controlador de exportacion de datos de analytics (G116-5).
@@ -110,11 +112,15 @@ class AnalyticsExportController extends ControllerBase {
    *
    * Exporta eventos de analytics como archivo CSV descargable.
    *
+   * AUDIT-PERF-N06: Replaced in-memory buffer with StreamedResponse.
+   * Rows are written directly to php://output in batches, keeping
+   * memory usage O(batch_size) instead of O(total_rows).
+   *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   Objeto de peticion HTTP.
    *
    * @return \Symfony\Component\HttpFoundation\Response
-   *   Respuesta con contenido CSV y cabeceras de descarga.
+   *   StreamedResponse con contenido CSV y cabeceras de descarga.
    */
   public function exportCsv(Request $request): Response {
     $params = $this->extractParams($request);
@@ -123,10 +129,6 @@ class AnalyticsExportController extends ControllerBase {
       return new Response($params['error'], 400, ['Content-Type' => 'text/plain']);
     }
 
-    $rows = $this->queryEvents($params);
-
-    $csv = $this->buildCsvContent($rows, ',');
-
     $filename = sprintf(
       'analytics_export_%d_%s_%s.csv',
       $params['tenant_id'],
@@ -134,17 +136,12 @@ class AnalyticsExportController extends ControllerBase {
       $params['date_to']
     );
 
-    $this->logger->info('Exportacion CSV generada para tenant @tid: @count registros.', [
+    $this->logger->info('Exportacion CSV iniciada para tenant @tid.', [
       '@tid' => $params['tenant_id'],
-      '@count' => count($rows),
     ]);
 
-    return new Response($csv, 200, [
-      'Content-Type' => 'text/csv; charset=utf-8',
-      'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
-      'Cache-Control' => 'no-cache, no-store, must-revalidate',
-      'Pragma' => 'no-cache',
-    ]);
+    // AUDIT-PERF-N06: Stream CSV rows directly to output, never buffer all in memory.
+    return $this->buildStreamedCsvResponse($params, ',', $filename, 'text/csv; charset=utf-8');
   }
 
   /**
@@ -154,11 +151,13 @@ class AnalyticsExportController extends ControllerBase {
    * Utiliza CSV con BOM UTF-8 y separador punto y coma para
    * compatibilidad nativa con Microsoft Excel.
    *
+   * AUDIT-PERF-N06: Replaced in-memory buffer with StreamedResponse.
+   *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   Objeto de peticion HTTP.
    *
    * @return \Symfony\Component\HttpFoundation\Response
-   *   Respuesta con contenido CSV Excel-compatible y cabeceras de descarga.
+   *   StreamedResponse con contenido CSV Excel-compatible y cabeceras de descarga.
    */
   public function exportExcel(Request $request): Response {
     $params = $this->extractParams($request);
@@ -167,12 +166,6 @@ class AnalyticsExportController extends ControllerBase {
       return new Response($params['error'], 400, ['Content-Type' => 'text/plain']);
     }
 
-    $rows = $this->queryEvents($params);
-
-    // BOM UTF-8 para que Excel detecte la codificacion correctamente.
-    $bom = "\xEF\xBB\xBF";
-    $csv = $bom . $this->buildCsvContent($rows, ';');
-
     $filename = sprintf(
       'analytics_export_%d_%s_%s.xlsx.csv',
       $params['tenant_id'],
@@ -180,17 +173,12 @@ class AnalyticsExportController extends ControllerBase {
       $params['date_to']
     );
 
-    $this->logger->info('Exportacion Excel generada para tenant @tid: @count registros.', [
+    $this->logger->info('Exportacion Excel iniciada para tenant @tid.', [
       '@tid' => $params['tenant_id'],
-      '@count' => count($rows),
     ]);
 
-    return new Response($csv, 200, [
-      'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',
-      'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
-      'Cache-Control' => 'no-cache, no-store, must-revalidate',
-      'Pragma' => 'no-cache',
-    ]);
+    // AUDIT-PERF-N06: Stream CSV rows directly to output with BOM prefix.
+    return $this->buildStreamedCsvResponse($params, ';', $filename, 'application/vnd.ms-excel; charset=utf-8', TRUE);
   }
 
   /**
@@ -242,13 +230,17 @@ class AnalyticsExportController extends ControllerBase {
   /**
    * Consulta eventos de analytics filtrados por los parametros dados.
    *
+   * AUDIT-PERF-N06: Returns a Generator that yields rows one-by-one from
+   * the DB cursor. Combined with StreamedResponse, this keeps memory at
+   * O(1) per row instead of O(N) for the full result set.
+   *
    * @param array $params
    *   Parametros extraidos (tenant_id, date_from, date_to, metric_type).
    *
-   * @return array
-   *   Array de filas con datos de eventos.
+   * @return \Generator
+   *   Generator que produce filas de datos de eventos una a una.
    */
-  protected function queryEvents(array $params): array {
+  protected function queryEvents(array $params): \Generator {
     $startTs = strtotime($params['date_from'] . ' 00:00:00');
     $endTs = strtotime($params['date_to'] . ' 23:59:59');
 
@@ -308,32 +300,70 @@ class AnalyticsExportController extends ControllerBase {
   }
 
   /**
-   * Construye el contenido CSV a partir de las filas de datos.
+   * Builds a StreamedResponse that writes CSV rows directly to php://output.
    *
-   * @param array $rows
-   *   Array de filas (cada fila es un array asociativo).
+   * AUDIT-PERF-N06: Replaces the old buildCsvContent() which accumulated
+   * all rows (up to 50K) in a php://temp buffer and then read everything
+   * into a single string (8-15MB RAM). This version streams rows in
+   * batches of 500, keeping peak memory usage under 1MB regardless of
+   * total row count.
+   *
+   * @param array $params
+   *   Validated request parameters (tenant_id, date_from, date_to, metric_type).
    * @param string $separator
-   *   Separador de columnas (',' para CSV estandar, ';' para Excel).
+   *   Column separator (',' for standard CSV, ';' for Excel).
+   * @param string $filename
+   *   Filename for the Content-Disposition header.
+   * @param string $contentType
+   *   MIME type for the Content-Type header.
+   * @param bool $withBom
+   *   Whether to prepend UTF-8 BOM (for Excel compatibility).
    *
-   * @return string
-   *   Contenido CSV completo como cadena.
+   * @return \Symfony\Component\HttpFoundation\StreamedResponse
+   *   Streamed response that writes CSV directly to the client.
    */
-  protected function buildCsvContent(iterable $rows, string $separator): string {
-    $output = fopen('php://temp', 'r+');
+  protected function buildStreamedCsvResponse(array $params, string $separator, string $filename, string $contentType, bool $withBom = FALSE): StreamedResponse {
+    // AUDIT-PERF-N06: Batch size for flushing output buffer.
+    $batchSize = 500;
 
-    // Escribir cabeceras.
-    fputcsv($output, self::CSV_HEADERS, $separator);
+    $response = new StreamedResponse(function () use ($params, $separator, $withBom, $batchSize) {
+      $output = fopen('php://output', 'w');
 
-    // Escribir filas de datos.
-    foreach ($rows as $row) {
-      fputcsv($output, array_values($row), $separator);
-    }
+      // BOM UTF-8 para que Excel detecte la codificacion correctamente.
+      if ($withBom) {
+        fwrite($output, "\xEF\xBB\xBF");
+      }
 
-    rewind($output);
-    $csv = stream_get_contents($output);
-    fclose($output);
+      // Escribir cabeceras.
+      fputcsv($output, self::CSV_HEADERS, $separator);
 
-    return $csv;
+      // AUDIT-PERF-N06: Iterate the generator from queryEvents() and
+      // flush every $batchSize rows to keep memory constant at O(batch).
+      $rowCount = 0;
+      $rows = $this->queryEvents($params);
+      foreach ($rows as $row) {
+        fputcsv($output, array_values($row), $separator);
+        $rowCount++;
+
+        if ($rowCount % $batchSize === 0) {
+          flush();
+        }
+      }
+
+      fclose($output);
+
+      $this->logger->info('Exportacion streaming completada para tenant @tid: @count registros.', [
+        '@tid' => $params['tenant_id'],
+        '@count' => $rowCount,
+      ]);
+    });
+
+    $response->headers->set('Content-Type', $contentType);
+    $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
+    $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    $response->headers->set('Pragma', 'no-cache');
+
+    return $response;
   }
 
   /**

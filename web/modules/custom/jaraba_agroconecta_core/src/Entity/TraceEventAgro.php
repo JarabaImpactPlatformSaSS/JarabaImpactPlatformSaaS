@@ -145,6 +145,13 @@ class TraceEventAgro extends ContentEntityBase implements EntityChangedInterface
             ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -3])
             ->setDisplayConfigurable('form', TRUE);
 
+        $fields['shipment_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Envío Relacionado'))
+            ->setSetting('target_type', 'agro_shipment')
+            ->setDescription(t('Vínculo con el envío físico en caso de eventos de tipo Envío.'))
+            ->setDisplayOptions('form', ['type' => 'entity_reference_autocomplete', 'weight' => -2])
+            ->setDisplayConfigurable('form', TRUE);
+
         // Hash encadenado para inmutabilidad.
         $fields['event_hash'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Hash del evento'))

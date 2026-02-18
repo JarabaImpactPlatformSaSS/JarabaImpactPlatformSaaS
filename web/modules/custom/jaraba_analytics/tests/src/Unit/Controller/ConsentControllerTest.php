@@ -36,7 +36,7 @@ class ConsentControllerTest extends UnitTestCase {
    * Tests status endpoint returns banner_required when no visitor_id.
    */
   public function testStatusWithNoVisitorId(): void {
-    $request = Request::create('/api/consent/status', 'GET');
+    $request = Request::create('/api/v1/consent/status', 'GET');
 
     $response = $this->controller->status($request);
     $body = json_decode($response->getContent(), TRUE);
@@ -56,7 +56,7 @@ class ConsentControllerTest extends UnitTestCase {
       ->with('visitor_abc')
       ->willReturn(NULL);
 
-    $request = Request::create('/api/consent/status', 'GET');
+    $request = Request::create('/api/v1/consent/status', 'GET');
     $request->cookies->set('jaraba_visitor_id', 'visitor_abc');
 
     $response = $this->controller->status($request);
@@ -70,7 +70,7 @@ class ConsentControllerTest extends UnitTestCase {
    * Tests grant endpoint returns error on invalid JSON.
    */
   public function testGrantWithInvalidJson(): void {
-    $request = Request::create('/api/consent/grant', 'POST', [], [], [], [], '');
+    $request = Request::create('/api/v1/consent/grant', 'POST', [], [], [], [], '');
 
     $response = $this->controller->grant($request);
     $body = json_decode($response->getContent(), TRUE);
@@ -83,7 +83,7 @@ class ConsentControllerTest extends UnitTestCase {
    * Tests revoke endpoint returns error when no visitor_id.
    */
   public function testRevokeWithNoVisitorId(): void {
-    $request = Request::create('/api/consent/revoke', 'POST');
+    $request = Request::create('/api/v1/consent/revoke', 'POST');
 
     $response = $this->controller->revoke($request);
     $body = json_decode($response->getContent(), TRUE);
@@ -100,7 +100,7 @@ class ConsentControllerTest extends UnitTestCase {
       ->method('revokeConsent')
       ->with('visitor_xyz');
 
-    $request = Request::create('/api/consent/revoke', 'POST');
+    $request = Request::create('/api/v1/consent/revoke', 'POST');
     $request->cookies->set('jaraba_visitor_id', 'visitor_xyz');
 
     $response = $this->controller->revoke($request);

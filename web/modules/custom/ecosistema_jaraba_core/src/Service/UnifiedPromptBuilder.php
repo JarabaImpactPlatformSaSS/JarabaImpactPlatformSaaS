@@ -9,6 +9,7 @@ use Drupal\jaraba_skills\Service\SkillManager;
 use Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager;
 use Drupal\jaraba_tenant_knowledge\Service\KnowledgeIndexerService;
 use Psr\Log\LoggerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * SERVICIO CONSTRUCTOR DE PROMPT UNIFICADO
@@ -47,6 +48,7 @@ class UnifiedPromptBuilder
         protected TenantKnowledgeManager $knowledgeManager,
         protected KnowledgeIndexerService $knowledgeIndexer,
         protected LoggerInterface $logger,
+        protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
     }
 
@@ -245,8 +247,8 @@ class UnifiedPromptBuilder
      */
     protected function getCurrentTenantId(): ?int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        if ($this->tenantContext !== NULL) {
+            $tenantContext = $this->tenantContext;
             $tenant = $tenantContext->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : NULL;
         }

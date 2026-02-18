@@ -100,7 +100,8 @@ class SitemapController extends ControllerBase
         try {
             $page = $this->entityTypeManager()->getStorage('page_content')->load($id);
             if (!$page) {
-                return new JsonResponse(['error' => 'Page not found'], 404);
+                return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Page not found']], 404);
             }
 
             /** @var \Drupal\jaraba_page_builder\Service\SchemaOrgService $schemaOrgService */
@@ -159,7 +160,7 @@ class SitemapController extends ControllerBase
         try {
             $page = $this->entityTypeManager()->getStorage('page_content')->load($id);
             if (!$page) {
-                return new JsonResponse(['error' => 'Page not found'], 404);
+                return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Page not found']], 404);
             }
 
             $baseUrl = $request->getSchemeAndHttpHost();
@@ -197,7 +198,7 @@ class SitemapController extends ControllerBase
             ]);
         }
         catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $e->getMessage()]], 500);
         }
     }
 

@@ -193,7 +193,75 @@ class QueryAnalyticsService
             '@tenant' => $tenantId ?? 'platform',
         ]);
 
-        // @todo Notificar al admin del tenant via ECA/Brevo
+        // AUDIT-TODO-RESOLVED: Notify tenant admin via Drupal mail when gap threshold is hit.
+        try {
+            $adminEmail = NULL;
+
+            // Resolve tenant admin email.
+            if ($tenantId !== NULL) {
+                $tenantStorage = \Drupal::entityTypeManager()->getStorage('group');
+                $tenant = $tenantStorage->load($tenantId);
+                if ($tenant) {
+                    // Get the tenant owner/admin.
+                    $adminUser = $tenant->getOwner();
+                    if ($adminUser && $adminUser->getEmail()) {
+                        $adminEmail = $adminUser->getEmail();
+                    }
+                }
+            }
+
+            // Fallback to site mail if no tenant admin found.
+            if (empty($adminEmail)) {
+                $adminEmail = \Drupal::config('system.site')->get('mail');
+            }
+
+            if (!empty($adminEmail)) {
+                $mailManager = \Drupal::service('plugin.manager.mail');
+                $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+
+                $params = [
+                    'subject' => sprintf(
+                        'Gap de contenido detectado en Knowledge Base (x%d en 24h)',
+                        $count
+                    ),
+                    'body' => sprintf(
+                        "Se ha detectado un gap de contenido recurrente en la Knowledge Base.\n\n"
+                        . "Pregunta ejemplo: %s\n"
+                        . "Frecuencia: %d veces en las ultimas 24 horas\n"
+                        . "Tenant: %s\n\n"
+                        . "Se recomienda crear contenido que responda a esta consulta para mejorar "
+                        . "la experiencia de los usuarios.\n\n"
+                        . "-- Jaraba Impact Platform (notificacion automatica)",
+                        $exampleQuery,
+                        $count,
+                        $tenantId !== NULL ? (string) $tenantId : 'plataforma global'
+                    ),
+                ];
+
+                $mailManager->mail(
+                    'jaraba_rag',
+                    'content_gap_alert',
+                    $adminEmail,
+                    $langcode,
+                    $params
+                );
+
+                $this->loggerFactory->get('jaraba_rag')->info(
+                    'Gap alert email sent to @email for query "@query" (tenant: @tenant).',
+                    [
+                        '@email' => $adminEmail,
+                        '@query' => mb_substr($exampleQuery, 0, 100),
+                        '@tenant' => $tenantId ?? 'platform',
+                    ]
+                );
+            }
+        }
+        catch (\Exception $e) {
+            $this->loggerFactory->get('jaraba_rag')->error(
+                'Failed to send gap alert notification: @msg',
+                ['@msg' => $e->getMessage()]
+            );
+        }
     }
 
     /**

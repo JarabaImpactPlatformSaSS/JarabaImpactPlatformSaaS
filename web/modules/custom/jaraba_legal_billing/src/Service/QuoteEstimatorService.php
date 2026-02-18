@@ -6,6 +6,7 @@ namespace Drupal\jaraba_legal_billing\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -23,6 +24,7 @@ class QuoteEstimatorService {
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly ConfigFactoryInterface $configFactory,
     protected readonly LoggerInterface $logger,
+    protected readonly ClientInterface $httpClient,
   ) {}
 
   /**
@@ -54,25 +56,102 @@ class QuoteEstimatorService {
       // Construir prompt para Gemini.
       $prompt = $this->buildPrompt($triageData, $catalog);
 
-      // Llamar a Gemini 2.0 Flash API.
-      // TODO: Integrar con el GeminiApiClient del kernel.
-      // $response = $geminiClient->generate($prompt, [
-      //   'model' => 'gemini-2.0-flash-001',
-      //   'temperature' => 0.2,
-      //   'response_mime_type' => 'application/json',
-      //   'response_schema' => $this->getResponseSchema(),
-      // ]);
+      // AUDIT-TODO-RESOLVED: Real Gemini API integration for quote estimation.
+      $geminiApiKey = $config->get('gemini_api_key')
+        ?: getenv('GEMINI_API_KEY');
 
-      $this->logger->info('Quote estimation requested for provider @pid (placeholder).', [
-        '@pid' => $providerId,
+      if (empty($geminiApiKey)) {
+        $this->logger->warning('Gemini API key not configured for quote estimation.');
+        return ['error' => 'AI estimator API key not configured.'];
+      }
+
+      $geminiModel = $config->get('gemini_model') ?: 'gemini-2.0-flash-001';
+      $apiUrl = sprintf(
+        'https://generativelanguage.googleapis.com/v1/models/%s:generateContent?key=%s',
+        $geminiModel,
+        $geminiApiKey
+      );
+
+      $requestPayload = [
+        'contents' => [
+          [
+            'parts' => [
+              ['text' => $prompt],
+            ],
+          ],
+        ],
+        'generationConfig' => [
+          'temperature' => 0.2,
+          'maxOutputTokens' => 2048,
+          'responseMimeType' => 'application/json',
+        ],
+      ];
+
+      $geminiResponse = $this->httpClient->request('POST', $apiUrl, [
+        'headers' => [
+          'Content-Type' => 'application/json',
+        ],
+        'json' => $requestPayload,
+        'timeout' => 60,
       ]);
 
-      // Placeholder response structure.
+      $geminiData = json_decode((string) $geminiResponse->getBody(), TRUE);
+      $generatedText = $geminiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+      if (empty($generatedText)) {
+        $this->logger->warning('Empty response from Gemini for provider @pid.', [
+          '@pid' => $providerId,
+        ]);
+        return ['error' => 'AI returned empty estimation.'];
+      }
+
+      // Parse the JSON response from the LLM.
+      $estimationData = json_decode($generatedText, TRUE);
+      if (json_last_error() !== JSON_ERROR_NONE || empty($estimationData['lines'])) {
+        $this->logger->warning('Invalid JSON from Gemini for provider @pid: @raw', [
+          '@pid' => $providerId,
+          '@raw' => mb_substr($generatedText, 0, 500),
+        ]);
+        return ['error' => 'AI returned invalid estimation format.'];
+      }
+
+      // Build quote lines from catalog data and AI multipliers.
+      $quoteLines = [];
+      $catalogById = array_column($catalog, NULL, 'id');
+
+      foreach ($estimationData['lines'] as $line) {
+        $catalogItemId = $line['catalog_item_id'] ?? NULL;
+        $multiplier = (float) ($line['complexity_multiplier'] ?? 1.0);
+        $multiplier = max(0.8, min(2.5, $multiplier));
+
+        if ($catalogItemId && isset($catalogById[$catalogItemId])) {
+          $item = $catalogById[$catalogItemId];
+          $basePrice = $item['base_price'] > 0 ? $item['base_price'] : $item['price_min'];
+          $estimatedPrice = round($basePrice * $multiplier, 2);
+
+          $quoteLines[] = [
+            'catalog_item_id' => $catalogItemId,
+            'name' => $item['name'],
+            'complexity_multiplier' => $multiplier,
+            'base_price' => $basePrice,
+            'estimated_price' => $estimatedPrice,
+            'pricing_model' => $item['pricing_model'],
+            'notes' => $line['notes'] ?? '',
+          ];
+        }
+      }
+
+      $this->logger->info('Quote estimation completed for provider @pid: @count lines.', [
+        '@pid' => $providerId,
+        '@count' => count($quoteLines),
+      ]);
+
       return [
-        'status' => 'pending_integration',
+        'status' => 'estimated',
         'catalog_count' => count($catalog),
         'triage_area' => $triageData['area_legal'] ?? 'unknown',
-        'lines' => [],
+        'lines' => $quoteLines,
+        'total_estimated' => array_sum(array_column($quoteLines, 'estimated_price')),
       ];
     }
     catch (\Exception $e) {

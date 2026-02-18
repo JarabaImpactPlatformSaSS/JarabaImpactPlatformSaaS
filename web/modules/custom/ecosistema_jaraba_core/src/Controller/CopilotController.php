@@ -40,7 +40,7 @@ class CopilotController extends ControllerBase
     }
 
     /**
-     * GET /api/copilot/context - Obtener contexto de página.
+     * GET /api/v1/copilot/context - Obtener contexto de página. (AUDIT-CONS-N07)
      */
     public function getContext(): JsonResponse
     {
@@ -49,7 +49,7 @@ class CopilotController extends ControllerBase
     }
 
     /**
-     * POST /api/copilot/generate - Generar contenido con IA.
+     * POST /api/v1/copilot/generate - Generar contenido con IA. (AUDIT-CONS-N07)
      */
     public function generateContent(Request $request): JsonResponse
     {
@@ -67,7 +67,7 @@ class CopilotController extends ControllerBase
     }
 
     /**
-     * GET /api/copilot/autocomplete/{field} - Autocompletado inteligente.
+     * GET /api/v1/copilot/autocomplete/{field} - Autocompletado inteligente. (AUDIT-CONS-N07)
      */
     public function autocomplete(Request $request, string $field): JsonResponse
     {

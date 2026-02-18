@@ -114,7 +114,7 @@
   <script>
     window.onload = function() {
       const ui = SwaggerUIBundle({
-        url: "/api/openapi.yaml",
+        url: "/api/v1/openapi.yaml", {# AUDIT-CONS-N07: Added API versioning prefix. #}
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

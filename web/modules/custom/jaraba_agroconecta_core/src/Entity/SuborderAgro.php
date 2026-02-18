@@ -260,6 +260,17 @@ class SuborderAgro extends ContentEntityBase implements EntityChangedInterface
     }
 
     /**
+     * Obtiene los envíos asociados a este sub-pedido.
+     *
+     * @return \Drupal\jaraba_agroconecta_core\Entity\AgroShipmentInterface[]
+     */
+    public function getShipments(): array {
+      return \Drupal::entityTypeManager()->getStorage('agro_shipment')->loadByProperties([
+        'sub_order_id' => $this->id(),
+      ]);
+    }
+
+    /**
      * Calcula la comisión y el payout del productor.
      *
      * @param float $commissionRate

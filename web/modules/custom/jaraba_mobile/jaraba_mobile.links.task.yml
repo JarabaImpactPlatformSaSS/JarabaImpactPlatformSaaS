@@ -1,0 +1,4 @@
+jaraba_mobile.settings:
+  title: 'Settings'
+  route_name: jaraba_mobile.settings
+  base_route: jaraba_mobile.settings

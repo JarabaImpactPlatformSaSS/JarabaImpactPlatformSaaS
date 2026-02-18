@@ -94,6 +94,11 @@ class NotificationService {
   public function sendBulk(array $userIds, string $templateMachineName, array $variables = []): int {
     $success_count = 0;
 
+    // AUDIT-PERF-N05: Pre-load template once before the loop so that
+    // send() → loadTemplate() hits the static cache instead of querying
+    // the database for every recipient.
+    $this->loadTemplate($templateMachineName);
+
     foreach ($userIds as $userId) {
       if ($this->send((int) $userId, $templateMachineName, $variables)) {
         $success_count++;
@@ -268,8 +273,17 @@ class NotificationService {
 
   /**
    * Carga una plantilla de notificacion por machine_name.
+   *
+   * // AUDIT-PERF-N05: Static cache prevents repeated DB queries for the same
+   * // template within a single request (e.g. during sendBulk iterations).
    */
   protected function loadTemplate(string $machineName) {
+    // AUDIT-PERF-N05: Static per-request cache keyed by machine_name.
+    static $cache = [];
+    if (array_key_exists($machineName, $cache)) {
+      return $cache[$machineName];
+    }
+
     $storage = $this->entityTypeManager->getStorage('comercio_notification_template');
 
     $ids = $storage->getQuery()
@@ -279,10 +293,12 @@ class NotificationService {
       ->execute();
 
     if (!$ids) {
+      $cache[$machineName] = NULL;
       return NULL;
     }
 
-    return $storage->load(reset($ids));
+    $cache[$machineName] = $storage->load(reset($ids));
+    return $cache[$machineName];
   }
 
   /**

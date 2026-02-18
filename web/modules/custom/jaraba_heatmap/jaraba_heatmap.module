@@ -87,6 +87,7 @@ function jaraba_heatmap_page_attachments(array &$attachments) {
   // Obtener contexto de tenant para multi-tenancy.
   $tenant_id = NULL;
   if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+    // @todo CONS-N10: Move to service class for proper DI.
     $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
     $tenant = $tenant_context->getCurrentTenant();
     if ($tenant) {

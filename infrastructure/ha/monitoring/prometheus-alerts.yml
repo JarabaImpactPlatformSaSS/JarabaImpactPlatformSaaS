@@ -1,0 +1,310 @@
+# =============================================================================
+# Jaraba Impact Platform - Prometheus Alert Rules
+# N3 Enterprise Class - Doc 197 - High Availability Infrastructure
+# =============================================================================
+
+groups:
+  # ---------------------------------------------------------------------------
+  # Galera Cluster Alerts
+  # ---------------------------------------------------------------------------
+  - name: galera_cluster
+    rules:
+      - alert: GaleraClusterSizeCritical
+        expr: mysql_global_status_wsrep_cluster_size < 3
+        for: 1m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Galera cluster has lost a node"
+          description: "Galera cluster size is {{ $value }} (expected 3). Node may have crashed or lost network connectivity. Check wsrep_local_state on all nodes."
+          runbook_url: "https://wiki.jaraba.io/runbooks/galera-node-down"
+
+      - alert: GaleraClusterSizeWarning
+        expr: mysql_global_status_wsrep_cluster_size < 3
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Galera cluster degraded for 5+ minutes"
+          description: "Cluster has been running with {{ $value }} nodes for over 5 minutes. IST/SST may be needed."
+
+      - alert: GaleraNodeNotReady
+        expr: mysql_global_status_wsrep_ready != 1
+        for: 30s
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Galera node not ready on {{ $labels.instance }}"
+          description: "wsrep_ready=OFF means this node cannot process queries. Investigate wsrep_local_state_comment."
+
+      - alert: GaleraFlowControlPaused
+        expr: rate(mysql_global_status_wsrep_flow_control_paused_ns[5m]) / 1e9 > 0.3
+        for: 2m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Galera flow control active on {{ $labels.instance }}"
+          description: "Node is paused {{ $value | humanizePercentage }} of the time due to flow control. This indicates a slow node is throttling the cluster."
+
+      - alert: GaleraReplicationLatencyHigh
+        expr: mysql_global_status_wsrep_local_recv_queue_avg > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Galera replication queue growing on {{ $labels.instance }}"
+          description: "Average receive queue is {{ $value }}. Node is falling behind the cluster."
+
+  # ---------------------------------------------------------------------------
+  # ProxySQL Alerts
+  # ---------------------------------------------------------------------------
+  - name: proxysql
+    rules:
+      - alert: ProxySQLConnectionPoolHigh
+        expr: (proxysql_connection_pool_conn_used / proxysql_connection_pool_conn_max) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "ProxySQL connection pool > 80% on {{ $labels.instance }}"
+          description: "Connection pool utilisation is {{ $value | humanize }}%. Approaching exhaustion. Consider increasing max_connections or investigating slow queries."
+
+      - alert: ProxySQLConnectionPoolCritical
+        expr: (proxysql_connection_pool_conn_used / proxysql_connection_pool_conn_max) * 100 > 95
+        for: 1m
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "ProxySQL connection pool > 95% on {{ $labels.instance }}"
+          description: "Connection pool at {{ $value | humanize }}%. New connections will be rejected imminently."
+
+      - alert: ProxySQLBackendDown
+        expr: proxysql_connection_pool_status != 1
+        for: 30s
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "ProxySQL backend server offline"
+          description: "Backend {{ $labels.hostgroup }}/{{ $labels.endpoint }} is in status {{ $value }}. ProxySQL has marked it unhealthy."
+
+      - alert: ProxySQLQueryErrorsHigh
+        expr: rate(proxysql_command_counter_total{command="error"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "ProxySQL query error rate elevated"
+          description: "{{ $value | humanize }} errors/sec over 5 minutes on {{ $labels.instance }}."
+
+  # ---------------------------------------------------------------------------
+  # HAProxy Alerts
+  # ---------------------------------------------------------------------------
+  - name: haproxy
+    rules:
+      - alert: HAProxyBackendDown
+        expr: haproxy_backend_active_servers{backend="drupal_servers"} < 2
+        for: 30s
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "HAProxy: fewer than 2 active Drupal backends"
+          description: "Only {{ $value }} backend(s) active in drupal_servers. Service degraded or at risk of outage."
+
+      - alert: HAProxyBackendAllDown
+        expr: haproxy_backend_active_servers{backend="drupal_servers"} == 0
+        for: 10s
+        labels:
+          severity: critical
+          team: infrastructure
+          pager: "true"
+        annotations:
+          summary: "OUTAGE: All HAProxy backends DOWN"
+          description: "Zero active backends in drupal_servers. Complete service outage."
+
+      - alert: HAProxyHighErrorRate
+        expr: (rate(haproxy_backend_http_responses_total{code=~"5.."}[5m]) / rate(haproxy_backend_http_responses_total[5m])) * 100 > 1
+        for: 2m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "HAProxy 5xx error rate > 1%"
+          description: "Error rate is {{ $value | humanize }}% over 5 minutes on backend {{ $labels.backend }}."
+
+      - alert: HAProxyHighLatencyP95
+        expr: haproxy_backend_http_response_time_average_seconds{backend="drupal_servers"} > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "HAProxy response time > 2s"
+          description: "Average backend response time is {{ $value | humanize }}s on {{ $labels.backend }}. Investigate slow application or database queries."
+
+      - alert: HAProxyConnectionQueueHigh
+        expr: haproxy_backend_current_queue{backend="drupal_servers"} > 50
+        for: 1m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "HAProxy connection queue building up"
+          description: "{{ $value }} connections queued for backend {{ $labels.backend }}. Backends may be overloaded."
+
+  # ---------------------------------------------------------------------------
+  # Redis Sentinel Alerts
+  # ---------------------------------------------------------------------------
+  - name: redis_sentinel
+    rules:
+      - alert: RedisSentinelFailover
+        expr: changes(redis_sentinel_master_ok_sentinels[5m]) > 0
+        for: 0s
+        labels:
+          severity: critical
+          team: infrastructure
+        annotations:
+          summary: "Redis Sentinel failover detected"
+          description: "The Sentinel quorum status changed in the last 5 minutes. A failover may have occurred or be in progress. Verify master identity."
+
+      - alert: RedisMasterDown
+        expr: redis_up{role="master"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: infrastructure
+          pager: "true"
+        annotations:
+          summary: "Redis master is DOWN"
+          description: "Redis master on {{ $labels.instance }} is unreachable. Sentinel should trigger automatic failover."
+
+      - alert: RedisReplicaDown
+        expr: redis_up{role="slave"} == 0
+        for: 1m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Redis replica down on {{ $labels.instance }}"
+          description: "A Redis replica is unreachable. Failover capacity is reduced."
+
+      - alert: RedisMemoryHigh
+        expr: (redis_memory_used_bytes / redis_memory_max_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Redis memory usage > 85%"
+          description: "Redis on {{ $labels.instance }} is using {{ $value | humanize }}% of maxmemory. LRU eviction is active."
+
+      - alert: RedisReplicationLag
+        expr: redis_replication_offset_diff > 10000
+        for: 2m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Redis replication lag detected"
+          description: "Replica {{ $labels.instance }} is {{ $value }} bytes behind master."
+
+  # ---------------------------------------------------------------------------
+  # Application-Level Alerts
+  # ---------------------------------------------------------------------------
+  - name: application
+    rules:
+      - alert: HighResponseTimeP95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="drupal"}[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: application
+        annotations:
+          summary: "P95 response time > 2s"
+          description: "95th percentile response time is {{ $value | humanize }}s over the last 5 minutes."
+
+      - alert: HighResponseTimeP99
+        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job="drupal"}[5m])) by (le)) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: application
+        annotations:
+          summary: "P99 response time > 5s"
+          description: "99th percentile response time is {{ $value | humanize }}s. Users are experiencing severe latency."
+
+      - alert: HighErrorRate
+        expr: (sum(rate(http_requests_total{job="drupal",status=~"5.."}[5m])) / sum(rate(http_requests_total{job="drupal"}[5m]))) * 100 > 1
+        for: 2m
+        labels:
+          severity: warning
+          team: application
+        annotations:
+          summary: "Application error rate > 1%"
+          description: "HTTP 5xx error rate is {{ $value | humanize }}% across all Drupal instances."
+
+      - alert: CriticalErrorRate
+        expr: (sum(rate(http_requests_total{job="drupal",status=~"5.."}[5m])) / sum(rate(http_requests_total{job="drupal"}[5m]))) * 100 > 5
+        for: 1m
+        labels:
+          severity: critical
+          team: application
+          pager: "true"
+        annotations:
+          summary: "Application error rate > 5%"
+          description: "HTTP 5xx error rate is {{ $value | humanize }}%. Possible outage condition."
+
+  # ---------------------------------------------------------------------------
+  # Infrastructure / Disk Alerts
+  # ---------------------------------------------------------------------------
+  - name: infrastructure
+    rules:
+      - alert: DiskUsageHigh
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Disk usage > 85% on {{ $labels.instance }}"
+          description: "Root filesystem is {{ $value | humanize }}% full. Clean up logs, old deployments, or expand volume."
+
+      - alert: DiskUsageCritical
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          team: infrastructure
+          pager: "true"
+        annotations:
+          summary: "Disk usage > 95% on {{ $labels.instance }}"
+          description: "Root filesystem at {{ $value | humanize }}%. Imminent risk of service failure."
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "CPU usage > 85% on {{ $labels.instance }}"
+          description: "Sustained high CPU at {{ $value | humanize }}% for 10+ minutes."
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "Memory usage > 90% on {{ $labels.instance }}"
+          description: "Available memory critically low at {{ $value | humanize }}% used."

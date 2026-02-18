@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Connector marketplace page template.
+ *
+ * Available variables:
+ * - connectors: Array of certified connector data arrays.
+ * - total: Total number of certified connectors.
+ */
+#}
+<div class="connector-marketplace">
+  <div class="connector-marketplace__header">
+    <h2 class="connector-marketplace__title">{{ 'Connector Marketplace'|t }}</h2>
+    <p class="connector-marketplace__subtitle">
+      {{ 'Browse and install certified connectors to extend your platform.'|t }}
+      <span class="connector-marketplace__count">{{ '%count connectors available'|t({'%count': total}) }}</span>
+    </p>
+  </div>
+
+  <div class="connector-marketplace__filters">
+    <input
+      type="text"
+      class="connector-marketplace__search"
+      placeholder="{{ 'Search connectors...'|t }}"
+      aria-label="{{ 'Search connectors'|t }}"
+    />
+    <select class="connector-marketplace__category-filter" aria-label="{{ 'Filter by category'|t }}">
+      <option value="">{{ 'All Categories'|t }}</option>
+      <option value="analytics">{{ 'Analytics'|t }}</option>
+      <option value="marketing">{{ 'Marketing'|t }}</option>
+      <option value="crm">{{ 'CRM'|t }}</option>
+      <option value="ecommerce">{{ 'E-Commerce'|t }}</option>
+      <option value="communication">{{ 'Communication'|t }}</option>
+      <option value="productivity">{{ 'Productivity'|t }}</option>
+      <option value="payment">{{ 'Payment'|t }}</option>
+      <option value="ai">{{ 'AI'|t }}</option>
+      <option value="custom">{{ 'Custom'|t }}</option>
+    </select>
+  </div>
+
+  <div class="connector-marketplace__grid">
+    {% if connectors is not empty %}
+      {% for connector in connectors %}
+        {% include '@jaraba_connector_sdk/connector-tile.html.twig' with {connector: connector} only %}
+      {% endfor %}
+    {% else %}
+      <div class="connector-marketplace__empty">
+        <p>{{ 'No certified connectors available yet. Check back soon!'|t }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>

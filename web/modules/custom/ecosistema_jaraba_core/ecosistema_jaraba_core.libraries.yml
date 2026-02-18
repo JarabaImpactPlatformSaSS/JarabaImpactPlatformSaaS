@@ -10,6 +10,17 @@
 # ============================================================================
 
 # ---------------------------------------------------------------------------
+# AUDIT-PERF-N12: Canonical Chart.js CDN — single source of truth
+# ---------------------------------------------------------------------------
+# Todos los módulos deben declarar ecosistema_jaraba_core/chartjs como
+# dependencia en vez de incluir la URL del CDN directamente.
+
+chartjs:
+  version: 4.4.1
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true, attributes: { crossorigin: anonymous, integrity: false } }
+
+# ---------------------------------------------------------------------------
 # BIBLIOTECA PRINCIPAL DEL MÓDULO
 # ---------------------------------------------------------------------------
 # Incluye los estilos base compilados desde SCSS.
@@ -114,7 +125,7 @@ health-dashboard:
 # ---------------------------------------------------------------------------
 # Dashboard de optimización de costes con métricas por tenant,
 # proyecciones y recomendaciones de ahorro.
-# Incluye Chart.js para gráficos de tendencias de costes IA.
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 
 finops-dashboard:
   version: 1.x
@@ -122,18 +133,18 @@ finops-dashboard:
     theme:
       css/ecosistema-jaraba-core.css: {}
   js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
     js/finops-ai-charts.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
+    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DEL TENANT SELF-SERVICE DASHBOARD
 # ---------------------------------------------------------------------------
 # Dashboard self-service para tenants con gráficos de tendencias.
-# Incluye Chart.js para visualización de datos.
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 
 tenant-dashboard:
   version: 1.x
@@ -141,12 +152,12 @@ tenant-dashboard:
     theme:
       css/ecosistema-jaraba-core.css: {}
   js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
     js/tenant-dashboard-charts.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
+    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DEL MARKETPLACE
@@ -178,30 +189,28 @@ demo-landing:
 # BIBLIOTECA DE DEMO DASHBOARD
 # ---------------------------------------------------------------------------
 # Dashboard interactivo con métricas y gráficos para demo.
-# Incluye Chart.js desde CDN.
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 
 demo-dashboard:
   version: 1.x
   css:
     theme:
       css/ecosistema-jaraba-core.css: {}
-  js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
   dependencies:
     - core/drupal
     - core/drupalSettings
+    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE CHARTS (ALIAS PARA DEMO)
 # ---------------------------------------------------------------------------
-# Alias para Chart.js usado en demos.
+# AUDIT-PERF-N12: Alias que ahora delega a ecosistema_jaraba_core/chartjs
 
 charts:
   version: 1.x
-  js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
   dependencies:
     - core/drupal
+    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE DEMO STORYTELLING
@@ -314,7 +323,7 @@ rbac-matrix:
 # BIBLIOTECA DE USAGE DASHBOARD (G111 / f111)
 # ---------------------------------------------------------------------------
 # Dashboard de uso y facturación para tenants.
-# Incluye Chart.js para gráficos de tendencias históricas.
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 
 usage-dashboard:
   version: 1.x
@@ -322,12 +331,12 @@ usage-dashboard:
     theme:
       css/ecosistema-jaraba-core.css: {}
   js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
     js/usage-dashboard.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
+    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # COMPLIANCE DASHBOARD (G115-1)

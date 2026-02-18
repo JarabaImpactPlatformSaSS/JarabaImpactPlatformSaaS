@@ -8,6 +8,7 @@ use Drupal\jaraba_heatmap\Service\HeatmapScreenshotService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador API para consulta de datos de heatmap.
@@ -36,6 +37,12 @@ class HeatmapApiController extends ControllerBase
      */
     protected HeatmapScreenshotService $screenshotService;
 
+    // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+    /**
+     * Servicio de contexto de tenant.
+     */
+    protected TenantContextService $tenantContext;
+
     /**
      * Constructor.
      *
@@ -43,11 +50,15 @@ class HeatmapApiController extends ControllerBase
      *   Conexión a base de datos.
      * @param \Drupal\jaraba_heatmap\Service\HeatmapScreenshotService $screenshot_service
      *   Servicio de capturas de página.
+     * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenant_context
+     *   Servicio de contexto de tenant.
      */
-    public function __construct(Connection $database, HeatmapScreenshotService $screenshot_service)
+    public function __construct(Connection $database, HeatmapScreenshotService $screenshot_service, TenantContextService $tenant_context)
     {
         $this->database = $database;
         $this->screenshotService = $screenshot_service;
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+        $this->tenantContext = $tenant_context;
     }
 
     /**
@@ -58,6 +69,7 @@ class HeatmapApiController extends ControllerBase
         return new static(
             $container->get('database'),
             $container->get('jaraba_heatmap.screenshot'),
+            $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         );
     }
 
@@ -75,8 +87,11 @@ class HeatmapApiController extends ControllerBase
      */
     public function listPages(Request $request): JsonResponse
     {
-        // Obtener tenant_id del contexto.
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         $tenant_id = $this->getTenantId();
+        if ($tenant_id <= 0) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Tenant context required.'], 403);
+        }
         $pages = [];
         $seen_paths = [];
 
@@ -174,7 +189,11 @@ class HeatmapApiController extends ControllerBase
      */
     public function getScrollData(string $path, Request $request): JsonResponse
     {
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         $tenant_id = $this->getTenantId();
+        if ($tenant_id <= 0) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Tenant context required.'], 403);
+        }
         $decoded_path = urldecode($path);
 
         // Obtener días de rango de filtro.
@@ -268,7 +287,11 @@ class HeatmapApiController extends ControllerBase
      */
     public function getSummary(Request $request): JsonResponse
     {
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         $tenant_id = $this->getTenantId();
+        if ($tenant_id <= 0) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Tenant context required.'], 403);
+        }
 
         // Obtener días de rango.
         $days = (int) $request->query->get('days', 30);
@@ -322,7 +345,11 @@ class HeatmapApiController extends ControllerBase
      */
     public function getScreenshot(string $page_path): JsonResponse
     {
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         $tenantId = $this->getTenantId();
+        if ($tenantId <= 0) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Tenant context required.'], 403);
+        }
         $decodedPath = urldecode($page_path);
 
         $screenshot = $this->screenshotService->getScreenshot($tenantId, $decodedPath);
@@ -359,7 +386,11 @@ class HeatmapApiController extends ControllerBase
      */
     public function captureScreenshot(string $page_path): JsonResponse
     {
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         $tenantId = $this->getTenantId();
+        if ($tenantId <= 0) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Tenant context required.'], 403);
+        }
         $decodedPath = urldecode($page_path);
 
         $screenshot = $this->screenshotService->getScreenshot($tenantId, $decodedPath, TRUE);
@@ -400,7 +431,11 @@ class HeatmapApiController extends ControllerBase
      */
     protected function getEventData(string $path, string $event_type, Request $request): JsonResponse
     {
+        // AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
         $tenant_id = $this->getTenantId();
+        if ($tenant_id <= 0) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'Tenant context required.'], 403);
+        }
         $decoded_path = urldecode($path);
 
         // Filtros opcionales.
@@ -459,20 +494,17 @@ class HeatmapApiController extends ControllerBase
     }
 
     /**
-     * Obtiene el tenant_id del contexto actual.
+     * Obtiene el tenant_id del contexto actual del servidor.
+     *
+     * AUDIT-SEC-N06: Server-side tenant resolution, prevents IDOR.
+     * Never uses client-supplied tenant_id.
      *
      * @return int
      *   ID del tenant o 0 si no hay multi-tenancy.
      */
     protected function getTenantId(): int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
-            if ($tenant) {
-                return (int) $tenant->id();
-            }
-        }
-        return 0;
+        return (int) ($this->tenantContext->getCurrentTenantId() ?? 0);
     }
 
 }

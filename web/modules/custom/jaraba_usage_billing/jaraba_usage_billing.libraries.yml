@@ -1,12 +1,10 @@
 # Librerías del módulo Jaraba Usage Billing.
 
-# Chart.js CDN.
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 chartjs:
   version: 4.4.1
-  js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js:
-      type: external
-      minified: true
+  dependencies:
+    - ecosistema_jaraba_core/chartjs
 
 # Dashboard de uso con Chart.js.
 usage-dashboard:

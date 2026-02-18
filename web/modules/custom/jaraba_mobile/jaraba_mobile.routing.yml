@@ -1,0 +1,80 @@
+# API: Device Management
+jaraba_mobile.api.device.register:
+  path: '/api/v1/mobile/devices/register'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\DeviceApiController::register'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE'
+
+jaraba_mobile.api.device.unregister:
+  path: '/api/v1/mobile/devices/unregister'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\DeviceApiController::unregister'
+  methods: [DELETE]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE'
+
+jaraba_mobile.api.device.update_token:
+  path: '/api/v1/mobile/devices/token'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\DeviceApiController::updateToken'
+  methods: [PUT]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE'
+
+jaraba_mobile.api.device.list:
+  path: '/api/v1/mobile/devices'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\DeviceApiController::list'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# API: Push Notifications
+jaraba_mobile.api.push.send:
+  path: '/api/v1/mobile/push/send'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\PushApiController::send'
+  methods: [POST]
+  requirements:
+    _permission: 'send push notifications'
+    _csrf_token: 'TRUE'
+
+jaraba_mobile.api.push.batch:
+  path: '/api/v1/mobile/push/batch'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\PushApiController::batch'
+  methods: [POST]
+  requirements:
+    _permission: 'send push notifications'
+    _csrf_token: 'TRUE'
+
+jaraba_mobile.api.push.history:
+  path: '/api/v1/mobile/push/history'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\PushApiController::history'
+  methods: [GET]
+  requirements:
+    _permission: 'view push history'
+
+# API: Deep Link Resolution
+jaraba_mobile.api.deeplink.resolve:
+  path: '/api/v1/mobile/deeplink/resolve'
+  defaults:
+    _controller: '\Drupal\jaraba_mobile\Controller\DeepLinkApiController::resolve'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# Admin Settings
+jaraba_mobile.settings:
+  path: '/admin/config/jaraba/mobile'
+  defaults:
+    _form: '\Drupal\jaraba_mobile\Form\MobileSettingsForm'
+    _title: 'Jaraba Mobile Settings'
+  requirements:
+    _permission: 'administer jaraba mobile'

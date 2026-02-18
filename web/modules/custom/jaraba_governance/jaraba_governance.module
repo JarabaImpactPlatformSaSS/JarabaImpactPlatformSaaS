@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Module file for Jaraba Data Governance.
+ *
+ * Provides data classification, retention policies, lineage tracking,
+ * GDPR compliance (erasure, portability), and data masking for dev/staging.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_governance_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_governance') {
+    return '<p>' . t('Provides enterprise data governance: classification, retention, lineage, GDPR erasure/portability, and data masking.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_governance_theme(): array {
+  return [
+    'governance_dashboard' => [
+      'variables' => [
+        'classification_stats' => NULL,
+        'retention_status' => NULL,
+        'erasure_queue' => NULL,
+        'lineage_recent' => NULL,
+        'masking_status' => NULL,
+      ],
+      'template' => 'governance-dashboard',
+    ],
+  ];
+}

@@ -1,29 +1,39 @@
 {#
 /**
  * @file
- * Template para el dashboard del programa Andalucía +ei.
+ * Template premium para el dashboard del programa Andalucía +ei.
  *
  * Variables:
  * - participante: Entidad ProgramaParticipanteEi del usuario (o NULL).
- * - is_admin: Boolean indicando si el usuario tiene permisos de gestion.
+ * - is_admin: Boolean indicando si el usuario tiene permisos de gestión.
+ * - health_score: Array con datos de health score (score, label, breakdown).
+ * - bridges: Array de cross-vertical bridges disponibles.
+ * - proactive_action: Array con acción proactiva IA sugerida.
  *
  * @see Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiController::dashboard()
  */
 #}
 
 <div class="andalucia-ei-dashboard">
-  
-  {# Hero Section #}
-  <section class="andalucia-ei-hero">
-    <div class="hero-content">
-      <h1 class="hero-title">{% trans %}Andalucía +ei{% endtrans %}</h1>
-      <p class="hero-subtitle">{% trans %}Emprendimiento Aumentado con Inteligencia Artificial{% endtrans %}</p>
+
+  {# =================== HERO PREMIUM =================== #}
+  <section class="aei-hero">
+    <canvas id="aei-hero-particles" class="aei-hero__particles" aria-hidden="true"></canvas>
+    <div class="aei-hero__overlay" aria-hidden="true"></div>
+    <div class="aei-hero__content">
+      <span class="aei-hero__badge">
+        {{ jaraba_icon('verticals', 'emprendimiento', { variant: 'duotone', color: 'naranja-impulso', size: '28px' }) }}
+        <span>{% trans %}Programa Público{% endtrans %}</span>
+      </span>
+      <h1 class="aei-hero__title">{% trans %}Andalucía <span class="aei-hero__accent">+ei</span>{% endtrans %}</h1>
+      <p class="aei-hero__subtitle">{% trans %}Emprendimiento Aumentado con Inteligencia Artificial{% endtrans %}</p>
+      <p class="aei-hero__description">{% trans %}Tu espacio personal para el seguimiento integral del programa: mentoría IA, formación y orientación hacia la inserción.{% endtrans %}</p>
     </div>
-    <div class="hero-decoration" aria-hidden="true"></div>
+    <div class="aei-hero__decoration" aria-hidden="true"></div>
   </section>
 
   {% if participante %}
-    {# Dashboard del Participante #}
+    {# Variables del participante #}
     {% set faseActual = participante.get('fase_actual').value|default('atencion') %}
     {% set horasMentoriaIa = participante.get('horas_mentoria_ia').value|default(0) %}
     {% set horasMentoriaHumana = participante.get('horas_mentoria_humana').value|default(0) %}
@@ -32,149 +42,344 @@
     {% set totalOrientacion = horasMentoriaIa + horasMentoriaHumana + horasOrientacionInd + horasOrientacionGrup %}
     {% set horasFormacion = participante.get('horas_formacion').value|default(0) %}
     {% set progreso = (horasFormacion / 50 * 100)|round %}
-    
-    <section class="participant-dashboard">
-      <div class="dashboard-grid">
-        
-        {# Card: Progreso General #}
-        <article class="dashboard-card card-progress">
-          <header class="card-header">
-            <span class="card-icon">{{ jaraba_icon('business', 'chart-line', { size: '20px' }) }}</span>
+
+    {# =================== DASHBOARD PRINCIPAL =================== #}
+    <section class="aei-dashboard">
+
+      {# --- Fila superior: Progreso + Health Score --- #}
+      <div class="aei-dashboard__top-row">
+
+        {# Card: Fase y Progreso General #}
+        <article class="aei-card aei-card--progress aei-animate-in">
+          <div class="aei-card__shine"></div>
+          <header class="aei-card__header">
+            <span class="aei-card__icon aei-card__icon--progress">
+              {{ jaraba_icon('business', 'chart-line', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+            </span>
             <h2>{% trans %}Tu Progreso{% endtrans %}</h2>
           </header>
-          <div class="card-body">
-            <div class="progress-stat">
-              <span class="stat-label">{% trans %}Fase actual{% endtrans %}</span>
-              <span class="stat-value fase-{{ faseActual }}">
+          <div class="aei-card__body">
+            <div class="aei-progress-overview">
+              <div class="aei-fase-badge aei-fase-badge--{{ faseActual }}">
                 {% if faseActual == 'atencion' %}
-                  {% trans %}Atención{% endtrans %}
+                  {{ jaraba_icon('general', 'eye', { size: '16px' }) }}
+                  <span>{% trans %}Fase Atención{% endtrans %}</span>
                 {% elseif faseActual == 'insercion' %}
-                  {% trans %}Inserción{% endtrans %}
+                  {{ jaraba_icon('actions', 'rocket', { size: '16px' }) }}
+                  <span>{% trans %}Fase Inserción{% endtrans %}</span>
                 {% else %}
-                  {{ faseActual|capitalize }}
+                  <span>{{ faseActual|capitalize }}</span>
                 {% endif %}
-              </span>
+              </div>
+              <div class="aei-journey-timeline">
+                <div class="aei-timeline-step {{ faseActual == 'atencion' or faseActual == 'insercion' ? 'aei-timeline-step--done' : '' }}">
+                  <span class="aei-timeline-dot"></span>
+                  <span class="aei-timeline-label">{% trans %}Inscripción{% endtrans %}</span>
+                </div>
+                <div class="aei-timeline-connector {{ faseActual == 'atencion' or faseActual == 'insercion' ? 'aei-timeline-connector--done' : '' }}"></div>
+                <div class="aei-timeline-step {{ faseActual == 'atencion' ? 'aei-timeline-step--active' : '' }}{{ faseActual == 'insercion' ? 'aei-timeline-step--done' : '' }}">
+                  <span class="aei-timeline-dot"></span>
+                  <span class="aei-timeline-label">{% trans %}Atención{% endtrans %}</span>
+                </div>
+                <div class="aei-timeline-connector {{ faseActual == 'insercion' ? 'aei-timeline-connector--done' : '' }}"></div>
+                <div class="aei-timeline-step {{ faseActual == 'insercion' ? 'aei-timeline-step--active' : '' }}">
+                  <span class="aei-timeline-dot"></span>
+                  <span class="aei-timeline-label">{% trans %}Inserción{% endtrans %}</span>
+                </div>
+              </div>
             </div>
           </div>
         </article>
 
+        {# Card: Health Score (si disponible) #}
+        {% if health_score %}
+          <article class="aei-card aei-card--health aei-animate-in" style="--aei-stagger: 1">
+            <div class="aei-card__shine"></div>
+            <header class="aei-card__header">
+              <span class="aei-card__icon aei-card__icon--health">
+                {{ jaraba_icon('analytics', 'pulse', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
+              </span>
+              <h2>{% trans %}Health Score{% endtrans %}</h2>
+            </header>
+            <div class="aei-card__body">
+              <div class="aei-health-gauge">
+                <svg class="aei-gauge-svg" viewBox="0 0 120 120" aria-label="{% trans %}Health Score{% endtrans %}">
+                  <circle class="aei-gauge-bg" cx="60" cy="60" r="52" fill="none" stroke-width="10"/>
+                  <circle class="aei-gauge-fill" cx="60" cy="60" r="52" fill="none" stroke-width="10"
+                          stroke-dasharray="326.7"
+                          stroke-dashoffset="{{ 326.7 - (326.7 * (health_score.score|default(0)) / 100) }}"
+                          data-target-offset="{{ 326.7 - (326.7 * (health_score.score|default(0)) / 100) }}"/>
+                  <text class="aei-gauge-value" x="60" y="56" text-anchor="middle" dominant-baseline="middle">
+                    <tspan class="aei-gauge-number" data-count-target="{{ health_score.score|default(0) }}">0</tspan>
+                  </text>
+                  <text class="aei-gauge-label-text" x="60" y="76" text-anchor="middle">
+                    {{ health_score.label|default('—') }}
+                  </text>
+                </svg>
+              </div>
+            </div>
+          </article>
+        {% endif %}
+      </div>
+
+      {# --- Fila central: Métricas --- #}
+      <div class="aei-dashboard__metrics-row">
+
         {# Card: Horas de Orientación #}
-        <article class="dashboard-card card-hours">
-          <header class="card-header">
-            <span class="card-icon">{{ jaraba_icon('general', 'clock', { size: '20px' }) }}</span>
+        <article class="aei-card aei-card--hours aei-animate-in" style="--aei-stagger: 2">
+          <div class="aei-card__shine"></div>
+          <header class="aei-card__header">
+            <span class="aei-card__icon aei-card__icon--hours">
+              {{ jaraba_icon('general', 'clock', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+            </span>
             <h2>{% trans %}Horas Acumuladas{% endtrans %}</h2>
           </header>
-          <div class="card-body">
-            <div class="hours-grid">
-              <div class="hour-item">
-                <span class="hour-value">{{ horasMentoriaIa|number_format(1) }}</span>
-                <span class="hour-label">{% trans %}Tutor IA{% endtrans %}</span>
+          <div class="aei-card__body">
+            <div class="aei-hours-grid">
+              <div class="aei-hour-metric">
+                <div class="aei-hour-metric__icon">
+                  {{ jaraba_icon('ai', 'robot', { color: 'naranja-impulso', size: '18px' }) }}
+                </div>
+                <div class="aei-hour-metric__data">
+                  <span class="aei-hour-metric__value" data-count-target="{{ horasMentoriaIa }}">0</span>
+                  <span class="aei-hour-metric__label">{% trans %}Tutor IA{% endtrans %}</span>
+                </div>
+                <div class="aei-hour-metric__bar">
+                  <div class="aei-hour-metric__bar-fill aei-hour-metric__bar-fill--ia" style="width: {{ horasMentoriaIa > 0 ? (horasMentoriaIa / (totalOrientacion > 0 ? totalOrientacion : 1) * 100)|round : 0 }}%"></div>
+                </div>
               </div>
-              <div class="hour-item">
-                <span class="hour-value">{{ horasMentoriaHumana|number_format(1) }}</span>
-                <span class="hour-label">{% trans %}Mentor{% endtrans %}</span>
+              <div class="aei-hour-metric">
+                <div class="aei-hour-metric__icon">
+                  {{ jaraba_icon('general', 'users', { color: 'azul-corporativo', size: '18px' }) }}
+                </div>
+                <div class="aei-hour-metric__data">
+                  <span class="aei-hour-metric__value" data-count-target="{{ horasMentoriaHumana }}">0</span>
+                  <span class="aei-hour-metric__label">{% trans %}Mentor{% endtrans %}</span>
+                </div>
+                <div class="aei-hour-metric__bar">
+                  <div class="aei-hour-metric__bar-fill aei-hour-metric__bar-fill--mentor" style="width: {{ horasMentoriaHumana > 0 ? (horasMentoriaHumana / (totalOrientacion > 0 ? totalOrientacion : 1) * 100)|round : 0 }}%"></div>
+                </div>
               </div>
-              <div class="hour-item">
-                <span class="hour-value">{{ totalOrientacion|number_format(1) }}</span>
-                <span class="hour-label">{% trans %}Orientación{% endtrans %}</span>
+              <div class="aei-hour-metric">
+                <div class="aei-hour-metric__icon">
+                  {{ jaraba_icon('general', 'compass', { color: 'verde-innovacion', size: '18px' }) }}
+                </div>
+                <div class="aei-hour-metric__data">
+                  <span class="aei-hour-metric__value" data-count-target="{{ totalOrientacion }}">0</span>
+                  <span class="aei-hour-metric__label">{% trans %}Total Orientación{% endtrans %}</span>
+                </div>
+                <div class="aei-hour-metric__bar">
+                  <div class="aei-hour-metric__bar-fill aei-hour-metric__bar-fill--total" style="width: 100%"></div>
+                </div>
               </div>
             </div>
           </div>
         </article>
 
         {# Card: Formación LMS #}
-        <article class="dashboard-card card-training">
-          <header class="card-header">
-            <span class="card-icon">{{ jaraba_icon('general', 'graduation', { size: '20px' }) }}</span>
+        <article class="aei-card aei-card--training aei-animate-in" style="--aei-stagger: 3">
+          <div class="aei-card__shine"></div>
+          <header class="aei-card__header">
+            <span class="aei-card__icon aei-card__icon--training">
+              {{ jaraba_icon('general', 'graduation', { variant: 'duotone', color: 'azul-profundo', size: '24px' }) }}
+            </span>
             <h2>{% trans %}Formación{% endtrans %}</h2>
           </header>
-          <div class="card-body">
-            <div class="training-progress">
-              <div class="progress-bar" role="progressbar" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-fill" style="width: {{ progreso > 100 ? 100 : progreso }}%"></div>
+          <div class="aei-card__body">
+            <div class="aei-training-progress">
+              <div class="aei-training-progress__header">
+                <span class="aei-training-progress__value" data-count-target="{{ horasFormacion }}">0</span>
+                <span class="aei-training-progress__unit">h / 50h {% trans %}mínimo{% endtrans %}</span>
               </div>
-              <span class="progress-text">{{ horasFormacion|number_format(1) }}h / 50h {% trans %}mínimo{% endtrans %}</span>
+              <div class="aei-training-progress__bar" role="progressbar" aria-valuenow="{{ progreso }}" aria-valuemin="0" aria-valuemax="100">
+                <div class="aei-training-progress__fill" style="width: {{ progreso > 100 ? 100 : progreso }}%"></div>
+                {# Milestone markers #}
+                <div class="aei-training-milestone" style="left: 50%" title="25h">
+                  <span class="aei-training-milestone__dot"></span>
+                </div>
+                <div class="aei-training-milestone" style="left: 100%" title="50h">
+                  <span class="aei-training-milestone__dot"></span>
+                </div>
+              </div>
+              <div class="aei-training-progress__footer">
+                <span class="aei-training-progress__pct">{{ progreso }}%</span>
+                {% if progreso >= 100 %}
+                  <span class="aei-training-progress__badge aei-training-progress__badge--complete">
+                    {{ jaraba_icon('actions', 'check-circle', { color: 'success', size: '14px' }) }}
+                    {% trans %}Completado{% endtrans %}
+                  </span>
+                {% endif %}
+              </div>
             </div>
           </div>
         </article>
-
-        {# Card: Acciones Rápidas #}
-        <article class="dashboard-card card-actions">
-          <header class="card-header">
-            <span class="card-icon">{{ jaraba_icon('actions', 'rocket', { size: '20px' }) }}</span>
-            <h2>{% trans %}Acciones{% endtrans %}</h2>
-          </header>
-          <div class="card-body">
-            <nav class="quick-actions" aria-label="{% trans %}Acciones rápidas{% endtrans %}">
-              <a href="/copilot" class="action-btn action-primary">
-                {{ jaraba_icon('ai', 'robot', { size: '20px' }) }} <span>{% trans %}Hablar con Tutor IA{% endtrans %}</span>
-              </a>
-              <a href="/mentoring" class="action-btn action-secondary">
-                {{ jaraba_icon('general', 'users', { size: '20px' }) }} <span>{% trans %}Reservar Mentor{% endtrans %}</span>
-              </a>
-              <a href="/lms" class="action-btn action-secondary">
-                {{ jaraba_icon('general', 'book', { size: '20px' }) }} <span>{% trans %}Ver Cursos{% endtrans %}</span>
-              </a>
-            </nav>
-          </div>
-        </article>
-
       </div>
+
+      {# --- Acciones Rápidas --- #}
+      <article class="aei-card aei-card--actions aei-animate-in" style="--aei-stagger: 4">
+        <div class="aei-card__shine"></div>
+        <header class="aei-card__header">
+          <span class="aei-card__icon aei-card__icon--actions">
+            {{ jaraba_icon('actions', 'rocket', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
+          </span>
+          <h2>{% trans %}Acciones Rápidas{% endtrans %}</h2>
+        </header>
+        <div class="aei-card__body">
+          <nav class="aei-quick-actions" aria-label="{% trans %}Acciones rápidas{% endtrans %}">
+            <a href="/copilot" class="aei-action aei-action--primary">
+              <span class="aei-action__icon">{{ jaraba_icon('ai', 'robot', { size: '22px' }) }}</span>
+              <span class="aei-action__content">
+                <span class="aei-action__title">{% trans %}Hablar con Tutor IA{% endtrans %}</span>
+                <span class="aei-action__desc">{% trans %}Sesión de mentoría inteligente{% endtrans %}</span>
+              </span>
+              <span class="aei-action__arrow">→</span>
+            </a>
+            <a href="/mentoring" class="aei-action aei-action--secondary">
+              <span class="aei-action__icon">{{ jaraba_icon('general', 'users', { size: '22px' }) }}</span>
+              <span class="aei-action__content">
+                <span class="aei-action__title">{% trans %}Reservar Mentor{% endtrans %}</span>
+                <span class="aei-action__desc">{% trans %}Acompañamiento personalizado{% endtrans %}</span>
+              </span>
+              <span class="aei-action__arrow">→</span>
+            </a>
+            <a href="/lms" class="aei-action aei-action--secondary">
+              <span class="aei-action__icon">{{ jaraba_icon('general', 'book', { size: '22px' }) }}</span>
+              <span class="aei-action__content">
+                <span class="aei-action__title">{% trans %}Ver Cursos{% endtrans %}</span>
+                <span class="aei-action__desc">{% trans %}Formación acreditada del programa{% endtrans %}</span>
+              </span>
+              <span class="aei-action__arrow">→</span>
+            </a>
+          </nav>
+        </div>
+      </article>
+
     </section>
 
+    {# =================== CROSS-VERTICAL BRIDGES =================== #}
+    {% if bridges is not empty %}
+      <section class="aei-bridges aei-animate-in" style="--aei-stagger: 5" aria-label="{% trans %}Oportunidades complementarias{% endtrans %}">
+        <h3 class="aei-bridges__title">
+          {{ jaraba_icon('business', 'network', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+          {% trans %}Oportunidades del Ecosistema{% endtrans %}
+        </h3>
+        <div class="aei-bridges__grid">
+          {% for bridge in bridges %}
+            <div class="aei-bridge-card" data-bridge-id="{{ bridge.id|default(loop.index) }}">
+              <span class="aei-bridge-card__icon">
+                {{ jaraba_icon(bridge.icon_category|default('business'), bridge.icon_name|default('link'), { color: bridge.color|default('verde-innovacion'), size: '24px' }) }}
+              </span>
+              <p class="aei-bridge-card__message">{{ bridge.message|default('') }}</p>
+              {% if bridge.url|default('') %}
+                <a href="{{ bridge.url }}" class="aei-bridge-card__cta">{% trans %}Explorar{% endtrans %} →</a>
+              {% endif %}
+              <button type="button" class="aei-bridge-card__dismiss" aria-label="{% trans %}Cerrar{% endtrans %}" data-dismiss-bridge>
+                {{ jaraba_icon('ui', 'close', { size: '14px' }) }}
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {# =================== PROACTIVE AI FAB =================== #}
+    {% if proactive_action %}
+      <div class="aei-fab" data-proactive-action='{{ proactive_action|json_encode }}' aria-label="{% trans %}Acción sugerida por IA{% endtrans %}">
+        <button type="button" class="aei-fab__trigger" aria-expanded="false">
+          <span class="aei-fab__pulse"></span>
+          {{ jaraba_icon('ai', 'brain', { color: 'naranja-impulso', size: '24px' }) }}
+        </button>
+        <div class="aei-fab__tooltip">
+          <p class="aei-fab__tooltip-text">{{ proactive_action.message|default('') }}</p>
+          {% if proactive_action.url|default('') %}
+            <a href="{{ proactive_action.url }}" class="aei-fab__tooltip-cta">
+              {{ proactive_action.cta_label|default('Ver'|t) }} →
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
   {% else %}
-    {# Estado: No inscrito #}
-    <section class="not-enrolled">
-      <div class="empty-state">
-        <span class="empty-icon">{{ jaraba_icon('general', 'user', { size: '20px' }) }}</span>
-        <h2>{% trans %}Aún no estás inscrito en Andalucía +ei{% endtrans %}</h2>
-        <p>{% trans %}Contacta con tu orientador para inscribirte en el programa.{% endtrans %}</p>
-        <a href="/contacto" class="btn btn-primary">
+    {# =================== EMPTY STATE PREMIUM =================== #}
+    <section class="aei-empty-state aei-animate-in">
+      <div class="aei-empty-state__card">
+        <div class="aei-empty-state__icon-wrapper">
+          {{ jaraba_icon('verticals', 'emprendimiento', { variant: 'duotone', color: 'naranja-impulso', size: '64px' }) }}
+        </div>
+        <h2 class="aei-empty-state__title">{% trans %}Aún no estás inscrito en Andalucía +ei{% endtrans %}</h2>
+        <p class="aei-empty-state__desc">{% trans %}El programa de emprendimiento aumentado con IA te ofrece mentoría inteligente, formación acreditada y orientación personalizada.{% endtrans %}</p>
+        <div class="aei-empty-state__features">
+          <div class="aei-empty-state__feature">
+            {{ jaraba_icon('ai', 'robot', { color: 'naranja-impulso', size: '20px' }) }}
+            <span>{% trans %}Tutor IA 24/7{% endtrans %}</span>
+          </div>
+          <div class="aei-empty-state__feature">
+            {{ jaraba_icon('general', 'graduation', { color: 'azul-corporativo', size: '20px' }) }}
+            <span>{% trans %}50h Formación{% endtrans %}</span>
+          </div>
+          <div class="aei-empty-state__feature">
+            {{ jaraba_icon('general', 'users', { color: 'verde-innovacion', size: '20px' }) }}
+            <span>{% trans %}Mentoría Experta{% endtrans %}</span>
+          </div>
+        </div>
+        <a href="/contacto" class="aei-empty-state__cta">
           {% trans %}Solicitar Información{% endtrans %}
+          <span class="aei-empty-state__cta-arrow">→</span>
         </a>
       </div>
     </section>
   {% endif %}
 
-  {# === Seccion de Gestion (AND-001: slide-panel CRUD) === #}
+  {# =================== ADMIN SECTION =================== #}
   {% if is_admin %}
-    <section class="andalucia-ei-admin" aria-label="{% trans %}Gestión de participantes{% endtrans %}">
-      <header class="admin-header">
-        <h2>{% trans %}Gestión de Participantes{% endtrans %}</h2>
+    <section class="aei-admin aei-animate-in" style="--aei-stagger: 6" aria-label="{% trans %}Gestión de participantes{% endtrans %}">
+      <header class="aei-admin__header">
+        <div class="aei-admin__title-group">
+          {{ jaraba_icon('business', 'building', { variant: 'duotone', color: 'azul-corporativo', size: '28px' }) }}
+          <h2>{% trans %}Gestión de Participantes{% endtrans %}</h2>
+        </div>
         <button type="button"
-                class="btn btn-primary"
+                class="aei-admin__add-btn"
                 data-slide-panel="participante-form"
                 data-slide-panel-url="/api/v1/andalucia-ei/participant/add"
                 data-slide-panel-title="{% trans %}Nuevo Participante{% endtrans %}">
-          + {% trans %}Añadir Participante{% endtrans %}
+          <span class="aei-admin__add-icon">+</span>
+          {% trans %}Añadir Participante{% endtrans %}
         </button>
       </header>
 
-      {# Filtros rapidos #}
-      <div class="admin-filters">
-        <select class="filter-fase" data-filter="fase" aria-label="{% trans %}Filtrar por fase{% endtrans %}">
-          <option value="">{% trans %}Todas las fases{% endtrans %}</option>
-          <option value="atencion">{% trans %}Atención{% endtrans %}</option>
-          <option value="insercion">{% trans %}Inserción{% endtrans %}</option>
-        </select>
-        <select class="filter-provincia" data-filter="provincia" aria-label="{% trans %}Filtrar por provincia{% endtrans %}">
-          <option value="">{% trans %}Todas las provincias{% endtrans %}</option>
-          <option value="almeria">{% trans %}Almería{% endtrans %}</option>
-          <option value="cadiz">{% trans %}Cádiz{% endtrans %}</option>
-          <option value="cordoba">{% trans %}Córdoba{% endtrans %}</option>
-          <option value="granada">{% trans %}Granada{% endtrans %}</option>
-          <option value="huelva">{% trans %}Huelva{% endtrans %}</option>
-          <option value="jaen">{% trans %}Jaén{% endtrans %}</option>
-          <option value="malaga">{% trans %}Málaga{% endtrans %}</option>
-          <option value="sevilla">{% trans %}Sevilla{% endtrans %}</option>
-        </select>
+      {# Filtros #}
+      <div class="aei-admin__filters">
+        <div class="aei-filter">
+          <label class="aei-filter__label">{% trans %}Fase{% endtrans %}</label>
+          <select class="aei-filter__select" data-filter="fase" aria-label="{% trans %}Filtrar por fase{% endtrans %}">
+            <option value="">{% trans %}Todas las fases{% endtrans %}</option>
+            <option value="atencion">{% trans %}Atención{% endtrans %}</option>
+            <option value="insercion">{% trans %}Inserción{% endtrans %}</option>
+          </select>
+        </div>
+        <div class="aei-filter">
+          <label class="aei-filter__label">{% trans %}Provincia{% endtrans %}</label>
+          <select class="aei-filter__select" data-filter="provincia" aria-label="{% trans %}Filtrar por provincia{% endtrans %}">
+            <option value="">{% trans %}Todas las provincias{% endtrans %}</option>
+            <option value="almeria">{% trans %}Almería{% endtrans %}</option>
+            <option value="cadiz">{% trans %}Cádiz{% endtrans %}</option>
+            <option value="cordoba">{% trans %}Córdoba{% endtrans %}</option>
+            <option value="granada">{% trans %}Granada{% endtrans %}</option>
+            <option value="huelva">{% trans %}Huelva{% endtrans %}</option>
+            <option value="jaen">{% trans %}Jaén{% endtrans %}</option>
+            <option value="malaga">{% trans %}Málaga{% endtrans %}</option>
+            <option value="sevilla">{% trans %}Sevilla{% endtrans %}</option>
+          </select>
+        </div>
       </div>
 
-      {# Tabla de participantes (cargada via AJAX) #}
-      <div class="participants-table-wrapper"
+      {# Tabla premium #}
+      <div class="aei-admin__table-wrapper"
            data-participants-api="/api/v1/andalucia-ei/participants"
            data-participants-edit-url="/api/v1/andalucia-ei/participant/{id}/edit">
-        <table class="participants-table">
+        <table class="aei-table">
           <thead>
             <tr>
               <th>{% trans %}DNI/NIE{% endtrans %}</th>
@@ -189,7 +394,7 @@
             {# Filas cargadas via JS desde la API #}
           </tbody>
         </table>
-        <nav class="participants-pagination" aria-label="{% trans %}Paginación{% endtrans %}"></nav>
+        <nav class="aei-table__pagination" aria-label="{% trans %}Paginación{% endtrans %}"></nav>
       </div>
     </section>
   {% endif %}

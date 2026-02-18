@@ -110,6 +110,30 @@
         <h2 class="producer-portal__section-title">{{ jaraba_icon('business', 'chart-line', { size: '20px' }) }} {{ 'Ventas Últimos 7 Días'|t }}</h2>
         <canvas id="sales-chart" class="producer-portal__chart" height="200"></canvas>
       </section>
+
+      {# Logística & Trazabilidad (Fase 7) #}
+      <section class="producer-portal__section producer-portal__section--logistics">
+        <h2 class="producer-portal__section-title">{{ jaraba_icon('actions', 'truck', { size: '20px' }) }} {{ 'Logística y Trazabilidad'|t }}</h2>
+        <div class="producer-portal__analytics-grid">
+          <div class="producer-portal__metric-box">
+            <span class="producer-portal__metric-label">{{ 'Escaneos QR'|t }}</span>
+            <span class="producer-portal__metric-value">{{ analytics|last.qr_scans|default(0) }}</span>
+            <span class="producer-portal__metric-trend">{{ 'Hoy'|t }}</span>
+          </div>
+          <div class="producer-portal__metric-box">
+            <span class="producer-portal__metric-label">{{ 'Envíos'|t }}</span>
+            <span class="producer-portal__metric-value">{{ analytics|last.shipments|default(0) }}</span>
+            <span class="producer-portal__metric-trend">{{ 'Hoy'|t }}</span>
+          </div>
+          <div class="producer-portal__metric-box">
+            <span class="producer-portal__metric-label">{{ 'Alertas Frío'|t }}</span>
+            <span class="producer-portal__metric-value {% if analytics|last.cold_alerts > 0 %}text-danger{% endif %}">
+              {{ analytics|last.cold_alerts|default(0) }}
+            </span>
+            <span class="producer-portal__metric-trend">{{ 'Críticas'|t }}</span>
+          </div>
+        </div>
+      </section>
     </div>
 
     {# Sidebar: Top productos #}

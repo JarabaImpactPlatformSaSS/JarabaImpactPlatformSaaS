@@ -1,0 +1,109 @@
+jaraba_sla.settings:
+  type: config_object
+  label: 'Jaraba SLA settings'
+  mapping:
+    monitoring:
+      type: mapping
+      label: 'Monitoring configuration'
+      mapping:
+        web_app:
+          type: mapping
+          label: 'Web App monitoring'
+          mapping:
+            url:
+              type: string
+              label: 'Health check URL'
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+            timeout_ms:
+              type: integer
+              label: 'Timeout in milliseconds'
+        api:
+          type: mapping
+          label: 'API monitoring'
+          mapping:
+            url:
+              type: string
+              label: 'Health check URL'
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+            timeout_ms:
+              type: integer
+              label: 'Timeout in milliseconds'
+        database:
+          type: mapping
+          label: 'Database monitoring'
+          mapping:
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+        redis:
+          type: mapping
+          label: 'Redis monitoring'
+          mapping:
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+        email:
+          type: mapping
+          label: 'Email monitoring'
+          mapping:
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+        ai_copilot:
+          type: mapping
+          label: 'AI Copilot monitoring'
+          mapping:
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+        payment:
+          type: mapping
+          label: 'Payment monitoring'
+          mapping:
+            interval_seconds:
+              type: integer
+              label: 'Check interval in seconds'
+    default_sla_tier:
+      type: string
+      label: 'Default SLA tier'
+    sla_tiers:
+      type: mapping
+      label: 'SLA tier definitions'
+      mapping:
+        standard:
+          type: jaraba_sla.tier_definition
+          label: 'Standard tier'
+        premium:
+          type: jaraba_sla.tier_definition
+          label: 'Premium tier'
+        critical:
+          type: jaraba_sla.tier_definition
+          label: 'Critical tier'
+
+jaraba_sla.tier_definition:
+  type: mapping
+  label: 'SLA tier definition'
+  mapping:
+    uptime_target:
+      type: float
+      label: 'Uptime target percentage'
+    max_downtime_minutes_month:
+      type: float
+      label: 'Maximum downtime minutes per month'
+    credit_policy:
+      type: sequence
+      label: 'Credit policy thresholds'
+      sequence:
+        type: mapping
+        label: 'Credit policy entry'
+        mapping:
+          threshold:
+            type: float
+            label: 'Uptime threshold percentage'
+          credit_pct:
+            type: integer
+            label: 'Credit percentage'

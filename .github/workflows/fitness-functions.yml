@@ -27,12 +27,12 @@ env:
 
 jobs:
   # ===========================================
-  # JOB 1: PHPSTAN OBLIGATORIO (Level 5)
+  # AUDIT-SEC-N11: JOB 1: PHPSTAN OBLIGATORIO (Level 6 + Security Rules)
   # ===========================================
   phpstan:
-    name: 🔬 PHPStan Level 5
+    name: 🔬 PHPStan Level 6 + Security
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -50,18 +50,20 @@ jobs:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
 
+      # AUDIT-SEC-N11: Dev dependencies needed for security PHPStan extensions.
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: PHPStan Analysis
+      # AUDIT-SEC-N11: SAST with security rules — blocks PR on failure.
+      - name: PHPStan Analysis (Level 6 + Security Rules)
         id: phpstan
         run: |
-          echo "## 🔬 PHPStan Level 5 Results" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔬 PHPStan Level 6 + Security Rules Results" >> $GITHUB_STEP_SUMMARY
           vendor/bin/phpstan analyse -c phpstan.neon --error-format=github --no-progress 2>&1 | tee phpstan-output.txt
           if [ ${PIPESTATUS[0]} -eq 0 ]; then
-            echo "✅ **PHPStan passed** - No errors found" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **PHPStan passed** - No errors found at Level 6 with security rules" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ **PHPStan failed** - See errors above" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **PHPStan failed** - Security or type-safety issues detected" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
 
@@ -258,7 +260,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| PHPStan Level 5 | ${{ needs.phpstan.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PHPStan Level 6 + Security | ${{ needs.phpstan.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Dependency Freshness | ${{ needs.dependency-freshness.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Module Structure | ${{ needs.module-structure.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Architecture Patterns | ${{ needs.architecture-patterns.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY

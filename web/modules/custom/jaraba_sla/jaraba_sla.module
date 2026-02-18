@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Jaraba SLA Management module.
+ *
+ * SLA agreements, uptime monitoring, credit automation,
+ * status page, and postmortem system for enterprise clients.
+ *
+ * Ref: Doc Tecnico #198 - SLA Management (N3 Enterprise Class)
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_sla_theme(): array {
+  return [
+    'sla_status_page' => [
+      'variables' => [
+        'overall_status' => 'operational',
+        'components' => [],
+        'recent_incidents' => [],
+        'uptime_history' => [],
+      ],
+      'template' => 'sla-status-page',
+    ],
+  ];
+}

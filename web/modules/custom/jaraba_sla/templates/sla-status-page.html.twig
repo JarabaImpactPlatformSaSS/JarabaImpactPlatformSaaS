@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * Template for the public SLA status page.
+ *
+ * Available variables:
+ * - overall_status: 'operational', 'degraded', or 'major_outage'.
+ * - components: Array of component statuses keyed by component name.
+ *   Each component has: status ('up','down','degraded'), response_time_ms, checked_at.
+ * - recent_incidents: Array of recent incident data (last 7 days).
+ * - uptime_history: Array of historical uptime data (last 90 days, placeholder).
+ */
+#}
+
+<div class="sla-status-page">
+
+  {# Overall Status Banner #}
+  <div class="sla-status-banner sla-status-banner--{{ overall_status }}">
+    {% if overall_status == 'operational' %}
+      <div class="sla-status-banner__icon">&#10003;</div>
+      <h1 class="sla-status-banner__title">{{ 'All Systems Operational'|t }}</h1>
+    {% elseif overall_status == 'degraded' %}
+      <div class="sla-status-banner__icon">&#9888;</div>
+      <h1 class="sla-status-banner__title">{{ 'Partial System Degradation'|t }}</h1>
+    {% else %}
+      <div class="sla-status-banner__icon">&#10007;</div>
+      <h1 class="sla-status-banner__title">{{ 'Major Outage Detected'|t }}</h1>
+    {% endif %}
+  </div>
+
+  {# Component Status Cards #}
+  <section class="sla-components">
+    <h2 class="sla-components__title">{{ 'Component Status'|t }}</h2>
+    <div class="sla-components__grid">
+      {% set component_labels = {
+        'web_app': 'Web Application'|t,
+        'api': 'API'|t,
+        'database': 'Database'|t,
+        'redis': 'Redis Cache'|t,
+        'email': 'Email Service'|t,
+        'ai_copilot': 'AI Copilot'|t,
+        'payment': 'Payment Gateway'|t,
+      } %}
+
+      {% for name, component in components %}
+        <div class="sla-component-card sla-component-card--{{ component.status }}">
+          <div class="sla-component-card__indicator"></div>
+          <div class="sla-component-card__info">
+            <span class="sla-component-card__name">{{ component_labels[name] ?? name }}</span>
+            <span class="sla-component-card__status">
+              {% if component.status == 'up' %}
+                {{ 'Operational'|t }}
+              {% elseif component.status == 'degraded' %}
+                {{ 'Degraded'|t }}
+              {% else %}
+                {{ 'Down'|t }}
+              {% endif %}
+            </span>
+          </div>
+          <div class="sla-component-card__response">
+            {{ component.response_time_ms }}ms
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Recent Incidents Timeline #}
+  <section class="sla-incidents">
+    <h2 class="sla-incidents__title">{{ 'Recent Incidents'|t }} <small>({{ 'Last 7 days'|t }})</small></h2>
+
+    {% if recent_incidents is empty %}
+      <p class="sla-incidents__empty">{{ 'No incidents reported in the last 7 days.'|t }}</p>
+    {% else %}
+      <div class="sla-incidents__timeline">
+        {% for incident in recent_incidents %}
+          <div class="sla-incident sla-incident--{{ incident.severity }}">
+            <div class="sla-incident__header">
+              <span class="sla-incident__severity">{{ incident.severity|upper }}</span>
+              <span class="sla-incident__title">{{ incident.title }}</span>
+              <span class="sla-incident__status sla-incident__status--{{ incident.status }}">
+                {{ incident.status|capitalize }}
+              </span>
+            </div>
+            <div class="sla-incident__meta">
+              <span class="sla-incident__component">{{ component_labels[incident.component] ?? incident.component }}</span>
+              <span class="sla-incident__time">{{ incident.started_at }}</span>
+              {% if incident.duration_minutes %}
+                <span class="sla-incident__duration">{{ incident.duration_minutes|number_format(0) }} min</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+  {# Uptime History (placeholder for chart) #}
+  <section class="sla-uptime-history">
+    <h2 class="sla-uptime-history__title">{{ 'Uptime History'|t }} <small>({{ 'Last 90 days'|t }})</small></h2>
+    <div class="sla-uptime-history__chart" data-uptime-history="{{ uptime_history|json_encode }}">
+      <div class="sla-uptime-history__bars">
+        {# Placeholder bars for 90-day history. JS or future implementation will populate. #}
+        {% for i in 1..90 %}
+          <div class="sla-uptime-history__bar sla-uptime-history__bar--up" title="{{ 'Day'|t }} {{ i }}"></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+</div>

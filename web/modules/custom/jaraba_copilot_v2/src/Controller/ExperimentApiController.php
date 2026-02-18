@@ -66,7 +66,7 @@ class ExperimentApiController extends ControllerBase {
   }
 
   /**
-   * GET /api/copilot/experiments - Library catalog (existing).
+   * GET /api/v1/copilot/experiments - Library catalog (existing). (AUDIT-CONS-N07)
    */
   public function list(Request $request): JsonResponse {
     $category = $request->query->get('category');
@@ -80,7 +80,7 @@ class ExperimentApiController extends ControllerBase {
   }
 
   /**
-   * POST /api/copilot/experiments/suggest - Suggest experiments (existing).
+   * POST /api/v1/copilot/experiments/suggest - Suggest experiments (existing). (AUDIT-CONS-N07)
    */
   public function suggest(Request $request): JsonResponse {
     $data = json_decode($request->getContent(), TRUE);

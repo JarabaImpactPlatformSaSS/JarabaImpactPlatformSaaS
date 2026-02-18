@@ -120,7 +120,8 @@ class FinOpsDashboardController extends ControllerBase
     public function finopsApi()
     {
         $finops_data = $this->getFinOpsData();
-        return new JsonResponse($finops_data);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $finops_data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -661,33 +662,13 @@ class FinOpsDashboardController extends ControllerBase
         ];
 
         try {
-            $tenant_storage = \Drupal::entityTypeManager()->getStorage('tenant');
-            $tenant_entities = $tenant_storage->loadMultiple();
+            // AUDIT-PERF-N04: Reusar datos ya calculados en $tenants
+            // en lugar de loadMultiple() duplicado.
+            foreach ($tenants as $tenantData) {
+                $monthly_price = $tenantData['plan_cost']['monthly'] ?? 0;
+                $tier = $tenantData['tier'] ?? 'basic';
 
-            foreach ($tenant_entities as $tenant) {
-                // Obtener plan del tenant usando getSubscriptionPlan()
-                $plan = NULL;
-                try {
-                    if (method_exists($tenant, 'getSubscriptionPlan')) {
-                        $plan = $tenant->getSubscriptionPlan();
-                    }
-                } catch (\Exception $e) {
-                    // Plan no disponible
-                }
-
-                if ($plan) {
-                    $monthly_price = $plan->getPriceMonthly();
-                    // Mapear el nombre del plan a un tier normalizado
-                    $plan_name = method_exists($plan, 'getName') ? strtolower($plan->getName()) : '';
-                    $tier = 'basic'; // default
-                    if (strpos($plan_name, 'professional') !== false || strpos($plan_name, 'profesional') !== false) {
-                        $tier = 'professional';
-                    } elseif (strpos($plan_name, 'enterprise') !== false || strpos($plan_name, 'empresarial') !== false) {
-                        $tier = 'enterprise';
-                    } elseif (strpos($plan_name, 'basic') !== false || strpos($plan_name, 'starter') !== false || strpos($plan_name, 'básico') !== false) {
-                        $tier = 'basic';
-                    }
-
+                if ($monthly_price > 0) {
                     $mrr += $monthly_price;
 
                     if (isset($revenue_by_tier[$tier])) {

@@ -36,7 +36,7 @@ class LeadApiController extends ControllerBase implements ContainerInjectionInte
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.qr_service'),
+            $container->get('jaraba_agroconecta_core.qr_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 
@@ -178,10 +178,11 @@ class LeadApiController extends ControllerBase implements ContainerInjectionInte
     {
         $result = $this->qrService->syncLeadToCrm($lead_id);
         if (isset($result['error'])) {
-            return new JsonResponse($result, 400);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => $result], 400);
         }
 
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
 }

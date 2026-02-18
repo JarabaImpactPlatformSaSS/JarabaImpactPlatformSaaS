@@ -183,7 +183,8 @@ class AndaluciaEiApiController extends ControllerBase
         $entity = $this->entityTypeManager->getStorage('programa_participante_ei')->load($id);
 
         if (!$entity) {
-            return new JsonResponse(['error' => 'Participante no encontrado.'], 404);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Participante no encontrado.']], 404);
         }
 
         return new JsonResponse([
@@ -220,7 +221,7 @@ class AndaluciaEiApiController extends ControllerBase
         $entity = $this->entityTypeManager->getStorage('programa_participante_ei')->load($id);
 
         if (!$entity) {
-            return new JsonResponse(['error' => 'Participante no encontrado.'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Participante no encontrado.']], 404);
         }
 
         $dniNie = $entity->getDniNie();

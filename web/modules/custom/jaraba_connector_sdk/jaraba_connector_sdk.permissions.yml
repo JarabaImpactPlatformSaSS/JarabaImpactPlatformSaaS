@@ -1,0 +1,20 @@
+administer connector sdk:
+  title: 'Administer Connector SDK'
+  restrict access: true
+
+submit connector:
+  title: 'Submit connector for certification'
+  description: 'Submit a third-party connector for platform certification.'
+
+certify connector:
+  title: 'Certify connectors'
+  description: 'Approve or reject connector certification requests.'
+  restrict access: true
+
+use connector marketplace:
+  title: 'Use connector marketplace'
+  description: 'Browse and install connectors from the marketplace.'
+
+view connector earnings:
+  title: 'View connector earnings'
+  description: 'View revenue share earnings for submitted connectors.'

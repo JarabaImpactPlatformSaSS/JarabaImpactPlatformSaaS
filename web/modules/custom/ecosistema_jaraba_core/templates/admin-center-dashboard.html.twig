@@ -68,7 +68,7 @@
       <div class="admin-center-kpi admin-center-kpi--{{ key }}">
         <div class="admin-center-kpi__header">
           <span class="admin-center-kpi__icon">
-            {% if key == 'mrr' or key == 'arr' %}
+            {% if key == 'mrr' or key == 'arr' or key == 'gmv_total' %}
               {{ jaraba_icon('business', 'money', { size: '18px', color: 'impulse' }) }}
             {% elseif key == 'tenants' %}
               {{ jaraba_icon('business', 'company', { size: '18px', color: 'innovation' }) }}

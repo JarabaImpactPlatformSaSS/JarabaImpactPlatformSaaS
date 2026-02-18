@@ -36,8 +36,6 @@ entity.suborder_agro.settings:
   parent: system.admin_structure
   weight: 74
 
-# Fase 4: Reviews + Notificaciones (Field UI en /admin/structure)
-
 entity.review_agro.settings:
   title: 'Reseñas Agro'
   description: 'Administrar campos de Reseñas Agro.'
@@ -66,15 +64,12 @@ entity.notification_preference_agro.settings:
   parent: system.admin_structure
   weight: 78
 
-# Configuración del módulo
-jaraba_agroconecta.settings:
+jaraba_agroconecta_core.settings:
   title: 'AgroConecta'
   description: 'Configuración del marketplace AgroConecta.'
-  route_name: jaraba_agroconecta.settings
+  route_name: jaraba_agroconecta_core.settings
   parent: system.admin_config
   weight: 50
-
-# Fase 5: Search & Discovery (Field UI en /admin/structure)
 
 entity.agro_category.settings:
   title: 'Categorías Agro'
@@ -90,8 +85,6 @@ entity.agro_collection.settings:
   parent: system.admin_structure
   weight: 81
 
-# Fase 5: Promotions & Coupons (Field UI en /admin/structure)
-
 entity.promotion_agro.settings:
   title: 'Promociones Agro'
   description: 'Administrar campos de Promociones Agro.'
@@ -106,81 +99,89 @@ entity.coupon_agro.settings:
   parent: system.admin_structure
   weight: 83
 
-# Fase 5: Shipping Core (Field UI en /admin/structure)
-
 entity.shipping_zone_agro.settings:
-  title: 'Zonas de Envío Agro'
+  title: 'Zonas de Envío Agro (Campos)'
   description: 'Administrar campos de Zonas de Envío Agro.'
   route_name: entity.shipping_zone_agro.settings
   parent: system.admin_structure
   weight: 84
 
 entity.shipping_method_agro.settings:
-  title: 'Métodos de Envío Agro'
+  title: 'Métodos de Envío Agro (Campos)'
   description: 'Administrar campos de Métodos de Envío Agro.'
   route_name: entity.shipping_method_agro.settings
   parent: system.admin_structure
   weight: 85
 
-# Fase 6: Traceability + QR
+# Colecciones reales para gestión de datos
+
+entity.agro_shipment.collection:
+  title: 'Envíos AgroConecta'
+  description: 'Ver y gestionar envíos físicos.'
+  route_name: entity.agro_shipment.collection
+  parent: system.admin_content
+  weight: 46
+
+entity.agro_shipping_zone.collection:
+  title: 'Zonas de Envío Agro'
+  description: 'Gestionar áreas geográficas de envío.'
+  route_name: entity.agro_shipping_zone.collection
+  parent: system.admin_structure
+  weight: 100
+
+entity.agro_shipping_rate.collection:
+  title: 'Tarifas de Envío Agro'
+  description: 'Gestionar precios por peso y zona.'
+  route_name: entity.agro_shipping_rate.collection
+  parent: system.admin_structure
+  weight: 101
+
+# Fase 6+: Trazabilidad, QR, etc.
 
 entity.agro_batch.settings:
   title: 'Lotes Agro'
-  description: 'Administrar campos de Lotes de producción.'
   route_name: entity.agro_batch.settings
   parent: system.admin_structure
-  weight: 86
+  weight: 110
 
 entity.trace_event_agro.settings:
   title: 'Eventos Trazabilidad Agro'
-  description: 'Administrar campos de Eventos de Trazabilidad.'
   route_name: entity.trace_event_agro.settings
   parent: system.admin_structure
-  weight: 87
+  weight: 111
 
 entity.integrity_proof_agro.settings:
   title: 'Pruebas Integridad Agro'
-  description: 'Administrar campos de Pruebas de Integridad.'
   route_name: entity.integrity_proof_agro.settings
   parent: system.admin_structure
-  weight: 88
+  weight: 112
 
 entity.qr_code_agro.settings:
   title: 'QR Codes Agro'
-  description: 'Administrar campos de Códigos QR.'
   route_name: entity.qr_code_agro.settings
   parent: system.admin_structure
-  weight: 89
+  weight: 113
 
 entity.qr_lead_capture.settings:
   title: 'Leads QR Agro'
-  description: 'Administrar campos de Leads capturados por QR.'
   route_name: entity.qr_lead_capture.settings
   parent: system.admin_structure
-  weight: 90
-
-# Fase 7: Analytics
+  weight: 114
 
 entity.alert_rule_agro.settings:
   title: 'Reglas Alerta Agro'
-  description: 'Administrar campos de Reglas de Alerta.'
   route_name: entity.alert_rule_agro.settings
   parent: system.admin_structure
-  weight: 91
-
-# Sprint AC6-2: Partner Document Hub B2B
+  weight: 115
 
 entity.partner_relationship.settings:
   title: 'Partners Agro'
-  description: 'Administrar campos de Relaciones Partner.'
   route_name: entity.partner_relationship.settings
   parent: system.admin_structure
-  weight: 92
+  weight: 116
 
 entity.product_document.settings:
   title: 'Documentos de Producto'
-  description: 'Administrar campos de Documentos de Producto.'
   route_name: entity.product_document.settings
   parent: system.admin_structure
-  weight: 93
-
+  weight: 117

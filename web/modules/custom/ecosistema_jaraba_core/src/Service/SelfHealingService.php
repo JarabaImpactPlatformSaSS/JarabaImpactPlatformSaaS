@@ -141,15 +141,19 @@ class SelfHealingService
     {
         $incidentId = 'INC-' . date('Ymd') . '-' . substr(md5(uniqid()), 0, 6);
 
+        // AUDIT-SEC-N14: Incluir tenant_id en el incidente para aislamiento.
+        // Si context contiene tenant_id, usarlo; si no, es platform-wide.
+        $fields = [
+            'id' => $incidentId,
+            'failure_type' => $failureType,
+            'status' => self::STATUS_DETECTED,
+            'context' => json_encode($context),
+            'tenant_id' => $context['tenant_id'] ?? NULL,
+            'created' => time(),
+            'updated' => time(),
+        ];
         $this->database->insert('self_healing_incidents')
-            ->fields([
-                    'id' => $incidentId,
-                    'failure_type' => $failureType,
-                    'status' => self::STATUS_DETECTED,
-                    'context' => json_encode($context),
-                    'created' => time(),
-                    'updated' => time(),
-                ])
+            ->fields(array_filter($fields, fn($v) => $v !== NULL))
             ->execute();
 
         $this->loggerFactory->get('self_healing')->warning(

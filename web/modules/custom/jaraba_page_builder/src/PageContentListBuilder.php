@@ -8,6 +8,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * List builder para PageContent.
@@ -22,15 +23,22 @@ class PageContentListBuilder extends EntityListBuilder
      */
     protected $dateFormatter;
 
+
+    /**
+     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+     */
+    protected ?TenantContextService $tenantContext;
     /**
      * Constructor.
      */
     public function __construct(
         EntityTypeInterface $entity_type,
         EntityStorageInterface $storage,
-        DateFormatterInterface $date_formatter
+        DateFormatterInterface $date_formatter,
+        ?TenantContextService $tenantContext = NULL, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
         parent::__construct($entity_type, $storage);
+        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
         $this->dateFormatter = $date_formatter;
     }
 
@@ -42,7 +50,8 @@ class PageContentListBuilder extends EntityListBuilder
         return new static(
             $entity_type,
             $container->get('entity_type.manager')->getStorage($entity_type->id()),
-            $container->get('date.formatter')
+            $container->get('date.formatter'),
+            $container->has('ecosistema_jaraba_core.tenant_context') ? $container->get('ecosistema_jaraba_core.tenant_context') : NULL, // AUDIT-CONS-N10: Proper DI for tenant context.
         );
     }
 
@@ -90,8 +99,8 @@ class PageContentListBuilder extends EntityListBuilder
         // Filtrar por tenant si el usuario tiene uno asignado.
         $current_user = \Drupal::currentUser();
         if (!$current_user->hasPermission('administer page builder')) {
-            if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-                $tenantId = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId();
+            if ($this->tenantContext !== NULL) {
+                $tenantId = $this->tenantContext->getCurrentTenantId();
                 if ($tenantId) {
                     $query->condition('tenant_id', $tenantId);
                 }

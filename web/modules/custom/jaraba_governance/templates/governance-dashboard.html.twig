@@ -1,0 +1,186 @@
+{#
+/**
+ * @file
+ * Template for the Data Governance Dashboard.
+ *
+ * Available variables:
+ * - classification_stats: Classification coverage summary.
+ * - retention_status: Retention policy preview (would-affect counts).
+ * - erasure_queue: Pending GDPR erasure requests.
+ * - lineage_recent: Recent data lineage events.
+ * - masking_status: Data masking configuration status.
+ */
+#}
+
+<div class="governance-dashboard">
+
+  {# ── HEADER ──────────────────────────────────────────── #}
+  <div class="governance-dashboard__header">
+    <h1 class="governance-dashboard__title">{{ 'Data Governance Dashboard'|t }}</h1>
+    <p class="governance-dashboard__subtitle">
+      {{ 'Enterprise data classification, retention, lineage, GDPR compliance, and masking.'|t }}
+    </p>
+  </div>
+
+  {# ── CARDS GRID ──────────────────────────────────────── #}
+  <div class="governance-dashboard__grid">
+
+    {# ── CARD 1: Classifications ──────────────────────── #}
+    <div class="governance-card governance-card--classifications">
+      <div class="governance-card__header">
+        <h2 class="governance-card__title">{{ 'Data Classifications'|t }}</h2>
+      </div>
+      <div class="governance-card__body">
+        {% if classification_stats %}
+          <div class="governance-card__metric">
+            <span class="governance-card__metric-value">{{ classification_stats.total_classified }}</span>
+            <span class="governance-card__metric-label">{{ 'Total Classified'|t }}</span>
+          </div>
+          <div class="governance-card__breakdown">
+            {% for level, count in classification_stats.by_level %}
+              <div class="governance-card__level">
+                <span class="governance-badge governance-badge--{{ level|lower }}">{{ level }}</span>
+                <span class="governance-card__count">{{ count }}</span>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="governance-card__pii-summary">
+            <span>{{ 'PII Fields'|t }}: <strong>{{ classification_stats.pii_count }}</strong></span>
+            <span>{{ 'Sensitive (Art.9)'|t }}: <strong>{{ classification_stats.sensitive_count }}</strong></span>
+          </div>
+        {% else %}
+          <p class="governance-card__empty">{{ 'No classifications configured yet.'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── CARD 2: Retention Policies ──────────────────── #}
+    <div class="governance-card governance-card--retention">
+      <div class="governance-card__header">
+        <h2 class="governance-card__title">{{ 'Retention Policies'|t }}</h2>
+      </div>
+      <div class="governance-card__body">
+        {% if retention_status %}
+          <table class="governance-table">
+            <thead>
+              <tr>
+                <th>{{ 'Policy'|t }}</th>
+                <th>{{ 'Entity Type'|t }}</th>
+                <th>{{ 'Days'|t }}</th>
+                <th>{{ 'Action'|t }}</th>
+                <th>{{ 'Would Affect'|t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, policy in retention_status %}
+                <tr>
+                  <td>{{ key }}</td>
+                  <td>{{ policy.entity_type ?: '-' }}</td>
+                  <td>{{ policy.retention_days }}</td>
+                  <td><span class="governance-badge governance-badge--{{ policy.action }}">{{ policy.action }}</span></td>
+                  <td>{{ policy.would_affect }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="governance-card__empty">{{ 'No retention policies configured.'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── CARD 3: Erasure Queue ───────────────────────── #}
+    <div class="governance-card governance-card--erasure">
+      <div class="governance-card__header">
+        <h2 class="governance-card__title">{{ 'GDPR Erasure Queue'|t }}</h2>
+      </div>
+      <div class="governance-card__body">
+        {% if erasure_queue %}
+          <div class="governance-card__metric">
+            <span class="governance-card__metric-value">{{ erasure_queue|length }}</span>
+            <span class="governance-card__metric-label">{{ 'Pending Requests'|t }}</span>
+          </div>
+          <table class="governance-table">
+            <thead>
+              <tr>
+                <th>{{ 'ID'|t }}</th>
+                <th>{{ 'Type'|t }}</th>
+                <th>{{ 'Subject'|t }}</th>
+                <th>{{ 'Status'|t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for request in erasure_queue %}
+                <tr>
+                  <td>#{{ request.id }}</td>
+                  <td>{{ request.request_type }}</td>
+                  <td>{{ 'User'|t }} #{{ request.subject_user_id }}</td>
+                  <td><span class="governance-badge governance-badge--{{ request.status }}">{{ request.status }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="governance-card__empty">{{ 'No pending erasure requests.'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── CARD 4: Data Lineage ────────────────────────── #}
+    <div class="governance-card governance-card--lineage">
+      <div class="governance-card__header">
+        <h2 class="governance-card__title">{{ 'Recent Data Lineage'|t }}</h2>
+      </div>
+      <div class="governance-card__body">
+        {% if lineage_recent %}
+          <table class="governance-table">
+            <thead>
+              <tr>
+                <th>{{ 'Event'|t }}</th>
+                <th>{{ 'Entity'|t }}</th>
+                <th>{{ 'Actor'|t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for event in lineage_recent %}
+                <tr>
+                  <td><span class="governance-badge governance-badge--{{ event.event_type }}">{{ event.event_type }}</span></td>
+                  <td>{{ event.target_entity_type }} #{{ event.target_entity_id }}</td>
+                  <td>{{ event.actor_type }}{% if event.actor_id %} #{{ event.actor_id }}{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="governance-card__empty">{{ 'No lineage events recorded yet.'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── CARD 5: Data Masking ────────────────────────── #}
+    <div class="governance-card governance-card--masking">
+      <div class="governance-card__header">
+        <h2 class="governance-card__title">{{ 'Data Masking'|t }}</h2>
+      </div>
+      <div class="governance-card__body">
+        {% if masking_status %}
+          <div class="governance-card__metric">
+            <span class="governance-card__metric-value">{{ masking_status.rules_configured }}</span>
+            <span class="governance-card__metric-label">{{ 'Rules Configured'|t }}</span>
+          </div>
+          <div class="governance-card__masking-rules">
+            {% for rule in masking_status.rules %}
+              <span class="governance-badge governance-badge--masking">{{ rule }}</span>
+            {% endfor %}
+          </div>
+          <p class="governance-card__warning">
+            {{ 'Data masking should ONLY be executed on staging/dev database copies, never on production.'|t }}
+          </p>
+        {% else %}
+          <p class="governance-card__empty">{{ 'No masking rules configured.'|t }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>

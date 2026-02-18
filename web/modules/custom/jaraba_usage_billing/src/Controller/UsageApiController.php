@@ -58,8 +58,10 @@ class UsageApiController extends ControllerBase {
       $data = json_decode($content, TRUE);
 
       if (!is_array($data)) {
+        // AUDIT-CONS-N08: Standardized JSON envelope.
         return new JsonResponse([
-          'error' => 'Invalid JSON payload.',
+          'success' => FALSE,
+          'error' => ['code' => 'INVALID_BODY', 'message' => 'Invalid JSON payload.'],
         ], 400);
       }
 
@@ -67,9 +69,9 @@ class UsageApiController extends ControllerBase {
       if (isset($data['events']) && is_array($data['events'])) {
         $count = $this->ingestion->batchIngest($data['events']);
         return new JsonResponse([
-          'status' => 'ok',
-          'ingested' => $count,
-          'total' => count($data['events']),
+          'success' => TRUE,
+          'data' => ['ingested' => $count],
+          'meta' => ['total' => count($data['events']), 'timestamp' => time()],
         ], 201);
       }
 
@@ -78,13 +80,15 @@ class UsageApiController extends ControllerBase {
 
       if ($eventId === NULL) {
         return new JsonResponse([
-          'error' => 'Failed to ingest event. Check required fields: event_type, metric_name, quantity, tenant_id.',
+          'success' => FALSE,
+          'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'Failed to ingest event. Check required fields: event_type, metric_name, quantity, tenant_id.'],
         ], 422);
       }
 
       return new JsonResponse([
-        'status' => 'ok',
-        'event_id' => $eventId,
+        'success' => TRUE,
+        'data' => ['event_id' => $eventId],
+        'meta' => ['timestamp' => time()],
       ], 201);
     }
     catch (\Exception $e) {
@@ -92,7 +96,8 @@ class UsageApiController extends ControllerBase {
         '@error' => $e->getMessage(),
       ]);
       return new JsonResponse([
-        'error' => 'Internal server error.',
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Internal server error.'],
       ], 500);
     }
   }
@@ -114,7 +119,8 @@ class UsageApiController extends ControllerBase {
 
       if ($tenantId <= 0) {
         return new JsonResponse([
-          'error' => 'tenant_id is required.',
+          'success' => FALSE,
+          'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'tenant_id is required.'],
         ], 400);
       }
 
@@ -134,10 +140,9 @@ class UsageApiController extends ControllerBase {
       }
 
       return new JsonResponse([
-        'status' => 'ok',
-        'tenant_id' => $tenantId,
-        'period' => $period,
+        'success' => TRUE,
         'data' => $result,
+        'meta' => ['tenant_id' => $tenantId, 'period' => $period, 'timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
@@ -145,7 +150,8 @@ class UsageApiController extends ControllerBase {
         '@error' => $e->getMessage(),
       ]);
       return new JsonResponse([
-        'error' => 'Internal server error.',
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Internal server error.'],
       ], 500);
     }
   }
@@ -166,7 +172,8 @@ class UsageApiController extends ControllerBase {
 
       if ($tenantId <= 0) {
         return new JsonResponse([
-          'error' => 'tenant_id is required.',
+          'success' => FALSE,
+          'error' => ['code' => 'VALIDATION_ERROR', 'message' => 'tenant_id is required.'],
         ], 400);
       }
 
@@ -222,17 +229,18 @@ class UsageApiController extends ControllerBase {
       sort($chartLabels);
 
       return new JsonResponse([
-        'status' => 'ok',
-        'tenant_id' => $tenantId,
-        'period' => $period,
-        'metrics' => $metricsSummary,
-        'cost_breakdown' => $costBreakdown,
-        'total_cost' => round($totalCost, 4),
-        'alerts' => $alerts,
-        'chart' => [
-          'labels' => $chartLabels,
-          'datasets' => $chartDatasets,
+        'success' => TRUE,
+        'data' => [
+          'metrics' => $metricsSummary,
+          'cost_breakdown' => $costBreakdown,
+          'total_cost' => round($totalCost, 4),
+          'alerts' => $alerts,
+          'chart' => [
+            'labels' => $chartLabels,
+            'datasets' => $chartDatasets,
+          ],
         ],
+        'meta' => ['tenant_id' => $tenantId, 'period' => $period, 'timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
@@ -240,7 +248,8 @@ class UsageApiController extends ControllerBase {
         '@error' => $e->getMessage(),
       ]);
       return new JsonResponse([
-        'error' => 'Internal server error.',
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Internal server error.'],
       ], 500);
     }
   }

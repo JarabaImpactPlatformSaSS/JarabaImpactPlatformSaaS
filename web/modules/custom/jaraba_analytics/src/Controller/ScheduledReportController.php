@@ -97,19 +97,23 @@ class ScheduledReportController extends ControllerBase {
       $reportData = $this->reportScheduler->generateReport($reportId);
 
       if (empty($reportData)) {
+        // AUDIT-CONS-N08: Standardized JSON envelope.
         return new JsonResponse([
-          'error' => 'Report not found or empty.',
+          'success' => FALSE,
+          'error' => ['code' => 'NOT_FOUND', 'message' => 'Report not found or empty.'],
         ], 404);
       }
 
       return new JsonResponse([
-        'preview' => TRUE,
-        'report' => $reportData,
+        'success' => TRUE,
+        'data' => ['preview' => TRUE, 'report' => $reportData],
+        'meta' => ['timestamp' => time()],
       ]);
     }
     catch (\Exception $e) {
       return new JsonResponse([
-        'error' => 'Failed to preview report: ' . $e->getMessage(),
+        'success' => FALSE,
+        'error' => ['code' => 'INTERNAL_ERROR', 'message' => 'Failed to preview report.'],
       ], 500);
     }
   }

@@ -1,0 +1,16 @@
+administer jaraba mobile:
+  title: 'Administer Jaraba Mobile'
+  description: 'Configure mobile app settings and manage devices.'
+  restrict access: true
+
+manage mobile devices:
+  title: 'Manage mobile devices'
+  description: 'View and manage registered mobile devices.'
+
+send push notifications:
+  title: 'Send push notifications'
+  description: 'Send push notifications to users.'
+
+view push history:
+  title: 'View push history'
+  description: 'View push notification delivery history.'

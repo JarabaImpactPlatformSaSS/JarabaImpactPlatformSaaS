@@ -33,7 +33,7 @@ class AgroAdminController extends ControllerBase implements ContainerInjectionIn
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.analytics_service'),
+            $container->get('jaraba_agroconecta_core.analytics_service'), // AUDIT-CONS-N05: canonical prefix
         );
     }
 
@@ -255,7 +255,8 @@ class AgroAdminController extends ControllerBase implements ContainerInjectionIn
                 'generated_at' => date('c'),
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Entity not available'], 500);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Entity not available']], 500);
         }
     }
 

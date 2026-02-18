@@ -71,7 +71,8 @@ class WebhookReceiverController extends ControllerBase
         $body = $request->getContent();
 
         if (empty($body)) {
-            return new JsonResponse(['error' => 'Empty payload'], 400);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Empty payload']], 400);
         }
 
         // AUDIT-SEC-N01: Verificar firma HMAC antes de procesar el payload.
@@ -82,7 +83,7 @@ class WebhookReceiverController extends ControllerBase
 
         $payload = json_decode($body, TRUE);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return new JsonResponse(['error' => 'Invalid JSON'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid JSON']], 400);
         }
 
         $eventType = $payload['event'] ?? $payload['type'] ?? 'unknown';
@@ -145,7 +146,7 @@ class WebhookReceiverController extends ControllerBase
             $this->logger->warning('Webhook rechazado: endpoint @id no encontrado', [
                 '@id' => $webhookId,
             ]);
-            return new JsonResponse(['error' => 'Webhook endpoint not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Webhook endpoint not found']], 404);
         }
 
         $subscription = reset($subscriptions);
@@ -155,7 +156,7 @@ class WebhookReceiverController extends ControllerBase
             $this->logger->error('Webhook rechazado: endpoint @id sin secret configurado', [
                 '@id' => $webhookId,
             ]);
-            return new JsonResponse(['error' => 'Webhook secret not configured'], 500);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Webhook secret not configured']], 500);
         }
 
         // Intentar extraer la firma de los headers soportados.
@@ -167,7 +168,7 @@ class WebhookReceiverController extends ControllerBase
                 '@id' => $webhookId,
                 '@ip' => $request->getClientIp(),
             ]);
-            return new JsonResponse(['error' => 'Missing signature'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Missing signature']], 403);
         }
 
         // Extraer el hash de la firma (soportar formato "sha256=<hex>" o "<hex>").
@@ -185,7 +186,7 @@ class WebhookReceiverController extends ControllerBase
                 '@id' => $webhookId,
                 '@ip' => $request->getClientIp(),
             ]);
-            return new JsonResponse(['error' => 'Invalid signature'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid signature']], 403);
         }
 
         return TRUE;

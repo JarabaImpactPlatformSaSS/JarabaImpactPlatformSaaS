@@ -9,6 +9,7 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\jaraba_agroconecta_core\Entity\OrderAgro;
 use Drupal\jaraba_agroconecta_core\Service\OrderService;
 use Drupal\jaraba_agroconecta_core\Service\ProducerDashboardService;
+use Drupal\jaraba_agroconecta_core\Service\AgroAnalyticsService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -35,6 +36,7 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
     public function __construct(
         protected ProducerDashboardService $dashboardService,
         protected OrderService $orderService,
+        protected AgroAnalyticsService $analyticsService,
     ) {
     }
 
@@ -44,8 +46,9 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.producer_dashboard_service'),
-            $container->get('jaraba_agroconecta.order_service'),
+            $container->get('jaraba_agroconecta_core.producer_dashboard_service'),
+            $container->get('jaraba_agroconecta_core.order_service'),
+            $container->get('jaraba_agroconecta_core.analytics_service'),
         );
     }
 
@@ -68,17 +71,22 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
         $topProducts = $this->dashboardService->getTopProducts($producerId);
         $salesChart = $this->dashboardService->getSalesChart($producerId);
 
+        $tenantId = (int) \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenantId();
+        $analytics = $this->analyticsService->getRecentAnalytics($tenantId, $producerId);
+
         return [
             '#theme' => 'agro_producer_dashboard',
             '#kpis' => $kpis,
             '#alerts' => $alerts,
             '#pending_orders' => $pendingOrders,
             '#top_products' => $topProducts,
+            '#analytics' => $analytics,
             '#attached' => [
                 'library' => ['jaraba_agroconecta_core/agroconecta.producer'],
                 'drupalSettings' => [
                     'agroconecta' => [
                         'salesChart' => $salesChart,
+                        'analytics' => $analytics,
                     ],
                 ],
             ],

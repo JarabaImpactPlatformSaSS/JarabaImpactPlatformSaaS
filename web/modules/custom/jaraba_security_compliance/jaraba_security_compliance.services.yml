@@ -31,3 +31,20 @@ services:
       - '@database'
       - '@config.factory'
       - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.soc2_control_mapper:
+    class: Drupal\jaraba_security_compliance\Service\Soc2ControlMapperService
+    arguments:
+      - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.ens_compliance:
+    class: Drupal\jaraba_security_compliance\Service\EnsComplianceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_security_compliance'
+
+  jaraba_security_compliance.iso_risk:
+    class: Drupal\jaraba_security_compliance\Service\IsoRiskService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_security_compliance'

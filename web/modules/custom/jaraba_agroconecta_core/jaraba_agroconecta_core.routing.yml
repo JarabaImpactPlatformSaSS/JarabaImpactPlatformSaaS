@@ -1,3 +1,4 @@
+# AUDIT-CONS-N05: Normalized all route names from jaraba_agroconecta.* to jaraba_agroconecta_core.*
 # Rutas del módulo Jaraba AgroConecta Core
 # CRÍTICO: Content Entities en /admin/content, Settings en /admin/structure
 
@@ -161,7 +162,7 @@ entity.agro_certification.settings:
 # FRONTEND: MARKETPLACE
 # ============================================
 
-jaraba_agroconecta.marketplace:
+jaraba_agroconecta_core.marketplace:
   path: '/marketplace'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\MarketplaceController::index'
@@ -169,7 +170,7 @@ jaraba_agroconecta.marketplace:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.product_detail:
+jaraba_agroconecta_core.product_detail:
   path: '/producto/{product_agro}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\MarketplaceController::productDetail'
@@ -185,7 +186,7 @@ jaraba_agroconecta.product_detail:
 # CONFIGURACIÓN DEL MÓDULO
 # ============================================
 
-jaraba_agroconecta.settings:
+jaraba_agroconecta_core.settings:
   path: '/admin/config/agroconecta/settings'
   defaults:
     _form: 'Drupal\jaraba_agroconecta_core\Form\AgroconectaSettingsForm'
@@ -197,7 +198,7 @@ jaraba_agroconecta.settings:
 # API REST
 # ============================================
 
-jaraba_agroconecta.api.products:
+jaraba_agroconecta_core.api.products:
   path: '/api/v1/agro/products'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroApiController::listProducts'
@@ -205,7 +206,7 @@ jaraba_agroconecta.api.products:
   requirements:
     _permission: 'view agro products'
 
-jaraba_agroconecta.api.product:
+jaraba_agroconecta_core.api.product:
   path: '/api/v1/agro/products/{product_agro}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroApiController::getProduct'
@@ -217,7 +218,7 @@ jaraba_agroconecta.api.product:
       product_agro:
         type: entity:product_agro
 
-jaraba_agroconecta.api.producers:
+jaraba_agroconecta_core.api.producers:
   path: '/api/v1/agro/producers'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroApiController::listProducers'
@@ -325,7 +326,7 @@ entity.suborder_agro.settings:
 # FRONTEND: CHECKOUT (Fase 2)
 # ============================================
 
-jaraba_agroconecta.checkout:
+jaraba_agroconecta_core.checkout:
   path: '/checkout'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::checkout'
@@ -333,7 +334,7 @@ jaraba_agroconecta.checkout:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.checkout_process:
+jaraba_agroconecta_core.checkout_process:
   path: '/checkout/process'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::processCheckout'
@@ -341,7 +342,7 @@ jaraba_agroconecta.checkout_process:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.checkout_confirm:
+jaraba_agroconecta_core.checkout_confirm:
   path: '/checkout/confirm'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::confirmOrder'
@@ -349,7 +350,7 @@ jaraba_agroconecta.checkout_confirm:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.order_confirmation:
+jaraba_agroconecta_core.order_confirmation:
   path: '/pedido/{order_number}/confirmacion'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CheckoutController::orderConfirmation'
@@ -361,7 +362,7 @@ jaraba_agroconecta.order_confirmation:
 # API REST: PEDIDOS (Fase 2)
 # ============================================
 
-jaraba_agroconecta.api.orders:
+jaraba_agroconecta_core.api.orders:
   path: '/api/v1/agro/orders'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::listOrders'
@@ -369,7 +370,7 @@ jaraba_agroconecta.api.orders:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.order:
+jaraba_agroconecta_core.api.order:
   path: '/api/v1/agro/orders/{order_number}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::getOrder'
@@ -377,7 +378,7 @@ jaraba_agroconecta.api.order:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.orders.cancel:
+jaraba_agroconecta_core.api.orders.cancel:
   path: '/api/v1/agro/orders/{order_number}/cancel'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::cancelOrder'
@@ -385,7 +386,7 @@ jaraba_agroconecta.api.orders.cancel:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.producer.orders:
+jaraba_agroconecta_core.api.producer.orders:
   path: '/api/v1/agro/producer/orders'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::listProducerOrders'
@@ -393,7 +394,7 @@ jaraba_agroconecta.api.producer.orders:
   requirements:
     _permission: 'manage producer profiles'
 
-jaraba_agroconecta.api.producer.order.confirm:
+jaraba_agroconecta_core.api.producer.order.confirm:
   path: '/api/v1/agro/producer/orders/{suborder_agro}/confirm'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::confirmSuborder'
@@ -405,7 +406,7 @@ jaraba_agroconecta.api.producer.order.confirm:
       suborder_agro:
         type: entity:suborder_agro
 
-jaraba_agroconecta.api.producer.order.ship:
+jaraba_agroconecta_core.api.producer.order.ship:
   path: '/api/v1/agro/producer/orders/{suborder_agro}/ship'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\OrderApiController::shipSuborder'
@@ -421,7 +422,7 @@ jaraba_agroconecta.api.producer.order.ship:
 # PORTAL DEL PRODUCTOR (Fase 3)
 # ============================================
 
-jaraba_agroconecta.producer.dashboard:
+jaraba_agroconecta_core.producer.dashboard:
   path: '/productor'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::dashboard'
@@ -429,7 +430,7 @@ jaraba_agroconecta.producer.dashboard:
   requirements:
     _permission: 'manage producer profiles'
 
-jaraba_agroconecta.producer.orders:
+jaraba_agroconecta_core.producer.orders:
   path: '/productor/pedidos'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::orders'
@@ -437,7 +438,7 @@ jaraba_agroconecta.producer.orders:
   requirements:
     _permission: 'manage producer profiles'
 
-jaraba_agroconecta.producer.order_detail:
+jaraba_agroconecta_core.producer.order_detail:
   path: '/productor/pedidos/{suborder_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::orderDetail'
@@ -446,7 +447,7 @@ jaraba_agroconecta.producer.order_detail:
     _permission: 'manage producer profiles'
     suborder_id: '\d+'
 
-jaraba_agroconecta.producer.products:
+jaraba_agroconecta_core.producer.products:
   path: '/productor/productos'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::products'
@@ -454,7 +455,7 @@ jaraba_agroconecta.producer.products:
   requirements:
     _permission: 'manage producer profiles'
 
-jaraba_agroconecta.producer.payouts:
+jaraba_agroconecta_core.producer.payouts:
   path: '/productor/finanzas'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::payouts'
@@ -462,7 +463,7 @@ jaraba_agroconecta.producer.payouts:
   requirements:
     _permission: 'manage producer profiles'
 
-jaraba_agroconecta.producer.settings:
+jaraba_agroconecta_core.producer.settings:
   path: '/productor/configuracion'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ProducerPortalController::settings'
@@ -474,7 +475,7 @@ jaraba_agroconecta.producer.settings:
 # PORTAL DEL CLIENTE (Fase 3)
 # ============================================
 
-jaraba_agroconecta.customer.dashboard:
+jaraba_agroconecta_core.customer.dashboard:
   path: '/mi-cuenta'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::dashboard'
@@ -482,7 +483,7 @@ jaraba_agroconecta.customer.dashboard:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.customer.orders:
+jaraba_agroconecta_core.customer.orders:
   path: '/mi-cuenta/pedidos'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::orders'
@@ -490,7 +491,7 @@ jaraba_agroconecta.customer.orders:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.customer.order_detail:
+jaraba_agroconecta_core.customer.order_detail:
   path: '/mi-cuenta/pedidos/{order_number}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::orderDetail'
@@ -498,7 +499,7 @@ jaraba_agroconecta.customer.order_detail:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.customer.addresses:
+jaraba_agroconecta_core.customer.addresses:
   path: '/mi-cuenta/direcciones'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::addresses'
@@ -506,7 +507,7 @@ jaraba_agroconecta.customer.addresses:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.customer.favorites:
+jaraba_agroconecta_core.customer.favorites:
   path: '/mi-cuenta/favoritos'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CustomerPortalController::favorites'
@@ -710,7 +711,7 @@ entity.notification_preference_agro.settings:
 # FASE 4: API REST — Reviews
 # ============================================
 
-jaraba_agroconecta.api.reviews.list:
+jaraba_agroconecta_core.api.reviews.list:
   path: '/api/v1/agro/reviews'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::list'
@@ -718,7 +719,7 @@ jaraba_agroconecta.api.reviews.list:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.reviews.stats:
+jaraba_agroconecta_core.api.reviews.stats:
   path: '/api/v1/agro/reviews/stats'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::stats'
@@ -726,7 +727,7 @@ jaraba_agroconecta.api.reviews.stats:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.reviews.create:
+jaraba_agroconecta_core.api.reviews.create:
   path: '/api/v1/agro/reviews'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::createReview'
@@ -734,7 +735,7 @@ jaraba_agroconecta.api.reviews.create:
   requirements:
     _permission: 'submit agro reviews'
 
-jaraba_agroconecta.api.reviews.respond:
+jaraba_agroconecta_core.api.reviews.respond:
   path: '/api/v1/agro/reviews/{review_id}/respond'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::respond'
@@ -742,7 +743,7 @@ jaraba_agroconecta.api.reviews.respond:
   requirements:
     _permission: 'respond agro reviews'
 
-jaraba_agroconecta.api.reviews.pending:
+jaraba_agroconecta_core.api.reviews.pending:
   path: '/api/v1/agro/reviews/pending'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::pending'
@@ -750,7 +751,7 @@ jaraba_agroconecta.api.reviews.pending:
   requirements:
     _permission: 'manage agro reviews'
 
-jaraba_agroconecta.api.reviews.moderate:
+jaraba_agroconecta_core.api.reviews.moderate:
   path: '/api/v1/agro/reviews/{review_id}/moderate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ReviewApiController::moderate'
@@ -762,7 +763,7 @@ jaraba_agroconecta.api.reviews.moderate:
 # FASE 4: API REST — Notificaciones
 # ============================================
 
-jaraba_agroconecta.api.notifications.preferences.get:
+jaraba_agroconecta_core.api.notifications.preferences.get:
   path: '/api/v1/agro/notifications/preferences'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::getPreferences'
@@ -770,7 +771,7 @@ jaraba_agroconecta.api.notifications.preferences.get:
   requirements:
     _permission: 'access content'
 
-jaraba_agroconecta.api.notifications.preferences.update:
+jaraba_agroconecta_core.api.notifications.preferences.update:
   path: '/api/v1/agro/notifications/preferences'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::updatePreferences'
@@ -778,7 +779,7 @@ jaraba_agroconecta.api.notifications.preferences.update:
   requirements:
     _permission: 'access content'
 
-jaraba_agroconecta.api.notifications.send:
+jaraba_agroconecta_core.api.notifications.send:
   path: '/api/v1/agro/notifications/send'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::send'
@@ -786,7 +787,7 @@ jaraba_agroconecta.api.notifications.send:
   requirements:
     _permission: 'manage agro notifications'
 
-jaraba_agroconecta.api.notifications.logs:
+jaraba_agroconecta_core.api.notifications.logs:
   path: '/api/v1/agro/notifications/logs'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::logs'
@@ -794,7 +795,7 @@ jaraba_agroconecta.api.notifications.logs:
   requirements:
     _permission: 'manage agro notifications'
 
-jaraba_agroconecta.api.notifications.metrics:
+jaraba_agroconecta_core.api.notifications.metrics:
   path: '/api/v1/agro/notifications/metrics'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\NotificationApiController::metrics'
@@ -910,7 +911,7 @@ entity.agro_collection.settings:
 # BÚSQUEDA - API REST (Fase 5: Search & Discovery)
 # ============================================
 
-jaraba_agroconecta.api.search:
+jaraba_agroconecta_core.api.search:
   path: '/api/v1/agro/search'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::search'
@@ -918,7 +919,7 @@ jaraba_agroconecta.api.search:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.search.autocomplete:
+jaraba_agroconecta_core.api.search.autocomplete:
   path: '/api/v1/agro/search/autocomplete'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::autocomplete'
@@ -926,7 +927,7 @@ jaraba_agroconecta.api.search.autocomplete:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.categories:
+jaraba_agroconecta_core.api.categories:
   path: '/api/v1/agro/categories'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::categories'
@@ -934,7 +935,7 @@ jaraba_agroconecta.api.categories:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.categories.products:
+jaraba_agroconecta_core.api.categories.products:
   path: '/api/v1/agro/categories/{category_id}/products'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::categoryProducts'
@@ -943,7 +944,7 @@ jaraba_agroconecta.api.categories.products:
     _permission: 'access marketplace'
     category_id: '\d+'
 
-jaraba_agroconecta.api.collections:
+jaraba_agroconecta_core.api.collections:
   path: '/api/v1/agro/collections'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::collections'
@@ -951,7 +952,7 @@ jaraba_agroconecta.api.collections:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.collections.detail:
+jaraba_agroconecta_core.api.collections.detail:
   path: '/api/v1/agro/collections/{collection_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchApiController::collectionDetail'
@@ -964,7 +965,7 @@ jaraba_agroconecta.api.collections.detail:
 # BÚSQUEDA - FRONTEND (Fase 5: Search & Discovery)
 # ============================================
 
-jaraba_agroconecta.search_page:
+jaraba_agroconecta_core.search_page:
   path: '/agroconecta/search'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchController::searchPage'
@@ -972,7 +973,7 @@ jaraba_agroconecta.search_page:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.category_page:
+jaraba_agroconecta_core.category_page:
   path: '/agroconecta/category/{slug}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchController::categoryPage'
@@ -980,7 +981,7 @@ jaraba_agroconecta.category_page:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.collection_page:
+jaraba_agroconecta_core.collection_page:
   path: '/agroconecta/collection/{slug}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SearchController::collectionPage'
@@ -1096,7 +1097,7 @@ entity.coupon_agro.settings:
 # PROMOTIONS & COUPONS - API REST (Fase 5)
 # ============================================
 
-jaraba_agroconecta.api.promotions:
+jaraba_agroconecta_core.api.promotions:
   path: '/api/v1/agro/promotions'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::list'
@@ -1104,7 +1105,7 @@ jaraba_agroconecta.api.promotions:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.promotions.detail:
+jaraba_agroconecta_core.api.promotions.detail:
   path: '/api/v1/agro/promotions/{promotion_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::detail'
@@ -1113,7 +1114,7 @@ jaraba_agroconecta.api.promotions.detail:
     _permission: 'access marketplace'
     promotion_id: '\d+'
 
-jaraba_agroconecta.api.promotions.evaluate:
+jaraba_agroconecta_core.api.promotions.evaluate:
   path: '/api/v1/agro/promotions/evaluate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::evaluate'
@@ -1121,7 +1122,7 @@ jaraba_agroconecta.api.promotions.evaluate:
   requirements:
     _permission: 'access checkout'
 
-jaraba_agroconecta.api.coupons.validate:
+jaraba_agroconecta_core.api.coupons.validate:
   path: '/api/v1/agro/coupons/validate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::validateCoupon'
@@ -1129,7 +1130,7 @@ jaraba_agroconecta.api.coupons.validate:
   requirements:
     _permission: 'access checkout'
 
-jaraba_agroconecta.api.coupons.redeem:
+jaraba_agroconecta_core.api.coupons.redeem:
   path: '/api/v1/agro/coupons/redeem'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PromotionApiController::redeemCoupon'
@@ -1245,7 +1246,7 @@ entity.shipping_method_agro.settings:
 # SHIPPING - API REST (Fase 5)
 # ============================================
 
-jaraba_agroconecta.api.shipping.zones:
+jaraba_agroconecta_core.api.shipping.zones:
   path: '/api/v1/agro/shipping/zones'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::zones'
@@ -1253,7 +1254,7 @@ jaraba_agroconecta.api.shipping.zones:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.shipping.methods:
+jaraba_agroconecta_core.api.shipping.methods:
   path: '/api/v1/agro/shipping/methods'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::methods'
@@ -1261,7 +1262,7 @@ jaraba_agroconecta.api.shipping.methods:
   requirements:
     _permission: 'access marketplace'
 
-jaraba_agroconecta.api.shipping.calculate:
+jaraba_agroconecta_core.api.shipping.calculate:
   path: '/api/v1/agro/shipping/calculate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::calculate'
@@ -1269,13 +1270,93 @@ jaraba_agroconecta.api.shipping.calculate:
   requirements:
     _permission: 'access checkout'
 
-jaraba_agroconecta.api.shipping.detect_zone:
+jaraba_agroconecta_core.api.shipping.detect_zone:
   path: '/api/v1/agro/shipping/detect-zone'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\ShippingApiController::detectZone'
   methods: [POST]
   requirements:
     _permission: 'access checkout'
+
+# ============================================
+# CONFIGURACIÓN TRANSPORTISTAS (Fase 5: Shipping Core)
+# ============================================
+
+entity.agro_carrier_config.collection:
+  path: '/admin/structure/agro-carrier-configs'
+  defaults:
+    _entity_list: 'agro_carrier_config'
+    _title: 'Configuración Transportistas'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.agro_carrier_config.add_form:
+  path: '/admin/structure/agro-carrier-configs/add'
+  defaults:
+    _entity_form: 'agro_carrier_config.add'
+    _title: 'Añadir Configuración'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.agro_carrier_config.edit_form:
+  path: '/admin/structure/agro-carrier-configs/{agro_carrier_config}/edit'
+  defaults:
+    _entity_form: 'agro_carrier_config.edit'
+    _title: 'Editar Configuración'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.agro_carrier_config.delete_form:
+  path: '/admin/structure/agro-carrier-configs/{agro_carrier_config}/delete'
+  defaults:
+    _entity_form: 'agro_carrier_config.delete'
+    _title: 'Eliminar Configuración'
+  requirements:
+    _permission: 'manage agro shipping'
+
+# ============================================
+# ENVÍOS FÍSICOS (Fase 5: Shipping Core)
+# ============================================
+
+entity.agro_shipment.collection:
+  path: '/admin/content/agro-shipments'
+  defaults:
+    _entity_list: 'agro_shipment'
+    _title: 'Envíos AgroConecta'
+  requirements:
+    _permission: 'view agro shipments'
+
+entity.agro_shipment.canonical:
+  path: '/admin/content/agro-shipments/{agro_shipment}'
+  defaults:
+    _entity_view: 'agro_shipment'
+    _title: 'Ver Envío'
+  requirements:
+    _permission: 'view agro shipments'
+
+entity.agro_shipment.add_form:
+  path: '/admin/content/agro-shipments/add'
+  defaults:
+    _entity_form: 'agro_shipment.add'
+    _title: 'Registrar Envío'
+  requirements:
+    _permission: 'create agro shipments'
+
+entity.agro_shipment.edit_form:
+  path: '/admin/content/agro-shipments/{agro_shipment}/edit'
+  defaults:
+    _entity_form: 'agro_shipment.edit'
+    _title: 'Editar Envío'
+  requirements:
+    _permission: 'manage agro shipments'
+
+entity.agro_shipment.delete_form:
+  path: '/admin/content/agro-shipments/{agro_shipment}/delete'
+  defaults:
+    _entity_form: 'agro_shipment.delete'
+    _title: 'Eliminar Envío'
+  requirements:
+    _permission: 'manage agro shipments'
 
 # ============================================
 # LOTES / TRAZABILIDAD (Fase 6: Traceability)
@@ -1530,10 +1611,22 @@ entity.qr_lead_capture.settings:
     _permission: 'administer agroconecta'
 
 # ============================================
+# TRAZABILIDAD PÚBLICA (Consumer Experience)
+# ============================================
+
+jaraba_agroconecta.traceability.public:
+  path: '/agroconecta/trace/{batch_code}'
+  defaults:
+    _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityPublicController::viewHistory'
+    _title: 'Trazabilidad de Producto'
+  requirements:
+    _access: 'TRUE'
+
+# ============================================
 # TRAZABILIDAD + QR API REST (Fase 6)
 # ============================================
 
-jaraba_agroconecta.api.traceability.batch:
+jaraba_agroconecta_core.api.traceability.batch:
   path: '/api/v1/agro/traceability/{code}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::getBatchTraceability'
@@ -1541,7 +1634,7 @@ jaraba_agroconecta.api.traceability.batch:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.traceability.add_event:
+jaraba_agroconecta_core.api.traceability.add_event:
   path: '/api/v1/agro/traceability/events'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::addTraceEvent'
@@ -1549,7 +1642,7 @@ jaraba_agroconecta.api.traceability.add_event:
   requirements:
     _permission: 'manage agro traceability'
 
-jaraba_agroconecta.api.traceability.verify:
+jaraba_agroconecta_core.api.traceability.verify:
   path: '/api/v1/agro/traceability/{batch_id}/verify'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::verifyIntegrity'
@@ -1557,7 +1650,7 @@ jaraba_agroconecta.api.traceability.verify:
   requirements:
     _permission: 'view agro traceability'
 
-jaraba_agroconecta.api.traceability.proof:
+jaraba_agroconecta_core.api.traceability.proof:
   path: '/api/v1/agro/traceability/proof'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::createProof'
@@ -1565,7 +1658,7 @@ jaraba_agroconecta.api.traceability.proof:
   requirements:
     _permission: 'manage agro traceability'
 
-jaraba_agroconecta.api.qr.generate:
+jaraba_agroconecta_core.api.qr.generate:
   path: '/api/v1/agro/qr/generate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::generateQr'
@@ -1573,7 +1666,7 @@ jaraba_agroconecta.api.qr.generate:
   requirements:
     _permission: 'manage agro qr'
 
-jaraba_agroconecta.api.qr.scan:
+jaraba_agroconecta_core.api.qr.scan:
   path: '/api/v1/agro/qr/scan'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::trackScan'
@@ -1581,7 +1674,7 @@ jaraba_agroconecta.api.qr.scan:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.qr.lead:
+jaraba_agroconecta_core.api.qr.lead:
   path: '/api/v1/agro/qr/lead'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::captureLead'
@@ -1589,7 +1682,7 @@ jaraba_agroconecta.api.qr.lead:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.qr.analytics:
+jaraba_agroconecta_core.api.qr.analytics:
   path: '/api/v1/agro/qr/{qr_id}/analytics'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::qrAnalytics'
@@ -1597,7 +1690,7 @@ jaraba_agroconecta.api.qr.analytics:
   requirements:
     _permission: 'view agro qr'
 
-jaraba_agroconecta.api.qr.list:
+jaraba_agroconecta_core.api.qr.list:
   path: '/api/v1/agro/qr/list'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\TraceabilityApiController::listQrCodes'
@@ -1675,7 +1768,7 @@ entity.alert_rule_agro.settings:
 
 # API Analytics
 
-jaraba_agroconecta.api.analytics.dashboard:
+jaraba_agroconecta_core.api.analytics.dashboard:
   path: '/api/v1/agro/analytics/dashboard'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::dashboard'
@@ -1683,7 +1776,7 @@ jaraba_agroconecta.api.analytics.dashboard:
   requirements:
     _permission: 'view agro analytics'
 
-jaraba_agroconecta.api.analytics.top_products:
+jaraba_agroconecta_core.api.analytics.top_products:
   path: '/api/v1/agro/analytics/top-products'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::topProducts'
@@ -1691,7 +1784,7 @@ jaraba_agroconecta.api.analytics.top_products:
   requirements:
     _permission: 'view agro analytics'
 
-jaraba_agroconecta.api.analytics.top_producers:
+jaraba_agroconecta_core.api.analytics.top_producers:
   path: '/api/v1/agro/analytics/top-producers'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::topProducers'
@@ -1699,7 +1792,7 @@ jaraba_agroconecta.api.analytics.top_producers:
   requirements:
     _permission: 'view agro analytics'
 
-jaraba_agroconecta.api.analytics.aggregate:
+jaraba_agroconecta_core.api.analytics.aggregate:
   path: '/api/v1/agro/analytics/aggregate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::aggregate'
@@ -1707,7 +1800,7 @@ jaraba_agroconecta.api.analytics.aggregate:
   requirements:
     _permission: 'manage agro analytics'
 
-jaraba_agroconecta.api.analytics.alerts:
+jaraba_agroconecta_core.api.analytics.alerts:
   path: '/api/v1/agro/analytics/alerts'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::alerts'
@@ -1715,7 +1808,7 @@ jaraba_agroconecta.api.analytics.alerts:
   requirements:
     _permission: 'view agro analytics'
 
-jaraba_agroconecta.api.analytics.evaluate_alerts:
+jaraba_agroconecta_core.api.analytics.evaluate_alerts:
   path: '/api/v1/agro/analytics/alerts/evaluate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AnalyticsApiController::evaluateAlerts'
@@ -1727,7 +1820,7 @@ jaraba_agroconecta.api.analytics.evaluate_alerts:
 # ADMIN PANEL (Fase 8: Doc 58)
 # ============================================
 
-jaraba_agroconecta.api.admin.overview:
+jaraba_agroconecta_core.api.admin.overview:
   path: '/api/v1/agro/admin/overview'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::overview'
@@ -1735,7 +1828,7 @@ jaraba_agroconecta.api.admin.overview:
   requirements:
     _permission: 'administer agroconecta'
 
-jaraba_agroconecta.api.admin.health:
+jaraba_agroconecta_core.api.admin.health:
   path: '/api/v1/agro/admin/health'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::health'
@@ -1743,7 +1836,7 @@ jaraba_agroconecta.api.admin.health:
   requirements:
     _permission: 'administer agroconecta'
 
-jaraba_agroconecta.api.admin.activity:
+jaraba_agroconecta_core.api.admin.activity:
   path: '/api/v1/agro/admin/activity'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::activity'
@@ -1751,7 +1844,7 @@ jaraba_agroconecta.api.admin.activity:
   requirements:
     _permission: 'administer agroconecta'
 
-jaraba_agroconecta.api.admin.report_products:
+jaraba_agroconecta_core.api.admin.report_products:
   path: '/api/v1/agro/admin/reports/products'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::reportProducts'
@@ -1759,7 +1852,7 @@ jaraba_agroconecta.api.admin.report_products:
   requirements:
     _permission: 'administer agroconecta'
 
-jaraba_agroconecta.api.admin.report_orders:
+jaraba_agroconecta_core.api.admin.report_orders:
   path: '/api/v1/agro/admin/reports/orders'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::reportOrders'
@@ -1767,7 +1860,7 @@ jaraba_agroconecta.api.admin.report_orders:
   requirements:
     _permission: 'administer agroconecta'
 
-jaraba_agroconecta.api.admin.report_producers:
+jaraba_agroconecta_core.api.admin.report_producers:
   path: '/api/v1/agro/admin/reports/producers'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\AgroAdminController::reportProducers'
@@ -1805,7 +1898,7 @@ entity.copilot_message_agro.collection:
 
 # API Copilot
 
-jaraba_agroconecta.api.copilot.chat:
+jaraba_agroconecta_core.api.copilot.chat:
   path: '/api/v1/producer/copilot/chat'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::chat'
@@ -1813,7 +1906,7 @@ jaraba_agroconecta.api.copilot.chat:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.generate_description:
+jaraba_agroconecta_core.api.copilot.generate_description:
   path: '/api/v1/producer/copilot/generate/description'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::generateDescription'
@@ -1821,7 +1914,7 @@ jaraba_agroconecta.api.copilot.generate_description:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.suggest_price:
+jaraba_agroconecta_core.api.copilot.suggest_price:
   path: '/api/v1/producer/copilot/generate/price'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::suggestPrice'
@@ -1829,7 +1922,7 @@ jaraba_agroconecta.api.copilot.suggest_price:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.review_response:
+jaraba_agroconecta_core.api.copilot.review_response:
   path: '/api/v1/producer/copilot/generate/review-response'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::reviewResponse'
@@ -1837,7 +1930,7 @@ jaraba_agroconecta.api.copilot.review_response:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.conversations:
+jaraba_agroconecta_core.api.copilot.conversations:
   path: '/api/v1/producer/copilot/conversations'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::conversations'
@@ -1845,7 +1938,7 @@ jaraba_agroconecta.api.copilot.conversations:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.messages:
+jaraba_agroconecta_core.api.copilot.messages:
   path: '/api/v1/producer/copilot/conversations/{conversation_id}/messages'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::messages'
@@ -1855,7 +1948,7 @@ jaraba_agroconecta.api.copilot.messages:
 
 # API Copilot — Forecast & Market Intelligence
 
-jaraba_agroconecta.api.copilot.forecast_demand:
+jaraba_agroconecta_core.api.copilot.forecast_demand:
   path: '/api/v1/producer/copilot/forecast/demand'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::forecastDemand'
@@ -1863,7 +1956,7 @@ jaraba_agroconecta.api.copilot.forecast_demand:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.trending:
+jaraba_agroconecta_core.api.copilot.trending:
   path: '/api/v1/producer/copilot/market/trending'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::trendingProducts'
@@ -1871,7 +1964,7 @@ jaraba_agroconecta.api.copilot.trending:
   requirements:
     _permission: 'use agro copilot'
 
-jaraba_agroconecta.api.copilot.competitive_position:
+jaraba_agroconecta_core.api.copilot.competitive_position:
   path: '/api/v1/producer/copilot/market/position'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\CopilotApiController::competitivePosition'
@@ -1903,7 +1996,7 @@ entity.copilot_generated_content_agro.canonical:
 
 # API Sales Agent
 
-jaraba_agroconecta.api.sales.chat:
+jaraba_agroconecta_core.api.sales.chat:
   path: '/api/v1/sales/chat'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::chat'
@@ -1911,7 +2004,7 @@ jaraba_agroconecta.api.sales.chat:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.sales.conversations:
+jaraba_agroconecta_core.api.sales.conversations:
   path: '/api/v1/sales/conversations'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::listConversations'
@@ -1919,7 +2012,7 @@ jaraba_agroconecta.api.sales.conversations:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.sales.search:
+jaraba_agroconecta_core.api.sales.search:
   path: '/api/v1/sales/search'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::search'
@@ -1927,7 +2020,7 @@ jaraba_agroconecta.api.sales.search:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.sales.recommendations:
+jaraba_agroconecta_core.api.sales.recommendations:
   path: '/api/v1/sales/recommendations'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::recommendations'
@@ -1935,7 +2028,7 @@ jaraba_agroconecta.api.sales.recommendations:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.sales.cart_add:
+jaraba_agroconecta_core.api.sales.cart_add:
   path: '/api/v1/sales/cart/add'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::addToCart'
@@ -1943,7 +2036,7 @@ jaraba_agroconecta.api.sales.cart_add:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.sales.coupon_apply:
+jaraba_agroconecta_core.api.sales.coupon_apply:
   path: '/api/v1/sales/coupon/apply'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::applyCoupon'
@@ -1951,7 +2044,7 @@ jaraba_agroconecta.api.sales.coupon_apply:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.sales.order_status:
+jaraba_agroconecta_core.api.sales.order_status:
   path: '/api/v1/sales/order/{order_id}/status'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::orderStatus'
@@ -1960,7 +2053,7 @@ jaraba_agroconecta.api.sales.order_status:
     _role: 'authenticated'
     order_id: '\d+'
 
-jaraba_agroconecta.api.sales.preferences:
+jaraba_agroconecta_core.api.sales.preferences:
   path: '/api/v1/sales/preferences'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::getPreferences'
@@ -1968,7 +2061,7 @@ jaraba_agroconecta.api.sales.preferences:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.sales.rate:
+jaraba_agroconecta_core.api.sales.rate:
   path: '/api/v1/sales/conversations/{conversation_id}/rate'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::rateConversation'
@@ -1979,7 +2072,7 @@ jaraba_agroconecta.api.sales.rate:
 
 # API Sales Agent — Cross-Sell & Market Intelligence
 
-jaraba_agroconecta.api.sales.cross_sell:
+jaraba_agroconecta_core.api.sales.cross_sell:
   path: '/api/v1/sales/cross-sell'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::crossSellSuggestions'
@@ -1987,7 +2080,7 @@ jaraba_agroconecta.api.sales.cross_sell:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.sales.upsell:
+jaraba_agroconecta_core.api.sales.upsell:
   path: '/api/v1/sales/upsell'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::upsellSuggestions'
@@ -1995,7 +2088,7 @@ jaraba_agroconecta.api.sales.upsell:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.sales.recovery_stats:
+jaraba_agroconecta_core.api.sales.recovery_stats:
   path: '/api/v1/sales/recovery/stats'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\SalesApiController::recoveryStats'
@@ -2005,7 +2098,7 @@ jaraba_agroconecta.api.sales.recovery_stats:
 
 # WhatsApp Business API Webhook
 
-jaraba_agroconecta.api.whatsapp.webhook:
+jaraba_agroconecta_core.api.whatsapp.webhook:
   path: '/api/v1/whatsapp/webhook'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\WhatsAppWebhookController::webhook'
@@ -2018,7 +2111,7 @@ jaraba_agroconecta.api.whatsapp.webhook:
 # ============================================
 
 # Redirect público — Puente phy-gital (sin autenticación)
-jaraba_agroconecta.qr.redirect:
+jaraba_agroconecta_core.qr.redirect:
   path: '/q/{code}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::redirectQr'
@@ -2027,7 +2120,7 @@ jaraba_agroconecta.qr.redirect:
     _access: 'TRUE'
 
 # API QR Management
-jaraba_agroconecta.api.qr.detail:
+jaraba_agroconecta_core.api.qr.detail:
   path: '/api/v1/agro/qr/{qr_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::getQr'
@@ -2036,7 +2129,7 @@ jaraba_agroconecta.api.qr.detail:
     _role: 'authenticated'
     qr_id: '\d+'
 
-jaraba_agroconecta.api.qr.update:
+jaraba_agroconecta_core.api.qr.update:
   path: '/api/v1/agro/qr/{qr_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::updateQr'
@@ -2045,7 +2138,7 @@ jaraba_agroconecta.api.qr.update:
     _role: 'authenticated'
     qr_id: '\d+'
 
-jaraba_agroconecta.api.qr.delete:
+jaraba_agroconecta_core.api.qr.delete:
   path: '/api/v1/agro/qr/{qr_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::deleteQr'
@@ -2054,7 +2147,7 @@ jaraba_agroconecta.api.qr.delete:
     _role: 'authenticated'
     qr_id: '\d+'
 
-jaraba_agroconecta.api.qr.scans:
+jaraba_agroconecta_core.api.qr.scans:
   path: '/api/v1/agro/qr/{qr_id}/scans'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::listScans'
@@ -2063,7 +2156,7 @@ jaraba_agroconecta.api.qr.scans:
     _role: 'authenticated'
     qr_id: '\d+'
 
-jaraba_agroconecta.api.qr.batch:
+jaraba_agroconecta_core.api.qr.batch:
   path: '/api/v1/agro/qr/batch'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::batchGenerate'
@@ -2071,7 +2164,7 @@ jaraba_agroconecta.api.qr.batch:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.qr.download:
+jaraba_agroconecta_core.api.qr.download:
   path: '/api/v1/agro/qr/{qr_id}/download/{format}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::downloadQr'
@@ -2081,7 +2174,7 @@ jaraba_agroconecta.api.qr.download:
     qr_id: '\d+'
     format: 'png|svg|pdf'
 
-jaraba_agroconecta.api.qr.dashboard:
+jaraba_agroconecta_core.api.qr.dashboard:
   path: '/api/v1/agro/qr/dashboard'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\QrApiController::dashboard'
@@ -2094,7 +2187,7 @@ jaraba_agroconecta.api.qr.dashboard:
 # ============================================
 
 # Captura pública de lead (desde landing QR, sin autenticación)
-jaraba_agroconecta.api.leads.capture:
+jaraba_agroconecta_core.api.leads.capture:
   path: '/api/v1/agro/leads'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::capture'
@@ -2102,7 +2195,7 @@ jaraba_agroconecta.api.leads.capture:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.leads.list:
+jaraba_agroconecta_core.api.leads.list:
   path: '/api/v1/agro/leads'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::list'
@@ -2110,7 +2203,7 @@ jaraba_agroconecta.api.leads.list:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.leads.detail:
+jaraba_agroconecta_core.api.leads.detail:
   path: '/api/v1/agro/leads/{lead_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::get'
@@ -2119,7 +2212,7 @@ jaraba_agroconecta.api.leads.detail:
     _role: 'authenticated'
     lead_id: '\d+'
 
-jaraba_agroconecta.api.leads.delete:
+jaraba_agroconecta_core.api.leads.delete:
   path: '/api/v1/agro/leads/{lead_id}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::delete'
@@ -2128,7 +2221,7 @@ jaraba_agroconecta.api.leads.delete:
     _role: 'authenticated'
     lead_id: '\d+'
 
-jaraba_agroconecta.api.leads.export:
+jaraba_agroconecta_core.api.leads.export:
   path: '/api/v1/agro/leads/export'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::export'
@@ -2136,7 +2229,7 @@ jaraba_agroconecta.api.leads.export:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.leads.sync:
+jaraba_agroconecta_core.api.leads.sync:
   path: '/api/v1/agro/leads/{lead_id}/sync'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\LeadApiController::syncCrm'
@@ -2168,7 +2261,7 @@ entity.product_document.settings:
 
 # --- Producer API (authenticated) ---
 
-jaraba_agroconecta.api.hub.partners.create:
+jaraba_agroconecta_core.api.hub.partners.create:
   path: '/api/v1/hub/partners'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::createPartner'
@@ -2176,7 +2269,7 @@ jaraba_agroconecta.api.hub.partners.create:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.partners.list:
+jaraba_agroconecta_core.api.hub.partners.list:
   path: '/api/v1/hub/partners'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::listPartners'
@@ -2184,7 +2277,7 @@ jaraba_agroconecta.api.hub.partners.list:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.partners.update:
+jaraba_agroconecta_core.api.hub.partners.update:
   path: '/api/v1/hub/partners/{uuid}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::updatePartner'
@@ -2192,7 +2285,7 @@ jaraba_agroconecta.api.hub.partners.update:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.partners.revoke:
+jaraba_agroconecta_core.api.hub.partners.revoke:
   path: '/api/v1/hub/partners/{uuid}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::revokePartner'
@@ -2200,7 +2293,7 @@ jaraba_agroconecta.api.hub.partners.revoke:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.documents.upload:
+jaraba_agroconecta_core.api.hub.documents.upload:
   path: '/api/v1/hub/documents'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::uploadDocument'
@@ -2208,7 +2301,7 @@ jaraba_agroconecta.api.hub.documents.upload:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.documents.list:
+jaraba_agroconecta_core.api.hub.documents.list:
   path: '/api/v1/hub/documents'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::listDocuments'
@@ -2216,7 +2309,7 @@ jaraba_agroconecta.api.hub.documents.list:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.documents.update:
+jaraba_agroconecta_core.api.hub.documents.update:
   path: '/api/v1/hub/documents/{uuid}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::updateDocument'
@@ -2224,7 +2317,7 @@ jaraba_agroconecta.api.hub.documents.update:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.documents.delete:
+jaraba_agroconecta_core.api.hub.documents.delete:
   path: '/api/v1/hub/documents/{uuid}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::deleteDocument'
@@ -2232,7 +2325,7 @@ jaraba_agroconecta.api.hub.documents.delete:
   requirements:
     _role: 'authenticated'
 
-jaraba_agroconecta.api.hub.analytics:
+jaraba_agroconecta_core.api.hub.analytics:
   path: '/api/v1/hub/analytics'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerHubApiController::getAnalytics'
@@ -2242,7 +2335,7 @@ jaraba_agroconecta.api.hub.analytics:
 
 # --- Partner Portal API (public, token-based auth) ---
 
-jaraba_agroconecta.api.portal.data:
+jaraba_agroconecta_core.api.portal.data:
   path: '/api/v1/portal/{token}'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::getPortalData'
@@ -2250,7 +2343,7 @@ jaraba_agroconecta.api.portal.data:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.portal.products:
+jaraba_agroconecta_core.api.portal.products:
   path: '/api/v1/portal/{token}/products'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::listProducts'
@@ -2258,7 +2351,7 @@ jaraba_agroconecta.api.portal.products:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.portal.product_documents:
+jaraba_agroconecta_core.api.portal.product_documents:
   path: '/api/v1/portal/{token}/products/{product_id}/documents'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::getProductDocuments'
@@ -2267,7 +2360,7 @@ jaraba_agroconecta.api.portal.product_documents:
     _access: 'TRUE'
     product_id: '\d+'
 
-jaraba_agroconecta.api.portal.all_documents:
+jaraba_agroconecta_core.api.portal.all_documents:
   path: '/api/v1/portal/{token}/documents'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::listAllDocuments'
@@ -2275,7 +2368,7 @@ jaraba_agroconecta.api.portal.all_documents:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.portal.download:
+jaraba_agroconecta_core.api.portal.download:
   path: '/api/v1/portal/{token}/documents/{uuid}/download'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::downloadDocument'
@@ -2283,7 +2376,7 @@ jaraba_agroconecta.api.portal.download:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.portal.download_pack:
+jaraba_agroconecta_core.api.portal.download_pack:
   path: '/api/v1/portal/{token}/products/{product_id}/download-pack'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::downloadPack'
@@ -2292,7 +2385,7 @@ jaraba_agroconecta.api.portal.download_pack:
     _access: 'TRUE'
     product_id: '\d+'
 
-jaraba_agroconecta.api.portal.download_all:
+jaraba_agroconecta_core.api.portal.download_all:
   path: '/api/v1/portal/{token}/download-all'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::downloadAll'
@@ -2300,7 +2393,7 @@ jaraba_agroconecta.api.portal.download_all:
   requirements:
     _access: 'TRUE'
 
-jaraba_agroconecta.api.portal.request_link:
+jaraba_agroconecta_core.api.portal.request_link:
   path: '/api/v1/portal/request-link'
   defaults:
     _controller: 'Drupal\jaraba_agroconecta_core\Controller\PartnerPortalApiController::requestMagicLink'

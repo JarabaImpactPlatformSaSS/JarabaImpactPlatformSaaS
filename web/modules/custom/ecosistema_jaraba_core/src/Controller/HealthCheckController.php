@@ -62,7 +62,12 @@ class HealthCheckController extends ControllerBase
 
         $statusCode = $healthy ? 200 : 503;
 
-        return new JsonResponse($response, $statusCode, [
+        // AUDIT-CONS-N08: Standardized JSON envelope.
+        return new JsonResponse([
+            'success' => $healthy,
+            'data' => $response,
+            'meta' => ['timestamp' => time()],
+        ], $statusCode, [
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
             'X-Health-Check' => 'jaraba-saas',

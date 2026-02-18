@@ -1,3 +1,4 @@
+/* AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace */
 /**
  * @file
  * Page Builder Vertical Sections — Estilos para los 55 bloques verticales.
@@ -13,15 +14,15 @@
 // Estilos compartidos por todos los bloques verticales
 // ============================================================================
 .pb-section {
-  --pb-accent: var(--ej-primary, #0066CC);
-  --pb-accent-light: color-mix(in srgb, var(--pb-accent) 12%, white);
-  --pb-accent-dark: color-mix(in srgb, var(--pb-accent) 80%, black);
-  --pb-radius: var(--ej-radius-lg, 16px);
-  --pb-radius-sm: var(--ej-radius-md, 12px);
-  --pb-font: var(--ej-font-family, Outfit, sans-serif);
+  --ej-pb-accent: var(--ej-primary, #0066CC);
+  --ej-pb-accent-light: color-mix(in srgb, var(--ej-pb-accent) 12%, white);
+  --ej-pb-accent-dark: color-mix(in srgb, var(--ej-pb-accent) 80%, black);
+  --ej-pb-radius: var(--ej-radius-lg, 16px);
+  --ej-pb-radius-sm: var(--ej-radius-md, 12px);
+  --ej-pb-font: var(--ej-font-family, Outfit, sans-serif);
 
   padding: var(--ej-spacing-section, 4rem) var(--ej-spacing-lg, 2rem);
-  font-family: var(--pb-font);
+  font-family: var(--ej-pb-font);
   color: var(--ej-text-primary, #1e293b);
   position: relative;
   overflow: hidden;
@@ -49,7 +50,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
     margin-bottom: var(--ej-spacing-xs, 0.5rem);
   }
 
@@ -89,7 +90,7 @@
 
   // === Media (imagen/vídeo) ===
   &__media {
-    border-radius: var(--pb-radius);
+    border-radius: var(--ej-pb-radius);
     overflow: hidden;
 
     img,
@@ -116,7 +117,7 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 0.875rem 2rem;
-    border-radius: var(--pb-radius-sm);
+    border-radius: var(--ej-pb-radius-sm);
     font-weight: 600;
     font-size: 1rem;
     text-decoration: none;
@@ -125,23 +126,23 @@
     border: 2px solid transparent;
 
     &--primary {
-      background: var(--pb-accent);
+      background: var(--ej-pb-accent);
       color: white;
 
       &:hover {
         filter: brightness(1.1);
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px color-mix(in srgb, var(--pb-accent) 30%, transparent);
+        box-shadow: 0 8px 20px color-mix(in srgb, var(--ej-pb-accent) 30%, transparent);
       }
     }
 
     &--secondary {
       background: transparent;
-      color: var(--pb-accent);
-      border-color: var(--pb-accent);
+      color: var(--ej-pb-accent);
+      border-color: var(--ej-pb-accent);
 
       &:hover {
-        background: var(--pb-accent-light);
+        background: var(--ej-pb-accent-light);
         transform: translateY(-2px);
       }
     }
@@ -149,13 +150,13 @@
 
   // === Placeholder image ===
   &__img-placeholder {
-    background: var(--pb-accent-light);
-    border-radius: var(--pb-radius);
+    background: var(--ej-pb-accent-light);
+    border-radius: var(--ej-pb-radius);
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 200px;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
     font-size: 3rem;
     opacity: 0.6;
   }
@@ -165,23 +166,23 @@
 // COLOR SCHEMES — 5 verticales
 // ============================================================================
 .pb-section--agroconecta {
-  --pb-accent: var(--ej-color-agro, #556B2F);
+  --ej-pb-accent: var(--ej-color-agro, #556B2F);
 }
 
 .pb-section--comercioconecta {
-  --pb-accent: var(--ej-color-impulse, #FF8C42);
+  --ej-pb-accent: var(--ej-color-impulse, #FF8C42);
 }
 
 .pb-section--serviciosconecta {
-  --pb-accent: var(--ej-color-corporate, #233D63);
+  --ej-pb-accent: var(--ej-color-corporate, #233D63);
 }
 
 .pb-section--empleabilidad {
-  --pb-accent: var(--ej-color-innovation, #00A9A5);
+  --ej-pb-accent: var(--ej-color-innovation, #00A9A5);
 }
 
 .pb-section--emprendimiento {
-  --pb-accent: #8B5CF6;
+  --ej-pb-accent: #8B5CF6;
 }
 
 // ============================================================================
@@ -194,8 +195,8 @@
   display: flex;
   align-items: center;
   background: linear-gradient(135deg,
-    color-mix(in srgb, var(--pb-accent) 8%, white) 0%,
-    color-mix(in srgb, var(--pb-accent) 3%, white) 100%);
+    color-mix(in srgb, var(--ej-pb-accent) 8%, white) 0%,
+    color-mix(in srgb, var(--ej-pb-accent) 3%, white) 100%);
 
   .pb-section__container {
     display: grid;
@@ -224,7 +225,7 @@
   }
 
   .pb-section__media {
-    border-radius: var(--pb-radius);
+    border-radius: var(--ej-pb-radius);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 
     img {
@@ -243,7 +244,7 @@
     width: 400px;
     height: 400px;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--pb-accent) 6%, transparent);
+    background: color-mix(in srgb, var(--ej-pb-accent) 6%, transparent);
     top: -100px;
     right: -100px;
     pointer-events: none;
@@ -339,7 +340,7 @@
 
   .pb-section__feature-card {
     background: var(--ej-bg-primary, white);
-    border-radius: var(--pb-radius);
+    border-radius: var(--ej-pb-radius);
     padding: var(--ej-spacing-lg, 2rem);
     text-align: center;
     border: 1px solid var(--ej-border-color, #e2e8f0);
@@ -354,14 +355,14 @@
   .pb-section__feature-icon {
     width: 56px;
     height: 56px;
-    border-radius: var(--pb-radius-sm);
-    background: var(--pb-accent-light);
+    border-radius: var(--ej-pb-radius-sm);
+    background: var(--ej-pb-accent-light);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto var(--ej-spacing-md, 1.25rem);
     font-size: 1.5rem;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
   }
 
   .pb-section__feature-title {
@@ -397,8 +398,8 @@
 // ============================================================================
 .pb-section--stats {
   background: linear-gradient(135deg,
-    color-mix(in srgb, var(--pb-accent) 6%, white) 0%,
-    color-mix(in srgb, var(--pb-accent) 2%, white) 100%);
+    color-mix(in srgb, var(--ej-pb-accent) 6%, white) 0%,
+    color-mix(in srgb, var(--ej-pb-accent) 2%, white) 100%);
 
   .pb-section__stats-row {
     display: grid;
@@ -414,7 +415,7 @@
   .pb-section__stat-number {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
     line-height: 1;
     margin-bottom: var(--ej-spacing-xs, 0.5rem);
     display: block;
@@ -455,7 +456,7 @@
 
   .pb-section__pricing-card {
     background: var(--ej-bg-primary, white);
-    border-radius: var(--pb-radius);
+    border-radius: var(--ej-pb-radius);
     padding: var(--ej-spacing-xl, 2.5rem) var(--ej-spacing-lg, 2rem);
     border: 2px solid var(--ej-border-color, #e2e8f0);
     text-align: center;
@@ -470,9 +471,9 @@
 
     // Plan destacado
     &--featured {
-      border-color: var(--pb-accent);
+      border-color: var(--ej-pb-accent);
       position: relative;
-      box-shadow: 0 8px 32px color-mix(in srgb, var(--pb-accent) 20%, transparent);
+      box-shadow: 0 8px 32px color-mix(in srgb, var(--ej-pb-accent) 20%, transparent);
     }
   }
 
@@ -481,7 +482,7 @@
     top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--pb-accent);
+    background: var(--ej-pb-accent);
     color: white;
     padding: 0.375rem 1.25rem;
     border-radius: 100px;
@@ -502,7 +503,7 @@
   .pb-section__pricing-price {
     font-size: clamp(2rem, 4vw, 2.75rem);
     font-weight: 800;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
     margin: 0 0 var(--ej-spacing-xs, 0.5rem);
     line-height: 1;
   }
@@ -531,7 +532,7 @@
 
       &::before {
         content: '\2713';
-        color: var(--pb-accent);
+        color: var(--ej-pb-accent);
         font-weight: 700;
         flex-shrink: 0;
       }
@@ -566,7 +567,7 @@
 
   .pb-section__testimonial {
     background: var(--ej-bg-primary, white);
-    border-radius: var(--pb-radius);
+    border-radius: var(--ej-pb-radius);
     padding: var(--ej-spacing-lg, 2rem);
     border: 1px solid var(--ej-border-color, #e2e8f0);
     position: relative;
@@ -578,7 +579,7 @@
       left: 20px;
       font-size: 4rem;
       line-height: 1;
-      color: var(--pb-accent);
+      color: var(--ej-pb-accent);
       opacity: 0.3;
       font-family: Georgia, serif;
     }
@@ -602,11 +603,11 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: var(--pb-accent-light);
+    background: var(--ej-pb-accent-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
     font-weight: 700;
     font-size: 1.125rem;
     flex-shrink: 0;
@@ -651,7 +652,7 @@
     border-bottom: 1px solid var(--ej-border-color, #e2e8f0);
 
     &[open] summary {
-      color: var(--pb-accent);
+      color: var(--ej-pb-accent);
       font-weight: 700;
 
       &::after {
@@ -683,14 +684,14 @@
     &::after {
       content: '\002B';
       font-size: 1.5rem;
-      color: var(--pb-accent);
+      color: var(--ej-pb-accent);
       transition: transform 0.25s ease;
       flex-shrink: 0;
       margin-left: 1rem;
     }
 
     &:hover {
-      color: var(--pb-accent);
+      color: var(--ej-pb-accent);
     }
   }
 
@@ -708,8 +709,8 @@
 // ============================================================================
 .pb-section--cta {
   background: linear-gradient(135deg,
-    var(--pb-accent) 0%,
-    color-mix(in srgb, var(--pb-accent) 75%, black) 100%);
+    var(--ej-pb-accent) 0%,
+    color-mix(in srgb, var(--ej-pb-accent) 75%, black) 100%);
   color: white;
   text-align: center;
   padding: var(--ej-spacing-2xl, 5rem) var(--ej-spacing-lg, 2rem);
@@ -739,7 +740,7 @@
 
   .pb-section__cta--primary {
     background: white;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
 
     &:hover {
       background: rgba(255, 255, 255, 0.92);
@@ -770,7 +771,7 @@
   }
 
   .pb-section__gallery-item {
-    border-radius: var(--pb-radius-sm);
+    border-radius: var(--ej-pb-radius-sm);
     overflow: hidden;
     position: relative;
     margin: 0;
@@ -837,7 +838,7 @@
 
   .pb-section__map-embed {
     background: var(--ej-bg-secondary, #f1f5f9);
-    border-radius: var(--pb-radius);
+    border-radius: var(--ej-pb-radius);
     min-height: 380px;
     display: flex;
     align-items: center;
@@ -851,7 +852,7 @@
       height: 100%;
       min-height: 380px;
       border: 0;
-      border-radius: var(--pb-radius);
+      border-radius: var(--ej-pb-radius);
     }
   }
 
@@ -870,12 +871,12 @@
   .pb-section__contact-icon {
     width: 40px;
     height: 40px;
-    border-radius: var(--pb-radius-sm);
-    background: var(--pb-accent-light);
+    border-radius: var(--ej-pb-radius-sm);
+    background: var(--ej-pb-accent-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--pb-accent);
+    color: var(--ej-pb-accent);
     font-size: 1.125rem;
     flex-shrink: 0;
   }
@@ -893,7 +894,7 @@
     line-height: 1.5;
 
     a {
-      color: var(--pb-accent);
+      color: var(--ej-pb-accent);
       text-decoration: none;
 
       &:hover {
@@ -956,7 +957,7 @@
     height: 48px;
     background: var(--ej-bg-primary, white);
     border: 1px dashed var(--ej-border-color, #cbd5e1);
-    border-radius: var(--pb-radius-sm);
+    border-radius: var(--ej-pb-radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;

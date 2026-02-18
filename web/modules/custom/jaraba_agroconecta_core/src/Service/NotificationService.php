@@ -307,27 +307,35 @@ class NotificationService
             ->condition('status', [NotificationLogAgro::STATUS_FAILED, NotificationLogAgro::STATUS_BOUNCED], 'IN')
             ->accessCheck(FALSE)->count()->execute();
 
-        // AUDIT-PERF-N05: Procesar en lotes de 200 en lugar de cargar TODOS en memoria.
-        $ids = $storage->getQuery()->accessCheck(FALSE)->execute();
-        $opened = 0;
-        $clicked = 0;
-        $channelCounts = [];
+        // AUDIT-PERF-N05: Use aggregate SQL queries instead of loading all
+        // entities into memory. The previous approach hydrated every
+        // NotificationLogAgro entity just to check two nullable timestamp
+        // fields and count channels, which is O(n) memory and very slow at
+        // scale. Direct COUNT queries let the DB do the work in O(1) memory.
+        $database = \Drupal::database();
+        $table = 'notification_log_agro';
 
-        foreach (array_chunk($ids, 200) as $batch) {
-            $logs = $storage->loadMultiple($batch);
-            foreach ($logs as $log) {
-                /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationLogAgro $log */
-                if ($log->wasOpened()) {
-                    $opened++;
-                }
-                if ($log->wasClicked()) {
-                    $clicked++;
-                }
-                $ch = $log->get('channel')->value;
-                $channelCounts[$ch] = ($channelCounts[$ch] ?? 0) + 1;
-            }
-            // Liberar memoria del lote anterior.
-            unset($logs);
+        $opened = (int) $database->select($table, 'n')
+            ->condition('n.opened_at', NULL, 'IS NOT NULL')
+            ->countQuery()
+            ->execute()
+            ->fetchField();
+
+        $clicked = (int) $database->select($table, 'n')
+            ->condition('n.clicked_at', NULL, 'IS NOT NULL')
+            ->countQuery()
+            ->execute()
+            ->fetchField();
+
+        // Channel distribution via GROUP BY.
+        $channelCounts = [];
+        $channelQuery = $database->select($table, 'n');
+        $channelQuery->addField('n', 'channel');
+        $channelQuery->addExpression('COUNT(*)', 'cnt');
+        $channelQuery->groupBy('n.channel');
+        $channelRows = $channelQuery->execute();
+        foreach ($channelRows as $row) {
+            $channelCounts[$row->channel] = (int) $row->cnt;
         }
 
         return [

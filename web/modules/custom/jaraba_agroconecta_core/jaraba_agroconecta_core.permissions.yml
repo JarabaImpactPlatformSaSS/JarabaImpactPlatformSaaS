@@ -116,6 +116,27 @@ view agro shipping:
   title: 'Ver opciones de envío agro'
   description: 'Ver las opciones de envío disponibles.'
 
+manage agro shipments:
+  title: 'Gestionar todos los envíos (Super Admin)'
+  description: 'Ver y editar todos los envíos físicos de la plataforma.'
+  restrict access: true
+
+create agro shipments:
+  title: 'Crear nuevos envíos (Productor)'
+  description: 'Generar etiquetas y registrar envíos de sub-pedidos.'
+
+view agro shipments:
+  title: 'Ver historial de envíos'
+  description: 'Ver el estado y seguimiento de los envíos realizados.'
+
+manage agro shipping zones:
+  title: 'Gestionar zonas de envío'
+  description: 'Definir áreas geográficas para el cálculo de tarifas.'
+
+manage agro shipping rates:
+  title: 'Gestionar tarifas de envío'
+  description: 'Configurar precios de envío por zona y peso.'
+
 # ============================================
 # TRAZABILIDAD + QR (Fase 6)
 # ============================================

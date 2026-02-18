@@ -1,3 +1,4 @@
+// AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace
 // =================================================================
 // JARABA INTERACTIVE - Player Styles
 // =================================================================
@@ -10,13 +11,13 @@
 // Player Container
 // -----------------------------------------------------------------
 .interactive-player {
-    --player-bg: var(--color-bg-secondary);
-    --player-radius: var(--radius-lg);
-    --player-shadow: var(--shadow-md);
+    --ej-player-bg: var(--color-bg-secondary);
+    --ej-player-radius: var(--radius-lg);
+    --ej-player-shadow: var(--shadow-md);
 
-    background: var(--player-bg);
-    border-radius: var(--player-radius);
-    box-shadow: var(--player-shadow);
+    background: var(--ej-player-bg);
+    border-radius: var(--ej-player-radius);
+    box-shadow: var(--ej-player-shadow);
     overflow: hidden;
     max-width: 64rem;
     margin: 0 auto;

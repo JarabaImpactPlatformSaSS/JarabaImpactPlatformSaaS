@@ -1,0 +1,104 @@
+jaraba_governance.settings:
+  type: config_object
+  label: 'Jaraba Data Governance settings'
+  mapping:
+    retention_policies:
+      type: mapping
+      label: 'Retention policies'
+      mapping:
+        session_logs:
+          type: jaraba_governance.retention_policy
+          label: 'Session logs retention'
+        inactive_users:
+          type: jaraba_governance.retention_policy
+          label: 'Inactive users retention'
+        cvs:
+          type: jaraba_governance.retention_policy
+          label: 'CVs retention'
+        fiscal_invoices:
+          type: jaraba_governance.retention_policy
+          label: 'Fiscal invoices retention'
+        legal_records:
+          type: jaraba_governance.retention_policy
+          label: 'Legal records retention'
+        backups:
+          type: jaraba_governance.retention_policy
+          label: 'Backups retention'
+        anonymized:
+          type: jaraba_governance.retention_policy
+          label: 'Anonymized data retention'
+    masking_rules:
+      type: mapping
+      label: 'Data masking rules'
+      mapping:
+        email:
+          type: string
+          label: 'Email masking template'
+        nombre:
+          type: string
+          label: 'Name masking rule'
+        nif:
+          type: string
+          label: 'NIF masking rule'
+        iban:
+          type: string
+          label: 'IBAN masking rule'
+        telefono:
+          type: string
+          label: 'Phone masking rule'
+        direccion:
+          type: string
+          label: 'Address masking rule'
+    classification_levels:
+      type: mapping
+      label: 'Data classification levels'
+      mapping:
+        C1_PUBLIC:
+          type: jaraba_governance.classification_level
+          label: 'C1 Public'
+        C2_INTERNAL:
+          type: jaraba_governance.classification_level
+          label: 'C2 Internal'
+        C3_CONFIDENTIAL:
+          type: jaraba_governance.classification_level
+          label: 'C3 Confidential'
+        C4_RESTRICTED:
+          type: jaraba_governance.classification_level
+          label: 'C4 Restricted'
+
+jaraba_governance.retention_policy:
+  type: mapping
+  label: 'Retention policy'
+  mapping:
+    entity_type:
+      type: string
+      label: 'Entity type'
+    retention_days:
+      type: integer
+      label: 'Retention days'
+    action:
+      type: string
+      label: 'Action (delete, anonymize, archive, keep)'
+    grace_days:
+      type: integer
+      label: 'Grace days before action'
+    legal_basis:
+      type: string
+      label: 'Legal basis for retention'
+
+jaraba_governance.classification_level:
+  type: mapping
+  label: 'Classification level definition'
+  mapping:
+    label:
+      type: string
+      label: 'Human-readable label'
+    encryption_required:
+      type: boolean
+      label: 'Encryption required'
+    masking_required:
+      type: boolean
+      label: 'Masking required for staging'
+    cross_border_restricted:
+      type: boolean
+      label: 'Cross-border transfer restricted'

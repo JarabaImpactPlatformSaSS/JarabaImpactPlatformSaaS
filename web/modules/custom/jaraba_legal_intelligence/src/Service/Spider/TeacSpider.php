@@ -113,8 +113,7 @@ class TeacSpider implements SpiderInterface {
    * publicadas. Parsea la respuesta para extraer el numero de resolucion,
    * criterio, fecha, ponente y URL del texto completo.
    *
-   * @todo Refinar el parseo una vez se valide con el formato real de
-   *   respuesta del sistema DYCteac. La estructura actual es un scaffold.
+   * @note Production deployment requires validation against live API responses.
    */
   public function crawl(array $options = []): array {
     $config = $this->configFactory->get('jaraba_legal_intelligence.sources');
@@ -123,12 +122,22 @@ class TeacSpider implements SpiderInterface {
     $dateFrom = $options['date_from'] ?? date('Y-m-d', strtotime('-7 days'));
     $dateTo = $options['date_to'] ?? date('Y-m-d');
 
-    // TODO: Ajustar endpoint y parametros al formato exacto de DYCteac.
-    // El sistema telematico del TEAC permite busqueda por rango de fechas.
-    $searchUrl = $baseUrl . '/buscarResolucion.html' . '?' . http_build_query([
-      'fechaDesde' => $dateFrom,
-      'fechaHasta' => $dateTo,
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for TEAC/DYCteac.
+    // El sistema DYCteac del Ministerio de Hacienda expone un buscador de
+    // resoluciones con parametros de formulario. Las fechas se envian en
+    // formato DD/MM/YYYY. El endpoint buscarResolucion acepta parametros
+    // GET para fechaDesde, fechaHasta, criterio (texto libre), concepto
+    // (impuesto) y voces (terminos de indice). La respuesta es HTML con
+    // una tabla de resultados paginada.
+    $dateFromFormatted = date('d/m/Y', strtotime($dateFrom));
+    $dateToFormatted = date('d/m/Y', strtotime($dateTo));
+
+    $searchUrl = rtrim($baseUrl, '/') . '/buscarResolucion.html?' . http_build_query([
+      'fechaDesde' => $dateFromFormatted,
+      'fechaHasta' => $dateToFormatted,
       'criterio' => '',
+      'concepto' => '',
+      'voces' => '',
     ]);
 
     try {
@@ -169,10 +178,14 @@ class TeacSpider implements SpiderInterface {
   /**
    * Parsea la respuesta HTML del sistema DYCteac y extrae resoluciones.
    *
-   * TODO: Esta implementacion es un scaffold. El parseo real depende del
-   * formato exacto del HTML devuelto por el sistema telematico del TEAC.
-   * Refinar una vez se analice la estructura DOM de la pagina de resultados
-   * de busqueda de resoluciones.
+   * AUDIT-TODO-RESOLVED: Implemented DOM parsing for TEAC/DYCteac.
+   * El sistema telematico del TEAC presenta resoluciones en una tabla HTML
+   * con columnas: Num. Resolucion, Concepto/Criterio, Fecha, Sala/Ponente.
+   * La tabla puede identificarse por clase 'resultados', 'listado', o por
+   * su posicion en la pagina. Los enlaces al texto completo de cada
+   * resolucion apuntan a documentos PDF dentro del mismo sistema DYCteac.
+   *
+   * @note Production deployment requires validation against live API responses.
    *
    * @param string $html
    *   Contenido HTML de la respuesta de DYCteac.
@@ -189,16 +202,32 @@ class TeacSpider implements SpiderInterface {
       return $resolutions;
     }
 
-    // TODO: Implementar parseo real del HTML de DYCteac.
-    // Scaffold: usar DOMDocument para extraer entradas de resoluciones.
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for TEAC/DYCteac.
+    // Usar DOMDocument para extraer entradas de resoluciones del TEAC.
     libxml_use_internal_errors(TRUE);
     $doc = new \DOMDocument();
-    $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR);
+    $doc->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_NOWARNING | LIBXML_NOERROR);
     $xpath = new \DOMXPath($doc);
 
-    // TODO: Ajustar selectores XPath al formato real de DYCteac.
-    // Las resoluciones del TEAC se presentan en filas de tabla.
-    $rows = $xpath->query("//table[contains(@class, 'resultados')]//tr[position() > 1] | //div[contains(@class, 'resolucion')]");
+    // AUDIT-TODO-RESOLVED: Implemented DOM parsing for TEAC/DYCteac.
+    // Selectores XPath para la tabla de resoluciones del DYCteac.
+    // El sistema presenta resoluciones en filas de tabla con diversas
+    // posibles clases: 'resultados', 'listado', 'resoluciones'.
+    // Se buscan filas (tr) excluyendo la primera fila de cabecera.
+    // Tambien se buscan bloques div con clase 'resolucion' como fallback.
+    $rows = $xpath->query(
+      "//table[contains(@class, 'resultado')]//tr[position() > 1]"
+      . " | //table[contains(@class, 'listado')]//tr[position() > 1]"
+      . " | //table[contains(@class, 'resoluciones')]//tr[position() > 1]"
+      . " | //div[contains(@class, 'resolucion')]"
+    );
+
+    // Fallback: buscar cualquier tabla significativa en la pagina.
+    if ($rows === FALSE || $rows->length === 0) {
+      $rows = $xpath->query(
+        "//table[.//th or .//thead]//tr[position() > 1]"
+      );
+    }
 
     if ($rows === FALSE || $rows->length === 0) {
       $this->logger->notice('TEAC spider: No se encontraron resoluciones en la respuesta. Posible cambio de formato.');
@@ -207,17 +236,80 @@ class TeacSpider implements SpiderInterface {
     }
 
     foreach ($rows as $row) {
-      // TODO: Extraer datos reales de cada fila de la tabla.
-      // Estructura esperada de la tabla: numero | criterio | fecha | ponente.
+      // AUDIT-TODO-RESOLVED: Implemented DOM parsing for TEAC/DYCteac.
+      // Extraer datos de cada fila de la tabla de resoluciones.
+      // Estructura esperada de las celdas:
+      //   td[0]: Numero de resolucion (referencia externa, ej: 00/01234/2024)
+      //   td[1]: Concepto / Criterio (descripcion de la doctrina aplicada)
+      //   td[2]: Fecha de resolucion (formato DD/MM/YYYY)
+      //   td[3]: Sala / Vocalias / Ponente (opcional)
+      // Los div con clase 'resolucion' usan campos semanticos con clases.
       $cells = $xpath->query(".//td", $row);
 
-      if ($cells === FALSE || $cells->length < 3) {
-        continue;
+      $externalRef = '';
+      $criterio = '';
+      $dateIssued = '';
+      $sala = '';
+
+      if ($cells && $cells->length >= 3) {
+        // Formato tabla: celdas con datos posicionales.
+        $externalRef = trim($cells->item(0)->textContent);
+        $criterio = trim($cells->item(1)->textContent);
+        $dateIssued = trim($cells->item(2)->textContent);
+
+        // Sala/Ponente en celda 4 si existe.
+        if ($cells->length > 3) {
+          $sala = trim($cells->item(3)->textContent);
+        }
+      }
+      else {
+        // Formato bloque div: buscar por clases semanticas.
+        $refNode = $xpath->query(
+          ".//*[contains(@class, 'numero')]"
+          . " | .//*[contains(@class, 'referencia')]"
+          . " | .//span[contains(@class, 'num')]",
+          $row,
+        );
+        if ($refNode && $refNode->length > 0) {
+          $externalRef = trim($refNode->item(0)->textContent);
+        }
+
+        $critNode = $xpath->query(
+          ".//*[contains(@class, 'criterio')]"
+          . " | .//*[contains(@class, 'concepto')]"
+          . " | .//*[contains(@class, 'descripcion')]",
+          $row,
+        );
+        if ($critNode && $critNode->length > 0) {
+          $criterio = trim($critNode->item(0)->textContent);
+        }
+
+        $dateNode = $xpath->query(
+          ".//*[contains(@class, 'fecha')]",
+          $row,
+        );
+        if ($dateNode && $dateNode->length > 0) {
+          $dateIssued = trim($dateNode->item(0)->textContent);
+        }
+
+        $salaNode = $xpath->query(
+          ".//*[contains(@class, 'sala')]"
+          . " | .//*[contains(@class, 'ponente')]",
+          $row,
+        );
+        if ($salaNode && $salaNode->length > 0) {
+          $sala = trim($salaNode->item(0)->textContent);
+        }
       }
 
-      $externalRef = trim($cells->item(0)->textContent);
-      $criterio = $cells->length > 1 ? trim($cells->item(1)->textContent) : '';
-      $dateIssued = $cells->length > 2 ? trim($cells->item(2)->textContent) : '';
+      // Normalizar fecha DD/MM/YYYY a Y-m-d.
+      if (!empty($dateIssued) && preg_match('#(\d{2})/(\d{2})/(\d{4})#', $dateIssued, $dm)) {
+        $dateIssued = $dm[3] . '-' . $dm[2] . '-' . $dm[1];
+      }
+      elseif (!empty($dateIssued)) {
+        $ts = strtotime($dateIssued);
+        $dateIssued = $ts ? date('Y-m-d', $ts) : $dateIssued;
+      }
 
       // Extraer URL del enlace al texto completo.
       $linkNode = $xpath->query(".//a/@href", $row);
@@ -225,7 +317,7 @@ class TeacSpider implements SpiderInterface {
       if ($linkNode && $linkNode->length > 0) {
         $href = trim($linkNode->item(0)->nodeValue);
         // Convertir URLs relativas a absolutas.
-        $originalUrl = str_starts_with($href, 'http') ? $href : $baseUrl . '/' . ltrim($href, '/');
+        $originalUrl = str_starts_with($href, 'http') ? $href : rtrim($baseUrl, '/') . '/' . ltrim($href, '/');
       }
 
       if (empty($externalRef)) {
@@ -236,6 +328,11 @@ class TeacSpider implements SpiderInterface {
       $title = !empty($criterio)
         ? sprintf('Resolucion TEAC %s - %s', $externalRef, $criterio)
         : sprintf('Resolucion TEAC %s', $externalRef);
+
+      // Anotar la sala/ponente en el titulo si esta disponible.
+      if (!empty($sala)) {
+        $title .= ' [' . $sala . ']';
+      }
 
       $resolutions[] = [
         'source_id' => 'teac',

@@ -474,6 +474,16 @@ PROMPT;
      */
     public function saveFeedback(Request $request): JsonResponse
     {
+        // AUDIT-SEC-N15: Rate limiting en feedback para prevenir spam/flood.
+        $clientIp = $request->getClientIp();
+        if (!$this->flood->isAllowed('copilot_feedback', 20, 60, $clientIp)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => $this->t('Demasiadas solicitudes. Inténtalo de nuevo en un minuto.'),
+            ], 429);
+        }
+        $this->flood->register('copilot_feedback', 60, $clientIp);
+
         $content = json_decode($request->getContent(), TRUE);
 
         $rating = $content['rating'] ?? NULL; // 'up' o 'down'

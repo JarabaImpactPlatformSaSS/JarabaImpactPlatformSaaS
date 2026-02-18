@@ -1,3 +1,4 @@
+// AUDIT-CONS-N06 — Custom properties migrated to --ej-* namespace
 // =============================================================================
 // VERTICAL LANDING PAGES - Estilos para landing pages públicas de verticales
 // =============================================================================
@@ -25,7 +26,7 @@
     justify-content: center;
     background: linear-gradient(135deg,
             var(--ej-color-corporate, #233D63) 0%,
-            var(--vertical-color, var(--ej-color-impulse, #FF8C42)) 100%);
+            var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42)) 100%);
     color: #fff;
     text-align: center;
     padding: 4rem 2rem;
@@ -190,13 +191,13 @@
     width: 64px;
     height: 64px;
     margin-inline: auto;
-    background: var(--vertical-color-light, rgba(255, 140, 66, 0.1));
+    background: var(--ej-vertical-color-light, rgba(255, 140, 66, 0.1));
     border-radius: 16px;
 
     svg {
         width: 32px;
         height: 32px;
-        color: var(--vertical-color, var(--ej-color-impulse, #FF8C42));
+        color: var(--ej-vertical-color, var(--ej-color-impulse, #FF8C42));
     }
 }
 
@@ -249,28 +250,28 @@
 // -----------------------------------------------------------------------------
 .vertical-landing--empleo,
 .vertical-landing--talento {
-    --vertical-color: var(--ej-color-innovation, #00A9A5);
-    --vertical-color-light: rgba(0, 169, 165, 0.1);
+    --ej-vertical-color: var(--ej-color-innovation, #00A9A5);
+    --ej-vertical-color-light: rgba(0, 169, 165, 0.1);
 }
 
 .vertical-landing--emprender {
-    --vertical-color: var(--ej-color-impulse, #FF8C42);
-    --vertical-color-light: rgba(255, 140, 66, 0.1);
+    --ej-vertical-color: var(--ej-color-impulse, #FF8C42);
+    --ej-vertical-color-light: rgba(255, 140, 66, 0.1);
 }
 
 .vertical-landing--comercio {
-    --vertical-color: var(--ej-color-success, #10B981);
-    --vertical-color-light: rgba(16, 185, 129, 0.1);
+    --ej-vertical-color: var(--ej-color-success, #10B981);
+    --ej-vertical-color-light: rgba(16, 185, 129, 0.1);
 }
 
 .vertical-landing--instituciones {
-    --vertical-color: var(--ej-color-corporate, #233D63);
-    --vertical-color-light: rgba(35, 61, 99, 0.1);
+    --ej-vertical-color: var(--ej-color-corporate, #233D63);
+    --ej-vertical-color-light: rgba(35, 61, 99, 0.1);
 }
 
 .vertical-landing--jarabalex {
-    --vertical-color: var(--ej-legal-primary, #1E3A5F);
-    --vertical-color-light: color-mix(in srgb, var(--ej-legal-primary, #1E3A5F) 10%, white);
+    --ej-vertical-color: var(--ej-legal-primary, #1E3A5F);
+    --ej-vertical-color-light: color-mix(in srgb, var(--ej-legal-primary, #1E3A5F) 10%, white);
 }
 
 // -----------------------------------------------------------------------------

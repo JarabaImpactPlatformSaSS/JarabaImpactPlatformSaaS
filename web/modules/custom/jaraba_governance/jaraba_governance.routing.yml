@@ -1,0 +1,156 @@
+# Routes for Jaraba Data Governance module.
+# Doc 200 — N3 Enterprise Class.
+
+# ============================================
+# ADMIN SETTINGS
+# ============================================
+
+jaraba_governance.settings:
+  path: '/admin/config/jaraba/governance'
+  defaults:
+    _form: 'Drupal\jaraba_governance\Form\GovernanceSettingsForm'
+    _title: 'Data Governance Settings'
+  requirements:
+    _permission: 'administer data governance'
+
+# ============================================
+# DATA CLASSIFICATION API
+# ============================================
+
+jaraba_governance.api.classifications.list:
+  path: '/api/v1/governance/classifications'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::listClassifications'
+  requirements:
+    _permission: 'view data classification'
+  methods: [GET]
+
+jaraba_governance.api.classifications.entity_type:
+  path: '/api/v1/governance/classifications/{entity_type}'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::getClassificationForEntityType'
+  requirements:
+    _permission: 'view data classification'
+    entity_type: '[a-z_]+'
+  methods: [GET]
+
+jaraba_governance.api.classifications.save:
+  path: '/api/v1/governance/classifications'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::saveClassification'
+  requirements:
+    _permission: 'administer data governance'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+# ============================================
+# RETENTION POLICIES API
+# ============================================
+
+jaraba_governance.api.retention.list:
+  path: '/api/v1/governance/retention-policies'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::listRetentionPolicies'
+  requirements:
+    _permission: 'manage retention policies'
+  methods: [GET]
+
+jaraba_governance.api.retention.execute:
+  path: '/api/v1/governance/retention/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::executeRetention'
+  requirements:
+    _permission: 'administer data governance'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+# ============================================
+# DATA LINEAGE API
+# ============================================
+
+jaraba_governance.api.lineage.get:
+  path: '/api/v1/governance/lineage/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::getLineage'
+  requirements:
+    _permission: 'view data lineage'
+    entity_type: '[a-z_]+'
+    entity_id: '\d+'
+  methods: [GET]
+
+# ============================================
+# GDPR ERASURE API
+# ============================================
+
+jaraba_governance.api.erasure.create:
+  path: '/api/v1/governance/erasure-request'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::createErasureRequest'
+  requirements:
+    _permission: 'export user data'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+jaraba_governance.api.erasure.list:
+  path: '/api/v1/governance/erasure-requests'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::listErasureRequests'
+  requirements:
+    _permission: 'process erasure requests'
+  methods: [GET]
+
+jaraba_governance.api.erasure.process:
+  path: '/api/v1/governance/erasure-requests/{request_id}/process'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::processErasureRequest'
+  requirements:
+    _permission: 'process erasure requests'
+    _csrf_token: 'TRUE'
+    request_id: '\d+'
+  methods: [POST]
+
+# ============================================
+# GDPR EXPORT (PORTABILITY) API
+# ============================================
+
+jaraba_governance.api.export:
+  path: '/api/v1/governance/export/{user_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::exportUserData'
+  requirements:
+    _permission: 'export user data'
+    user_id: '\d+'
+  methods: [GET]
+
+# ============================================
+# DATA MASKING API
+# ============================================
+
+jaraba_governance.api.masking.execute:
+  path: '/api/v1/governance/masking/execute'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::executeMasking'
+  requirements:
+    _permission: 'run data masking'
+    _csrf_token: 'TRUE'
+  methods: [POST]
+
+# ============================================
+# GOVERNANCE DASHBOARD
+# ============================================
+
+jaraba_governance.api.dashboard:
+  path: '/api/v1/governance/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::dashboardData'
+  requirements:
+    _permission: 'administer data governance'
+  methods: [GET]
+
+jaraba_governance.dashboard:
+  path: '/governance/dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_governance\Controller\GovernanceDashboardController::dashboard'
+    _title: 'Data Governance Dashboard'
+  requirements:
+    _permission: 'administer data governance'

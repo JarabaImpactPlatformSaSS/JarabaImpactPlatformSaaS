@@ -104,14 +104,11 @@ class ServiceApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse([
-      'data' => $data,
-      'meta' => [
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => [
         'total' => $result['total'],
         'limit' => $limit,
         'offset' => $offset,
-      ],
-    ]);
+      ]]);
   }
 
   /**
@@ -123,7 +120,8 @@ class ServiceApiController extends ControllerBase {
       ->load($provider_profile);
 
     if (!$provider) {
-      return new JsonResponse(['error' => 'Provider not found'], 404);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Provider not found']], 404);
     }
 
     $services = $this->offeringService->getProviderOfferings((int) $provider->id());
@@ -140,8 +138,7 @@ class ServiceApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse([
-      'data' => [
+    return new JsonResponse(['success' => TRUE, 'data' => [
         'id' => (int) $provider->id(),
         'display_name' => $provider->get('display_name')->value,
         'professional_title' => $provider->get('professional_title')->value ?? '',
@@ -182,9 +179,7 @@ class ServiceApiController extends ControllerBase {
     }
 
     return new JsonResponse([
-      'data' => $data,
-      'meta' => ['total' => count($data)],
-    ]);
+      'data' => $data, 'meta' => ['total' => count($data)]]);
   }
 
   /**
@@ -196,7 +191,7 @@ class ServiceApiController extends ControllerBase {
       ->load($service_offering);
 
     if (!$offering) {
-      return new JsonResponse(['error' => 'Service not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Service not found']], 404);
     }
 
     return new JsonResponse([
@@ -234,14 +229,14 @@ class ServiceApiController extends ControllerBase {
     // Load the service offering to get duration.
     $offering = $this->entityTypeManager()->getStorage('service_offering')->load($serviceId);
     if (!$offering) {
-      return new JsonResponse(['error' => 'Service offering not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Service offering not found']], 404);
     }
 
     $duration = (int) $offering->get('duration_minutes')->value;
 
     // Verify availability.
     if (!$this->availabilityService->isSlotAvailable($providerId, $datetime, $duration)) {
-      return new JsonResponse(['error' => 'Selected time slot is not available'], 409);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Selected time slot is not available']], 409);
     }
 
     // Create the booking entity.
@@ -260,7 +255,7 @@ class ServiceApiController extends ControllerBase {
       $booking->save();
     }
     catch (\Exception $e) {
-      return new JsonResponse(['error' => 'Failed to create booking'], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Failed to create booking']], 500);
     }
 
     // Mark availability slot as booked.
@@ -290,7 +285,7 @@ class ServiceApiController extends ControllerBase {
     $bookingEntity = $this->entityTypeManager()->getStorage('booking')->load($booking);
 
     if (!$bookingEntity) {
-      return new JsonResponse(['error' => 'Booking not found'], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Booking not found']], 404);
     }
 
     // Verify the current user has permission (provider or client).
@@ -299,14 +294,14 @@ class ServiceApiController extends ControllerBase {
     $clientId = (int) $bookingEntity->get('client_id')->target_id;
 
     if ($currentUserId !== $providerId && $currentUserId !== $clientId) {
-      return new JsonResponse(['error' => 'Access denied'], 403);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
     }
 
     $data = json_decode($request->getContent(), TRUE);
     $newStatus = $data['status'] ?? NULL;
 
     if (!$newStatus) {
-      return new JsonResponse(['error' => 'Missing status field'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Missing status field']], 400);
     }
 
     // Validate state transition.

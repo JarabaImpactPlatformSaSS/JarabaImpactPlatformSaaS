@@ -10,6 +10,7 @@ use Drupal\jaraba_candidate\Agent\EmployabilityCopilotAgent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * API controller para el Copilot de Empleabilidad.
@@ -27,6 +28,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class CopilotApiController extends ControllerBase {
 
+
+  /**
+   * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+   */
+  protected TenantContextService $tenantContext;
   /**
    * El agente copilot de empleabilidad.
    */
@@ -44,6 +50,8 @@ class CopilotApiController extends ControllerBase {
     $instance = parent::create($container);
     $instance->copilotAgent = $container->get('jaraba_candidate.agent.employability_copilot');
     $instance->routeMatch = $container->get('current_route_match');
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+
     return $instance;
   }
 
@@ -71,8 +79,8 @@ class CopilotApiController extends ControllerBase {
     $mode = $data['mode'] ?? NULL;
 
     // Establecer contexto del tenant si disponible.
-    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-      $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+    if ($this->tenantContext !== NULL) {
+      $tenantContext = $this->tenantContext;
       $tenant = $tenantContext->getCurrentTenant();
       if ($tenant) {
         $this->copilotAgent->setTenantContext(

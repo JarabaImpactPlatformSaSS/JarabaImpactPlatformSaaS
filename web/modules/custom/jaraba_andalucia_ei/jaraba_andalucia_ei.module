@@ -425,6 +425,7 @@ function _jaraba_andalucia_ei_fire_upgrade_trigger(string $triggerType, $partici
   }
 
   try {
+    // @todo CONS-N10: Move to service class for proper DI.
     $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
     $tenant = $tenantContext->getCurrentTenant();
 
@@ -559,7 +560,7 @@ function _jaraba_andalucia_ei_sync_to_crm($participante, string $newFase): void 
       ['@id' => $participante->id(), '@fase' => $newFase, '@stage' => $stage]
     );
   }
-  catch (\Exception $e) {
+  catch (\Throwable $e) {
     \Drupal::logger('jaraba_andalucia_ei')->error(
       'CRM sync error for participant @id: @message',
       ['@id' => $participante->id(), '@message' => $e->getMessage()]

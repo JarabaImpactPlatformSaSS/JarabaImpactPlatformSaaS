@@ -1,0 +1,45 @@
+services:
+  jaraba_sso.saml_handler:
+    class: Drupal\jaraba_sso\Service\SamlHandlerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_sso'
+
+  jaraba_sso.oidc_handler:
+    class: Drupal\jaraba_sso\Service\OidcHandlerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.jaraba_sso'
+
+  jaraba_sso.scim_handler:
+    class: Drupal\jaraba_sso\Service\ScimHandlerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+      - '@logger.channel.jaraba_sso'
+
+  jaraba_sso.jit_provisioner:
+    class: Drupal\jaraba_sso\Service\JitProvisionerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@user.auth'
+      - '@logger.channel.jaraba_sso'
+
+  jaraba_sso.mfa_enforcer:
+    class: Drupal\jaraba_sso\Service\MfaEnforcerService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@config.factory'
+
+  logger.channel.jaraba_sso:
+    parent: logger.channel_base
+    arguments: ['jaraba_sso']

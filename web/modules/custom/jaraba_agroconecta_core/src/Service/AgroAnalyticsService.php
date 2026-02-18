@@ -4,473 +4,174 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agroconecta_core\Service;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\jaraba_agroconecta_core\Entity\AlertRuleAgro;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\jaraba_agroconecta_core\Entity\AnalyticsDailyAgro;
 
 /**
- * Servicio de analytics para AgroConecta.
+ * Servicio de Analítica y KPIs para AgroConecta.
  *
- * RESPONSABILIDADES:
- * - Agregación nocturna de métricas diarias (cron job).
- * - Dashboard KPIs con periodos comparativos.
- * - Rankings de productos y productores.
- * - Evaluación de reglas de alerta.
- * - Sparkline data para gráficas.
+ * LÓGICA:
+ * - Agrega datos de ventas, logística y marketing.
+ * - Genera snapshots diarios para el dashboard.
+ * - Calcula tendencias y comparativas.
+ *
+ * F7 — Doc 57.
  */
-class AgroAnalyticsService
-{
+class AgroAnalyticsService {
 
-    public function __construct(
-        protected EntityTypeManagerInterface $entityTypeManager,
-    ) {
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected Connection $database,
+    protected LoggerChannelFactoryInterface $loggerFactory,
+  ) {}
+
+  /**
+   * Genera el snapshot diario para un productor o tenant.
+   */
+  public function generateDailySnapshot(int $tenantId, ?int $producerId = NULL, string $date = NULL): AnalyticsDailyAgro {
+    if (!$date) {
+      $date = date('Y-m-d', strtotime('yesterday'));
     }
 
-    // ===================================================
-    // Dashboard KPIs
-    // ===================================================
+    $data = $this->collectMetrics($tenantId, $producerId, $date);
 
-    /**
-     * Obtiene los KPIs del dashboard para un periodo.
-     */
-    public function getDashboardData(int $tenantId, string $period = '7d'): array
-    {
-        $endDate = new \DateTime();
-        $startDate = $this->calculateStartDate($period);
-
-        $metrics = $this->getMetricsForPeriod($tenantId, $startDate, $endDate);
-        $previousStart = $this->calculatePreviousPeriodStart($startDate, $endDate);
-        $previousMetrics = $this->getMetricsForPeriod($tenantId, $previousStart, $startDate);
-
-        return [
-            'period' => $period,
-            'start_date' => $startDate->format('Y-m-d'),
-            'end_date' => $endDate->format('Y-m-d'),
-            'kpis' => [
-                'gmv' => $this->buildKpi('GMV', $metrics['gmv'], $previousMetrics['gmv'], '€'),
-                'orders' => $this->buildKpi('Pedidos', $metrics['orders_count'], $previousMetrics['orders_count']),
-                'aov' => $this->buildKpi('Ticket Medio', $metrics['aov'], $previousMetrics['aov'], '€'),
-                'conversion_rate' => $this->buildKpi('Conversión', $metrics['conversion_rate'], $previousMetrics['conversion_rate'], '%'),
-                'unique_buyers' => $this->buildKpi('Compradores', $metrics['unique_buyers'], $previousMetrics['unique_buyers']),
-                'avg_rating' => $this->buildKpi('Rating', $metrics['avg_rating'], $previousMetrics['avg_rating'], '⭐'),
-                'new_users' => $this->buildKpi('Nuevos Usuarios', $metrics['new_users'], $previousMetrics['new_users']),
-                'active_producers' => $this->buildKpi('Productores Activos', $metrics['active_producers'], $previousMetrics['active_producers']),
-            ],
-            'sparklines' => [
-                'gmv' => $this->getSparklineData($tenantId, 'gmv', $startDate, $endDate),
-                'orders' => $this->getSparklineData($tenantId, 'orders_count', $startDate, $endDate),
-            ],
-        ];
+    $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
+    
+    // Buscar si ya existe para actualizar, o crear nuevo.
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('tenant_id', $tenantId)
+      ->condition('date', $date);
+    
+    if ($producerId) {
+      $query->condition('uid', $producerId); // Usamos uid como owner (productor)
+    } else {
+      $query->condition('uid', 0); // Snapshot global del tenant
     }
 
-    // ===================================================
-    // Rankings
-    // ===================================================
-
-    /**
-     * Top productos por ventas.
-     */
-    public function getTopProducts(int $tenantId, int $limit = 10): array
-    {
-        // Query products con más ventas (basado en OrderItemAgro).
-        $storage = $this->entityTypeManager->getStorage('order_item_agro');
-        $query = $storage->getQuery()
-            ->accessCheck(FALSE);
-
-        // Agregar productos con mayor cantidad vendida.
-        $ids = $query->range(0, $limit)->execute();
-        if (empty($ids)) {
-            return [];
-        }
-
-        $items = $storage->loadMultiple($ids);
-        $productSales = [];
-
-        foreach ($items as $item) {
-            $productId = $item->get('product_id')->target_id ?? NULL;
-            if (!$productId) {
-                continue;
-            }
-
-            if (!isset($productSales[$productId])) {
-                $product = $this->entityTypeManager->getStorage('product_agro')->load($productId);
-                $productSales[$productId] = [
-                    'product_id' => $productId,
-                    'name' => $product ? $product->label() : 'Producto #' . $productId,
-                    'total_sold' => 0,
-                    'revenue' => 0,
-                ];
-            }
-
-            $qty = (int) ($item->get('quantity')->value ?? 0);
-            $price = (float) ($item->get('unit_price')->value ?? 0);
-            $productSales[$productId]['total_sold'] += $qty;
-            $productSales[$productId]['revenue'] += ($qty * $price);
-        }
-
-        usort($productSales, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
-        return array_slice($productSales, 0, $limit);
+    $ids = $query->execute();
+    
+    if (!empty($ids)) {
+      $entity = $storage->load(reset($ids));
+    } else {
+      $entity = $storage->create([
+        'tenant_id' => $tenantId,
+        'uid' => $producerId ?? 0,
+        'date' => $date,
+      ]);
     }
 
-    /**
-     * Top productores por GMV generado.
-     */
-    public function getTopProducers(int $tenantId, int $limit = 10): array
-    {
-        $storage = $this->entityTypeManager->getStorage('suborder_agro');
-        $ids = $storage->getQuery()
-            ->accessCheck(FALSE)
-            ->range(0, 200)
-            ->execute();
-
-        if (empty($ids)) {
-            return [];
-        }
-
-        $suborders = $storage->loadMultiple($ids);
-        $producerGmv = [];
-
-        foreach ($suborders as $suborder) {
-            $producerId = $suborder->get('producer_id')->target_id ?? NULL;
-            if (!$producerId) {
-                continue;
-            }
-
-            if (!isset($producerGmv[$producerId])) {
-                $producer = $this->entityTypeManager->getStorage('producer_profile')->load($producerId);
-                $producerGmv[$producerId] = [
-                    'producer_id' => $producerId,
-                    'name' => $producer ? $producer->label() : 'Productor #' . $producerId,
-                    'gmv' => 0,
-                    'suborders' => 0,
-                ];
-            }
-
-            $producerGmv[$producerId]['gmv'] += (float) ($suborder->get('subtotal')->value ?? 0);
-            $producerGmv[$producerId]['suborders']++;
-        }
-
-        usort($producerGmv, fn($a, $b) => $b['gmv'] <=> $a['gmv']);
-        return array_slice($producerGmv, 0, $limit);
+    // Mapear métricas recolectadas.
+    foreach ($data as $key => $value) {
+      if ($entity->hasField($key)) {
+        $entity->set($key, $value);
+      }
     }
 
-    // ===================================================
-    // Agregación Diaria (Cron)
-    // ===================================================
+    $entity->save();
+    return $entity;
+  }
 
-    /**
-     * Agrega métricas del día anterior. Llamado por cron.
-     */
-    public function aggregateDaily(?string $date = NULL): ?array
-    {
-        $targetDate = $date ?? (new \DateTime('yesterday'))->format('Y-m-d');
+  /**
+   * Obtiene un resumen de analítica de los últimos N días.
+   */
+  public function getRecentAnalytics(int $tenantId, ?int $producerId = NULL, int $days = 7): array {
+    $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('tenant_id', $tenantId)
+      ->sort('date', 'DESC')
+      ->range(0, $days);
 
-        // Verificar si ya existe para evitar duplicados.
-        $existing = $this->findDailyRecord(1, $targetDate);
-        if ($existing) {
-            return ['status' => 'already_exists', 'date' => $targetDate];
-        }
-
-        // Contar pedidos del día.
-        $orderStorage = $this->entityTypeManager->getStorage('order_agro');
-        $dayStart = strtotime($targetDate . ' 00:00:00');
-        $dayEnd = strtotime($targetDate . ' 23:59:59');
-
-        $orderIds = $orderStorage->getQuery()
-            ->condition('created', [$dayStart, $dayEnd], 'BETWEEN')
-            ->accessCheck(FALSE)
-            ->execute();
-
-        $ordersCount = count($orderIds);
-        $gmv = 0;
-
-        if (!empty($orderIds)) {
-            $orders = $orderStorage->loadMultiple($orderIds);
-            foreach ($orders as $order) {
-                $gmv += (float) ($order->get('total')->value ?? 0);
-            }
-        }
-
-        $aov = $ordersCount > 0 ? $gmv / $ordersCount : 0;
-
-        // Crear registro.
-        $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
-        $record = $storage->create([
-            'tenant_id' => 1,
-            'date' => $targetDate,
-            'gmv' => round($gmv, 2),
-            'orders_count' => $ordersCount,
-            'aov' => round($aov, 2),
-            'uid' => 1,
-        ]);
-        $record->save();
-
-        return [
-            'status' => 'created',
-            'date' => $targetDate,
-            'gmv' => round($gmv, 2),
-            'orders' => $ordersCount,
-        ];
+    if ($producerId) {
+      $query->condition('uid', $producerId);
+    } else {
+      $query->condition('uid', 0);
     }
 
-    // ===================================================
-    // Alertas
-    // ===================================================
+    $ids = $query->execute();
+    if (empty($ids)) return [];
 
-    /**
-     * Evalúa todas las reglas de alerta activas.
-     */
-    public function evaluateAlerts(int $tenantId = 1): array
-    {
-        $storage = $this->entityTypeManager->getStorage('alert_rule_agro');
-        $ids = $storage->getQuery()
-            ->condition('tenant_id', $tenantId)
-            ->condition('is_active', TRUE)
-            ->accessCheck(FALSE)
-            ->execute();
+    $snapshots = $storage->loadMultiple($ids);
+    $summary = [];
 
-        if (empty($ids)) {
-            return [];
-        }
-
-        $rules = $storage->loadMultiple($ids);
-        $todayMetrics = $this->getTodayMetrics($tenantId);
-        $avgMetrics = $this->getAverageMetrics($tenantId, 7);
-
-        $triggered = [];
-
-        foreach ($rules as $rule) {
-            assert($rule instanceof AlertRuleAgro);
-            $metric = $rule->getMetric();
-            $condition = $rule->getCondition();
-            $threshold = $rule->getThreshold();
-            $value = $todayMetrics[$metric] ?? 0;
-
-            $isTriggered = match ($condition) {
-                'lt' => $value < $threshold,
-                'lte' => $value <= $threshold,
-                'gt' => $value > $threshold,
-                'gte' => $value >= $threshold,
-                'drop_pct' => $this->checkDropPercent($value, $avgMetrics[$metric] ?? 0, $threshold),
-                default => FALSE,
-            };
-
-            if ($isTriggered) {
-                // Actualizar contadores de la regla.
-                $rule->set('last_triggered', date('Y-m-d\TH:i:s'));
-                $triggerCount = (int) ($rule->get('trigger_count')->value ?? 0);
-                $rule->set('trigger_count', $triggerCount + 1);
-                $rule->save();
-
-                $triggered[] = [
-                    'rule_id' => (int) $rule->id(),
-                    'name' => $rule->getName(),
-                    'metric' => $metric,
-                    'severity' => $rule->getSeverity(),
-                    'current_value' => $value,
-                    'threshold' => $threshold,
-                    'message' => sprintf(
-                        '%s: %s = %.2f (umbral: %.2f)',
-                        $rule->getName(),
-                        $metric,
-                        $value,
-                        $threshold
-                    ),
-                ];
-            }
-        }
-
-        return $triggered;
+    foreach ($snapshots as $snapshot) {
+      $summary[] = [
+        'date' => $snapshot->get('date')->value,
+        'gmv' => (float) $snapshot->getGmv(),
+        'orders' => (int) $snapshot->getOrdersCount(),
+        'qr_scans' => (int) $snapshot->get('qr_scans')->value,
+        'shipments' => (int) $snapshot->get('shipments_count')->value,
+        'cold_alerts' => (int) $snapshot->get('cold_chain_alerts')->value,
+      ];
     }
 
-    /**
-     * Obtiene las alertas activas recientes.
-     */
-    public function getActiveAlerts(int $tenantId): array
-    {
-        $storage = $this->entityTypeManager->getStorage('alert_rule_agro');
-        $ids = $storage->getQuery()
-            ->condition('tenant_id', $tenantId)
-            ->condition('is_active', TRUE)
-            ->exists('last_triggered')
-            ->sort('last_triggered', 'DESC')
-            ->range(0, 20)
-            ->accessCheck(FALSE)
-            ->execute();
+    return array_reverse($summary);
+  }
 
-        if (empty($ids)) {
-            return [];
-        }
+  /**
+   * Recolecta métricas reales desde la base de datos.
+   */
+  protected function collectMetrics(int $tenantId, ?int $producerId, string $date): array {
+    $metrics = [];
+    $start = $date . ' 00:00:00';
+    $end = $date . ' 23:59:59';
 
-        $rules = $storage->loadMultiple($ids);
-        $alerts = [];
-
-        foreach ($rules as $rule) {
-            assert($rule instanceof AlertRuleAgro);
-            $alerts[] = [
-                'id' => (int) $rule->id(),
-                'name' => $rule->getName(),
-                'metric' => $rule->getMetric(),
-                'severity' => $rule->getSeverity(),
-                'threshold' => $rule->getThreshold(),
-                'trigger_count' => (int) ($rule->get('trigger_count')->value ?? 0),
-                'last_triggered' => $rule->get('last_triggered')->value,
-            ];
-        }
-
-        return $alerts;
+    // 1. Ventas (GMV y Pedidos).
+    $query = $this->database->select('agro_suborder', 's')
+      ->fields('s', ['subtotal', 'shipping_amount'])
+      ->condition('s.tenant_id', $tenantId)
+      ->condition('s.created', [strtotime($start), strtotime($end)], 'BETWEEN');
+    
+    if ($producerId) {
+      $query->condition('s.producer_id', $producerId);
     }
 
-    // ===================================================
-    // Métodos internos
-    // ===================================================
+    $orders = $query->execute()->fetchAll();
+    $metrics['gmv'] = array_sum(array_column($orders, 'subtotal'));
+    $metrics['orders_count'] = count($orders);
+    $metrics['shipping_revenue'] = array_sum(array_column($orders, 'shipping_amount'));
+    $metrics['aov'] = $metrics['orders_count'] > 0 ? $metrics['gmv'] / $metrics['orders_count'] : 0;
 
-    protected function getMetricsForPeriod(int $tenantId, \DateTime $start, \DateTime $end): array
-    {
-        $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
-        $ids = $storage->getQuery()
-            ->condition('tenant_id', $tenantId)
-            ->condition('date', $start->format('Y-m-d'), '>=')
-            ->condition('date', $end->format('Y-m-d'), '<=')
-            ->accessCheck(FALSE)
-            ->execute();
-
-        $defaults = [
-            'gmv' => 0,
-            'orders_count' => 0,
-            'aov' => 0,
-            'conversion_rate' => 0,
-            'unique_buyers' => 0,
-            'avg_rating' => 0,
-            'new_users' => 0,
-            'active_producers' => 0,
-            'qr_scans' => 0,
-        ];
-
-        if (empty($ids)) {
-            return $defaults;
-        }
-
-        $records = $storage->loadMultiple($ids);
-        $days = count($records);
-
-        foreach ($records as $r) {
-            assert($r instanceof AnalyticsDailyAgro);
-            $defaults['gmv'] += $r->getGmv();
-            $defaults['orders_count'] += $r->getOrdersCount();
-            $defaults['unique_buyers'] += (int) ($r->get('unique_buyers')->value ?? 0);
-            $defaults['new_users'] += (int) ($r->get('new_users')->value ?? 0);
-            $defaults['active_producers'] += (int) ($r->get('active_producers')->value ?? 0);
-            $defaults['qr_scans'] += (int) ($r->get('qr_scans')->value ?? 0);
-            $defaults['avg_rating'] += (float) ($r->get('avg_rating')->value ?? 0);
-            $defaults['conversion_rate'] += $r->getConversionRate();
-        }
-
-        // Promedios.
-        if ($days > 0) {
-            $defaults['aov'] = $defaults['orders_count'] > 0 ? $defaults['gmv'] / $defaults['orders_count'] : 0;
-            $defaults['avg_rating'] /= $days;
-            $defaults['conversion_rate'] /= $days;
-        }
-
-        return $defaults;
+    // 2. Logística (Fase 7).
+    $ship_query = $this->database->select('agro_shipment', 'sh')
+      ->fields('sh', ['id', 'is_refrigerated', 'state'])
+      ->condition('sh.tenant_id', $tenantId)
+      ->condition('sh.created', [strtotime($start), strtotime($end)], 'BETWEEN');
+    
+    // El shipment no tiene producer_id directo, filtramos por sub_order_id.
+    if ($producerId) {
+      $ship_query->join('agro_suborder', 'so', 'sh.sub_order_id = so.id');
+      $ship_query->condition('so.producer_id', $producerId);
     }
 
-    protected function getSparklineData(int $tenantId, string $field, \DateTime $start, \DateTime $end): array
-    {
-        $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
-        $ids = $storage->getQuery()
-            ->condition('tenant_id', $tenantId)
-            ->condition('date', $start->format('Y-m-d'), '>=')
-            ->condition('date', $end->format('Y-m-d'), '<=')
-            ->sort('date', 'ASC')
-            ->accessCheck(FALSE)
-            ->execute();
+    $shipments = $ship_query->execute()->fetchAll();
+    $metrics['shipments_count'] = count($shipments);
+    
+    // Alertas de frío (Incidencias en envíos refrigerados).
+    $cold_alerts = 0;
+    foreach ($shipments as $sh) {
+      if ($sh->is_refrigerated && $sh->state === 'exception') {
+        $cold_alerts++;
+      }
+    }
+    $metrics['cold_chain_alerts'] = $cold_alerts;
 
-        if (empty($ids)) {
-            return [];
-        }
-
-        $records = $storage->loadMultiple($ids);
-        $data = [];
-        foreach ($records as $r) {
-            $data[] = [
-                'date' => $r->get('date')->value,
-                'value' => (float) ($r->get($field)->value ?? 0),
-            ];
-        }
-        return $data;
+    // 3. Marketing (QR).
+    $qr_query = $this->database->select('qr_scan_event', 'qse')
+      ->condition('qse.created', [strtotime($start), strtotime($end)], 'BETWEEN');
+    
+    if ($producerId) {
+      $qr_query->join('qr_code_agro', 'qca', 'qse.qr_id = qca.id');
+      $qr_query->condition('qca.target_entity_type', 'producer_profile');
+      $qr_query->condition('qca.target_entity_id', $producerId);
     }
 
-    protected function getTodayMetrics(int $tenantId): array
-    {
-        $today = new \DateTime('today');
-        $tomorrow = new \DateTime('tomorrow');
-        return $this->getMetricsForPeriod($tenantId, $today, $tomorrow);
-    }
+    $metrics['qr_scans'] = (int) $qr_query->countQuery()->execute()->fetchField();
 
-    protected function getAverageMetrics(int $tenantId, int $days): array
-    {
-        $end = new \DateTime('yesterday');
-        $start = (clone $end)->modify("-{$days} days");
-        return $this->getMetricsForPeriod($tenantId, $start, $end);
-    }
+    return $metrics;
+  }
 
-    protected function buildKpi(string $label, float $current, float $previous, string $suffix = ''): array
-    {
-        $change = $previous > 0 ? round(($current - $previous) / $previous * 100, 1) : 0;
-        return [
-            'label' => $label,
-            'value' => round($current, 2),
-            'previous' => round($previous, 2),
-            'change_pct' => $change,
-            'trend' => $change > 0 ? 'up' : ($change < 0 ? 'down' : 'flat'),
-            'suffix' => $suffix,
-        ];
-    }
-
-    protected function checkDropPercent(float $current, float $average, float $thresholdPct): bool
-    {
-        if ($average <= 0) {
-            return FALSE;
-        }
-        $dropPct = (($average - $current) / $average) * 100;
-        return $dropPct >= $thresholdPct;
-    }
-
-    protected function calculateStartDate(string $period): \DateTime
-    {
-        return match ($period) {
-            '1d' => new \DateTime('yesterday'),
-            '7d' => new \DateTime('-7 days'),
-            '30d' => new \DateTime('-30 days'),
-            '90d' => new \DateTime('-90 days'),
-            '365d' => new \DateTime('-365 days'),
-            default => new \DateTime('-7 days'),
-        };
-    }
-
-    protected function calculatePreviousPeriodStart(\DateTime $start, \DateTime $end): \DateTime
-    {
-        $diff = $start->diff($end);
-        return (clone $start)->modify("-{$diff->days} days");
-    }
-
-    protected function findDailyRecord(int $tenantId, string $date): ?AnalyticsDailyAgro
-    {
-        $storage = $this->entityTypeManager->getStorage('analytics_daily_agro');
-        $ids = $storage->getQuery()
-            ->condition('tenant_id', $tenantId)
-            ->condition('date', $date)
-            ->range(0, 1)
-            ->accessCheck(FALSE)
-            ->execute();
-
-        if (empty($ids)) {
-            return NULL;
-        }
-
-        $record = $storage->load(reset($ids));
-        return $record instanceof AnalyticsDailyAgro ? $record : NULL;
-    }
 }

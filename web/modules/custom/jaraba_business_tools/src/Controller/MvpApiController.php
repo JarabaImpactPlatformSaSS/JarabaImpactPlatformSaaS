@@ -31,7 +31,7 @@ class MvpApiController extends ControllerBase
             $hypotheses[] = $this->serializeHypothesis($hypothesis);
         }
 
-        return new JsonResponse(['data' => $hypotheses]);
+        return new JsonResponse(['success' => TRUE, 'data' => $hypotheses]);
     }
 
     /**
@@ -42,7 +42,8 @@ class MvpApiController extends ControllerBase
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['hypothesis'])) {
-            return new JsonResponse(['error' => 'Hypothesis statement is required'], 400);
+            return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Hypothesis statement is required']], 400);
         }
 
         $storage = $this->entityTypeManager()->getStorage('mvp_hypothesis');
@@ -57,9 +58,7 @@ class MvpApiController extends ControllerBase
         $hypothesis->save();
 
         return new JsonResponse([
-            'data' => $this->serializeHypothesis($hypothesis),
-            'message' => 'Hypothesis created successfully',
-        ], 201);
+            'data' => $this->serializeHypothesis($hypothesis), 'meta' => ['timestamp' => time()]], 201);
     }
 
     /**
@@ -71,14 +70,14 @@ class MvpApiController extends ControllerBase
         $hypothesis = $storage->load($id);
 
         if (!$hypothesis) {
-            return new JsonResponse(['error' => 'Hypothesis not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Hypothesis not found']], 404);
         }
 
         if ($hypothesis->getOwnerId() != $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
-        return new JsonResponse(['data' => $this->serializeHypothesis($hypothesis)]);
+        return new JsonResponse(['success' => TRUE, 'data' => $this->serializeHypothesis($hypothesis)]);
     }
 
     /**
@@ -90,11 +89,11 @@ class MvpApiController extends ControllerBase
         $hypothesis = $storage->load($id);
 
         if (!$hypothesis) {
-            return new JsonResponse(['error' => 'Hypothesis not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Hypothesis not found']], 404);
         }
 
         if ($hypothesis->getOwnerId() != $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         $data = json_decode($request->getContent(), TRUE);
@@ -117,9 +116,7 @@ class MvpApiController extends ControllerBase
         $hypothesis->save();
 
         return new JsonResponse([
-            'data' => $this->serializeHypothesis($hypothesis),
-            'message' => 'Hypothesis updated',
-        ]);
+            'data' => $this->serializeHypothesis($hypothesis), 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -131,22 +128,22 @@ class MvpApiController extends ControllerBase
         $hypothesis = $storage->load($id);
 
         if (!$hypothesis) {
-            return new JsonResponse(['error' => 'Hypothesis not found'], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Hypothesis not found']], 404);
         }
 
         if ($hypothesis->getOwnerId() != $this->currentUser()->id()) {
-            return new JsonResponse(['error' => 'Access denied'], 403);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
         }
 
         $data = json_decode($request->getContent(), TRUE);
 
         if (empty($data['result_status'])) {
-            return new JsonResponse(['error' => 'Result status is required'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Result status is required']], 400);
         }
 
         $allowed_statuses = ['validated', 'invalidated', 'inconclusive', 'pivot_needed'];
         if (!in_array($data['result_status'], $allowed_statuses)) {
-            return new JsonResponse(['error' => 'Invalid result status'], 400);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid result status']], 400);
         }
 
         $hypothesis->set('result_status', $data['result_status']);
@@ -156,10 +153,7 @@ class MvpApiController extends ControllerBase
         $hypothesis->set('tested_at', date('Y-m-d\TH:i:s'));
         $hypothesis->save();
 
-        return new JsonResponse([
-            'data' => $this->serializeHypothesis($hypothesis),
-            'message' => 'Result recorded successfully',
-        ]);
+        return new JsonResponse(['success' => TRUE, 'data' => $this->serializeHypothesis($hypothesis), 'meta' => ['timestamp' => time()]]);
     }
 
     /**

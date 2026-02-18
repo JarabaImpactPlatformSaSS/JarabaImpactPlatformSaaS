@@ -1,0 +1,45 @@
+monitoring:
+  web_app:
+    url: '/health'
+    interval_seconds: 30
+    timeout_ms: 2000
+  api:
+    url: '/api/v1/health'
+    interval_seconds: 30
+    timeout_ms: 2000
+  database:
+    interval_seconds: 15
+  redis:
+    interval_seconds: 15
+  email:
+    interval_seconds: 60
+  ai_copilot:
+    interval_seconds: 60
+  payment:
+    interval_seconds: 60
+default_sla_tier: standard
+sla_tiers:
+  standard:
+    uptime_target: 99.900
+    max_downtime_minutes_month: 43.8
+    credit_policy:
+      - { threshold: 99.9, credit_pct: 0 }
+      - { threshold: 99.0, credit_pct: 10 }
+      - { threshold: 95.0, credit_pct: 25 }
+      - { threshold: 0, credit_pct: 50 }
+  premium:
+    uptime_target: 99.950
+    max_downtime_minutes_month: 21.9
+    credit_policy:
+      - { threshold: 99.95, credit_pct: 0 }
+      - { threshold: 99.5, credit_pct: 10 }
+      - { threshold: 99.0, credit_pct: 25 }
+      - { threshold: 0, credit_pct: 50 }
+  critical:
+    uptime_target: 99.990
+    max_downtime_minutes_month: 4.38
+    credit_policy:
+      - { threshold: 99.99, credit_pct: 0 }
+      - { threshold: 99.9, credit_pct: 15 }
+      - { threshold: 99.5, credit_pct: 30 }
+      - { threshold: 0, credit_pct: 100 }

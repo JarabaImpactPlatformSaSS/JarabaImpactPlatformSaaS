@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador para el Dashboard de Analytics del Page Builder.
@@ -25,6 +26,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AnalyticsDashboardController extends ControllerBase
 {
+
+
+    /**
+     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
+     */
+    protected ?TenantContextService $tenantContext = NULL;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function create(ContainerInterface $container): static {
+        $instance = parent::create($container);
+        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
+            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
+        }
+        return $instance;
+    }
 
     /**
      * Renderiza el dashboard principal de analytics.
@@ -366,8 +384,8 @@ class AnalyticsDashboardController extends ControllerBase
      */
     protected function getTenantId(): int
     {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-            $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+        if ($this->tenantContext !== NULL) {
+            $tenant = $this->tenantContext->getCurrentTenant();
             if ($tenant) {
                 return (int) $tenant->id();
             }

@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador API para el módulo Jaraba RAG.
@@ -30,6 +31,7 @@ class RagApiController extends ControllerBase
         protected JarabaRagService $ragService,
         protected KbIndexerService $indexerService,
         protected RateLimiterService $rateLimiter,
+        protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
     }
 
@@ -42,13 +44,14 @@ class RagApiController extends ControllerBase
             $container->get('jaraba_rag.rag_service'),
             $container->get('jaraba_rag.indexer'),
             $container->get('ecosistema_jaraba_core.rate_limiter'),
+            $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
         );
     }
 
     /**
      * Endpoint para consultas RAG.
      *
-     * POST /api/jaraba-rag/query
+     * POST /api/v1/jaraba-rag/query (AUDIT-CONS-N07)
      *
      * Body:
      * {
@@ -136,7 +139,7 @@ class RagApiController extends ControllerBase
      * SEC-09: Verifica que la entidad pertenece al tenant del usuario
      * antes de permitir la reindexación.
      *
-     * POST /api/jaraba-rag/reindex/{entity_type}/{entity_id}
+     * POST /api/v1/jaraba-rag/reindex/{entity_type}/{entity_id} (AUDIT-CONS-N07)
      */
     public function reindex(string $entity_type, int $entity_id): JsonResponse
     {
@@ -172,7 +175,7 @@ class RagApiController extends ControllerBase
 
                 // Obtener tenant del usuario actual via TenantContextService.
                 try {
-                    $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                    $tenantContext = $this->tenantContext;
                     $currentTenant = $tenantContext->getCurrentTenant();
                     $userTenantId = $currentTenant ? (string) $currentTenant->id() : NULL;
                 } catch (\Exception $e) {

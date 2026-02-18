@@ -9,6 +9,7 @@ use Drupal\jaraba_pixels\Service\PixelDispatcherService;
 use Drupal\jaraba_pixels\Service\RedisQueueService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
 /**
  * Controlador para dashboard de estadísticas de pixels.
@@ -52,7 +53,9 @@ class PixelStatsController extends ControllerBase
         BatchProcessorService $batch_processor,
         PixelDispatcherService $dispatcher,
         CredentialManagerService $credential_manager,
+        TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
+        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
         $this->queue = $queue;
         $this->batchProcessor = $batch_processor;
         $this->dispatcher = $dispatcher;
@@ -68,7 +71,8 @@ class PixelStatsController extends ControllerBase
             $container->get('jaraba_pixels.queue'),
             $container->get('jaraba_pixels.batch_processor'),
             $container->get('jaraba_pixels.dispatcher'),
-            $container->get('jaraba_pixels.credential_manager')
+            $container->get('jaraba_pixels.credential_manager'),
+            $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
         );
     }
 
@@ -201,7 +205,7 @@ class PixelStatsController extends ControllerBase
     protected function getCurrentTenantId(): int
     {
         try {
-            $tenant_context = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+            $tenant_context = $this->tenantContext;
             $tenant = $tenant_context->getCurrentTenant();
             return $tenant ? (int) $tenant->id() : 1;
         } catch (\Exception $e) {

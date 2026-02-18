@@ -35,7 +35,7 @@ class AnalyticsApiController extends ControllerBase implements ContainerInjectio
     public static function create(ContainerInterface $container): static
     {
         return new static(
-            $container->get('jaraba_agroconecta.analytics_service'),
+            $container->get('jaraba_agroconecta_core.analytics_service'), // AUDIT-CONS-N05: canonical prefix
             $container->get('ecosistema_jaraba_core.tenant_context'),
         );
     }
@@ -49,7 +49,8 @@ class AnalyticsApiController extends ControllerBase implements ContainerInjectio
         $period = $request->query->get('period', '7d');
 
         $data = $this->analyticsService->getDashboardData($tenantId, $period);
-        return new JsonResponse($data);
+        return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
     }
 
     /**
@@ -85,7 +86,7 @@ class AnalyticsApiController extends ControllerBase implements ContainerInjectio
         $date = $data['date'] ?? NULL;
 
         $result = $this->analyticsService->aggregateDaily($date);
-        return new JsonResponse($result);
+        return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }
 
     /**

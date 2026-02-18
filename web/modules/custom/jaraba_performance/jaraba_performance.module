@@ -151,3 +151,30 @@ function jaraba_performance_page_attachments_alter(array &$attachments): void {
   ];
 }
 
+/**
+ * Implements hook_preprocess_image().
+ *
+ * AUDIT-PERF-N16: Añade loading="lazy" por defecto a todas las imágenes
+ * renderizadas a través del theme system de Drupal que no tengan ya
+ * el atributo 'loading' definido.
+ *
+ * Esto actúa como red de seguridad global: cualquier imagen que se renderice
+ * mediante el template image.html.twig (u otros que usen la variable
+ * 'attributes') recibirá automáticamente lazy loading si no se ha
+ * especificado explícitamente otro valor (p.ej. 'eager' para heros).
+ *
+ * IMPORTANTE: Este hook NO afecta a imágenes escritas directamente en
+ * templates Twig con <img> hardcoded — esas deben tener el atributo
+ * en el propio template. Este hook cubre las imágenes renderizadas
+ * programáticamente por Drupal (campos de imagen, render arrays, etc.).
+ *
+ * @param array &$variables
+ *   Variables del template de imagen. Incluye 'attributes' (Attribute object).
+ */
+function jaraba_performance_preprocess_image(array &$variables): void {
+  // AUDIT-PERF-N16: Default lazy loading para todas las imágenes del theme system.
+  if (!isset($variables['attributes']['loading'])) {
+    $variables['attributes']['loading'] = 'lazy';
+  }
+}
+

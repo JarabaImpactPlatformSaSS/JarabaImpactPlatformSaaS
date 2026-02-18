@@ -488,6 +488,13 @@
 │   ├── Indexación automática de productos                                │
 │   └── Estado: ✅ Producción (v5.1)                                      │
 │                                                                         │
+│   <!-- AUDIT-SPEC-N01: ai_provider_google_gemini añadido al registro -->│
+│   📦 ai_provider_google_gemini — Google Gemini AI Provider ✅           │
+│   ├── Proveedor IA Google AI Studio (Gemini API)                       │
+│   ├── Integración con módulo ai:ai + Key                               │
+│   ├── Configuración: ai_provider_google_gemini.settings                │
+│   └── Estado: ✅ Producción                                             │
+│                                                                         │
 │   📦 jaraba_tenant_knowledge ✅ (Knowledge Training + Help Center)       │
 │   ├── Entrenamiento KB del Tenant: FAQs, Políticas, Documentos          │
 │   ├── Centro de Ayuda Público: /ayuda (G114)                            │
@@ -670,9 +677,17 @@
 │   ├── Frontend: compliance-dashboard.css/js + Twig template            │
 │   └── Estado: ✅ Producción (Feb 2026)                                  │
 │                                                                         │
-│   📦 jaraba_analytics — Advanced Analytics (Cohort + Funnel) ✅         │
-│   ├── CohortDefinition Entity: Cohortes por fecha, compra, vertical    │
-│   ├── FunnelDefinition Entity: Embudos configurables con pasos JSON    │
+│   <!-- AUDIT-SPEC-N02: jaraba_analytics tiene 8 entities, no 2 -->      │
+│   📦 jaraba_analytics — Advanced Analytics (8 Entities) ✅              │
+│   ├── 8 Content Entities:                                               │
+│   │   ├── CohortDefinition: Cohortes por fecha, compra, vertical       │
+│   │   ├── FunnelDefinition: Embudos configurables con pasos JSON       │
+│   │   ├── AnalyticsEvent: Eventos de analytics raw                     │
+│   │   ├── AnalyticsDaily: Agregaciones diarias                         │
+│   │   ├── AnalyticsDashboard: Dashboards configurables drag-drop       │
+│   │   ├── CustomReport: Reportes personalizados                        │
+│   │   ├── DashboardWidget: Widgets para dashboards                     │
+│   │   └── ScheduledReport: Reportes programados                        │
 │   ├── CohortAnalysisService: Curva retención semanal, comparaciones    │
 │   ├── FunnelTrackingService: Conversión por pasos, ventana temporal    │
 │   ├── API REST: /api/v1/analytics/cohorts/*, /api/v1/analytics/funnels/*│
@@ -864,7 +879,7 @@
 │   │   ├── Session History + Knowledge Search (2 endpoints)               │
 │   │   ├── Copilot Chat + Field Exit (4 endpoints)                        │
 │   │   └── Chat SSE Stream: POST /api/copilot/chat/stream (streaming)    │
-│   ├── 14+ Servicios Producción:                                          │
+│   ├── 21 Servicios Producción: <!-- AUDIT-SPEC-N08: actualizado de 14 a 21 --> │
 │   │   ├── HypothesisPrioritizationService (ICE Score algorithm)          │
 │   │   ├── BmcValidationService (semáforos RED/YELLOW/GREEN/GRAY)         │
 │   │   ├── LearningCardService + TestCardGeneratorService                 │
@@ -1430,7 +1445,8 @@
 │   ├── Tests: 2 unit test files                                         │
 │   └── Estado: ✅ Producción (v1.0 - 54 archivos)                       │
 │                                                                         │
-│   📦 jaraba_credentials ✅ (Open Badge 3.0 — 5 Gaps cerrados)            │
+│   <!-- AUDIT-SPEC-N09: jaraba_credentials total 8 entities (6 core + 2 cross-vertical) -->
+│   📦 jaraba_credentials ✅ (Open Badge 3.0 — 8 Entities, 5 Gaps cerrados) │
 │   ├── Sistema completo de credenciales verificables Open Badge 3.0     │
 │   ├── 6 Content Entities (core):                                       │
 │   │   ├── IssuerProfile, CredentialTemplate, IssuedCredential          │
@@ -2467,7 +2483,8 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 
 ### 12.1 Métricas de la Auditoría Integral
 
-La auditoría integral del 2026-02-13 analizó la plataforma desde 15 disciplinas simultáneas, cubriendo 69 módulos custom (actualizado 2026-02-16), 268+ Content Entities y ~769 rutas API.
+<!-- AUDIT-SPEC-N03: Content Entities actualizado de 268 a 375 (verificado via @ContentEntityType grep 2026-02-18) -->
+La auditoría integral del 2026-02-13 analizó la plataforma desde 15 disciplinas simultáneas, cubriendo 69 módulos custom (actualizado 2026-02-16), 375+ Content Entities y ~769 rutas API.
 
 | Dimensión | Hallazgos | Críticos | Altos | Medios | Bajos |
 |-----------|-----------|----------|-------|--------|-------|

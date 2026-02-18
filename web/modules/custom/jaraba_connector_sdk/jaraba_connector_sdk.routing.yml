@@ -1,0 +1,122 @@
+# =============================================================================
+# MARKETPLACE PAGE
+# =============================================================================
+
+jaraba_connector_sdk.marketplace:
+  path: '/connectors'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::marketplace'
+    _title: 'Connector Marketplace'
+  requirements:
+    _permission: 'use connector marketplace'
+
+# =============================================================================
+# REST API — Certified Connectors
+# =============================================================================
+
+jaraba_connector_sdk.api.list:
+  path: '/api/v1/connectors'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::listCertified'
+  methods: [GET]
+  requirements:
+    _permission: 'use connector marketplace'
+
+jaraba_connector_sdk.api.detail:
+  path: '/api/v1/connectors/{connector_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::getDetail'
+  methods: [GET]
+  requirements:
+    _permission: 'use connector marketplace'
+    connector_id: \d+
+
+jaraba_connector_sdk.api.rate:
+  path: '/api/v1/connectors/{connector_id}/rate'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::rate'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    connector_id: \d+
+  options:
+    _csrf_token: 'TRUE'
+
+jaraba_connector_sdk.api.install:
+  path: '/api/v1/connectors/{connector_id}/install'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::installConnector'
+  methods: [POST]
+  requirements:
+    _permission: 'use connector marketplace'
+    connector_id: \d+
+  options:
+    _csrf_token: 'TRUE'
+
+jaraba_connector_sdk.api.uninstall:
+  path: '/api/v1/connectors/{connector_id}/uninstall'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::uninstallConnector'
+  methods: [DELETE]
+  requirements:
+    _permission: 'use connector marketplace'
+    connector_id: \d+
+  options:
+    _csrf_token: 'TRUE'
+
+jaraba_connector_sdk.api.configure:
+  path: '/api/v1/connectors/{connector_id}/configure'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::configureConnector'
+  methods: [PATCH]
+  requirements:
+    _permission: 'use connector marketplace'
+    connector_id: \d+
+  options:
+    _csrf_token: 'TRUE'
+
+jaraba_connector_sdk.api.status:
+  path: '/api/v1/connectors/{connector_id}/status'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::getConnectorStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'use connector marketplace'
+    connector_id: \d+
+
+# =============================================================================
+# REST API — Developer / Certification
+# =============================================================================
+
+jaraba_connector_sdk.api.developer.submit:
+  path: '/api/v1/developer/submit'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::submitForCertification'
+  methods: [POST]
+  requirements:
+    _permission: 'submit connector'
+  options:
+    _csrf_token: 'TRUE'
+
+jaraba_connector_sdk.api.developer.certify:
+  path: '/api/v1/developer/certify/{connector_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_connector_sdk\Controller\ConnectorSdkApiController::certifyConnector'
+  methods: [POST]
+  requirements:
+    _permission: 'certify connector'
+    connector_id: \d+
+  options:
+    _csrf_token: 'TRUE'
+
+# =============================================================================
+# ADMIN SETTINGS
+# =============================================================================
+
+jaraba_connector_sdk.settings:
+  path: '/admin/config/jaraba/connector-sdk'
+  defaults:
+    _form: '\Drupal\jaraba_connector_sdk\Form\SdkSettingsForm'
+    _title: 'Connector SDK Settings'
+  requirements:
+    _permission: 'administer connector sdk'

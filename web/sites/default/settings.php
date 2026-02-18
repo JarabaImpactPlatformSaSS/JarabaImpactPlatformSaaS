@@ -931,6 +931,13 @@ if ($redis_host && extension_loaded('redis') && class_exists('Redis')) {
   $settings['cache']['bins']['copilot_responses'] = 'cache.backend.redis';
 }
 
+// AUDIT-PERF-N14: CDN configuration for static assets.
+// Reads CDN_BASE_URL from environment to rewrite public file URLs.
+// Must load before settings.local.php so local overrides take precedence.
+if (file_exists($app_root . '/' . $site_path . '/settings.cdn.php')) {
+  include $app_root . '/' . $site_path . '/settings.cdn.php';
+}
+
 /**
  * Load local development override configuration, if available.
  *

@@ -387,9 +387,10 @@ class LeadMagnetController extends ControllerBase
             $payload = json_decode($content, TRUE);
 
             if (empty($payload) || !is_array($payload)) {
+                // AUDIT-CONS-N08: Standardized JSON envelope.
                 return new JsonResponse([
-                    'status' => 'error',
-                    'message' => (string) $this->t('Cuerpo de la peticion invalido. Se esperaba JSON.'),
+                    'success' => FALSE,
+                    'error' => ['code' => 'INVALID_BODY', 'message' => (string) $this->t('Cuerpo de la peticion invalido. Se esperaba JSON.')],
                 ], 400);
             }
 
@@ -399,22 +400,22 @@ class LeadMagnetController extends ControllerBase
 
             if (empty($email)) {
                 return new JsonResponse([
-                    'status' => 'error',
-                    'message' => (string) $this->t('El campo email es obligatorio.'),
+                    'success' => FALSE,
+                    'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('El campo email es obligatorio.')],
                 ], 422);
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return new JsonResponse([
-                    'status' => 'error',
-                    'message' => (string) $this->t('El formato del email no es valido.'),
+                    'success' => FALSE,
+                    'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('El formato del email no es valido.')],
                 ], 422);
             }
 
             if (empty($name)) {
                 return new JsonResponse([
-                    'status' => 'error',
-                    'message' => (string) $this->t('El campo nombre es obligatorio.'),
+                    'success' => FALSE,
+                    'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('El campo nombre es obligatorio.')],
                 ], 422);
             }
 
@@ -436,12 +437,15 @@ class LeadMagnetController extends ControllerBase
             $this->trackLeadMagnetEvent($type, $email, $data);
 
             return new JsonResponse([
-                'status' => 'success',
-                'message' => (string) $this->t('Tus resultados han sido enviados a @email', [
-                    '@email' => $email,
-                ]),
-                'email_sent' => $emailSent,
-                'type' => $type,
+                'success' => TRUE,
+                'data' => [
+                    'message' => (string) $this->t('Tus resultados han sido enviados a @email', [
+                        '@email' => $email,
+                    ]),
+                    'email_sent' => $emailSent,
+                    'type' => $type,
+                ],
+                'meta' => ['timestamp' => time()],
             ], 200);
         }
         catch (\Exception $e) {
@@ -451,8 +455,8 @@ class LeadMagnetController extends ControllerBase
             ]);
 
             return new JsonResponse([
-                'status' => 'error',
-                'message' => (string) $this->t('Ha ocurrido un error al procesar tu solicitud. Por favor, intentalo de nuevo.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INTERNAL_ERROR', 'message' => (string) $this->t('Ha ocurrido un error al procesar tu solicitud. Por favor, intentalo de nuevo.')],
             ], 500);
         }
     }
@@ -682,7 +686,7 @@ class LeadMagnetController extends ControllerBase
      * Delega al SeoAuditService y devuelve resultados JSON con score,
      * checks individuales y recomendaciones priorizadas.
      *
-     * Ruta: /api/lead-magnet/auditoria-seo/analizar
+     * Ruta: /api/v1/lead-magnet/auditoria-seo/analizar (AUDIT-CONS-N07)
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *   La peticion HTTP con JSON body.
@@ -698,8 +702,8 @@ class LeadMagnetController extends ControllerBase
 
             if (empty($payload) || !is_array($payload)) {
                 return new JsonResponse([
-                    'status' => 'error',
-                    'message' => (string) $this->t('Cuerpo de la peticion invalido. Se esperaba JSON.'),
+                    'success' => FALSE,
+                    'error' => ['code' => 'INVALID_BODY', 'message' => (string) $this->t('Cuerpo de la peticion invalido. Se esperaba JSON.')],
                 ], 400);
             }
 
@@ -707,8 +711,8 @@ class LeadMagnetController extends ControllerBase
 
             if (empty($url)) {
                 return new JsonResponse([
-                    'status' => 'error',
-                    'message' => (string) $this->t('El campo url es obligatorio.'),
+                    'success' => FALSE,
+                    'error' => ['code' => 'VALIDATION_ERROR', 'message' => (string) $this->t('El campo url es obligatorio.')],
                 ], 422);
             }
 
@@ -731,10 +735,18 @@ class LeadMagnetController extends ControllerBase
                 ]);
             }
 
+            $isError = !empty($auditResult['error']);
+            if ($isError) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => ['code' => 'AUDIT_ERROR', 'message' => $auditResult['error'] ?? 'Audit failed'],
+                ], 422);
+            }
             return new JsonResponse([
-                'status' => $auditResult['error'] ? 'error' : 'success',
+                'success' => TRUE,
                 'data' => $auditResult,
-            ], $auditResult['error'] ? 422 : 200);
+                'meta' => ['timestamp' => time()],
+            ]);
         }
         catch (\Throwable $e) {
             $this->leadLogger->error('SEO audit controller error: @error', [
@@ -742,8 +754,8 @@ class LeadMagnetController extends ControllerBase
             ]);
 
             return new JsonResponse([
-                'status' => 'error',
-                'message' => (string) $this->t('Ha ocurrido un error al ejecutar la auditoria. Por favor, intentalo de nuevo.'),
+                'success' => FALSE,
+                'error' => ['code' => 'INTERNAL_ERROR', 'message' => (string) $this->t('Ha ocurrido un error al ejecutar la auditoria. Por favor, intentalo de nuevo.')],
             ], 500);
         }
     }

@@ -1,0 +1,211 @@
+/**
+ * @file
+ * SSO Login Page Styles — jaraba_sso.
+ *
+ * Styles for the SSO provider selection page (/sso/login).
+ * Uses Federated Design Tokens from ecosistema_jaraba_core.
+ */
+
+/* ============================================
+   LOGIN PAGE CONTAINER
+   ============================================ */
+
+.sso-login-page {
+  max-width: 480px;
+  margin: 3rem auto;
+  padding: var(--ej-spacing-xl, 2rem);
+  background: var(--ej-bg-surface, #ffffff);
+  border-radius: var(--ej-border-radius-lg, 12px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.sso-login-page__header {
+  text-align: center;
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.sso-login-page__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ej-text-primary, #1a1a2e);
+  margin: 0 0 0.5rem;
+}
+
+.sso-login-page__subtitle {
+  color: var(--ej-text-secondary, #6b7280);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ============================================
+   PROVIDER BUTTONS
+   ============================================ */
+
+.sso-login-page__providers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.75rem);
+}
+
+.sso-login-page__provider {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-md, 1rem);
+  padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 1.25rem);
+  border: 2px solid var(--ej-border-color, #e5e7eb);
+  border-radius: var(--ej-border-radius, 8px);
+  text-decoration: none;
+  color: var(--ej-text-primary, #1a1a2e);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sso-login-page__provider:hover {
+  border-color: var(--ej-accent, #2563eb);
+  background: var(--ej-bg-accent, #f0f4ff);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.sso-login-page__provider-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--ej-bg-accent, #f0f4ff);
+  color: var(--ej-accent, #2563eb);
+}
+
+.sso-login-page__provider--saml .sso-login-page__provider-icon {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.sso-login-page__provider--oidc .sso-login-page__provider-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sso-login-page__provider-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sso-login-page__provider-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.sso-login-page__provider-type {
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #6b7280);
+  margin-top: 2px;
+}
+
+.sso-login-page__provider-arrow {
+  flex-shrink: 0;
+  color: var(--ej-text-tertiary, #9ca3af);
+  transition: transform 0.2s ease;
+}
+
+.sso-login-page__provider:hover .sso-login-page__provider-arrow {
+  transform: translateX(3px);
+  color: var(--ej-accent, #2563eb);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.sso-login-page__empty {
+  text-align: center;
+  padding: var(--ej-spacing-xl, 2rem) 0;
+  color: var(--ej-text-secondary, #6b7280);
+}
+
+.sso-login-page__empty p {
+  margin: 0.5rem 0;
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+
+.sso-login-page__divider {
+  display: flex;
+  align-items: center;
+  margin: var(--ej-spacing-lg, 1.5rem) 0;
+}
+
+.sso-login-page__divider::before,
+.sso-login-page__divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+}
+
+.sso-login-page__divider span {
+  padding: 0 var(--ej-spacing-md, 1rem);
+  color: var(--ej-text-tertiary, #9ca3af);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   ALTERNATIVE LOGIN
+   ============================================ */
+
+.sso-login-page__alternative {
+  text-align: center;
+}
+
+.sso-login-page__password-link {
+  display: inline-block;
+  padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-lg, 1.5rem);
+  color: var(--ej-text-secondary, #6b7280);
+  text-decoration: none;
+  border: 1px solid var(--ej-border-color, #e5e7eb);
+  border-radius: var(--ej-border-radius, 8px);
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.sso-login-page__password-link:hover {
+  color: var(--ej-text-primary, #1a1a2e);
+  border-color: var(--ej-text-secondary, #6b7280);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.sso-login-page__footer {
+  margin-top: var(--ej-spacing-xl, 2rem);
+  text-align: center;
+}
+
+.sso-login-page__security-note {
+  font-size: 0.8rem;
+  color: var(--ej-text-tertiary, #9ca3af);
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 540px) {
+  .sso-login-page {
+    margin: 1rem;
+    padding: var(--ej-spacing-lg, 1.5rem);
+  }
+
+  .sso-login-page__title {
+    font-size: 1.25rem;
+  }
+}

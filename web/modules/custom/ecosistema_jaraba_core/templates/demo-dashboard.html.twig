@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.magic-action-card').forEach(card => {
     card.addEventListener('click', function() {
       const action = this.dataset.action;
-      fetch('/api/demo/track', {
+      fetch('/api/v1/demo/track', { {# AUDIT-CONS-N07: Added API versioning prefix. #}
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId, action: action })
@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
     e.preventDefault();
     const email = document.getElementById('convert-email').value;
     
-    fetch('/api/demo/convert', {
+    fetch('/api/v1/demo/convert', { {# AUDIT-CONS-N07: Added API versioning prefix. #}
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ session_id: sessionId, email: email })

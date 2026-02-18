@@ -136,16 +136,17 @@ experiment-dashboard:
     - ecosistema_jaraba_theme/slide-panel
 
 # Dashboard de Analytics - Gap C Clase Mundial
+# AUDIT-PERF-N12: Chart.js via dependencia canónica ecosistema_jaraba_core/chartjs
 analytics-dashboard:
   version: 1.0
   js:
-    https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js: { type: external, minified: true }
     js/analytics-dashboard.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
     - core/once
     - ecosistema_jaraba_core/global
+    - ecosistema_jaraba_core/chartjs
     - ecosistema_jaraba_theme/slide-panel
     - jaraba_heatmap/viewer
 
@@ -304,6 +305,9 @@ page-builder-core:
   dependencies:
     - core/drupal
 
+# AUDIT-PERF-N13: GrapesJS (~966KB) lazy-loaded via defer attribute.
+# Defers parsing of all GrapesJS vendor + plugin JS until HTML is fully parsed,
+# eliminating render-blocking on page builder routes.
 # GrapesJS Canvas Editor - Canvas v3 Constructor Visual Clase Mundial
 # Motor de edición drag-and-drop con inline editing y undo/redo nativo
 # v5.3: Fix GrapesJS init lifecycle, SEO guard, viewport dropdown, loading skeleton
@@ -316,22 +320,23 @@ grapesjs-canvas:
       # FE-07: CSS compilado del tema (main.css eliminado en PERF-02)
       /themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css: {}
   js:
+    # AUDIT-PERF-N13: defer=true para lazy-load de GrapesJS vendor (~966KB)
     # GrapesJS core (local, descargado de unpkg.com para evitar CSP)
-    js/vendor/grapes.min.js: { minified: true }
+    js/vendor/grapes.min.js: { minified: true, attributes: { defer: true } }
     # GrapesJS presets y plugins (local, descargado de unpkg.com para evitar CSP)
-    js/vendor/grapesjs-preset-webpage.min.js: { minified: true }
-    js/vendor/grapesjs-blocks-basic.min.js: { minified: true }
-    # Archivos Jaraba custom
-    js/grapesjs-jaraba-canvas.js: {}
-    js/grapesjs-jaraba-thumbnails.js: {}
-    js/grapesjs-jaraba-icons.js: {}
-    js/grapesjs-jaraba-blocks.js: {}
-    js/grapesjs-jaraba-legal-blocks.js: {}
-    js/grapesjs-jaraba-command-palette.js: {}
-    js/grapesjs-jaraba-partials.js: {}
-    js/grapesjs-jaraba-ai.js: {}
-    js/grapesjs-jaraba-assets.js: {}
-    js/grapesjs-jaraba-seo.js: {}
+    js/vendor/grapesjs-preset-webpage.min.js: { minified: true, attributes: { defer: true } }
+    js/vendor/grapesjs-blocks-basic.min.js: { minified: true, attributes: { defer: true } }
+    # AUDIT-PERF-N13: defer=true para lazy-load de plugins Jaraba custom
+    js/grapesjs-jaraba-canvas.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-thumbnails.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-icons.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-blocks.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-legal-blocks.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-command-palette.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-partials.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-ai.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-assets.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-seo.js: { attributes: { defer: true } }
   dependencies:
     - core/drupal
     - core/drupalSettings

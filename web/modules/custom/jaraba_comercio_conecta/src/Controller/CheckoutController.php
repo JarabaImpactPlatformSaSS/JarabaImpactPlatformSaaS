@@ -98,13 +98,14 @@ class CheckoutController extends ControllerBase {
     $result = $this->checkoutService->processCheckout($cart, $checkout_data);
 
     if (!$result['success']) {
-      return new JsonResponse(['error' => $result['message']], 400);
+      return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $result['message']]], 400);
     }
 
     $payment_result = $this->paymentService->createPaymentIntent($result['order']);
 
     if (!$payment_result['success']) {
-      return new JsonResponse(['error' => $payment_result['message']], 500);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => $payment_result['message']]], 500);
     }
 
     return new JsonResponse([
@@ -151,7 +152,7 @@ class CheckoutController extends ControllerBase {
     $data = json_decode($payload, TRUE);
 
     if (!$data || !isset($data['type'])) {
-      return new JsonResponse(['error' => 'Invalid payload'], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Invalid payload']], 400);
     }
 
     switch ($data['type']) {

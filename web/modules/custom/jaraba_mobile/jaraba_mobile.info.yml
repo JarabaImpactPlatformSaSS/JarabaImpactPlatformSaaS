@@ -1,0 +1,9 @@
+name: 'Jaraba Mobile'
+type: module
+description: 'Native mobile app backend: device registry, push notifications, deep linking.'
+package: 'Jaraba Platform'
+core_version_requirement: ^11
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - drupal:user
+lifecycle: stable

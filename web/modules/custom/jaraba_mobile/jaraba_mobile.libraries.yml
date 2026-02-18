@@ -1,0 +1,4 @@
+mobile-admin:
+  css:
+    theme:
+      css/mobile-admin.css: {}

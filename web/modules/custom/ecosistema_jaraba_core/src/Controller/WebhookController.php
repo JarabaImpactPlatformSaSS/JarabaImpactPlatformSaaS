@@ -62,6 +62,183 @@ class WebhookController extends ControllerBase
     }
 
     /**
+     * Dispatches a custom webhook to the appropriate handler.
+     *
+     * Routes incoming payloads based on integration source type.
+     * New integration types can be added to the match expression.
+     *
+     * @param string $integrationId
+     *   The integration identifier (e.g., 'zapier', 'n8n', 'hubspot').
+     * @param array $payload
+     *   The decoded JSON payload.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The original HTTP request.
+     *
+     * @return array
+     *   Handler result data.
+     */
+    protected function dispatchCustomWebhook(string $integrationId, array $payload, Request $request): array
+    {
+        // Normalize the integration source identifier.
+        $source = strtolower($integrationId);
+
+        // Extract common webhook metadata.
+        $eventType = $payload['event'] ?? $payload['type'] ?? $payload['action'] ?? 'unknown';
+
+        $this->logger->info(
+            'Dispatching custom webhook: @source (event: @event)',
+            [
+                '@source' => $source,
+                '@event' => $eventType,
+            ]
+        );
+
+        $result = match (TRUE) {
+            // Zapier webhooks: generic automation data.
+            str_starts_with($source, 'zapier') => $this->handleZapierWebhook($payload),
+
+            // n8n webhooks: workflow automation data.
+            str_starts_with($source, 'n8n') => $this->handleN8nWebhook($payload),
+
+            // HubSpot webhooks: CRM contact/deal events.
+            str_starts_with($source, 'hubspot') => $this->handleCrmWebhook('hubspot', $payload),
+
+            // Brevo (Sendinblue) webhooks: email marketing events.
+            str_starts_with($source, 'brevo'),
+            str_starts_with($source, 'sendinblue') => $this->handleEmailMarketingWebhook($payload),
+
+            // Payment provider webhooks (non-Stripe, e.g., Redsys).
+            str_starts_with($source, 'redsys'),
+            str_starts_with($source, 'payment') => $this->handlePaymentWebhook($source, $payload),
+
+            // Default: store the event for manual processing.
+            default => $this->handleGenericWebhook($source, $payload),
+        };
+
+        return $result;
+    }
+
+    /**
+     * Handles Zapier automation webhooks.
+     */
+    protected function handleZapierWebhook(array $payload): array
+    {
+        // Store the automation data using State API for processing.
+        $key = 'webhook_zapier_' . time() . '_' . bin2hex(random_bytes(4));
+        \Drupal::state()->set($key, [
+            'payload' => $payload,
+            'received_at' => date('c'),
+            'processed' => FALSE,
+        ]);
+
+        return ['handler' => 'zapier', 'stored_key' => $key];
+    }
+
+    /**
+     * Handles n8n workflow webhooks.
+     */
+    protected function handleN8nWebhook(array $payload): array
+    {
+        $key = 'webhook_n8n_' . time() . '_' . bin2hex(random_bytes(4));
+        \Drupal::state()->set($key, [
+            'payload' => $payload,
+            'received_at' => date('c'),
+            'processed' => FALSE,
+        ]);
+
+        return ['handler' => 'n8n', 'stored_key' => $key];
+    }
+
+    /**
+     * Handles CRM webhooks (HubSpot, etc).
+     */
+    protected function handleCrmWebhook(string $provider, array $payload): array
+    {
+        $eventType = $payload['event'] ?? $payload['subscriptionType'] ?? 'unknown';
+
+        $this->logger->info(
+            'CRM webhook from @provider: @event',
+            ['@provider' => $provider, '@event' => $eventType]
+        );
+
+        $key = 'webhook_crm_' . $provider . '_' . time() . '_' . bin2hex(random_bytes(4));
+        \Drupal::state()->set($key, [
+            'provider' => $provider,
+            'event_type' => $eventType,
+            'payload' => $payload,
+            'received_at' => date('c'),
+            'processed' => FALSE,
+        ]);
+
+        return ['handler' => 'crm', 'provider' => $provider, 'event_type' => $eventType];
+    }
+
+    /**
+     * Handles email marketing webhooks (Brevo/Sendinblue).
+     */
+    protected function handleEmailMarketingWebhook(array $payload): array
+    {
+        $eventType = $payload['event'] ?? 'unknown';
+
+        $this->logger->info(
+            'Email marketing webhook: @event',
+            ['@event' => $eventType]
+        );
+
+        $key = 'webhook_email_' . time() . '_' . bin2hex(random_bytes(4));
+        \Drupal::state()->set($key, [
+            'event_type' => $eventType,
+            'payload' => $payload,
+            'received_at' => date('c'),
+            'processed' => FALSE,
+        ]);
+
+        return ['handler' => 'email_marketing', 'event_type' => $eventType];
+    }
+
+    /**
+     * Handles payment provider webhooks (non-Stripe).
+     */
+    protected function handlePaymentWebhook(string $source, array $payload): array
+    {
+        $this->logger->info(
+            'Payment webhook from @source received.',
+            ['@source' => $source]
+        );
+
+        $key = 'webhook_payment_' . $source . '_' . time() . '_' . bin2hex(random_bytes(4));
+        \Drupal::state()->set($key, [
+            'source' => $source,
+            'payload' => $payload,
+            'received_at' => date('c'),
+            'processed' => FALSE,
+        ]);
+
+        return ['handler' => 'payment', 'source' => $source];
+    }
+
+    /**
+     * Handles generic/unknown integration webhooks.
+     */
+    protected function handleGenericWebhook(string $source, array $payload): array
+    {
+        $this->logger->info(
+            'Generic webhook from @source stored for manual processing.',
+            ['@source' => $source]
+        );
+
+        $key = 'webhook_generic_' . $source . '_' . time() . '_' . bin2hex(random_bytes(4));
+        \Drupal::state()->set($key, [
+            'source' => $source,
+            'payload' => $payload,
+            'received_at' => date('c'),
+            'processed' => FALSE,
+        ]);
+
+        return ['handler' => 'generic', 'source' => $source, 'stored_key' => $key];
+    }
+
+    /**
      * Procesa webhooks entrantes de Stripe.
      *
      * Este endpoint recibe eventos de Stripe y los procesa según su tipo.
@@ -701,14 +878,37 @@ class WebhookController extends ControllerBase
             ['@id' => $integration_id]
         );
 
-        // TODO: Implementar entidad WebhookIntegration para procesamiento específico.
+        // AUDIT-TODO-RESOLVED: Dispatch custom webhooks to appropriate handlers.
         $payload = json_decode($request->getContent(), TRUE);
 
-        return new JsonResponse([
-            'success' => TRUE,
-            'message' => 'Webhook received',
-            'integration_id' => $integration_id,
-        ]);
+        if (!is_array($payload)) {
+            return new JsonResponse(['error' => 'Invalid JSON payload'], 400);
+        }
+
+        // Route to the appropriate handler based on integration type.
+        try {
+            $result = $this->dispatchCustomWebhook($integration_id, $payload, $request);
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'message' => 'Webhook processed',
+                'integration_id' => $integration_id,
+                'handler_result' => $result,
+            ]);
+        }
+        catch (\Exception $e) {
+            $this->logger->error(
+                'Error processing custom webhook @id: @error',
+                [
+                    '@id' => $integration_id,
+                    '@error' => $e->getMessage(),
+                ]
+            );
+            return new JsonResponse([
+                'error' => 'Webhook processing failed',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 }

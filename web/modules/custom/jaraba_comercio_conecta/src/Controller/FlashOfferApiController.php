@@ -72,7 +72,8 @@ class FlashOfferApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return // AUDIT-CONS-N08: Standardized JSON envelope.
+        new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -103,7 +104,7 @@ class FlashOfferApiController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('No se pudo canjear la oferta. Puede estar expirada, llena o ya canjeada.')], 409);
     }
 
-    return new JsonResponse(['data' => $claim], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $claim, 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -126,7 +127,7 @@ class FlashOfferApiController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('Codigo de canje invalido o ya utilizado.')], 404);
     }
 
-    return new JsonResponse(['data' => ['redeemed' => TRUE]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['redeemed' => TRUE], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -134,7 +135,7 @@ class FlashOfferApiController extends ControllerBase {
    */
   public function offerStats(int $offer_id): JsonResponse {
     $stats = $this->flashOfferService->getOfferStats($offer_id);
-    return new JsonResponse(['data' => $stats]);
+    return new JsonResponse(['success' => TRUE, 'data' => $stats, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -190,7 +191,7 @@ class FlashOfferApiController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('Error capturando lead.')], 500);
     }
 
-    return new JsonResponse(['data' => ['captured' => TRUE]], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => ['captured' => TRUE], 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -198,7 +199,7 @@ class FlashOfferApiController extends ControllerBase {
    */
   public function qrStats(int $qr_code_id): JsonResponse {
     $stats = $this->qrRetailService->getQrStats($qr_code_id);
-    return new JsonResponse(['data' => $stats]);
+    return new JsonResponse(['success' => TRUE, 'data' => $stats, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -268,10 +269,10 @@ class FlashOfferApiController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('Error creando resena.')], 500);
     }
 
-    return new JsonResponse(['data' => [
+    return new JsonResponse(['success' => TRUE, 'data' => [
       'id' => (int) $review->id(),
       'status' => $review->get('status')->value,
-    ]], 201);
+    ], 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**
@@ -279,7 +280,7 @@ class FlashOfferApiController extends ControllerBase {
    */
   public function markReviewHelpful(int $review_id): JsonResponse {
     $new_count = $this->reviewRetailService->markHelpful($review_id);
-    return new JsonResponse(['data' => ['helpful_count' => $new_count]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['helpful_count' => $new_count], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -307,7 +308,7 @@ class FlashOfferApiController extends ControllerBase {
       ];
     }
 
-    return new JsonResponse(['data' => $data]);
+    return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -320,7 +321,7 @@ class FlashOfferApiController extends ControllerBase {
       return new JsonResponse(['error' => $this->t('Notificacion no encontrada.')], 404);
     }
 
-    return new JsonResponse(['data' => ['read' => TRUE]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['read' => TRUE], 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -333,7 +334,7 @@ class FlashOfferApiController extends ControllerBase {
     }
 
     $preferences = $this->notificationService->getUserPreferences($user_id);
-    return new JsonResponse(['data' => $preferences]);
+    return new JsonResponse(['success' => TRUE, 'data' => $preferences, 'meta' => ['timestamp' => time()]]);
   }
 
   /**
@@ -356,7 +357,7 @@ class FlashOfferApiController extends ControllerBase {
     $enabled = (bool) ($body['enabled'] ?? TRUE);
     $this->notificationService->updatePreference($user_id, $channel, $category, $enabled);
 
-    return new JsonResponse(['data' => ['updated' => TRUE]]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['updated' => TRUE], 'meta' => ['timestamp' => time()]]);
   }
 
 }

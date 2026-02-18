@@ -828,6 +828,9 @@
 | [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **v20.0.0** - 11 reglas AUDIT-* | 2026-02-13 (v20.0.0) |
 | [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v19.0** - Madurez 4.5/5.0, sección 12 Estado Auditoría | 2026-02-13 (v19.0.0) |
 | [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-02-13 (v30.0.0) |
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | FLUJO TRABAJO CLAUDE | 2026 |
+| [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | VERTICAL CUSTOMIZATION PATTERNS | 2026 |
 
 ---
 
@@ -859,6 +862,10 @@
 | [2026-02-05_especificacion_grapesjs_saas.md](./arquitectura/2026-02-05_especificacion_grapesjs_saas.md) | 🖼️ **Especificación GrapesJS SaaS** ⭐ - Components, interactividad dual, Design Tokens, multi-tenancy, SEO/IA | 2026-02-05 |
 | [2026-02-06_arquitectura_unificada_templates_bloques.md](./arquitectura/2026-02-06_arquitectura_unificada_templates_bloques.md) | 🏗️ **Arquitectura Unificada Templates-Bloques** ⭐ - SSoT, Bridge Pattern, inventario 76 templates vs 37 bloques | 2026-02-06 |
 | [2026-02-08_plan_elevacion_page_builder_clase_mundial.md](./arquitectura/2026-02-08_plan_elevacion_page_builder_clase_mundial.md) | 🚀 **Elevación Page Builder Clase Mundial** — v1.2.0 con 3 falsos positivos corregidos | 2026-02-08 |
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+| [2026-01-11_certificacion-level-5.md](./arquitectura/2026-01-11_certificacion-level-5.md) | Certificacion level 5 | 2026-01-11 |
+| [2026-02-05_auditoria_page_site_builder_clase_mundial.md](./arquitectura/2026-02-05_auditoria_page_site_builder_clase_mundial.md) | Auditoria page site builder clase mundial | 2026-02-05 |
+| [2026-02-06_plan_elevacion_page_builder_clase_mundial.md](./arquitectura/2026-02-06_plan_elevacion_page_builder_clase_mundial.md) | Plan elevacion page builder clase mundial | 2026-02-06 |
 
 **Total documentos:** 26
 
@@ -906,6 +913,13 @@
 | [20260202-Gap_F_CSS_Critico_v1.md](./planificacion/20260202-Gap_F_CSS_Critico_v1.md) | ⚡ **GAP F: CSS CRÍTICO** - jaraba_performance, Above-the-fold, LCP | 2026-02-02 |
 | [20260209-Plan_Elevacion_Page_Site_Builder_v2.md](./planificacion/20260209-Plan_Elevacion_Page_Site_Builder_v2.md) | 🔍 **AUDITORÍA v2.1 PAGE BUILDER** ⭐ — Corrección 3 falsos positivos, fix AI endpoint, score 10/10 | 2026-02-09 |
 | [20260209-Plan_Mejoras_Page_Site_Builder_v3.md](./planificacion/20260209-Plan_Mejoras_Page_Site_Builder_v3.md) | 🚀 **MEJORAS PAGE/SITE BUILDER v3.1** ⭐✅ — **10/10 sprints completados** (4 fases: UX Polish + Site Builder + Features + IA): A1-A3, B1-B2, C1-C4 | 2026-02-09 |
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+| [2026-01-23_tareas_pendientes.md](./planificacion/2026-01-23_tareas_pendientes.md) | Tareas pendientes | 2026-01-23 |
+| [20260203-Analisis_Estrategico_Constructor_Sitios_Clase_Mundial_v1.md](./planificacion/20260203-Analisis_Estrategico_Constructor_Sitios_Clase_Mundial_v1.md) | Analisis Estrategico Constructor Sitios Clase Mundial v1 | 2002-03--A |
+| [20260203-Page_Builder_Canvas_Visual_v1.md](./planificacion/20260203-Page_Builder_Canvas_Visual_v1.md) | Page Builder Canvas Visual v1 | 2002-03--P |
+| [20260203-Plan_Trabajo_Pendiente.md](./planificacion/20260203-Plan_Trabajo_Pendiente.md) | Plan Trabajo Pendiente | 2002-03--P |
+| [20260210-Plan_Maestro_Implementacion_Specs_f100_f104_v1.md](./planificacion/20260210-Plan_Maestro_Implementacion_Specs_f100_f104_v1.md) | Plan Maestro Implementacion Specs f100 f104 v1 | 2002-10--P |
+| [20260212-Plan_Sprint_Inmediato_Tenant_Filtering_Data_Integration_v1.md](./planificacion/20260212-Plan_Sprint_Inmediato_Tenant_Filtering_Data_Integration_v1.md) | Plan Sprint Inmediato Tenant Filtering Data Integration v1 | 2002-12--P |
 
 **Total documentos:** 15
 
@@ -918,12 +932,33 @@
 
 | Documento | Descripción | Fecha Creación |
 |-----------|-------------|----------------|
-| *Sin documentos aún* | - | - |
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+| [2026-01-22_smart-router-fase2.md](./tareas/2026-01-22_smart-router-fase2.md) | Smart router fase2 | 2026-01-22 |
+| [2026-02-05_bloque_e_training_pendientes.md](./tareas/2026-02-05_bloque_e_training_pendientes.md) | Bloque e training pendientes | 2026-02-05 |
+| [2026-02-07_remediacion_auditoria_pendientes.md](./tareas/2026-02-07_remediacion_auditoria_pendientes.md) | Remediacion auditoria pendientes | 2026-02-07 |
+| [2026-02-07_tareas_pendientes.md](./tareas/2026-02-07_tareas_pendientes.md) | Tareas pendientes | 2026-02-07 |
+| [20260205-Canvas_Editor_Tareas_Pendientes.md](./tareas/20260205-Canvas_Editor_Tareas_Pendientes.md) | Canvas Editor Tareas Pendientes | 20260205-C |
 
-**Total documentos:** 0
+**Total documentos:** 5
 
 ---
 
+
+## 5b. Operaciones
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+📁 **Ubicación:** `docs/operaciones/`
+
+| Documento | Descripción | Fecha |
+|-----------|-------------|-------|
+| [2026-01-10_diagrama-infraestructura.md](./operaciones/2026-01-10_diagrama-infraestructura.md) | Diagrama infraestructura | 2026-01-10 |
+| [2026-01-10_runbook-ionos.md](./operaciones/2026-01-10_runbook-ionos.md) | Runbook ionos | 2026-01-10 |
+| [2026-01-10_sla-rto-rpo.md](./operaciones/2026-01-10_sla-rto-rpo.md) | Sla rto rpo | 2026-01-10 |
+
+**Total documentos:** 3
+
+---
 ## 6. Implementación
 
 📁 **Ubicación:** `docs/implementacion/`
@@ -992,6 +1027,52 @@
 
 ---
 
+
+### 6.4 Documentos Adicionales de Implementacion
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+| Documento | Descripción |
+|-----------|-------------|
+| [2026-01-10_1520_staging-deployment-checklist.md](./implementacion/2026-01-10_1520_staging-deployment-checklist.md) | Staging deployment checklist |
+| [2026-01-10_1520_stripe-production-config.md](./implementacion/2026-01-10_1520_stripe-production-config.md) | Stripe production config |
+| [2026-01-10_1540_ionos-deployment-workflow.md](./implementacion/2026-01-10_1540_ionos-deployment-workflow.md) | Ionos deployment workflow |
+| [2026-01-11_game-day-2-resultados.md](./implementacion/2026-01-11_game-day-2-resultados.md) | Game day 2 resultados |
+| [2026-02-12_F2_Freemium_Trial_Model_Doc183_Implementacion.md](./implementacion/2026-02-12_F2_Freemium_Trial_Model_Doc183_Implementacion.md) | F2 Freemium Trial Model Doc183 Implementacion |
+| [2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md](./implementacion/2026-02-12_F3_Visitor_Journey_Complete_Doc178_Implementacion.md) | F3 Visitor Journey Complete Doc178 Implementacion |
+| [2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md](./implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md) | F4 Landing Pages Verticales Doc180 Implementacion |
+| [2026-02-12_F5_Tenant_Onboarding_Wizard_Doc179_Implementacion.md](./implementacion/2026-02-12_F5_Tenant_Onboarding_Wizard_Doc179_Implementacion.md) | F5 Tenant Onboarding Wizard Doc179 Implementacion |
+| [2026-02-12_F6_SaaS_Admin_UX_Complete_Doc181_Implementacion.md](./implementacion/2026-02-12_F6_SaaS_Admin_UX_Complete_Doc181_Implementacion.md) | F6 SaaS Admin UX Complete Doc181 Implementacion |
+| [2026-02-12_F7_Entity_Admin_Dashboard_Elena_Doc182_Implementacion.md](./implementacion/2026-02-12_F7_Entity_Admin_Dashboard_Elena_Doc182_Implementacion.md) | F7 Entity Admin Dashboard Elena Doc182 Implementacion |
+| [2026-02-12_F8_Merchant_Copilot_Doc184_Implementacion.md](./implementacion/2026-02-12_F8_Merchant_Copilot_Doc184_Implementacion.md) | F8 Merchant Copilot Doc184 Implementacion |
+| [2026-02-12_Plan_Cierre_Gaps_Specs_20260122_20260125.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260122_20260125.md) | Plan Cierre Gaps Specs 20260122 20260125 |
+| [2026-02-12_Plan_Cierre_Gaps_Specs_20260126_v1.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260126_v1.md) | Plan Cierre Gaps Specs 20260126 v1 |
+| [2026-02-12_Plan_Cierre_Gaps_Specs_20260128_Clase_Mundial.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260128_Clase_Mundial.md) | Plan Cierre Gaps Specs 20260128 Clase Mundial |
+| [2026-02-12_Plan_Cierre_Gaps_Specs_20260130_Heatmaps_Tracking_Preview.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_Specs_20260130_Heatmaps_Tracking_Preview.md) | Plan Cierre Gaps Specs 20260130 Heatmaps Tracking Preview |
+| [2026-02-12_Plan_Cierre_Gaps_v2_Copiloto_v2_Specs_20260121.md](./implementacion/2026-02-12_Plan_Cierre_Gaps_v2_Copiloto_v2_Specs_20260121.md) | Plan Cierre Gaps v2 Copiloto v2 Specs 20260121 |
+| [20260202-Page_Builder_Preview_Fidelity_Audit_Claude.md](./implementacion/20260202-Page_Builder_Preview_Fidelity_Audit_Claude.md) | Page Builder Preview Fidelity Audit Claude |
+| [20260204b-H5P_Integration_Research_Drupal11_v1_Claude.md](./implementacion/20260204b-H5P_Integration_Research_Drupal11_v1_Claude.md) | H5P Integration Research Drupal11 v1 Claude |
+| [20260204e-Bloque_E_Training_Gaps_Completion_v2_Claude.md](./implementacion/20260204e-Bloque_E_Training_Gaps_Completion_v2_Claude.md) | Bloque E Training Gaps Completion v2 Claude |
+| [20260204g-Bloque_G_AI_Skills_Implementacion_v2_Claude.md](./implementacion/20260204g-Bloque_G_AI_Skills_Implementacion_v2_Claude.md) | Bloque G AI Skills Implementacion v2 Claude |
+| [20260208-Plan_AgroConecta_WorldClass_v3.md](./implementacion/20260208-Plan_AgroConecta_WorldClass_v3.md) | Plan AgroConecta WorldClass v3 |
+| [20260209-Plan_Implementacion_ComercioConecta_v1.md](./implementacion/20260209-Plan_Implementacion_ComercioConecta_v1.md) | Plan Implementacion ComercioConecta v1 |
+| [20260210-guia-monitoring-externo.md](./implementacion/20260210-guia-monitoring-externo.md) | Guia monitoring externo |
+| [20260211-Plan_Implementacion_Platform_Services_f108_f117_v2.md](./implementacion/20260211-Plan_Implementacion_Platform_Services_f108_f117_v2.md) | Plan Implementacion Platform Services f108 f117 v2 |
+| [20260211-Plan_Maestro_Implementacion_Integral_v2.md](./implementacion/20260211-Plan_Maestro_Implementacion_Integral_v2.md) | Plan Maestro Implementacion Integral v2 |
+| [20260212-Catalogo_TODOs_Plan_Implementacion_Pendientes_v1.md](./implementacion/20260212-Catalogo_TODOs_Plan_Implementacion_Pendientes_v1.md) | Catalogo TODOs Plan Implementacion Pendientes v1 |
+| [20260212-Plan_Implementacion_Marketing_AI_Stack_v2.md](./implementacion/20260212-Plan_Implementacion_Marketing_AI_Stack_v2.md) | Plan Implementacion Marketing AI Stack v2 |
+| [20260212-Plan_Implementacion_Modulos_20260201_InsightsHub_LegalKnowledge_FundingIntelligence_AgroConecta_Copilots_v1.md](./implementacion/20260212-Plan_Implementacion_Modulos_20260201_InsightsHub_LegalKnowledge_FundingIntelligence_AgroConecta_Copilots_v1.md) | Plan Implementacion Modulos 20260201 InsightsHub LegalKnowledge FundingIntelligence AgroConecta Copilots v1 |
+| [20260212-Plan_Implementacion_SiteBuilder_Navigation_Blog_SEO_Specs_176_179.md](./implementacion/20260212-Plan_Implementacion_SiteBuilder_Navigation_Blog_SEO_Specs_176_179.md) | Plan Implementacion SiteBuilder Navigation Blog SEO Specs 176 179 |
+| [20260212-Plan_Implementacion_TODOs_Pendientes_Sprints_S2_S7_v1.md](./implementacion/20260212-Plan_Implementacion_TODOs_Pendientes_Sprints_S2_S7_v1.md) | Plan Implementacion TODOs Pendientes Sprints S2 S7 v1 |
+| [20260212-Plan_Implementacion_v2_SiteBuilder_Navigation_Blog_SEO_Specs_176_179.md](./implementacion/20260212-Plan_Implementacion_v2_SiteBuilder_Navigation_Blog_SEO_Specs_176_179.md) | Plan Implementacion v2 SiteBuilder Navigation Blog SEO Specs 176 179 |
+| [20260216-Plan_Elevacion_JarabaLex_Clase_Mundial_v1.md](./implementacion/20260216-Plan_Elevacion_JarabaLex_Clase_Mundial_v1.md) | Plan Elevacion JarabaLex Clase Mundial v1 |
+| [20260216-Plan_Implementacion_JarabaLex_Legal_Practice_Platform_v1.md](./implementacion/20260216-Plan_Implementacion_JarabaLex_Legal_Practice_Platform_v1.md) | Plan Implementacion JarabaLex Legal Practice Platform v1 |
+| [20260217-Plan_Elevacion_AgroConecta_Clase_Mundial_v1.md](./implementacion/20260217-Plan_Elevacion_AgroConecta_Clase_Mundial_v1.md) | Plan Elevacion AgroConecta Clase Mundial v1 |
+| [20260217-Plan_Elevacion_ComercioConecta_Clase_Mundial_v1.md](./implementacion/20260217-Plan_Elevacion_ComercioConecta_Clase_Mundial_v1.md) | Plan Elevacion ComercioConecta Clase Mundial v1 |
+| [20260217-Plan_Implementacion_N2_Growth_Ready_Platform_v1.md](./implementacion/20260217-Plan_Implementacion_N2_Growth_Ready_Platform_v1.md) | Plan Implementacion N2 Growth Ready Platform v1 |
+
+**Total documentos adicionales:** 36
+
 ## 7. Documentos Técnicos
 
 📁 **Ubicación:** `docs/tecnicos/`
@@ -1028,9 +1109,65 @@
 |-----|---------|------|
 | **160** | [20260125-160_Empleabilidad_Self_Discovery_Tools_v1_Claude.md](./tecnicos/20260125-160_Empleabilidad_Self_Discovery_Tools_v1_Claude.md) | **Self-Discovery IA** ⭐ - Rueda de Vida, Timeline, RIASEC, Fortalezas ✅ (Specs 20260122-25 100% cerradas: 2 Content Entities + 4 Services + Copilot injection) |
 
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+| Doc | Archivo | Area |
+|-----|---------|------|
+| [20260115g-08_Empleabilidad_LMS_Core_v1_Claude.md](./tecnicos/20260115g-08_Empleabilidad_LMS_Core_v1_Claude.md) | Empleabilidad LMS Core v1 Claude |
+| [20260115g-09_Empleabilidad_Learning_Paths_v1_Claude.md](./tecnicos/20260115g-09_Empleabilidad_Learning_Paths_v1_Claude.md) | Empleabilidad Learning Paths v1 Claude |
+| [20260115g-10_Empleabilidad_Progress_Tracking_v1_Claude.md](./tecnicos/20260115g-10_Empleabilidad_Progress_Tracking_v1_Claude.md) | Empleabilidad Progress Tracking v1 Claude |
+| [20260115g-11_Empleabilidad_Job_Board_Core_v1_Claude.md](./tecnicos/20260115g-11_Empleabilidad_Job_Board_Core_v1_Claude.md) | Empleabilidad Job Board Core v1 Claude |
+| [20260115g-12_Empleabilidad_Application_System_v1_Claude.md](./tecnicos/20260115g-12_Empleabilidad_Application_System_v1_Claude.md) | Empleabilidad Application System v1 Claude |
+| [20260115g-13_Empleabilidad_Employer_Portal_v1_Claude.md](./tecnicos/20260115g-13_Empleabilidad_Employer_Portal_v1_Claude.md) | Empleabilidad Employer Portal v1 Claude |
+| [20260115g-14_Empleabilidad_Job_Alerts_v1_Claude.md](./tecnicos/20260115g-14_Empleabilidad_Job_Alerts_v1_Claude.md) | Empleabilidad Job Alerts v1 Claude |
+| [20260115g-15_Empleabilidad_Candidate_Profile_v1_Claude.md](./tecnicos/20260115g-15_Empleabilidad_Candidate_Profile_v1_Claude.md) | Empleabilidad Candidate Profile v1 Claude |
+| [20260115g-16_Empleabilidad_CV_Builder_v1_Claude.md](./tecnicos/20260115g-16_Empleabilidad_CV_Builder_v1_Claude.md) | Empleabilidad CV Builder v1 Claude |
+| [20260115g-17_Empleabilidad_Credentials_System_v1_Claude.md](./tecnicos/20260115g-17_Empleabilidad_Credentials_System_v1_Claude.md) | Empleabilidad Credentials System v1 Claude |
+| [20260115g-18_Empleabilidad_Certification_Workflow_v1_Claude.md](./tecnicos/20260115g-18_Empleabilidad_Certification_Workflow_v1_Claude.md) | Empleabilidad Certification Workflow v1 Claude |
+| [20260115g-19_Empleabilidad_Matching_Engine_v1_Claude.md](./tecnicos/20260115g-19_Empleabilidad_Matching_Engine_v1_Claude.md) | Empleabilidad Matching Engine v1 Claude |
+| [20260115g-20_Empleabilidad_AI_Copilot_v1_Claude.md](./tecnicos/20260115g-20_Empleabilidad_AI_Copilot_v1_Claude.md) | Empleabilidad AI Copilot v1 Claude |
+| [20260115g-21_Empleabilidad_Recommendation_System_v1_Claude.md](./tecnicos/20260115g-21_Empleabilidad_Recommendation_System_v1_Claude.md) | Empleabilidad Recommendation System v1 Claude |
+| [20260115g-22_Empleabilidad_Dashboard_JobSeeker_v1_Calude.md](./tecnicos/20260115g-22_Empleabilidad_Dashboard_JobSeeker_v1_Calude.md) | Empleabilidad Dashboard JobSeeker v1 Calude |
+| [20260115g-23_Empleabilidad_Dashboard_Employer_v1_Claude.md](./tecnicos/20260115g-23_Empleabilidad_Dashboard_Employer_v1_Claude.md) | Empleabilidad Dashboard Employer v1 Claude |
+| [20260115g-24_Empleabilidad_Impact_Metrics_v1_Claude.md](./tecnicos/20260115g-24_Empleabilidad_Impact_Metrics_v1_Claude.md) | Empleabilidad Impact Metrics v1 Claude |
+| [20260115g-Auditoria_Gap_Arquitectura_v1_Claude.md](./tecnicos/20260115g-Auditoria_Gap_Arquitectura_v1_Claude.md) | Auditoria Gap Arquitectura v1 Claude |
+| [20260115g-CP_Empleabilidad_MatchingEngine_VideoLMS_v1_Claude.md](./tecnicos/20260115g-CP_Empleabilidad_MatchingEngine_VideoLMS_v1_Claude.md) | CP Empleabilidad MatchingEngine VideoLMS v1 Claude |
+| [20260115g-Gap_Analysis_Documentacion_Tecnica_Empleabilidad_v1_Claude.md](./tecnicos/20260115g-Gap_Analysis_Documentacion_Tecnica_Empleabilidad_v1_Claude.md) | Gap Analysis Documentacion Tecnica Empleabilidad v1 Claude |
+| [20260125-161_Empleabilidad_Self_Discovery_Mejoras_v1.md](./tecnicos/20260125-161_Empleabilidad_Self_Discovery_Mejoras_v1.md) | Empleabilidad Self Discovery Mejoras v1 |
+
+
 ### 7.3 Vertical Emprendimiento (Docs 25-45)
 
 21 documentos especificando Business Diagnostic, Mentoring, Business Tools, Andalucía +ei.
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+| Doc | Archivo | Area |
+|-----|---------|------|
+| [20260115h-25_Emprendimiento_Business_Diagnostic_Core_v1_Claude.md](./tecnicos/20260115h-25_Emprendimiento_Business_Diagnostic_Core_v1_Claude.md) | Emprendimiento Business Diagnostic Core v1 Claude |
+| [20260115h-26_Emprendimiento_Digital_Maturity_Assessment_v1_Claude.md](./tecnicos/20260115h-26_Emprendimiento_Digital_Maturity_Assessment_v1_Claude.md) | Emprendimiento Digital Maturity Assessment v1 Claude |
+| [20260115h-27_Emprendimiento_Competitive_Analysis_Tool_v1_Claude.md](./tecnicos/20260115h-27_Emprendimiento_Competitive_Analysis_Tool_v1_Claude.md) | Emprendimiento Competitive Analysis Tool v1 Claude |
+| [20260115h-28_Emprendimiento_Digitalization_Paths_v1_Claude.md](./tecnicos/20260115h-28_Emprendimiento_Digitalization_Paths_v1_Claude.md) | Emprendimiento Digitalization Paths v1 Claude |
+| [20260115h-29_Emprendimiento_Action_Plans_v1_Claude.md](./tecnicos/20260115h-29_Emprendimiento_Action_Plans_v1_Claude.md) | Emprendimiento Action Plans v1 Claude |
+| [20260115h-30_Emprendimiento_Progress_Milestones_v1_Claude.md](./tecnicos/20260115h-30_Emprendimiento_Progress_Milestones_v1_Claude.md) | Emprendimiento Progress Milestones v1 Claude |
+| [20260115h-31_Emprendimiento_Mentoring_Core_v1_Claude.md](./tecnicos/20260115h-31_Emprendimiento_Mentoring_Core_v1_Claude.md) | Emprendimiento Mentoring Core v1 Claude |
+| [20260115h-32_Emprendimiento_Mentoring_Sessions_v1_Claude.md](./tecnicos/20260115h-32_Emprendimiento_Mentoring_Sessions_v1_Claude.md) | Emprendimiento Mentoring Sessions v1 Claude |
+| [20260115h-33_Emprendimiento_Mentor_Dashboard_v1_Claude.md](./tecnicos/20260115h-33_Emprendimiento_Mentor_Dashboard_v1_Claude.md) | Emprendimiento Mentor Dashboard v1 Claude |
+| [20260115h-34_Emprendimiento_Collaboration_Groups_v1_Claude.md](./tecnicos/20260115h-34_Emprendimiento_Collaboration_Groups_v1_Claude.md) | Emprendimiento Collaboration Groups v1 Claude |
+| [20260115h-35_Emprendimiento_Networking_Events_v1_Claude.md](./tecnicos/20260115h-35_Emprendimiento_Networking_Events_v1_Claude.md) | Emprendimiento Networking Events v1 Claude |
+| [20260115h-36_Emprendimiento_Business_Model_Canvas_v1_Claude.md](./tecnicos/20260115h-36_Emprendimiento_Business_Model_Canvas_v1_Claude.md) | Emprendimiento Business Model Canvas v1 Claude |
+| [20260115h-37_Emprendimiento_MVP_Validation_v1_Claude.md](./tecnicos/20260115h-37_Emprendimiento_MVP_Validation_v1_Claude.md) | Emprendimiento MVP Validation v1 Claude |
+| [20260115h-38_Emprendimiento_Financial_Projections_v1_Claude.md](./tecnicos/20260115h-38_Emprendimiento_Financial_Projections_v1_Claude.md) | Emprendimiento Financial Projections v1 Claude |
+| [20260115h-39_Emprendimiento_Digital_Kits_v1_Claude.md](./tecnicos/20260115h-39_Emprendimiento_Digital_Kits_v1_Claude.md) | Emprendimiento Digital Kits v1 Claude |
+| [20260115h-40_Emprendimiento_Membership_System_v1_Claude.md](./tecnicos/20260115h-40_Emprendimiento_Membership_System_v1_Claude.md) | Emprendimiento Membership System v1 Claude |
+| [20260115h-41_Emprendimiento_Dashboard_Entrepreneur_v1_Claude.md](./tecnicos/20260115h-41_Emprendimiento_Dashboard_Entrepreneur_v1_Claude.md) | Emprendimiento Dashboard Entrepreneur v1 Claude |
+| [20260115h-42_Emprendimiento_Dashboard_Program_v1_Claude.md](./tecnicos/20260115h-42_Emprendimiento_Dashboard_Program_v1_Claude.md) | Emprendimiento Dashboard Program v1 Claude |
+| [20260115h-43_Emprendimiento_Impact_Metrics_v1_Claude.md](./tecnicos/20260115h-43_Emprendimiento_Impact_Metrics_v1_Claude.md) | Emprendimiento Impact Metrics v1 Claude |
+| [20260115h-44_Emprendimiento_AI_Business_Copilot_v1_Claude.md](./tecnicos/20260115h-44_Emprendimiento_AI_Business_Copilot_v1_Claude.md) | Emprendimiento AI Business Copilot v1 Claude |
+| [20260115h-Gap_Analysis_Documentacion_Tecnica_Emprendimiento_v1_Claude.md](./tecnicos/20260115h-Gap_Analysis_Documentacion_Tecnica_Emprendimiento_v1_Claude.md) | Gap Analysis Documentacion Tecnica Emprendimiento v1 Claude |
+| [20260115i-45_Andalucia_ei_Implementacion_v1_Claude.md](./tecnicos/20260115i-45_Andalucia_ei_Implementacion_v1_Claude.md) | Andalucia ei Implementacion v1 Claude |
+| [20260115j-46_Training_Certification_System_v1_Claude.md](./tecnicos/20260115j-46_Training_Certification_System_v1_Claude.md) | Training Certification System v1 Claude |
+
 
 ### 7.4 Vertical AgroConecta (Docs 47-61, 67-68, 80-82)
 
@@ -1049,15 +1186,91 @@
 | **67-68** | **AI Agents: Producer Copilot, Sales Agent** ⭐ | 2 | ✅ Completado (Fases 9-10) |
 | 80-82 | Traceability System, Dynamic QR, Partner Hub | 3 | ⬜ Fase 7 |
 
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+| Doc | Archivo | Area |
+|-----|---------|------|
+| [20260116a-47_AgroConecta_Commerce_Core_v1_Claude.md](./tecnicos/20260116a-47_AgroConecta_Commerce_Core_v1_Claude.md) | AgroConecta Commerce Core v1 Claude |
+| [20260116a-48_AgroConecta_Product_Catalog_v1.md](./tecnicos/20260116a-48_AgroConecta_Product_Catalog_v1.md) | AgroConecta Product Catalog v1 |
+| [20260116a-49_AgroConecta_Order_System_v1_Claude.md](./tecnicos/20260116a-49_AgroConecta_Order_System_v1_Claude.md) | AgroConecta Order System v1 Claude |
+| [20260116a-50_AgroConecta_Checkout_Flow_v1_Claude.md](./tecnicos/20260116a-50_AgroConecta_Checkout_Flow_v1_Claude.md) | AgroConecta Checkout Flow v1 Claude |
+| [20260116a-51_AgroConecta_Shipping_Logistics_v1_Claude.md](./tecnicos/20260116a-51_AgroConecta_Shipping_Logistics_v1_Claude.md) | AgroConecta Shipping Logistics v1 Claude |
+| [20260116a-52_AgroConecta_Producer_Portal_v1_Claude.md](./tecnicos/20260116a-52_AgroConecta_Producer_Portal_v1_Claude.md) | AgroConecta Producer Portal v1 Claude |
+| [20260116a-53_AgroConecta_Customer_Portal_v1_Claude.md](./tecnicos/20260116a-53_AgroConecta_Customer_Portal_v1_Claude.md) | AgroConecta Customer Portal v1 Claude |
+| [20260116a-54_AgroConecta_Reviews_System_v1_Claude.md](./tecnicos/20260116a-54_AgroConecta_Reviews_System_v1_Claude.md) | AgroConecta Reviews System v1 Claude |
+| [20260116a-55_AgroConecta_Search_Discovery_v1_Claude.md](./tecnicos/20260116a-55_AgroConecta_Search_Discovery_v1_Claude.md) | AgroConecta Search Discovery v1 Claude |
+| [20260116a-56_AgroConecta_Promotions_Coupons_v1_Claude.md](./tecnicos/20260116a-56_AgroConecta_Promotions_Coupons_v1_Claude.md) | AgroConecta Promotions Coupons v1 Claude |
+| [20260116a-57_AgroConecta_Analytics_Dashboard_v1_Claude.md](./tecnicos/20260116a-57_AgroConecta_Analytics_Dashboard_v1_Claude.md) | AgroConecta Analytics Dashboard v1 Claude |
+| [20260116a-58_AgroConecta_Admin_Panel_v1_Claude.md](./tecnicos/20260116a-58_AgroConecta_Admin_Panel_v1_Claude.md) | AgroConecta Admin Panel v1 Claude |
+| [20260116a-59_AgroConecta_Notifications_System_v1_Claude.md](./tecnicos/20260116a-59_AgroConecta_Notifications_System_v1_Claude.md) | AgroConecta Notifications System v1 Claude |
+| [20260116a-60_AgroConecta_Mobile_App_v1_Claude.md](./tecnicos/20260116a-60_AgroConecta_Mobile_App_v1_Claude.md) | AgroConecta Mobile App v1 Claude |
+| [20260116a-61_AgroConecta_API_Integration_Guide_v1_Claude.md](./tecnicos/20260116a-61_AgroConecta_API_Integration_Guide_v1_Claude.md) | AgroConecta API Integration Guide v1 Claude |
+| [20260116a-Gap_Analysis_Documentacion_Tecnica_AgroConecta_v1_Claude.md](./tecnicos/20260116a-Gap_Analysis_Documentacion_Tecnica_AgroConecta_v1_Claude.md) | Gap Analysis Documentacion Tecnica AgroConecta v1 Claude |
+| [20260117c-80_AgroConecta_Traceability_System_v1_Claude.md](./tecnicos/20260117c-80_AgroConecta_Traceability_System_v1_Claude.md) | AgroConecta Traceability System v1 Claude |
+| [20260117c-81_AgroConecta_QR_Dynamic_v1_Claude.md](./tecnicos/20260117c-81_AgroConecta_QR_Dynamic_v1_Claude.md) | AgroConecta QR Dynamic v1 Claude |
+| [20260117c-82_AgroConecta_Partner_Document_Hub_v1_Claude.md](./tecnicos/20260117c-82_AgroConecta_Partner_Document_Hub_v1_Claude.md) | AgroConecta Partner Document Hub v1 Claude |
+| [20260201b-67_AgroConecta_Producer_Copilot_v1_Claude.md](./tecnicos/20260201b-67_AgroConecta_Producer_Copilot_v1_Claude.md) | AgroConecta Producer Copilot v1 Claude |
+| [20260201b-68_AgroConecta_Sales_Agent_v1_Claude.md](./tecnicos/20260201b-68_AgroConecta_Sales_Agent_v1_Claude.md) | AgroConecta Sales Agent v1 Claude |
+
 **Plan de Implementación:** [20260208-Plan_Implementacion_AgroConecta_v1.md](./implementacion/20260208-Plan_Implementacion_AgroConecta_v1.md) ⭐
 
 ### 7.4b Vertical ComercioConecta (Docs 62-79)
 
 18 documentos especificando Commerce Core, POS, Flash Offers, QR, Merchant/Customer Portal.
 
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+| Doc | Archivo | Area |
+|-----|---------|------|
+| [20260117b-62_ComercioConecta_Commerce_Core_v1_Claude.md](./tecnicos/20260117b-62_ComercioConecta_Commerce_Core_v1_Claude.md) | ComercioConecta Commerce Core v1 Claude |
+| [20260117b-63_ComercioConecta_POS_Integration_v1_Claude.md](./tecnicos/20260117b-63_ComercioConecta_POS_Integration_v1_Claude.md) | ComercioConecta POS Integration v1 Claude |
+| [20260117b-64_ComercioConecta_Flash_Offers_v1_Claude.md](./tecnicos/20260117b-64_ComercioConecta_Flash_Offers_v1_Claude.md) | ComercioConecta Flash Offers v1 Claude |
+| [20260117b-65_ComercioConecta_Dynamic_QR_v1_Claude.md](./tecnicos/20260117b-65_ComercioConecta_Dynamic_QR_v1_Claude.md) | ComercioConecta Dynamic QR v1 Claude |
+| [20260117b-66_ComercioConecta_Product_Catalog_v1_Claude.md](./tecnicos/20260117b-66_ComercioConecta_Product_Catalog_v1_Claude.md) | ComercioConecta Product Catalog v1 Claude |
+| [20260117b-67_ComercioConecta_Order_System_v1_Claude.md](./tecnicos/20260117b-67_ComercioConecta_Order_System_v1_Claude.md) | ComercioConecta Order System v1 Claude |
+| [20260117b-68_ComercioConecta_Checkout_Flow_v1_Claude.md](./tecnicos/20260117b-68_ComercioConecta_Checkout_Flow_v1_Claude.md) | ComercioConecta Checkout Flow v1 Claude |
+| [20260117b-69_ComercioConecta_Shipping_Logistics_v1_Claude.md](./tecnicos/20260117b-69_ComercioConecta_Shipping_Logistics_v1_Claude.md) | ComercioConecta Shipping Logistics v1 Claude |
+| [20260117b-70_ComercioConecta_Search_Discovery_v1_Claude.md](./tecnicos/20260117b-70_ComercioConecta_Search_Discovery_v1_Claude.md) | ComercioConecta Search Discovery v1 Claude |
+| [20260117b-71_ComercioConecta_Local_SEO_v1_Claude.md](./tecnicos/20260117b-71_ComercioConecta_Local_SEO_v1_Claude.md) | ComercioConecta Local SEO v1 Claude |
+| [20260117b-72_ComercioConecta_Promotions_Coupons_v1_Claude.md](./tecnicos/20260117b-72_ComercioConecta_Promotions_Coupons_v1_Claude.md) | ComercioConecta Promotions Coupons v1 Claude |
+| [20260117b-73_ComercioConecta_Reviews_Ratings_v1_Claude.md](./tecnicos/20260117b-73_ComercioConecta_Reviews_Ratings_v1_Claude.md) | ComercioConecta Reviews Ratings v1 Claude |
+| [20260117b-74_ComercioConecta_Merchant_Portal_v1_Claude.md](./tecnicos/20260117b-74_ComercioConecta_Merchant_Portal_v1_Claude.md) | ComercioConecta Merchant Portal v1 Claude |
+| [20260117b-75_ComercioConecta_Customer_Portal_v1_Claude.md](./tecnicos/20260117b-75_ComercioConecta_Customer_Portal_v1_Claude.md) | ComercioConecta Customer Portal v1 Claude |
+| [20260117b-76_ComercioConecta_Notifications_System_v1_Claude.md](./tecnicos/20260117b-76_ComercioConecta_Notifications_System_v1_Claude.md) | ComercioConecta Notifications System v1 Claude |
+| [20260117b-77_ComercioConecta_Mobile_App_v1_Claude.md](./tecnicos/20260117b-77_ComercioConecta_Mobile_App_v1_Claude.md) | ComercioConecta Mobile App v1 Claude |
+| [20260117b-78_ComercioConecta_Admin_Panel_v1_Claude.md](./tecnicos/20260117b-78_ComercioConecta_Admin_Panel_v1_Claude.md) | ComercioConecta Admin Panel v1 Claude |
+| [20260117b-79_ComercioConecta_API_Integration_Guide_v1_Claude.md](./tecnicos/20260117b-79_ComercioConecta_API_Integration_Guide_v1_Claude.md) | ComercioConecta API Integration Guide v1 Claude |
+
+
 ### 7.4c Vertical ServiciosConecta (Docs 82-99) — Clase Mundial ✅
 
 18 documentos especificando Services Core, Provider Profile, Booking Engine, AI Triage. **Elevado a Clase Mundial** (14 fases, 26/26 paridad).
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+| Doc | Archivo | Area |
+|-----|---------|------|
+| [20260117d-Gap_Analysis_Documentacion_Tecnica_ServiciosConecta_v1_Claude.md](./tecnicos/20260117d-Gap_Analysis_Documentacion_Tecnica_ServiciosConecta_v1_Claude.md) | Gap Analysis Documentacion Tecnica ServiciosConecta v1 Claude |
+| [20260117e-82_ServiciosConecta_Services_Core_v1_Claude.md](./tecnicos/20260117e-82_ServiciosConecta_Services_Core_v1_Claude.md) | ServiciosConecta Services Core v1 Claude |
+| [20260117e-83_ServiciosConecta_Provider_Profile_v1_Claude.md](./tecnicos/20260117e-83_ServiciosConecta_Provider_Profile_v1_Claude.md) | ServiciosConecta Provider Profile v1 Claude |
+| [20260117e-84_ServiciosConecta_Service_Offerings_v1_Claude.md](./tecnicos/20260117e-84_ServiciosConecta_Service_Offerings_v1_Claude.md) | ServiciosConecta Service Offerings v1 Claude |
+| [20260117e-85_ServiciosConecta_Booking_Engine_Core_v1_Claude.md](./tecnicos/20260117e-85_ServiciosConecta_Booking_Engine_Core_v1_Claude.md) | ServiciosConecta Booking Engine Core v1 Claude |
+| [20260117e-86_ServiciosConecta_Calendar_Sync_v1_Claude.md](./tecnicos/20260117e-86_ServiciosConecta_Calendar_Sync_v1_Claude.md) | ServiciosConecta Calendar Sync v1 Claude |
+| [20260117e-87_ServiciosConecta_Video_Conferencing_v1_Claude.md](./tecnicos/20260117e-87_ServiciosConecta_Video_Conferencing_v1_Claude.md) | ServiciosConecta Video Conferencing v1 Claude |
+| [20260117e-88_ServiciosConecta_Buzon_Confianza_v1_Claude.md](./tecnicos/20260117e-88_ServiciosConecta_Buzon_Confianza_v1_Claude.md) | ServiciosConecta Buzon Confianza v1 Claude |
+| [20260117e-89_ServiciosConecta_Firma_Digital_PAdES_v1_Claude.md](./tecnicos/20260117e-89_ServiciosConecta_Firma_Digital_PAdES_v1_Claude.md) | ServiciosConecta Firma Digital PAdES v1 Claude |
+| [20260117e-90_ServiciosConecta_Portal_Cliente_Documental_v1_Claude.md](./tecnicos/20260117e-90_ServiciosConecta_Portal_Cliente_Documental_v1_Claude.md) | ServiciosConecta Portal Cliente Documental v1 Claude |
+| [20260117e-91_ServiciosConecta_AI_Triaje_Casos_v1_Claude.md](./tecnicos/20260117e-91_ServiciosConecta_AI_Triaje_Casos_v1_Claude.md) | ServiciosConecta AI Triaje Casos v1 Claude |
+| [20260117e-92_ServiciosConecta_Presupuestador_Auto_v1_Claude.md](./tecnicos/20260117e-92_ServiciosConecta_Presupuestador_Auto_v1_Claude.md) | ServiciosConecta Presupuestador Auto v1 Claude |
+| [20260117e-93_ServiciosConecta_Copilot_Servicios_v1_Claude.md](./tecnicos/20260117e-93_ServiciosConecta_Copilot_Servicios_v1_Claude.md) | ServiciosConecta Copilot Servicios v1 Claude |
+| [20260117e-94_ServiciosConecta_Dashboard_Profesional_v1_Claude.md](./tecnicos/20260117e-94_ServiciosConecta_Dashboard_Profesional_v1_Claude.md) | ServiciosConecta Dashboard Profesional v1 Claude |
+| [20260117e-95_ServiciosConecta_Dashboard_Admin_v1_Claude.md](./tecnicos/20260117e-95_ServiciosConecta_Dashboard_Admin_v1_Claude.md) | ServiciosConecta Dashboard Admin v1 Claude |
+| [20260117e-96_ServiciosConecta_Sistema_Facturacion_v1_Claude.md](./tecnicos/20260117e-96_ServiciosConecta_Sistema_Facturacion_v1_Claude.md) | ServiciosConecta Sistema Facturacion v1 Claude |
+| [20260117e-97_ServiciosConecta_Reviews_Ratings_v1_Claude.md](./tecnicos/20260117e-97_ServiciosConecta_Reviews_Ratings_v1_Claude.md) | ServiciosConecta Reviews Ratings v1 Claude |
+| [20260117e-98_ServiciosConecta_Notificaciones_Multicanal_v1_Claude.md](./tecnicos/20260117e-98_ServiciosConecta_Notificaciones_Multicanal_v1_Claude.md) | ServiciosConecta Notificaciones Multicanal v1 Claude |
+| [20260117e-99_ServiciosConecta_API_Integration_Guide_v1_Claude.md](./tecnicos/20260117e-99_ServiciosConecta_API_Integration_Guide_v1_Claude.md) | ServiciosConecta API Integration Guide v1 Claude |
+
 
 | Rango | Area | Docs | Estado |
 |-------|------|------|--------|
@@ -1233,9 +1446,237 @@
 | [2026-02-16_specs_madurez_backup_separation.md](./tecnicos/aprendizajes/2026-02-16_specs_madurez_backup_separation.md) | 📋 **Specs Madurez N1/N2/N3 + Backup Separation** ⭐ — 21 docs técnicos (183-203) en 3 niveles. Separación ~/backups/daily/ + ~/backups/pre_deploy/ para GoodSync. Migración one-time 78 backups via GitHub Actions. Patrón documentación por niveles madurez. 2 reglas BACKUP-003, DOC-NIVEL-001. Aprendizaje #84 | 2026-02-16 |
 | [2026-02-16_jarabalex_elevacion_vertical_independiente.md](./tecnicos/aprendizajes/2026-02-16_jarabalex_elevacion_vertical_independiente.md) | ⚖️ **Elevacion JarabaLex a Vertical Independiente** ⭐ — Elevacion de jaraba_legal_intelligence de sub-feature ServiciosConecta a vertical independiente. 16 config entities (vertical + 3 features + 3 SaaS plans + 9 FreemiumVerticalLimit). page--legal.html.twig zero-region + CSS custom properties --ej-legal-*. Billing FEATURE_ADDON_MAP. Patron reutilizable elevacion vertical con zero cambios funcionales. 5 reglas VERTICAL-ELEV-001 a 005. Aprendizaje #85 | 2026-02-16 |
 
-**Total aprendizajes:** 85
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+| [2026-01-28_page_builder_analisis_completo.md](./tecnicos/aprendizajes/2026-01-28_page_builder_analisis_completo.md) | Page builder analisis completo | 2026-01-28 |
+| [2026-01-28_page_builder_auditoria_clase_mundial.md](./tecnicos/aprendizajes/2026-01-28_page_builder_auditoria_clase_mundial.md) | Page builder auditoria clase mundial | 2026-01-28 |
+| [2026-01-29_frontend_pages_pattern.md](./tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md) | Frontend pages pattern | 2026-01-29 |
+| [2026-02-06_admin_center_d_impersonation_rbac_reports.md](./tecnicos/aprendizajes/2026-02-06_admin_center_d_impersonation_rbac_reports.md) | Admin center d impersonation rbac reports | 2026-02-06 |
+| [2026-02-11_hero_split_admin_fix.md](./tecnicos/aprendizajes/2026-02-11_hero_split_admin_fix.md) | Hero split admin fix | 2026-02-11 |
+| [2026-02-12_phase4_scss_colors_emoji_cleanup.md](./tecnicos/aprendizajes/2026-02-12_phase4_scss_colors_emoji_cleanup.md) | Phase4 scss colors emoji cleanup | 2026-02-12 |
+| [2026-02-16_fase11_fiscal_integration_compliance_legal_n1.md](./tecnicos/aprendizajes/2026-02-16_fase11_fiscal_integration_compliance_legal_n1.md) | Fase11 fiscal integration compliance legal n1 | 2026-02-16 |
+| [2026-02-16_gap_filling_compliance_aggregator.md](./tecnicos/aprendizajes/2026-02-16_gap_filling_compliance_aggregator.md) | Gap filling compliance aggregator | 2026-02-16 |
+| [2026-02-16_jaraba_legal_cases_fase_a1_implementacion.md](./tecnicos/aprendizajes/2026-02-16_jaraba_legal_cases_fase_a1_implementacion.md) | Jaraba legal cases fase a1 implementacion | 2026-02-16 |
+| [2026-02-16_kernel_test_ci_fix_campaign.md](./tecnicos/aprendizajes/2026-02-16_kernel_test_ci_fix_campaign.md) | Kernel test ci fix campaign | 2026-02-16 |
+| [2026-02-16_plan_elevacion_jarabalex_14_fases.md](./tecnicos/aprendizajes/2026-02-16_plan_elevacion_jarabalex_14_fases.md) | Plan elevacion jarabalex 14 fases | 2026-02-16 |
+| [2026-02-16_synthetic_services_cascade_plan_elevacion.md](./tecnicos/aprendizajes/2026-02-16_synthetic_services_cascade_plan_elevacion.md) | Synthetic services cascade plan elevacion | 2026-02-16 |
+| [2026-02-17_agroconecta_clase_mundial_elevacion.md](./tecnicos/aprendizajes/2026-02-17_agroconecta_clase_mundial_elevacion.md) | Agroconecta clase mundial elevacion | 2026-02-17 |
+| [2026-02-17_comercioconecta_elevacion_clase_mundial.md](./tecnicos/aprendizajes/2026-02-17_comercioconecta_elevacion_clase_mundial.md) | Comercioconecta elevacion clase mundial | 2026-02-17 |
+| [2026-02-17_jarabalex_legal_practice_platform_completa.md](./tecnicos/aprendizajes/2026-02-17_jarabalex_legal_practice_platform_completa.md) | Jarabalex legal practice platform completa | 2026-02-17 |
+| [2026-02-17_n2_macro_fase_3_growth_ready_platform.md](./tecnicos/aprendizajes/2026-02-17_n2_macro_fase_3_growth_ready_platform.md) | N2 macro fase 3 growth ready platform | 2026-02-17 |
+| [2026-02-17_serviciosconecta_elevacion_clase_mundial.md](./tecnicos/aprendizajes/2026-02-17_serviciosconecta_elevacion_clase_mundial.md) | Serviciosconecta elevacion clase mundial | 2026-02-17 |
+| [2026-02-18_auditoria_integridad_planes_implementacion.md](./tecnicos/aprendizajes/2026-02-18_auditoria_integridad_planes_implementacion.md) | Auditoria integridad planes implementacion | 2026-02-18 |
+| [2026-02-18_gaps_medium_resolucion_post_auditoria_integridad.md](./tecnicos/aprendizajes/2026-02-18_gaps_medium_resolucion_post_auditoria_integridad.md) | Gaps medium resolucion post auditoria integridad | 2026-02-18 |
+
+**Total aprendizajes:** 104
 
 ---
+
+
+### 7.7 Documentos Tecnicos Adicionales (Especificaciones Completas)
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+📁 **Ubicación:** `docs/tecnicos/`
+
+> Los siguientes documentos tecnicos no estaban previamente indexados. Se incluyen aqui para completar el indice al 100%.
+
+| Archivo | Descripcion |
+|---------|-------------|
+| [2026-02-06_matriz_bloques_page_builder.md](./tecnicos/2026-02-06_matriz_bloques_page_builder.md) | Matriz bloques page builder |
+| [20260108a-AgroConecta_ Trazabilidad y Blockchain_Gemini.md](./tecnicos/20260108a-AgroConecta_%20Trazabilidad%20y%20Blockchain_Gemini.md) | AgroConecta  Trazabilidad y Blockchain Gemini |
+| [20260108b-Evaluación de Plataformas Blockchain para AgroConecta_Gemini.md](./tecnicos/20260108b-Evaluaci%C3%B3n%20de%20Plataformas%20Blockchain%20para%20AgroConecta_Gemini.md) | Evaluación de Plataformas Blockchain para AgroConecta Gemini |
+| [20260109a-AgroConecta_Certificados_Digitales_FNMT_Cluade.md](./tecnicos/20260109a-AgroConecta_Certificados_Digitales_FNMT_Cluade.md) | AgroConecta Certificados Digitales FNMT Cluade |
+| [20260109b-AgroConecta_Firma_Automatica_Lotes_Claude.md](./tecnicos/20260109b-AgroConecta_Firma_Automatica_Lotes_Claude.md) | AgroConecta Firma Automatica Lotes Claude |
+| [20260109c-AgroConecta_AutoFirma_Integracion_Claude.md](./tecnicos/20260109c-AgroConecta_AutoFirma_Integracion_Claude.md) | AgroConecta AutoFirma Integracion Claude |
+| [20260109e-DOCUMENTO_TECNICO_MAESTRO_SaaS_CONSOLIDADO_Claude.md](./tecnicos/20260109e-DOCUMENTO_TECNICO_MAESTRO_SaaS_CONSOLIDADO_Claude.md) | DOCUMENTO TECNICO MAESTRO SaaS CONSOLIDADO Claude |
+| [20260110d-SaaS Nativo Inteligente_ Drupal 11_Gemini.md](./tecnicos/20260110d-SaaS%20Nativo%20Inteligente_%20Drupal%2011_Gemini.md) | SaaS Nativo Inteligente  Drupal 11 Gemini |
+| [20260110e-Documento_Tecnico_Maestro_v2_Claude.md](./tecnicos/20260110e-Documento_Tecnico_Maestro_v2_Claude.md) | Documento Tecnico Maestro v2 Claude |
+| [20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md](./tecnicos/20260110i-Anexo_A_Knowledge_Base_AI_Nativa_claude.md) | Anexo A Knowledge Base AI Nativa claude |
+| [20260111-Guia_Tecnica_KB_RAG_Qdrant.md](./tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md) | Guia Tecnica KB RAG Qdrant |
+| [20260111b-Anexo_A1_Integracion_Qdrant_Seguro_v3_Claude.md](./tecnicos/20260111b-Anexo_A1_Integracion_Qdrant_Seguro_v3_Claude.md) | Anexo A1 Integracion Qdrant Seguro v3 Claude |
+| [20260111c-Lecciones_Integracion_Qdrant_v5.1.md](./tecnicos/20260111c-Lecciones_Integracion_Qdrant_v5.1.md) | Lecciones Integracion Qdrant v5.1 |
+| [20260113-FOC_Especificacion_Tecnica_Integracion.md](./tecnicos/20260113-FOC_Especificacion_Tecnica_Integracion.md) | FOC Especificacion Tecnica Integracion |
+| [20260113d-FOC_Documento_Tecnico_Definitivo_v2_Claude.md](./tecnicos/20260113d-FOC_Documento_Tecnico_Definitivo_v2_Claude.md) | FOC Documento Tecnico Definitivo v2 Claude |
+| [20260114b-Plan_Maestro_Consolidado_Ecosistema_Jaraba_2026_Claude.md](./tecnicos/20260114b-Plan_Maestro_Consolidado_Ecosistema_Jaraba_2026_Claude.md) | Plan Maestro Consolidado Ecosistema Jaraba 2026 Claude |
+| [20260115b-Diagnostico_Express_TTV_Especificacion_Tecnica_Claude.md](./tecnicos/20260115b-Diagnostico_Express_TTV_Especificacion_Tecnica_Claude.md) | Diagnostico Express TTV Especificacion Tecnica Claude |
+| [20260115c-Calculadora_Madurez_Digital_Especificacion_Tecnica_Claude.md](./tecnicos/20260115c-Calculadora_Madurez_Digital_Especificacion_Tecnica_Claude.md) | Calculadora Madurez Digital Especificacion Tecnica Claude |
+| [20260115c-Programa Maestro Andalucía +ei V2.0_Gemini.md](./tecnicos/20260115c-Programa%20Maestro%20Andaluc%C3%ADa%20%2Bei%20V2.0_Gemini.md) | Programa Maestro Andalucía +ei V2.0 Gemini |
+| [20260115d-Ecosistema Jaraba_ Estrategia de Verticalización y Precios_Gemini.md](./tecnicos/20260115d-Ecosistema%20Jaraba_%20Estrategia%20de%20Verticalizaci%C3%B3n%20y%20Precios_Gemini.md) | Ecosistema Jaraba  Estrategia de Verticalización y Precios Gemini |
+| [20260115e-SaaS Verticales_ Empleabilidad y Emprendimiento IA_Gemini.md](./tecnicos/20260115e-SaaS%20Verticales_%20Empleabilidad%20y%20Emprendimiento%20IA_Gemini.md) | SaaS Verticales  Empleabilidad y Emprendimiento IA Gemini |
+| [20260117f-100_Frontend_Architecture_MultiTenant_v1_Claude.md](./tecnicos/20260117f-100_Frontend_Architecture_MultiTenant_v1_Claude.md) | Frontend Architecture MultiTenant v1 Claude |
+| [20260117f-101_Industry_Style_Presets_v1_Claude.md](./tecnicos/20260117f-101_Industry_Style_Presets_v1_Claude.md) | Industry Style Presets v1 Claude |
+| [20260117f-102_Industry_Style_Presets_Premium_Implementation_v1_AnexoB_Claude.md](./tecnicos/20260117f-102_Industry_Style_Presets_Premium_Implementation_v1_AnexoB_Claude.md) | Industry Style Presets Premium Implementation v1 AnexoB Claude |
+| [20260117f-102_Industry_Style_Presets_Premium_Implementation_v1_Claude.md](./tecnicos/20260117f-102_Industry_Style_Presets_Premium_Implementation_v1_Claude.md) | Industry Style Presets Premium Implementation v1 Claude |
+| [20260117f-103_UX_Journey_Specifications_Avatar_v1_Claude.md](./tecnicos/20260117f-103_UX_Journey_Specifications_Avatar_v1_Claude.md) | UX Journey Specifications Avatar v1 Claude |
+| [20260117f-104_SaaS_Admin_Center_Premium_v1_Claude.md](./tecnicos/20260117f-104_SaaS_Admin_Center_Premium_v1_Claude.md) | SaaS Admin Center Premium v1 Claude |
+| [20260117g-105_Homologacion_Teleformacion_SEPE_v1_Claude.md](./tecnicos/20260117g-105_Homologacion_Teleformacion_SEPE_v1_Claude.md) | Homologacion Teleformacion SEPE v1 Claude |
+| [20260117g-106_Modulo_SEPE_Teleformacion_Implementacion_v1_Claude.md](./tecnicos/20260117g-106_Modulo_SEPE_Teleformacion_Implementacion_v1_Claude.md) | Modulo SEPE Teleformacion Implementacion v1 Claude |
+| [20260117g-107_SEPE_Kit_Validacion_Procedimiento_v1_Claude.md](./tecnicos/20260117g-107_SEPE_Kit_Validacion_Procedimiento_v1_Claude.md) | SEPE Kit Validacion Procedimiento v1 Claude |
+| [20260117g-Auditoria_ECA_Empleabilidad_v1.md](./tecnicos/20260117g-Auditoria_ECA_Empleabilidad_v1.md) | Auditoria ECA Empleabilidad v1 |
+| [20260117h-Investigacion_Mercado_SaaS_Jaraba_2026_Claude.md](./tecnicos/20260117h-Investigacion_Mercado_SaaS_Jaraba_2026_Claude.md) | Investigacion Mercado SaaS Jaraba 2026 Claude |
+| [20260117i-108_Platform_AI_Agent_Flows_v1_Claude.md](./tecnicos/20260117i-108_Platform_AI_Agent_Flows_v1_Claude.md) | Platform AI Agent Flows v1 Claude |
+| [20260117i-109_Platform_PWA_Mobile_v1_Claude.md](./tecnicos/20260117i-109_Platform_PWA_Mobile_v1_Claude.md) | Platform PWA Mobile v1 Claude |
+| [20260117i-110_Platform_Onboarding_ProductLed_v1_Claude.md](./tecnicos/20260117i-110_Platform_Onboarding_ProductLed_v1_Claude.md) | Platform Onboarding ProductLed v1 Claude |
+| [20260117i-111_Platform_UsageBased_Pricing_v1_Claude.md](./tecnicos/20260117i-111_Platform_UsageBased_Pricing_v1_Claude.md) | Platform UsageBased Pricing v1 Claude |
+| [20260117i-112_Platform_Integration_Marketplace_v1_Claude.md](./tecnicos/20260117i-112_Platform_Integration_Marketplace_v1_Claude.md) | Platform Integration Marketplace v1 Claude |
+| [20260117i-113_Platform_Customer_Success_v1_CLaude.md](./tecnicos/20260117i-113_Platform_Customer_Success_v1_CLaude.md) | Platform Customer Success v1 CLaude |
+| [20260117i-114_Platform_Knowledge_Base_v1_Claude.md](./tecnicos/20260117i-114_Platform_Knowledge_Base_v1_Claude.md) | Platform Knowledge Base v1 Claude |
+| [20260117i-115_Platform_Security_Compliance_v1_Claude.md](./tecnicos/20260117i-115_Platform_Security_Compliance_v1_Claude.md) | Platform Security Compliance v1 Claude |
+| [20260117i-116_Platform_Advanced_Analytics_v1_Claude.md](./tecnicos/20260117i-116_Platform_Advanced_Analytics_v1_Claude.md) | Platform Advanced Analytics v1 Claude |
+| [20260117i-117_Platform_WhiteLabel_v1_Claude.md](./tecnicos/20260117i-117_Platform_WhiteLabel_v1_Claude.md) | Platform WhiteLabel v1 Claude |
+| [20260118a-123_PepeJaraba_Personal_Brand_Plan_v1_Claude.md](./tecnicos/20260118a-123_PepeJaraba_Personal_Brand_Plan_v1_Claude.md) | PepeJaraba Personal Brand Plan v1 Claude |
+| [20260118a-124_PepeJaraba_Content_Ready_v1_Claude.md](./tecnicos/20260118a-124_PepeJaraba_Content_Ready_v1_Claude.md) | PepeJaraba Content Ready v1 Claude |
+| [20260118a-126_Personal_Brand_Tenant_Config_v1_Claude.md](./tecnicos/20260118a-126_Personal_Brand_Tenant_Config_v1_Claude.md) | Personal Brand Tenant Config v1 Claude |
+| [20260118c-125_Blog_Articulos_v1_Claude.md](./tecnicos/20260118c-125_Blog_Articulos_v1_Claude.md) | Blog Articulos v1 Claude |
+| [20260118e-124_PepeJaraba_Content_Ready_v1_Claude.md](./tecnicos/20260118e-124_PepeJaraba_Content_Ready_v1_Claude.md) | PepeJaraba Content Ready v1 Claude |
+| [20260118f-127_PED_Corporate_Website_v1_Claude.md](./tecnicos/20260118f-127_PED_Corporate_Website_v1_Claude.md) | PED Corporate Website v1 Claude |
+| [20260118g-128_Platform_AI_Content_Hub_v1_Claude.md](./tecnicos/20260118g-128_Platform_AI_Content_Hub_v1_Claude.md) | Platform AI Content Hub v1 Claude |
+| [20260118g-128_Platform_AI_Content_Hub_v2_Claude.md](./tecnicos/20260118g-128_Platform_AI_Content_Hub_v2_Claude.md) | Platform AI Content Hub v2 Claude |
+| [20260118g-128b_Platform_AI_Content_Hub_Frontend_v1_Claude.md](./tecnicos/20260118g-128b_Platform_AI_Content_Hub_Frontend_v1_Claude.md) | 128b Platform AI Content Hub Frontend v1 Claude |
+| [20260118g-128c_Platform_AI_Content_Hub_Editor_v1_Claude.md](./tecnicos/20260118g-128c_Platform_AI_Content_Hub_Editor_v1_Claude.md) | 128c Platform AI Content Hub Editor v1 Claude |
+| [20260118h-128_JarabaImpact_Website_v1_Claude.md](./tecnicos/20260118h-128_JarabaImpact_Website_v1_Claude.md) | JarabaImpact Website v1 Claude |
+| [20260118i1-129_Platform_AI_Skills_System_v1_Claude.md](./tecnicos/20260118i1-129_Platform_AI_Skills_System_v1_Claude.md) | Platform AI Skills System v1 Claude |
+| [20260118i2-129_Platform_AI_Skills_System_v1_AnexoA_Claude.md](./tecnicos/20260118i2-129_Platform_AI_Skills_System_v1_AnexoA_Claude.md) | Platform AI Skills System v1 AnexoA Claude |
+| [20260118j-130_Platform_Tenant_Knowledge_Training_v1_Claude.md](./tecnicos/20260118j-130_Platform_Tenant_Knowledge_Training_v1_Claude.md) | Platform Tenant Knowledge Training v1 Claude |
+| [20260118k-131_Platform_Infrastructure_Deployment_v1_Claude.md](./tecnicos/20260118k-131_Platform_Infrastructure_Deployment_v1_Claude.md) | Platform Infrastructure Deployment v1 Claude |
+| [20260118k-132_Platform_CICD_Pipeline_v1_Claude.md](./tecnicos/20260118k-132_Platform_CICD_Pipeline_v1_Claude.md) | Platform CICD Pipeline v1 Claude |
+| [20260118k-133_Platform_Monitoring_Alerting_v1_Claude.md](./tecnicos/20260118k-133_Platform_Monitoring_Alerting_v1_Claude.md) | Platform Monitoring Alerting v1 Claude |
+| [20260118k-134_Platform_Stripe_Billing_Integration_v1_Claude.md](./tecnicos/20260118k-134_Platform_Stripe_Billing_Integration_v1_Claude.md) | Platform Stripe Billing Integration v1 Claude |
+| [20260118k-135_Platform_Testing_Strategy_v1_Claude.md](./tecnicos/20260118k-135_Platform_Testing_Strategy_v1_Claude.md) | Platform Testing Strategy v1 Claude |
+| [20260118k-136_Platform_Email_Templates_v1_Claude.md](./tecnicos/20260118k-136_Platform_Email_Templates_v1_Claude.md) | Platform Email Templates v1 Claude |
+| [20260118k-137_Platform_API_Gateway_Developer_Portal_v1_Claude.md](./tecnicos/20260118k-137_Platform_API_Gateway_Developer_Portal_v1_Claude.md) | Platform API Gateway Developer Portal v1 Claude |
+| [20260118k-138_Platform_Security_Audit_Procedures_v1_Claude.md](./tecnicos/20260118k-138_Platform_Security_Audit_Procedures_v1_Claude.md) | Platform Security Audit Procedures v1 Claude |
+| [20260118k-139_Platform_GoLive_Runbook_v1_Claude.md](./tecnicos/20260118k-139_Platform_GoLive_Runbook_v1_Claude.md) | Platform GoLive Runbook v1 Claude |
+| [20260118k-140_Platform_User_Manuals_v1_Claude.md](./tecnicos/20260118k-140_Platform_User_Manuals_v1_Claude.md) | Platform User Manuals v1 Claude |
+| [20260118l-141_Indice_Maestro_Consolidado_v1_Claude.md](./tecnicos/20260118l-141_Indice_Maestro_Consolidado_v1_Claude.md) | Indice Maestro Consolidado v1 Claude |
+| [20260118l-143_Presupuesto_Actualizado_2026_v1_Claude.md](./tecnicos/20260118l-143_Presupuesto_Actualizado_2026_v1_Claude.md) | Presupuesto Actualizado 2026 v1 Claude |
+| [20260118l-144_Matriz_Dependencias_Tecnicas_v1_Claude.md](./tecnicos/20260118l-144_Matriz_Dependencias_Tecnicas_v1_Claude.md) | Matriz Dependencias Tecnicas v1 Claude |
+| [20260119a-145_ActiveCampaign_Automation_Flows_v1_Claude.md](./tecnicos/20260119a-145_ActiveCampaign_Automation_Flows_v1_Claude.md) | ActiveCampaign Automation Flows v1 Claude |
+| [20260119a-146_SendGrid_ECA_Architecture_v1_Claude.md](./tecnicos/20260119a-146_SendGrid_ECA_Architecture_v1_Claude.md) | SendGrid ECA Architecture v1 Claude |
+| [20260119a-147_Auditoria_Arquitectura_Comunicacion_Nativa_v1_Claude.md](./tecnicos/20260119a-147_Auditoria_Arquitectura_Comunicacion_Nativa_v1_Claude.md) | Auditoria Arquitectura Comunicacion Nativa v1 Claude |
+| [20260119a-148_Mapa_Arquitectonico_Completo_v1_Claude.md](./tecnicos/20260119a-148_Mapa_Arquitectonico_Completo_v1_Claude.md) | Mapa Arquitectonico Completo v1 Claude |
+| [20260119a-149_Marketing_AI_Stack_Completo_v1_Claude.md](./tecnicos/20260119a-149_Marketing_AI_Stack_Completo_v1_Claude.md) | Marketing AI Stack Completo v1 Claude |
+| [20260119b-02_Core_Modulos_Personalizados_v2_Claude.md](./tecnicos/20260119b-02_Core_Modulos_Personalizados_v2_Claude.md) | Core Modulos Personalizados v2 Claude |
+| [20260119b-118_Roadmap_Implementacion_v2_Claude.md](./tecnicos/20260119b-118_Roadmap_Implementacion_v2_Claude.md) | Roadmap Implementacion v2 Claude |
+| [20260119c-150_Marketing_jaraba_crm_Pipeline_v1_Claude.md](./tecnicos/20260119c-150_Marketing_jaraba_crm_Pipeline_v1_Claude.md) | Marketing jaraba crm Pipeline v1 Claude |
+| [20260119c-151_Marketing_jaraba_email_v1_Claude.md](./tecnicos/20260119c-151_Marketing_jaraba_email_v1_Claude.md) | Marketing jaraba email v1 Claude |
+| [20260119c-152_Marketing_jaraba_social_v1_Claude.md](./tecnicos/20260119c-152_Marketing_jaraba_social_v1_Claude.md) | Marketing jaraba social v1 Claude |
+| [20260119c-153_Marketing_Paid_Ads_Integration_v1_Claude.md](./tecnicos/20260119c-153_Marketing_Paid_Ads_Integration_v1_Claude.md) | Marketing Paid Ads Integration v1 Claude |
+| [20260119c-154_Marketing_Retargeting_Pixel_Manager_v1_Claude.md](./tecnicos/20260119c-154_Marketing_Retargeting_Pixel_Manager_v1_Claude.md) | Marketing Retargeting Pixel Manager v1 Claude |
+| [20260119c-155_Marketing_Events_Webinars_v1_Claude.md](./tecnicos/20260119c-155_Marketing_Events_Webinars_v1_Claude.md) | Marketing Events Webinars v1 Claude |
+| [20260119c-156_Marketing_AB_Testing_Framework_v1_Claude.md](./tecnicos/20260119c-156_Marketing_AB_Testing_Framework_v1_Claude.md) | Marketing AB Testing Framework v1 Claude |
+| [20260119c-157_Marketing_Referral_Program_Universal_v1_Claude.md](./tecnicos/20260119c-157_Marketing_Referral_Program_Universal_v1_Claude.md) | Marketing Referral Program Universal v1 Claude |
+| [20260119d-158_Platform_Vertical_Pricing_Matrix_v1_Claude.md](./tecnicos/20260119d-158_Platform_Vertical_Pricing_Matrix_v1_Claude.md) | Platform Vertical Pricing Matrix v1 Claude |
+| [20260120b-Recorrido_Interfaz_Empleabilidad_v1_Claude.md](./tecnicos/20260120b-Recorrido_Interfaz_Empleabilidad_v1_Claude.md) | Recorrido Interfaz Empleabilidad v1 Claude |
+| [20260121a-Especificaciones_Tecnicas_Copiloto_v2_Claude.md](./tecnicos/20260121a-Especificaciones_Tecnicas_Copiloto_v2_Claude.md) | Especificaciones Tecnicas Copiloto v2 Claude |
+| [20260121a-README_INSTALACION.md](./tecnicos/20260121a-README_INSTALACION.md) | README INSTALACION |
+| [20260121a-copilot_prompt_master_v2.md](./tecnicos/20260121a-copilot_prompt_master_v2.md) | Copilot prompt master v2 |
+| [20260121b-Analisis_Impacto_Copiloto_Programa_Andalucia_ei_Claude.md](./tecnicos/20260121b-Analisis_Impacto_Copiloto_Programa_Andalucia_ei_Claude.md) | Analisis Impacto Copiloto Programa Andalucia ei Claude |
+| [20260121c-Manual_Operativo_Completo_Andalucia_ei_V2_1_Claude.md](./tecnicos/20260121c-Manual_Operativo_Completo_Andalucia_ei_V2_1_Claude.md) | Manual Operativo Completo Andalucia ei V2 1 Claude |
+| [20260121d-Addendum_Tecnico_v2_1_EDI.md](./tecnicos/20260121d-Addendum_Tecnico_v2_1_EDI.md) | Addendum Tecnico v2 1 EDI |
+| [20260121d-Manual_Operativo_Completo_Andalucia_ei_V2_1_Claude.md](./tecnicos/20260121d-Manual_Operativo_Completo_Andalucia_ei_V2_1_Claude.md) | Manual Operativo Completo Andalucia ei V2 1 Claude |
+| [20260121d-copilot_prompt_master_v2_1.md](./tecnicos/20260121d-copilot_prompt_master_v2_1.md) | Copilot prompt master v2 1 |
+| [20260121e-Especificacion_Router_Inteligente_RAG_Claude.md](./tecnicos/20260121e-Especificacion_Router_Inteligente_RAG_Claude.md) | Especificacion Router Inteligente RAG Claude |
+| [20260122a-159_Dev_Environment_Lando_Complete_v1_Claude.md](./tecnicos/20260122a-159_Dev_Environment_Lando_Complete_v1_Claude.md) | Dev Environment Lando Complete v1 Claude |
+| [20260122a-Auditoria_Exhaustiva_Multidisciplinar_v1_Claude.md](./tecnicos/20260122a-Auditoria_Exhaustiva_Multidisciplinar_v1_Claude.md) | Auditoria Exhaustiva Multidisciplinar v1 Claude |
+| [20260122b-Plan_Implementacion_Gaps_Auditoria_v1_Claude.md](./tecnicos/20260122b-Plan_Implementacion_Gaps_Auditoria_v1_Claude.md) | Plan Implementacion Gaps Auditoria v1 Claude |
+| [20260123-Guia_Homologacion_SEPE_v1_Claude.md](./tecnicos/20260123-Guia_Homologacion_SEPE_v1_Claude.md) | Guia Homologacion SEPE v1 Claude |
+| [20260123-Matriz_Especificaciones_Tecnicas_Auditoria_Claude.md](./tecnicos/20260123-Matriz_Especificaciones_Tecnicas_Auditoria_Claude.md) | Matriz Especificaciones Tecnicas Auditoria Claude |
+| [20260126d-160_Page_Builder_SaaS_v1_Claude.md](./tecnicos/20260126d-160_Page_Builder_SaaS_v1_Claude.md) | Page Builder SaaS v1 Claude |
+| [20260126d-161_Auditoria_Cumplimiento_Directrices_v1_Claude.md](./tecnicos/20260126d-161_Auditoria_Cumplimiento_Directrices_v1_Claude.md) | Auditoria Cumplimiento Directrices v1 Claude |
+| [20260126d-162_Page_Builder_Sistema_Completo_EDI_v1_Claude.md](./tecnicos/20260126d-162_Page_Builder_Sistema_Completo_EDI_v1_Claude.md) | Page Builder Sistema Completo EDI v1 Claude |
+| [20260126d-163_Bloques_Premium_Anexo_Tecnico_EDI_v1_Claude.md](./tecnicos/20260126d-163_Bloques_Premium_Anexo_Tecnico_EDI_v1_Claude.md) | Bloques Premium Anexo Tecnico EDI v1 Claude |
+| [20260126d-164_Platform_SEO_GEO_PageBuilder_v1_Claude.md](./tecnicos/20260126d-164_Platform_SEO_GEO_PageBuilder_v1_Claude.md) | Platform SEO GEO PageBuilder v1 Claude |
+| [20260126d-165_Gap_Analysis_PageBuilder_v1_Claude.md](./tecnicos/20260126d-165_Gap_Analysis_PageBuilder_v1_Claude.md) | Gap Analysis PageBuilder v1 Claude |
+| [20260126d-166_Platform_i18n_Multilanguage_v1_Claude.md](./tecnicos/20260126d-166_Platform_i18n_Multilanguage_v1_Claude.md) | Platform i18n Multilanguage v1 Claude |
+| [20260126d-167_Platform_Analytics_PageBuilder_v1_Claude.md](./tecnicos/20260126d-167_Platform_Analytics_PageBuilder_v1_Claude.md) | Platform Analytics PageBuilder v1 Claude |
+| [20260126d-168_Platform_AB_Testing_Pages_v1_Claude.md](./tecnicos/20260126d-168_Platform_AB_Testing_Pages_v1_Claude.md) | Platform AB Testing Pages v1 Claude |
+| [20260126d-169_Platform_Page_Versioning_v1_Claude.md](./tecnicos/20260126d-169_Platform_Page_Versioning_v1_Claude.md) | Platform Page Versioning v1 Claude |
+| [20260126d-170_Platform_Accessibility_WCAG_v1_Claude.md](./tecnicos/20260126d-170_Platform_Accessibility_WCAG_v1_Claude.md) | Platform Accessibility WCAG v1 Claude |
+| [20260126d-171_Platform_ContentHub_PageBuilder_v1_Claude.md](./tecnicos/20260126d-171_Platform_ContentHub_PageBuilder_v1_Claude.md) | Platform ContentHub PageBuilder v1 Claude |
+| [20260126e-172_Jaraba_Credentials_Implementation_Guide_v1_Claude.md](./tecnicos/20260126e-172_Jaraba_Credentials_Implementation_Guide_v1_Claude.md) | Jaraba Credentials Implementation Guide v1 Claude |
+| [20260126e-173_Credentials_Stackable_Extensions_v1_Claude.md](./tecnicos/20260126e-173_Credentials_Stackable_Extensions_v1_Claude.md) | Credentials Stackable Extensions v1 Claude |
+| [20260126e-174_Credentials_Cross_Vertical_v1_Claude.md](./tecnicos/20260126e-174_Credentials_Cross_Vertical_v1_Claude.md) | Credentials Cross Vertical v1 Claude |
+| [20260126e-175_Credentials_Emprendimiento_Extension_v1_Claude.md](./tecnicos/20260126e-175_Credentials_Emprendimiento_Extension_v1_Claude.md) | Credentials Emprendimiento Extension v1 Claude |
+| [20260127a-176_Site_Structure_Manager_v1_Claude.md](./tecnicos/20260127a-176_Site_Structure_Manager_v1_Claude.md) | Site Structure Manager v1 Claude |
+| [20260127a-177_Global_Navigation_System_v1_Claude.md](./tecnicos/20260127a-177_Global_Navigation_System_v1_Claude.md) | Global Navigation System v1 Claude |
+| [20260127a-178_Blog_System_Nativo_v1_Claude.md](./tecnicos/20260127a-178_Blog_System_Nativo_v1_Claude.md) | Blog System Nativo v1 Claude |
+| [20260127a-179_SEO_GEO_IA_Integration_SiteBuilder_v1_Claude.md](./tecnicos/20260127a-179_SEO_GEO_IA_Integration_SiteBuilder_v1_Claude.md) | SEO GEO IA Integration SiteBuilder v1 Claude |
+| [20260128-Auditoria_Arquitectura_IA_SaaS_v1_Claude.md](./tecnicos/20260128-Auditoria_Arquitectura_IA_SaaS_v1_Claude.md) | Auditoria Arquitectura IA SaaS v1 Claude |
+| [20260128-Auditoria_Exhaustiva_Multidisciplinar_v1_Claude.md](./tecnicos/20260128-Auditoria_Exhaustiva_Multidisciplinar_v1_Claude.md) | Auditoria Exhaustiva Multidisciplinar v1 Claude |
+| [20260128-Especificacion_IA_Clase_Mundial_SaaS_v1_Claude.md](./tecnicos/20260128-Especificacion_IA_Clase_Mundial_SaaS_v1_Claude.md) | Especificacion IA Clase Mundial SaaS v1 Claude |
+| [20260128a-Auditoria_Ecosistema_Jaraba_UX_2026_Claude.md](./tecnicos/20260128a-Auditoria_Ecosistema_Jaraba_UX_2026_Claude.md) | Auditoria Ecosistema Jaraba UX 2026 Claude |
+| [20260128b-Especificaciones_Completas_10_10_Ecosistema_Jaraba_Claude.md](./tecnicos/20260128b-Especificaciones_Completas_10_10_Ecosistema_Jaraba_Claude.md) | Especificaciones Completas 10 10 Ecosistema Jaraba Claude |
+| [20260128c-Documento_Maestro_Consolidado_10_10_Claude.md](./tecnicos/20260128c-Documento_Maestro_Consolidado_10_10_Claude.md) | Documento Maestro Consolidado 10 10 Claude |
+| [20260130a-180_Platform_Native_Heatmaps_v1_Claude.md](./tecnicos/20260130a-180_Platform_Native_Heatmaps_v1_Claude.md) | Platform Native Heatmaps v1 Claude |
+| [20260130b-178_Platform_Native_Tracking_Architecture_v1_Claude.md](./tecnicos/20260130b-178_Platform_Native_Tracking_Architecture_v1_Claude.md) | Platform Native Tracking Architecture v1 Claude |
+| [20260130c-181_Premium_Preview_System_v1_Claude.md](./tecnicos/20260130c-181_Premium_Preview_System_v1_Claude.md) | Premium Preview System v1 Claude |
+| [20260201a-179_Platform_Insights_Hub_v1_Claude.md](./tecnicos/20260201a-179_Platform_Insights_Hub_v1_Claude.md) | Platform Insights Hub v1 Claude |
+| [20260201b-178_Platform_Legal_Knowledge_Module_v1_Claude.md](./tecnicos/20260201b-178_Platform_Legal_Knowledge_Module_v1_Claude.md) | Platform Legal Knowledge Module v1 Claude |
+| [20260201b-178b_Platform_Legal_Knowledge_Implementation_v1_Claude.md](./tecnicos/20260201b-178b_Platform_Legal_Knowledge_Implementation_v1_Claude.md) | 178b Platform Legal Knowledge Implementation v1 Claude |
+| [20260201b-179_Platform_Funding_Intelligence_Module_v1_Claude.md](./tecnicos/20260201b-179_Platform_Funding_Intelligence_Module_v1_Claude.md) | Platform Funding Intelligence Module v1 Claude |
+| [20260201b-179b_Platform_Funding_DB_Optimization_v1_Claude.md](./tecnicos/20260201b-179b_Platform_Funding_DB_Optimization_v1_Claude.md) | 179b Platform Funding DB Optimization v1 Claude |
+| [20260201b-Auditoria_AI_Copilots_API_BOE_v1_Claude.md](./tecnicos/20260201b-Auditoria_AI_Copilots_API_BOE_v1_Claude.md) | Auditoria AI Copilots API BOE v1 Claude |
+| [20260201c-Plan_Implementacion_Mitigaciones_Recomendaciones_v1_Claude.md](./tecnicos/20260201c-Plan_Implementacion_Mitigaciones_Recomendaciones_v1_Claude.md) | Plan Implementacion Mitigaciones Recomendaciones v1 Claude |
+| [20260203-178_Jaraba_Canvas_v2_Full_Page_Editor_Plan_Claude.md](./tecnicos/20260203-178_Jaraba_Canvas_v2_Full_Page_Editor_Plan_Claude.md) | Jaraba Canvas v2 Full Page Editor Plan Claude |
+| [20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md](./tecnicos/20260203-Plan_Implementacion_Docs_45_46_v1_Claude.md) | Plan Implementacion Docs 45 46 v1 Claude |
+| [20260203a-178_Page_Builder_Canvas_Visual_v1_Claude.md](./tecnicos/20260203a-178_Page_Builder_Canvas_Visual_v1_Claude.md) | Page Builder Canvas Visual v1 Claude |
+| [20260203a-178_Page_Builder_Canvas_Visual_v2_Claude.md](./tecnicos/20260203a-178_Page_Builder_Canvas_Visual_v2_Claude.md) | Page Builder Canvas Visual v2 Claude |
+| [20260204-Jaraba_Interactive_AI_Arquitectura_Maestra_v1.md](./tecnicos/20260204-Jaraba_Interactive_AI_Arquitectura_Maestra_v1.md) | Jaraba Interactive AI Arquitectura Maestra v1 |
+| [20260204_Auditoria_Canvas_Editor_vs_Specs.md](./tecnicos/20260204_Auditoria_Canvas_Editor_vs_Specs.md) | Auditoria Canvas Editor vs Specs |
+| [20260204a-Evaluacion_Arquitectonica_Jaraba_Canvas_Claude.md](./tecnicos/20260204a-Evaluacion_Arquitectonica_Jaraba_Canvas_Claude.md) | Evaluacion Arquitectonica Jaraba Canvas Claude |
+| [20260204b-Canvas_Editor_v3_Arquitectura_Maestra.md](./tecnicos/20260204b-Canvas_Editor_v3_Arquitectura_Maestra.md) | Canvas Editor v3 Arquitectura Maestra |
+| [20260215a-178A_Legal_Intelligence_Hub_EU_Sources_v1_Claude.md](./tecnicos/20260215a-178A_Legal_Intelligence_Hub_EU_Sources_v1_Claude.md) | 178A Legal Intelligence Hub EU Sources v1 Claude |
+| [20260215a-178B_Legal_Intelligence_Hub_Implementation_v1_Claude.md](./tecnicos/20260215a-178B_Legal_Intelligence_Hub_Implementation_v1_Claude.md) | 178B Legal Intelligence Hub Implementation v1 Claude |
+| [20260215a-178_ServiciosConecta_Legal_Intelligence_Hub_v1_Claude.md](./tecnicos/20260215a-178_ServiciosConecta_Legal_Intelligence_Hub_v1_Claude.md) | ServiciosConecta Legal Intelligence Hub v1 Claude |
+| [20260215b-178_Auditoria_VeriFactu_WorldClass_v1_Claude.md](./tecnicos/20260215b-178_Auditoria_VeriFactu_WorldClass_v1_Claude.md) | Auditoria VeriFactu WorldClass v1 Claude |
+| [20260215b-179_Platform_VeriFactu_Implementation_v1_Claude.md](./tecnicos/20260215b-179_Platform_VeriFactu_Implementation_v1_Claude.md) | Platform VeriFactu Implementation v1 Claude |
+| [20260215c-180_Platform_Facturae_FACe_B2G_v1_Claude.md](./tecnicos/20260215c-180_Platform_Facturae_FACe_B2G_v1_Claude.md) | Platform Facturae FACe B2G v1 Claude |
+| [20260215d-181_Platform_EFactura_B2B_v1_Claude.md](./tecnicos/20260215d-181_Platform_EFactura_B2B_v1_Claude.md) | Platform EFactura B2B v1 Claude |
+| [20260215e-182_Gap_Analysis_Madurez_Documental_v1_Claude.md](./tecnicos/20260215e-182_Gap_Analysis_Madurez_Documental_v1_Claude.md) | Gap Analysis Madurez Documental v1 Claude |
+| [20260216a-183_Platform_GDPR_DPA_Templates_v1_Claude.md](./tecnicos/20260216a-183_Platform_GDPR_DPA_Templates_v1_Claude.md) | Platform GDPR DPA Templates v1 Claude |
+| [20260216a-184_Platform_Legal_Terms_v1_Claude.md](./tecnicos/20260216a-184_Platform_Legal_Terms_v1_Claude.md) | Platform Legal Terms v1 Claude |
+| [20260216a-185_Platform_Disaster_Recovery_v1_Claude.md](./tecnicos/20260216a-185_Platform_Disaster_Recovery_v1_Claude.md) | Platform Disaster Recovery v1 Claude |
+| [20260216a-201_Auditoria_N1_ClaudeCode_Readiness_v1_Claude.md](./tecnicos/20260216a-201_Auditoria_N1_ClaudeCode_Readiness_v1_Claude.md) | Auditoria N1 ClaudeCode Readiness v1 Claude |
+| [20260216b-186_Platform_AI_Autonomous_Agents_v1_Claude.md](./tecnicos/20260216b-186_Platform_AI_Autonomous_Agents_v1_Claude.md) | Platform AI Autonomous Agents v1 Claude |
+| [20260216b-187_Platform_Native_Mobile_v1_Claude.md](./tecnicos/20260216b-187_Platform_Native_Mobile_v1_Claude.md) | Platform Native Mobile v1 Claude |
+| [20260216b-188_Platform_Multi_Agent_Orchestration_v1_Claude.md](./tecnicos/20260216b-188_Platform_Multi_Agent_Orchestration_v1_Claude.md) | Platform Multi Agent Orchestration v1 Claude |
+| [20260216b-189_Platform_Predictive_Analytics_v1_Claude.md](./tecnicos/20260216b-189_Platform_Predictive_Analytics_v1_Claude.md) | Platform Predictive Analytics v1 Claude |
+| [20260216b-190_Platform_Multi_Region_v1_Claude.md](./tecnicos/20260216b-190_Platform_Multi_Region_v1_Claude.md) | Platform Multi Region v1 Claude |
+| [20260216b-191_Platform_STO_PIIL_Integration_v1_Claude.md](./tecnicos/20260216b-191_Platform_STO_PIIL_Integration_v1_Claude.md) | Platform STO PIIL Integration v1 Claude |
+| [20260216b-192_Platform_European_Funding_v1_Claude.md](./tecnicos/20260216b-192_Platform_European_Funding_v1_Claude.md) | Platform European Funding v1 Claude |
+| [20260216b-193_Platform_Connector_SDK_v1_Claude.md](./tecnicos/20260216b-193_Platform_Connector_SDK_v1_Claude.md) | Platform Connector SDK v1 Claude |
+| [20260216b-202_Auditoria_N2_ClaudeCode_Readiness_v1_Claude.md](./tecnicos/20260216b-202_Auditoria_N2_ClaudeCode_Readiness_v1_Claude.md) | Auditoria N2 ClaudeCode Readiness v1 Claude |
+| [20260216c-194_Platform_SOC2_Type_II_Readiness_v1_Claude.md](./tecnicos/20260216c-194_Platform_SOC2_Type_II_Readiness_v1_Claude.md) | Platform SOC2 Type II Readiness v1 Claude |
+| [20260216c-195_Platform_ISO_27001_SGSI_v1_Claude.md](./tecnicos/20260216c-195_Platform_ISO_27001_SGSI_v1_Claude.md) | Platform ISO 27001 SGSI v1 Claude |
+| [20260216c-196_Platform_ENS_Compliance_v1_Claude.md](./tecnicos/20260216c-196_Platform_ENS_Compliance_v1_Claude.md) | Platform ENS Compliance v1 Claude |
+| [20260216c-197_Platform_HA_Multi_Region_v1_Claude.md](./tecnicos/20260216c-197_Platform_HA_Multi_Region_v1_Claude.md) | Platform HA Multi Region v1 Claude |
+| [20260216c-198_Platform_SLA_Management_v1_Claude.md](./tecnicos/20260216c-198_Platform_SLA_Management_v1_Claude.md) | Platform SLA Management v1 Claude |
+| [20260216c-199_Platform_SSO_SAML_SCIM_v1_Claude.md](./tecnicos/20260216c-199_Platform_SSO_SAML_SCIM_v1_Claude.md) | Platform SSO SAML SCIM v1 Claude |
+| [20260216c-200_Platform_Data_Governance_v1_Claude.md](./tecnicos/20260216c-200_Platform_Data_Governance_v1_Claude.md) | Platform Data Governance v1 Claude |
+| [20260216c-203_Auditoria_N3_ClaudeCode_Readiness_v1_Claude.md](./tecnicos/20260216c-203_Auditoria_N3_ClaudeCode_Readiness_v1_Claude.md) | Auditoria N3 ClaudeCode Readiness v1 Claude |
+| [2060118l-142_Developer_Onboarding_Kit_v1_Claude.md](./tecnicos/2060118l-142_Developer_Onboarding_Kit_v1_Claude.md) | 2060118l 142 Developer Onboarding Kit v1 Claude |
+| [INSTALACION_AUTOFIRMA.md](./tecnicos/C%C3%B3digo%20AutoFirma%20Claude/INSTALACION_AUTOFIRMA.md) | INSTALACION AUTOFIRMA |
+| [INSTALACION_FIRMA_DIGITAL.md](./tecnicos/C%C3%B3digo%20Certficaci%C3%B3n%20Lotes%20Claude/INSTALACION_FIRMA_DIGITAL.md) | INSTALACION FIRMA DIGITAL |
+| [DIRECTRICES_DESARROLLO.md](./tecnicos/DIRECTRICES_DESARROLLO.md) | DIRECTRICES DESARROLLO |
+| [coding_conventions.md](./tecnicos/coding_conventions.md) | Coding conventions |
+| [tech_debt_auditoria_coherencia.md](./tecnicos/tech_debt_auditoria_coherencia.md) | Tech debt auditoria coherencia |
+
+**Total documentos adicionales:** 179
+
+### 7.8 Auditorias
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+📁 **Ubicación:** `docs/tecnicos/auditorias/`
+
+| Archivo | Descripcion |
+|---------|-------------|
+| [20260129_Auditoria_PageBuilder_20260126d_v1.md](./tecnicos/auditorias/20260129_Auditoria_PageBuilder_20260126d_v1.md) | Auditoria PageBuilder 20260126d v1 |
+| [20260130-Auditoria_Exhaustiva_Directrices_Nucleares_v1_Claude.md](./tecnicos/auditorias/20260130-Auditoria_Exhaustiva_Directrices_Nucleares_v1_Claude.md) | Auditoria Exhaustiva Directrices Nucleares v1 Claude |
+
+
+**Total auditorias adicionales:** 2
 
 ## 8. Plantillas
 
@@ -1285,6 +1726,20 @@
 
 ---
 
+
+## 9b. Documentacion de Usuario
+
+<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
+
+📁 **Ubicación:** `docs/usuario/`
+
+| Documento | Descripción |
+|-----------|-------------|
+| [guia_entrenamiento_copiloto.md](./usuario/guia_entrenamiento_copiloto.md) | Guia de entrenamiento del copiloto |
+
+**Total documentos usuario:** 1
+
+---
 ## 10. Estadísticas de Documentación
 
 | Métrica | Valor |

@@ -73,9 +73,10 @@ class ShipmentRetail extends ContentEntityBase implements EntityChangedInterface
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['suborder_id'] = BaseFieldDefinition::create('entity_reference')
+    $fields['suborder_id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Sub-pedido'))
-      ->setSetting('target_type', 'comercio_suborder')
+      ->setDescription(t('ID del sub-pedido asociado.'))
+      ->setRequired(FALSE)
       ->setDisplayOptions('form', ['weight' => 2])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);

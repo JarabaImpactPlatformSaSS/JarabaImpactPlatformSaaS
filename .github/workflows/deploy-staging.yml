@@ -84,9 +84,14 @@ jobs:
 
       - name: Verify Deployment
         run: |
+          # AUDIT-SEC-N17: Staging URL must come from GitHub Secrets, not hardcoded.
+          if [ -z "$STAGING_URL" ]; then
+            echo "::error::STAGING_URL secret is not configured. Set it in Settings → Secrets → Actions."
+            exit 1
+          fi
           echo "Verificando despliegue en staging..."
           for i in {1..10}; do
-            if curl -sf https://staging.jaraba.io/health; then
+            if curl -sf "${STAGING_URL}/health"; then
               echo "✅ Staging está respondiendo correctamente"
               exit 0
             fi
@@ -95,6 +100,8 @@ jobs:
           done
           echo "❌ Staging no responde después de 100 segundos"
           exit 1
+        env:
+          STAGING_URL: ${{ secrets.STAGING_URL }}
 
       - name: Notify Slack
         if: always()

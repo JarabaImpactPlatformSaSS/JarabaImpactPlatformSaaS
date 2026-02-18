@@ -169,7 +169,7 @@ class CopilotDashboardFunctionalTest extends BrowserTestBase {
     try {
       $route = $routeProvider->getRouteByName('jaraba_copilot_v2.api.chat_stream');
       $this->assertNotNull($route, 'Chat stream route should exist');
-      $this->assertEquals('/api/copilot/chat/stream', $route->getPath());
+      $this->assertEquals('/api/v1/copilot/chat/stream', $route->getPath()); // AUDIT-CONS-N07
     }
     catch (\Exception $e) {
       $this->fail('Chat stream route not found: ' . $e->getMessage());

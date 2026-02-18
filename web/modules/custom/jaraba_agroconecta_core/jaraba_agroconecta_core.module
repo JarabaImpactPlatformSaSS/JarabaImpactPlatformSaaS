@@ -11,6 +11,7 @@
  *   cd web/modules/custom/jaraba_agroconecta_core && npm run build
  */
 
+// AUDIT-CONS-N05: All route name references normalized from jaraba_agroconecta.* to jaraba_agroconecta_core.*
 declare(strict_types=1);
 
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -174,6 +175,15 @@ function jaraba_agroconecta_core_theme(): array
             ],
             'template' => 'agro-collection-page',
         ],
+        'agro_traceability_public' => [
+            'variables' => [
+                'batch' => NULL,
+                'producer' => NULL,
+                'product' => NULL,
+                'events' => [],
+            ],
+            'template' => 'agro-traceability-public',
+        ],
     ];
 }
 
@@ -200,27 +210,29 @@ function jaraba_agroconecta_core_preprocess_html(array &$variables): void
 
     $routeClasses = [
         // Marketplace público
-        'jaraba_agroconecta.marketplace' => ['marketplace-page', 'page-marketplace'],
-        'jaraba_agroconecta.product_detail' => ['agro-product-page'],
-        'jaraba_agroconecta.checkout' => ['checkout-page', 'page-checkout'],
-        'jaraba_agroconecta.order_confirmation' => ['order-confirmation-page'],
+        'jaraba_agroconecta_core.marketplace' => ['marketplace-page', 'page-marketplace'],
+        'jaraba_agroconecta_core.product_detail' => ['agro-product-page'],
+        'jaraba_agroconecta_core.checkout' => ['checkout-page', 'page-checkout'],
+        'jaraba_agroconecta_core.order_confirmation' => ['order-confirmation-page'],
         // Portal del Productor (Fase 3)
-        'jaraba_agroconecta.producer.dashboard' => ['producer-dashboard-page', 'producer-portal-page'],
-        'jaraba_agroconecta.producer.orders' => ['producer-orders-page', 'producer-portal-page'],
-        'jaraba_agroconecta.producer.order_detail' => ['producer-order-detail-page', 'producer-portal-page'],
-        'jaraba_agroconecta.producer.products' => ['producer-products-page', 'producer-portal-page'],
-        'jaraba_agroconecta.producer.payouts' => ['producer-payouts-page', 'producer-portal-page'],
-        'jaraba_agroconecta.producer.settings' => ['producer-settings-page', 'producer-portal-page'],
+        'jaraba_agroconecta_core.producer.dashboard' => ['producer-dashboard-page', 'producer-portal-page'],
+        'jaraba_agroconecta_core.producer.orders' => ['producer-orders-page', 'producer-portal-page'],
+        'jaraba_agroconecta_core.producer.order_detail' => ['producer-order-detail-page', 'producer-portal-page'],
+        'jaraba_agroconecta_core.producer.products' => ['producer-products-page', 'producer-portal-page'],
+        'jaraba_agroconecta_core.producer.payouts' => ['producer-payouts-page', 'producer-portal-page'],
+        'jaraba_agroconecta_core.producer.settings' => ['producer-settings-page', 'producer-portal-page'],
         // Portal del Cliente (Fase 3)
-        'jaraba_agroconecta.customer.dashboard' => ['customer-dashboard-page', 'customer-portal-page'],
-        'jaraba_agroconecta.customer.orders' => ['customer-orders-page', 'customer-portal-page'],
-        'jaraba_agroconecta.customer.order_detail' => ['customer-order-detail-page', 'customer-portal-page'],
-        'jaraba_agroconecta.customer.addresses' => ['customer-addresses-page', 'customer-portal-page'],
-        'jaraba_agroconecta.customer.favorites' => ['customer-favorites-page', 'customer-portal-page'],
+        'jaraba_agroconecta_core.customer.dashboard' => ['customer-dashboard-page', 'customer-portal-page'],
+        'jaraba_agroconecta_core.customer.orders' => ['customer-orders-page', 'customer-portal-page'],
+        'jaraba_agroconecta_core.customer.order_detail' => ['customer-order-detail-page', 'customer-portal-page'],
+        'jaraba_agroconecta_core.customer.addresses' => ['customer-addresses-page', 'customer-portal-page'],
+        'jaraba_agroconecta_core.customer.favorites' => ['customer-favorites-page', 'customer-portal-page'],
         // Search & Discovery (Fase 5)
-        'jaraba_agroconecta.search_page' => ['search-page', 'agro-search-page'],
-        'jaraba_agroconecta.category_page' => ['category-page', 'agro-category-page'],
-        'jaraba_agroconecta.collection_page' => ['collection-page', 'agro-collection-page'],
+        'jaraba_agroconecta_core.search_page' => ['search-page', 'agro-search-page'],
+        'jaraba_agroconecta_core.category_page' => ['category-page', 'agro-category-page'],
+        'jaraba_agroconecta_core.collection_page' => ['collection-page', 'agro-collection-page'],
+        // Trazabilidad Pública (Fase 6)
+        'jaraba_agroconecta.traceability.public' => ['traceability-public-page', 'agro-traceability-page'],
         // Landing page del vertical
         'ecosistema_jaraba_core.landing.agroconecta' => ['agroconecta-landing-page'],
     ];
@@ -309,11 +321,11 @@ function jaraba_agroconecta_core_cron(): void
     $time = \Drupal::time()->getRequestTime();
 
     // === Actualización de forecasts de demanda (cada 24h) ===
-    $lastForecast = (int) $state->get('jaraba_agroconecta.last_forecast_update', 0);
+    $lastForecast = (int) $state->get('jaraba_agroconecta_core.last_forecast_update', 0);
     $hour = (int) date('G', $time);
 
     if (($time - $lastForecast) > 86400 && $hour >= 4 && $hour <= 6) {
-        $state->set('jaraba_agroconecta.last_forecast_update', $time);
+        $state->set('jaraba_agroconecta_core.last_forecast_update', $time);
 
         // AUDIT-PERF-N11: Queue per-producer forecast instead of synchronous loop.
         $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
@@ -337,10 +349,10 @@ function jaraba_agroconecta_core_cron(): void
     }
 
     // === Alertas de precios fuera de rango (cada 12h) ===
-    $lastPriceCheck = (int) $state->get('jaraba_agroconecta.last_price_check', 0);
+    $lastPriceCheck = (int) $state->get('jaraba_agroconecta_core.last_price_check', 0);
 
     if (($time - $lastPriceCheck) > 43200) {
-        $state->set('jaraba_agroconecta.last_price_check', $time);
+        $state->set('jaraba_agroconecta_core.last_price_check', $time);
 
         // AUDIT-PERF-N11: Queue per-producer price alerts instead of synchronous loop.
         $storage = \Drupal::entityTypeManager()->getStorage('producer_profile');
@@ -364,10 +376,10 @@ function jaraba_agroconecta_core_cron(): void
     }
 
     // === Detección de carritos abandonados (cada 1h) ===
-    $lastCartCheck = (int) $state->get('jaraba_agroconecta.last_cart_recovery_check', 0);
+    $lastCartCheck = (int) $state->get('jaraba_agroconecta_core.last_cart_recovery_check', 0);
 
     if (($time - $lastCartCheck) > 3600) {
-        $state->set('jaraba_agroconecta.last_cart_recovery_check', $time);
+        $state->set('jaraba_agroconecta_core.last_cart_recovery_check', $time);
 
         try {
             /** @var \Drupal\jaraba_agroconecta_core\Service\CartRecoveryService $cartRecovery */
@@ -451,7 +463,8 @@ function jaraba_agroconecta_core_preprocess_page(array &$variables): void
     $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
     // Solo procesar rutas del vertical AgroConecta.
-    if (str_starts_with($route_name, 'jaraba_agroconecta.') ||
+    if (str_starts_with($route_name, 'jaraba_agroconecta_core.') ||
+        str_starts_with($route_name, 'jaraba_agroconecta.') ||
         $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
         // Inyectar clean_content desde el controller render array.
         if (isset($variables['page']['content'])) {
@@ -482,7 +495,7 @@ function jaraba_agroconecta_core_theme_suggestions_page_alter(array &$suggestion
     $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
 
     // Rutas frontend del vertical (excluir rutas API).
-    if ((str_starts_with($route_name, 'jaraba_agroconecta.') && !str_contains($route_name, '.api.')) ||
+    if (((str_starts_with($route_name, 'jaraba_agroconecta_core.') || str_starts_with($route_name, 'jaraba_agroconecta.')) && !str_contains($route_name, '.api.')) ||
         $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
         $suggestions[] = 'page__agroconecta';
     }
