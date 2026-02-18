@@ -76,7 +76,7 @@ class FlashOfferService {
    * Canjea una oferta flash para un usuario.
    *
    * Logica: Verifica que la oferta este activa, no expirada, y no haya
-   *   alcanzado max_claims. Crea entidad comercio_flash_offer_claim con
+   *   alcanzado max_claims. Crea entidad comercio_flash_claim con
    *   codigo unico, incrementa current_claims en la oferta.
    *
    * @param int $offerId
@@ -93,7 +93,7 @@ class FlashOfferService {
    */
   public function claimOffer(int $offerId, int $userId, float $lat = 0, float $lng = 0): ?array {
     $offer_storage = $this->entityTypeManager->getStorage('comercio_flash_offer');
-    $claim_storage = $this->entityTypeManager->getStorage('comercio_flash_offer_claim');
+    $claim_storage = $this->entityTypeManager->getStorage('comercio_flash_claim');
     $now = \Drupal::time()->getRequestTime();
 
     try {
@@ -184,7 +184,7 @@ class FlashOfferService {
    *   TRUE si se redimio correctamente.
    */
   public function redeemClaim(string $claimCode): bool {
-    $storage = $this->entityTypeManager->getStorage('comercio_flash_offer_claim');
+    $storage = $this->entityTypeManager->getStorage('comercio_flash_claim');
 
     try {
       $ids = $storage->getQuery()
@@ -315,7 +315,7 @@ class FlashOfferService {
    *   Array con total_claims, total_redeemed, conversion_rate.
    */
   public function getOfferStats(int $offerId): array {
-    $claim_storage = $this->entityTypeManager->getStorage('comercio_flash_offer_claim');
+    $claim_storage = $this->entityTypeManager->getStorage('comercio_flash_claim');
 
     try {
       $total_claims = (int) $claim_storage->getQuery()

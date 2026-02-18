@@ -110,7 +110,7 @@ class MerchantDashboardService {
     $pedidos_pendientes = 0;
 
     try {
-      $order_storage = $this->entityTypeManager->getStorage('comercio_order');
+      $order_storage = $this->entityTypeManager->getStorage('order_retail');
 
       // Ventas de hoy: SUM(total_price) donde status=completed y created=hoy.
       $today_start = strtotime('today midnight');

@@ -150,16 +150,21 @@ function jaraba_comercio_conecta_update_10002(): void {
   $update_manager = \Drupal::entityDefinitionUpdateManager();
 
   $entity_types = [
+    // Base entities (must be installed first — referenced by others)
+    'merchant_profile',
+    'product_retail',
+    'product_variation_retail',
+    'stock_location',
     // F6: Orders, Cart, Returns, Coupons
-    'comercio_order',
-    'comercio_order_item',
-    'comercio_suborder',
+    'order_retail',
+    'order_item_retail',
+    'suborder_retail',
     'comercio_cart',
     'comercio_cart_item',
-    'comercio_return_request',
-    'comercio_coupon',
-    'comercio_coupon_redemption',
-    'comercio_abandoned_cart',
+    'return_request',
+    'coupon_retail',
+    'coupon_redemption',
+    'abandoned_cart',
     // F7: Customer Profile, Wishlist
     'customer_profile_retail',
     'comercio_wishlist',
