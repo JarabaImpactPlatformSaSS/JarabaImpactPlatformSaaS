@@ -11,7 +11,8 @@
 {% set text_align = content.text_align|default('center') %}
 {% set cursor = content.cursor_style|default('bar') %}
 
-<section class="jaraba-typewriter jaraba-typewriter--{{ bg_class }} jaraba-typewriter--{{ text_align }} jaraba-block jaraba-block--premium">
+<section class="jaraba-typewriter jaraba-typewriter--{{ bg_class }} jaraba-typewriter--{{ text_align }} jaraba-block jaraba-block--premium"
+         data-block-type="premium_typewriter_text">
   <div class="jaraba-block__container">
     
     <div class="jaraba-typewriter__content jaraba-typewriter__content--{{ font_size }}"

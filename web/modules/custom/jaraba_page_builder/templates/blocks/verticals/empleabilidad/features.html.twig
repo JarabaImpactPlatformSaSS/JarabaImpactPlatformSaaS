@@ -6,6 +6,7 @@
  # Header centrado + grid de 3 feature cards (icono + título + descripción)
  #}
 <section class="pb-section pb-section--features pb-section--empleabilidad"
+         data-block-type="empleabilidad_features"
          aria-label="{{ title|default('Nuestros Servicios')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__header">
@@ -15,15 +16,16 @@
     </div>
     <div class="pb-section__features-grid">
       {% set default_features = [
-        { icon: '&#127891;', title: 'Formación certificada', desc: 'Cursos y talleres con certificación oficial para mejorar tu empleabilidad.' },
-        { icon: '&#128269;', title: 'Bolsa de empleo', desc: 'Accede a ofertas laborales actualizadas y postula directamente desde tu perfil.' },
-        { icon: '&#129309;', title: 'Orientación laboral', desc: 'Asesores profesionales te guían para encontrar el camino profesional ideal.' }
+        { icon: 'graduation-cap', icon_category: 'ui', title: 'Formación certificada', desc: 'Cursos y talleres con certificación oficial para mejorar tu empleabilidad.' },
+        { icon: 'search', icon_category: 'ui', title: 'Bolsa de empleo', desc: 'Accede a ofertas laborales actualizadas y postula directamente desde tu perfil.' },
+        { icon: 'handshake', icon_category: 'business', title: 'Orientación laboral', desc: 'Asesores profesionales te guían para encontrar el camino profesional ideal.' }
       ] %}
       {% set items = features|default(default_features) %}
       {% for feature in items %}
         <div class="pb-section__feature-card">
-          {# AUDIT-SEC-02: |raw needed for HTML entities (emoji icons). Input is admin-configured, low risk. #}
-          <div class="pb-section__feature-icon" aria-hidden="true">{{ feature.icon|default('&#9733;')|striptags|raw }}</div>
+          <div class="pb-section__feature-icon" aria-hidden="true">
+            {{ jaraba_icon(feature.icon_category|default('ui'), feature.icon|default('star'), { variant: 'duotone', size: '32px' }) }}
+          </div>
           <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
           <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>
         </div>

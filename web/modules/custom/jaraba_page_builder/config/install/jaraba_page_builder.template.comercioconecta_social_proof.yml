@@ -62,11 +62,10 @@ fields_schema:
     - title
 plans_required:
   - professional
-  - professional
   - enterprise
 is_premium: true
 animation: fade-up
-preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-social_proof.png'
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/comercioconecta-social-proof.png'
 weight: 21
 preview_data:
   title: 'Marcas que confian en nosotros'

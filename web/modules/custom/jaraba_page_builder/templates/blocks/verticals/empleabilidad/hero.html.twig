@@ -6,11 +6,12 @@
  # Split layout: hero content (eyebrow + h2 + subtitle + CTAs) + media
  #}
 <section class="pb-section pb-section--hero pb-section--empleabilidad"
+         data-block-type="empleabilidad_hero"
          aria-label="{{ title|default('Tu Carrera Profesional')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__hero-content">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Empleabilidad')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Impulsa tu carrera profesional')|t }}</h2>
+      <h1 class="pb-section__title">{{ title|default('Impulsa tu carrera profesional')|t }}</h1>
       <p class="pb-section__subtitle">{{ subtitle|default('Formación, orientación y oportunidades laborales para construir el futuro que mereces.')|t }}</p>
       <div class="pb-section__actions">
         <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
@@ -29,7 +30,9 @@
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#127891;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'graduation-cap', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

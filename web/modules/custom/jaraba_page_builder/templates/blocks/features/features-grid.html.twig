@@ -20,10 +20,11 @@
  */
 #}
 
-{% set bg_class = content.background_variant ? 'jaraba-features--' ~ content.background_variant : '' %}
+{% set bg_class = content.background ? 'jaraba-features--' ~ content.background : '' %}
 
-<section class="jaraba-features jaraba-features--grid {{ bg_class }}">
-  <div class="container">
+<section class="jaraba-features jaraba-features--grid {{ bg_class }} jaraba-block"
+         data-block-type="features_grid">
+  <div class="jaraba-block__container">
     {% if content.section_title %}
       <header class="jaraba-features__header">
         <h2 class="jaraba-features__title">{{ content.section_title }}</h2>

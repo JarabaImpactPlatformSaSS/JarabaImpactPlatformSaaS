@@ -19,6 +19,11 @@ fields_schema:
       type: string
       title: 'Subtítulo de la Sección'
       maxLength: 200
+    background:
+      type: string
+      title: 'Fondo'
+      enum: [light, dark, gradient, light-green]
+      default: light
     columns:
       type: integer
       title: 'Columnas'
@@ -65,7 +70,7 @@ preview_image: '/modules/custom/jaraba_page_builder/images/previews/features-gri
 # Usa iconos verificados en la librería SVG y colores de paleta corporativa
 preview_data:
   section_title: 'Features Grid'
-  background_variant: 'light-green'
+  background: 'light-green'
   columns: 3
   features:
     # Icono: ui/bolt-duotone | Color: impulse (naranja)

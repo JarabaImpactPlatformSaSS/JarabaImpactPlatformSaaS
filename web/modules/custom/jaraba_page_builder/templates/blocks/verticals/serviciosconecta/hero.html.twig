@@ -8,13 +8,14 @@
  # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
 <section class="pb-section pb-section--hero pb-section--serviciosconecta jaraba-block jaraba-block--premium"
+         data-block-type="serviciosconecta_hero"
          aria-label="{{ title|default('Presentacion Profesional')|t }}"
          data-effect="fade-up"
          {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__hero-content">
       <span class="pb-section__eyebrow">{{ eyebrow|default('ServiciosConecta')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Profesionales verificados a tu alcance')|t }}</h2>
+      <h1 class="pb-section__title">{{ title|default('Profesionales verificados a tu alcance')|t }}</h1>
       <p class="pb-section__subtitle">{{ subtitle|default('Encuentra expertos en asesoría, consultoría y servicios profesionales con referencias verificadas.')|t }}</p>
       <div class="pb-section__actions">
         <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">

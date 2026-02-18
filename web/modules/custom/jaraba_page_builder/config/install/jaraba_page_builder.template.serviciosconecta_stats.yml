@@ -31,6 +31,10 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
   required:
     - title
 plans_required:

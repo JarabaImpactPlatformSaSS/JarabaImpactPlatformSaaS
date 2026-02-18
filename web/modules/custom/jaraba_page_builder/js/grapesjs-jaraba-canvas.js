@@ -755,42 +755,16 @@
             this.editor.on('canvas:frame:load', ({ window }) => {
                 const doc = window.document;
 
-                // 1. Inyectar Design Tokens
+                // 1. Inyectar Design Tokens (CSS dinámico, no disponible como archivo estático)
                 const tokenStyle = doc.createElement('style');
                 tokenStyle.innerHTML = self.designTokensCss;
                 doc.head.appendChild(tokenStyle);
 
-                // 2. Inyectar CSS del tema principal para que los bloques se vean correctamente
-                const themeLink = doc.createElement('link');
-                themeLink.rel = 'stylesheet';
-                themeLink.href = '/themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css';
-                doc.head.appendChild(themeLink);
+                // FIX M5: Los CSS del tema, Page Builder y Google Fonts ya se inyectan
+                // via canvas.styles en la config de GrapesJS (líneas 42-59).
+                // No re-inyectar aquí para evitar doble carga y conflictos de especificidad.
 
-                // 3. Inyectar CSS de bloques del Page Builder
-                const pbCssFiles = [
-                    '/modules/custom/jaraba_page_builder/css/jaraba-page-builder.css',
-                    '/modules/custom/jaraba_page_builder/css/page-builder-core.css',
-                    '/modules/custom/jaraba_page_builder/css/navigation.css',
-                    '/modules/custom/jaraba_page_builder/css/product-card.css',
-                    '/modules/custom/jaraba_page_builder/css/social-links.css',
-                    '/modules/custom/jaraba_page_builder/css/contact-form.css',
-                    '/modules/custom/jaraba_page_builder/css/premium/aceternity.css',
-                    '/modules/custom/jaraba_page_builder/css/premium/magic-ui.css',
-                ];
-                pbCssFiles.forEach(cssHref => {
-                    const link = doc.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = cssHref;
-                    doc.head.appendChild(link);
-                });
-
-                // 4. Inyectar Google Fonts — Outfit (principal) + Inter + Plus Jakarta Sans
-                const fontLink = doc.createElement('link');
-                fontLink.rel = 'stylesheet';
-                fontLink.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
-                doc.head.appendChild(fontLink);
-
-                // 5. Inyectar mocks de Drupal y once() para scripts premium
+                // 2. Inyectar mocks de Drupal y once() para scripts premium
                 const drupalMock = doc.createElement('script');
                 drupalMock.textContent = `
                     // Mock de Drupal para el iframe del canvas
@@ -816,7 +790,7 @@
                 `;
                 doc.head.appendChild(drupalMock);
 
-                // 6. Inyectar script de bloques premium (animaciones, efectos)
+                // 3. Inyectar script de bloques premium (animaciones, efectos)
                 const premiumScript = doc.createElement('script');
                 premiumScript.src = '/modules/custom/jaraba_page_builder/js/premium-blocks.js';
                 premiumScript.onload = () => {

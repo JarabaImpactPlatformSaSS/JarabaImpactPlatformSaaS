@@ -10,6 +10,7 @@
 {% set blur = content.blur_intensity|default('medium') %}
 
 <section class="jaraba-glassmorphism jaraba-glassmorphism--blur-{{ blur }} jaraba-block jaraba-block--premium"
+         data-block-type="premium_glassmorphism_cards"
          {% if content.background_image %}style="background-image: url('{{ content.background_image }}');"{% endif %}>
   
   <div class="jaraba-glassmorphism__overlay"></div>

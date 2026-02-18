@@ -10,7 +10,8 @@
 {% set columns = content.columns|default(3) %}
 {% set glow_intensity = content.glow_intensity|default('medium') %}
 
-<section class="jaraba-glow-cards jaraba-glow-cards--{{ bg_class }} jaraba-glow-cards--intensity-{{ glow_intensity }} jaraba-block jaraba-block--premium">
+<section class="jaraba-glow-cards jaraba-glow-cards--{{ bg_class }} jaraba-glow-cards--intensity-{{ glow_intensity }} jaraba-block jaraba-block--premium"
+         data-block-type="premium_hover_glow_cards">
   <div class="jaraba-block__container">
     
     <header class="jaraba-glow-cards__header">

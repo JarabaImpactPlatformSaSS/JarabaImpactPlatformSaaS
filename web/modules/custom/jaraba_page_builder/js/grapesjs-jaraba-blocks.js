@@ -65,8 +65,12 @@
                         const schema = JSON.parse(schemaStr);
                         const traits = [];
 
-                        // Convertir schema a traits GrapesJS
-                        Object.entries(schema).forEach(([key, config]) => {
+                        // FIX M6: Iterar schema.properties (JSON Schema estándar),
+                        // no las claves raíz del schema (type, properties, required...).
+                        const properties = schema.properties || schema;
+                        Object.entries(properties).forEach(([key, config]) => {
+                            // Saltar claves meta de JSON Schema que no son campos.
+                            if (['type', 'required', '$schema', 'title', 'description'].includes(key)) return;
                             traits.push(this.schemaToTrait(key, config));
                         });
 

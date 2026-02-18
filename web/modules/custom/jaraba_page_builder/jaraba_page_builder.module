@@ -859,6 +859,38 @@ function jaraba_page_builder_theme_suggestions_page_alter(array &$suggestions, a
 }
 
 /**
+ * Implements hook_preprocess_HOOK() para todos los bloques del Page Builder.
+ *
+ * PROPÓSITO (FIX C3/C4):
+ * Los 129 bloques usan dos convenciones de variables Twig diferentes:
+ * - Genéricos (70): {{ content.title }}, {{ content.subtitle }}, etc.
+ * - Verticales (59): {{ title }}, {{ subtitle }}, etc. (variables top-level)
+ *
+ * Este preprocess propaga las claves del array 'content' al nivel superior
+ * de $variables, haciendo que AMBAS convenciones funcionen correctamente.
+ * No sobreescribe variables ya existentes en el scope.
+ *
+ * Drupal reconoce este hook como base preprocess para todos los theme hooks
+ * registrados como page_builder_block__{template_id} gracias a la convención
+ * de doble guion bajo (__) en los nombres de hook.
+ *
+ * @param array $variables
+ *   Variables del template.
+ *
+ * @see jaraba_page_builder_theme() donde se registran los hooks dinámicos.
+ */
+function jaraba_page_builder_preprocess_page_builder_block(array &$variables): void {
+  if (!empty($variables['content']) && is_array($variables['content'])) {
+    foreach ($variables['content'] as $key => $value) {
+      // No sobreescribir variables del theme system (content, template_id, etc.)
+      if (!isset($variables[$key])) {
+        $variables[$key] = $value;
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_preprocess_html().
  *
  * Añade clases al body para páginas de revisiones.

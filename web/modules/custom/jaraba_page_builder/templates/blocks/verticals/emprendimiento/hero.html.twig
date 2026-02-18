@@ -6,11 +6,12 @@
  # Split layout: hero content (eyebrow + h2 + subtitle + CTAs) + media
  #}
 <section class="pb-section pb-section--hero pb-section--emprendimiento"
+         data-block-type="emprendimiento_hero"
          aria-label="{{ title|default('Lanza tu Startup')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__hero-content">
       <span class="pb-section__eyebrow">{{ eyebrow|default('Emprendimiento')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Convierte tu idea en un negocio real')|t }}</h2>
+      <h1 class="pb-section__title">{{ title|default('Convierte tu idea en un negocio real')|t }}</h1>
       <p class="pb-section__subtitle">{{ subtitle|default('Mentores, financiación y herramientas para lanzar y escalar tu proyecto emprendedor.')|t }}</p>
       <div class="pb-section__actions">
         <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
@@ -29,7 +30,9 @@
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#128640;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'rocket', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>

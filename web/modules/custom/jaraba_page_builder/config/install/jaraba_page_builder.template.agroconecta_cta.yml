@@ -31,6 +31,22 @@ fields_schema:
       type: string
       title: 'URL del Boton'
       format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: uri
+    countdown_date:
+      type: string
+      title: 'Fecha de cuenta regresiva'
+      format: date-time
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Boton Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Boton Secundario'
+      format: uri
   required:
     - title
 plans_required:

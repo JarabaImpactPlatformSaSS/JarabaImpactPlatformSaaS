@@ -15,7 +15,7 @@
 {% set layout_class = content.layout|default('centered') %}
 {% set has_bg_image = content.background == 'image' and content.background_image %}
 
-<section class="jaraba-block jaraba-cta-section jaraba-cta-section--{{ bg_class }} jaraba-cta-section--{{ layout_class }}"
+<section class="jaraba-cta-section jaraba-cta-section--{{ bg_class }} jaraba-cta-section--{{ layout_class }} jaraba-block"
          data-block-type="cta_section"
          {% if has_bg_image %}
            style="--cta-bg-image: url('{{ file_url(content.background_image) }}')"

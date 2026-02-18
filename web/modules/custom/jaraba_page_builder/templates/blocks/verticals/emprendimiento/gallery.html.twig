@@ -6,6 +6,7 @@
  # Header + grid responsive de imágenes con hover overlay
  #}
 <section class="pb-section pb-section--gallery pb-section--emprendimiento"
+         data-block-type="emprendimiento_gallery"
          aria-label="{{ title|default('Nuestro Ecosistema')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__header">
@@ -28,7 +29,9 @@
           {% if item.src|default('') %}
             <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
           {% else %}
-            <div class="pb-section__img-placeholder" aria-hidden="true">&#128640;</div>
+            <div class="pb-section__img-placeholder" aria-hidden="true">
+              {{ jaraba_icon('ui', 'rocket', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+            </div>
           {% endif %}
           {% if item.caption|default('') %}
             <figcaption>{{ item.caption|t }}</figcaption>

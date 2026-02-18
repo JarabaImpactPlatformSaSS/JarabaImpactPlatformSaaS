@@ -6,6 +6,7 @@
  # Grid 2 columnas: texto + media
  #}
 <section class="pb-section pb-section--content pb-section--empleabilidad"
+         data-block-type="empleabilidad_content"
          aria-label="{{ title|default('Formación Profesional')|t }}">
   <div class="pb-section__container">
     <div class="pb-section__text">
@@ -27,7 +28,9 @@
       {% if image %}
         <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
       {% else %}
-        <div class="pb-section__img-placeholder" aria-hidden="true">&#128218;</div>
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ui', 'book', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
       {% endif %}
     </div>
   </div>
