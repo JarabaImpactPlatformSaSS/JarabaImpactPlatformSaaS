@@ -366,11 +366,6 @@ jobs:
               ls -la ~/logs/ 2>/dev/null || echo "~/logs/ directory not found"
             fi
 
-            # Apply entity definition updates if devel_entity_updates is enabled
-            if /usr/bin/php8.4-cli vendor/bin/drush.php pm:list --status=enabled --filter=devel_entity_updates --format=list 2>/dev/null | grep -q devel_entity_updates; then
-              echo "=== Running devel-entity-updates ==="
-              /usr/bin/php8.4-cli vendor/bin/drush.php devel-entity-updates -y 2>&1 || echo "⚠️ devel-entity-updates had issues"
-            fi
           EOF
 
       - name: Sync site UUID for config import
@@ -399,6 +394,13 @@ jobs:
             export PATH="$HOME/bin_cli:$PATH"
             export DRUSH_PHP=/usr/bin/php8.4-cli
             /usr/bin/php8.4-cli vendor/bin/drush.php config:import -y 2>&1 || echo "⚠️ Config import had issues (non-blocking)"
+
+            # Apply entity definition updates if devel_entity_updates is enabled (post config:import)
+            if /usr/bin/php8.4-cli vendor/bin/drush.php pm:list --status=enabled --filter=devel_entity_updates --format=list 2>/dev/null | grep -q devel_entity_updates; then
+              echo "=== Running devel-entity-updates ==="
+              /usr/bin/php8.4-cli vendor/bin/drush.php devel-entity-updates -y 2>&1 || echo "⚠️ devel-entity-updates had issues"
+            fi
+
             /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
           EOF
 
