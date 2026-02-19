@@ -240,9 +240,10 @@ jobs:
               exit 1
             fi
 
-            # Clean stale vendor artifacts to prevent "Could not delete" errors
-            # on IONOS shared hosting (leftover temp dirs with restrictive perms).
-            rm -rf vendor/composer/[0-9a-f]* vendor/composer/tmp-* 2>/dev/null || true
+            # Wipe vendor to prevent "Could not delete" / extraction errors
+            # on IONOS shared hosting (stale temp dirs with restrictive perms).
+            # Composer's global cache (~/.cache/composer) speeds up reinstall.
+            rm -rf vendor
 
             # Instalar dependencias
             /usr/bin/php8.4-cli ~/bin/composer.phar install --no-dev --optimize-autoloader
