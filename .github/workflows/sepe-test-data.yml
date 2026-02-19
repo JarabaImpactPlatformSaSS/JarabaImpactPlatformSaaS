@@ -1,0 +1,35 @@
+name: SEPE - Seed Test Data
+
+on:
+  workflow_dispatch:
+
+env:
+  IONOS_HOST: 'access834313033.webspace-data.io'
+  IONOS_USER: 'u101456434'
+
+jobs:
+  seed:
+    name: Seed SEPE test data on IONOS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.IONOS_SSH_PRIVATE_KEY }}
+
+      - name: Add IONOS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.IONOS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run SEPE test data script
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            export PATH="$HOME/bin_cli:$PATH"
+            echo "=== Running SEPE test data script ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php php:script web/modules/custom/jaraba_sepe_teleformacion/scripts/sepe_test_data.php 2>&1
+            echo ""
+            echo "=== Verifying centro_activo_id config ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php config:get jaraba_sepe_teleformacion.settings 2>&1
+          EOF
