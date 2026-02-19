@@ -32,8 +32,8 @@ $centro = $entityTypeManager->getStorage('sepe_centro')->create([
     'provincia' => 'Sevilla',
     'telefono' => '954123456',
     'email' => 'formacion@jarabaosc.com',
-    'url_plataforma' => 'https://plataformadeecosistemas.es',
-    'url_seguimiento' => 'https://plataformadeecosistemas.es/sepe/ws/seguimiento',
+    'url_plataforma' => 'https://plataformadeecosistemas.com',
+    'url_seguimiento' => 'https://plataformadeecosistemas.com/sepe/ws/seguimiento',
     'is_active' => TRUE,
 ]);
 
@@ -57,12 +57,12 @@ $accion = $entityTypeManager->getStorage('sepe_accion_formativa')->create([
     'centro_id' => $centro_id,
     'denominacion' => 'Competencias Digitales para el Empleo',
     'codigo_especialidad' => 'ADGG057PO',
-    'modalidad' => 'teleformacion',
+    'modalidad' => 'T',
     'numero_horas' => 60,
     'fecha_inicio' => date('Y-m-d'),
     'fecha_fin' => date('Y-m-d', strtotime('+2 months')),
     'estado' => 'en_curso',
-    'max_participantes' => 25,
+    'num_participantes_max' => 25,
 ]);
 
 $accion->save();

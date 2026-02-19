@@ -5,7 +5,7 @@ services:
       - '@entity_type.manager'
       - '@jaraba_sepe_teleformacion.data_mapper'
       - '@config.factory'
-      - '@logger.factory'
+      - '@logger.channel.sepe_teleformacion'
 
   jaraba_sepe_teleformacion.data_mapper:
     class: Drupal\jaraba_sepe_teleformacion\Service\SepeDataMapper
