@@ -994,6 +994,70 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = '---';
       $message['body'][] = t('Sistema de monitorización automática - Jaraba Impact Platform');
       break;
+
+    // =========================================================================
+    // USER WELCOME EMAIL
+    // =========================================================================
+    case 'user_welcome':
+      $account = $params['account'];
+      $avatar = $params['avatar'] ?? 'pending';
+
+      $message['subject'] = t('🚀 ¡Bienvenido a @site, @name!', [
+        '@site' => \Drupal::config('system.site')->get('name'),
+        '@name' => $account->getDisplayName(),
+      ]);
+
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $account->getDisplayName(),
+      ]);
+
+      $message['body'][] = t('¡Tu cuenta en @site ha sido creada exitosamente!', [
+        '@site' => \Drupal::config('system.site')->get('name'),
+      ]);
+
+      // Ventajas personalizadas por avatar.
+      $benefits = match ($avatar) {
+        'jobseeker' => [
+          t('📊 Diagnóstico de empleabilidad personalizado con IA'),
+          t('🎯 Plan de carrera y mapa de competencias'),
+          t('📚 Formación y certificaciones recomendadas'),
+          t('🤝 Red de contactos profesionales'),
+        ],
+        'entrepreneur' => [
+          t('💡 Diagnóstico de viabilidad de tu idea de negocio'),
+          t('📈 Plan de negocio guiado paso a paso'),
+          t('🏗️ Herramientas de gestión empresarial'),
+          t('💰 Acceso a oportunidades de financiación'),
+        ],
+        'farmer' => [
+          t('🌱 Dashboard agropecuario personalizado'),
+          t('📊 Análisis de mercado y precios'),
+          t('🤝 Red de productores y compradores'),
+          t('📋 Gestión de cultivos y parcelas'),
+        ],
+        default => [
+          t('📊 Herramientas de diagnóstico con IA'),
+          t('🎯 Plan personalizado según tu perfil'),
+          t('📚 Recursos y formación'),
+          t('🤝 Comunidad de impacto'),
+        ],
+      };
+
+      $message['body'][] = t('¿Qué puedes hacer en la plataforma?');
+      foreach ($benefits as $benefit) {
+        $message['body'][] = '  • ' . $benefit;
+      }
+
+      $message['body'][] = '';
+      $message['body'][] = t('Inicia sesión y explora: @url', [
+        '@url' => \Drupal::request()->getSchemeAndHttpHost() . '/user/login',
+      ]);
+
+      $message['body'][] = '---';
+      $message['body'][] = t('El equipo de @site', [
+        '@site' => \Drupal::config('system.site')->get('name'),
+      ]);
+      break;
   }
 }
 
@@ -2264,23 +2328,7 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
       }
     }
 
-    // 4. Encolar webhook ActiveCampaign para CRM.
-    if (\Drupal::hasService('queue')) {
-      try {
-        $queue = \Drupal::queue('activecampaign_webhook');
-        $queue->createItem([
-          'event' => 'user_registered',
-          'user_id' => $account->id(),
-          'email' => $account->getEmail(),
-          'avatar' => $avatarType,
-          'vertical' => $vertical,
-          'timestamp' => time(),
-        ]);
-      }
-      catch (\Exception $e) {
-        // No bloquear registro por errores de cola.
-      }
-    }
+    // 4. [REMOVED] ActiveCampaign webhook — descartado del SaaS.
 
     $logger->info('USR-001: Usuario @uid registrado. Avatar: @avatar, Vertical: @vertical, Source: @source', [
       '@uid' => $account->id(),
@@ -2291,6 +2339,69 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
   }
   catch (\Exception $e) {
     $logger->error('Error en hook_user_insert: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ *
+ * Detecta primer login post-registro y:
+ * 1. Redirige al dashboard contextual según avatar detectado.
+ * 2. Envía email de bienvenida con ventajas del SaaS.
+ */
+function ecosistema_jaraba_core_user_login(\Drupal\user\UserInterface $account): void {
+  // Solo actuar en primer login (post-registro).
+  // getLastAccessedTime() === 0 indica que nunca ha accedido antes.
+  if ($account->getLastAccessedTime() > 0) {
+    return;
+  }
+
+  $logger = \Drupal::logger('ecosistema_jaraba_core');
+
+  try {
+    // 1. Detectar avatar para redirección contextual.
+    $avatarType = 'pending';
+    if (\Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+      $detection = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
+      if ($detection->isDetected()) {
+        $avatarType = $detection->avatarType;
+      }
+    }
+
+    // 2. Mapa de redirección por avatar.
+    $redirectMap = [
+      'jobseeker' => '/career-dashboard',
+      'entrepreneur' => '/diagnostic-wizard',
+      'farmer' => '/agro-dashboard',
+      'merchant' => '/comercio-dashboard',
+    ];
+    $destination = $redirectMap[$avatarType] ?? '/career-dashboard';
+
+    // Establecer destino post-login (Drupal respeta ?destination).
+    $request = \Drupal::requestStack()->getCurrentRequest();
+    if ($request && !$request->query->has('destination')) {
+      $request->query->set('destination', $destination);
+    }
+
+    // 3. Enviar email de bienvenida.
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $params = [
+      'account' => $account,
+      'avatar' => $avatarType,
+    ];
+    $langcode = $account->getPreferredLangcode();
+    $mailManager->mail('ecosistema_jaraba_core', 'user_welcome', $account->getEmail(), $langcode, $params);
+
+    $logger->info('USR-002: Primer login usuario @uid. Avatar: @avatar. Redirect: @dest. Welcome email enviado.', [
+      '@uid' => $account->id(),
+      '@avatar' => $avatarType,
+      '@dest' => $destination,
+    ]);
+  }
+  catch (\Exception $e) {
+    $logger->error('Error en hook_user_login para primer login: @error', [
       '@error' => $e->getMessage(),
     ]);
   }
