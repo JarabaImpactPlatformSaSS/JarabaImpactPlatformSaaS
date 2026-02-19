@@ -164,7 +164,7 @@
   <!-- Service -->
   <service name="SeguimientoTeleformacionService">
     <port name="SeguimientoPort" binding="tns:SeguimientoBinding">
-      <soap:address location="https://plataforma.jarabaimpact.es/sepe/ws/seguimiento"/>
+      <soap:address location="https://plataformadeecosistemas.com/sepe/ws/seguimiento"/>
     </port>
   </service>
 
