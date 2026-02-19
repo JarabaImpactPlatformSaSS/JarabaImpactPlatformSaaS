@@ -365,6 +365,12 @@ jobs:
               tail -30 ~/logs/error.log 2>/dev/null || tail -30 ~/logs/php_error.log 2>/dev/null || echo "No error log found at ~/logs/"
               ls -la ~/logs/ 2>/dev/null || echo "~/logs/ directory not found"
             fi
+
+            # Apply entity definition updates if devel_entity_updates is enabled
+            if /usr/bin/php8.4-cli vendor/bin/drush.php pm:list --status=enabled --filter=devel_entity_updates --format=list 2>/dev/null | grep -q devel_entity_updates; then
+              echo "=== Running devel-entity-updates ==="
+              /usr/bin/php8.4-cli vendor/bin/drush.php devel-entity-updates -y 2>&1 || echo "⚠️ devel-entity-updates had issues"
+            fi
           EOF
 
       - name: Sync site UUID for config import
