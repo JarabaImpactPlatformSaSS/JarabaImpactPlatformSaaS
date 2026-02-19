@@ -39,9 +39,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: |
-            composer-
+          key: composer-dev-${{ hashFiles('composer.lock') }}
 
       # AUDIT-SEC-N11: Install WITH dev dependencies so PHPStan security
       # extensions (phpstan-strict-rules, phpstan-disallowed-calls) are available.
