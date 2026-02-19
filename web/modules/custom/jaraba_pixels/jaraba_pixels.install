@@ -203,6 +203,58 @@ function jaraba_pixels_install() {
 }
 
 /**
+ * Resize consent_record fields to match entity definition.
+ */
+function jaraba_pixels_update_10001() {
+  $db = \Drupal::database();
+
+  // Resize visitor_id: varchar(64) → varchar(255).
+  $db->schema()->changeField('consent_record', 'visitor_id', 'visitor_id', [
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+  ]);
+
+  // Resize user_agent: varchar(100) → varchar(500).
+  $db->schema()->changeField('consent_record', 'user_agent', 'user_agent', [
+    'type' => 'varchar',
+    'length' => 500,
+    'not null' => FALSE,
+  ]);
+
+  // Update the stored field definitions in key_value so Drupal sees them as
+  // current and stops reporting a mismatch.
+  $entity_type_id = 'consent_record';
+  $kv = \Drupal::keyValue('entity.storage_schema.sql');
+  $schema_key = $entity_type_id . '.field_schema_data.visitor_id';
+  $schema = $kv->get($schema_key);
+  if ($schema) {
+    $schema[$entity_type_id]['fields']['visitor_id']['length'] = 255;
+    $kv->set($schema_key, $schema);
+  }
+
+  $schema_key = $entity_type_id . '.field_schema_data.user_agent';
+  $schema = $kv->get($schema_key);
+  if ($schema) {
+    $schema[$entity_type_id]['fields']['user_agent']['length'] = 500;
+    $kv->set($schema_key, $schema);
+  }
+
+  // Update the last installed field storage definitions.
+  $def_kv = \Drupal::keyValue('entity.definitions.installed');
+  $definitions = $def_kv->get($entity_type_id . '.field_storage_definitions');
+  if ($definitions) {
+    if (isset($definitions['visitor_id'])) {
+      $definitions['visitor_id']->setSetting('max_length', 255);
+    }
+    if (isset($definitions['user_agent'])) {
+      $definitions['user_agent']->setSetting('max_length', 500);
+    }
+    $def_kv->set($entity_type_id . '.field_storage_definitions', $definitions);
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function jaraba_pixels_uninstall() {
