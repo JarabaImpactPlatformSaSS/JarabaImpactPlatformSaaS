@@ -544,7 +544,7 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          text: 'Delete node'
+          text: 'Eliminar nodo'
         dropbutton:
           id: dropbutton
           table: views
