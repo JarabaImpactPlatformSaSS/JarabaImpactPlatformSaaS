@@ -629,6 +629,21 @@ ecosistema_jaraba_core.marketplace.product:
     id: '\d+'
 
 # ---------------------------------------------------------------------------
+# STRIPE SETTINGS
+# ---------------------------------------------------------------------------
+
+# Configuración de claves y parámetros de Stripe
+ecosistema_jaraba_core.stripe_settings:
+  path: '/admin/config/ecosistema-jaraba/stripe'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\StripeSettingsForm'
+    _title: 'Configuración de Stripe'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
 # PHASE 12: ALERTING CONFIGURATION
 # ---------------------------------------------------------------------------
 
