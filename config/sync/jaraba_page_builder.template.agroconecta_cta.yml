@@ -1,0 +1,72 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_cta
+label: 'AgroConecta: Pedido Directo'
+description: 'Sección de conversión especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/cta.html.twig'
+fields_schema:
+  type: object
+  title: 'Pedido Directo'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: uri
+    countdown_date:
+      type: string
+      title: 'Fecha de cuenta regresiva'
+      format: date-time
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-cta.png
+preview_data:
+  eyebrow: 'Empieza ahora'
+  title: '¿Listo para llevar tus productos al mundo digital?'
+  subtitle: 'Únete a la red de productores que ya venden online y llegan a miles de consumidores.'
+  cta_text: 'Registrar mi finca'
+  cta_url: /registro
+  cta_secondary_text: 'Ver planes'
+  cta_secondary_url: /planes
+  countdown_date: ''
+  background_image: ''
+animation: fade-up
+weight: 3

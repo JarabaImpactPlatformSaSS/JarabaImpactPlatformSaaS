@@ -10,12 +10,14 @@ module:
   ai_search: 0
   ai_translate: 0
   announcements_feed: 0
+  antibot: 0
   automated_cron: 0
   backup_migrate: 0
   big_pipe: 0
   block: 0
   block_content: 0
   breakpoint: 0
+  captcha: 0
   ckeditor5: 0
   comment: 0
   commerce: 0
@@ -58,6 +60,7 @@ module:
   group: 0
   help: 0
   history: 0
+  honeypot: 0
   image: 0
   inline_entity_form: 0
   inline_form_errors: 0
@@ -90,9 +93,12 @@ module:
   jaraba_interactive: 0
   jaraba_job_board: 0
   jaraba_journey: 0
+  jaraba_legal_cases: 0
+  jaraba_legal_intelligence: 0
   jaraba_lms: 0
   jaraba_matching: 0
   jaraba_mentoring: 0
+  jaraba_onboarding: 0
   jaraba_page_builder: 0
   jaraba_paths: 0
   jaraba_performance: 0
@@ -105,6 +111,7 @@ module:
   jaraba_servicios_conecta: 0
   jaraba_site_builder: 0
   jaraba_skills: 0
+  jaraba_tenant_export: 0
   jaraba_tenant_knowledge: 0
   jaraba_theming: 0
   jaraba_training: 0
@@ -115,6 +122,7 @@ module:
   leaflet: 0
   link: 0
   locale: 0
+  mailer_transport: 0
   media: 0
   media_library: 0
   menu_link_content: 0
@@ -130,6 +138,7 @@ module:
   path: 0
   path_alias: 0
   profile: 0
+  recaptcha_v3: 0
   redis: 0
   responsive_image: 0
   rest: 0
@@ -137,7 +146,13 @@ module:
   serialization: 0
   shortcut: 0
   simple_sitemap: 0
+  social_api: 0
+  social_auth: 0
+  social_auth_google: 0
+  social_auth_linkedin: 0
+  social_auth_microsoft: 0
   state_machine: 0
+  symfony_mailer: 0
   system: 0
   taxonomy: 0
   telephone: 0

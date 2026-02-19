@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_social_proof
+label: 'Emprendimiento: Red de Mentores'
+description: 'Sección credibilidad y confianza especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: 'Red de Mentores'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-social-proof.png
+preview_data:
+  eyebrow: Ecosistema
+  title: 'Partners que nos acompañan'
+  subtitle: 'Instituciones y empresas que apoyan nuestro ecosistema emprendedor.'
+  average_rating: 4.8
+  total_reviews: 89
+  reviews:
+    -
+      text: 'El programa de aceleración fue clave para conseguir nuestra primera ronda de inversión de 300K€.'
+      author: 'Andrea Soler'
+      role: 'CEO de TechGrow'
+    -
+      text: 'Los mentores del programa me ahorraron meses de errores. Su experiencia es invaluable.'
+      author: 'Daniel Ruiz'
+      role: 'Fundador de EcoDelivery'
+  logos:
+    -
+      src: ''
+      alt: 'Fondo de inversión'
+    -
+      src: ''
+      alt: 'Aceleradora tecnológica'
+    -
+      src: ''
+      alt: 'Gobierno de Aragón'
+  badges: {  }
+weight: 54

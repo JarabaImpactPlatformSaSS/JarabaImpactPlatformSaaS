@@ -1,0 +1,66 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_features
+label: 'Empleabilidad: Competencias Destacadas'
+description: 'Sección rejilla de características especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/features.html.twig'
+fields_schema:
+  type: object
+  title: 'Competencias Destacadas'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-features.png
+preview_data:
+  eyebrow: Servicios
+  title: 'Todo lo que necesitas para encontrar empleo'
+  subtitle: 'Herramientas y acompañamiento profesional para impulsar tu carrera.'
+  columns: 3
+  features:
+    -
+      icon: search
+      icon_category: ui
+      title: 'Búsqueda inteligente'
+      desc: 'Motor de matching que conecta tu perfil con las ofertas que mejor se ajustan a tu experiencia y aspiraciones.'
+    -
+      icon: book-open
+      icon_category: ui
+      title: 'Formación a medida'
+      desc: 'Cursos y certificaciones adaptados a tu perfil profesional y a las demandas del mercado laboral.'
+    -
+      icon: user-check
+      icon_category: ui
+      title: 'Orientación personalizada'
+      desc: 'Orientadores profesionales que te acompañan en la definición de tu plan de carrera y búsqueda activa.'
+weight: 34

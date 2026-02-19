@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_testimonials
+label: 'Empleabilidad: Historias de Exito'
+description: 'Sección historias de éxito especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/testimonials.html.twig'
+fields_schema:
+  type: object
+  title: 'Historias de Exito'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-testimonials.png
+preview_data:
+  eyebrow: Testimonios
+  title: 'Lo que dicen quienes han confiado en nosotros'
+  subtitle: 'Historias reales de transformación profesional.'
+  testimonials:
+    -
+      quote: 'Después de 8 meses en paro, el programa de empleabilidad me dio las herramientas y la confianza para conseguir un puesto acorde a mi perfil.'
+      name: 'David Moreno'
+      role: 'Técnico de marketing'
+      rating: 5
+      avatar: ''
+      initials: DM
+    -
+      quote: 'La formación en análisis de datos fue exactamente lo que necesitaba. En tres meses pasé de administrativa a analista junior.'
+      name: 'Lucía Fernández'
+      role: 'Analista de datos'
+      rating: 5
+      avatar: ''
+      initials: LF
+    -
+      quote: 'Mi orientadora me ayudó a redefinir mi marca personal. Ahora recibo ofertas de empresas que antes ni me consideraban.'
+      name: 'Roberto Vega'
+      role: 'Project Manager'
+      rating: 5
+      avatar: ''
+      initials: RV
+weight: 35

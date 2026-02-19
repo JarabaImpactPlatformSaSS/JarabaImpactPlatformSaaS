@@ -1,0 +1,72 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_content
+label: 'ComercioConecta: Historia de la Marca'
+description: 'Sección narrativa especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Historia de la Marca'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-content.png
+preview_data:
+  eyebrow: 'Nuestra misión'
+  title: 'Empoderamos al comercio local'
+  subtitle: 'Tecnología accesible para que ningún negocio se quede atrás'
+  description: '<p>ComercioConecta es la respuesta digital para los comercios que quieren competir en igualdad de condiciones. Nuestra plataforma ofrece todas las herramientas que necesitas para gestionar tu negocio online: catálogo de productos, pasarela de pagos, gestión de pedidos y envíos.</p><p>Con plantillas profesionales y un asistente de configuración, tu tienda online puede estar operativa en menos de una hora.</p>'
+  layout: right
+  cta_text: 'Descubre cómo funciona'
+  cta_url: /como-funciona
+  image: ''
+  background_image: ''
+animation: fade-up
+weight: 15

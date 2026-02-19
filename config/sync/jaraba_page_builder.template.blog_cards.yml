@@ -1,4 +1,3 @@
-uuid: cc86decd-f082-4c86-8cb5-1c28aba9d954
 langcode: es
 status: true
 dependencies: {  }
@@ -106,7 +105,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/blog-cards.png
 preview_data:
   eyebrow: 'FROM THE BLOG'
   title: 'Latest Articles'
@@ -145,4 +144,3 @@ preview_data:
   cta_text: 'View All Articles'
   cta_url: /blog
   background: light
-weight: 0

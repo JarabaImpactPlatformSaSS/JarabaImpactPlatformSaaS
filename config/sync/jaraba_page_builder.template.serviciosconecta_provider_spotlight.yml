@@ -1,0 +1,113 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_provider_spotlight
+label: 'ServiciosConecta: Perfil Destacado del Profesional'
+description: 'Sección perfil destacado de profesional con credenciales, valoración y servicios ofrecidos.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/provider_spotlight.html.twig'
+fields_schema:
+  type: object
+  title: 'Perfil Destacado del Profesional'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    provider_name:
+      type: string
+      title: 'Nombre del profesional'
+      maxLength: 100
+    provider_title:
+      type: string
+      title: 'Título profesional'
+      maxLength: 150
+    provider_bio:
+      type: string
+      title: Biografia
+      format: html
+    provider_image:
+      type: string
+      title: 'Foto del profesional'
+      format: image
+    rating:
+      type: string
+      title: 'Valoracion media'
+      maxLength: 10
+    review_count:
+      type: string
+      title: 'Numero de valoraciónes'
+      maxLength: 20
+    years_experience:
+      type: string
+      title: 'Anos de experiencia'
+      maxLength: 10
+    credentials:
+      type: array
+      title: Credenciales
+      items:
+        type: object
+        properties:
+          label:
+            type: string
+            maxLength: 100
+    services_offered:
+      type: array
+      title: 'Servicios ofrecidos'
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            maxLength: 100
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cred_items:
+      type: array
+      title: 'Elementos de credenciales'
+      items:
+        type: object
+    service_items:
+      type: array
+      title: 'Elementos de servicios'
+      items:
+        type: object
+  required:
+    - title
+    - provider_name
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-provider-spotlight.png
+preview_data:
+  title: 'Conoce a nuestro experto destacado'
+  subtitle: 'Profesionales verificados con trayectoria demostrada.'
+  eyebrow: 'Profesional Destacado'
+  provider_name: 'Carlos Mendez Garcia'
+  provider_title: 'Consultor Financiero Senior | MBA, CFA'
+  rating: '4.9'
+  review_count: '127'
+  years_experience: '15'
+  cta_text: 'Solicitar consulta'
+  cta_url: /servicios/consulta
+animation: fade-up
+weight: 231

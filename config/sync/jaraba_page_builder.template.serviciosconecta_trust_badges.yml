@@ -1,0 +1,66 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_trust_badges
+label: 'ServiciosConecta: Sellos de Confianza'
+description: 'Sección sellos de confianza con verificación, certificación, seguro y firma digital.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/trust_badges.html.twig'
+fields_schema:
+  type: object
+  title: 'Sellos de Confianza'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    badges:
+      type: array
+      title: 'Sellos de confianza'
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+            maxLength: 50
+          title:
+            type: string
+            maxLength: 100
+          description:
+            type: string
+            maxLength: 300
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-trust-badges.png
+preview_data:
+  title: 'Garantias que nos avalan'
+  subtitle: 'Contamos con las certificaciónes y sellos de calidad mas exigentes del sector.'
+  eyebrow: Confianza
+  cta_text: 'Saber mas'
+  cta_url: /servicios/confianza
+animation: fade-up
+weight: 232

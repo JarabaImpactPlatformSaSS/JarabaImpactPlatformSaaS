@@ -1,0 +1,88 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_booking_widget
+label: 'ServiciosConecta: Widget de Reservas'
+description: 'Sección widget de reservas con calendario, lista de servicios y CTA para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/booking_widget.html.twig'
+fields_schema:
+  type: object
+  title: 'Widget de Reservas'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    services:
+      type: array
+      title: 'Lista de servicios'
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            maxLength: 100
+          duration:
+            type: string
+            maxLength: 50
+          price:
+            type: string
+            maxLength: 50
+    provider_name:
+      type: string
+      title: 'Nombre del profesional'
+      maxLength: 100
+    provider_specialty:
+      type: string
+      title: Especialidad
+      maxLength: 100
+    phone:
+      type: string
+      title: Telefono
+      maxLength: 20
+    email:
+      type: string
+      title: Email
+      maxLength: 100
+  required:
+    - title
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-booking-widget.png
+preview_data:
+  title: 'Reserva tu cita'
+  subtitle: 'Selecciona el servicio que necesitas y agenda tu cita en minutos.'
+  eyebrow: 'Reservas Online'
+  cta_text: 'Reservar ahora'
+  cta_url: /servicios/reservar
+  provider_name: 'Dra. Carmen Navarro'
+  provider_specialty: 'Asesoria Fiscal y Tributaria'
+animation: fade-up
+weight: 230

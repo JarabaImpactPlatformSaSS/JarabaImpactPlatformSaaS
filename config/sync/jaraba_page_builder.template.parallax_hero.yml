@@ -1,4 +1,3 @@
-uuid: 2e888e5a-f7df-40bf-8c51-7b09e85408b5
 langcode: es
 status: true
 dependencies: {  }
@@ -64,7 +63,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/parallax-hero.png
 preview_data:
   title: 'Elevate Your Vision'
   subtitle: 'Create stunning experiences that captivate your audience'
@@ -82,4 +81,3 @@ preview_data:
       url: '#'
       style: outline
   min_height: tall
-weight: 0

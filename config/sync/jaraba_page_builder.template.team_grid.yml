@@ -1,4 +1,3 @@
-uuid: f9464c41-3c56-466a-a392-a2dba4250ddc
 langcode: es
 status: true
 dependencies: {  }
@@ -79,7 +78,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/team-grid.png
 preview_data:
   eyebrow: 'OUR TEAM'
   title: 'Meet Our Experts'
@@ -137,4 +136,3 @@ preview_data:
   layout: grid-4
   card_style: simple
   background: light
-weight: 0

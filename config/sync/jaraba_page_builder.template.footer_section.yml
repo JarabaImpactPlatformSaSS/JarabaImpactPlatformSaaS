@@ -1,4 +1,3 @@
-uuid: acd5f892-bf52-4396-8d0f-e8632a6250a0
 langcode: es
 status: true
 dependencies: {  }
@@ -86,7 +85,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/footer-section.png
 preview_data:
   tagline: 'Building the future of business, one platform at a time.'
   columns:
@@ -149,4 +148,3 @@ preview_data:
       text: 'Terms of Service'
       url: '#'
   style: dark
-weight: 0

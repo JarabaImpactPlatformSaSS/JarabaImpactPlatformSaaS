@@ -1,0 +1,12 @@
+uuid: 99b880c9-7da2-49fb-8936-043c8e3c9645
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: JlhtZGzrKvb_1TFIVW-o2lEEoeutUxHkdpZ1WzIkJMY
+id: sendmail
+label: 'Enviar correo'
+plugin: sendmail
+configuration:
+  query:
+    command: ''

@@ -1,0 +1,67 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_gallery
+label: 'ServiciosConecta: Portafolio de Proyectos'
+description: 'Sección galería visual especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/gallery.html.twig'
+fields_schema:
+  type: object
+  title: 'Portafolio de Proyectos'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-gallery.png
+preview_data:
+  eyebrow: Galería
+  title: 'Profesionales destacados'
+  subtitle: 'Conoce algunos de los profesionales que confían en nuestra plataforma.'
+  layout: grid
+  gallery:
+    -
+      src: ''
+      alt: 'Consultoría empresarial'
+      caption: 'Servicios de consultoría estratégica'
+    -
+      src: ''
+      alt: 'Diseño gráfico'
+      caption: 'Diseño y branding profesional'
+    -
+      src: ''
+      alt: 'Servicios legales'
+      caption: 'Asesoría legal especializada'
+    -
+      src: ''
+      alt: 'Servicios de salud'
+      caption: 'Profesionales de la salud'
+weight: 27

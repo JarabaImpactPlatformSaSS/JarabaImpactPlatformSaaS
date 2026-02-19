@@ -1,0 +1,90 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_gallery
+label: 'AgroConecta: Linea del Tiempo Cosecha'
+description: 'Sección galería visual especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/gallery.html.twig'
+fields_schema:
+  type: object
+  title: 'Linea del Tiempo Cosecha'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - grid
+        - masonry
+        - carousel
+      default: grid
+    gallery:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 150
+          caption:
+            type: string
+            maxLength: 200
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-gallery.png
+preview_data:
+  eyebrow: Galería
+  title: 'Nuestros productos destacados'
+  subtitle: 'Descubre la variedad y calidad de nuestro catálogo.'
+  layout: grid
+  gallery:
+    -
+      src: ''
+      alt: 'Huerta ecológica de tomates'
+      caption: 'Tomates ecológicos de temporada'
+    -
+      src: ''
+      alt: 'Aceite de oliva virgen extra'
+      caption: 'Aceite de oliva de primera presión en frío'
+    -
+      src: ''
+      alt: 'Queso artesanal de cabra'
+      caption: 'Queso artesanal con leche de pastoreo'
+    -
+      src: ''
+      alt: 'Miel de romero'
+      caption: 'Miel cruda de romero de la Sierra'
+animation: fade-up
+weight: 5

@@ -1,0 +1,70 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_stats
+label: 'Emprendimiento: Metricas Startup'
+description: 'Sección métricas de impacto especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Metricas Startup'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-stats.png
+preview_data:
+  eyebrow: Impacto
+  title: 'Nuestros números hablan'
+  subtitle: 'Resultados reales del ecosistema emprendedor de Jaraba.'
+  stats:
+    -
+      number: '+200'
+      label: 'Startups aceleradas'
+      prefix: ''
+      suffix: ''
+    -
+      number: '72'
+      label: 'Tasa de supervivencia'
+      prefix: ''
+      suffix: '%'
+    -
+      number: 5.2M
+      label: 'Inversión captada'
+      prefix: ''
+      suffix: €
+    -
+      number: '+850'
+      label: 'Empleos generados'
+      prefix: ''
+      suffix: ''
+weight: 52

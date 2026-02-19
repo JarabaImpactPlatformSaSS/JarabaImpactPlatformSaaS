@@ -1,4 +1,3 @@
-uuid: 6ac92a45-2d39-471c-9e74-31e12e47b940
 langcode: es
 status: true
 dependencies: {  }
@@ -79,7 +78,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/job-search-hero.png
 preview_data:
   eyebrow: 'FIND YOUR DREAM JOB'
   title: 'Discover Your Next Career Opportunity'
@@ -120,4 +119,3 @@ preview_data:
     -
       value: 98%
       label: 'Success Rate'
-weight: 0

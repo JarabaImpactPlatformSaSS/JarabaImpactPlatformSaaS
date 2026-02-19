@@ -1,0 +1,66 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_map
+label: 'Emprendimiento: Ecosistema de Partners'
+description: 'Sección ubicación y cobertura especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/map.html.twig'
+fields_schema:
+  type: object
+  title: 'Ecosistema de Partners'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    map_embed:
+      type: string
+      title: 'Codigo embed del mapa'
+      format: html
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-map.png
+preview_data:
+  eyebrow: Ubicación
+  title: 'Nuestro espacio de coworking'
+  subtitle: 'Un lugar donde las ideas cobran vida.'
+  map_embed: ''
+  address: 'Hub de Emprendimiento, Calle Innovación, 1, Jaraba, Zaragoza'
+  phone: '+34 976 000 003'
+  email: hola@emprendimiento.es
+  working_hours:
+    -
+      days: 'Lunes a Viernes'
+      open: '08:00'
+      close: '20:00'
+    -
+      days: Sábados
+      open: '09:00'
+      close: '14:00'
+weight: 51

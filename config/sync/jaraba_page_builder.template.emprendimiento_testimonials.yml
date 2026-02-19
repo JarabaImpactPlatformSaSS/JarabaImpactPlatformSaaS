@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_testimonials
+label: 'Emprendimiento: Historias de Fundadores'
+description: 'Sección historias de éxito especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/testimonials.html.twig'
+fields_schema:
+  type: object
+  title: 'Historias de Fundadores'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-testimonials.png
+preview_data:
+  eyebrow: Testimonios
+  title: 'Lo que dicen nuestros emprendedores'
+  subtitle: 'Historias de éxito nacidas en nuestro ecosistema.'
+  testimonials:
+    -
+      quote: 'Empecé con una idea en una servilleta. Gracias al programa, hoy facturamos 500K€ anuales con un equipo de 12 personas.'
+      name: 'Marta Alonso'
+      role: 'Fundadora de GreenBox'
+      rating: 5
+      avatar: ''
+      initials: MA
+    -
+      quote: 'La red de mentores fue decisiva. Mi mentor me conectó con el inversor que creyó en mi proyecto desde el primer pitch.'
+      name: 'Pablo Jiménez'
+      role: 'CEO de DataPulse'
+      rating: 5
+      avatar: ''
+      initials: PJ
+    -
+      quote: 'El espacio de coworking y la comunidad emprendedora te mantienen motivado en los momentos difíciles.'
+      name: 'Sara Molina'
+      role: 'Co-fundadora de UrbanGreen'
+      rating: 4
+      avatar: ''
+      initials: SM
+weight: 46

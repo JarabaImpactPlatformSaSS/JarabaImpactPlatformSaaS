@@ -1,4 +1,3 @@
-uuid: ba6011d3-3059-40ed-b7ad-3ebdda963eae
 langcode: es
 status: true
 dependencies: {  }
@@ -103,7 +102,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/product-showcase.png
 preview_data:
   title: 'Featured Products'
   subtitle: 'Handpicked items for you'
@@ -142,4 +141,3 @@ preview_data:
   cta_text: 'View All Products'
   cta_url: '#'
   background: light
-weight: 0

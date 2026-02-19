@@ -1,4 +1,3 @@
-uuid: b5895769-be3b-4d5f-930f-92a2c7bd3db5
 langcode: es
 status: true
 dependencies: {  }
@@ -85,7 +84,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/services-grid.png
 preview_data:
   eyebrow: 'WHAT WE DO'
   title: 'OUR SERVICES'
@@ -160,4 +159,3 @@ preview_data:
   columns: 3
   card_style: elevated
   background: light
-weight: 0

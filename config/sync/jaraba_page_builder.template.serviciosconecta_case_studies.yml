@@ -1,0 +1,84 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_case_studies
+label: 'ServiciosConecta: Casos de Exito'
+description: 'Sección casos de éxito con before/after, testimonial y KPIs de impacto.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/case_studies.html.twig'
+fields_schema:
+  type: object
+  title: 'Casos de Exito'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cases:
+      type: array
+      title: 'Casos de éxito'
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            maxLength: 150
+          client_name:
+            type: string
+            maxLength: 100
+          client_role:
+            type: string
+            maxLength: 100
+          quote:
+            type: string
+            maxLength: 500
+          before:
+            type: string
+            maxLength: 300
+          after:
+            type: string
+            maxLength: 300
+          kpi_label:
+            type: string
+            maxLength: 50
+          kpi_value:
+            type: string
+            maxLength: 30
+          image:
+            type: string
+            format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-case-studies.png
+preview_data:
+  title: 'Historias de éxito reales'
+  subtitle: 'Descubre como nuestros profesionales han transformado negocios y resuelto retos complejos.'
+  eyebrow: 'Casos de Exito'
+  cta_text: 'Ver todos los casos'
+  cta_url: /servicios/casos-éxito
+animation: fade-up
+weight: 233

@@ -1,4 +1,3 @@
-uuid: ac6a0372-45e3-4a41-8188-38c1089d9ebc
 langcode: es
 status: true
 dependencies: {  }
@@ -49,7 +48,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/rich-text.png
 preview_data:
   title: 'Our Commitment to Quality'
   content: |-
@@ -65,4 +64,3 @@ preview_data:
   max_width: medium
   alignment: left
   background: transparent
-weight: 0

@@ -1,0 +1,92 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_testimonials
+label: 'AgroConecta: Historia del Productor'
+description: 'Sección historias de éxito especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/testimonials.html.twig'
+fields_schema:
+  type: object
+  title: 'Historia del Productor'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    testimonials:
+      type: array
+      items:
+        type: object
+        properties:
+          quote:
+            type: string
+            maxLength: 500
+          name:
+            type: string
+            maxLength: 100
+          role:
+            type: string
+            maxLength: 100
+          initials:
+            type: string
+            maxLength: 5
+          avatar:
+            type: string
+            format: image
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-testimonials.png
+preview_data:
+  eyebrow: Testimonios
+  title: 'Lo que dicen nuestros productores'
+  subtitle: 'Historias reales de agricultores que han transformado su negocio.'
+  testimonials:
+    -
+      quote: 'AgroConecta me permitió dejar de depender de los intermediarios. Ahora fijo mis propios precios y mis clientes saben exactamente de dónde viene su comida.'
+      name: 'Carmen Ruiz'
+      role: 'Horticultora ecológica'
+      rating: 5
+      avatar: ''
+      initials: CR
+    -
+      quote: 'La plataforma es muy intuitiva. En una semana ya tenía mi tienda online funcionando y recibiendo pedidos de toda la comarca.'
+      name: 'Pedro Sánchez'
+      role: 'Apicultor artesanal'
+      rating: 5
+      avatar: ''
+      initials: PS
+    -
+      quote: 'El soporte es excepcional. Me ayudaron a optimizar mis envíos y ahora mis productos llegan frescos a cualquier punto de España.'
+      name: 'Ana Martínez'
+      role: 'Productora de lácteos'
+      rating: 4
+      avatar: ''
+      initials: AM
+animation: fade-up
+weight: 2

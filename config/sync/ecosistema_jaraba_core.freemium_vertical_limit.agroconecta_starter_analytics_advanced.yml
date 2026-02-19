@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: agroconecta_starter_analytics_advanced
+label: 'AgroConecta Starter: Analytics Avanzados'
+vertical: agroconecta
+plan: starter
+feature_key: analytics_advanced
+limit_value: 0
+description: 'Analytics avanzados no disponibles en plan Starter AgroConecta.'
+upgrade_message: 'Los analytics avanzados te ayudan a tomar mejores decisiones. Disponible en Profesional.'
+expected_conversion: 0.2
+weight: 0

@@ -1,0 +1,118 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_social_proof
+label: 'AgroConecta: Resenas de Compradores'
+description: 'Sección credibilidad y confianza especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: 'Resenas de Compradores'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    average_rating:
+      type: number
+      title: 'Valoracion media'
+      default: 4.8
+    total_reviews:
+      type: integer
+      title: 'Total de resenas'
+      default: 150
+    logos:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 150
+    reviews:
+      type: array
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+            maxLength: 500
+          author:
+            type: string
+            maxLength: 100
+          role:
+            type: string
+            maxLength: 100
+    badges:
+      type: array
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          src:
+            type: string
+            format: image
+          label:
+            type: string
+            maxLength: 100
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-social-proof.png
+preview_data:
+  eyebrow: Comunidad
+  title: 'Productores que confían en nosotros'
+  subtitle: 'Fincas y cooperativas que ya forman parte de AgroConecta.'
+  average_rating: 4.8
+  total_reviews: 156
+  reviews:
+    -
+      text: 'Desde que uso AgroConecta, mis ventas directas se han triplicado. Los consumidores valoran la transparencia.'
+      author: 'María García'
+      role: 'Productora ecológica'
+    -
+      text: 'La logística de cadena de frío funciona perfectamente. Mis productos llegan frescos a toda España.'
+      author: 'Antonio López'
+      role: Fruticultor
+  logos:
+    -
+      src: ''
+      alt: 'Cooperativa del Valle'
+    -
+      src: ''
+      alt: 'Denominación de Origen Jaraba'
+    -
+      src: ''
+      alt: 'Asociación de Agricultores'
+  badges: {  }
+animation: fade-up
+weight: 10

@@ -1,0 +1,59 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_faq
+label: 'Emprendimiento: Proceso de Validacion'
+description: 'Sección preguntas frecuentes especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Proceso de Validacion'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-faq.png
+preview_data:
+  eyebrow: FAQ
+  title: 'Preguntas frecuentes'
+  subtitle: 'Todo lo que necesitas saber para emprender con nosotros.'
+  faqs:
+    -
+      question: '¿Necesito tener una empresa constituida?'
+      answer: 'No. Puedes aplicar con solo una idea. Te acompañamos en todo el proceso, incluyendo la constitución legal cuando sea el momento adecuado.'
+    -
+      question: '¿Cómo accedo a financiación?'
+      answer: 'Conectamos a los emprendedores con inversores ángeles, fondos de venture capital y programas de subvenciones públicas. Además te preparamos para presentar tu pitch.'
+    -
+      question: '¿Cuánto dura el programa de aceleración?'
+      answer: 'El programa estándar dura 6 meses, con sesiones semanales de mentoring, workshops mensuales y acceso ilimitado a nuestra plataforma y red de contactos.'
+weight: 53

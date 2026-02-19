@@ -1,0 +1,10 @@
+uuid: be223715-a3d3-4a01-97a2-0810df42d96f
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: 8UYEKlWeJ8cK8V-9ojit-_9SwBjQKk0SU-UkiuvlWKI
+name: 'Correo electrónico HTML'
+format: email_html
+weight: 10
+filters: {  }

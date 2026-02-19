@@ -1,0 +1,108 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_testimonials
+label: 'ComercioConecta: Resenas de Clientes'
+description: 'Sección historias de éxito especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/testimonials.html.twig'
+fields_schema:
+  type: object
+  title: 'Resenas de Clientes'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+    testimonials:
+      type: array
+      items:
+        type: object
+        properties:
+          quote:
+            type: string
+            maxLength: 500
+          name:
+            type: string
+            maxLength: 100
+          role:
+            type: string
+            maxLength: 100
+          initials:
+            type: string
+            maxLength: 3
+          avatar:
+            type: string
+            format: image
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-testimonials.png
+preview_data:
+  eyebrow: Testimonios
+  title: 'Lo que dicen nuestros comerciantes'
+  subtitle: 'Comercios reales que han transformado su negocio con ComercioConecta.'
+  testimonials:
+    -
+      quote: 'Antes perdía clientes porque no tenía presencia online. Ahora el 40% de mis ventas vienen de la tienda digital.'
+      name: 'Elena Martín'
+      role: 'Librería El Rincón'
+      rating: 5
+      avatar: ''
+      initials: EM
+    -
+      quote: 'La integración con Correos y MRW me ha simplificado los envíos. Todo automático y mis clientes reciben tracking al instante.'
+      name: 'Carlos Gómez'
+      role: 'Tienda de deportes'
+      rating: 5
+      avatar: ''
+      initials: CG
+    -
+      quote: 'El diseño de las plantillas es profesional y moderno. Mis clientes me felicitan por la web.'
+      name: 'Isabel Navarro'
+      role: Floristería
+      rating: 4
+      avatar: ''
+      initials: IN
+animation: fade-up
+weight: 13

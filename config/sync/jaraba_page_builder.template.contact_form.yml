@@ -1,4 +1,3 @@
-uuid: 95eed806-b227-49ca-9700-234cbfa80f1c
 langcode: es
 status: true
 dependencies: {  }
@@ -119,7 +118,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/contact-form.png
 preview_data:
   title: 'Get In Touch'
   subtitle: "Have questions? We'd love to hear from you."
@@ -168,4 +167,3 @@ preview_data:
   submit_text: 'Send Message'
   success_message: "Thanks! We'll get back to you within 24 hours."
   background: light
-weight: 0

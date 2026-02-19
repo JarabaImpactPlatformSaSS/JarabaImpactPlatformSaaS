@@ -1,4 +1,3 @@
-uuid: 67e2222b-da29-4420-a272-6cfb9405e809
 langcode: es
 status: true
 dependencies: {  }
@@ -53,7 +52,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/glassmorphism-cards.png
 preview_data:
   title: 'Premium Features'
   subtitle: 'Experience the future of design'
@@ -76,4 +75,3 @@ preview_data:
       value: '<100ms'
   columns: 3
   blur_intensity: medium
-weight: 0

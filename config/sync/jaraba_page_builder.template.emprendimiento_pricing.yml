@@ -1,0 +1,89 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_pricing
+label: 'Emprendimiento: Planes Startup'
+description: 'Sección tabla de precios especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Planes Startup'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-pricing.png
+preview_data:
+  eyebrow: Planes
+  title: 'Planes de acompañamiento emprendedor'
+  subtitle: 'Elige el nivel de soporte que necesita tu proyecto.'
+  show_toggle: false
+  plans:
+    -
+      name: Explorer
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: 'Empezar gratis'
+      url: /registro
+      features:
+        - 'Acceso a la comunidad'
+        - 'Workshops mensuales'
+        - 'Recursos online'
+    -
+      name: Startup
+      price: 49€
+      period: /mes
+      featured: true
+      badge: 'Más popular'
+      cta: Aplicar
+      url: /planes/startup
+      features:
+        - 'Todo de Explorer'
+        - 'Mentor asignado'
+        - 'Acceso a coworking'
+        - 'Pitch training'
+    -
+      name: Scale
+      price: 149€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/scale
+      features:
+        - 'Todo de Startup'
+        - 'Acceso a inversores'
+        - 'Asesoría legal'
+        - Internacionalización
+weight: 50

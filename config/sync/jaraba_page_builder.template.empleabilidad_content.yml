@@ -1,0 +1,55 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_content
+label: 'Empleabilidad: Constructor de CV'
+description: 'Sección narrativa especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Constructor de CV'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-content.png
+preview_data:
+  eyebrow: Formación
+  title: 'Desarrolla las habilidades que el mercado demanda'
+  subtitle: 'Programas de upskilling y reskilling diseñados para el mercado laboral actual'
+  description: '<p>Nuestros programas formativos están diseñados en colaboración con empresas líderes para garantizar que las competencias adquiridas son las que realmente demanda el mercado laboral.</p><p>Desde habilidades digitales hasta liderazgo, pasando por idiomas y certificaciones profesionales, ofrecemos un catálogo completo de formación adaptada a cada perfil.</p>'
+  layout: left
+  cta_text: 'Ver catálogo formativo'
+  cta_url: /formacion
+  image: ''
+  background_image: ''
+weight: 37

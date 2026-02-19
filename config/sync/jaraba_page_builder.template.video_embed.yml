@@ -1,4 +1,3 @@
-uuid: 0a367aee-f87a-4cc1-83c0-a0ebef67054d
 langcode: es
 status: true
 dependencies: {  }
@@ -56,7 +55,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/video-embed.png
 preview_data:
   title: 'See Our Platform in Action'
   description: 'Watch how our tools can transform your workflow in just 2 minutes.'
@@ -66,4 +65,3 @@ preview_data:
   autoplay: false
   layout: centered
   background: light
-weight: 0

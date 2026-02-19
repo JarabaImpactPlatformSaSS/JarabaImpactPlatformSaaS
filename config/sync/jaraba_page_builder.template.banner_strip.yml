@@ -1,4 +1,3 @@
-uuid: ef47d7ea-8943-4f6b-b462-5d30577c2a3b
 langcode: es
 status: true
 dependencies: {  }
@@ -49,7 +48,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/banner-strip.png
 preview_data:
   text: '🎉 Spring Sale! Get 25% off all plans with code SPRING25'
   cta_text: 'Shop Now →'
@@ -58,4 +57,3 @@ preview_data:
   dismissible: true
   style: promo
   position: inline
-weight: 0

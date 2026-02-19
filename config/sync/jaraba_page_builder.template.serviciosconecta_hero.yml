@@ -1,0 +1,68 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_hero
+label: 'ServiciosConecta: Presentacion Profesional'
+description: 'Sección hero principal especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Presentacion Profesional'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-hero.png
+preview_data:
+  eyebrow: ServiciosConecta
+  title: 'Tu servicio profesional, visible para quien lo necesita'
+  subtitle: 'Conectamos profesionales cualificados con clientes que buscan servicios de confianza'
+  description: 'Plataforma de servicios profesionales que facilita la conexión entre profesionales verificados y clientes, con sistema de reservas, valoraciones y pagos integrados.'
+  image: ''
+  cta_text: 'Ofrecer mis servicios'
+  cta_url: /registro-profesional
+  cta_secondary_text: 'Buscar profesional'
+  cta_secondary_url: /buscar
+  background_image: ''
+weight: 22

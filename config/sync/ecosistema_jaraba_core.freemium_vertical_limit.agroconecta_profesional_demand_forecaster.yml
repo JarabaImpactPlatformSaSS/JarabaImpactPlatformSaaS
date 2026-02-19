@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: agroconecta_profesional_demand_forecaster
+label: 'AgroConecta Profesional: Prediccion de Demanda'
+vertical: agroconecta
+plan: profesional
+feature_key: demand_forecaster
+limit_value: -1
+description: 'Prediccion de demanda ilimitada en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

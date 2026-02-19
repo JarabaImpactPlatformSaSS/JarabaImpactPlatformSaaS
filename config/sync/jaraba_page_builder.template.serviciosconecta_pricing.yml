@@ -1,0 +1,89 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_pricing
+label: 'ServiciosConecta: Paquetes de Servicio'
+description: 'Sección tabla de precios especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Paquetes de Servicio'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-pricing.png
+preview_data:
+  eyebrow: Planes
+  title: 'Planes para profesionales'
+  subtitle: 'Elige el plan que mejor se adapte a tu volumen de servicios.'
+  show_toggle: false
+  plans:
+    -
+      name: Freelance
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: 'Empezar gratis'
+      url: /registro
+      features:
+        - 'Perfil básico'
+        - 'Hasta 10 reservas/mes'
+        - '10% comisión'
+    -
+      name: Profesional
+      price: 25€
+      period: /mes
+      featured: true
+      badge: 'Más popular'
+      cta: 'Elegir plan'
+      url: /planes/profesional
+      features:
+        - 'Perfil verificado'
+        - 'Reservas ilimitadas'
+        - '5% comisión'
+        - 'Facturación automática'
+    -
+      name: Agencia
+      price: 69€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/agencia
+      features:
+        - 'Todo de Profesional'
+        - Multi-profesional
+        - '0% comisión'
+        - 'API y widgets'
+weight: 28

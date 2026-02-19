@@ -1,4 +1,3 @@
-uuid: 2ec872fe-992e-4b9d-baa5-6f97f228273c
 langcode: es
 status: true
 dependencies: {  }
@@ -64,7 +63,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/countdown-timer.png
 preview_data:
   title: 'Product Launch Coming Soon'
   description: 'Be the first to experience our revolutionary new platform. Sign up now for early access.'
@@ -76,4 +75,3 @@ preview_data:
     url: '#'
   style: cards
   background: gradient
-weight: 0

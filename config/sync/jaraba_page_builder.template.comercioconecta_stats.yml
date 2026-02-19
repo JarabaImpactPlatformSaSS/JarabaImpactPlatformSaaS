@@ -1,0 +1,98 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_stats
+label: 'ComercioConecta: Metricas de Ventas'
+description: 'Sección métricas de impacto especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Metricas de Ventas'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+    stats:
+      type: array
+      items:
+        type: object
+        properties:
+          number:
+            type: string
+            maxLength: 20
+          label:
+            type: string
+            maxLength: 100
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-stats.png
+preview_data:
+  eyebrow: Resultados
+  title: 'Cifras que demuestran nuestro impacto'
+  subtitle: 'Cifras que demuestran el impacto de ComercioConecta en negocios locales.'
+  stats:
+    -
+      number: '+580'
+      label: 'Tiendas activas'
+      prefix: ''
+      suffix: ''
+    -
+      number: 2.3M
+      label: 'Facturación anual'
+      prefix: ''
+      suffix: €
+    -
+      number: '97'
+      label: Satisfacción
+      prefix: ''
+      suffix: '%'
+    -
+      number: +12K
+      label: 'Productos listados'
+      prefix: ''
+      suffix: ''
+animation: fade-up
+weight: 19

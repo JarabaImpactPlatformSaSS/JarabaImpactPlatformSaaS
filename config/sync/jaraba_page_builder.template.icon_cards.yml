@@ -1,4 +1,3 @@
-uuid: f6c1ba63-db42-45e1-93f6-093ee324df3d
 langcode: es
 status: true
 dependencies: {  }
@@ -87,7 +86,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/icon-cards.png
 preview_data:
   eyebrow: FEATURES
   title: 'What We Offer'
@@ -117,4 +116,3 @@ preview_data:
   card_style: elevated
   icon_position: top
   background: light
-weight: 0

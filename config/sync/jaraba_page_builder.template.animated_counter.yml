@@ -1,4 +1,3 @@
-uuid: 9dc132d2-0541-4218-9ecf-df38a7755ea0
 langcode: es
 status: true
 dependencies: {  }
@@ -65,7 +64,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/animated-counter.png
 preview_data:
   title: 'Our Achievements'
   subtitle: 'Numbers that speak for themselves'
@@ -97,4 +96,3 @@ preview_data:
   show_separator: true
   style: cards
   background: gradient
-weight: 0

@@ -1,0 +1,70 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_stats
+label: 'Empleabilidad: Metricas de Colocacion'
+description: 'Sección métricas de impacto especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Metricas de Colocacion'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-stats.png
+preview_data:
+  eyebrow: Resultados
+  title: 'Resultados que avalan nuestra metodología'
+  subtitle: 'Cifras reales del impacto de nuestros programas de empleabilidad.'
+  stats:
+    -
+      number: '+1.500'
+      label: 'Candidatos colocados'
+      prefix: ''
+      suffix: ''
+    -
+      number: '87'
+      label: 'Tasa de inserción'
+      prefix: ''
+      suffix: '%'
+    -
+      number: '+120'
+      label: 'Empresas colaboradoras'
+      prefix: ''
+      suffix: ''
+    -
+      number: '4.9'
+      label: 'Valoración media'
+      prefix: ''
+      suffix: /5
+weight: 41

@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_testimonials
+label: 'ServiciosConecta: Testimonios de Clientes'
+description: 'Sección historias de éxito especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/testimonials.html.twig'
+fields_schema:
+  type: object
+  title: 'Casos de Exito'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-testimonials.png
+preview_data:
+  eyebrow: Testimonios
+  title: 'Lo que dicen nuestros profesionales'
+  subtitle: 'Experiencias reales de profesionales que han crecido con nuestra plataforma.'
+  testimonials:
+    -
+      quote: 'ServiciosConecta me ha permitido llenar mi agenda sin invertir en publicidad. Los clientes llegan solos gracias al posicionamiento de la plataforma.'
+      name: 'Cristina Ramos'
+      role: 'Psicóloga clínica'
+      rating: 5
+      avatar: ''
+      initials: CR
+    -
+      quote: 'La facturación automática y el control de citas me ahorra 5 horas a la semana de gestión administrativa.'
+      name: 'Alberto Navarro'
+      role: 'Consultor de marketing'
+      rating: 5
+      avatar: ''
+      initials: AN
+    -
+      quote: 'Como agencia, poder gestionar 8 profesionales desde un solo panel es fantástico. Totalmente recomendable.'
+      name: 'Marina Ortiz'
+      role: 'Directora de StudioX'
+      rating: 4
+      avatar: ''
+      initials: MO
+weight: 24

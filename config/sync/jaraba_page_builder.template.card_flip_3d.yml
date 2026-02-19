@@ -1,4 +1,3 @@
-uuid: 7c96c1cb-8803-4733-a2bc-8932f7965be4
 langcode: es
 status: true
 dependencies: {  }
@@ -58,7 +57,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/card-flip-3d.png
 preview_data:
   title: 'Our Services'
   subtitle: 'Hover to flip and learn more'
@@ -87,4 +86,3 @@ preview_data:
   columns: 3
   flip_direction: horizontal
   background: light
-weight: 0

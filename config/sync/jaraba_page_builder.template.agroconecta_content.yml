@@ -1,0 +1,68 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_content
+label: 'AgroConecta: Certificacion y Origen'
+description: 'Sección narrativa especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Certificacion y Origen'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: uri
+    layout:
+      type: string
+      title: Layout
+      enum:
+        - default
+        - reversed
+        - centered
+      default: default
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-content.png
+preview_data:
+  eyebrow: 'Nuestra historia'
+  title: 'Agricultura sostenible para un futuro mejor'
+  subtitle: 'Impulsamos el desarrollo rural a través de la tecnología'
+  description: '<p>AgroConecta nació con la misión de acortar la cadena entre el campo y la mesa. Nuestra plataforma permite a los productores agrícolas vender directamente, establecer precios justos y llegar a nuevos mercados sin depender de intermediarios.</p><p>Creemos en una agricultura que respeta la tierra, valora el trabajo del agricultor y ofrece productos frescos y de calidad a los consumidores.</p>'
+  layout: left
+  cta_text: 'Conoce nuestra historia'
+  cta_url: /sobre-nosotros
+  image: ''
+  background_image: ''
+animation: fade-up
+weight: 4

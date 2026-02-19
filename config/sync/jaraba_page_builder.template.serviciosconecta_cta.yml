@@ -1,0 +1,63 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_cta
+label: 'ServiciosConecta: Reservar Consulta'
+description: 'Sección de conversión especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/cta.html.twig'
+fields_schema:
+  type: object
+  title: 'Reservar Consulta'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-cta.png
+preview_data:
+  eyebrow: Únete
+  title: '¿Eres profesional? Haz crecer tu negocio con nosotros'
+  subtitle: 'Cientos de profesionales ya gestionan sus servicios y captan nuevos clientes a través de nuestra plataforma.'
+  cta_text: 'Registrarme como profesional'
+  cta_url: /registro-profesional
+  cta_secondary_text: 'Soy cliente'
+  cta_secondary_url: /registro-cliente
+  countdown_date: ''
+  background_image: ''
+weight: 25
