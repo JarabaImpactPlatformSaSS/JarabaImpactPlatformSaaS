@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: agroconecta_free_partner_hub
+label: 'AgroConecta Free: Hub B2B'
+vertical: agroconecta
+plan: free
+feature_key: partner_hub
+limit_value: 0
+description: 'Hub B2B no disponible en plan gratuito AgroConecta.'
+upgrade_message: 'El Hub B2B abre un nuevo canal de venta mayorista. Disponible en Profesional.'
+expected_conversion: 0.2
+weight: 0

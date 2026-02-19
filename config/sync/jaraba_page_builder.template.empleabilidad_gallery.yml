@@ -1,0 +1,67 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_gallery
+label: 'Empleabilidad: Timeline de Carrera'
+description: 'Sección galería visual especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/gallery.html.twig'
+fields_schema:
+  type: object
+  title: 'Timeline de Carrera'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-gallery.png
+preview_data:
+  eyebrow: Galería
+  title: 'Nuestras actividades formativas'
+  subtitle: 'Talleres, jornadas y eventos que conectan talento con oportunidades.'
+  layout: grid
+  gallery:
+    -
+      src: ''
+      alt: 'Taller de entrevistas'
+      caption: 'Simulación de entrevistas de trabajo'
+    -
+      src: ''
+      alt: 'Jornada networking'
+      caption: 'Networking con empresas del sector'
+    -
+      src: ''
+      alt: 'Formación digital'
+      caption: 'Curso de competencias digitales'
+    -
+      src: ''
+      alt: 'Feria de empleo'
+      caption: 'Feria de empleo y emprendimiento'
+weight: 38

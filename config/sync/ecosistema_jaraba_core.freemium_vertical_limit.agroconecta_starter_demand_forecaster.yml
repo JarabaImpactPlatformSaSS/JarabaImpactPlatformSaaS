@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: agroconecta_starter_demand_forecaster
+label: 'AgroConecta Starter: Prediccion de Demanda'
+vertical: agroconecta
+plan: starter
+feature_key: demand_forecaster
+limit_value: 0
+description: 'Prediccion de demanda no disponible en plan Starter AgroConecta.'
+upgrade_message: 'La prediccion de demanda con IA te anticipa las tendencias. Disponible en Profesional.'
+expected_conversion: 0.18
+weight: 0

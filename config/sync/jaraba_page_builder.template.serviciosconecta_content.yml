@@ -1,0 +1,55 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_content
+label: 'ServiciosConecta: Expertise y Trayectoria'
+description: 'Sección narrativa especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Expertise y Trayectoria'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-content.png
+preview_data:
+  eyebrow: Plataforma
+  title: 'La plataforma que profesionaliza tus servicios'
+  subtitle: 'Herramientas digitales para gestionar y hacer crecer tu actividad profesional'
+  description: '<p>ServiciosConecta ofrece a profesionales independientes y pequeñas empresas de servicios las herramientas necesarias para gestionar su negocio de forma profesional: agenda de citas, facturación automática, perfil verificado y sistema de valoraciones.</p><p>Para los clientes, ofrecemos un directorio de profesionales verificados con disponibilidad en tiempo real y sistema de reservas instantáneo.</p>'
+  layout: left
+  cta_text: 'Descubrir la plataforma'
+  cta_url: /plataforma
+  image: ''
+  background_image: ''
+weight: 26

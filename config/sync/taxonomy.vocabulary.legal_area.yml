@@ -1,0 +1,9 @@
+uuid: 312f1f9f-31fd-46be-8858-616fec5c16e9
+langcode: es
+status: true
+dependencies: {  }
+name: 'Area Juridica'
+vid: legal_area
+description: 'Areas de practica juridica para clasificacion de expedientes.'
+weight: 0
+new_revision: false

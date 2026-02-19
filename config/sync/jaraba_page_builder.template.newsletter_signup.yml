@@ -1,4 +1,3 @@
-uuid: 74c32c83-f99c-489c-9c89-af84703d9d01
 langcode: es
 status: true
 dependencies: {  }
@@ -70,7 +69,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/newsletter-signup.png
 preview_data:
   title: 'Stay Updated'
   subtitle: 'Get the latest news and exclusive content delivered to your inbox'
@@ -90,4 +89,3 @@ preview_data:
   privacy_text: 'We respect your privacy. Unsubscribe anytime.'
   layout: card
   background: gradient
-weight: 0

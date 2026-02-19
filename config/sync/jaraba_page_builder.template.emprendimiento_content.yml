@@ -1,0 +1,55 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_content
+label: 'Emprendimiento: Modelo de Negocio'
+description: 'Sección narrativa especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Modelo de Negocio'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-content.png
+preview_data:
+  eyebrow: Metodología
+  title: 'De la idea al mercado con metodología probada'
+  subtitle: 'Un proceso estructurado que maximiza tus probabilidades de éxito'
+  description: '<p>Nuestro programa de emprendimiento combina la metodología Lean Startup con el acompañamiento personalizado de mentores experimentados. Validamos tu idea de negocio, construimos tu MVP y te conectamos con inversores.</p><p>Más de 200 startups han pasado por nuestro programa, con una tasa de supervivencia del 72% a los 3 años.</p>'
+  layout: right
+  cta_text: 'Ver metodología'
+  cta_url: /metodologia
+  image: ''
+  background_image: ''
+weight: 48

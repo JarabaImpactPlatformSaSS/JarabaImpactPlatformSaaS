@@ -1,4 +1,3 @@
-uuid: ebbe6d35-a206-4859-9eab-a726f84b44ef
 langcode: es
 status: true
 dependencies: {  }
@@ -76,7 +75,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/orbit-animation.png
 preview_data:
   center_content:
     type: icon
@@ -114,4 +113,3 @@ preview_data:
   title: 'Everything Revolves Around You'
   description: 'Our platform puts your success at the center of everything we do'
   background: dark
-weight: 0

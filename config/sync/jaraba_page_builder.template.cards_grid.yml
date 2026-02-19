@@ -1,4 +1,3 @@
-uuid: 37dd9468-5e58-4e67-b605-581e52e4b7ec
 langcode: es
 status: true
 dependencies: {  }
@@ -68,7 +67,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/cards-grid.png
 preview_data:
   eyebrow: SOLUTIONS
   title: 'Solutions for Every Need'
@@ -95,4 +94,3 @@ preview_data:
   card_style: elevated
   equal_height: true
   background: light
-weight: 0

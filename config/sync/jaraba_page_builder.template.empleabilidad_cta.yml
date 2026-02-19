@@ -1,0 +1,63 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_cta
+label: 'Empleabilidad: Aplicar Ahora'
+description: 'Sección de conversión especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/cta.html.twig'
+fields_schema:
+  type: object
+  title: 'Aplicar Ahora'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-cta.png
+preview_data:
+  eyebrow: 'Da el paso'
+  title: '¿Listo para dar el siguiente paso en tu carrera?'
+  subtitle: 'Miles de profesionales ya han transformado su futuro laboral. Únete y accede a formación, ofertas y orientación personalizada.'
+  cta_text: 'Empezar ahora'
+  cta_url: /registro
+  cta_secondary_text: 'Contactar orientador'
+  cta_secondary_url: /orientacion
+  countdown_date: ''
+  background_image: ''
+weight: 36

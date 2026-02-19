@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_social_proof
+label: 'ServiciosConecta: Acreditaciones'
+description: 'Sección credibilidad y confianza especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: Acreditaciones
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-social-proof.png
+preview_data:
+  eyebrow: Confianza
+  title: 'Profesionales que confían en nosotros'
+  subtitle: 'Profesionales y agencias que ya gestionan sus servicios con ServiciosConecta.'
+  average_rating: 4.8
+  total_reviews: 178
+  reviews:
+    -
+      text: 'La agenda inteligente me ha eliminado las cancelaciones de última hora. Los recordatorios automáticos funcionan de maravilla.'
+      author: 'Patricia López'
+      role: Fisioterapeuta
+    -
+      text: 'Desde que tengo el perfil verificado, las solicitudes de presupuesto se han duplicado.'
+      author: 'Fernando Gil'
+      role: Arquitecto
+  logos:
+    -
+      src: ''
+      alt: 'Colegio de Arquitectos'
+    -
+      src: ''
+      alt: 'Asociación de Fisioterapeutas'
+    -
+      src: ''
+      alt: 'Clúster de Servicios'
+  badges: {  }
+weight: 32

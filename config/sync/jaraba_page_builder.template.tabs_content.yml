@@ -1,4 +1,3 @@
-uuid: 64f6f1da-e284-431a-a18b-0d71ff4ad86a
 langcode: es
 status: true
 dependencies: {  }
@@ -66,7 +65,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/tabs-content.png
 preview_data:
   title: 'Explore Our Features'
   tabs:
@@ -90,4 +89,3 @@ preview_data:
   orientation: horizontal
   default_tab: 0
   background: light
-weight: 0

@@ -1,0 +1,87 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_faq
+label: 'ComercioConecta: Envio y Devoluciones'
+description: 'Sección preguntas frecuentes especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Envio y Devoluciones'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+    faqs:
+      type: array
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            maxLength: 200
+          answer:
+            type: string
+            maxLength: 1000
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-faq.png
+preview_data:
+  eyebrow: FAQ
+  title: 'Preguntas frecuentes'
+  subtitle: 'Resolvemos tus dudas sobre envíos, devoluciones y más.'
+  faqs:
+    -
+      question: '¿Necesito conocimientos técnicos?'
+      answer: 'No. Nuestra plataforma está diseñada para que cualquier persona pueda crear y gestionar su tienda online sin necesidad de programar.'
+    -
+      question: '¿Cómo gestiono los pagos?'
+      answer: 'Integramos pasarelas de pago seguras (Stripe, Redsys) que permiten aceptar tarjetas, Bizum y transferencias bancarias con total seguridad.'
+    -
+      question: '¿Puedo vender productos digitales?'
+      answer: 'Sí, puedes vender tanto productos físicos como digitales, cursos online, reservas de servicios y suscripciones recurrentes.'
+animation: fade-up
+weight: 20

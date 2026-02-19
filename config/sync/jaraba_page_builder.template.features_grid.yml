@@ -1,4 +1,3 @@
-uuid: 0baf6858-f854-4d21-a354-69dfa94eabf6
 langcode: es
 status: true
 dependencies: {  }
@@ -20,6 +19,15 @@ fields_schema:
       type: string
       title: 'Subtítulo de la Sección'
       maxLength: 200
+    background:
+      type: string
+      title: Fondo
+      enum:
+        - light
+        - dark
+        - gradient
+        - light-green
+      default: light
     columns:
       type: integer
       title: Columnas
@@ -70,7 +78,7 @@ is_premium: false
 preview_image: /modules/custom/jaraba_page_builder/images/previews/features-grid.png
 preview_data:
   section_title: 'Features Grid'
-  background_variant: light-green
+  background: light-green
   columns: 3
   features:
     -

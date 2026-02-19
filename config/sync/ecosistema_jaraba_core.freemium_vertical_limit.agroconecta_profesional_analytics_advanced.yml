@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: agroconecta_profesional_analytics_advanced
+label: 'AgroConecta Profesional: Analytics Avanzados'
+vertical: agroconecta
+plan: profesional
+feature_key: analytics_advanced
+limit_value: -1
+description: 'Analytics avanzados ilimitados en plan Profesional AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

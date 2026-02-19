@@ -1,4 +1,3 @@
-uuid: 1f54bb14-faba-43bd-a630-eea4aa5a00a7
 langcode: es
 status: true
 dependencies: {  }
@@ -62,7 +61,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/gradient-cards.png
 preview_data:
   title: 'Why Choose Us'
   subtitle: 'Modern solutions for modern businesses'
@@ -85,4 +84,3 @@ preview_data:
   columns: 3
   animation_speed: normal
   background: dark
-weight: 0

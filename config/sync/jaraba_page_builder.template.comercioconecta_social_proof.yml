@@ -1,0 +1,98 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_social_proof
+label: 'ComercioConecta: Sellos de Confianza'
+description: 'Sección credibilidad y confianza especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: 'Sellos de Confianza'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+    logos:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 100
+  required:
+    - title
+plans_required:
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-social-proof.png
+preview_data:
+  eyebrow: Comunidad
+  title: 'Marcas que confían en nosotros'
+  subtitle: 'Comercios y marcas que ya forman parte de ComercioConecta.'
+  average_rating: 4.7
+  total_reviews: 234
+  reviews:
+    -
+      text: 'Montar mi tienda online fue facilísimo. En una tarde tenía todo listo y ya estaba recibiendo pedidos.'
+      author: 'Laura Hernández'
+      role: 'Tienda de artesanía'
+    -
+      text: 'La gestión de inventario automatizada me ha ahorrado horas de trabajo cada semana.'
+      author: 'Miguel Torres'
+      role: 'Comercio de alimentación'
+  logos:
+    -
+      src: ''
+      alt: 'Asociación de Comerciantes'
+    -
+      src: ''
+      alt: 'Cámara de Comercio'
+    -
+      src: ''
+      alt: 'Federación de Autónomos'
+  badges: {  }
+animation: fade-up
+weight: 21

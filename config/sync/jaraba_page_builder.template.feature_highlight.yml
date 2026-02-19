@@ -1,4 +1,3 @@
-uuid: 6a1936dc-70ee-44f1-8516-556a6fd20984
 langcode: es
 status: true
 dependencies: {  }
@@ -64,7 +63,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/feature-highlight.png
 preview_data:
   eyebrow: 'NEW FEATURE'
   title: 'Powerful Dashboard Analytics'
@@ -88,4 +87,3 @@ preview_data:
     text: 'Try It Free'
     url: '#'
   background: light
-weight: 0

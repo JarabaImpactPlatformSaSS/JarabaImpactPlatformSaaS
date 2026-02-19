@@ -1,0 +1,135 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_pricing
+label: 'ComercioConecta: Niveles de Producto'
+description: 'Sección tabla de precios especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Niveles de Producto'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+    plans:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            maxLength: 50
+          price:
+            type: string
+            maxLength: 20
+          period:
+            type: string
+            maxLength: 20
+          featured:
+            type: boolean
+          badge:
+            type: string
+            maxLength: 30
+          cta:
+            type: string
+            maxLength: 50
+          url:
+            type: string
+            format: uri
+          features:
+            type: array
+            items:
+              type: string
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-pricing.png
+preview_data:
+  eyebrow: Planes
+  title: 'Elige el plan perfecto para tu tienda'
+  subtitle: 'Planes flexibles que crecen con tu negocio.'
+  show_toggle: false
+  plans:
+    -
+      name: Básico
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: 'Empezar gratis'
+      url: /registro
+      features:
+        - 'Hasta 25 productos'
+        - 'Plantilla estándar'
+        - 'Pagos con tarjeta'
+    -
+      name: Profesional
+      price: 29€
+      period: /mes
+      featured: true
+      badge: 'Más popular'
+      cta: 'Elegir plan'
+      url: /planes/profesional
+      features:
+        - 'Productos ilimitados'
+        - 'Dominio propio'
+        - 'SEO avanzado'
+        - 'Cupones y descuentos'
+    -
+      name: Enterprise
+      price: 79€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/enterprise
+      features:
+        - 'Todo de Profesional'
+        - Multi-tienda
+        - 'API completa'
+        - 'Soporte 24/7'
+animation: fade-up
+weight: 17

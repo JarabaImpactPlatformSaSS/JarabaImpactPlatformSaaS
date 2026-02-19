@@ -1,0 +1,74 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_stats
+label: 'ServiciosConecta: Metricas de Experiencia'
+description: 'Sección métricas de impacto especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Metricas de Experiencia'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-stats.png
+preview_data:
+  eyebrow: Resultados
+  title: 'Cifras que respaldan nuestro servicio'
+  subtitle: 'Métricas reales del impacto de ServiciosConecta en profesionales.'
+  stats:
+    -
+      number: '+420'
+      label: 'Profesionales activos'
+      prefix: ''
+      suffix: ''
+    -
+      number: 8.5K
+      label: 'Servicios realizados'
+      prefix: ''
+      suffix: ''
+    -
+      number: '4.8'
+      label: 'Valoración media'
+      prefix: ''
+      suffix: /5
+    -
+      number: '95'
+      label: 'Tasa de satisfacción'
+      prefix: ''
+      suffix: '%'
+weight: 30

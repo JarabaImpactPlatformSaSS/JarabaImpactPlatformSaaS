@@ -1,0 +1,73 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_hero
+label: 'ComercioConecta: Escaparate de Tienda'
+description: 'Sección hero principal especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Escaparate de Tienda'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-hero.png
+preview_data:
+  eyebrow: ComercioConecta
+  title: 'Tu tienda online, lista en minutos'
+  subtitle: 'Digitaliza tu comercio local y vende a toda España'
+  description: 'Plataforma integral de comercio electrónico diseñada para pequeños y medianos negocios que quieren dar el salto al mundo digital sin complicaciones.'
+  image: ''
+  cta_text: 'Crear mi tienda'
+  cta_url: /registro
+  cta_secondary_text: 'Ver demo'
+  cta_secondary_url: /demo
+  background_image: ''
+animation: fade-up
+weight: 11

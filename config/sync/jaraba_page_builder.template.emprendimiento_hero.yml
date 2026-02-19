@@ -1,0 +1,64 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_hero
+label: 'Emprendimiento: Lanzamiento Startup'
+description: 'Sección hero principal especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Lanzamiento Startup'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-hero.png
+preview_data:
+  eyebrow: Emprendimiento
+  title: 'Convierte tu idea en un negocio real'
+  subtitle: 'Metodología, financiación y mentores para lanzar tu proyecto con garantías'
+  description: 'Ecosistema completo de apoyo al emprendimiento: desde la validación de tu idea hasta la escalabilidad de tu negocio, con metodología probada y red de mentores.'
+  image: ''
+  cta_text: 'Validar mi idea'
+  cta_url: /validar
+  cta_secondary_text: 'Conocer el programa'
+  cta_secondary_url: /programa
+  background_image: ''
+weight: 44

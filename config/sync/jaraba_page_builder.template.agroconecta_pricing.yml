@@ -1,0 +1,132 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_pricing
+label: 'AgroConecta: Cajas de Suscripcion'
+description: 'Sección tabla de precios especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Cajas de Suscripcion'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    toggle_discount:
+      type: boolean
+      title: 'Mostrar descuento'
+      default: false
+    toggle_label_monthly:
+      type: string
+      title: 'Etiqueta mensual'
+      default: Mensual
+    toggle_label_weekly:
+      type: string
+      title: 'Etiqueta semanal'
+      default: Semanal
+    plans:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            maxLength: 100
+          price:
+            type: string
+            maxLength: 20
+          period:
+            type: string
+            maxLength: 20
+          featured:
+            type: boolean
+          badge:
+            type: string
+            maxLength: 50
+          cta:
+            type: string
+            maxLength: 50
+          url:
+            type: string
+            format: uri
+          features:
+            type: array
+            items:
+              type: string
+              maxLength: 100
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-pricing.png
+preview_data:
+  eyebrow: Planes
+  title: 'Elige el plan perfecto para tu finca'
+  subtitle: 'Planes flexibles que crecen con tu producción.'
+  show_toggle: false
+  plans:
+    -
+      name: Semilla
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: 'Empezar gratis'
+      url: /registro
+      features:
+        - 'Hasta 10 productos'
+        - 'Perfil básico de finca'
+        - 'Soporte por email'
+    -
+      name: Cosecha
+      price: 19€
+      period: /mes
+      featured: true
+      badge: 'Más popular'
+      cta: 'Elegir plan'
+      url: /planes/cosecha
+      features:
+        - 'Productos ilimitados'
+        - 'Logística integrada'
+        - 'Analítica avanzada'
+        - 'Soporte prioritario'
+    -
+      name: Hacienda
+      price: 49€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/hacienda
+      features:
+        - 'Todo de Cosecha'
+        - Multi-finca
+        - 'API personalizada'
+        - 'Gestor dedicado'
+animation: fade-up
+weight: 6

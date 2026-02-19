@@ -1,4 +1,3 @@
-uuid: dbb5e6af-0956-4a65-8eda-d4f141adc0f6
 langcode: es
 status: true
 dependencies: {  }
@@ -57,7 +56,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/spotlight-text.png
 preview_data:
   title: 'Illuminate Your Success'
   subtitle: 'Hover to discover the spotlight effect'
@@ -73,4 +72,3 @@ preview_data:
       text: 'Learn More'
       url: '#'
       style: outline
-weight: 0

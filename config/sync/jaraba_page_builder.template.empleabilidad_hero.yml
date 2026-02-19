@@ -1,0 +1,64 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_hero
+label: 'Empleabilidad: Perfil del Candidato'
+description: 'Sección hero principal especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Perfil del Candidato'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-hero.png
+preview_data:
+  eyebrow: Empleabilidad
+  title: 'Impulsa tu carrera profesional'
+  subtitle: 'Formación, orientación y oportunidades laborales para construir el futuro que mereces'
+  description: 'Plataforma integral de empleabilidad que conecta talento con oportunidades, ofreciendo formación personalizada, orientación profesional y acceso a ofertas de empleo cualificadas.'
+  image: ''
+  cta_text: 'Crear mi perfil'
+  cta_url: /registro
+  cta_secondary_text: 'Explorar ofertas'
+  cta_secondary_url: /ofertas
+  background_image: ''
+weight: 33

@@ -1,4 +1,3 @@
-uuid: 313110c4-26a4-4be9-8230-9003f5690994
 langcode: es
 status: true
 dependencies: {  }
@@ -78,7 +77,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/how-it-works.png
 preview_data:
   eyebrow: 'SIMPLE & EASY'
   title: 'How It Works'
@@ -105,4 +104,3 @@ preview_data:
     text: 'Get Started Now'
     url: '#'
   background: light
-weight: 0

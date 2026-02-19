@@ -1,0 +1,18 @@
+uuid: ec0e7006-7254-46b1-8d4e-d100b7687505
+langcode: es
+status: true
+dependencies: {  }
+id: smtp_ionos
+label: 'SMTP IONOS'
+plugin: smtp
+configuration:
+  user: ***REDACTED_SMTP_USER***
+  pass: '***REDACTED_SMTP_PASS***'
+  host: ***REDACTED_SMTP_HOST***
+  port: 587
+  query:
+    verify_peer: true
+    local_domain: ''
+    restart_threshold: null
+    restart_threshold_sleep: null
+    ping_threshold: null

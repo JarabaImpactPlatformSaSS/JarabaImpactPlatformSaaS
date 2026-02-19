@@ -1,4 +1,3 @@
-uuid: 5c4fa61e-1b0b-4108-be73-4736951f7abf
 langcode: es
 status: true
 dependencies: {  }
@@ -68,7 +67,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/columns-layout.png
 preview_data:
   layout: 50-50
   gap: medium
@@ -83,4 +82,3 @@ preview_data:
       vertical_align: center
   reverse_mobile: false
   background: light
-weight: 0

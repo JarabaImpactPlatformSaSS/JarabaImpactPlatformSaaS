@@ -1,0 +1,69 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_hero
+label: 'AgroConecta: Escaparate del Productor'
+description: 'Sección hero principal especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Escaparate del Productor'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-hero.png
+preview_data:
+  eyebrow: AgroConecta
+  title: 'Del campo a tu mesa, sin intermediarios'
+  subtitle: 'Conectamos productores locales con consumidores conscientes'
+  description: 'Plataforma digital que impulsa la agricultura sostenible, conectando directamente a productores del campo con compradores que valoran la calidad y el origen de los alimentos.'
+  image: ''
+  cta_text: 'Explorar productos'
+  cta_url: /productos
+  cta_secondary_text: 'Conocer productores'
+  cta_secondary_url: /productores
+  background_image: ''
+animation: fade-up
+weight: 0

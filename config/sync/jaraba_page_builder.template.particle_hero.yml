@@ -1,4 +1,3 @@
-uuid: 68ac3d67-61d6-4887-86b1-194c059aaf97
 langcode: es
 status: true
 dependencies: {  }
@@ -77,7 +76,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/particle-hero.png
 preview_data:
   title: 'Innovation Starts Here'
   subtitle: 'The most advanced platform for modern businesses'
@@ -98,4 +97,3 @@ preview_data:
       style: secondary
   background_color: gradient
   min_height: fullscreen
-weight: 0

@@ -1,0 +1,59 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_faq
+label: 'Empleabilidad: Consejos de Busqueda'
+description: 'Sección preguntas frecuentes especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Consejos de Busqueda'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-faq.png
+preview_data:
+  eyebrow: FAQ
+  title: 'Preguntas frecuentes'
+  subtitle: 'Resolvemos tus dudas sobre formación, empleo y desarrollo profesional.'
+  faqs:
+    -
+      question: '¿Es gratuito registrarse?'
+      answer: 'Sí, el registro y el acceso a ofertas de empleo es completamente gratuito. Los programas formativos premium tienen un coste subvencionado.'
+    -
+      question: '¿Cómo funciona la orientación profesional?'
+      answer: 'Asignamos un orientador que analiza tu perfil, identifica áreas de mejora y diseña un plan personalizado de desarrollo profesional con objetivos concretos.'
+    -
+      question: '¿Las certificaciones tienen validez oficial?'
+      answer: 'Sí, todas nuestras certificaciones están homologadas por el SEPE y reconocidas por las principales empresas empleadoras del país.'
+weight: 42

@@ -1,0 +1,41 @@
+label: 'Social auth profiles'
+display:
+  default:
+    display_title: Default
+    display_options:
+      title: 'Social auth profiles'
+      fields:
+        id:
+          label: ID
+          separator: ', '
+        plugin_id:
+          label: 'Plugin ID'
+          separator: ', '
+        provider_user_id:
+          label: 'Provider user ID'
+          separator: ', '
+        operations:
+          label: Operations
+      pager:
+        options:
+          tags:
+            next: ››
+            previous: ‹‹
+          expose:
+            items_per_page_label: 'Items per page'
+            items_per_page_options_all_label: '- All -'
+            offset_label: Offset
+      exposed_form:
+        options:
+          submit_button: Apply
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      empty:
+        area_text_custom:
+          content: 'There are no configured third-party authentication profiles yet.'
+      arguments:
+        user_id:
+          exception:
+            title: All

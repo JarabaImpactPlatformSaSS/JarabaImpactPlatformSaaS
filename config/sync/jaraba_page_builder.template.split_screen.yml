@@ -1,4 +1,3 @@
-uuid: 32cf4094-50c7-4c06-8145-7398074fb24c
 langcode: es
 status: true
 dependencies: {  }
@@ -99,7 +98,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/split-screen.png
 preview_data:
   left_section:
     type: content
@@ -115,4 +114,3 @@ preview_data:
     background: image
   split_ratio: 50-50
   min_height: fullscreen
-weight: 0

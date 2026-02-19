@@ -1,4 +1,3 @@
-uuid: 2b1c46a2-b8e4-4a17-9d00-5cd3a58c6c32
 langcode: es
 status: true
 dependencies: {  }
@@ -64,7 +63,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/feature-comparison-table.png
 preview_data:
   title: 'Elige el plan perfecto para ti'
   subtitle: 'Todas las funciones que necesitas para hacer crecer tu negocio'
@@ -147,4 +146,3 @@ preview_data:
   highlight_column: 2
   sticky_header: true
   show_annual_toggle: false
-weight: 0

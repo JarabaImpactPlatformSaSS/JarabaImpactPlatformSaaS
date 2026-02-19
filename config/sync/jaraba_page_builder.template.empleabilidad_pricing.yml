@@ -1,0 +1,89 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_pricing
+label: 'Empleabilidad: Funciones Premium'
+description: 'Sección tabla de precios especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Funciones Premium'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-pricing.png
+preview_data:
+  eyebrow: Planes
+  title: 'Elige el plan que impulse tu carrera'
+  subtitle: 'Opciones flexibles para cada etapa de tu desarrollo profesional.'
+  show_toggle: false
+  plans:
+    -
+      name: Buscador
+      price: 0€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: 'Registrarse gratis'
+      url: /registro
+      features:
+        - 'Acceso a ofertas'
+        - 'Perfil profesional'
+        - 'Alertas de empleo'
+    -
+      name: Profesional
+      price: 15€
+      period: /mes
+      featured: true
+      badge: Recomendado
+      cta: 'Elegir plan'
+      url: /planes/profesional
+      features:
+        - 'Todo de Buscador'
+        - 'Cursos premium'
+        - 'Orientador asignado'
+        - 'CV optimizado con IA'
+    -
+      name: Premium
+      price: 39€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/premium
+      features:
+        - 'Todo de Profesional'
+        - 'Coaching ejecutivo'
+        - 'Headhunting activo'
+        - 'Certificaciones incluidas'
+weight: 39

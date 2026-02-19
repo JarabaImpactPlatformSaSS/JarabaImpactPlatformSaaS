@@ -1,4 +1,3 @@
-uuid: b3591980-b70a-452c-a3a0-d5219b2d0ecd
 langcode: es
 status: true
 dependencies: {  }
@@ -69,7 +68,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/profile-cards.png
 preview_data:
   title: 'Meet Our Experts'
   subtitle: 'Industry leaders ready to help you succeed'
@@ -107,4 +106,3 @@ preview_data:
   columns: 3
   card_style: full
   background: light
-weight: 0

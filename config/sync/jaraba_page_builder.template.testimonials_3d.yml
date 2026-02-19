@@ -1,4 +1,3 @@
-uuid: a7b94679-3f65-45ba-860b-a242bb1cb955
 langcode: es
 status: true
 dependencies: {  }
@@ -60,7 +59,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/testimonials-3d.png
 preview_data:
   title: 'What Our Clients Say'
   testimonials:
@@ -86,4 +85,3 @@ preview_data:
   autoplay_speed: 5000
   effect: coverflow
   background: gradient
-weight: 0

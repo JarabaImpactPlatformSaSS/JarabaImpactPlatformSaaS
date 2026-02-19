@@ -1,4 +1,3 @@
-uuid: 4f613330-a31e-4edc-bc4c-fd268e8f1752
 langcode: es
 status: true
 dependencies: {  }
@@ -68,7 +67,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/image-text-block.png
 preview_data:
   eyebrow: 'ABOUT US'
   title: "We're Building the Future of Work"
@@ -84,4 +83,3 @@ preview_data:
     url: '#'
   vertical_align: center
   background: light
-weight: 0

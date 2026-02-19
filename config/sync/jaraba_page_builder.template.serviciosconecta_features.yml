@@ -1,0 +1,78 @@
+langcode: es
+status: true
+dependencies: {  }
+id: serviciosconecta_features
+label: 'ServiciosConecta: Rejilla de Servicios'
+description: 'Sección rejilla de características especializada para profesionales de servicios.'
+category: serviciosconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/serviciosconecta/features.html.twig'
+fields_schema:
+  type: object
+  title: 'Rejilla de Servicios'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/serviciosconecta-features.png
+preview_data:
+  eyebrow: Funcionalidades
+  title: 'Todo lo que necesitas para gestionar tus servicios'
+  subtitle: 'Herramientas profesionales para una gestión eficiente.'
+  columns: 3
+  features:
+    -
+      icon: calendar
+      icon_category: ui
+      title: 'Agenda inteligente'
+      desc: 'Sistema de reservas con disponibilidad en tiempo real, confirmaciones automáticas y recordatorios por email y SMS.'
+    -
+      icon: shield-check
+      icon_category: ui
+      title: 'Perfil verificado'
+      desc: 'Distintivo de profesional verificado que genera confianza en los clientes y mejora tu visibilidad.'
+    -
+      icon: chart-line
+      icon_category: analytics
+      title: 'Panel de métricas'
+      desc: 'Dashboard con estadísticas de reservas, ingresos, valoraciones y rendimiento para optimizar tu negocio.'
+weight: 23

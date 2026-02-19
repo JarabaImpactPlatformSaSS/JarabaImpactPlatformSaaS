@@ -1,0 +1,63 @@
+langcode: es
+status: true
+dependencies: {  }
+id: emprendimiento_cta
+label: 'Emprendimiento: Validar Idea'
+description: 'Sección de conversión especializada para emprendedores.'
+category: emprendimiento
+twig_template: '@jaraba_page_builder/blocks/verticals/emprendimiento/cta.html.twig'
+fields_schema:
+  type: object
+  title: 'Validar Idea'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/emprendimiento-cta.png
+preview_data:
+  eyebrow: 'Lanza tu proyecto'
+  title: '¿Tienes una idea de negocio? Valídala con nosotros'
+  subtitle: 'Accede a mentores, financiación y herramientas para convertir tu visión en realidad.'
+  cta_text: 'Aplicar al programa'
+  cta_url: /aplicar
+  cta_secondary_text: 'Agendar sesión'
+  cta_secondary_url: /sesion
+  countdown_date: ''
+  background_image: ''
+weight: 47

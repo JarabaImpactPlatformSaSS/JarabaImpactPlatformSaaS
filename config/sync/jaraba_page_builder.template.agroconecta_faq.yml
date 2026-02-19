@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_faq
+label: 'AgroConecta: Certificacion Organica'
+description: 'Sección preguntas frecuentes especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Certificacion Organica'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    faqs:
+      type: array
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            maxLength: 200
+          answer:
+            type: string
+            maxLength: 1000
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-faq.png
+preview_data:
+  eyebrow: FAQ
+  title: 'Preguntas frecuentes'
+  subtitle: 'Resolvemos tus dudas sobre venta directa y producción agrícola.'
+  faqs:
+    -
+      question: '¿Cómo puedo registrar mi finca?'
+      answer: 'El proceso es sencillo: crea tu cuenta, completa el perfil de tu finca con fotos y descripción de tus productos, y en 24h tu tienda estará activa.'
+    -
+      question: '¿Qué comisión cobra la plataforma?'
+      answer: 'Cobramos una comisión justa del 8% por venta realizada. Sin cuotas mensuales ni costes ocultos. Solo pagas cuando vendes.'
+    -
+      question: '¿Cómo se gestiona la logística de envío?'
+      answer: 'Ofrecemos integración con transportistas especializados en productos frescos. También puedes gestionar tus propios envíos o habilitar recogida en finca.'
+animation: fade-up
+weight: 9

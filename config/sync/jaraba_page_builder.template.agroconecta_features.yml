@@ -1,0 +1,84 @@
+langcode: es
+status: true
+dependencies: {  }
+id: agroconecta_features
+label: 'AgroConecta: Productos Organicos'
+description: 'Sección rejilla de características especializada para productores agrícolas.'
+category: agroconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/agroconecta/features.html.twig'
+fields_schema:
+  type: object
+  title: 'Productos Organicos'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    columns:
+      type: integer
+      title: Columnas
+      default: 3
+    features:
+      type: array
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+            maxLength: 100
+          desc:
+            type: string
+            maxLength: 300
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/agroconecta-features.png
+preview_data:
+  eyebrow: Funcionalidades
+  title: 'Todo lo que tu finca necesita para vender online'
+  subtitle: 'Herramientas diseñadas para la realidad del campo.'
+  columns: 3
+  features:
+    -
+      icon: shopping-bag
+      icon_category: commerce
+      title: 'Tienda online'
+      desc: 'Crea tu catálogo de productos con fotos, precios y disponibilidad actualizada en tiempo real.'
+    -
+      icon: truck
+      icon_category: logistics
+      title: 'Logística integrada'
+      desc: 'Gestiona envíos de productos frescos con cadena de frío y seguimiento en tiempo real.'
+    -
+      icon: chart-bar
+      icon_category: analytics
+      title: 'Analítica de ventas'
+      desc: 'Dashboard con métricas de ventas, productos más demandados y tendencias estacionales.'
+animation: fade-up
+weight: 1

@@ -1,0 +1,95 @@
+langcode: es
+status: true
+dependencies: {  }
+id: comercioconecta_map
+label: 'ComercioConecta: Ubicaciones de Tienda'
+description: 'Sección ubicación y cobertura especializada para comercios y tiendas.'
+category: comercioconecta
+twig_template: '@jaraba_page_builder/blocks/verticals/comercioconecta/map.html.twig'
+fields_schema:
+  type: object
+  title: 'Ubicaciones de Tienda'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: Eyebrow
+      maxLength: 50
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    map_embed:
+      type: string
+      title: 'Codigo embed del mapa'
+      format: html
+    address:
+      type: string
+      title: Direccion
+      maxLength: 200
+    phone:
+      type: string
+      title: Telefono
+      maxLength: 30
+    email:
+      type: string
+      title: Email
+      format: email
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/comercioconecta-map.png
+preview_data:
+  eyebrow: Ubicación
+  title: Encuéntranos
+  subtitle: 'Visita nuestra oficina o contacta con nosotros.'
+  map_embed: ''
+  address: 'Plaza Mayor, 5, Jaraba, Zaragoza'
+  phone: '+34 976 000 001'
+  email: hola@comercioconecta.es
+  working_hours:
+    -
+      days: 'Lunes a Viernes'
+      open: '09:00'
+      close: '18:00'
+    -
+      days: Sábados
+      open: '10:00'
+      close: '14:00'
+animation: fade-up
+weight: 18

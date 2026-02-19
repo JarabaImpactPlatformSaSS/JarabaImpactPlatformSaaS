@@ -1,0 +1,71 @@
+langcode: es
+status: true
+dependencies: {  }
+id: empleabilidad_social_proof
+label: 'Empleabilidad: Empresas Aliadas'
+description: 'Sección credibilidad y confianza especializada para buscadores de empleo.'
+category: empleabilidad
+twig_template: '@jaraba_page_builder/blocks/verticals/empleabilidad/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: 'Empresas Aliadas'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - professional
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/empleabilidad-social-proof.png
+preview_data:
+  eyebrow: Confianza
+  title: 'Empresas que contratan a nuestros candidatos'
+  subtitle: 'Organizaciones que confían en nuestro talento formado para cubrir sus vacantes.'
+  average_rating: 4.9
+  total_reviews: 312
+  reviews:
+    -
+      text: 'Encontré trabajo en menos de un mes gracias a la orientación personalizada y los cursos de la plataforma.'
+      author: 'Javier Pérez'
+      role: 'Desarrollador web'
+    -
+      text: 'El programa de reskilling me permitió reinventarme profesionalmente a los 45 años. Ahora trabajo en lo que me apasiona.'
+      author: 'Rosa Díaz'
+      role: 'Analista de datos'
+  logos:
+    -
+      src: ''
+      alt: 'Empresa tecnológica'
+    -
+      src: ''
+      alt: 'Consultora nacional'
+    -
+      src: ''
+      alt: 'Grupo industrial'
+  badges: {  }
+weight: 43

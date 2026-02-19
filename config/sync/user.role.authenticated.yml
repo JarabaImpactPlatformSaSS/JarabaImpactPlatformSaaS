@@ -13,8 +13,11 @@ dependencies:
     - file
     - filter
     - jaraba_candidate
+    - jaraba_copilot_v2
     - jaraba_job_board
     - jaraba_lms
+    - jaraba_mentoring
+    - jaraba_onboarding
     - jaraba_self_discovery
     - media
     - shortcut
@@ -29,6 +32,7 @@ permissions:
   - 'access checkout'
   - 'access comments'
   - 'access content'
+  - 'access copilot'
   - 'access jobseeker dashboard'
   - 'access self discovery tools'
   - 'access shortcuts'
@@ -49,6 +53,8 @@ permissions:
   - 'view commerce_product'
   - 'view learning paths'
   - 'view media'
+  - 'view mentor profiles'
+  - 'view onboarding progress'
   - 'view own applications'
   - 'view own certificates'
   - 'view own commerce_order'

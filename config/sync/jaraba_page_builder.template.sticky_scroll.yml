@@ -1,4 +1,3 @@
-uuid: 1091d003-1d4a-428b-b052-57d906b72b8e
 langcode: es
 status: true
 dependencies: {  }
@@ -62,7 +61,7 @@ fields_schema:
 plans_required:
   - enterprise
 is_premium: true
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/sticky-scroll.png
 preview_data:
   sticky_content:
     type: device_mockup
@@ -83,4 +82,3 @@ preview_data:
       description: 'Full functionality on any device. Work from anywhere, anytime.'
   sticky_position: left
   background: light
-weight: 0

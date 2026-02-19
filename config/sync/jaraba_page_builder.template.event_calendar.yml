@@ -1,4 +1,3 @@
-uuid: 564f7ab3-ee1c-4d9b-b05e-16b68ba2ab1b
 langcode: es
 status: true
 dependencies: {  }
@@ -96,7 +95,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: ''
+preview_image: /modules/custom/jaraba_page_builder/images/previews/event-calendar.png
 preview_data:
   title: 'Upcoming Events'
   subtitle: 'Join us for inspiring workshops and networking'
@@ -137,4 +136,3 @@ preview_data:
   subscribe_text: 'Subscribe to Calendar'
   limit: 6
   background: light
-weight: 0
