@@ -299,7 +299,7 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
       );
       // Enviar notificación de aprobación al profesional.
       try {
-        $userId = $entity->get('user_id')->target_id ?? NULL;
+        $userId = $entity->getOwnerId();
         if ($userId) {
           $user = \Drupal::entityTypeManager()->getStorage('user')->load($userId);
           if ($user && $user->getEmail()) {
@@ -340,14 +340,14 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
 
       // Enviar notificación por estado de reserva.
       try {
-        $clientId = $entity->get('client_id')->target_id ?? NULL;
+        $clientUid = $entity->getOwnerId();
         $providerId = $entity->get('provider_id')->target_id ?? NULL;
-        if ($clientId) {
-          $client = \Drupal::entityTypeManager()->getStorage('user')->load($clientId);
+        if ($clientUid) {
+          $client = \Drupal::entityTypeManager()->getStorage('user')->load($clientUid);
           if ($client && $client->getEmail()) {
             $mailKey = match ($new_status) {
               'confirmed' => 'booking_confirmed',
-              'cancelled' => 'booking_cancelled',
+              'cancelled_client', 'cancelled_provider' => 'booking_cancelled',
               'completed' => 'booking_completed',
               default => NULL,
             };
@@ -360,7 +360,7 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
                 [
                   'client_name' => $client->getDisplayName(),
                   'booking_id' => $entity->id(),
-                  'datetime' => $entity->get('datetime')->value ?? '',
+                  'datetime' => $entity->get('booking_date')->value ?? '',
                 ]
               );
             }
@@ -375,12 +375,12 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
       }
 
       // Si cancelada, liberar slot de disponibilidad.
-      if ($new_status === 'cancelled') {
+      if (str_starts_with($new_status, 'cancelled_')) {
         try {
           $availability = \Drupal::service('jaraba_servicios_conecta.availability');
           $availability->releaseSlot(
             (int) ($entity->get('provider_id')->target_id ?? 0),
-            $entity->get('datetime')->value ?? '',
+            $entity->get('booking_date')->value ?? '',
             (int) ($entity->get('duration_minutes')->value ?? 60)
           );
         }
@@ -446,7 +446,7 @@ function _jaraba_servicios_conecta_cancel_stale_bookings(int $now): void {
       ->execute();
 
     foreach ($storage->loadMultiple($ids) as $booking) {
-      $booking->set('status', 'cancelled');
+      $booking->set('status', 'cancelled_client');
       $booking->save();
 
       // Release the availability slot.
@@ -462,7 +462,7 @@ function _jaraba_servicios_conecta_cancel_stale_bookings(int $now): void {
       }
 
       \Drupal::logger('jaraba_servicios_conecta')->info(
-        'Auto-cancelled stale booking @id', ['@id' => $booking->id()]
+        'Auto-cancelled stale booking @id (pending >24h)', ['@id' => $booking->id()]
       );
     }
   }
@@ -482,28 +482,38 @@ function _jaraba_servicios_conecta_send_reminders(int $now): void {
     $mailManager = \Drupal::service('plugin.manager.mail');
     $userStorage = \Drupal::entityTypeManager()->getStorage('user');
 
-    // 24h reminders: bookings between now+23h and now+25h.
+    // Each window has: time range, the flag field to check/set.
     $windows = [
-      ['from' => $now + 82800, 'to' => $now + 90000],
-      ['from' => $now + 3300, 'to' => $now + 3900],
+      [
+        'from' => $now + 82800,
+        'to' => $now + 90000,
+        'flag' => 'reminder_24h_sent',
+      ],
+      [
+        'from' => $now + 3300,
+        'to' => $now + 3900,
+        'flag' => 'reminder_1h_sent',
+      ],
     ];
 
     foreach ($windows as $window) {
       $from = date('Y-m-d\TH:i:s', $window['from']);
       $to = date('Y-m-d\TH:i:s', $window['to']);
+      $flag = $window['flag'];
 
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
         ->condition('status', 'confirmed')
         ->condition('booking_date', $from, '>=')
         ->condition('booking_date', $to, '<=')
+        ->condition($flag, 0)
         ->execute();
 
       foreach ($storage->loadMultiple($ids) as $booking) {
-        $clientId = $booking->get('client_id')->target_id ?? NULL;
+        $clientUid = $booking->getOwnerId();
         $providerId = $booking->get('provider_id')->target_id ?? NULL;
 
-        foreach ([$clientId, $providerId] as $userId) {
+        foreach ([$clientUid, $providerId] as $userId) {
           if ($userId) {
             $user = $userStorage->load($userId);
             if ($user && $user->getEmail()) {
@@ -515,6 +525,10 @@ function _jaraba_servicios_conecta_send_reminders(int $now): void {
             }
           }
         }
+
+        // Mark reminder as sent to prevent duplicates.
+        $booking->set($flag, TRUE);
+        $booking->save();
       }
     }
   }
