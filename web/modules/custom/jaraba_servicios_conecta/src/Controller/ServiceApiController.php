@@ -215,44 +215,90 @@ class ServiceApiController extends ControllerBase {
     $data = json_decode($request->getContent(), TRUE);
 
     // Validate required fields.
-    $required = ['provider_id', 'service_id', 'datetime'];
+    $required = ['provider_id', 'offering_id', 'datetime'];
     foreach ($required as $field) {
       if (empty($data[$field])) {
-        return new JsonResponse(['error' => "Missing required field: {$field}"], 400);
+        return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => "Missing required field: {$field}"]], 400);
       }
     }
 
     $providerId = (int) $data['provider_id'];
-    $serviceId = (int) $data['service_id'];
+    $offeringId = (int) $data['offering_id'];
     $datetime = $data['datetime'];
 
-    // Load the service offering to get duration.
-    $offering = $this->entityTypeManager()->getStorage('service_offering')->load($serviceId);
+    // Validate provider exists and is active + approved.
+    $provider = $this->entityTypeManager()->getStorage('provider_profile')->load($providerId);
+    if (!$provider) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'Provider not found']], 404);
+    }
+    if (!$provider->get('is_active')->value || $provider->get('verification_status')->value !== 'approved') {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'FORBIDDEN', 'message' => 'Provider is not active or not approved']], 403);
+    }
+
+    // Load the service offering and validate it belongs to the provider.
+    $offering = $this->entityTypeManager()->getStorage('service_offering')->load($offeringId);
     if (!$offering) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Service offering not found']], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'Service offering not found']], 404);
+    }
+    if ((int) $offering->get('provider_id')->target_id !== $providerId) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => 'Offering does not belong to the specified provider']], 422);
     }
 
     $duration = (int) $offering->get('duration_minutes')->value;
+    $price = (float) $offering->get('price')->value;
+
+    // Validate datetime is in the future and meets advance_booking_min.
+    $requestedTimestamp = strtotime($datetime);
+    $now = time();
+    if ($requestedTimestamp === FALSE || $requestedTimestamp <= $now) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => 'Booking datetime must be in the future']], 422);
+    }
+    $advanceMinHours = (int) ($offering->get('advance_booking_min')->value ?? 2);
+    if (($requestedTimestamp - $now) < ($advanceMinHours * 3600)) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => "Booking requires at least {$advanceMinHours} hours advance notice"]], 422);
+    }
 
     // Verify availability.
     if (!$this->availabilityService->isSlotAvailable($providerId, $datetime, $duration)) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Selected time slot is not available']], 409);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'CONFLICT', 'message' => 'Selected time slot is not available']], 409);
     }
 
-    // Create the booking entity.
+    // Load client data from current user.
     $currentUser = $this->currentUser();
+    $userEntity = $this->entityTypeManager()->getStorage('user')->load($currentUser->id());
+    $clientName = $data['client_name'] ?? $userEntity->getDisplayName();
+    $clientEmail = $data['client_email'] ?? $userEntity->getEmail();
+    $clientPhone = $data['client_phone'] ?? '';
+
+    // Generate meeting URL for online modality.
+    $modality = $data['modality'] ?? $offering->get('modality')->value ?? 'in_person';
+    $meetingUrl = NULL;
+
+    // Create the booking entity.
     try {
       $booking = $this->entityTypeManager()->getStorage('booking')->create([
         'provider_id' => $providerId,
-        'service_id' => $serviceId,
-        'client_id' => $currentUser->id(),
-        'datetime' => $datetime,
+        'offering_id' => $offeringId,
+        'uid' => $currentUser->id(),
+        'client_name' => $clientName,
+        'client_email' => $clientEmail,
+        'client_phone' => $clientPhone,
+        'booking_date' => $datetime,
         'duration_minutes' => $duration,
+        'price' => $price,
         'status' => 'pending_confirmation',
-        'modality' => $offering->get('modality')->value ?? 'presential',
-        'notes' => $data['notes'] ?? '',
+        'payment_status' => 'not_required',
+        'modality' => $modality,
+        'client_notes' => $data['notes'] ?? '',
       ]);
       $booking->save();
+
+      // Set meeting_url after save so we have the booking ID.
+      if ($modality === 'online') {
+        $meetingUrl = 'https://meet.jit.si/jaraba-booking-' . $booking->id();
+        $booking->set('meeting_url', $meetingUrl);
+        $booking->save();
+      }
     }
     catch (\Exception $e) {
       return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Failed to create booking']], 500);
@@ -261,18 +307,14 @@ class ServiceApiController extends ControllerBase {
     // Mark availability slot as booked.
     $this->availabilityService->markSlotBooked($providerId, $datetime, $duration);
 
-    // Generate meeting URL for online modality.
-    $meetingUrl = NULL;
-    if ($offering->get('modality')->value === 'online') {
-      $meetingUrl = '/meeting/room/' . $booking->id();
-    }
-
     return new JsonResponse([
+      'success' => TRUE,
       'data' => [
         'booking_id' => (int) $booking->id(),
         'status' => 'pending_confirmation',
         'datetime' => $datetime,
         'duration_minutes' => $duration,
+        'price' => $price,
         'meeting_url' => $meetingUrl,
       ],
     ], 201);
@@ -285,43 +327,59 @@ class ServiceApiController extends ControllerBase {
     $bookingEntity = $this->entityTypeManager()->getStorage('booking')->load($booking);
 
     if (!$bookingEntity) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Booking not found']], 404);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'Booking not found']], 404);
     }
 
     // Verify the current user has permission (provider or client).
     $currentUserId = (int) $this->currentUser()->id();
     $providerId = (int) $bookingEntity->get('provider_id')->target_id;
-    $clientId = (int) $bookingEntity->get('client_id')->target_id;
+    $clientUid = (int) $bookingEntity->getOwnerId();
 
-    if ($currentUserId !== $providerId && $currentUserId !== $clientId) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Access denied']], 403);
+    if ($currentUserId !== $providerId && $currentUserId !== $clientUid) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'FORBIDDEN', 'message' => 'Access denied']], 403);
     }
 
     $data = json_decode($request->getContent(), TRUE);
     $newStatus = $data['status'] ?? NULL;
 
     if (!$newStatus) {
-      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Missing status field']], 400);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => 'Missing status field']], 400);
+    }
+
+    $isProvider = ($currentUserId === $providerId);
+
+    // Map generic 'cancelled' to role-specific status.
+    if ($newStatus === 'cancelled') {
+      $newStatus = $isProvider ? 'cancelled_provider' : 'cancelled_client';
     }
 
     // Validate state transition.
     $currentStatus = $bookingEntity->get('status')->value;
     $allowedTransitions = [
-      'pending_confirmation' => ['confirmed', 'cancelled'],
-      'confirmed' => ['completed', 'cancelled', 'no_show'],
+      'pending_confirmation' => ['confirmed', 'cancelled_client', 'cancelled_provider'],
+      'confirmed' => ['completed', 'cancelled_client', 'cancelled_provider', 'no_show'],
     ];
 
     if (!isset($allowedTransitions[$currentStatus]) || !in_array($newStatus, $allowedTransitions[$currentStatus], TRUE)) {
-      return new JsonResponse(['error' => "Invalid transition: {$currentStatus} -> {$newStatus}"], 422);
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => "Invalid transition: {$currentStatus} -> {$newStatus}"]], 422);
+    }
+
+    // Only providers can confirm or mark completed/no_show.
+    if (in_array($newStatus, ['confirmed', 'completed', 'no_show'], TRUE) && !$isProvider) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'FORBIDDEN', 'message' => 'Only the provider can perform this action']], 403);
     }
 
     $bookingEntity->set('status', $newStatus);
 
+    if (!empty($data['cancellation_reason'])) {
+      $bookingEntity->set('cancellation_reason', $data['cancellation_reason']);
+    }
+
     // If cancelled, release the availability slot.
-    if ($newStatus === 'cancelled') {
+    if (str_starts_with($newStatus, 'cancelled_')) {
       $this->availabilityService->releaseSlot(
         $providerId,
-        $bookingEntity->get('datetime')->value,
+        $bookingEntity->get('booking_date')->value ?? '',
         (int) $bookingEntity->get('duration_minutes')->value
       );
     }
@@ -329,6 +387,7 @@ class ServiceApiController extends ControllerBase {
     $bookingEntity->save();
 
     return new JsonResponse([
+      'success' => TRUE,
       'data' => [
         'booking_id' => (int) $bookingEntity->id(),
         'status' => $newStatus,

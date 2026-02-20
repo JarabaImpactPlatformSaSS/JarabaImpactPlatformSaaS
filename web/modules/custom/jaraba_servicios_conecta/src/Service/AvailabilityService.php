@@ -157,19 +157,7 @@ class AvailabilityService {
       while (($current + ($duration_minutes * 60)) <= $slot_end) {
         $candidate_end = $current + ($duration_minutes * 60);
 
-        // Verificar que no colisione con ninguna reserva
-        $collision = FALSE;
-        foreach ($bookings as $booking) {
-          $booking_start = strtotime($booking->get('booking_date')->value);
-          $booking_end = $booking_start + ((int) $booking->get('duration_minutes')->value * 60) + ($buffer * 60);
-
-          if ($current < $booking_end && $candidate_end > ($booking_start - ($buffer * 60))) {
-            $collision = TRUE;
-            break;
-          }
-        }
-
-        if (!$collision) {
+        if (!$this->hasCollision($current, $candidate_end, $bookings, $buffer)) {
           $available[] = date('H:i', $current);
         }
 
@@ -243,6 +231,115 @@ class AvailabilityService {
     // Future Fase 4 (Calendar Sync): This method will also need to
     // update external calendar events (Google Calendar, Outlook) to
     // mark the slot as available again.
+  }
+
+  /**
+   * Verifica si un slot concreto esta disponible para reserva.
+   *
+   * Combina la logica de getAvailableSlots() para un datetime + duracion
+   * concretos: comprueba que cae dentro de un slot recurrente activo y
+   * que no colisiona con reservas existentes (incluyendo buffer_time).
+   *
+   * @param int $providerId
+   *   ID del perfil profesional.
+   * @param string $datetime
+   *   Fecha/hora solicitada (Y-m-d\TH:i:s o Y-m-d H:i:s).
+   * @param int $duration
+   *   Duracion requerida en minutos.
+   *
+   * @return bool
+   *   TRUE si el slot esta disponible, FALSE si no.
+   */
+  public function isSlotAvailable(int $providerId, string $datetime, int $duration): bool {
+    $timestamp = strtotime($datetime);
+    if ($timestamp === FALSE) {
+      return FALSE;
+    }
+
+    $date = date('Y-m-d', $timestamp);
+    $day_of_week = (int) date('N', $timestamp);
+    $request_start = $timestamp;
+    $request_end = $timestamp + ($duration * 60);
+
+    // Verificar que el rango cae dentro de algun slot recurrente activo.
+    $slots_by_day = $this->getProviderSlots($providerId);
+    if (empty($slots_by_day[$day_of_week])) {
+      return FALSE;
+    }
+
+    $within_slot = FALSE;
+    foreach ($slots_by_day[$day_of_week] as $slot) {
+      $slot_start = strtotime($date . ' ' . $slot->get('start_time')->value);
+      $slot_end = strtotime($date . ' ' . $slot->get('end_time')->value);
+
+      if ($request_start >= $slot_start && $request_end <= $slot_end) {
+        $within_slot = TRUE;
+        break;
+      }
+    }
+
+    if (!$within_slot) {
+      return FALSE;
+    }
+
+    // Verificar que no hay colision con reservas existentes.
+    $bookings = $this->getProviderBookingsForDate($providerId, $date);
+    $provider = $this->entityTypeManager->getStorage('provider_profile')->load($providerId);
+    $buffer = $provider ? (int) $provider->get('buffer_time')->value : 15;
+
+    return !$this->hasCollision($request_start, $request_end, $bookings, $buffer);
+  }
+
+  /**
+   * Registra que un slot ha sido reservado.
+   *
+   * Como los slots son recurrentes semanales, la reserva se materializa
+   * al crear la entidad Booking. Este metodo registra la accion para
+   * auditoria. En Fase 4 actualizara calendarios externos.
+   *
+   * @param int $providerId
+   *   ID del profesional.
+   * @param string $datetime
+   *   Fecha/hora de la reserva (Y-m-d\TH:i:s).
+   * @param int $duration
+   *   Duracion de la reserva en minutos.
+   */
+  public function markSlotBooked(int $providerId, string $datetime, int $duration): void {
+    $this->logger->info('Slot booked for provider @provider at @datetime (@duration min)', [
+      '@provider' => $providerId,
+      '@datetime' => $datetime,
+      '@duration' => $duration,
+    ]);
+
+    // Future Fase 4 (Calendar Sync): Create external calendar event.
+  }
+
+  /**
+   * Verifica si un rango horario colisiona con reservas existentes.
+   *
+   * @param int $candidateStart
+   *   Timestamp de inicio del candidato.
+   * @param int $candidateEnd
+   *   Timestamp de fin del candidato.
+   * @param array $bookings
+   *   Array de entidades Booking existentes.
+   * @param int $buffer
+   *   Tiempo colchon en minutos entre citas.
+   *
+   * @return bool
+   *   TRUE si hay colision, FALSE si no.
+   */
+  private function hasCollision(int $candidateStart, int $candidateEnd, array $bookings, int $buffer): bool {
+    foreach ($bookings as $booking) {
+      $booking_start = strtotime($booking->get('booking_date')->value);
+      $booking_end = $booking_start + ((int) $booking->get('duration_minutes')->value * 60) + ($buffer * 60);
+
+      if ($candidateStart < $booking_end && $candidateEnd > ($booking_start - ($buffer * 60))) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
 }
