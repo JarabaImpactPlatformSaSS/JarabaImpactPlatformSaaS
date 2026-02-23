@@ -11,6 +11,9 @@ use Drupal\KernelTests\KernelTestBase;
 /**
  * Tests the SHA-256 hash chain audit trail.
  *
+ * Includes the full module dependency chain required by jaraba_messaging:
+ * group → flexible_permissions + entity, ecosistema_jaraba_core → jaraba_theming.
+ *
  * @coversDefaultClass \Drupal\jaraba_messaging\Service\MessageAuditService
  * @group jaraba_messaging
  */
@@ -18,11 +21,25 @@ class MessageAuditServiceTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * Full dependency chain:
+   * jaraba_messaging → group (→ entity, flexible_permissions, options)
+   *                   → ecosistema_jaraba_core (→ jaraba_theming, node, user, file, field, options, datetime)
    */
   protected static $modules = [
     'system',
     'user',
+    'node',
+    'file',
+    'field',
+    'options',
+    'datetime',
+    'text',
+    'filter',
+    'entity',
+    'flexible_permissions',
     'group',
+    'jaraba_theming',
     'ecosistema_jaraba_core',
     'jaraba_messaging',
   ];
@@ -129,7 +146,7 @@ class MessageAuditServiceTest extends KernelTestBase {
   }
 
   /**
-   * Tests genesis hash: first entry uses all-zeros previous_hash.
+   * Tests genesis hash: first entry stores binary all-zeros previous_hash.
    */
   public function testGenesisHash(): void {
     $this->auditService->log(1, 100, 'conversation.created');
@@ -143,7 +160,8 @@ class MessageAuditServiceTest extends KernelTestBase {
       ->execute()
       ->fetchField();
 
-    $this->assertSame(str_repeat('0', 64), $firstEntry);
+    // Hashes are stored as raw binary (32 bytes); convert to hex for assertion.
+    $this->assertSame(str_repeat('0', 64), bin2hex($firstEntry));
   }
 
   /**
@@ -156,7 +174,7 @@ class MessageAuditServiceTest extends KernelTestBase {
   }
 
   /**
-   * Tests getLog returns entries in descending order.
+   * Tests getLog returns entries in descending order with hex hashes.
    */
   public function testGetLogOrdering(): void {
     $this->auditService->log(1, 100, 'conversation.created');
@@ -169,6 +187,10 @@ class MessageAuditServiceTest extends KernelTestBase {
     // Descending order: newest first.
     $this->assertSame('message.read', $entries[0]['action']);
     $this->assertSame('conversation.created', $entries[2]['action']);
+
+    // Hashes should be returned as 64-char hex strings (not binary).
+    $this->assertSame(64, strlen($entries[0]['current_hash']));
+    $this->assertTrue(ctype_xdigit($entries[0]['current_hash']));
   }
 
   /**
