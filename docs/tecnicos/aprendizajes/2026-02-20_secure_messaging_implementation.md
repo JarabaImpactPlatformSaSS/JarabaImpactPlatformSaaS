@@ -166,6 +166,37 @@ protected static $modules = [
 
 **Regla MSG-VO-001:** Al usar named parameters con Value Objects `readonly`, verificar que el nombre del argumento coincide EXACTAMENTE con el parametro del constructor. Buscar con grep antes de commit: `grep -r 'NombreDelVO(' --include='*.php' | grep -v 'class '` para detectar todas las instanciaciones.
 
+### 2.12 Constructor Promotion y Propiedades Heredadas de ControllerBase (PHP 8.4)
+
+**Problema:** PHP 8.4 introduce un fatal error cuando un constructor con promotion (`protected Type $prop`) re-declara una propiedad que ya existe en la clase padre. `ControllerBase` ya define `$entityTypeManager`, `$configFactory`, `$currentUser`, `$moduleHandler`, entre otras. Usar `protected EntityTypeManagerInterface $entityTypeManager` en el constructor de una subclase causa:
+
+```
+Fatal error: Type of MyController::$entityTypeManager must not be defined
+(as in class Drupal\Core\Controller\ControllerBase)
+```
+
+Este error NO se detecta con `php -l` — solo se manifiesta en runtime al instanciar el controlador.
+
+**Solucion:** Quitar `protected` del parametro (para que no sea promoted) y asignar manualmente en el cuerpo del constructor:
+
+```php
+// INCORRECTO — re-declara propiedad heredada:
+public function __construct(
+  protected EntityTypeManagerInterface $entityTypeManager,
+) {}
+
+// CORRECTO — asigna a propiedad heredada sin re-declarar:
+public function __construct(
+  EntityTypeManagerInterface $entityTypeManager,
+) {
+  $this->entityTypeManager = $entityTypeManager;
+}
+```
+
+**Archivos afectados:** `RetentionDashboardController`, `RetentionApiController` (`$entityTypeManager`), `CalendarApiController` (`$entityTypeManager`, `$configFactory`).
+
+**Regla CTRL-PROMO-001:** NUNCA usar constructor promotion (`protected`/`public`) para propiedades que ya existen en `ControllerBase` u otra clase padre. Propiedades heredadas conocidas de `ControllerBase`: `$entityTypeManager`, `$entityFormBuilder`, `$configFactory`, `$currentUser`, `$languageManager`, `$moduleHandler`, `$keyValue`, `$stateService`. Usar asignacion explicita `$this->prop = $param` en el cuerpo del constructor.
+
 ## 3. Errores Corregidos
 
 | Error | Causa | Solucion |
@@ -174,6 +205,7 @@ protected static $modules = [
 | MessageOwnerAccessCheck no resuelve | Faltaba `@database` en services.yml | Anadir argumento `- '@database'` |
 | CI: `ServiceNotFoundException: flexible_permissions.chain_calculator` (14 kernel tests) | Los kernel tests declaraban `group` en `$modules` sin incluir sus dependencias transitivas (`flexible_permissions`, `entity`) | Trazar el arbol completo de dependencias de `jaraba_messaging.info.yml` y declarar TODOS los modulos en orden: `system`, `user`, `node`, `file`, `field`, `options`, `datetime`, `text`, `filter`, `entity`, `flexible_permissions`, `group`, `jaraba_theming`, `ecosistema_jaraba_core`, `jaraba_messaging` |
 | CI: `Unknown named parameter $keyId` (6 encryption tests) | `EncryptedPayload` define el constructor con `$key_id` (snake_case) pero `MessageEncryptionService`, `MessageService` y `SearchService` lo invocaban como `keyId:` (camelCase). PHP named parameters exigen coincidencia exacta | Cambiar `keyId:` a `key_id:` en los 3 servicios afectados |
+| Fatal: `Type of $entityTypeManager must not be defined (as in class ControllerBase)` | Constructor promotion (`protected EntityTypeManagerInterface $entityTypeManager`) re-declara una propiedad ya definida en `ControllerBase`. PHP 8.4 lo prohibe. No detectable con `php -l` | Quitar `protected` del parametro y asignar con `$this->entityTypeManager = $entityTypeManager` en el cuerpo. Afectados: `RetentionDashboardController`, `RetentionApiController`, `CalendarApiController` |
 
 ## 4. Metricas Finales
 
@@ -205,6 +237,7 @@ protected static $modules = [
 | MSG-RATE-001 | Rate Limiting Mensajeria | 30 msg/min/user, 100 msg/min/conversation. Contadores DB |
 | MSG-TEST-001 | Dependencias Transitivas en Kernel Tests | SIEMPRE declarar cadena completa de modulos en `$modules`. Trazar desde info.yml hasta las hojas |
 | MSG-VO-001 | Named Parameters en Value Objects | Verificar coincidencia EXACTA de nombres al instanciar VOs readonly con named parameters |
+| CTRL-PROMO-001 | Constructor Promotion y Herencia | NUNCA usar `protected`/`public` promotion para propiedades heredadas de `ControllerBase` (`$entityTypeManager`, `$configFactory`, etc.). Asignar con `$this->prop = $param` |
 
 ## 6. Post-Audit Hardening (2026-02-23)
 
@@ -286,7 +319,7 @@ Error: Unknown named parameter $keyId
 | Hash storage efficiency | 64 bytes/hash | 32 bytes/hash |
 | PresenceService backends | Memory only | Redis + Memory fallback |
 | CI status | N/A | Verde (161 tests, 0 errores) |
-| Reglas nuevas | 3 | 5 (+MSG-TEST-001, +MSG-VO-001) |
+| Reglas nuevas | 3 | 6 (+MSG-TEST-001, +MSG-VO-001, +CTRL-PROMO-001) |
 
 ## 7. Documentos Actualizados
 
