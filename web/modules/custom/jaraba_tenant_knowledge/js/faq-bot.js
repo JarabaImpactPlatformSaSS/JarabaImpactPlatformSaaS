@@ -264,19 +264,38 @@
             });
           }
 
-          // Follow-up suggestions.
+          // Follow-up suggestions & CTAs (patrón estándar SaaS).
           if (role === 'assistant' && meta.suggestions && meta.suggestions.length > 0) {
             var sugDiv = document.createElement('div');
             sugDiv.className = 'faq-bot__follow-suggestions';
+
+            // Mapa de acciones → URLs de redirección.
+            var actionRoutes = {
+              'register': '/user/register',
+              'view_plans': '/planes',
+              'view_jobs': '/empleo',
+              'view_courses': '/formacion',
+              'view_marketplace': '/marketplace',
+              'contact_support': '/ayuda',
+              'contact_sales': '/contacto'
+            };
+
             meta.suggestions.forEach(function (s) {
-              var btn = document.createElement('button');
+              var isRedirect = s.action && actionRoutes[s.action];
+              var btn = document.createElement(isRedirect ? 'a' : 'button');
               btn.className = 'faq-bot__suggestion-chip';
-              btn.textContent = s.label;
-              btn.addEventListener('click', function () {
-                sugDiv.remove();
-                input.value = s.label;
-                sendMessage();
-              });
+              if (isRedirect) {
+                btn.className += ' faq-bot__suggestion-chip--cta';
+                btn.href = actionRoutes[s.action];
+                btn.textContent = s.label;
+              } else {
+                btn.textContent = s.label;
+                btn.addEventListener('click', function () {
+                  sugDiv.remove();
+                  input.value = s.label;
+                  sendMessage();
+                });
+              }
               sugDiv.appendChild(btn);
             });
             wrapper.appendChild(sugDiv);

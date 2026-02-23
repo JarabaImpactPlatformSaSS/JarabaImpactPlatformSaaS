@@ -86,9 +86,26 @@ class FaqBotApiController extends ControllerBase {
     $message = trim($content['message'] ?? '');
     $sessionId = $content['session_id'] ?? NULL;
 
-    // AUDIT-SEC-N07: Resolver tenant_id desde el contexto del servidor (host),
+    // AUDIT-SEC-N07: Resolver tenant_id desde el contexto del servidor,
     // NO desde el body del cliente. Previene IDOR cross-tenant en KB.
     $tenantId = (int) $this->tenantContext->getCurrentTenantId();
+
+    // Fallback para usuarios anónimos: el endpoint es público (_access: TRUE)
+    // pero TenantContextService resuelve por admin_user (requiere login).
+    // Cargar el primer tenant activo como default para el FAQ Bot público.
+    if ($tenantId <= 0) {
+      try {
+        $tenants = $this->entityTypeManager()->getStorage('tenant')
+          ->loadMultiple();
+        if (!empty($tenants)) {
+          $tenantId = (int) reset($tenants)->id();
+        }
+      }
+      catch (\Exception $e) {
+        // Si falla la carga de tenants, caer al error abajo.
+      }
+    }
+
     if ($tenantId <= 0) {
       return new JsonResponse([
         'success' => FALSE,

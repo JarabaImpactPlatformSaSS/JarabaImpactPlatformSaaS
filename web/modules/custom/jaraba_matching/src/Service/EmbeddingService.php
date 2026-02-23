@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_matching\Service;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use GuzzleHttp\ClientInterface;
+use Drupal\ai\AiProviderPluginManager;
+use Drupal\ai\OperationType\Embeddings\EmbeddingsInput;
 use Psr\Log\LoggerInterface;
 
 /**
  * Servicio de embeddings para el Matching Engine.
  *
- * Genera embeddings usando OpenAI text-embedding-3-small (1536 dimensiones).
- * Reutiliza la configuración de jaraba_rag para API keys.
+ * Genera embeddings usando el módulo Drupal AI (provider abstraction).
+ * Utiliza el provider y modelo configurados como default para 'embeddings',
+ * con fallback a 'text-embedding-3-small'.
  *
  * ARQUITECTURA:
- * - Mismo modelo de embedding que jaraba_rag para consistencia
- * - Cachea embeddings para evitar llamadas duplicadas
+ * - Usa AiProviderPluginManager para failover, cost tracking y key management
+ * - Cachea embeddings en memoria para evitar llamadas duplicadas
  */
 class EmbeddingService
 {
 
     /**
-     * Modelo de embedding de OpenAI.
+     * Modelo de embedding por defecto (fallback).
      */
     const EMBEDDING_MODEL = 'text-embedding-3-small';
 
@@ -32,18 +33,11 @@ class EmbeddingService
     const VECTOR_DIMENSIONS = 1536;
 
     /**
-     * HTTP client.
+     * AI provider plugin manager.
      *
-     * @var \GuzzleHttp\ClientInterface
+     * @var \Drupal\ai\AiProviderPluginManager
      */
-    protected $httpClient;
-
-    /**
-     * Config factory.
-     *
-     * @var \Drupal\Core\Config\ConfigFactoryInterface
-     */
-    protected $configFactory;
+    protected $aiProvider;
 
     /**
      * Logger.
@@ -63,12 +57,10 @@ class EmbeddingService
      * Constructor.
      */
     public function __construct(
-        ClientInterface $http_client,
-        ConfigFactoryInterface $config_factory,
+        AiProviderPluginManager $ai_provider,
         $logger_factory
     ) {
-        $this->httpClient = $http_client;
-        $this->configFactory = $config_factory;
+        $this->aiProvider = $ai_provider;
         $this->logger = $logger_factory->get('jaraba_matching');
     }
 
@@ -87,41 +79,29 @@ class EmbeddingService
             return [];
         }
 
-        // Check cache
+        // Check cache.
         $cacheKey = md5($text);
         if (isset($this->cache[$cacheKey])) {
             return $this->cache[$cacheKey];
         }
 
-        $apiKey = $this->getOpenAiApiKey();
-        if (empty($apiKey)) {
-            $this->logger->error('OpenAI API key not configured');
-            return [];
-        }
-
         try {
-            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/embeddings', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'model' => self::EMBEDDING_MODEL,
-                    'input' => $text,
-                ],
-                'timeout' => 10,
-            ]);
+            $defaults = $this->aiProvider->getDefaultProviderForOperationType('embeddings');
 
-            $data = json_decode($response->getBody()->getContents(), TRUE);
-
-            if (isset($data['data'][0]['embedding'])) {
-                $embedding = $data['data'][0]['embedding'];
-                $this->cache[$cacheKey] = $embedding;
-                return $embedding;
+            if (empty($defaults['provider_id'])) {
+                $this->logger->error('No AI provider configured for embeddings. Configure at /admin/config/ai/settings');
+                return [];
             }
 
-            $this->logger->warning('Invalid embedding response structure');
-            return [];
+            $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+            $modelId = $defaults['model_id'] ?? self::EMBEDDING_MODEL;
+
+            $input = new EmbeddingsInput($text);
+            $result = $provider->embeddings($input, $modelId, ['jaraba_matching']);
+            $embedding = $result->getNormalized();
+
+            $this->cache[$cacheKey] = $embedding;
+            return $embedding;
         } catch (\Exception $e) {
             $this->logger->error('Embedding generation failed: @error', [
                 '@error' => $e->getMessage(),
@@ -229,43 +209,6 @@ class EmbeddingService
         }
 
         return implode("\n", $parts);
-    }
-
-    /**
-     * Obtiene la API key de OpenAI desde configuración.
-     *
-     * @return string
-     *   API key o string vacío.
-     */
-    protected function getOpenAiApiKey(): string
-    {
-        if (!\Drupal::hasService('key.repository')) {
-            return getenv('OPENAI_API_KEY') ?: '';
-        }
-
-        $keyRepository = \Drupal::service('key.repository');
-
-        // Buscar keys comunes de OpenAI directamente
-        $keyNames = ['openai_api', 'openai', 'openai_api_key'];
-        foreach ($keyNames as $keyName) {
-            $key = $keyRepository->getKey($keyName);
-            if ($key) {
-                return $key->getKeyValue();
-            }
-        }
-
-        // Intentar desde config de jaraba_rag
-        $ragConfig = $this->configFactory->get('jaraba_rag.settings');
-        $keyId = $ragConfig->get('openai_api_key');
-        if ($keyId) {
-            $key = $keyRepository->getKey($keyId);
-            if ($key) {
-                return $key->getKeyValue();
-            }
-        }
-
-        // Fallback a variable de entorno
-        return getenv('OPENAI_API_KEY') ?: '';
     }
 
 }

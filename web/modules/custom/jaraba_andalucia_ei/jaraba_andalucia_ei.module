@@ -40,10 +40,21 @@ function jaraba_andalucia_ei_theme(): array {
     'solicitud_ei_page' => [
       'variables' => [
         'form' => NULL,
+        'messages' => NULL,
       ],
       'template' => 'solicitud-ei-page',
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for solicitud_ei_page.
+ *
+ * Injects Drupal status messages into the solicitud template so that
+ * form validation errors and success messages are visible to the user.
+ */
+function jaraba_andalucia_ei_preprocess_solicitud_ei_page(array &$variables): void {
+  $variables['messages'] = ['#type' => 'status_messages'];
 }
 
 // =============================================================================

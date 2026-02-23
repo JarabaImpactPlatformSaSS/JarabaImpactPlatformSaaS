@@ -247,7 +247,7 @@ class SolicitudEiPublicForm extends FormBase
         // === PRIVACIDAD ===
         $form['privacidad'] = [
             '#type' => 'checkbox',
-            '#title' => $this->t('Acepto la <a href="/privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos para la gestión de esta solicitud.'),
+            '#title' => $this->t('Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos para la gestión de esta solicitud.'),
             '#required' => TRUE,
         ];
 

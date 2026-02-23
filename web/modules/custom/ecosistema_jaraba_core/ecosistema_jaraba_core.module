@@ -632,6 +632,47 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'fiscal_tenant_id' => '',
       ],
     ],
+
+    // =========================================================================
+    // PÁGINAS LEGALES E INFORMATIVAS
+    // =========================================================================
+
+    // Template genérico reutilizable para páginas legales (privacidad, términos, cookies).
+    // Contenido configurable desde theme settings.
+    'legal_page' => [
+      'variables' => [
+        'page_type' => '',
+        'title' => '',
+        'content' => '',
+        'last_updated' => '',
+        'theme_settings' => [],
+      ],
+      'template' => 'legal-page',
+      'path' => $path . '/templates',
+    ],
+
+    // Página Sobre Nosotros.
+    'info_page_about' => [
+      'variables' => [
+        'content' => '',
+        'theme_settings' => [],
+      ],
+      'template' => 'info-page-about',
+      'path' => $path . '/templates',
+    ],
+
+    // Página de Contacto.
+    'info_page_contact' => [
+      'variables' => [
+        'content' => '',
+        'contact_email' => '',
+        'contact_phone' => '',
+        'contact_address' => '',
+        'theme_settings' => [],
+      ],
+      'template' => 'info-page-contact',
+      'path' => $path . '/templates',
+    ],
   ];
 
 

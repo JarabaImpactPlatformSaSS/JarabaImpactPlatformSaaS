@@ -32,17 +32,18 @@
 .user-main {
   width: 100%;
   min-height: calc(100vh - 160px);
-  // Compensar el header fijo (position: fixed, ~72px de alto)
-  padding-top: 96px;
+  // Compensar el header fijo (position: fixed, ~80-90px de alto con
+  // items de acción multi-línea como "Mi cuenta" / "Cerrar sesión")
+  padding-top: 120px;
   background: linear-gradient(180deg, #f0f4f8 0%, #e8edf3 50%, #f8fafc 100%);
 
   // Compensar toolbar de admin cuando está logueado
   .toolbar-fixed & {
-    padding-top: calc(96px + 39px);
+    padding-top: calc(120px + 39px);
   }
 
   .toolbar-fixed.toolbar-tray-open.toolbar-horizontal & {
-    padding-top: calc(96px + 79px);
+    padding-top: calc(120px + 79px);
   }
 }
 
