@@ -1,0 +1,13 @@
+id: enterprise
+label: 'Enterprise'
+tier_key: enterprise
+aliases:
+  - enterprise
+  - corporativo
+  - corp
+  - unlimited
+stripe_price_monthly: ''
+stripe_price_yearly: ''
+description: 'Plan enterprise con funcionalidades ilimitadas y soporte premium.'
+weight: 20
+status: true

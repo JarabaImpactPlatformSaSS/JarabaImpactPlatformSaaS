@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
+use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService;
 use Psr\Log\LoggerInterface;
 
@@ -54,6 +55,16 @@ class PlanValidator
     protected ?UpgradeTriggerService $upgradeTriggerService;
 
     /**
+     * Servicio de resolucion de planes (Precios Configurables v2.1).
+     *
+     * Nullable para backwards compatibility: cuando no disponible,
+     * PlanValidator sigue usando FreemiumVerticalLimit como fuente.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\PlanResolverService|null
+     */
+    protected ?PlanResolverService $planResolver;
+
+    /**
      * Constructor.
      *
      * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -63,15 +74,20 @@ class PlanValidator
      * @param \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService|null $upgrade_trigger_service
      *   (Optional) Servicio de triggers de upgrade para consultar limites
      *   FreemiumVerticalLimit por vertical+plan. NULL si no disponible.
+     * @param \Drupal\ecosistema_jaraba_core\Service\PlanResolverService|null $plan_resolver
+     *   (Optional) Servicio de resolucion de planes para consultar
+     *   SaasPlanFeatures como fuente adicional de limites.
      */
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
         LoggerInterface $logger,
         ?UpgradeTriggerService $upgrade_trigger_service = null,
+        ?PlanResolverService $plan_resolver = null,
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->logger = $logger;
         $this->upgradeTriggerService = $upgrade_trigger_service;
+        $this->planResolver = $plan_resolver;
     }
 
     // =========================================================================
@@ -184,11 +200,25 @@ class PlanValidator
      */
     protected function resolveEffectiveLimit(string $vertical, string $plan, string $featureKey, int $fallback): int
     {
-        if ($this->upgradeTriggerService === null || $vertical === '' || $plan === '') {
-            return $fallback;
+        // 1. FreemiumVerticalLimit via UpgradeTriggerService (highest priority).
+        if ($this->upgradeTriggerService !== null && $vertical !== '' && $plan !== '') {
+            $fvlLimit = $this->upgradeTriggerService->getLimitValue($vertical, $plan, $featureKey, -999);
+            if ($fvlLimit !== -999) {
+                return $fvlLimit;
+            }
         }
 
-        return $this->upgradeTriggerService->getLimitValue($vertical, $plan, $featureKey, $fallback);
+        // 2. SaasPlanFeatures via PlanResolverService (Precios Configurables v2.1).
+        if ($this->planResolver !== null && $vertical !== '' && $plan !== '') {
+            $tier = $this->planResolver->normalize($plan);
+            $resolvedLimit = $this->planResolver->checkLimit($vertical, $tier, $featureKey, -999);
+            if ($resolvedLimit !== -999) {
+                return $resolvedLimit;
+            }
+        }
+
+        // 3. SaasPlan fallback.
+        return $fallback;
     }
 
     /**

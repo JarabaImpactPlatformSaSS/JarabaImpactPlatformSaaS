@@ -1,0 +1,18 @@
+id: serviciosconecta_professional
+label: 'ServiciosConecta - Professional'
+vertical: serviciosconecta
+tier: professional
+features:
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - calendar_sync
+  - buzon_confianza
+limits:
+  services: 20
+  bookings_per_month: 200
+  calendar_sync: 1
+  buzon_confianza: 1
+  firma_digital: 0
+description: 'Limites del tier Professional para la vertical ServiciosConecta.'
+status: true

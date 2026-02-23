@@ -162,7 +162,7 @@ display:
           entity_type: social_auth
           entity_field: provider_user_id
           plugin_id: field
-          label: 'Provider user ID'
+          label: 'ID de usuario del proveedor'
           exclude: false
           alter:
             alter_text: false

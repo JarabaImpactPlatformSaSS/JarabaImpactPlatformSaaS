@@ -130,6 +130,10 @@ class PublicCopilotController extends ControllerBase
         $content = json_decode($request->getContent(), TRUE);
         $message = trim($content['message'] ?? '');
         $context = $content['context'] ?? [];
+        // Normalize: JS may send a string like "help_center" instead of an array.
+        if (is_string($context)) {
+            $context = ['current_page' => $context];
+        }
         $history = $content['history'] ?? [];  // Historial de conversación
 
         if (empty($message)) {

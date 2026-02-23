@@ -1,0 +1,18 @@
+id: agroconecta_professional
+label: 'AgroConecta - Professional'
+vertical: agroconecta
+tier: professional
+features:
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - traceability_qr
+limits:
+  products: 50
+  orders_per_month: 300
+  copilot_uses_per_month: 100
+  photos_per_product: 10
+  commission_pct: 5
+  traceability_qr: 50
+description: 'Limites del tier Professional para la vertical AgroConecta.'
+status: true

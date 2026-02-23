@@ -1,0 +1,38 @@
+# Schema for SaasPlanTier config entity
+ecosistema_jaraba_core.plan_tier.*:
+  type: config_entity
+  label: 'SaaS Plan Tier configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    tier_key:
+      type: string
+      label: 'Canonical tier key'
+    aliases:
+      type: sequence
+      label: 'Aliases for plan name normalization'
+      sequence:
+        type: string
+        label: 'Alias'
+    stripe_price_monthly:
+      type: string
+      label: 'Stripe Price ID (Monthly)'
+    stripe_price_yearly:
+      type: string
+      label: 'Stripe Price ID (Yearly)'
+    description:
+      type: text
+      label: 'Description'
+    weight:
+      type: integer
+      label: 'Weight'
+    status:
+      type: boolean
+      label: 'Status'

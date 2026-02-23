@@ -1,0 +1,14 @@
+id: agroconecta_starter
+label: 'AgroConecta - Starter'
+vertical: agroconecta
+tier: starter
+features: []
+limits:
+  products: 5
+  orders_per_month: 20
+  copilot_uses_per_month: 10
+  photos_per_product: 3
+  commission_pct: 8
+  traceability_qr: 0
+description: 'Limites del tier Starter para la vertical AgroConecta.'
+status: true

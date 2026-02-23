@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v61.0
+## Jaraba Impact Platform SaaS v62.0
 
-**Fecha:** 2026-02-20
-**Versión:** 61.0.0 (Secure Messaging Implementado — Doc 178 jaraba_messaging)
-**Estado:** Produccion (Security Hardened + Secure Messaging Implementado)
+**Fecha:** 2026-02-23
+**Versión:** 62.0.0 (Precios Configurables v2.1 — SaasPlanTier + SaasPlanFeatures + PlanResolverService)
+**Estado:** Produccion (Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -123,6 +123,35 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   └── Total: 104 archivos, 6 sprints completados                      │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      PRECIOS CONFIGURABLES v2.1 ⭐                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 ecosistema_jaraba_core (Plan Config) ⭐                           │
+│   ├── ConfigEntities (2):                                              │
+│   │   ├── SaasPlanTier: tier_key, aliases, Stripe Price IDs, weight   │
+│   │   └── SaasPlanFeatures: vertical+tier, features[], limits{}       │
+│   ├── PlanResolverService (broker central):                            │
+│   │   ├── normalize(): Alias → tier key canonico                      │
+│   │   ├── getFeatures(): Cascade especifico → default → NULL          │
+│   │   ├── checkLimit() / hasFeature(): Consultas atomicas             │
+│   │   ├── resolveFromStripePriceId(): Resolucion inversa Stripe       │
+│   │   └── getPlanCapabilities(): Array plano para QuotaManager        │
+│   ├── Seed Data: 21 YAMLs (3 tiers + 3 defaults + 15 verticales)    │
+│   ├── Admin UI: /admin/config/jaraba/plan-tiers + plan-features      │
+│   ├── Drush: jaraba:validate-plans (completitud de configs)           │
+│   ├── Update Hook: 9019 (FileStorage + CONFIG-SEED-001)              │
+│   └── SCSS: _plan-admin.scss (body class page-plan-admin)            │
+│                                                                         │
+│   Integraciones cross-module (inyeccion @? opcional):                  │
+│   ├── QuotaManagerService (jaraba_page_builder): PlanResolver first   │
+│   │   con fallback a array hardcoded para backwards-compat            │
+│   ├── PlanValidator (jaraba_billing): 3-source cascade                │
+│   │   FVL → PlanFeatures → SaasPlan fallback                         │
+│   └── BillingWebhookController: Stripe Price ID → tier resolution    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -131,6 +160,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **62.0.0** | **Precios Configurables v2.1:** 2 ConfigEntities (`SaasPlanTier` + `SaasPlanFeatures`) como fuente de verdad para tiers, features y limites. `PlanResolverService` broker central con cascade especifico→default→NULL. Integracion en QuotaManagerService, PlanValidator y BillingWebhookController. 21 seed YAMLs + update hook 9019. Admin UI en `/admin/config/jaraba/plan-tiers` y `plan-features`. Drush command `jaraba:validate-plans`. 14 archivos nuevos + 11 editados. |
 | 2026-02-20 | **61.0.0** | **Secure Messaging Implementado (Doc 178):** Modulo `jaraba_messaging` implementado al completo con 104 archivos. 4 entidades PHP (SecureConversation + ConversationParticipant ContentEntities, SecureMessage + MessageAuditLog custom tables), 3 modelos (SecureMessageDTO readonly, EncryptedPayload, IntegrityReport), 18 servicios + 7 access checks, 7 controladores REST, 4 WebSocket (Ratchet server + ConnectionManager + MessageHandler + AuthMiddleware), 8 ECA plugins (3 eventos + 3 condiciones + 2 acciones), 9 Twig templates (zero-region), 11 SCSS + 4 JS. Cifrado AES-256-GCM server-side + Argon2id KDF. SHA-256 hash chain audit. RGPD Art.20 export. Cursor-based pagination. |
 | 2026-02-20 | 60.0.0 | **Secure Messaging Plan (Doc 178):** Plan de implementacion para `jaraba_messaging`. 64+ archivos planificados en 6 sprints. |
 | 2026-02-20 | 59.0.0 | **ServiciosConecta Sprint S3 — Booking Engine Operativo:** Fix critico de `createBooking()` API (field mapping booking_date/offering_id/uid, validaciones provider activo+aprobado, offering ownership, advance_booking_min, client data, price, meeting_url Jitsi). Implementacion de `isSlotAvailable()`, `markSlotBooked()` y `hasCollision()` (refactored) en AvailabilityService. Fix `updateBooking()` state machine (cancelled_client/cancelled_provider, role enforcement provider-only para confirm/complete/no_show). Fix cron reminder duplicates (flags reminder_24h_sent/reminder_1h_sent). Fix hook_entity_update (booking_date, getOwnerId, cancelled_ prefix). 3 archivos modificados, 0 nuevos. |
@@ -142,4 +172,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 61.0.0 | **Fecha:** 2026-02-20 | **Autor:** IA Asistente
+> **Versión:** 62.0.0 | **Fecha:** 2026-02-23 | **Autor:** IA Asistente

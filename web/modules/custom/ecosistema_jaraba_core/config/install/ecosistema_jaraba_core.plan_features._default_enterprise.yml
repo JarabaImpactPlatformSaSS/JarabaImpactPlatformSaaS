@@ -1,0 +1,27 @@
+id: _default_enterprise
+label: 'Default - Enterprise'
+vertical: _default
+tier: enterprise
+features:
+  - seo_advanced
+  - ab_testing
+  - analytics
+  - schema_org
+  - premium_blocks
+  - api_access
+  - white_label
+limits:
+  max_pages: -1
+  basic_templates: 55
+  premium_templates: 22
+  basic_blocks: 45
+  premium_blocks: 22
+  ab_test_limit: -1
+  max_products: -1
+  orders_per_month: -1
+  copilot_uses_per_month: -1
+  storage_gb: -1
+  ai_queries: -1
+  productores: -1
+description: 'Limites por defecto para el tier Enterprise (ilimitado).'
+status: true

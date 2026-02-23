@@ -1,0 +1,14 @@
+id: empleabilidad_starter
+label: 'Empleabilidad - Starter'
+vertical: empleabilidad
+tier: starter
+features: []
+limits:
+  cv_builder: 1
+  job_applications_per_day: 3
+  copilot_messages_per_day: 5
+  job_alerts: 1
+  offers_visible_per_day: 10
+  diagnostics: 1
+description: 'Limites del tier Starter para la vertical Empleabilidad.'
+status: true

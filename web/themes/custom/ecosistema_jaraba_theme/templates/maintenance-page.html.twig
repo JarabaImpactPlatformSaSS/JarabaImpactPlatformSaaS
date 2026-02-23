@@ -1,0 +1,311 @@
+{#
+/**
+ * @file
+ * maintenance-page.html.twig — Pagina de mantenimiento standalone.
+ *
+ * REQUISITO CRITICO: Esta pagina debe funcionar SIN base de datos,
+ * SIN JavaScript, SIN CSS externo, SIN Twig functions custom.
+ * Todo el CSS debe ir inline.
+ *
+ * Variables disponibles (limitadas por Drupal en modo mantenimiento):
+ * - {{ site_name }} — nombre del sitio
+ * - {{ head }} — elementos head
+ * - {{ css }} — CSS de libraries (puede estar vacio si DB caida)
+ * - {{ title }} — titulo de la pagina
+ * - {{ content }} — mensaje de mantenimiento configurado
+ *
+ * NO usa partials (header/footer), NO usa jaraba_icon().
+ * TODO el estilo es inline para maximo aislamiento.
+ */
+#}
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{{ title|default('Mantenimiento') }} | {{ site_name|default('Jaraba Impact Platform') }}</title>
+  {{ head }}
+  {{ css }}
+  <style>
+    /* =====================================================================
+     * Maintenance Page — CSS Inline Standalone
+     *
+     * Colores Jaraba:
+     *   Corporate: #233D63
+     *   Primary (Impulse): #FF8C42
+     *   Secondary (Innovation): #00A9A5
+     *   Body BG: #F8FAFC
+     * ===================================================================== */
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #F8FAFC 0%, #E8EDF4 50%, #F0F4F8 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      color: #334155;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Background animated shapes */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.06;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 500px;
+      height: 500px;
+      background: #FF8C42;
+      top: -150px;
+      right: -100px;
+      animation: float-bg 20s ease-in-out infinite;
+    }
+
+    body::after {
+      width: 400px;
+      height: 400px;
+      background: #00A9A5;
+      bottom: -100px;
+      left: -80px;
+      animation: float-bg 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float-bg {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(30px, -20px); }
+      66% { transform: translate(-20px, 15px); }
+    }
+
+    /* Card container */
+    .maintenance {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(35, 61, 99, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    @media (min-width: 640px) {
+      .maintenance {
+        padding: 3.5rem 3rem;
+      }
+    }
+
+    /* Logo */
+    .maintenance__logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      animation: pulse-logo 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-logo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .maintenance__logo svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .maintenance__logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #233D63;
+      letter-spacing: -0.02em;
+    }
+
+    /* Title */
+    .maintenance__title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1A1A2E;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    @media (min-width: 640px) {
+      .maintenance__title {
+        font-size: 2rem;
+      }
+    }
+
+    /* Subtitle */
+    .maintenance__subtitle {
+      font-size: 1rem;
+      color: #64748B;
+      margin-bottom: 2rem;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Content (Drupal maintenance message) */
+    .maintenance__content {
+      font-size: 0.9375rem;
+      color: #475569;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: rgba(35, 61, 99, 0.04);
+      border-radius: 10px;
+    }
+
+    .maintenance__content:empty {
+      display: none;
+    }
+
+    /* Gear illustration */
+    .maintenance__gears {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      height: 90px;
+      position: relative;
+    }
+
+    .maintenance__gear {
+      position: absolute;
+    }
+
+    .maintenance__gear--large {
+      animation: spin-gear 8s linear infinite;
+    }
+
+    .maintenance__gear--small {
+      animation: spin-gear 5s linear infinite reverse;
+    }
+
+    @keyframes spin-gear {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Progress bar */
+    .maintenance__progress {
+      width: 100%;
+      max-width: 280px;
+      height: 4px;
+      background: #E5E7EB;
+      border-radius: 4px;
+      margin: 0 auto 2rem;
+      overflow: hidden;
+    }
+
+    .maintenance__progress-bar {
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, #FF8C42, #00A9A5);
+      border-radius: 4px;
+      animation: progress-slide 2s ease-in-out infinite;
+    }
+
+    @keyframes progress-slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+
+    /* Contact info */
+    .maintenance__contact {
+      font-size: 0.875rem;
+      color: #94A3B8;
+    }
+
+    .maintenance__contact a {
+      color: #FF8C42;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .maintenance__contact a:hover {
+      text-decoration: underline;
+    }
+
+    .maintenance__contact a:focus-visible {
+      outline: 3px solid rgba(255, 140, 66, 0.4);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="maintenance" role="main" aria-labelledby="maintenance-title">
+
+    {# Logo — SVG inline ya que no podemos cargar archivos externos #}
+    <div class="maintenance__logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" aria-hidden="true">
+        <rect width="44" height="44" rx="10" fill="#233D63"/>
+        <text x="22" y="30" text-anchor="middle" font-family="'Outfit', sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">J</text>
+      </svg>
+      <span class="maintenance__logo-text">{{ site_name|default('Jaraba') }}</span>
+    </div>
+
+    <h1 id="maintenance-title" class="maintenance__title">{% trans %}En mantenimiento{% endtrans %}</h1>
+    <p class="maintenance__subtitle">{% trans %}Estamos mejorando la plataforma. Volveremos en breve.{% endtrans %}</p>
+
+    {# Mensaje de mantenimiento de Drupal (si existe) #}
+    {% if content %}
+      <div class="maintenance__content">
+        {{ content }}
+      </div>
+    {% endif %}
+
+    {# Engranajes animados — SVG inline (decorativo, exencion TPL-ICON-EXE-001) #}
+    <div class="maintenance__gears" role="img" aria-label="{% trans %}Engranajes de mantenimiento{% endtrans %}">
+      {# Engranaje grande #}
+      <svg class="maintenance__gear maintenance__gear--large" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" style="left: calc(50% - 44px); top: 8px;" aria-hidden="true">
+        <path d="M28 8 L31 2 L25 2 Z M28 48 L31 54 L25 54 Z M8 28 L2 31 L2 25 Z M48 28 L54 31 L54 25 Z M13 13 L8 8 L8 14 Z M43 13 L48 8 L48 14 Z M13 43 L8 48 L14 48 Z M43 43 L48 48 L42 48 Z" fill="#FF8C42" opacity="0.7"/>
+        <circle cx="28" cy="28" r="18" fill="none" stroke="#FF8C42" stroke-width="5" opacity="0.6"/>
+        <circle cx="28" cy="28" r="8" fill="#F8FAFC" stroke="#FF8C42" stroke-width="3" opacity="0.7"/>
+      </svg>
+      {# Engranaje pequeno #}
+      <svg class="maintenance__gear maintenance__gear--small" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" style="left: calc(50% + 12px); top: 38px;" aria-hidden="true">
+        <path d="M18 4 L20 0 L16 0 Z M18 32 L20 36 L16 36 Z M4 18 L0 20 L0 16 Z M32 18 L36 20 L36 16 Z M8 8 L4 4 L4 10 Z M28 8 L32 4 L32 10 Z M8 28 L4 32 L10 32 Z M28 28 L32 32 L26 32 Z" fill="#00A9A5" opacity="0.6"/>
+        <circle cx="18" cy="18" r="11" fill="none" stroke="#00A9A5" stroke-width="4" opacity="0.5"/>
+        <circle cx="18" cy="18" r="5" fill="#F8FAFC" stroke="#00A9A5" stroke-width="2" opacity="0.6"/>
+      </svg>
+    </div>
+
+    {# Barra de progreso animada #}
+    <div class="maintenance__progress" role="progressbar" aria-label="{% trans %}Progreso del mantenimiento{% endtrans %}">
+      <div class="maintenance__progress-bar"></div>
+    </div>
+
+    {# Contacto de soporte #}
+    <p class="maintenance__contact">
+      {% trans %}Si necesitas asistencia urgente:{% endtrans %}
+      <a href="mailto:soporte@jaraba.com">soporte@jaraba.com</a>
+    </p>
+
+  </div>
+
+</body>
+</html>

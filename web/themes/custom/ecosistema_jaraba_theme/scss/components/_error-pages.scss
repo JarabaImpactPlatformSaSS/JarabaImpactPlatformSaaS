@@ -1,0 +1,283 @@
+@use 'sass:color';
+@use '../variables' as *;
+
+// ==========================================================================
+// Error Pages (404, 403)
+//
+// Paginas de error premium con ilustraciones SVG, busqueda y quick links.
+// ==========================================================================
+
+.error-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 80px; // Espacio para header fijo (.landing-header position: fixed)
+  background: linear-gradient(135deg, $ej-bg-body 0%, color.adjust($ej-color-corporate, $lightness: 55%) 100%);
+}
+
+// ---------------------------------------------------------------------------
+// Hero Section
+// ---------------------------------------------------------------------------
+
+.error-page__hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: $ej-spacing-2xl $ej-spacing-lg;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.error-page__illustration {
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: $ej-spacing-xl;
+
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @include respond-to(md) {
+    max-width: 320px;
+  }
+}
+
+.error-page__title {
+  font-family: $ej-font-headings;
+  font-size: 2rem;
+  font-weight: 700;
+  color: $ej-color-headings;
+  margin: 0 0 $ej-spacing-sm;
+  line-height: 1.2;
+
+  @include respond-to(md) {
+    font-size: 2.5rem;
+  }
+}
+
+.error-page__subtitle {
+  font-size: 1.0625rem;
+  color: $ej-color-muted;
+  margin: 0 0 $ej-spacing-xl;
+  line-height: 1.6;
+  max-width: 480px;
+
+  @include respond-to(md) {
+    font-size: 1.125rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Search Bar (404 only)
+// ---------------------------------------------------------------------------
+
+.error-page__search {
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: $ej-spacing-xl;
+  border-radius: $ej-border-radius;
+  overflow: hidden;
+  box-shadow: $ej-shadow-md;
+  background: $ej-bg-surface;
+}
+
+.error-page__search-input {
+  flex: 1;
+  border: none;
+  padding: $ej-spacing-md $ej-spacing-lg;
+  font-size: 1rem;
+  color: $ej-color-body;
+  background: transparent;
+  outline: none;
+
+  &::placeholder {
+    color: $ej-color-muted;
+  }
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px $ej-focus-ring-color;
+  }
+}
+
+.error-page__search-btn {
+  border: none;
+  background: $ej-color-primary;
+  color: #fff;
+  padding: $ej-spacing-md $ej-spacing-lg;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background $ej-transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    opacity: $ej-hover-opacity;
+  }
+
+  &:focus-visible {
+    outline: $ej-focus-ring;
+    outline-offset: $ej-focus-ring-offset;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Action Buttons
+// ---------------------------------------------------------------------------
+
+.error-page__actions {
+  display: flex;
+  gap: $ej-spacing-md;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: $ej-spacing-2xl;
+}
+
+.error-page__btn--primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $ej-spacing-sm;
+  padding: $ej-spacing-md $ej-spacing-xl;
+  background: $ej-color-primary;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: $ej-btn-radius;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform $ej-transition-fast, box-shadow $ej-transition-fast;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: $ej-hover-shadow;
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: $ej-focus-ring;
+    outline-offset: $ej-focus-ring-offset;
+  }
+}
+
+.error-page__btn--secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: $ej-spacing-sm;
+  padding: $ej-spacing-md $ej-spacing-xl;
+  background: transparent;
+  color: $ej-color-corporate;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 2px solid $ej-border-color;
+  border-radius: $ej-btn-radius;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color $ej-transition-fast, background $ej-transition-fast;
+
+  &:hover {
+    border-color: $ej-color-corporate;
+    background: rgba($ej-color-corporate, 0.04);
+    color: $ej-color-corporate;
+  }
+
+  &:focus-visible {
+    outline: $ej-focus-ring;
+    outline-offset: $ej-focus-ring-offset;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Quick Links Grid (404 only)
+// ---------------------------------------------------------------------------
+
+.error-page__quick-links {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 $ej-spacing-lg $ej-spacing-2xl;
+}
+
+.error-page__quick-links-title {
+  font-family: $ej-font-headings;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $ej-color-headings;
+  text-align: center;
+  margin: 0 0 $ej-spacing-lg;
+}
+
+.error-page__cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $ej-spacing-lg;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.error-page__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: $ej-spacing-xl $ej-spacing-lg;
+  background: $ej-bg-surface;
+  border-radius: $ej-border-radius;
+  box-shadow: $ej-shadow-sm;
+  text-decoration: none;
+  color: inherit;
+  transition: transform $ej-transition-normal, box-shadow $ej-transition-normal;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $ej-shadow-lg;
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: $ej-focus-ring;
+    outline-offset: $ej-focus-ring-offset;
+  }
+}
+
+.error-page__card-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $ej-spacing-md;
+  color: $ej-color-primary;
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.error-page__card-title {
+  font-family: $ej-font-headings;
+  font-weight: 600;
+  font-size: 1rem;
+  color: $ej-color-headings;
+  margin: 0 0 $ej-spacing-xs;
+}
+
+.error-page__card-desc {
+  font-size: 0.875rem;
+  color: $ej-color-muted;
+  margin: 0;
+  line-height: 1.5;
+}

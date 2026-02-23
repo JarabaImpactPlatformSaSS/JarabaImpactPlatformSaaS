@@ -234,7 +234,15 @@
               body: payload,
             });
           })
-            .then(response => response.json())
+            .then(response => {
+              if (!response.ok) {
+                // 403 = missing permission, 500 = server error — read body for details.
+                return response.json().catch(() => ({})).then(errData => {
+                  throw new Error(errData.message || errData.error || response.statusText);
+                });
+              }
+              return response.json();
+            })
             .then(data => {
               hideTypingIndicator();
               if (data.success && data.data) {

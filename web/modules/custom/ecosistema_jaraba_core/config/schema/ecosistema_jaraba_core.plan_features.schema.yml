@@ -1,0 +1,72 @@
+# Schema for SaasPlanFeatures config entity
+ecosistema_jaraba_core.plan_features.*:
+  type: config_entity
+  label: 'SaaS Plan Features configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    vertical:
+      type: string
+      label: 'Vertical machine name (_default for global fallback)'
+    tier:
+      type: string
+      label: 'Tier machine name (starter, professional, enterprise)'
+    features:
+      type: sequence
+      label: 'Enabled features'
+      sequence:
+        type: string
+        label: 'Feature key'
+    limits:
+      type: mapping
+      label: 'Numeric limits per resource'
+      mapping:
+        max_pages:
+          type: integer
+          label: 'Max pages'
+        basic_templates:
+          type: integer
+          label: 'Basic templates'
+        premium_templates:
+          type: integer
+          label: 'Premium templates'
+        basic_blocks:
+          type: integer
+          label: 'Basic blocks'
+        premium_blocks:
+          type: integer
+          label: 'Premium blocks'
+        ab_test_limit:
+          type: integer
+          label: 'A/B test limit'
+        max_products:
+          type: integer
+          label: 'Max products'
+        orders_per_month:
+          type: integer
+          label: 'Orders per month'
+        copilot_uses_per_month:
+          type: integer
+          label: 'Copilot uses per month'
+        storage_gb:
+          type: integer
+          label: 'Storage GB'
+        ai_queries:
+          type: integer
+          label: 'AI queries per month'
+        productores:
+          type: integer
+          label: 'Productores'
+    description:
+      type: text
+      label: 'Description'
+    status:
+      type: boolean
+      label: 'Status'

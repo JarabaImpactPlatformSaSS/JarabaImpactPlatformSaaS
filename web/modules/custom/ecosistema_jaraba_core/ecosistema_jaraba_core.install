@@ -1709,3 +1709,61 @@ function ecosistema_jaraba_core_update_9018(): string {
 
   return "Created agroconecta_feature_usage table and imported {$imported} FreemiumVerticalLimit configs.";
 }
+
+/**
+ * Precios Configurables v2.1: Import SaasPlanTier and SaasPlanFeatures seed data.
+ *
+ * Creates the ConfigEntities that replace hardcoded plan capabilities.
+ * Safe to re-run: skips entities that already exist.
+ */
+function ecosistema_jaraba_core_update_9019(): string {
+  $config_path = \Drupal::service('extension.list.module')
+    ->getPath('ecosistema_jaraba_core') . '/config/install';
+  $source = new \Drupal\Core\Config\FileStorage($config_path);
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $messages = [];
+
+  // 1. Import SaasPlanTier configs (3 tiers: starter, professional, enterprise).
+  $tier_created = 0;
+  $tier_skipped = 0;
+  foreach ($source->listAll('ecosistema_jaraba_core.plan_tier') as $config_name) {
+    $data = $source->read($config_name);
+    if ($data && !empty($data['id'])) {
+      $existing = $entity_type_manager->getStorage('saas_plan_tier')->load($data['id']);
+      if (!$existing) {
+        $entity_type_manager->getStorage('saas_plan_tier')->create($data)->save();
+        $tier_created++;
+      }
+      else {
+        $tier_skipped++;
+      }
+    }
+  }
+  $messages[] = "{$tier_created} plan tiers imported, {$tier_skipped} already existed";
+
+  // 2. Import SaasPlanFeatures configs (3 defaults + 15 vertical-specific = 18).
+  $features_created = 0;
+  $features_skipped = 0;
+  foreach ($source->listAll('ecosistema_jaraba_core.plan_features') as $config_name) {
+    $data = $source->read($config_name);
+    if ($data && !empty($data['id'])) {
+      $existing = $entity_type_manager->getStorage('saas_plan_features')->load($data['id']);
+      if (!$existing) {
+        $entity_type_manager->getStorage('saas_plan_features')->create($data)->save();
+        $features_created++;
+      }
+      else {
+        $features_skipped++;
+      }
+    }
+  }
+  $messages[] = "{$features_created} plan features imported, {$features_skipped} already existed";
+
+  $result = implode('. ', $messages);
+  \Drupal::logger('ecosistema_jaraba_core')->notice(
+    'Precios Configurables v2.1: @result',
+    ['@result' => $result]
+  );
+
+  return "Precios Configurables v2.1: {$result}";
+}

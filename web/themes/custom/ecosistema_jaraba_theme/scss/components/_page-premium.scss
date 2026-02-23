@@ -65,9 +65,10 @@
 // =============================================
 // MAIN CONTENT - Estilos Premium
 // =============================================
-.main-content {
+.main-content,
+.help-center-main {
     flex: 1;
-    padding-top: 80px; // Espacio para header fijo
+    padding-top: 80px; // Espacio para header fijo (.landing-header position: fixed)
 
     // Full width para dashboards
     &--full {
