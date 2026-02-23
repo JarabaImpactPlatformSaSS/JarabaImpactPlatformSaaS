@@ -1,0 +1,47 @@
+{#
+/**
+ * @file
+ * Template genérico reutilizable para páginas legales.
+ *
+ * Usado por: /politica-privacidad, /terminos-uso, /politica-cookies.
+ * Contenido configurable desde theme settings (Apariencia > ecosistema_jaraba_theme).
+ * Zero-region pattern: sin page.content ni bloques Drupal.
+ * i18n: {% trans %} para todos los textos fijos.
+ *
+ * Variables:
+ *   - page_type: Tipo de página (privacy, terms, cookies).
+ *   - title: Título de la página (ya traducido).
+ *   - content: Contenido HTML desde theme settings.
+ *   - last_updated: Fecha de última actualización.
+ */
+#}
+<div class="ej-legal-page ej-legal-page--{{ page_type }}">
+  <div class="ej-legal-page__container">
+
+    <header class="ej-legal-page__header">
+      <h1 class="ej-legal-page__title">{{ title }}</h1>
+      {% if last_updated %}
+        <p class="ej-legal-page__updated">
+          {% trans %}Última actualización:{% endtrans %} {{ last_updated }}
+        </p>
+      {% endif %}
+    </header>
+
+    <article class="ej-legal-page__content">
+      {% if content %}
+        {{ content|raw }}
+      {% else %}
+        <div class="ej-legal-page__placeholder">
+          <p>{% trans %}Esta página está en preparación. El contenido se puede configurar desde Apariencia > Configuración del tema.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </article>
+
+    <footer class="ej-legal-page__footer">
+      <a href="/" class="ej-legal-page__back-link">
+        {% trans %}Volver al inicio{% endtrans %}
+      </a>
+    </footer>
+
+  </div>
+</div>

@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Template para la página Sobre Nosotros.
+ *
+ * Ruta: /sobre-nosotros
+ * Contenido configurable desde theme settings (Apariencia > ecosistema_jaraba_theme).
+ * Zero-region pattern: sin page.content ni bloques Drupal.
+ * i18n: {% trans %} para todos los textos fijos.
+ *
+ * Variables:
+ *   - content: Contenido HTML desde theme settings.
+ */
+#}
+<div class="ej-info-page ej-info-page--about">
+  <div class="ej-info-page__container">
+
+    <header class="ej-info-page__header">
+      <h1 class="ej-info-page__title">{% trans %}Sobre Nosotros{% endtrans %}</h1>
+    </header>
+
+    <article class="ej-info-page__content">
+      {% if content %}
+        {{ content|raw }}
+      {% else %}
+        <div class="ej-info-page__placeholder">
+          <h2>{% trans %}Jaraba Impact Platform{% endtrans %}</h2>
+          <p>{% trans %}Somos una plataforma SaaS de impacto social que conecta empleabilidad, emprendimiento, agroalimentación, comercio, servicios y asesoría legal — todo impulsado por Inteligencia Artificial.{% endtrans %}</p>
+          <p>{% trans %}Nuestro objetivo es democratizar el acceso a herramientas tecnológicas de clase mundial para colectivos vulnerables, emprendedores y profesionales.{% endtrans %}</p>
+          <p class="ej-info-page__config-hint">{% trans %}Este contenido se puede personalizar desde Apariencia > Configuración del tema.{% endtrans %}</p>
+        </div>
+      {% endif %}
+    </article>
+
+    <footer class="ej-info-page__footer">
+      <a href="/" class="ej-info-page__back-link">
+        {% trans %}Volver al inicio{% endtrans %}
+      </a>
+    </footer>
+
+  </div>
+</div>

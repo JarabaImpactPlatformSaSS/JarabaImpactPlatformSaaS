@@ -494,7 +494,7 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   $form['footer_options']['footer_nav']['footer_nav_col2_links'] = [
     '#type' => 'textarea',
     '#title' => t('Enlaces Columna 2'),
-    '#default_value' => $config->get('footer_nav_col2_links') ?: "Sobre nosotros|/about\nContacto|/contact\nBlog|/blog",
+    '#default_value' => $config->get('footer_nav_col2_links') ?: "Sobre nosotros|/sobre-nosotros\nContacto|/contacto\nBlog|/blog",
     '#rows' => 4,
   ];
 
@@ -506,7 +506,7 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   $form['footer_options']['footer_nav']['footer_nav_col3_links'] = [
     '#type' => 'textarea',
     '#title' => t('Enlaces Columna 3'),
-    '#default_value' => $config->get('footer_nav_col3_links') ?: "Privacidad|/privacy\nTérminos|/terms\nCookies|/cookies",
+    '#default_value' => $config->get('footer_nav_col3_links') ?: "Privacidad|/politica-privacidad\nTérminos|/terminos-uso\nCookies|/politica-cookies",
     '#rows' => 4,
   ];
 
@@ -550,7 +550,7 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   $form['footer_options']['footer_widgets']['footer_widget3_content'] = [
     '#type' => 'textarea',
     '#title' => t('Enlaces Columna 3 (uno por línea: texto|URL)'),
-    '#default_value' => $config->get('footer_widget3_content') ?: "Blog|/blog\nFAQ|/faq\nPolítica de Privacidad|/privacidad",
+    '#default_value' => $config->get('footer_widget3_content') ?: "Blog|/blog\nFAQ|/faq\nPolítica de Privacidad|/politica-privacidad",
     '#rows' => 4,
   ];
 
@@ -877,6 +877,117 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   $form['breadcrumbs']['color_breadcrumb_text'] = $fn_color('color_breadcrumb_text', t('Color Texto'), '#64748B');
   $form['breadcrumbs']['color_breadcrumb_link'] = $fn_color('color_breadcrumb_link', t('Color Enlaces'), '#FF8C42');
   $form['breadcrumbs']['color_breadcrumb_active'] = $fn_color('color_breadcrumb_active', t('Color Activo'), '#1A1A2E');
+
+  // =========================================================================
+  // TAB 14: PÁGINAS LEGALES E INFORMATIVAS
+  // =========================================================================
+  $form['legal_pages'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('legal', t('Páginas Legales'), '#233D63'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -25,
+  ];
+
+  // --- Política de Privacidad ---
+  $form['legal_pages']['privacy'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Política de Privacidad (/politica-privacidad)'),
+  ];
+  $form['legal_pages']['privacy']['legal_privacy_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido HTML'),
+    '#default_value' => $config->get('legal_privacy_content') ?: '',
+    '#rows' => 10,
+    '#description' => t('HTML permitido. Usa &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt; para estructurar el contenido.'),
+  ];
+  $form['legal_pages']['privacy']['legal_privacy_updated'] = [
+    '#type' => 'textfield',
+    '#title' => t('Última actualización'),
+    '#default_value' => $config->get('legal_privacy_updated') ?: '',
+    '#placeholder' => '23 de febrero de 2026',
+  ];
+
+  // --- Términos de Uso ---
+  $form['legal_pages']['terms'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Términos de Uso (/terminos-uso)'),
+  ];
+  $form['legal_pages']['terms']['legal_terms_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido HTML'),
+    '#default_value' => $config->get('legal_terms_content') ?: '',
+    '#rows' => 10,
+    '#description' => t('HTML permitido. Usa &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt; para estructurar el contenido.'),
+  ];
+  $form['legal_pages']['terms']['legal_terms_updated'] = [
+    '#type' => 'textfield',
+    '#title' => t('Última actualización'),
+    '#default_value' => $config->get('legal_terms_updated') ?: '',
+    '#placeholder' => '23 de febrero de 2026',
+  ];
+
+  // --- Política de Cookies ---
+  $form['legal_pages']['cookies'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Política de Cookies (/politica-cookies)'),
+  ];
+  $form['legal_pages']['cookies']['legal_cookies_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido HTML'),
+    '#default_value' => $config->get('legal_cookies_content') ?: '',
+    '#rows' => 10,
+    '#description' => t('HTML permitido. Usa &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt; para estructurar el contenido.'),
+  ];
+  $form['legal_pages']['cookies']['legal_cookies_updated'] = [
+    '#type' => 'textfield',
+    '#title' => t('Última actualización'),
+    '#default_value' => $config->get('legal_cookies_updated') ?: '',
+    '#placeholder' => '23 de febrero de 2026',
+  ];
+
+  // --- Sobre Nosotros ---
+  $form['legal_pages']['about'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Sobre Nosotros (/sobre-nosotros)'),
+  ];
+  $form['legal_pages']['about']['about_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido HTML'),
+    '#default_value' => $config->get('about_content') ?: '',
+    '#rows' => 10,
+    '#description' => t('HTML permitido. Describe tu empresa o plataforma.'),
+  ];
+
+  // --- Contacto ---
+  $form['legal_pages']['contact'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Contacto (/contacto)'),
+  ];
+  $form['legal_pages']['contact']['contact_email'] = [
+    '#type' => 'email',
+    '#title' => t('Email de contacto'),
+    '#default_value' => $config->get('contact_email') ?: '',
+    '#placeholder' => 'info@jaraba.es',
+  ];
+  $form['legal_pages']['contact']['contact_phone'] = [
+    '#type' => 'tel',
+    '#title' => t('Teléfono de contacto'),
+    '#default_value' => $config->get('contact_phone') ?: '',
+    '#placeholder' => '+34 623 174 304',
+  ];
+  $form['legal_pages']['contact']['contact_address'] = [
+    '#type' => 'textarea',
+    '#title' => t('Dirección postal'),
+    '#default_value' => $config->get('contact_address') ?: '',
+    '#rows' => 3,
+  ];
+  $form['legal_pages']['contact']['contact_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido adicional (HTML)'),
+    '#default_value' => $config->get('contact_content') ?: '',
+    '#rows' => 6,
+    '#description' => t('Contenido libre adicional para la página de contacto.'),
+  ];
 }
 
 /**

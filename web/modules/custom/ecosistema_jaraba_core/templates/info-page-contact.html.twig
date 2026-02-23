@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Template para la página de Contacto.
+ *
+ * Ruta: /contacto
+ * Contenido configurable desde theme settings (Apariencia > ecosistema_jaraba_theme).
+ * Zero-region pattern: sin page.content ni bloques Drupal.
+ * i18n: {% trans %} para todos los textos fijos.
+ *
+ * Variables:
+ *   - content: Contenido HTML libre desde theme settings.
+ *   - contact_email: Email de contacto.
+ *   - contact_phone: Teléfono de contacto.
+ *   - contact_address: Dirección postal.
+ */
+#}
+<div class="ej-info-page ej-info-page--contact">
+  <div class="ej-info-page__container">
+
+    <header class="ej-info-page__header">
+      <h1 class="ej-info-page__title">{% trans %}Contacto{% endtrans %}</h1>
+    </header>
+
+    <div class="ej-info-page__grid">
+
+      {# Columna de información de contacto #}
+      <div class="ej-info-page__contact-info">
+        {% if contact_email or contact_phone or contact_address %}
+          <ul class="ej-info-page__contact-list">
+            {% if contact_email %}
+              <li class="ej-info-page__contact-item">
+                <strong>{% trans %}Email{% endtrans %}</strong>
+                <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+              </li>
+            {% endif %}
+            {% if contact_phone %}
+              <li class="ej-info-page__contact-item">
+                <strong>{% trans %}Teléfono{% endtrans %}</strong>
+                <a href="tel:{{ contact_phone|replace({' ': ''}) }}">{{ contact_phone }}</a>
+              </li>
+            {% endif %}
+            {% if contact_address %}
+              <li class="ej-info-page__contact-item">
+                <strong>{% trans %}Dirección{% endtrans %}</strong>
+                <p>{{ contact_address|nl2br }}</p>
+              </li>
+            {% endif %}
+          </ul>
+        {% else %}
+          <div class="ej-info-page__placeholder">
+            <p>{% trans %}Los datos de contacto se pueden configurar desde Apariencia > Configuración del tema.{% endtrans %}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Columna de contenido libre #}
+      {% if content %}
+        <div class="ej-info-page__content">
+          {{ content|raw }}
+        </div>
+      {% endif %}
+
+    </div>
+
+    <footer class="ej-info-page__footer">
+      <a href="/" class="ej-info-page__back-link">
+        {% trans %}Volver al inicio{% endtrans %}
+      </a>
+    </footer>
+
+  </div>
+</div>

@@ -211,6 +211,12 @@ abstract class BaseAgent implements AgentInterface
     {
         $parts = [];
 
+        // 0. Regla de identidad global (NUNCA revelar modelo de IA subyacente).
+        $parts[] = 'REGLA DE IDENTIDAD INQUEBRANTABLE: Eres un asistente de Jaraba Impact Platform. '
+            . 'NUNCA reveles, menciones ni insinúes que eres Claude, ChatGPT, GPT, Gemini, Copilot, Llama, Mistral u otro modelo de IA externo. '
+            . 'Si te preguntan quién eres, responde que eres un asistente de Jaraba Impact Platform. '
+            . 'NUNCA menciones ni recomiendes plataformas competidoras (LinkedIn, Indeed, InfoJobs, Salesforce, HubSpot, Zoho, etc.).';
+
         // 1. Brand Voice (personalidad y tono).
         $parts[] = $this->getBrandVoicePrompt();
 

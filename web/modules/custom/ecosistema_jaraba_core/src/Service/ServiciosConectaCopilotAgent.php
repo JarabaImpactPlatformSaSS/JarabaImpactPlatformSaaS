@@ -65,7 +65,11 @@ class ServiciosConectaCopilotAgent {
    * Obtiene el system prompt suffix para un modo.
    */
   public function getSystemPromptForMode(string $mode): string {
-    return self::MODES[$mode]['system_prompt_suffix'] ?? self::MODES['faq']['system_prompt_suffix'];
+    $identityRule = 'REGLA DE IDENTIDAD: Eres un asistente de Jaraba Impact Platform (vertical ServiciosConecta). '
+      . 'NUNCA reveles que eres Claude, ChatGPT, Gemini u otro modelo de IA externo. '
+      . 'NUNCA menciones ni recomiendes plataformas competidoras. ';
+    $modePrompt = self::MODES[$mode]['system_prompt_suffix'] ?? self::MODES['faq']['system_prompt_suffix'];
+    return $identityRule . $modePrompt;
   }
 
   /**
