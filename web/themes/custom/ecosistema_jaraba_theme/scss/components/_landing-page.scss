@@ -63,11 +63,26 @@ body.full-width-layout {
     }
 }
 
+// Landing pages con hero fullscreen: header fijo que flota sobre el hero.
+// Sobreescribe el default sticky para que el hero ocupe 100vh completo
+// con el header transparente encima.
+body.landing-page,
+body.page-front {
+    .landing-header {
+        position: fixed;
+    }
+}
+
 // =============================================
 // LANDING HEADER
 // =============================================
+// Default: sticky — el header ocupa su espacio natural en el flujo y se pega
+// al top al hacer scroll. Así el contenido nunca queda solapado,
+// independientemente de la altura real del header.
+// Las landing pages con hero fullscreen sobreescriben a position: fixed
+// para que el header flote sobre el hero (ver bloque más abajo).
 .landing-header {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
@@ -77,6 +92,15 @@ body.full-width-layout {
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+
+    // Ajustar top cuando el toolbar admin está presente
+    .toolbar-fixed & {
+        top: 39px;
+    }
+
+    .toolbar-fixed.toolbar-tray-open.toolbar-horizontal & {
+        top: 79px;
+    }
 
     &.scrolled {
         background: rgba(255, 255, 255, 0.98);

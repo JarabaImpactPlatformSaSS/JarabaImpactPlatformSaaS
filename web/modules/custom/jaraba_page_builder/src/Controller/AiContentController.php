@@ -249,7 +249,7 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
             $modelId = $defaults['model_id'];
 
             $prompt = $this->buildFallbackPrompt($fieldType, $context, $currentValue);
-            $systemPrompt = 'Eres un copywriter experto. Genera contenido conciso y profesional en español.';
+            $systemPrompt = 'Eres el copywriter de Jaraba Impact Platform. Genera contenido conciso y profesional en español. NUNCA menciones plataformas competidoras ni modelos de IA externos.';
 
             // Construir input de chat con la API correcta.
             $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([

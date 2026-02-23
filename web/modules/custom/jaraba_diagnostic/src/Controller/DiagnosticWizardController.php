@@ -78,7 +78,7 @@ class DiagnosticWizardController extends ControllerBase
             'questions' => [
                 ['id' => 'chatbot', 'text' => '¿Tienes chatbot o respuestas automáticas?', 'type' => 'boolean'],
                 ['id' => 'email_automation', 'text' => '¿Tienes emails automáticos (bienvenida, abandono)?', 'type' => 'boolean'],
-                ['id' => 'uses_ai_tools', 'text' => '¿Usas herramientas de IA (ChatGPT, etc.)?', 'type' => 'boolean'],
+                ['id' => 'uses_ai_tools', 'text' => '¿Usas herramientas de IA generativa en tu negocio?', 'type' => 'boolean'],
                 ['id' => 'process_automation', 'text' => '¿Qué nivel de automatización tienen tus procesos?', 'type' => 'scale_5', 'labels' => ['Todo manual', 'Muy poco', 'Algo', 'Bastante', 'Muy automatizado']],
                 ['id' => 'data_analysis', 'text' => '¿Analizas datos para tomar decisiones?', 'type' => 'scale_5', 'labels' => ['Nunca', 'Rara vez', 'A veces', 'Frecuentemente', 'Siempre con datos']],
             ],

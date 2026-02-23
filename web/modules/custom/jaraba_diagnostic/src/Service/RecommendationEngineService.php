@@ -73,13 +73,13 @@ class RecommendationEngineService
                 'title' => 'Digitalizar operaciones básicas',
                 'description' => 'Gestión manual de clientes, inventario y facturación.',
                 'action' => 'Implementar herramientas de gestión (CRM, facturación).',
-                'quick_wins' => ['HubSpot CRM gratuito', 'Holded para facturas'],
+                'quick_wins' => ['CRM integrado en Jaraba', 'Gestión de facturas digital'],
             ],
             'medium' => [
                 'title' => 'Integrar sistemas',
                 'description' => 'Tienes varias herramientas pero no están conectadas.',
                 'action' => 'Integrar CRM con tienda, automatizar flujos.',
-                'quick_wins' => ['Zapier para integraciones', 'Dashboard unificado'],
+                'quick_wins' => ['Automatización de flujos integrada', 'Dashboard unificado'],
             ],
         ],
         'automation_ai' => [

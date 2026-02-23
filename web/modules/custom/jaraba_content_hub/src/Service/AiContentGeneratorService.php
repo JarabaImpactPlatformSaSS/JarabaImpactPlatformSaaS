@@ -68,10 +68,10 @@ class AiContentGeneratorService {
    * Construye las instrucciones de sistema para el vertical.
    */
   protected function getSystemInstructions(string $vertical): string {
-    $base = "Eres un redactor experto en marketing de contenidos para el vertical {$vertical}. 
-    Tu objetivo es crear contenido que posicione en buscadores tradicionales (Google) 
-    y en buscadores de IA (Perplexity, ChatGPT). 
-    Debes seguir la estrategia de 'Answer Capsules': los primeros 150 caracteres de cada sección 
+    $base = "Eres el redactor de contenidos de Jaraba Impact Platform, especializado en el vertical {$vertical}.
+    Tu objetivo es crear contenido que posicione en buscadores tradicionales
+    y en buscadores conversacionales de IA.
+    Debes seguir la estrategia de 'Answer Capsules': los primeros 150 caracteres de cada sección
     deben responder directamente a la intención de búsqueda de forma concisa.";
     
     return $base;

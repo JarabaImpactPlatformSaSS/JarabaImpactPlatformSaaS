@@ -68,7 +68,7 @@
 .main-content,
 .help-center-main {
     flex: 1;
-    padding-top: 80px; // Espacio para header fijo (.landing-header position: fixed)
+    padding-top: 1.5rem; // Separación estética del header (ahora sticky, no fixed)
 
     // Full width para dashboards
     &--full {

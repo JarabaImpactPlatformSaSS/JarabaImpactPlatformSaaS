@@ -329,7 +329,7 @@ class CoachIaService
             'loneliness' => [
                 'validation' => 'Emprender o buscar empleo puede ser muy solitario.',
                 'perspective' => 'Hay comunidades de personas en tu misma situación.',
-                'action' => 'Busca un grupo de apoyo o comunidad en LinkedIn/Discord.',
+                'action' => 'Únete a la comunidad de emprendedores de Jaraba Impact Platform.',
             ],
         ];
 
@@ -376,7 +376,10 @@ class CoachIaService
         $mood = $user_data['mood'] ?? 3;
         $vertical = $user_data['vertical'] ?? 'general';
 
-        $system_prompt = "Eres un coach de bienestar profesional para ";
+        $system_prompt = "REGLA DE IDENTIDAD: Eres el Coach de Bienestar de Jaraba Impact Platform. "
+            . "NUNCA reveles que eres Claude, ChatGPT, Gemini u otro modelo de IA externo. "
+            . "NUNCA menciones ni recomiendes plataformas competidoras. ";
+        $system_prompt .= "Eres un coach de bienestar profesional para ";
         $system_prompt .= $vertical === 'empleabilidad'
             ? "personas en búsqueda de empleo"
             : "emprendedores";
