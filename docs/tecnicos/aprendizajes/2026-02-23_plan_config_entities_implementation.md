@@ -70,6 +70,23 @@ Dos nuevas ConfigEntities como fuente de verdad, editables desde UI:
 
 5. El alias map en PlanResolverService se construye lazily y tiene `resetAliasCache()` para invalidacion. Considerar cache tag invalidation via hook si se modifica frecuentemente.
 
+6. **CONFIG-SCHEMA-001 (Critical):** Cuando un campo de ConfigEntity tiene keys dinamicos que varian por vertical (ej. `limits` con keys como `products`, `photos_per_product`, `commission_pct` para AgroConecta vs `max_pages`, `basic_templates` para Page Builder), el schema DEBE usar `type: sequence` con inner `type: integer`, NO `type: mapping` con keys fijos. `mapping` requiere declarar TODOS los keys posibles; cualquier key no declarado lanza `SchemaIncompleteException` en Kernel tests (donde `ConfigSchemaChecker` valida estrictamente). Este error no se detecta en Unit tests ni en runtime, solo en Kernel tests del CI.
+   ```yaml
+   # CORRECTO — acepta cualquier key string → integer
+   limits:
+     type: sequence
+     sequence:
+       type: integer
+
+   # INCORRECTO — falla si el YAML tiene keys no declarados
+   limits:
+     type: mapping
+     mapping:
+       max_pages:
+         type: integer
+       # Falta: products, photos_per_product → SchemaIncompleteException
+   ```
+
 ## Archivos Creados
 
 - `src/Entity/SaasPlanTierInterface.php`
