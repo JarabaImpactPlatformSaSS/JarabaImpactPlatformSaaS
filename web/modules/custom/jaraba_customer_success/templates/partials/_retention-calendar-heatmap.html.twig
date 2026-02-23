@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * _retention-calendar-heatmap.html.twig - Heatmap estacional 12x5.
+ *
+ * VARIABLES:
+ * - heatmap_data: array[vertical_id] => {label, months: array[month] => {risk_level, label, adjustment}}.
+ */
+#}
+
+{% set month_names = [
+  1: 'Ene'|t, 2: 'Feb'|t, 3: 'Mar'|t, 4: 'Abr'|t,
+  5: 'May'|t, 6: 'Jun'|t, 7: 'Jul'|t, 8: 'Ago'|t,
+  9: 'Sep'|t, 10: 'Oct'|t, 11: 'Nov'|t, 12: 'Dic'|t
+] %}
+
+<section class="cs-heatmap">
+  <h2 class="cs-heatmap__title">{% trans %}Seasonal Risk Calendar{% endtrans %}</h2>
+
+  <div class="cs-heatmap__grid" role="table" aria-label="{% trans %}Seasonal risk heatmap{% endtrans %}">
+    {# Header row with month names #}
+    <div class="cs-heatmap__row cs-heatmap__row--header" role="row">
+      <div class="cs-heatmap__cell cs-heatmap__cell--label" role="columnheader">{% trans %}Vertical{% endtrans %}</div>
+      {% for m in 1..12 %}
+        <div class="cs-heatmap__cell cs-heatmap__cell--header" role="columnheader">{{ month_names[m] }}</div>
+      {% endfor %}
+    </div>
+
+    {# Data rows per vertical #}
+    {% for vertical_id, vertical in heatmap_data %}
+      <div class="cs-heatmap__row" role="row">
+        <div class="cs-heatmap__cell cs-heatmap__cell--label" role="rowheader">{{ vertical.label }}</div>
+        {% for m in 1..12 %}
+          {% set month_data = vertical.months[m] ?? {risk_level: 'medium', label: '', adjustment: 0} %}
+          <div class="cs-heatmap__cell cs-heatmap__cell--{{ month_data.risk_level }}"
+               role="cell"
+               title="{{ month_data.label }} ({{ month_data.adjustment > 0 ? '+' : '' }}{{ (month_data.adjustment * 100)|round }}%)"
+               data-month="{{ m }}"
+               data-vertical="{{ vertical_id }}">
+            <span class="cs-heatmap__indicator"></span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Legend #}
+  <div class="cs-heatmap__legend">
+    <span class="cs-heatmap__legend-item">
+      <span class="cs-heatmap__legend-dot cs-heatmap__legend-dot--low"></span>
+      {% trans %}Low Risk{% endtrans %}
+    </span>
+    <span class="cs-heatmap__legend-item">
+      <span class="cs-heatmap__legend-dot cs-heatmap__legend-dot--medium"></span>
+      {% trans %}Medium Risk{% endtrans %}
+    </span>
+    <span class="cs-heatmap__legend-item">
+      <span class="cs-heatmap__legend-dot cs-heatmap__legend-dot--high"></span>
+      {% trans %}High Risk{% endtrans %}
+    </span>
+  </div>
+</section>

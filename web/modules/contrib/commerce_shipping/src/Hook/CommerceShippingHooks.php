@@ -222,29 +222,19 @@ class CommerceShippingHooks {
     if ($entity->getEntityTypeId() !== 'commerce_order') {
       return [];
     }
-    // Do not show for a "cart" order.
-    if ($entity->hasField('cart') && $entity->get('cart')->value) {
-      return [];
-    }
-
-    // Do not show if has no shipment operation for order.
-    if (!$entity->hasField('shipments')) {
-      return [];
-    }
-
-    // Only show if the user can create shipments.
-    if (!$entity->access('create')) {
-      return [];
-    }
 
     $operations = [];
-    $operations['shipments'] = [
-      'title' => t('Shipments'),
-      'url' => Url::fromRoute('entity.commerce_shipment.collection', [
-        'commerce_order' => $entity->id(),
-      ]),
-      'weight' => 60,
-    ];
+    $url = Url::fromRoute('entity.commerce_shipment.collection', [
+      'commerce_order' => $entity->id(),
+    ]);
+    if ($url->access()) {
+      $operations['shipments'] = [
+        'title' => $this->t('Shipments'),
+        'url' => $url,
+        'weight' => 60,
+      ];
+    }
+
     return $operations;
   }
 

@@ -1,0 +1,53 @@
+{#
+/**
+ * @file
+ * _retention-risk-card.html.twig - Card de riesgo por vertical.
+ *
+ * VARIABLES:
+ * - card: {label, vertical_id, max_inactivity_days, signals_count,
+ *          critical_features, at_risk_count, total_count, top_signals}.
+ */
+#}
+
+<article class="cs-risk-card">
+  <header class="cs-risk-card__header">
+    <h3 class="cs-risk-card__title">{{ card.label }}</h3>
+    <span class="cs-risk-card__badge">{{ card.vertical_id }}</span>
+  </header>
+
+  <div class="cs-risk-card__stats">
+    <div class="cs-risk-card__stat">
+      <span class="cs-risk-card__stat-value">{{ card.at_risk_count }}/{{ card.total_count }}</span>
+      <span class="cs-risk-card__stat-label">{% trans %}At Risk{% endtrans %}</span>
+    </div>
+    <div class="cs-risk-card__stat">
+      <span class="cs-risk-card__stat-value">{{ card.max_inactivity_days }}d</span>
+      <span class="cs-risk-card__stat-label">{% trans %}Max Inactivity{% endtrans %}</span>
+    </div>
+    <div class="cs-risk-card__stat">
+      <span class="cs-risk-card__stat-value">{{ card.signals_count }}</span>
+      <span class="cs-risk-card__stat-label">{% trans %}Signals{% endtrans %}</span>
+    </div>
+  </div>
+
+  {% if card.top_signals|length > 0 %}
+    <div class="cs-risk-card__signals">
+      <h4 class="cs-risk-card__signals-title">{% trans %}Top Signals{% endtrans %}</h4>
+      <ul class="cs-risk-card__signal-list">
+        {% for signal in card.top_signals %}
+          <li class="cs-risk-card__signal-item">
+            <span class="cs-risk-card__signal-weight">{{ (signal.weight * 100)|round }}%</span>
+            <span class="cs-risk-card__signal-desc">{{ signal.description }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <footer class="cs-risk-card__footer">
+    <a href="{{ path('jaraba_customer_success.api.retention.profile_detail', {vertical_id: card.vertical_id}) }}"
+       class="cs-risk-card__link">
+      {% trans %}View Detail{% endtrans %}
+    </a>
+  </footer>
+</article>

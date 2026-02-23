@@ -8,3 +8,8 @@ dependencies:
   - commerce:commerce
   - commerce:commerce_price
   - commerce:commerce_order
+
+# Information added by Drupal.org packaging script on 2026-02-17
+version: '3.3.2'
+project: 'commerce'
+datestamp: 1771359796

@@ -1,0 +1,48 @@
+{#
+/**
+ * @file
+ * _playbook-timeline.html.twig - Timeline de ejecuciones de playbooks.
+ *
+ * VARIABLES:
+ * - executions: array [{playbook_name, tenant_name, current_step, total_steps, status, started_at}, ...].
+ */
+#}
+
+<section class="cs-pb-timeline">
+  <h2 class="cs-pb-timeline__title">{% trans %}Recent Playbook Executions{% endtrans %}</h2>
+
+  {% if executions|length > 0 %}
+    <div class="cs-pb-timeline__list">
+      {% for execution in executions %}
+        <div class="cs-pb-timeline__item cs-pb-timeline__item--{{ execution.status|default('pending') }}">
+          <div class="cs-pb-timeline__marker">
+            <span class="cs-pb-timeline__dot cs-pb-timeline__dot--{{ execution.status|default('pending') }}"></span>
+            <span class="cs-pb-timeline__line"></span>
+          </div>
+
+          <div class="cs-pb-timeline__content">
+            <div class="cs-pb-timeline__header">
+              <span class="cs-pb-timeline__playbook">{{ execution.playbook_name }}</span>
+              <span class="cs-pb-timeline__status cs-pb-timeline__status--{{ execution.status }}">
+                {{ execution.status|capitalize }}
+              </span>
+            </div>
+            <span class="cs-pb-timeline__tenant">{{ execution.tenant_name }}</span>
+            <div class="cs-pb-timeline__progress">
+              <span class="cs-pb-timeline__step">
+                {% trans %}Step {{ execution.current_step }} of {{ execution.total_steps }}{% endtrans %}
+              </span>
+              {% if execution.started_at %}
+                <span class="cs-pb-timeline__time">{{ execution.started_at|date('d M Y H:i') }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="cs-pb-timeline__empty">
+      <p>{% trans %}No recent playbook executions. Executions will appear as playbooks are triggered.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</section>

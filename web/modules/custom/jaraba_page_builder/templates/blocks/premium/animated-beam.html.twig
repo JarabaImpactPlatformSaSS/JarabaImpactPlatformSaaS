@@ -21,7 +21,7 @@
   min-height: 500px;
 }
 .jaraba-animated-beam--dark {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, var(--ej-color-dark-bg, #1a1a2e) 0%, var(--ej-color-dark-bg-alt, #16213e) 100%);
   color: white;
 }
 .jaraba-animated-beam__header {
@@ -68,9 +68,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: linear-gradient(135deg, var(--ej-color-primary, #f97316), var(--ej-color-primary-dark, #ea580c));
   border-radius: 20px;
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
+  box-shadow: 0 0 30px var(--ej-color-primary-glow, rgba(249, 115, 22, 0.5));
 }
 .jaraba-animated-beam__text {
   font-size: 1.25rem;
@@ -136,6 +136,7 @@
 
 <section class="jaraba-animated-beam jaraba-animated-beam--{{ bg_class }} jaraba-block"
          data-block-type="animated_beam"
+         aria-label="{{ title|default('Animated Beam') }}"
          data-beam-style="{{ beam_style }}"
          data-beam-speed="{{ beam_speed }}">
   <div class="jaraba-block__container">

@@ -231,6 +231,25 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   /**
    * {@inheritdoc}
    */
+  public function getShippingServiceLabel(): ?string {
+    if (!$this->get('service_label')->isEmpty()) {
+      return $this->get('service_label')->value;
+    }
+
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setShippingServiceLabel(string $service_label): static {
+    $this->set('service_label', $service_label);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getShippingProfile(): ?ProfileInterface {
     return $this->get('shipping_profile')->entity;
   }
@@ -666,6 +685,11 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setRequired(TRUE)
       ->setDescription(t('The shipping service.'))
       ->setDefaultValue('')
+      ->setSetting('max_length', 255);
+
+    $fields['service_label'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Service Label'))
+      ->setDescription(t('The Service Label.'))
       ->setSetting('max_length', 255);
 
     $fields['shipping_profile'] = BaseFieldDefinition::create('entity_reference_revisions')

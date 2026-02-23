@@ -11,7 +11,8 @@
 {% set tilt = content.tilt_intensity|default('medium') %}
 
 <section class="jaraba-floating-cards jaraba-floating-cards--{{ bg_class }} jaraba-floating-cards--tilt-{{ tilt }} jaraba-block jaraba-block--premium"
-         data-block-type="premium_floating_cards">
+         data-block-type="premium_floating_cards"
+         aria-label="{{ title|default('Premium Floating Cards') }}">
   <div class="jaraba-block__container">
     
     <header class="jaraba-floating-cards__header">

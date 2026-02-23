@@ -3,71 +3,202 @@
  * @file
  * page--user.html.twig
  *
- * Template LIMPIO para paginas del sistema de usuario autenticado.
+ * Template PREMIUM para páginas del sistema de usuario autenticado.
  * Aplica a: /user/{uid}, /user/{uid}/edit, /user/logout/confirm,
  *           /user/{uid}/contact, /user/{uid}/cancel/confirm
  *
- * Patron: Frontend Page Pattern (Zero Region Policy)
- * Usa header global con avatar_nav + contenido limpio + footer.
+ * Patrón: Frontend Page Pattern (Zero Region Policy)
+ * Usa header global + contenido limpio premium + footer.
+ *
+ * NOTA: Este es un PAGE template, NO un HTML template. El wrapper
+ * <!DOCTYPE>, <html>, <head>, <body> lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de <body>.
  *
  * Variables inyectadas desde hook_preprocess_page__user():
  * - user_content: Render array del formulario/vista de usuario
  * - user_page_type: 'profile', 'edit', 'logout', 'contact', 'cancel', 'generic'
  * - user_display_name: Nombre del usuario
- * - clean_content: Contenido del controlador (fallback)
+ * - user_email: Email del usuario
+ * - user_roles: Array de labels de roles
+ * - user_role_ids: Array de IDs de roles
+ * - user_member_since: Fecha formateada de alta
+ * - user_last_access: Tiempo relativo del último acceso
+ * - user_avatar_url: URL del avatar (vacío si no tiene)
+ * - user_initials: Iniciales para fallback de avatar
+ * - user_quick_links: Array de accesos rápidos contextuales
  * - clean_messages: Mensajes del sistema
- * - avatar_nav: Navegacion contextual por avatar
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+  site_name: site_name,
+  logo: logo|default(''),
+  logged_in: logged_in,
+  theme_settings: theme_settings|default({}),
+  avatar_nav: avatar_nav|default(null),
+} only %}
 
-<body{{ attributes.addClass('user-page', 'page-user', 'full-width-layout') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Ir al contenido principal{% endtrans %}
-  </a>
+<main id="main-content" class="user-main">
+  {# Mensajes del sistema (status, warning, error) #}
+  {% if clean_messages %}
+    <div class="user-messages">
+      {{ clean_messages }}
+    </div>
+  {% endif %}
 
-  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
-    site_name: site_name,
-    logo: logo|default(''),
-    logged_in: logged_in,
-    theme_settings: theme_settings|default({}),
-    avatar_nav: avatar_nav|default(null),
-  } only %}
+  {# ====================================================================
+     PROFILE VIEW — Premium layout con hero card + info + quick links
+     ==================================================================== #}
+  {% if user_page_type == 'profile' %}
 
-  <main id="main-content" class="user-main">
-    {# Mensajes del sistema (status, warning, error) #}
-    {% if clean_messages %}
-      <div class="highlighted container">
-        {{ clean_messages }}
+    <div class="user-profile">
+
+      {# ── Hero Profile Card ────────────────────────────────────────── #}
+      <div class="profile-hero">
+        <div class="profile-hero__bg" aria-hidden="true">
+          <div class="profile-hero__gradient"></div>
+        </div>
+
+        <div class="profile-hero__content">
+          {# Avatar #}
+          <div class="profile-hero__avatar">
+            {% if user_avatar_url %}
+              <img src="{{ user_avatar_url }}" alt="{{ user_display_name }}" class="profile-hero__avatar-img" loading="lazy">
+            {% else %}
+              <span class="profile-hero__avatar-initials">{{ user_initials|default('U') }}</span>
+            {% endif %}
+            <div class="profile-hero__avatar-status" title="{% trans %}En línea{% endtrans %}"></div>
+          </div>
+
+          {# Info #}
+          <div class="profile-hero__info">
+            <h1 class="profile-hero__name">{{ user_display_name|default('Usuario') }}</h1>
+            <p class="profile-hero__email">{{ user_email }}</p>
+
+            <div class="profile-hero__meta">
+              {% if user_roles is not empty %}
+                <div class="profile-hero__roles">
+                  {% for role in user_roles %}
+                    <span class="profile-hero__role-badge">{{ role }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <span class="profile-hero__member-since">
+                {{ jaraba_icon('ui', 'calendar', { size: '14px' }) }}
+                {% trans %}Miembro desde{% endtrans %} {{ user_member_since }}
+              </span>
+            </div>
+          </div>
+
+          {# Action Buttons #}
+          <div class="profile-hero__actions">
+            {% if user is defined and user.id is defined %}
+              <a href="{{ path('entity.user.edit_form', {'user': user.id}) }}" class="btn-primary">
+                {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+                {% trans %}Editar perfil{% endtrans %}
+              </a>
+            {% endif %}
+            <a href="{{ path('<front>') }}" class="btn-ghost">
+              {% trans %}Ir al inicio{% endtrans %}
+            </a>
+          </div>
+        </div>
       </div>
-    {% endif %}
+
+      {# ── Account Info Cards ───────────────────────────────────────── #}
+      <div class="account-info">
+        <h2 class="account-info__title">
+          {{ jaraba_icon('ui', 'info', { size: '20px' }) }}
+          {% trans %}Información de la cuenta{% endtrans %}
+        </h2>
+
+        <div class="account-info__grid">
+          {# Email #}
+          <div class="account-info__card">
+            <div class="account-info__card-icon account-info__card-icon--primary">
+              {{ jaraba_icon('ui', 'mail', { size: '20px' }) }}
+            </div>
+            <div class="account-info__card-content">
+              <span class="account-info__card-label">{% trans %}Correo electrónico{% endtrans %}</span>
+              <span class="account-info__card-value">{{ user_email }}</span>
+            </div>
+          </div>
+
+          {# Roles #}
+          <div class="account-info__card">
+            <div class="account-info__card-icon account-info__card-icon--innovation">
+              {{ jaraba_icon('ui', 'users', { size: '20px' }) }}
+            </div>
+            <div class="account-info__card-content">
+              <span class="account-info__card-label">{% trans %}Roles{% endtrans %}</span>
+              <span class="account-info__card-value">
+                {% if user_roles is not empty %}
+                  {{ user_roles|join(', ') }}
+                {% else %}
+                  {% trans %}Usuario{% endtrans %}
+                {% endif %}
+              </span>
+            </div>
+          </div>
+
+          {# Last Access #}
+          <div class="account-info__card">
+            <div class="account-info__card-icon account-info__card-icon--impulse">
+              {{ jaraba_icon('ui', 'clock', { size: '20px' }) }}
+            </div>
+            <div class="account-info__card-content">
+              <span class="account-info__card-label">{% trans %}Último acceso{% endtrans %}</span>
+              <span class="account-info__card-value">{% trans %}Hace{% endtrans %} {{ user_last_access }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ── Quick Access Grid ────────────────────────────────────────── #}
+      {% if user_quick_links is not empty %}
+        <div class="quick-access">
+          <h2 class="quick-access__title">
+            {{ jaraba_icon('ui', 'bolt', { size: '20px' }) }}
+            {% trans %}Accesos rápidos{% endtrans %}
+          </h2>
+
+          <div class="quick-access__grid">
+            {% for link in user_quick_links %}
+              <a href="{{ link.url }}" class="quick-access__card quick-access__card--{{ link.color }}">
+                <div class="quick-access__card-icon">
+                  {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px' }) }}
+                </div>
+                <span class="quick-access__card-label">{{ link.label }}</span>
+                {{ jaraba_icon('ui', 'arrow-right', { size: '16px', class: 'quick-access__card-arrow' }) }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  {# ====================================================================
+     EDIT / LOGOUT / CONTACT / CANCEL — Mantener layout existente limpio
+     ==================================================================== #}
+  {% else %}
 
     <div class="user-wrapper">
-      {# Cabecera de seccion con icono contextual #}
+      {# Cabecera de sección con icono contextual #}
       <div class="user-section-header">
+        {# EXENCIÓN directriz iconos: SVGs decorativos multi-color con CSS var()
+           y opacidades, incompatibles con renderizado <img> de jaraba_icon(). #}
         <div class="user-section-header__icon" aria-hidden="true">
-          {% if user_page_type == 'profile' %}
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="24" cy="24" r="22" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.1"/>
-              <circle cx="24" cy="18" r="7" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.3"/>
-              <path d="M10 42c0-8 6-14 14-14s14 6 14 14" stroke="var(--ej-color-secondary, #00A9A5)" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
-          {% elseif user_page_type == 'edit' %}
+          {% if user_page_type == 'edit' %}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="24" cy="24" r="22" fill="var(--ej-color-primary, #FF8C42)" opacity="0.1"/>
-              <path d="M28 8l8 8-16 16H12v-8l16-16z" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
-              <path d="M28 8l8 8M12 32l24-24" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="20" cy="17" r="6" fill="var(--ej-color-corporate, #233D63)" opacity="0.25"/>
+              <path d="M8 40c0-7.2 5.4-13 12-13s12 5.8 12 13" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round" opacity="0.25"/>
+              <circle cx="35" cy="32" r="7" fill="var(--ej-color-primary, #FF8C42)" opacity="0.15"/>
+              <path d="M35 28v1.2m0 5.6V36m-4-4h1.2m5.6 0H39m-1.17-2.83l-.85.85m-3.96 3.96l-.85.85m0-5.66l.85.85m3.96 3.96l.85.85" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="35" cy="32" r="2" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="1.8"/>
             </svg>
           {% elseif user_page_type == 'logout' %}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,12 +218,10 @@
 
         <div class="user-section-header__text">
           <h1 class="user-section-header__title">
-            {% if user_page_type == 'profile' %}
-              {{ user_display_name|default('Usuario') }}
-            {% elseif user_page_type == 'edit' %}
+            {% if user_page_type == 'edit' %}
               {% trans %}Editar perfil{% endtrans %}
             {% elseif user_page_type == 'logout' %}
-              {% trans %}Cerrar sesion{% endtrans %}
+              {% trans %}Cerrar sesión{% endtrans %}
             {% elseif user_page_type == 'contact' %}
               {% trans %}Contactar usuario{% endtrans %}
             {% elseif user_page_type == 'cancel' %}
@@ -102,16 +231,14 @@
             {% endif %}
           </h1>
           <p class="user-section-header__subtitle">
-            {% if user_page_type == 'profile' %}
-              {% trans %}Panel de usuario{% endtrans %}
-            {% elseif user_page_type == 'edit' %}
-              {% trans %}Actualiza tu informacion{% endtrans %}
+            {% if user_page_type == 'edit' %}
+              {% trans %}Actualiza tu información{% endtrans %}
             {% elseif user_page_type == 'logout' %}
-              {% trans %}Estas seguro de que deseas salir?{% endtrans %}
+              {% trans %}¿Estás seguro de que deseas salir?{% endtrans %}
             {% elseif user_page_type == 'contact' %}
-              {% trans %}Envia un mensaje{% endtrans %}
+              {% trans %}Envía un mensaje{% endtrans %}
             {% elseif user_page_type == 'cancel' %}
-              {% trans %}Esta accion no se puede deshacer{% endtrans %}
+              {% trans %}Esta acción no se puede deshacer{% endtrans %}
             {% endif %}
           </p>
         </div>
@@ -122,14 +249,9 @@
         {{ user_content }}
       </div>
 
-      {# Enlaces de navegacion secundaria #}
+      {# Enlaces de navegación secundaria #}
       <div class="user-nav-links">
-        {% if user_page_type == 'profile' and user is defined and user.id is defined %}
-          <a href="{{ path('entity.user.edit_form', {'user': user.id}) }}" class="user-nav-links__item">
-            {% trans %}Editar perfil{% endtrans %}
-          </a>
-          <span class="user-nav-links__separator" aria-hidden="true">·</span>
-        {% elseif user_page_type == 'edit' and user is defined and user.id is defined %}
+        {% if user_page_type == 'edit' and user is defined and user.id is defined %}
           <a href="{{ path('entity.user.canonical', {'user': user.id}) }}" class="user-nav-links__item">
             {% trans %}Ver perfil{% endtrans %}
           </a>
@@ -140,14 +262,12 @@
         </a>
       </div>
     </div>
-  </main>
 
-  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
-    site_name: site_name,
-    logo: logo|default(''),
-    theme_settings: theme_settings|default({}),
-  } only %}
+  {% endif %}
+</main>
 
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-</body>
-</html>
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+  site_name: site_name,
+  logo: logo|default(''),
+  theme_settings: theme_settings|default({}),
+} only %}

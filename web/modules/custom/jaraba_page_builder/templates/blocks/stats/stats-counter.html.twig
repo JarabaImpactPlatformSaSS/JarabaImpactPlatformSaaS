@@ -24,6 +24,7 @@
 
 <section class="jaraba-stats-counter jaraba-stats-counter--{{ bg_class }} jaraba-block" 
          data-block-type="stats_counter"
+         aria-label="{{ title|default('Stats Counter') }}"
          {% if content.animate %}data-animate-counters{% endif %}>
   <div class="jaraba-block__container">
     

@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Template de página para el Selector de Plantillas.
+ * CORREGIDO: Restaurado paso de variables al header y footer.
+ */
+#}
+<div class="page-wrapper page-wrapper--clean page-wrapper--full-width">
+
+  {# Eliminamos 'only' para permitir que pasen las variables site_name, logo, etc. #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'clean_layout': true
+  } %}
+
+  <main role="main" id="main-content" class="main-content-clean">
+    <div class="canvas-clean-container">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'clean_layout': true
+  } %}
+
+</div>

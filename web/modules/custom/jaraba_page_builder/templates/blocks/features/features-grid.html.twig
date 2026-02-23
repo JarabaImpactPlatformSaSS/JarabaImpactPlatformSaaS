@@ -23,7 +23,8 @@
 {% set bg_class = content.background ? 'jaraba-features--' ~ content.background : '' %}
 
 <section class="jaraba-features jaraba-features--grid {{ bg_class }} jaraba-block"
-         data-block-type="features_grid">
+         data-block-type="features_grid"
+         aria-label="Features Grid">
   <div class="jaraba-block__container">
     {% if content.section_title %}
       <header class="jaraba-features__header">

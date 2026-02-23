@@ -4,6 +4,8 @@ namespace Drupal\commerce_stripe\Plugin\Commerce\PaymentGateway;
 
 use Drupal\advancedqueue\Job;
 use Drupal\commerce\Response\NeedsRedirectException;
+use Drupal\commerce\Utility\Error;
+use Drupal\commerce_checkout\CheckoutOrderManagerInterface;
 use Drupal\commerce_checkout\Event\CheckoutEvents;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Event\OrderEvent;
@@ -13,11 +15,14 @@ use Drupal\commerce_payment\Exception\HardDeclineException;
 use Drupal\commerce_payment\Exception\InvalidRequestException;
 use Drupal\commerce_payment\Exception\PaymentGatewayException;
 use Drupal\commerce_payment\Exception\SoftDeclineException;
+use Drupal\commerce_payment\PaymentMethodTypeManager;
+use Drupal\commerce_payment\PaymentOrderUpdaterInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayBase;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_stripe\ErrorHelper;
-use Drupal\commerce_stripe\Event\PaymentIntentEvent;
-use Drupal\commerce_stripe\Event\PaymentMethodCreateEvent;
+use Drupal\commerce_stripe\Event\ExpressCheckoutShippingProfileAlterEvent;
+use Drupal\commerce_stripe\Event\PaymentIntentCreateEvent;
+use Drupal\commerce_stripe\Event\PaymentIntentUpdateEvent;
 use Drupal\commerce_stripe\Event\StripeEvents;
 use Drupal\commerce_stripe\IntentHelper;
 use Drupal\commerce_stripe\Plugin\Commerce\PaymentMethodType\StripePaymentMethodTypeInterface;
@@ -25,8 +30,16 @@ use Drupal\commerce_stripe\WebhookEventState;
 use Drupal\commerce_stripe_webhook_event\WebhookEvent;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\Core\Queue\QueueFactory;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\profile\Entity\ProfileInterface;
@@ -44,6 +57,7 @@ use Stripe\SetupIntent;
 use Stripe\Stripe as StripeLibrary;
 use Stripe\Webhook;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -77,82 +91,96 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    *
    * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
-  protected $eventDispatcher;
+  protected EventDispatcherInterface $eventDispatcher;
 
   /**
    * The module extension list.
    *
    * @var \Drupal\Core\Extension\ModuleExtensionList
    */
-  protected $moduleExtensionList;
+  protected ModuleExtensionList $moduleExtensionList;
 
   /**
    * The logging channel.
    *
-   * @var \Drupal\Core\Logger\LoggerChannel
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
    */
-  protected $logger;
+  protected LoggerChannelInterface $logger;
 
   /**
    * The UUID service.
    *
    * @var \Drupal\Component\Uuid\UuidInterface
    */
-  protected $uuidService;
+  protected UuidInterface $uuidService;
 
   /**
    * The renderer.
    *
    * @var \Drupal\Core\Render\RendererInterface
    */
-  protected $renderer;
+  protected RendererInterface $renderer;
 
   /**
    * The current user.
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
-  protected $currentUser;
+  protected AccountInterface $currentUser;
 
   /**
    * The module handler service.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected $moduleHandler;
+  protected ModuleHandlerInterface $moduleHandler;
 
   /**
    * Whether the Webhook Event Submodule has been installed.
    *
    * @var bool
    */
-  protected $webhookEventModuleIsInstalled;
+  protected bool $webhookEventModuleIsInstalled;
 
   /**
    * The payment method type manager service.
    *
    * @var \Drupal\commerce_payment\PaymentMethodTypeManager
    */
-  protected $paymentMethodTypeManager;
+  protected PaymentMethodTypeManager $paymentMethodTypeManager;
 
   /**
    * The config factory service.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected $configFactory;
+  protected ConfigFactoryInterface $configFactory;
 
   /**
    * The queue service.
    *
    * @var \Drupal\Core\Queue\QueueFactory
    */
-  protected $queueFactory;
+  protected QueueFactory $queueFactory;
+
+  /**
+   * The payment order updater service.
+   *
+   * @var \Drupal\commerce_payment\PaymentOrderUpdaterInterface
+   */
+  protected PaymentOrderUpdaterInterface $paymentOrderUpdater;
+
+  /**
+   * The checkout order manager.
+   *
+   * @var \Drupal\commerce_checkout\CheckoutOrderManagerInterface
+   */
+  protected CheckoutOrderManagerInterface $checkoutOrderManager;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): self {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
     $instance->eventDispatcher = $container->get('event_dispatcher');
@@ -165,6 +193,8 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
     $instance->paymentMethodTypeManager = $container->get('plugin.manager.commerce_payment_method_type');
     $instance->configFactory = $container->get('config.factory');
     $instance->queueFactory = $container->get('queue');
+    $instance->paymentOrderUpdater = $container->get('commerce_payment.order_updater');
+    $instance->checkoutOrderManager = $container->get('commerce_checkout.checkout_order_manager');
 
     $instance->init();
     $instance->webhookEventModuleIsInstalled = $instance->moduleHandler->moduleExists('commerce_stripe_webhook_event');
@@ -184,7 +214,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * Initializes the SDK.
    */
-  protected function init() {
+  protected function init(): void {
     $extension_info = $this->moduleExtensionList->getExtensionInfo('commerce_stripe');
     $version = !empty($extension_info['version']) ? $extension_info['version'] : '8.x-1.0-dev';
     StripeLibrary::setAppInfo('Drupal Commerce by Centarro', $version, 'https://www.drupal.org/project/commerce_stripe', 'pp_partner_Fa3jTqCJqTDtHD');
@@ -197,17 +227,30 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
       ApiRequestor::setHttpClient($curl);
     }
 
-    StripeLibrary::setApiKey($this->getSecretKey());
-    StripeLibrary::setApiVersion('2019-12-03');
+    StripeLibrary::setApiVersion($this->getApiVersion());
+    if (!empty($this->configuration['access_token'])) {
+      StripeLibrary::setApiKey($this->configuration['access_token']);
+    }
+    else {
+      StripeLibrary::setApiKey($this->getSecretKey());
+    }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
+      'api_version' => NULL,
+      'authentication_method' => 'stripe_connect',
+      'access_token' => '',
+      'stripe_user_id' => '',
       'publishable_key' => '',
       'secret_key' => '',
+      'express_checkout' => [
+        'enable_on_cart' => FALSE,
+        'allowed_payment_method_types' => [],
+      ],
       'webhook_signing_secret' => '',
       'payment_method_usage' => 'on_session',
       'capture_method' => 'automatic',
@@ -219,25 +262,159 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
 
+    $form['access_token'] = [
+      '#type' => 'value',
+      '#default_value' => $this->configuration['access_token'],
+    ];
+    $form['stripe_user_id'] = [
+      '#type' => 'value',
+      '#default_value' => $this->configuration['stripe_user_id'],
+    ];
+    $form['authentication_method'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Authentication Method'),
+      '#description' => $this->t('When "Stripe connect" is selected, connecting to Stripe is done from the payment gateway list page.'),
+      '#options' => [
+        'stripe_connect' => $this->t('Stripe connect (Preferred)'),
+        'api_keys' => $this->t('API keys'),
+      ],
+      '#default_value' => !empty($this->configuration['secret_key']) ? 'api_keys' : $this->configuration['authentication_method'],
+      '#disabled' => !empty($this->configuration['access_token']),
+    ];
+    $stripe_connect_states = [
+      'invisible' => [
+        ':input[name="configuration[' . $this->pluginId . '][authentication_method]"]' => ['value' => 'stripe_connect'],
+      ],
+    ];
     $form['publishable_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Publishable key'),
       '#default_value' => $this->getPublishableKey(),
-      '#required' => TRUE,
+      '#states' => $stripe_connect_states,
     ];
     $form['secret_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Secret key'),
       '#default_value' => $this->getSecretKey(),
-      '#required' => TRUE,
+      '#states' => $stripe_connect_states,
     ];
     $form['validate_api_keys'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Validate API keys upon form submission.'),
+      '#states' => $stripe_connect_states,
       '#default_value' => TRUE,
+    ];
+    // Express Checkout configuration.
+    $form['express_checkout'] = [
+      '#type' => 'fieldset',
+      '#title' => 'Express Checkout configuration',
+    ];
+    $form['express_checkout']['enable_on_cart'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show Express Checkout buttons on the shopping cart page.'),
+      '#default_value' => $this->configuration['express_checkout']['enable_on_cart'],
+    ];
+    // An array of states when the Express Checkout configuration
+    // should be visible.
+    $express_checkout_visible = [
+      'visible' => [
+        ':input[name="configuration[' . $this->pluginId . '][express_checkout][enable_on_cart]"]' => ['checked' => TRUE],
+      ],
+    ];
+    $supported_payment_method_types = [
+      'paypal' => $this->t('PayPal'),
+      'amazonPay' => $this->t('Amazon Pay'),
+      'applePay' => $this->t('Apple Pay'),
+      'googlePay' => $this->t('Google Pay'),
+      'klarna' => $this->t('Klarna'),
+      'link' => $this->t('Link'),
+    ];
+    $form['express_checkout']['allowed_payment_method_types'] = [
+      '#title' => $this->t('Limit payment method types'),
+      '#type' => 'checkboxes',
+      '#options' => $supported_payment_method_types,
+      '#default_value' => $this->configuration['express_checkout']['allowed_payment_method_types'],
+      '#description' => $this->t('Only include Express Checkout buttons for these types even if other payment method types are enabled at Stripe. Leave empty to allow all payment method types.'),
+      '#states' => $express_checkout_visible,
+    ];
+    $supported_button_themes = [
+      'applePay' => [
+        'black' => $this->t('Black'),
+        'white' => $this->t('White'),
+        'white-outline' => $this->t('White outline'),
+      ],
+      'googlePay' => [
+        'black' => $this->t('Black'),
+        'white' => $this->t('White'),
+      ],
+    ];
+    $supported_button_types = [
+      'applePay' => [
+        'add-money' => $this->t('Add money'),
+        'book' => $this->t('Book'),
+        'buy' => $this->t('Buy'),
+        'check-out' => $this->t('Check out'),
+        'contribute' => $this->t('Contribute'),
+        'donate' => $this->t('Donate'),
+        'order' => $this->t('Order'),
+        'plain' => $this->t('Plain'),
+        'reload' => $this->t('Reload'),
+        'rent' => $this->t('Rent'),
+        'subscribe' => $this->t('Subscribe'),
+        'support' => $this->t('Support'),
+        'tip' => $this->t('Tip'),
+        'top-up' => $this->t('Top up'),
+      ],
+      'googlePay' => [
+        'book' => $this->t('Book'),
+        'buy' => $this->t('Buy'),
+        'checkout' => $this->t('Check out'),
+        'donate' => $this->t('Donate'),
+        'order' => $this->t('Order'),
+        'pay' => $this->t('Pay'),
+        'plain' => $this->t('Plain'),
+        'subscribe' => $this->t('Subscribe'),
+      ],
+    ];
+    $stylable_payment_methods = ['applePay', 'googlePay'];
+    foreach ($stylable_payment_methods as $payment_method_type_name) {
+      if (isset($supported_button_themes[$payment_method_type_name])) {
+        $form['express_checkout']['button_styles'][$payment_method_type_name]['theme'] = [
+          '#type' => 'select',
+          '#title' => $this->t('@name button theme', ['@name' => $supported_payment_method_types[$payment_method_type_name]]),
+          '#options' => $supported_button_themes[$payment_method_type_name],
+          '#default_value' => $this->configuration['express_checkout']['button_styles'][$payment_method_type_name]['theme'] ?? 'black',
+          '#states' => $express_checkout_visible,
+        ];
+      }
+      if (isset($supported_button_types[$payment_method_type_name])) {
+        $default_button_type = match($payment_method_type_name) {
+          'applePay' => 'plain',
+          'googlePay' => 'buy',
+        };
+        $form['express_checkout']['button_styles'][$payment_method_type_name]['type'] = [
+          '#type' => 'select',
+          '#title' => $this->t('@name button type', ['@name' => $supported_payment_method_types[$payment_method_type_name]]),
+          '#options' => $supported_button_types[$payment_method_type_name],
+          '#default_value' => $this->configuration['express_checkout']['button_styles'][$payment_method_type_name]['type'] ?? $default_button_type,
+          '#states' => $express_checkout_visible,
+        ];
+      }
+    }
+    $form['express_checkout']['collect_phone_number'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Collect a phone number in express checkout.'),
+      '#default_value' => $this->configuration['express_checkout']['collect_phone_number'] ?? FALSE,
+      '#states' => $express_checkout_visible,
+    ];
+    $form['express_checkout']['collect_billing_address'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Collect the billing address in express checkout.'),
+      '#default_value' => $this->configuration['express_checkout']['collect_billing_address'] ?? TRUE,
+      '#states' => $express_checkout_visible,
     ];
     $form['webhook'] = [
       '#type' => 'fieldset',
@@ -364,14 +541,14 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::validateConfigurationForm($form, $form_state);
 
     if (!$form_state->getErrors()) {
       $values = $form_state->getValue($form['#parents']);
       // Validate the secret key.
       $expected_livemode = $values['mode'] === 'live';
-      if (!empty($values['secret_key']) && $values['validate_api_keys']) {
+      if ($values['validate_api_keys'] && $values['authentication_method'] === 'api_keys') {
         try {
           StripeLibrary::setApiKey($values['secret_key']);
           // Make sure we use the right mode for the secret keys.
@@ -379,7 +556,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
             $form_state->setError($form['secret_key'], $this->t('The provided secret key is not for the selected mode (@mode).', ['@mode' => $values['mode']]));
           }
         }
-        catch (ApiErrorException $e) {
+        catch (ApiErrorException) {
           $form_state->setError($form['secret_key'], $this->t('Invalid secret key.'));
         }
       }
@@ -389,13 +566,21 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
 
     if (!$form_state->getErrors()) {
       $values = $form_state->getValue($form['#parents']);
       $this->configuration['publishable_key'] = $values['publishable_key'];
-      $this->configuration['secret_key'] = $values['secret_key'];
+      if ($values['authentication_method'] === 'api_keys') {
+        $this->configuration['secret_key'] = $values['secret_key'];
+      }
+      else {
+        $this->configuration['access_token'] = $values['access_token'];
+        $this->configuration['stripe_user_id'] = $values['stripe_user_id'];
+      }
+      $this->configuration['authentication_method'] = $values['authentication_method'];
+      $this->configuration['express_checkout'] = $values['express_checkout'];
       $this->configuration['webhook_signing_secret'] = $values['webhook']['webhook_signing_secret'];
       $this->configuration['payment_method_usage'] = $values['payment_method_usage'];
       $this->configuration['capture_method'] = $values['capture_method'];
@@ -407,7 +592,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function createPayment(PaymentInterface $payment, $capture = TRUE) {
+  public function createPayment(PaymentInterface $payment, $capture = TRUE): void {
     $this->assertPaymentState($payment, ['new']);
     $payment_method = $payment->getPaymentMethod();
     assert($payment_method instanceof PaymentMethodInterface);
@@ -428,6 +613,9 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
           'off_session'    => TRUE,
         ];
         $intent = $this->createPaymentIntent($order, $intent_attributes, $payment);
+      }
+      if ($intent === NULL) {
+        throw SoftDeclineException::createForPayment($payment, 'The intent is missing');
       }
       if ($intent->status === PaymentIntent::STATUS_REQUIRES_CONFIRMATION) {
         $intent = $intent->confirm();
@@ -458,7 +646,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
         }
         throw HardDeclineException::createForPayment($payment, $decline_message);
       }
-      if (count($intent->charges->data) === 0) {
+      if (empty($intent->latest_charge) && count($intent->charges->data) === 0) {
         throw HardDeclineException::createForPayment($payment, sprintf('The payment intent %s did not have a charge object.', $intent->id));
       }
       // Keep the payment in the new status if it has not yet been processed.
@@ -473,15 +661,15 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
       $payment_method_type->updatePayment($payment, $intent);
       $payment->save();
 
-      // Add metadata and extra transaction data where required.
-      $event = new PaymentIntentEvent($order, [], $payment);
-      $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_INTENT_CREATE);
-      // Update the transaction data from additional information added through
-      // the event.
-      $intent_array = $event->getIntentAttributes();
+      $metadata = $intent->metadata->toArray();
+      $event = new PaymentIntentUpdateEvent($order, $metadata, $payment);
+      $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_INTENT_UPDATE);
+      $metadata += $event->getMetadata();
       // If there are no updates, then no need to waste resources on the call.
-      if (!empty($intent_array)) {
-        PaymentIntent::update($intent->id, $intent_array);
+      if (!empty($metadata)) {
+        PaymentIntent::update($intent->id, [
+          'metadata' => $metadata,
+        ]);
       }
 
       $order->unsetData('stripe_intent');
@@ -500,7 +688,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    * @throws \Drupal\Core\Entity\EntityStorageException
    * @throws \Drupal\commerce\Response\NeedsRedirectException
    */
-  public function onReturn(OrderInterface $order, Request $request) {
+  public function onReturn(OrderInterface $order, Request $request): void {
     // If the order should force a 500 error, throw it now. This functionality
     // can be suppressed by setting the skip_return_failure query parameter in
     // the request object before calling this function manually.
@@ -606,9 +794,102 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
       );
     }
 
+    // Process Express Checkout order.
+    if ($order->getData('stripe_express_checkout')) {
+      $this->processExpressCheckoutOrder($order);
+    }
+
     $payment_details = ['stripe_payment_method' => $stripe_payment_method, 'commerce_order' => $order];
     $this->createPaymentMethod($payment_method, $payment_details);
     $order->set('payment_method', $payment_method);
+  }
+
+  /**
+   * Processes Express Checkout order.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order.
+   */
+  protected function processExpressCheckoutOrder(OrderInterface $order): void {
+    $intent_id = $order->getData('stripe_intent');
+    $intent = $this->getStripePaymentIntent($intent_id);
+
+    if (!isset($intent->charges)) {
+      return;
+    }
+
+    $charge_attributes = $intent->charges->data[0];
+    if (isset($charge_attributes['billing_details'])) {
+      $billing_details = $charge_attributes['billing_details'];
+      // Assign the order to the email taken from the billing details
+      // of the payment.
+      if (empty($order->getEmail())) {
+        $order->setEmail($billing_details['email']);
+      }
+      // Create a billing profile, if allowed.
+      if ($this->collectsBillingInformation()) {
+        $billing_profile = $this->entityTypeManager->getStorage('profile')
+          ->create([
+            'type' => 'customer',
+            'uid' => 0,
+          ]);
+        $address = [
+          'country_code' => $billing_details['address']['country'],
+          'postal_code' => $billing_details['address']['postal_code'],
+          'locality' => $billing_details['address']['city'],
+          'address_line1' => $billing_details['address']['line1'],
+          'administrative_area' => $billing_details['address']['state'],
+        ];
+        $billing_name = $billing_details['name'];
+        if (!empty($billing_name)) {
+          $name_parts = explode(' ', $billing_name);
+          $address['given_name'] = $name_parts[0];
+          $address['family_name'] = trim(str_replace($name_parts[0], '', $billing_name));
+        }
+        $billing_profile->set('address', $address);
+        $billing_profile->save();
+        $order->set('billing_profile', $billing_profile);
+      }
+    }
+
+    // Update the shipping profile with all possible information.
+    if ($order->hasField('shipments') &&
+      !$order->get('shipments')->isEmpty() && isset($charge_attributes['shipping'])) {
+      $profiles = $order->collectProfiles();
+      $shipping_profile = $profiles['shipping'] ?? NULL;
+      if ($shipping_profile) {
+        $shipping_address = $charge_attributes['shipping']['address'];
+        /** @var \Drupal\address\Plugin\Field\FieldType\AddressItem $shipping_profile_address */
+        $shipping_profile_address = $shipping_profile->get('address')->first();
+        $shipping_name = $charge_attributes['shipping']['name'];
+        $new_address = [
+          'given_name' => $shipping_profile_address->getGivenName(),
+          'family_name' => $shipping_profile_address->getFamilyName(),
+          'locality' => $shipping_address['city'],
+          // Leave the administrative_area defined in the
+          // getAdministrativeAreaForAddress() method.
+          'administrative_area' => $shipping_profile_address->getAdministrativeArea(),
+          'postal_code' => $shipping_address['postal_code'] ?? '',
+          'country_code' => $shipping_address['country'],
+          'address_line1' => $shipping_address['line1'] ?? '',
+          'address_line2' => $shipping_address['line2'] ?? '',
+        ];
+        // Save the first part of the shipping name as given_name
+        // and the rest as family_name.
+        if (!empty($shipping_name)) {
+          $name_parts = explode(' ', $shipping_name);
+          $new_address['given_name'] = $name_parts[0];
+          $new_address['family_name'] = trim(str_replace($name_parts[0], '', $shipping_name));
+        }
+        $shipping_profile->set('address', $new_address);
+
+        // Allow other modules to alter the shipping profile.
+        $event = new ExpressCheckoutShippingProfileAlterEvent($shipping_profile, $charge_attributes->toArray());
+        $this->eventDispatcher->dispatch($event, StripeEvents::EXPRESS_CHECKOUT_SHIPPING_PROFILE_ALTER);
+
+        $shipping_profile->save();
+      }
+    }
   }
 
   /**
@@ -682,7 +963,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    * @throws \Exception
    * @throws \Throwable
    */
-  public function onNotify(Request $request) {
+  public function onNotify(Request $request): ?Response {
     try {
       $stripe_signature = $request->headers->get('Stripe-Signature', '');
       $payload = $request->getContent();
@@ -924,7 +1205,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function capturePayment(PaymentInterface $payment, Price $amount = NULL) {
+  public function capturePayment(PaymentInterface $payment, ?Price $amount = NULL): void {
     $this->assertPaymentState($payment, ['authorization']);
     // If not specified, capture the entire amount.
     $amount = $amount ?: $payment->getAmount();
@@ -976,7 +1257,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function voidPayment(PaymentInterface $payment) {
+  public function voidPayment(PaymentInterface $payment): void {
     $this->assertPaymentState($payment, ['authorization']);
     // Void Stripe payment - release uncaptured payment.
     try {
@@ -1011,7 +1292,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function refundPayment(PaymentInterface $payment, Price $amount = NULL) {
+  public function refundPayment(PaymentInterface $payment, ?Price $amount = NULL): void {
     $this->assertPaymentState($payment, ['completed', 'partially_refunded']);
     // If not specified, refund the entire amount.
     $amount = $amount ?: $payment->getAmount();
@@ -1065,7 +1346,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    * @throws \Drupal\Core\Entity\EntityStorageException
    * @throws \Stripe\Exception\ApiErrorException
    */
-  public function createPaymentMethod(PaymentMethodInterface $payment_method, array $payment_details) {
+  public function createPaymentMethod(PaymentMethodInterface $payment_method, array $payment_details): void {
     // Handle previous code that passed just the stripe_payment_method_id.
     if (!array_key_exists('stripe_payment_method', $payment_details) && array_key_exists('stripe_payment_method_id', $payment_details)) {
       $payment_details['stripe_payment_method'] = PaymentMethod::retrieve($payment_details['stripe_payment_method_id']);
@@ -1080,16 +1361,11 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
         throw InvalidRequestException::createForPayment($payment_method, sprintf('$payment_details must contain the %s key.', $required_key));
       }
     }
-
-    // Allow alteration of the payment method before remote creation.
-    $event = new PaymentMethodCreateEvent($payment_method, $payment_details);
-    $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_METHOD_CREATE);
-
-    $stripe_payment_method = $this->doCreatePaymentMethod($payment_method, $payment_details);
+    $stripe_payment_method = $payment_details['stripe_payment_method'];
 
     $payment_method_type = $payment_method->getType();
     if (!$payment_method_type instanceof StripePaymentMethodTypeInterface) {
-      throw PaymentGatewayException::createForPayment($payment_method, 'The stripe payment method type(@payment_method_type) is not currently supported.', ['@payment_method_type' => $stripe_payment_method->type]);
+      throw PaymentGatewayException::createForPayment($payment_method, $this->t('The stripe payment method type(@payment_method_type) is not currently supported.', ['@payment_method_type' => $stripe_payment_method->type]));
     }
     $payment_method->setReusable($payment_method_type->isReusable());
     $payment_method_type->updatePaymentMethod($payment_method, $stripe_payment_method);
@@ -1099,12 +1375,14 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
       $payment_method->setReusable(FALSE);
     }
     $payment_method->save();
+
+    $this->attachCustomerToStripePaymentMethod($payment_method, $payment_details);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function deletePaymentMethod(PaymentMethodInterface $payment_method) {
+  public function deletePaymentMethod(PaymentMethodInterface $payment_method): void {
     // Delete the remote record.
     $payment_method_remote_id = $payment_method->getRemoteId();
     try {
@@ -1122,32 +1400,15 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * Attach the payment method to the customer.
    *
-   * @param \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method
-   *   The payment method.
-   * @param array $payment_details
-   *   The gateway-specific payment details.
-   *
-   * @return \Stripe\PaymentMethod
-   *   The stripe payment method.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \Stripe\Exception\ApiErrorException
-   *
-   * @deprecated in commerce_stripe:8.x-1.0 and is removed from commerce_stripe:2.0.0.
-   * Use StripePaymentElement::updateStripePaymentMethod instead.
-   *
-   * @see https://www.drupal.org/project/commerce_stripe/issues/3484253
-   */
-  public function doCreatePaymentMethod(PaymentMethodInterface $payment_method, array $payment_details): PaymentMethod {
-    return $this->attachCustomerToStripePaymentMethod($payment_method, $payment_details);
-  }
-
-  /**
-   * Attach the payment method to the customer.
-   *
    * The stripe payment method is already created at this point.
    *
-   * If it is reusable, we will attach it to the stripe customer.
+   * If it is reusable, we will attach it to the stripe customer, if needed.
+   *
+   * Authenticated users will already be attached to the payment method.
+   *
+   * This is primarily applicable when a customer checks out anonymously,
+   * but checkout is configured to assign an order to an existing customer
+   * or to create a new user if one doesn't exist.
    *
    * We'll create a stripe customer, if one does not yet exist.
    *
@@ -1160,37 +1421,35 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    *
    * @return \Stripe\PaymentMethod
    *   The stripe payment method.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \Stripe\Exception\ApiErrorException
    */
   public function attachCustomerToStripePaymentMethod(PaymentMethodInterface $payment_method, array $payment_details): PaymentMethod {
     /** @var \Stripe\PaymentMethod $stripe_payment_method */
     $stripe_payment_method = $payment_details['stripe_payment_method'];
-    $owner = $payment_method->getOwner();
-    $customer_id = NULL;
-    /** @var \Drupal\commerce_stripe\Plugin\Commerce\PaymentMethodType\StripePaymentMethodTypeInterface $payment_method_type */
-    $payment_method_type = $payment_method->getType();
-    $is_reusable = $this->isReusable() && $payment_method_type->isReusable();
-    if ($is_reusable) {
-      $order = $payment_details['commerce_order'] ?? NULL;
-      if ($order && $intent_id = $order->getData('stripe_intent')) {
-        $intent = $this->getIntent($intent_id);
-        if (($intent instanceof PaymentIntent) && (!$intent->setup_future_usage)) {
-          $is_reusable = FALSE;
+    try {
+      $owner = $payment_method->getOwner();
+      $customer_id = NULL;
+      /** @var \Drupal\commerce_stripe\Plugin\Commerce\PaymentMethodType\StripePaymentMethodTypeInterface $payment_method_type */
+      $payment_method_type = $payment_method->getType();
+      $is_reusable = $this->isReusable() && $payment_method_type->isReusable();
+      if ($is_reusable) {
+        $order = $payment_details['commerce_order'] ?? NULL;
+        if ($order && $intent_id = $order->getData('stripe_intent')) {
+          $intent = $this->getIntent($intent_id);
+          if (($intent instanceof PaymentIntent) && (!$intent->setup_future_usage)) {
+            $is_reusable = FALSE;
+          }
         }
       }
-    }
-    if ($owner && $owner->isAuthenticated()) {
-      $customer_id = $this->getRemoteCustomerId($owner);
-    }
-    try {
+      if ($owner && $owner->isAuthenticated()) {
+        $customer_id = $this->getRemoteCustomerId($owner);
+      }
+
       if ($customer_id) {
-        if ($is_reusable) {
-          // We cannot attach if the payment is not reusable.
+        // We cannot attach if the payment is not reusable.
+        // No need to attach if the payment method is already attached.
+        if ($is_reusable && empty($stripe_payment_method->customer ?? NULL)) {
           $stripe_payment_method->attach(['customer' => $customer_id]);
         }
-        $email = $owner->getEmail();
       }
       // If the user is authenticated, created a Stripe customer to attach the
       // payment method to.
@@ -1214,24 +1473,9 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
         $this->setRemoteCustomerId($owner, $customer_id);
         $owner->save();
       }
-      else {
-        $email = NULL;
-      }
-
-      if ($is_reusable && $customer_id && $email) {
-        $payment_method_data = [
-          'email' => $email,
-        ];
-        $billing_profile = $payment_method->getBillingProfile();
-        $formatted_address = $billing_profile ? $this->getFormattedAddress($billing_profile) : NULL;
-        if (!empty($formatted_address)) {
-          $payment_method_data = array_merge($payment_method_data, $formatted_address);
-        }
-        PaymentMethod::update($stripe_payment_method->id, ['billing_details' => $payment_method_data]);
-      }
     }
-    catch (ApiErrorException $e) {
-      ErrorHelper::handleException($e, $payment_method);
+    catch (\Throwable $e) {
+      Error::logException($this->logger, $e);
     }
     return $stripe_payment_method;
   }
@@ -1246,7 +1490,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function createPaymentIntent(OrderInterface $order, $intent_attributes = [], PaymentInterface $payment = NULL) {
+  public function createPaymentIntent(OrderInterface $order, $intent_attributes = [], ?PaymentInterface $payment = NULL): PaymentIntent {
     /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
     $payment_method = $payment ? $payment->getPaymentMethod() : $order->get('payment_method')->entity;
     /** @var \Drupal\commerce_price\Price $amount */
@@ -1265,9 +1509,12 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
       ],
     ];
 
+    // Do not add a shipping address to the payment intent in the case of
+    // express checkout.
+    $express_checkout_shippable = $order->getData('stripe_express_checkout') && $order->hasField('shipments') && !$order->get('shipments')->isEmpty();
     $profiles = $order->collectProfiles();
     $formatted_address = isset($profiles['shipping']) ? $this->getFormattedAddress($profiles['shipping'], 'shipping') : NULL;
-    if (!empty($formatted_address)) {
+    if (!empty($formatted_address) && !$express_checkout_shippable) {
       $default_intent_attributes['shipping'] = $formatted_address;
     }
 
@@ -1290,7 +1537,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
     }
 
     // Add metadata and extra transaction data where required.
-    $event = new PaymentIntentEvent($order, $intent_array);
+    $event = new PaymentIntentCreateEvent($order, $intent_array);
     $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_INTENT_CREATE);
 
     // Alter or extend the intent array from additional information added
@@ -1310,28 +1557,35 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function getPublishableKey() {
+  public function getApiVersion(): string {
+    return $this->configuration['api_version'] ?? '2019-12-03';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPublishableKey(): string {
     return $this->configuration['publishable_key'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSecretKey() {
+  public function getSecretKey(): string {
     return $this->configuration['secret_key'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getWebhookSigningSecret() {
+  public function getWebhookSigningSecret(): string {
     return $this->configuration['webhook_signing_secret'] ?? '';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPaymentMethodUsage() {
+  public function getPaymentMethodUsage(): string {
     return $this->configuration['payment_method_usage'];
   }
 
@@ -1345,8 +1599,15 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function getCheckoutFormDisplayLabel() {
+  public function getCheckoutFormDisplayLabel(): array {
     return $this->configuration['checkout_form_display_label'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getExpressCheckout(): array {
+    return $this->configuration['express_checkout'];
   }
 
   /**
@@ -1355,7 +1616,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    * @return string
    *   Checkout display label.
    */
-  public function getCheckoutDisplayLabel() {
+  public function getCheckoutDisplayLabel(): string {
     $display_label = '';
 
     $display_settings = $this->getCheckoutFormDisplayLabel();
@@ -1373,7 +1634,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
       '#credit_cards' => array_filter($display_settings['include_logos']),
     ];
     $before_logos = $after_logos = '';
-    $payment_method_logos = $this->renderer->renderPlain($logos);
+    $payment_method_logos = $this->renderer->renderInIsolation($logos);
     if ($display_settings['show_payment_method_logos'] === 'before') {
       $before_logos = $payment_method_logos;
     }
@@ -1387,7 +1648,7 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function getFormattedAddress(ProfileInterface $profile, $type = 'billing'): ?array {
+  public function getFormattedAddress(ProfileInterface $profile, string $type = 'billing'): ?array {
     if ($profile->get('address')->isEmpty()) {
       return NULL;
     }
@@ -1444,9 +1705,9 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
   /**
    * {@inheritdoc}
    */
-  public function canCapturePayment(PaymentInterface $payment) {
+  public function canCapturePayment(PaymentInterface $payment): bool {
     /** @var \Drupal\commerce_stripe\Plugin\Commerce\PaymentMethodType\StripePaymentMethodTypeInterface $payment_method_type */
-    $payment_method_type = $payment->getPaymentMethod()->getType() ?? NULL;
+    $payment_method_type = $payment->getPaymentMethod()?->getType();
     return $payment_method_type->canCapturePayment($payment);
   }
 
@@ -1560,12 +1821,20 @@ class StripePaymentElement extends OffsitePaymentGatewayBase implements StripePa
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function placeOrder(OrderInterface $order): string {
-    $step_id = 'complete';
+    $this->paymentOrderUpdater->updateOrder($order);
+    // Redirect to the next step after 'payment'.
+    $checkout_flow = $this->checkoutOrderManager->getCheckoutFlow($order);
+    $checkout_flow_plugin = $checkout_flow->getPlugin();
+    $step_id = $checkout_flow_plugin->getNextStepId('payment');
     $order->set('checkout_step', $step_id);
-    // Notify other modules.
-    $event = new OrderEvent($order);
-    $this->eventDispatcher->dispatch($event, CheckoutEvents::COMPLETION);
-    $order->getState()->applyTransitionById('place');
+    if ($step_id === 'complete') {
+      // Notify other modules.
+      $event = new OrderEvent($order);
+      $this->eventDispatcher->dispatch($event, CheckoutEvents::COMPLETION);
+      if ($order->getState()->isTransitionAllowed('place')) {
+        $order->getState()->applyTransitionById('place');
+      }
+    }
     $order->save();
     return $step_id;
   }

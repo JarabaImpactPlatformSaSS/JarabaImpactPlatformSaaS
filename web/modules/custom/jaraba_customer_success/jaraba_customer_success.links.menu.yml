@@ -11,3 +11,10 @@ jaraba_customer_success.admin_dashboard:
   parent: system.admin_structure
   route_name: jaraba_customer_success.admin.dashboard
   weight: 25
+
+jaraba_customer_success.retention_profiles:
+  title: 'Retention Profiles'
+  description: 'Manage vertical retention profiles.'
+  route_name: entity.vertical_retention_profile.collection
+  parent: system.admin_structure
+  weight: 26

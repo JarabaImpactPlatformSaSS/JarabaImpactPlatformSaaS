@@ -5,6 +5,7 @@ namespace Drupal\commerce_stripe\PluginForm\Stripe;
 use Drupal\commerce_payment\PluginForm\PaymentMethodAddForm as BasePaymentMethodAddForm;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\user\UserInterface;
 use Stripe\SetupIntent;
@@ -20,12 +21,12 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
    *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
-  protected $routeMatch;
+  protected RouteMatchInterface $routeMatch;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): self {
     $instance = parent::create($container);
     $instance->routeMatch = $container->get('current_route_match');
     return $instance;
@@ -34,7 +35,7 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
   /**
    * {@inheritdoc}
    */
-  public function buildCreditCardForm(array $element, FormStateInterface $form_state) {
+  public function buildCreditCardForm(array $element, FormStateInterface $form_state): array {
     // Alter the form with Stripe specific needs.
     $element['#attributes']['class'][] = 'stripe-form';
 
@@ -132,14 +133,14 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
   /**
    * {@inheritdoc}
    */
-  protected function validateCreditCardForm(array &$element, FormStateInterface $form_state) {
+  protected function validateCreditCardForm(array &$element, FormStateInterface $form_state): void {
     // The JS library performs its own validation.
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitCreditCardForm(array $element, FormStateInterface $form_state) {
+  public function submitCreditCardForm(array $element, FormStateInterface $form_state): void {
     if ($email = $form_state->getValue(['contact_information', 'email'])) {
       $email_parents = array_merge($element['#parents'], ['email']);
       $form_state->setValue($email_parents, $email);
@@ -149,7 +150,7 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
     if (isset($form['billing_information'])) {
       $form['billing_information']['#after_build'][] = [get_class($this), 'addAddressAttributes'];
@@ -172,7 +173,7 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
    * @return array
    *   The modified form element.
    */
-  public static function addAddressAttributes(array $element, FormStateInterface $form_state) {
+  public static function addAddressAttributes(array $element, FormStateInterface $form_state): array {
     if (isset($element['address'])) {
       $field_attribute_map = [
         'given_name' => 'name.1',
@@ -212,7 +213,7 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
    * @return array
    *   The modified form element.
    */
-  public static function addCountryCodeAttributes(array $element) {
+  public static function addCountryCodeAttributes(array $element): array {
     $element['country_code']['#attributes']['data-stripe'] = 'address.country';
     return $element;
   }
@@ -220,7 +221,7 @@ class PaymentMethodAddForm extends BasePaymentMethodAddForm implements TrustedCa
   /**
    * {@inheritdoc}
    */
-  public static function trustedCallbacks() {
+  public static function trustedCallbacks(): array {
     return [
       'addCountryCodeAttributes',
     ];

@@ -8,6 +8,7 @@ use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OnsitePaymentGatewayI
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\SupportsAuthorizationsInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\SupportsRefundsInterface;
 use Drupal\profile\Entity\ProfileInterface;
+use Stripe\PaymentIntent;
 
 /**
  * Provides the interface for the Stripe payment gateway.
@@ -17,27 +18,25 @@ interface StripeInterface extends OnsitePaymentGatewayInterface, SupportsAuthori
   /**
    * Get the Stripe API Publishable key set for the payment gateway.
    *
-   * @return string
+   * @return string|null
    *   The Stripe API publishable key.
    */
-  public function getPublishableKey();
+  public function getPublishableKey(): ?string;
 
   /**
    * Create a payment intent for an order.
    *
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The order.
-   * @param bool|array $intent_attributes
-   *   (optional) Either an array of intent attributes or a boolean indicating
-   *   whether the intent capture is automatic or manual. Passing a boolean is
-   *   deprecated in 1.0-rc6. From 2.0 this parameter must be an array.
+   * @param array $intent_attributes
+   *   (optional) An array of intent attributes.
    * @param \Drupal\commerce_payment\Entity\PaymentInterface|null $payment
    *   (optional) The payment.
    *
-   * @return \Stripe\PaymentIntent
+   * @return \Stripe\PaymentIntent|null
    *   The payment intent.
    */
-  public function createPaymentIntent(OrderInterface $order, $intent_attributes = [], PaymentInterface $payment = NULL);
+  public function createPaymentIntent(OrderInterface $order, array $intent_attributes = [], ?PaymentInterface $payment = NULL): ?PaymentIntent;
 
   /**
    * Extracts address from the given Profile and formats it for Stripe.
@@ -54,6 +53,6 @@ interface StripeInterface extends OnsitePaymentGatewayInterface, SupportsAuthori
    *   - name: The full name of the customer.
    *   - address: The address array.
    */
-  public function getFormattedAddress(ProfileInterface $profile, $type = 'billing'): ?array;
+  public function getFormattedAddress(ProfileInterface $profile, string $type = 'billing'): ?array;
 
 }

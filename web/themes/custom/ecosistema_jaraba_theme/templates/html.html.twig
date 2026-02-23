@@ -24,9 +24,16 @@
       if(!document.getElementById('critical-css'))return;
       var links=document.querySelectorAll('link[rel="stylesheet"][href*="ecosistema-jaraba-theme"]');
       for(var i=0;i<links.length;i++){
-        links[i].media='print';
-        links[i].onload=function(){this.media='all';this.onload=null;};
+        var link=links[i];
+        link.onload=function(){this.media='all';this.onload=null;};
+        link.setAttribute('media','print');
       }
+      // Safety: ensure media switches even if onload doesn't fire (cached resources)
+      requestAnimationFrame(function(){
+        for(var i=0;i<links.length;i++){
+          if(links[i].media==='print')links[i].media='all';
+        }
+      });
     })();
     </script>
     <noscript>

@@ -2,7 +2,9 @@
 
 namespace Drupal\commerce_payment\Plugin\Commerce\InlineForm;
 
+use Drupal\commerce\Utility\Error;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\commerce\Attribute\CommerceInlineForm;
@@ -66,6 +68,13 @@ class PaymentGatewayForm extends EntityInlineFormBase {
   protected EventDispatcherInterface $eventDispatcher;
 
   /**
+   * The logger.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   */
+  protected LoggerChannelInterface $logger;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -73,6 +82,7 @@ class PaymentGatewayForm extends EntityInlineFormBase {
     $instance->pluginFormFactory = $container->get('plugin_form.factory');
     $instance->routeMatch = $container->get('current_route_match');
     $instance->eventDispatcher = $container->get('event_dispatcher');
+    $instance->logger = $container->get('logger.channel.commerce_payment');
     return $instance;
   }
 
@@ -150,9 +160,9 @@ class PaymentGatewayForm extends EntityInlineFormBase {
    * {@inheritdoc}
    */
   public function validateInlineForm(array &$inline_form, FormStateInterface $form_state) {
-    parent::validateInlineForm($inline_form, $form_state);
-
     try {
+      parent::validateInlineForm($inline_form, $form_state);
+
       $this->pluginForm->validateConfigurationForm($inline_form, $form_state);
       $this->entity = $this->pluginForm->getEntity();
     }
@@ -161,15 +171,20 @@ class PaymentGatewayForm extends EntityInlineFormBase {
       $error_element = $this->pluginForm->getErrorElement($inline_form, $form_state);
       $form_state->setError($error_element, $e->getMessage());
     }
+    catch (\Throwable $throwable) {
+      Error::logException($this->logger, $throwable);
+      $error_element = $this->pluginForm->getErrorElement($inline_form, $form_state);
+      $form_state->setError($error_element, $throwable->getMessage());
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitInlineForm(array &$inline_form, FormStateInterface $form_state) {
-    parent::submitInlineForm($inline_form, $form_state);
-
     try {
+      parent::submitInlineForm($inline_form, $form_state);
+
       $this->pluginForm->submitConfigurationForm($inline_form, $form_state);
       $this->entity = $this->pluginForm->getEntity();
     }
@@ -177,6 +192,11 @@ class PaymentGatewayForm extends EntityInlineFormBase {
       $this->dispatchFailedPaymentEvent($e, $form_state);
       $error_element = $this->pluginForm->getErrorElement($inline_form, $form_state);
       $form_state->setError($error_element, $e->getMessage());
+    }
+    catch (\Throwable $throwable) {
+      Error::logException($this->logger, $throwable);
+      $error_element = $this->pluginForm->getErrorElement($inline_form, $form_state);
+      $form_state->setError($error_element, $throwable->getMessage());
     }
   }
 

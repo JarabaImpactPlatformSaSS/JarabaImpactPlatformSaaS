@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * CV Builder — Premium page for creating and managing CVs.
+ *
+ * Variables:
+ * - profile: Array with profile data (full_name, completion).
+ * - templates: Array of template objects (id, name, description, preview).
+ */
+#}
+
+<div class="cv-builder-page">
+
+  {# --- Header Section --- #}
+  <div class="cv-builder__header">
+    <div class="cv-builder__header-content">
+      {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
+      <div class="cv-builder__header-text">
+        <h1>{{ 'CV Builder'|t }}</h1>
+        <p>{{ 'Crea un CV profesional optimizado para los sistemas ATS'|t }}</p>
+      </div>
+    </div>
+
+    {% if profile %}
+      <div class="cv-builder__profile-badge">
+        <span class="cv-builder__profile-name">{{ profile.full_name }}</span>
+        <span class="cv-builder__profile-completion">{{ profile.completion }}% {{ 'completado'|t }}</span>
+      </div>
+    {% endif %}
+  </div>
+
+  {# --- Templates Grid --- #}
+  {% if templates is not empty %}
+    <h2 class="cv-builder__title">{{ 'Elige una plantilla'|t }}</h2>
+    <div class="cv-builder__templates">
+      {% for template in templates %}
+        <div class="cv-template-card">
+          {% if template.preview %}
+            <div class="cv-template-card__thumbnail">
+              <img src="{{ template.preview }}" alt="{{ template.name }}" loading="lazy" />
+            </div>
+          {% else %}
+            <div class="cv-template-card__icon">
+              {{ jaraba_icon('ui', 'file', { size: '24px', color: 'corporate' }) }}
+            </div>
+          {% endif %}
+          <div class="cv-template-card__name">{{ template.name }}</div>
+          {% if template.description %}
+            <div class="cv-template-card__desc">{{ template.description }}</div>
+          {% endif %}
+          <div class="cv-template-card__actions">
+            <a href="/my-profile/cv/preview/{{ template.id }}" class="cv-template-card__preview">
+              {{ 'Vista previa'|t }}
+            </a>
+            <a href="/my-profile/cv/download/pdf?template={{ template.id }}" class="cv-template-card__download">
+              {{ 'Descargar PDF'|t }}
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {# --- Empty State --- #}
+    <div class="cv-builder__empty">
+      {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
+      <p>{{ 'Completa tu perfil profesional para generar tu CV automáticamente con plantillas optimizadas para ATS.'|t }}</p>
+      <a href="/my-profile/edit" class="btn btn-primary">
+        {{ 'Completar mi perfil'|t }}
+      </a>
+    </div>
+  {% endif %}
+
+</div>

@@ -136,11 +136,13 @@
 
         // Persistir en backend de forma asíncrona (fire-and-forget).
         try {
+            const csrfToken = drupalSettings.csrfToken || drupalSettings.jarabaCanvas?.csrfToken || '';
             fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken,
                 },
                 body: JSON.stringify({ completed: true }),
             }).catch(() => {

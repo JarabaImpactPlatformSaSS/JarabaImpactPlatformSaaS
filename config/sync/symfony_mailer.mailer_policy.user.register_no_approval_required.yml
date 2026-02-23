@@ -1,0 +1,179 @@
+uuid: d8b2c3e4-f5a6-7890-bcde-f01234567890
+langcode: es
+status: true
+dependencies:
+  module:
+    - user
+id: user.register_no_approval_required
+configuration:
+  email_subject:
+    value: 'Paso 2: Alta de cuenta en [site:name]'
+  email_body:
+    content:
+      value: |
+        <h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">&iexcl;Hola, [user:display-name]!</h1>
+        <p style="margin: 0 0 28px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+          Gracias por registrarte en <strong style="color: #00A9A5;">[site:name]</strong>. Solo falta un paso: activa tu cuenta haciendo clic en el bot&oacute;n de abajo.
+        </p>
+
+        <!-- Info card -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; border-radius: 12px; border-left: 4px solid #00A9A5; margin-bottom: 24px;">
+          <tr>
+            <td style="padding: 20px 24px;">
+              <p style="margin: 0 0 4px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #1A1A2E;">Activa y establece tu contrase&ntilde;a</p>
+              <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; line-height: 1.5;">Este enlace solo puede usarse una vez. Te llevar&aacute; a una p&aacute;gina donde podr&aacute;s crear tu contrase&ntilde;a.</p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- CTA Button -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+          <tr>
+            <td style="text-align: center; padding: 8px 0;">
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
+                <tr>
+                  <td style="background: linear-gradient(135deg, #FF8C42 0%, #FF6B1A 100%); border-radius: 12px; box-shadow: 0 4px 16px rgba(255,140,66,0.35);">
+                    <a href="[user:one-time-login-url]" target="_blank" style="display: inline-block; padding: 16px 48px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #FFFFFF; text-decoration: none; letter-spacing: 0.3px;">Activar mi cuenta &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Fallback link -->
+        <p style="margin: 24px 0 0 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #94A3B8; line-height: 1.6; text-align: center;">
+          &iquest;No funciona el bot&oacute;n? Copia y pega este enlace:<br>
+          <a href="[user:one-time-login-url]" style="color: #FF8C42; word-break: break-all;">[user:one-time-login-url]</a>
+        </p>
+
+        <!-- Login info -->
+        <p style="margin: 20px 0 0 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; line-height: 1.6; text-align: center;">
+          Despu&eacute;s de establecer tu contrase&ntilde;a, inicia sesi&oacute;n con:<br>
+          <strong style="color: #1A1A2E;">Usuario:</strong> [user:name]
+        </p>
+
+        <!-- ═══ EXPLORA NUESTRAS VERTICALES ═══ -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 36px; border-top: 1px solid #E2E8F0; padding-top: 28px;">
+          <tr>
+            <td>
+              <h2 style="margin: 0 0 6px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #1A1A2E; text-align: center;">Explora todo lo que puedes hacer</h2>
+              <p style="margin: 0 0 24px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; text-align: center;">Descubre la vertical que mejor se adapta a ti</p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Vertical: Empleo -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 12px;">
+          <tr>
+            <td style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid #233D63; padding: 16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #233D63;">Empleo</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B;">Encuentra tu trabajo ideal con IA. CV inteligente, matching autom&aacute;tico y preparaci&oacute;n de entrevistas.</p>
+                  </td>
+                  <td width="90" style="text-align: right; vertical-align: middle;">
+                    <a href="[site:url]/empleabilidad" style="font-family: 'Outfit', Arial, sans-serif; font-size: 13px; font-weight: 600; color: #233D63; text-decoration: none;">Explorar &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Vertical: Emprendimiento -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 12px;">
+          <tr>
+            <td style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid #FF8C42; padding: 16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #FF8C42;">Emprendimiento</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B;">Lanza tu idea de negocio. Business Model Canvas, hip&oacute;tesis, experimentos y copiloto IA.</p>
+                  </td>
+                  <td width="90" style="text-align: right; vertical-align: middle;">
+                    <a href="[site:url]/emprendimiento" style="font-family: 'Outfit', Arial, sans-serif; font-size: 13px; font-weight: 600; color: #FF8C42; text-decoration: none;">Explorar &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Vertical: AgroConecta -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 12px;">
+          <tr>
+            <td style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid #556B2F; padding: 16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #556B2F;">AgroConecta</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B;">Vende online sin intermediarios. E-commerce agroalimentario con trazabilidad y log&iacute;stica.</p>
+                  </td>
+                  <td width="90" style="text-align: right; vertical-align: middle;">
+                    <a href="[site:url]/agroconecta" style="font-family: 'Outfit', Arial, sans-serif; font-size: 13px; font-weight: 600; color: #556B2F; text-decoration: none;">Explorar &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Vertical: Comercio -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 12px;">
+          <tr>
+            <td style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid #FF8C42; padding: 16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #FF8C42;">ComercioConecta</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B;">Digitaliza tu tienda local. Cat&aacute;logo online, gesti&oacute;n de pedidos y pagos integrados.</p>
+                  </td>
+                  <td width="90" style="text-align: right; vertical-align: middle;">
+                    <a href="[site:url]/comercioconecta" style="font-family: 'Outfit', Arial, sans-serif; font-size: 13px; font-weight: 600; color: #FF8C42; text-decoration: none;">Explorar &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Vertical: Servicios -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 12px;">
+          <tr>
+            <td style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid #00A9A5; padding: 16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #00A9A5;">ServiciosConecta</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B;">Gestiona citas y clientes. Agenda online, facturaci&oacute;n y fidelizaci&oacute;n para profesionales.</p>
+                  </td>
+                  <td width="90" style="text-align: right; vertical-align: middle;">
+                    <a href="[site:url]/serviciosconecta" style="font-family: 'Outfit', Arial, sans-serif; font-size: 13px; font-weight: 600; color: #00A9A5; text-decoration: none;">Explorar &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Vertical: JarabaLex -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 8px;">
+          <tr>
+            <td style="background-color: #F8FAFC; border-radius: 10px; border-left: 4px solid #233D63; padding: 16px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 2px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #233D63;">JarabaLex</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B;">Para abogados, gestores y asesores. Gesti&oacute;n de expedientes, plazos y copiloto jur&iacute;dico IA.</p>
+                  </td>
+                  <td width="90" style="text-align: right; vertical-align: middle;">
+                    <a href="[site:url]/jarabalex" style="font-family: 'Outfit', Arial, sans-serif; font-size: 13px; font-weight: 600; color: #233D63; text-decoration: none;">Explorar &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      format: email_html

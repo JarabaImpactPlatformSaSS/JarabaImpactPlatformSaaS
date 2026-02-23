@@ -1,7 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Version:** 10.0.0 (Page Builder Template Consistency Workflow)
+**Ultima actualizacion:** 2026-02-20
+**Version:** 15.0.0 (Secure Messaging Implementado — Doc 178 jaraba_messaging)
 
 ---
 
@@ -24,6 +25,82 @@
 - **Drupal 10+ Entity Updates:**
   - `applyUpdates()` fue eliminado. Usar `installFieldStorageDefinition()` / `updateFieldStorageDefinition()` explícitamente.
   - Verificar tipo de campo instalado con `getFieldStorageDefinition()` antes de intentar actualizarlo.
+- **Seguridad API (CSRF):**
+  - Rutas API consumidas via `fetch()` DEBEN usar `_csrf_request_header_token: 'TRUE'` (NO `_csrf_token`).
+  - El JS DEBE obtener token de `Drupal.url('session/token')`, cachearlo, y enviarlo como header `X-CSRF-Token`.
+  - Siempre incluir `?_format=json` en la URL cuando la ruta requiere `_format: 'json'`.
+- **Seguridad Twig (XSS):**
+  - Contenido de usuario: `|safe_html` (NUNCA `|raw`). Solo `|raw` para JSON-LD schema y HTML auto-generado.
+  - Escapar datos de usuario en HTML de emails con `Html::escape()`.
+  - Cast `(string)` en TranslatableMarkup al asignar a variables de render array.
+- **Remediacion Multi-IA:**
+  - Protocolo: CLASIFICAR (REVERT/FIX/KEEP) → REVERT (git checkout) → FIX (ediciones manuales) → VERIFICAR → DOCUMENTAR.
+  - Verificar roles especificos (nunca solo `authenticated`), URLs via `Url::fromRoute()` (nunca hardcoded).
+  - PWA: AMBOS meta tags (apple-mobile-web-app-capable + mobile-web-app-capable) siempre presentes.
+- **Entidades Append-Only:**
+  - Las entidades de registro inmutable (predicciones, logs, metricas) NO tienen form handlers de edicion/eliminacion.
+  - El `AccessControlHandler` DEBE denegar `update` y `delete`. Solo `create` y `view`.
+  - No definir `form` handlers en la anotacion `@ContentEntityType` excepto `default` (para admin UI).
+  - Ejemplo: `SeasonalChurnPrediction` — se crean via servicio, nunca se editan.
+- **Config Seeding via Update Hook:**
+  - Los YAMLs de `config/install/` almacenan datos como arrays PHP nativos, no como strings JSON.
+  - El `update_hook` DEBE leer el YAML con `Yaml::decode()`, codificar campos complejos con `json_encode()`, y crear la entidad via `Entity::create()->save()`.
+  - Verificar existencia antes de crear para evitar duplicados en re-ejecuciones: `$storage->loadByProperties(['field' => $value])`.
+  - Los campos `string_long` que almacenan JSON DEBEN tener getters que retornen `json_decode($value, TRUE)` con fallback a `[]`.
+- **Page Builder Preview Image Audit:**
+  - Los 4 escenarios de verificación: (1) Biblioteca de Plantillas, (2) Canvas Editor panel, (3) Canvas inserción, (4) Página pública.
+  - Todo vertical NUEVO debe generar sus PNGs de preview en `images/previews/` ANTES de desplegar. Convención: `{vertical}-{tipo}.png`.
+  - El `getPreviewImage()` en `PageTemplate.php` auto-detecta por convención: `id_con_underscores` → `id-con-guiones.png`.
+  - Usar paleta de colores consistente por vertical alineada con design tokens `--ej-{vertical}-*`.
+  - Verificar en browser que no hay duplicados en el BlockManager GrapesJS (bloques estáticos vs dinámicos API).
+  - JarabaLex: bloques definidos en `grapesjs-jaraba-legal-blocks.js` (GrapesJS-only, sin config entities).
+- **Booking API & Entity Field Mapping:**
+  - Los campos en `$storage->create([...])` DEBEN coincidir exactamente con `baseFieldDefinitions()`. Nunca usar nombres de conveniencia del JSON request como nombres de campo de entidad.
+  - Mapeo tipico: request `datetime` → entidad `booking_date`, request `service_id` → entidad `offering_id`, request `client_id` → entidad `uid` (owner).
+  - Rellenar campos requeridos de la entidad que no vienen en el request: `client_name`, `client_email` desde el user cargado, `price` desde el offering.
+  - Para `meeting_url` con Jitsi: guardar la entidad primero para obtener el ID, luego set+save con la URL.
+- **State Machine con Status Granulares:**
+  - Si la entidad define `cancelled_client` / `cancelled_provider` (no `cancelled` generico), el controlador DEBE mapear el valor generico de la API al valor correcto segun el rol del usuario.
+  - Patrón: `if ($newStatus === 'cancelled') { $newStatus = $isProvider ? 'cancelled_provider' : 'cancelled_client'; }`
+  - Los hooks (`hook_entity_update`) DEBEN usar `str_starts_with($status, 'cancelled_')` para detectar cancelaciones.
+  - Regla de negocio: solo providers pueden `confirmed`, `completed`, `no_show`. Validar en el controlador.
+- **Cron Idempotency con Flags:**
+  - Toda accion cron que envie emails DEBE: (1) filtrar por flag `->condition($flag, 0)` en la query, (2) marcar `$entity->set($flag, TRUE)` tras enviar, (3) `$entity->save()`.
+  - Los campos de flag (`reminder_24h_sent`, `reminder_1h_sent`) son `boolean` con `setDefaultValue(FALSE)` en `baseFieldDefinitions()`.
+  - Cada ventana temporal tiene su propio flag: no reutilizar un flag para multiples ventanas.
+- **Owner Pattern en Content Entities:**
+  - Las entidades con `EntityOwnerTrait` usan `uid` como campo owner (no `client_id` ni `user_id`).
+  - Leer owner: `$entity->getOwnerId()` (no `$entity->get('client_id')->target_id`).
+  - En hooks: `$entity->getOwnerId()` para obtener el uid del propietario, `$entity->get('provider_id')->target_id` para la referencia.
+- **Cifrado Server-Side AES-256-GCM:**
+  - Usar `openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag)` con IV de 12 bytes aleatorio por mensaje.
+  - Almacenar IV + tag + ciphertext como MEDIUMBLOB en custom schema table. Separar con concatenacion: `$iv . $tag . $ciphertext`.
+  - La clave se deriva con `sodium_crypto_pwhash()` (Argon2id) desde env var `JARABA_PMK`. Cache de clave derivada por tenant_id en memoria (property del servicio).
+  - NUNCA almacenar la clave derivada en BD ni config. El servicio `TenantKeyService` la genera en runtime.
+  - Encapsular datos descifrados en DTOs `readonly` (`SecureMessageDTO`). El DTO se descarta tras la respuesta HTTP.
+- **Custom Schema Tables con DTOs:**
+  - Cuando una ContentEntity no es viable (MEDIUMBLOB, VARBINARY, alto volumen de escrituras), usar `hook_schema()` con tablas custom + DTO readonly.
+  - El DTO encapsula las filas de la tabla: `SecureMessageDTO::fromRow($row)` (factory) y `->toArray()` (serialization).
+  - El servicio (`MessageService`) maneja CRUD via `\Drupal::database()` directamente (no Entity API).
+  - Mantener las relaciones con entidades via foreign keys (conversation_id → secure_conversation.id).
+- **WebSocket Auth Middleware:**
+  - El `AuthMiddleware` en `onOpen()` extrae JWT del query string (`?token=xxx`) o session cookie del header HTTP.
+  - Valida el token, resuelve `user_id` y `tenant_id`, los adjunta al objeto `ConnectionInterface` via atributos custom.
+  - Conexiones sin auth valido se cierran con `$conn->close()` y codigo 4401.
+  - El `ConnectionManager` mantiene indices `SplObjectStorage` para busqueda rapida por user_id y tenant_id.
+- **Cursor-Based Pagination:**
+  - Para endpoints con alto volumen (mensajes), usar cursor en lugar de offset: `?before_id=123&limit=50`.
+  - La query usa `WHERE id < :before_id ORDER BY id DESC LIMIT :limit`. Mas eficiente que OFFSET en tablas grandes.
+  - El response incluye `meta.has_more` y `meta.oldest_id` para la siguiente pagina.
+- **Optional DI con @?:**
+  - Servicios que dependen de modulos opcionales (ej. `AttachmentBridgeService` depende de `jaraba_vault`) usan `@?` en `services.yml`.
+  - El constructor acepta `?ServiceInterface $service = NULL` y degrada gracefully con fallback local.
+  - Patron: `$this->vaultService?->store($data) ?? $this->storeLocally($data)`.
+- **ECA Plugins por Codigo:**
+  - Los ECA Events heredan de `EventBase`, definen `defaultConfiguration()`, `getEntity()` y `static::EVENT_NAME`.
+  - Los ECA Conditions heredan de `ConditionBase`, implementan `evaluate()` retornando bool.
+  - Los ECA Actions heredan de `ConfigurableActionBase`, implementan `execute()`.
+  - Registrar el evento Symfony base en `src/Event/` y el plugin ECA que lo adapta en `src/Plugin/ECA/Event/`.
 
 ---
 
@@ -39,6 +116,17 @@
 8. **Privacidad Diferencial:** Toda inteligencia colectiva debe pasar por el motor de ruido de Laplace.
 9. **Verificar CI tras cambios de config:** Tras modificar archivos de configuracion de herramientas (trivy.yaml, workflows), monitorear el pipeline completo hasta verde. Las herramientas pueden ignorar claves invalidas sin warning.
 10. **Update hooks para config resync:** Tras modificar YAMLs en `config/install/`, crear un update hook que reimporte los configs en la BD activa. Los YAMLs de `config/install/` solo se procesan durante la instalacion del modulo.
+11. **CSRF header en APIs:** Toda ruta API consumida via fetch() DEBE usar `_csrf_request_header_token`, NUNCA `_csrf_token`. El patron JS es: obtener token de `/session/token`, cachear, enviar como `X-CSRF-Token`.
+12. **Sanitizar siempre contenido usuario:** En Twig `|safe_html` (nunca `|raw`), en PHP emails `Html::escape()`, en controladores `(string)` para TranslatableMarkup.
+13. **Auditar cambios externos:** Cuando otra IA o agente modifica codigo, seguir protocolo: Clasificar → Revert → Fix → Verify → Document. Nunca asumir que los cambios son correctos.
+14. **Entidades append-only:** Las entidades de registro inmutable (predicciones, auditorias, metricas) NUNCA tienen form handlers de edicion ni rutas de eliminacion. Solo `create` y `view`. El AccessControlHandler deniega `update`/`delete`.
+15. **Config seeding con JSON:** Los YAMLs de `config/install/` almacenan arrays PHP nativos. El update_hook lee YAML, codifica con `json_encode()` los campos complejos, y crea la entidad. Siempre verificar existencia previa para idempotencia.
+16. **Preview images por vertical:** Cada vertical del Page Builder DEBE tener los PNGs de preview generados y desplegados en `images/previews/` antes de ir a produccion. Auto-deteccion en `getPreviewImage()` convierte `id_con_underscores` a `id-con-guiones.png`.
+17. **Entity field mapping en APIs:** Los campos en `$storage->create()` DEBEN coincidir exactamente con `baseFieldDefinitions()`. Mapear explicitamente en el controlador (request `datetime` → entity `booking_date`). Nunca asumir que el nombre del request coincide con el de la entidad.
+18. **Status values coherentes:** Los valores de status en controladores, cron y hooks DEBEN coincidir con los `allowed_values` de la entidad. Si la entidad define `cancelled_client`/`cancelled_provider`, mapear `cancelled` generico al valor correcto en el punto de entrada.
+19. **Cron idempotency con flags:** Toda accion cron que envie notificaciones DEBE filtrar por flag NOT sent, marcar flag TRUE tras enviar, y guardar. Previene duplicados en reintentos.
+20. **Cifrado server-side para datos sensibles:** Mensajes, adjuntos y datos PII en tablas custom DEBEN cifrarse con AES-256-GCM. IV aleatorio por registro, tag almacenado junto al ciphertext, clave derivada con Argon2id desde env var. NUNCA almacenar claves en BD ni config.
+21. **Custom schema + DTO para alto volumen:** Cuando una entidad requiere tipos de columna no soportados por Entity API (MEDIUMBLOB, VARBINARY) o alto volumen de escrituras, usar `hook_schema()` + DTO readonly. El DTO encapsula filas, el servicio maneja CRUD via `\Drupal::database()`.
 
 ---
 
@@ -46,7 +134,12 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
-| 2026-02-18 | **10.0.0** | **Page Builder Template Consistency Workflow**: Patrones para edicion masiva de templates YAML, validacion, preview_data rico por vertical, update hooks para resync de configs, y Drupal 10+ entity update patterns. Regla de oro #10. |
+| 2026-02-20 | **15.0.0** | **Secure Messaging Implementation Workflow**: Patrones para cifrado server-side AES-256-GCM (IV 12 bytes, tag 16 bytes, Argon2id KDF), custom schema tables con DTOs readonly, WebSocket auth middleware (JWT + session), ConnectionManager con indices SplObjectStorage, cursor-based pagination (before_id), optional DI con `@?` para modulos opcionales, ECA plugins por codigo (Events + Conditions + Actions), hash chain SHA-256 para audit inmutable, rate limiting por usuario/conversacion. Reglas de oro #20, #21. Aprendizaje #106. |
+| 2026-02-20 | 14.0.0 | **ServiciosConecta Sprint S3 Workflow**: Patrones para booking API field mapping, state machine con status granulares, cron idempotency con flags, owner pattern. Reglas de oro #17, #18, #19. Aprendizaje #105. |
+| 2026-02-20 | 13.0.0 | **Page Builder Preview Audit Workflow**: Protocolo de auditoria de 4 escenarios del Page Builder. Patrones para generacion de preview images por vertical, auto-deteccion por convencion de nombre, verificacion browser multi-escenario. Regla de oro #16. Aprendizaje #103. |
+| 2026-02-20 | 12.0.0 | **Vertical Retention Playbooks Workflow**: Patrones para entidades append-only (sin form handlers, AccessControlHandler restrictivo), config seeding via update hooks con JSON encoding, campos `string_long` con getters `json_decode()`. Reglas de oro #14, #15. Aprendizaje #104. |
+| 2026-02-20 | 11.0.0 | **Gemini Remediation Workflow**: Protocolo de remediacion multi-IA (Clasificar/Revert/Fix/Verify/Document). Patrones CSRF para APIs via fetch(), XSS prevention en Twig y emails, TranslatableMarkup cast. Reglas de oro #11, #12, #13. Aprendizaje #102. |
+| 2026-02-18 | 10.0.0 | **Page Builder Template Consistency Workflow**: Patrones para edicion masiva de templates YAML, validacion, preview_data rico por vertical, update hooks para resync de configs, y Drupal 10+ entity update patterns. Regla de oro #10. |
 | 2026-02-18 | 9.0.0 | **CI/CD Hardening Workflow**: Reglas para config Trivy (`scan.skip-dirs`), deploy resiliente con fallback SSH, y regla de oro #9 (verificar CI tras cambios de config). |
 | 2026-02-18 | 8.0.0 | **Unified & Stabilized Workflow**: Incorporación de patrones de testing masivo, estabilización de 17 módulos y gestión de clases final con DI flexible. |
 | 2026-02-18 | 7.0.0 | **Living SaaS Workflow**: Incorporación de mentalidad adaptativa (Liquid UI) e inteligencia colectiva privada (ZKP). |

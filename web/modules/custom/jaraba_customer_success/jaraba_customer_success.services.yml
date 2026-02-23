@@ -57,3 +57,21 @@ services:
       - '@state'
       - '@jaraba_customer_success.health_calculator'
       - '@logger.channel.jaraba_customer_success'
+
+  jaraba_customer_success.vertical_retention:
+    class: Drupal\jaraba_customer_success\Service\VerticalRetentionService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_customer_success.health_calculator'
+      - '@jaraba_customer_success.engagement_scoring'
+      - '@jaraba_customer_success.lifecycle_stage'
+      - '@state'
+      - '@logger.channel.jaraba_customer_success'
+
+  jaraba_customer_success.seasonal_churn:
+    class: Drupal\jaraba_customer_success\Service\SeasonalChurnService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_customer_success.churn_prediction'
+      - '@state'
+      - '@logger.channel.jaraba_customer_success'

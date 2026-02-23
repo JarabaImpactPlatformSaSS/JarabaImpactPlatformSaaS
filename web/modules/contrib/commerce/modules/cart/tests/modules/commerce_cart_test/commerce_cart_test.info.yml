@@ -5,3 +5,8 @@ package: Testing
 dependencies:
   - commerce:commerce_cart
   - commerce:commerce_product
+
+# Information added by Drupal.org packaging script on 2026-02-17
+version: '3.3.2'
+project: 'commerce'
+datestamp: 1771359796

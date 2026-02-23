@@ -11,7 +11,8 @@
 {% set glow_intensity = content.glow_intensity|default('medium') %}
 
 <section class="jaraba-glow-cards jaraba-glow-cards--{{ bg_class }} jaraba-glow-cards--intensity-{{ glow_intensity }} jaraba-block jaraba-block--premium"
-         data-block-type="premium_hover_glow_cards">
+         data-block-type="premium_hover_glow_cards"
+         aria-label="{{ title|default('Premium Hover Glow Cards') }}">
   <div class="jaraba-block__container">
     
     <header class="jaraba-glow-cards__header">

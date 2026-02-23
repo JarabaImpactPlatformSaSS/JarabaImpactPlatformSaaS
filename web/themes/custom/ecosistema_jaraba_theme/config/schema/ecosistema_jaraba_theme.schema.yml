@@ -1,0 +1,330 @@
+# Schema for ecosistema_jaraba_theme settings.
+ecosistema_jaraba_theme.settings:
+  type: theme_settings
+  label: 'Ecosistema Jaraba Theme settings'
+  mapping:
+    # ── Colores Principales ──
+    color_primary:
+      type: string
+      label: 'Color primario'
+    color_secondary:
+      type: string
+      label: 'Color secundario'
+    color_corporate:
+      type: string
+      label: 'Color corporativo'
+    color_agro:
+      type: string
+      label: 'Color agro'
+    color_success:
+      type: string
+      label: 'Color éxito'
+    color_warning:
+      type: string
+      label: 'Color advertencia'
+    color_danger:
+      type: string
+      label: 'Color peligro'
+    color_neutral:
+      type: string
+      label: 'Color neutro'
+    color_bg_body:
+      type: string
+      label: 'Color fondo body'
+    color_bg_surface:
+      type: string
+      label: 'Color fondo superficie'
+    color_bg_dark:
+      type: string
+      label: 'Color fondo oscuro'
+
+    # ── Logo ──
+    logo_height:
+      type: string
+      label: 'Altura del logo'
+
+    # ── Tipografía ──
+    typography_headings:
+      type: string
+      label: 'Fuente encabezados'
+    typography_body:
+      type: string
+      label: 'Fuente cuerpo'
+    font_size_base:
+      type: string
+      label: 'Tamaño fuente base'
+    color_headings:
+      type: string
+      label: 'Color encabezados'
+    color_body_text:
+      type: string
+      label: 'Color texto cuerpo'
+    color_muted:
+      type: string
+      label: 'Color texto muted'
+
+    # ── Header ──
+    header_layout:
+      type: string
+      label: 'Layout del header'
+    color_header_bg:
+      type: string
+      label: 'Color fondo header'
+    color_header_text:
+      type: string
+      label: 'Color texto header'
+    header_sticky:
+      type: integer
+      label: 'Header sticky'
+    enable_header_cta:
+      type: integer
+      label: 'Activar botón CTA header'
+    header_cta_text:
+      type: string
+      label: 'Texto botón CTA'
+    header_cta_url:
+      type: string
+      label: 'URL botón CTA'
+    navigation_items:
+      type: string
+      label: 'Elementos de navegación'
+
+    # ── Hero ──
+    hero_layout:
+      type: string
+      label: 'Layout del hero'
+    hero_overlay_opacity:
+      type: string
+      label: 'Opacidad overlay hero'
+
+    # ── Cards ──
+    card_style:
+      type: string
+      label: 'Estilo de tarjetas'
+    card_border_radius:
+      type: string
+      label: 'Border radius tarjetas'
+    color_card_bg:
+      type: string
+      label: 'Color fondo tarjeta'
+    color_card_border:
+      type: string
+      label: 'Color borde tarjeta'
+
+    # ── Footer ──
+    enable_footer:
+      type: integer
+      label: 'Activar footer'
+    footer_layout:
+      type: string
+      label: 'Layout del footer'
+    footer_copyright:
+      type: string
+      label: 'Texto copyright'
+    footer_show_powered_by:
+      type: integer
+      label: 'Mostrar powered by'
+    footer_powered_text:
+      type: string
+      label: 'Texto powered by'
+    footer_powered_url:
+      type: string
+      label: 'URL powered by'
+    color_footer_bg:
+      type: string
+      label: 'Color fondo footer'
+    color_footer_text:
+      type: string
+      label: 'Color texto footer'
+    color_footer_link:
+      type: string
+      label: 'Color enlace footer'
+    color_footer_link_hover:
+      type: string
+      label: 'Color enlace hover footer'
+
+    # ── Footer Navigation ──
+    footer_nav_col1_title:
+      type: string
+      label: 'Título columna 1 nav footer'
+    footer_nav_col1_links:
+      type: string
+      label: 'Enlaces columna 1 nav footer'
+    footer_nav_col2_title:
+      type: string
+      label: 'Título columna 2 nav footer'
+    footer_nav_col2_links:
+      type: string
+      label: 'Enlaces columna 2 nav footer'
+    footer_nav_col3_title:
+      type: string
+      label: 'Título columna 3 nav footer'
+    footer_nav_col3_links:
+      type: string
+      label: 'Enlaces columna 3 nav footer'
+
+    # ── Footer Widgets (Mega) ──
+    footer_widget1_title:
+      type: string
+      label: 'Título widget 1'
+    footer_widget1_content:
+      type: string
+      label: 'Contenido widget 1'
+    footer_widget2_title:
+      type: string
+      label: 'Título widget 2'
+    footer_widget2_content:
+      type: string
+      label: 'Contenido widget 2'
+    footer_widget3_title:
+      type: string
+      label: 'Título widget 3'
+    footer_widget3_content:
+      type: string
+      label: 'Contenido widget 3'
+    footer_widget4_title:
+      type: string
+      label: 'Título widget 4'
+    footer_widget4_content:
+      type: string
+      label: 'Contenido widget 4'
+
+    # ── Footer Social ──
+    footer_social_facebook:
+      type: string
+      label: 'URL Facebook'
+    footer_social_twitter:
+      type: string
+      label: 'URL Twitter/X'
+    footer_social_linkedin:
+      type: string
+      label: 'URL LinkedIn'
+    footer_social_instagram:
+      type: string
+      label: 'URL Instagram'
+    footer_social_youtube:
+      type: string
+      label: 'URL YouTube'
+
+    # ── Sidebar ──
+    color_sidebar_bg:
+      type: string
+      label: 'Color fondo sidebar'
+    color_sidebar_title:
+      type: string
+      label: 'Color título sidebar'
+    color_sidebar_link:
+      type: string
+      label: 'Color enlace sidebar'
+    color_sidebar_link_hover:
+      type: string
+      label: 'Color enlace hover sidebar'
+    color_sidebar_link_active:
+      type: string
+      label: 'Color enlace activo sidebar'
+
+    # ── Botones ──
+    color_btn_primary_bg:
+      type: string
+      label: 'Color fondo botón primario'
+    color_btn_primary_text:
+      type: string
+      label: 'Color texto botón primario'
+    color_btn_secondary_bg:
+      type: string
+      label: 'Color fondo botón secundario'
+    color_btn_secondary_text:
+      type: string
+      label: 'Color texto botón secundario'
+    btn_border_radius:
+      type: string
+      label: 'Border radius botones'
+
+    # ── Formularios ──
+    color_input_bg:
+      type: string
+      label: 'Color fondo input'
+    color_input_border:
+      type: string
+      label: 'Color borde input'
+    color_input_focus:
+      type: string
+      label: 'Color foco input'
+
+    # ── Productos ──
+    product_card_layout:
+      type: string
+      label: 'Layout tarjeta producto'
+    color_product_price:
+      type: string
+      label: 'Color precio producto'
+    color_product_badge:
+      type: string
+      label: 'Color badge producto'
+
+    # ── Avanzadas ──
+    show_back_to_top:
+      type: integer
+      label: 'Botón volver arriba'
+    dark_mode:
+      type: string
+      label: 'Modo oscuro'
+    enable_preloader:
+      type: integer
+      label: 'Preloader animado'
+    custom_css:
+      type: string
+      label: 'CSS personalizado'
+
+    # ── Banner Promo ──
+    enable_promo_banner:
+      type: integer
+      label: 'Activar banner promo'
+    promo_banner_text:
+      type: string
+      label: 'Texto banner promo'
+    promo_banner_url:
+      type: string
+      label: 'URL banner promo'
+    color_promo_bg:
+      type: string
+      label: 'Color fondo banner promo'
+    color_promo_text:
+      type: string
+      label: 'Color texto banner promo'
+
+    # ── Industry Presets ──
+    industry_preset:
+      type: string
+      label: 'Preset de industria'
+
+    # ── Breadcrumbs ──
+    enable_breadcrumbs:
+      type: integer
+      label: 'Activar breadcrumbs'
+    breadcrumb_style:
+      type: string
+      label: 'Estilo breadcrumb'
+    breadcrumb_icons:
+      type: integer
+      label: 'Mostrar iconos breadcrumb'
+    breadcrumb_home_icon:
+      type: integer
+      label: 'Icono inicio breadcrumb'
+    breadcrumb_schema:
+      type: integer
+      label: 'Structured data breadcrumb'
+    color_breadcrumb_text:
+      type: string
+      label: 'Color texto breadcrumb'
+    color_breadcrumb_link:
+      type: string
+      label: 'Color enlace breadcrumb'
+    color_breadcrumb_active:
+      type: string
+      label: 'Color activo breadcrumb'
+
+    # ── Avatar Navigation ──
+    enable_avatar_nav:
+      type: integer
+      label: 'Activar navegación avatar'

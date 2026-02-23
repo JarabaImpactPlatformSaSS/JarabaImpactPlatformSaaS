@@ -137,7 +137,11 @@ class ReferenceFieldExtractor extends FieldExtractorBase implements Configurable
       return;
     }
 
-    $newValue = [];
+    // Start with the original field values to preserve structure in case of
+    // translation failures.
+    $originalValues = $entity_in_source_language->get($fieldName)->getValue();
+    $newValue = $originalValues;
+
     // Get the referenced entities based on the source language.
     $referencedEntities = $entity_in_source_language->get($fieldName)->referencedEntities();
     $translationLanguage = $entity->language()->getId();
@@ -152,11 +156,12 @@ class ReferenceFieldExtractor extends FieldExtractorBase implements Configurable
 
       // Translate referenced entity.
       if ($referencedEntity->isTranslatable()) {
-        $this->translateReferencedEntity($referencedEntity, $singleValue, $translationLanguage);
-
         try {
           // Save the updated referenced entity.
+          $this->translateReferencedEntity($referencedEntity, $singleValue, $translationLanguage);
           $referencedEntity->save();
+
+          $newValue[$delta] = ['entity' => $referencedEntity];
         }
         catch (\Throwable $e) {
           $this->logger->error('Unexpected error while saving referenced entity @delta. Type: @type, Message: @message, File: @file, Line: @line', [
@@ -166,11 +171,8 @@ class ReferenceFieldExtractor extends FieldExtractorBase implements Configurable
             '@file' => $e->getFile(),
             '@line' => $e->getLine(),
           ]);
-
-          continue;
         }
       }
-      $newValue[$delta] = ['entity' => $referencedEntity];
     }
 
     // Set the updated values back on the entity.

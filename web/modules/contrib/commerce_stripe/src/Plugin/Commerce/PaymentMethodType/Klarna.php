@@ -20,17 +20,15 @@ class Klarna extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
-    $args = [
-      '@stripe_klarna_dob' => $payment_method->get('stripe_klarna_dob')->getString(),
-    ];
-    return $this->t('@stripe_klarna_dob', $args);
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
+    $created = date('Y-m-d H:i:s', $payment_method->getCreatedTime());
+    return "Klarna ($created)";
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildFieldDefinitions() {
+  public function buildFieldDefinitions(): array {
     $fields = parent::buildFieldDefinitions();
 
     $fields['stripe_klarna_dob'] = BundleFieldDefinition::create('datetime')
@@ -65,14 +63,6 @@ class Klarna extends StripePaymentMethodTypeBase {
     return [
       'klarna' => $this->t('Klarna'),
     ];
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public function isReusable(): bool {
-    // Each transaction is a loan that is individually evaluated.
-    return FALSE;
   }
 
 }

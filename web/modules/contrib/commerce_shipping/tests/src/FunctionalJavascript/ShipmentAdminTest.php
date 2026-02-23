@@ -284,22 +284,6 @@ class ShipmentAdminTest extends CommerceWebDriverTestBase {
     // Ensure the "Shipments" operation is shown on the listing page.
     $this->drupalGet($this->order->toUrl('collection'));
     $this->assertSession()->linkByHrefExists($this->shipmentUri->toString());
-    $order_edit_link = $this->order->toUrl('edit-form')->toString();
-    $this->assertSession()->linkByHrefExists($order_edit_link);
-
-    // Make sure the "Shipments" tab isn't shown for cart orders.
-    $this->order->set('cart', TRUE);
-    $this->order->save();
-    $this->drupalGet($this->order->toUrl());
-    $this->assertSession()->linkNotExists('Shipments');
-    // Ensure the "Shipments" operation is not shown on the cart listing page.
-    $this->drupalGet($this->order->toUrl('collection'));
-    // The order will have moved to the cart listing.
-    $this->assertSession()->linkByHrefNotExists($order_edit_link);
-    $this->clickLink('Carts');
-    $this->assertSession()->linkByHrefExists($order_edit_link);
-    $this->assertSession()->linkNotExists('Shipments');
-    $this->assertSession()->linkByHrefNotExists($this->shipmentUri->toString());
   }
 
   /**

@@ -23,6 +23,8 @@ seti
 unionpay
 WeChat
 wechat
+buynow
+shippingratechange
 # SQL aliases
 cswe
 scem

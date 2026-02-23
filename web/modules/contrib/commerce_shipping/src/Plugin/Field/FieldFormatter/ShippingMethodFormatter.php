@@ -46,9 +46,16 @@ class ShippingMethodFormatter extends FormatterBase implements ContainerFactoryP
     /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment */
     $shipment = $items->getEntity();
     $shipping_service_id = $shipment->getShippingService();
+    $shipping_service_label = $shipment->getShippingServiceLabel();
 
     $elements = [];
     foreach ($items as $delta => $item) {
+      if (!empty($shipping_service_label)) {
+        $elements[$delta] = [
+          '#markup' => $shipping_service_label,
+        ];
+        continue;
+      }
       /** @var \Drupal\commerce_shipping\Entity\ShippingMethodInterface $shipping_method */
       $shipping_method = $item->entity;
       if (!$shipping_method) {

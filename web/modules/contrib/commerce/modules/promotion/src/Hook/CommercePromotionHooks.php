@@ -134,16 +134,6 @@ class CommercePromotionHooks {
             'link' => TRUE,
           ],
         ])
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayOptions('form', [
-          'type' => 'entity_reference_autocomplete',
-          'weight' => 5,
-          'settings' => [
-            'match_operator' => 'CONTAINS',
-            'autocomplete_type' => 'tags',
-            'placeholder' => '',
-          ],
-        ])
         ->setDisplayConfigurable('form', TRUE);
 
       return $fields;

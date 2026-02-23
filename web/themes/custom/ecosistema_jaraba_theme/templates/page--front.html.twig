@@ -3,6 +3,10 @@
  * @file
  * page--front.html.twig - Homepage profesional sin regiones.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * ARQUITECTURA REFACTORIZADA:
  * - Sin {{ page.* }} = Sin bloques de Drupal
  * - Usa {% include %} de partials reutilizables
@@ -16,6 +20,9 @@
  * - _stats.html.twig: Social proof
  * - _footer.html.twig: Footer configurable
  *
+ * Body classes 'page-front', 'landing-page' deben añadirse en
+ * hook_preprocess_html() en ecosistema_jaraba_theme.theme.
+ *
  * @see ecosistema_jaraba_theme.theme para preprocess
  */
 #}
@@ -27,27 +34,13 @@
 {{ attach_library('ecosistema_jaraba_theme/lenis-scroll') }}
 {{ attach_library('ecosistema_jaraba_core/visitor-journey') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-  
-  {# SEO Avanzado — Datos Estructurados Schema.org #}
-  {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' with {
-    site_name: site_name,
-    logo: logo
-  } %}
-</head>
+{# SEO Avanzado — Datos Estructurados Schema.org #}
+{% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' with {
+  site_name: site_name,
+  logo: logo
+} %}
 
-<body{{ attributes.addClass('page-front', 'landing-page') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
-
-  {# HEADER - Partial reutilizable con menú móvil #}
+{# HEADER - Partial reutilizable con menú móvil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
     site_name: site_name,
     site_slogan: site_slogan,
@@ -101,8 +94,3 @@
     greeting: '¡Hola! Soy tu asesor de Jaraba. Puedo mostrarte demos personalizadas, ayudarte a explorar la plataforma o resolver cualquier duda. ¿Qué te trae por aquí?'|t
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

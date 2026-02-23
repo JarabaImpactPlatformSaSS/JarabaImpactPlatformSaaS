@@ -3,14 +3,21 @@
  * @file
  * page--crm.html.twig - Dashboard CRM y Pipeline de Ventas
  *
- * ARQUITECTURA LIMPIA (mismo patrón que page--pixels.html.twig):
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
+ * ARQUITECTURA LIMPIA (mismo patron que page--pixels.html.twig):
  * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
  * - Full-width layout premium
  *
- * PROPÓSITO: Dashboard de gestión comercial (empresas, contactos, oportunidades).
+ * PROPOSITO: Dashboard de gestion comercial (empresas, contactos, oportunidades).
+ *
+ * Body classes migradas a preprocess_html:
+ * - page-crm, crm-page, dashboard-page
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
@@ -18,21 +25,7 @@
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('jaraba_crm/crm-frontend') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-crm', 'crm-page', 'dashboard-page') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
-
-  {# HEADER - Partial reutilizable con menú móvil #}
+  {# HEADER - Partial reutilizable con menu movil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
     site_name: site_name,
     logo: logo|default(''),
@@ -60,9 +53,4 @@
     theme_settings: theme_settings|default({})
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>
 

@@ -146,10 +146,3 @@ commerce_tax.commerce_tax_type.plugin.shipping:
       sequence:
         type: string
         label: 'Store'
-
-field.formatter.settings.commerce_shipping_information:
-  type: mapping
-  mapping:
-    allow_adding_shipment:
-      type: boolean
-      label: 'Allow adding shipment'

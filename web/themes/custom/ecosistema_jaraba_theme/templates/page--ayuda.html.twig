@@ -1,7 +1,11 @@
 {#
 /**
  * @file
- * page--ayuda.html.twig — Template para el Centro de Ayuda público.
+ * page--ayuda.html.twig — Template para el Centro de Ayuda publico.
+ *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
  *
  * ARQUITECTURA (IGUAL QUE page--content-hub.html.twig):
  * - Zero Region Policy — usa {{ clean_content }}
@@ -10,27 +14,16 @@
  * - Variables CSS var(--ej-*)
  * - Full-width igual que landing page
  *
- * PROPÓSITO: Página pública de Centro de Ayuda en /ayuda.
- * NO requiere autenticación.
+ * PROPOSITO: Pagina publica de Centro de Ayuda en /ayuda.
+ * NO requiere autenticacion.
+ *
+ * Body classes migradas a preprocess_html:
+ * - page-ayuda, help-center-page
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 
 {{ attach_library('ecosistema_jaraba_theme/global') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-ayuda', 'help-center-page') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
 
   {# HEADER - Partial reutilizable #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -58,8 +51,3 @@
     theme_settings: theme_settings|default({})
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

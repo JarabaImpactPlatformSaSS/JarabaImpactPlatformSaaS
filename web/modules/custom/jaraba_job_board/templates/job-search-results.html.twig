@@ -31,7 +31,7 @@
             <div class="job-card__meta">
               {% if job.location %}
                 <span class="job-card__location">
-                  <svg class="icon" width="16" height="16"><use xlink:href="#icon-location"></use></svg>
+                  {{ jaraba_icon('ui', 'location', { size: '16px' }) }}
                   {{ job.location }}
                 </span>
               {% endif %}

@@ -4,8 +4,8 @@ langcode: es
 site_key: 6LdVK3EsAAAAAD-Hjp7tdC8JLBY2XL9AgaXiCuAU
 secret_key: 6LdVK3EsAAAAAGIL2u_Hm5kMmCtOwn1L1H0A2_K2
 hide_badge: false
-verify_hostname: true
-default_challenge: captcha\Math
+verify_hostname: false
+default_challenge: captcha/Math
 error_message: 'Anti-bot verification failed.'
 cacheable: false
 library_use_recaptcha_net: false

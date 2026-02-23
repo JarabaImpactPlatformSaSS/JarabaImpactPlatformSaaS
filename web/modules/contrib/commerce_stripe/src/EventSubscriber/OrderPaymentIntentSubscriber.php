@@ -7,13 +7,17 @@ use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Event\OrderAssignEvent;
 use Drupal\commerce_order\Event\OrderEvent;
 use Drupal\commerce_order\Event\OrderEvents;
+use Drupal\commerce_order\OrderAssignmentInterface;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
 use Drupal\commerce_price\MinorUnitsConverterInterface;
+use Drupal\commerce_price\Price;
 use Drupal\commerce_stripe\ErrorHelper;
 use Drupal\commerce_stripe\Plugin\Commerce\PaymentGateway\StripeInterface;
 use Drupal\commerce_stripe\Plugin\Commerce\PaymentGateway\StripePaymentElement;
 use Drupal\commerce_stripe\Plugin\Commerce\PaymentGateway\StripePaymentElementInterface;
 use Drupal\Core\DestructableInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Password\PasswordGeneratorInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
 use Stripe\PaymentIntent;
@@ -32,20 +36,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class OrderPaymentIntentSubscriber implements EventSubscriberInterface, DestructableInterface {
 
   /**
-   * The minor units converter.
-   *
-   * @var \Drupal\commerce_price\MinorUnitsConverterInterface
-   */
-  protected MinorUnitsConverterInterface $minorUnitsConverter;
-
-  /**
-   * The stripe logger.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected LoggerInterface $logger;
-
-  /**
    * The intent IDs that need updating.
    *
    * @var int[]
@@ -62,20 +52,29 @@ class OrderPaymentIntentSubscriber implements EventSubscriberInterface, Destruct
   /**
    * Constructs a new OrderPaymentIntentSubscriber object.
    *
-   * @param \Drupal\commerce_price\MinorUnitsConverterInterface $minor_units_converter
+   * @param \Drupal\commerce_price\MinorUnitsConverterInterface $minorUnitsConverter
    *   The minor units converter.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\commerce_order\OrderAssignmentInterface $orderAssignment
+   *   The order assignment.
+   * @param \Drupal\Core\Password\PasswordGeneratorInterface $passwordGenerator
+   *   The password generator.
    */
-  public function __construct(MinorUnitsConverterInterface $minor_units_converter, LoggerInterface $logger) {
-    $this->minorUnitsConverter = $minor_units_converter;
-    $this->logger = $logger;
-  }
+  public function __construct(
+    protected MinorUnitsConverterInterface $minorUnitsConverter,
+    protected LoggerInterface $logger,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected OrderAssignmentInterface $orderAssignment,
+    protected PasswordGeneratorInterface $passwordGenerator,
+  ) {}
 
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       OrderEvents::ORDER_PRESAVE => 'onOrderPreSave',
       OrderEvents::ORDER_UPDATE => 'onOrderUpdate',
@@ -86,7 +85,7 @@ class OrderPaymentIntentSubscriber implements EventSubscriberInterface, Destruct
   /**
    * {@inheritdoc}
    */
-  public function destruct() {
+  public function destruct(): void {
     /** @var array $balance */
     foreach ($this->updateList as $intent_id => $balance) {
       try {
@@ -124,7 +123,7 @@ class OrderPaymentIntentSubscriber implements EventSubscriberInterface, Destruct
    * @param \Drupal\commerce_order\Event\OrderEvent $event
    *   The event.
    */
-  public function onOrderUpdate(OrderEvent $event) {
+  public function onOrderUpdate(OrderEvent $event): void {
     $order = $event->getOrder();
 
     $gateway = $order->get('payment_gateway');
@@ -164,7 +163,7 @@ class OrderPaymentIntentSubscriber implements EventSubscriberInterface, Destruct
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
-  public function onOrderPreSave(OrderEvent $event) {
+  public function onOrderPreSave(OrderEvent $event): void {
     $order = $event->getOrder();
 
     $gateway = $order->get('payment_gateway');
@@ -223,7 +222,7 @@ class OrderPaymentIntentSubscriber implements EventSubscriberInterface, Destruct
    * @return \Drupal\commerce_price\Price|null
    *   Changed balance of the order.
    */
-  protected function getChangedOrderBalance(OrderInterface $order) {
+  protected function getChangedOrderBalance(OrderInterface $order): ?Price {
     $balance = $order->getBalance();
     $original_balance = isset($order->original) ? $order->original->getBalance() : NULL;
 
@@ -276,7 +275,7 @@ class OrderPaymentIntentSubscriber implements EventSubscriberInterface, Destruct
             if (!empty($stripe_payment_method_id)) {
               $stripe_payment_method = PaymentMethod::retrieve($stripe_payment_method_id);
               $payment_details = ['stripe_payment_method' => $stripe_payment_method, 'commerce_order' => $order];
-              $plugin->doCreatePaymentMethod($payment_method, $payment_details);
+              $plugin->attachCustomerToStripePaymentMethod($payment_method, $payment_details);
             }
           }
         }

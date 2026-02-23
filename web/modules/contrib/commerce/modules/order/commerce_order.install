@@ -589,9 +589,6 @@ function commerce_order_update_10303(): void {
         'type' => 'commerce_shipping_information',
         'label' => 'above',
         'region' => 'content',
-        'settings' => [
-          'allow_adding_shipment' => TRUE,
-        ],
       ]);
     }
     $existing_order_items_component = $order_display->getComponent('order_items');

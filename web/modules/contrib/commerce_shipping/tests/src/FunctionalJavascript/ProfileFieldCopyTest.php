@@ -301,11 +301,9 @@ class ProfileFieldCopyTest extends CommerceWebDriverTestBase {
     $this->assertNotEmpty($billing_profile->getData('copy_fields'));
     $this->assertEmpty($billing_profile->getData('address_book_profile_id'));
 
-    // Confirm that the checkbox can be unchecked.
+    // Confirm that the checkbox is unchecked once a billing profile exists.
     $this->drupalGet($this->order->toUrl('edit-form'));
-    $this->assertSession()->checkboxChecked($billing_prefix . '[copy_fields][enable]');
-    $this->getSession()->getPage()->uncheckField($billing_prefix . '[copy_fields][enable]');
-    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->checkboxNotChecked($billing_prefix . '[copy_fields][enable]');
     $this->assertRenderedAddress($this->frenchAddress);
 
     // Confirm that the address book form still works.
@@ -360,7 +358,6 @@ class ProfileFieldCopyTest extends CommerceWebDriverTestBase {
     $this->drupalGet($this->order->toUrl('edit-form'));
     $this->getSession()->getPage()->findButton('add_billing_information')->click();
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->checkboxChecked($billing_prefix . '[copy_fields][enable]');
     $this->assertSession()->fieldExists($billing_prefix . '[copy_fields][tax_number][0][value]');
     $this->assertSession()->fieldNotExists($billing_prefix . '[address][0][address][address_line1]');
     $this->assertSession()->fieldNotExists($billing_prefix . '[copy_to_address_book]');
@@ -388,9 +385,10 @@ class ProfileFieldCopyTest extends CommerceWebDriverTestBase {
 
     // Confirm that the tax_number value is available on the edit form.
     $this->drupalGet($this->order->toUrl('edit-form'));
+    $this->assertSession()->checkboxNotChecked($billing_prefix . '[copy_fields][enable]');
+    $this->getSession()->getPage()->checkField($billing_prefix . '[copy_fields][enable]');
+    $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->fieldValueEquals($billing_prefix . '[copy_fields][tax_number][0][value]', 'FR40303265045');
-    $this->assertSession()->checkboxChecked($billing_prefix . '[copy_fields][enable]');
-
     $this->getSession()->getPage()->uncheckField($billing_prefix . '[copy_fields][enable]');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertRenderedAddress($this->frenchAddress);

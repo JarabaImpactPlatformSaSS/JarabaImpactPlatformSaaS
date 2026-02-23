@@ -15,7 +15,8 @@
 {% set layout = content.layout|default('inline') %}
 
 <section class="jaraba-social-proof jaraba-social-proof--{{ bg_class }} jaraba-social-proof--{{ layout }} jaraba-block"
-         data-block-type="trust_social_proof">
+         data-block-type="trust_social_proof"
+         aria-label="{{ title|default('Trust Social Proof') }}">
   <div class="jaraba-block__container">
     
     {% if content.title %}

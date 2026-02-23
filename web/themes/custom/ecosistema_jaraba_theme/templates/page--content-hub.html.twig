@@ -3,16 +3,23 @@
  * @file
  * page--content-hub.html.twig - Dashboard editor sin regiones.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Zero Region Policy:
  * - Sin {{ page.* }} = Sin bloques de Drupal
- * - Usa {{ clean_content }} extraído por preprocess_page()
+ * - Usa {{ clean_content }} extraido por preprocess_page()
  * - Usa {% include %} de partials reutilizables
  * - i18n con {% trans %}
  * - Variables CSS var(--ej-*)
  * - Full-width igual que landing page
  *
- * PROPÓSITO: Página frontend limpia para editores de tenant.
+ * PROPOSITO: Pagina frontend limpia para editores de tenant.
  * Ver: .agent/workflows/frontend-page-pattern.md
+ *
+ * Body classes migradas a preprocess_html:
+ * - page-content-hub, dashboard-page
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
@@ -20,21 +27,7 @@
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('ecosistema_jaraba_theme/content-hub') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-content-hub', 'dashboard-page') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
-
-  {# HEADER - Partial reutilizable con menú móvil #}
+  {# HEADER - Partial reutilizable con menu movil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
     site_name: site_name,
     logo: logo|default(''),
@@ -62,8 +55,3 @@
     theme_settings: theme_settings|default({})
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

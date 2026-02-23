@@ -178,7 +178,7 @@ class OnboardingController extends ControllerBase
 
         return new JsonResponse([
             'success' => TRUE,
-            'message' => '¡Registro exitoso! Redirigiendo...',
+            'message' => (string) $this->t('¡Registro exitoso! Redirigiendo...'),
             'redirect' => $redirectUrl,
             'tenant' => [
                 'id' => $result['tenant']->id(),

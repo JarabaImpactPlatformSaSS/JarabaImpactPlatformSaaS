@@ -1,0 +1,44 @@
+uuid: f0d4e5a6-b7c8-9012-defa-123456789012
+langcode: es
+status: true
+dependencies:
+  module:
+    - user
+id: user.status_activated
+configuration:
+  email_subject:
+    value: 'Su cuenta en [site:name] ha sido activada'
+  email_body:
+    content:
+      value: |
+        <h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">&iexcl;Tu cuenta est&aacute; activa!</h1>
+        <p style="margin: 0 0 32px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+          [user:display-name], tu cuenta en <strong style="color: #00A9A5;">[site:name]</strong> ha sido activada. Ya puedes acceder a todas las herramientas de la plataforma.
+        </p>
+
+        <!-- CTA Button -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+          <tr>
+            <td style="text-align: center; padding: 8px 0;">
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
+                <tr>
+                  <td style="background: linear-gradient(135deg, #FF8C42 0%, #FF6B1A 100%); border-radius: 12px; box-shadow: 0 4px 16px rgba(255,140,66,0.35);">
+                    <a href="[user:one-time-login-url]" target="_blank" style="display: inline-block; padding: 16px 48px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #FFFFFF; text-decoration: none; letter-spacing: 0.3px;">Iniciar sesi&oacute;n &rarr;</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Fallback link -->
+        <p style="margin: 24px 0 0 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #94A3B8; line-height: 1.6; text-align: center;">
+          &iquest;No funciona el bot&oacute;n? Copia y pega este enlace:<br>
+          <a href="[user:one-time-login-url]" style="color: #FF8C42; word-break: break-all;">[user:one-time-login-url]</a>
+        </p>
+
+        <!-- Login info -->
+        <p style="margin: 20px 0 0 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; line-height: 1.6; text-align: center;">
+          <strong style="color: #1A1A2E;">Usuario:</strong> [user:account-name]
+        </p>
+      format: email_html

@@ -8,8 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\Plugin\Field\FieldFormatter\EntityReferenceFormatterBase;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
@@ -23,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   label: new TranslatableMarkup('Shipping information'),
   field_types: ['entity_reference'],
 )]
-class ShippingInformationFormatter extends EntityReferenceFormatterBase {
+class ShippingInformationFormatter extends FormatterBase {
 
   /**
    * The entity type manager.
@@ -37,43 +36,6 @@ class ShippingInformationFormatter extends EntityReferenceFormatterBase {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->entityTypeManager = $container->get('entity_type.manager');
     return $instance;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function defaultSettings() {
-    return [
-      'allow_adding_shipment' => TRUE,
-    ] + parent::defaultSettings();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function settingsForm(array $form, FormStateInterface $form_state) {
-    $form = parent::settingsForm($form, $form_state);
-    $form['allow_adding_shipment'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Allow adding shipment'),
-      '#description' => $this->t('Adds additional tab to add shipment in the order.'),
-      '#default_value' => $this->getSetting('allow_adding_shipment'),
-    ];
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function settingsSummary() {
-    $summary = [];
-    if ($this->getSetting('allow_adding_shipment')) {
-      $summary[] = $this->t('"Add shipment" is enabled');
-    }
-    else {
-      $summary[] = $this->t('"Add shipment" is disabled');
-    }
-    return $summary;
   }
 
   /**
@@ -122,14 +84,24 @@ class ShippingInformationFormatter extends EntityReferenceFormatterBase {
     if (!empty($shipments)) {
       $shipment_view_builder = $this->entityTypeManager->getViewBuilder('commerce_shipment');
       $component['#slots']['card_content'] = $shipment_view_builder->view(reset($shipments), 'admin');
-      $component['#slots']['card_footer']['manage_shipments_link'] = [
-        '#type' => 'link',
-        '#title' => $this->formatPlural(count($shipments), 'Manage shipment →', 'Manage shipments →'),
-        '#url' => $shipment_collection_url,
-      ];
+      if ($shipment_collection_url->access()) {
+        $component['#slots']['card_footer']['manage_shipments_link'] = [
+          '#type' => 'link',
+          '#title' => $this->formatPlural(count($shipments), 'Manage shipment →', 'Manage shipments →'),
+          '#url' => $shipment_collection_url,
+        ];
+      }
     }
     else {
-      $component['#slots']['card_content'] = $this->getAddShipmentModalLink($order)->toRenderable();
+      $add_shipment_modal_link = $this->getAddShipmentModalLink($order);
+      if ($add_shipment_modal_link) {
+        $component['#slots']['card_content'] = $add_shipment_modal_link->toRenderable();
+      }
+      else {
+        $component['#slots']['card_content'] = [
+          '#markup' => '-',
+        ];
+      }
     }
 
     return [$component];
@@ -159,9 +131,6 @@ class ShippingInformationFormatter extends EntityReferenceFormatterBase {
    *   The order entity.
    */
   private function getAddShipmentModalLink(OrderInterface $order): ?Link {
-    if (!$this->getSetting('allow_adding_shipment')) {
-      return NULL;
-    }
     $order_type_storage = $this->entityTypeManager->getStorage('commerce_order_type');
     /** @var \Drupal\commerce_order\Entity\OrderTypeInterface $order_type */
     $order_type = $order_type_storage->load($order->bundle());

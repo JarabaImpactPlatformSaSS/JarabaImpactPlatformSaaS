@@ -3703,6 +3703,7 @@ const example = () => {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
                         },
                         credentials: 'same-origin',
                         body: JSON.stringify({
@@ -3764,8 +3765,25 @@ const example = () => {
 
             allBlocks.forEach((block) => {
                 const blockId = block.getId();
+                const currentMedia = block.get('media') || '';
+
+                // Forzar SVG para verticales que tienen discrepancias visuales con PNGs genéricos
+                const isVertical = blockId.indexOf('agroconecta') !== -1 || 
+                                 blockId.indexOf('comercioconecta') !== -1 ||
+                                 blockId.indexOf('serviciosconecta') !== -1;
+
+                if (isVertical) {
+                    const duotoneSvg = Drupal.jarabaThumbnails.get(blockId);
+                    if (duotoneSvg) {
+                        block.set('media', duotoneSvg);
+                        upgraded++;
+                        return;
+                    }
+                }
+
+                // Lógica estándar para el resto
                 const duotoneSvg = Drupal.jarabaThumbnails.get(blockId);
-                if (duotoneSvg) {
+                if (duotoneSvg && (typeof currentMedia !== 'string' || currentMedia.indexOf('<img') === -1)) {
                     block.set('media', duotoneSvg);
                     upgraded++;
                 }

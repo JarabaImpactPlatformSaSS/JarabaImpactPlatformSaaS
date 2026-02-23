@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="creative-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6f00"/><stop offset="100%" stop-color="#f50057"/></linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="#fff8e1" rx="8"/>
+  <!-- Diagonal accent -->
+  <polygon points="0,0 400,0 400,160 0,200" fill="url(#creative-bg)" opacity="0.9"/>
+  <!-- Avatar -->
+  <circle cx="200" cy="100" r="40" fill="rgba(255,255,255,0.3)" stroke="white" stroke-width="3"/>
+  <text x="200" y="108" text-anchor="middle" fill="white" font-size="30" font-family="Arial">M</text>
+  <!-- Name -->
+  <text x="200" y="170" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="Arial, sans-serif">María García</text>
+  <text x="200" y="190" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11" font-family="Arial">Diseñadora Creativa</text>
+  <!-- Content area -->
+  <rect x="25" y="220" width="350" height="240" rx="12" fill="white" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.08))"/>
+  <!-- Skills as colored chips -->
+  <text x="45" y="250" fill="#f50057" font-size="11" font-weight="bold" font-family="Arial">SKILLS</text>
+  <rect x="45" y="260" width="70" height="18" rx="9" fill="#ff6f00" opacity="0.2"/>
+  <rect x="125" y="260" width="60" height="18" rx="9" fill="#f50057" opacity="0.2"/>
+  <rect x="195" y="260" width="80" height="18" rx="9" fill="#ff6f00" opacity="0.2"/>
+  <rect x="285" y="260" width="65" height="18" rx="9" fill="#f50057" opacity="0.2"/>
+  <!-- Experience blocks -->
+  <text x="45" y="310" fill="#f50057" font-size="11" font-weight="bold" font-family="Arial">EXPERIENCIA</text>
+  <rect x="45" y="320" width="180" height="8" rx="2" fill="#ffccbc"/>
+  <rect x="45" y="334" width="280" height="6" rx="2" fill="#fce4ec"/>
+  <rect x="45" y="346" width="240" height="6" rx="2" fill="#fce4ec"/>
+  <!-- Education -->
+  <text x="45" y="380" fill="#f50057" font-size="11" font-weight="bold" font-family="Arial">EDUCACIÓN</text>
+  <rect x="45" y="390" width="160" height="8" rx="2" fill="#ffccbc"/>
+  <rect x="45" y="404" width="220" height="6" rx="2" fill="#fce4ec"/>
+  <!-- Label -->
+  <rect x="140" y="440" width="120" height="30" rx="15" fill="url(#creative-bg)"/>
+  <text x="200" y="460" text-anchor="middle" fill="white" font-size="12" font-family="Arial" font-weight="bold">CREATIVE</text>
+</svg>

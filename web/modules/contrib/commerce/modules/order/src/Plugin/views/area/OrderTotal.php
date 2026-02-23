@@ -53,31 +53,32 @@ class OrderTotal extends AreaPluginBase {
       /** @var \Drupal\commerce_order\OrderStorageInterface $order_storage */
       $order_storage = $this->entityTypeManager->getStorage('commerce_order');
       foreach ($this->view->argument as $name => $argument) {
-        // First look for an order_id argument.
         if (!$argument instanceof NumericArgument) {
           continue;
         }
-        if ($argument->getField() === 'commerce_order_item.order_item_id') {
+        $field_name_parts = explode('.', $argument->getField());
+        $order_id = NULL;
+
+        // The field is an order item ID, or list of order item IDs, so get the
+        // order ID from it.
+        if (!empty($field_name_parts[1]) && $field_name_parts[1] == 'order_item_id') {
           $order_item_storage = $this->entityTypeManager->getStorage('commerce_order_item');
           $order_item_ids = preg_split('/[+, ]+/', $argument->getValue(), -1, PREG_SPLIT_NO_EMPTY);
           $order_item = $order_item_storage->load(reset($order_item_ids));
           if ($order_item instanceof OrderItemInterface) {
             $order_id = $order_item->getOrderId();
-            if ($order_id === NULL) {
-              continue;
-            }
           }
         }
-        elseif (!in_array($argument->getField(), [
-          'commerce_order.order_id',
-          'commerce_order_item.order_id',
-          'commerce_payment.order_id',
-        ])) {
-          continue;
+
+        // The field is an order ID.
+        elseif (!empty($field_name_parts[1]) && $field_name_parts[1] == 'order_id') {
+          $order_id = $argument->getValue();
         }
-        $order_id = $order_id ?? $argument->getValue();
+
+        // If the order ID was found, make sure the order can be loaded, i.e.
+        // it's a valid order ID and that the person has permission to view it.
         /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
-        if ($order = $order_storage->load($order_id)) {
+        if ($order_id && $order = $order_storage->load($order_id)) {
           $order_total = $order->get('total_price')->view([
             'label' => 'hidden',
             'type' => 'commerce_order_total_summary',

@@ -4,3 +4,8 @@ description: Contains various non-specific things needed in tests.
 package: Testing
 dependencies:
   - commerce:commerce_tax
+
+# Information added by Drupal.org packaging script on 2026-02-17
+version: '3.3.2'
+project: 'commerce'
+datestamp: 1771359796

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\commerce_order\FunctionalJavascript;
 
+use Drupal\commerce_order\Entity\OrderType;
 use Drupal\Core\Test\AssertMailTrait;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\Order;
@@ -776,6 +777,33 @@ class OrderAdminTest extends OrderWebDriverTestBase {
     $this->drupalGet($order->toUrl()->toString());
     $this->assertSession()->pageTextNotContains(sprintf('Contact email %s', $old_email));
     $this->assertSession()->pageTextContains(sprintf('Contact email %s', $new_mail));
+  }
+
+  /**
+   * Tests that the order edit links are hidden if configured to do so.
+   */
+  public function testOrderEditLinks(): void {
+    $order = $this->createEntity('commerce_order', [
+      'type' => 'default',
+      'mail' => $this->loggedInUser->getEmail(),
+      'order_number' => '11111',
+      'uid' => $this->loggedInUser,
+      'store_id' => $this->store,
+    ]);
+    $this->drupalGet($order->toUrl()->toString());
+    $order_edit_form_url = $order->toUrl('edit-form')->toString();
+    $this->assertSession()->linkByHrefNotExists($order_edit_form_url);
+    $this->drupalGet($order->toUrl('collection')->toString());
+    $this->assertSession()->linkByHrefNotExists($order_edit_form_url);
+    $order_type = OrderType::load($order->bundle());
+    $this->drupalGet($order_type->toUrl('edit-form')->toString());
+    $this->getSession()->getPage()->checkField('showOrderEditLinks');
+    $this->submitForm([], 'Save');
+
+    $this->drupalGet($order->toUrl()->toString());
+    $this->assertSession()->linkByHrefExists($order_edit_form_url);
+    $this->drupalGet($order->toUrl('collection')->toString());
+    $this->assertSession()->linkByHrefExists($order_edit_form_url);
   }
 
 }

@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\commerce_stripe\Kernel;
 
-use Drupal\commerce_stripe\Plugin\Commerce\PaymentGateway\Stripe;
 use Drupal\KernelTests\KernelTestBase;
 use Stripe\Stripe as StripeLibrary;
 
@@ -20,6 +19,7 @@ class AppInfoTest extends KernelTestBase {
    */
   protected static $modules = [
     'system',
+    'entity',
     'commerce',
     'commerce_order',
     'commerce_payment',
@@ -32,18 +32,16 @@ class AppInfoTest extends KernelTestBase {
    */
   public function testStripeAppInfo() {
     $secret_key = $this->randomMachineName();
-    Stripe::create(
-      $this->container,
-      ['secret_key' => $secret_key],
-      'stripe',
-      [
-        'payment_type' => 'payment_default',
-        'payment_method_types' => ['credit_card'],
-        'forms' => [],
-        'modes' => ['test', 'prod'],
-        'display_label' => 'Stripe',
-      ],
-    );
+
+    /** @var \Drupal\commerce_payment\PaymentGatewayManager $gateway_manager */
+    $gateway_manager = $this->container->get('plugin.manager.commerce_payment_gateway');
+
+    $gateway_manager->createInstance('stripe', [
+      'mode' => 'test',
+      'secret_key' => $secret_key,
+      'payment_method_types' => ['credit_card'],
+      'display_label' => 'Stripe',
+    ]);
 
     $app_info = StripeLibrary::getAppInfo();
     $this->assertEquals([

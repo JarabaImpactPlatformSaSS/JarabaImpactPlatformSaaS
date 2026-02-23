@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * jaraba-cs-retention-dashboard.html.twig - Dashboard de retencion verticalizada.
+ *
+ * ARQUITECTURA:
+ * - BEM: cs-retention / cs-retention__* / cs-retention--*
+ * - Variables CSS var(--ej-*) para colores y tipografia.
+ * - Zero-region: se renderiza dentro de {{ clean_content }}.
+ *
+ * VARIABLES:
+ * - stats: array {total_tenants, at_risk_tenants, retention_rate, active_playbooks}.
+ * - heatmap_data: array[vertical_id] => {label, months: array[month] => {risk_level, label, adjustment}}.
+ * - risk_cards: array[vertical_id] => {label, vertical_id, max_inactivity_days, signals_count, ...}.
+ * - recent_executions: array [{playbook_name, tenant_name, current_step, total_steps, status, started_at}, ...].
+ */
+#}
+
+<div class="cs-retention">
+  {# Header with navigation #}
+  <header class="cs-retention__header">
+    <div class="cs-retention__header-content">
+      <h1 class="cs-retention__title">{% trans %}Vertical Retention Dashboard{% endtrans %}</h1>
+      <p class="cs-retention__subtitle">{% trans %}Seasonal risk analysis and vertical-specific playbook management.{% endtrans %}</p>
+    </div>
+    <nav class="cs-retention__nav">
+      <a href="{{ path('jaraba_customer_success.frontend.dashboard') }}" class="cs-retention__nav-link">{% trans %}Overview{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.frontend.playbooks') }}" class="cs-retention__nav-link">{% trans %}Playbooks{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.frontend.expansion') }}" class="cs-retention__nav-link">{% trans %}Expansion{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.nps_survey') }}" class="cs-retention__nav-link">{% trans %}NPS{% endtrans %}</a>
+      <a href="{{ path('jaraba_customer_success.retention_dashboard') }}" class="cs-retention__nav-link cs-retention__nav-link--active">{% trans %}Retention{% endtrans %}</a>
+    </nav>
+  </header>
+
+  {# Stats cards #}
+  <section class="cs-retention__stats">
+    <div class="cs-retention__stat-card">
+      <span class="cs-retention__stat-value" data-count="{{ stats.total_tenants }}">0</span>
+      <span class="cs-retention__stat-label">{% trans %}Total Tenants{% endtrans %}</span>
+    </div>
+    <div class="cs-retention__stat-card cs-retention__stat-card--danger">
+      <span class="cs-retention__stat-value" data-count="{{ stats.at_risk_tenants }}">0</span>
+      <span class="cs-retention__stat-label">{% trans %}At Risk{% endtrans %}</span>
+    </div>
+    <div class="cs-retention__stat-card cs-retention__stat-card--success">
+      <span class="cs-retention__stat-value" data-count="{{ stats.retention_rate }}">0</span>
+      <span class="cs-retention__stat-label">{% trans %}Retention Rate %{% endtrans %}</span>
+    </div>
+    <div class="cs-retention__stat-card">
+      <span class="cs-retention__stat-value" data-count="{{ stats.active_playbooks }}">0</span>
+      <span class="cs-retention__stat-label">{% trans %}Active Playbooks{% endtrans %}</span>
+    </div>
+  </section>
+
+  {# Seasonal heatmap #}
+  {% include '@jaraba_customer_success/partials/_retention-calendar-heatmap.html.twig' with {
+    heatmap_data: heatmap_data,
+  } only %}
+
+  {# Risk cards by vertical #}
+  <section class="cs-retention__risk-section">
+    <h2 class="cs-retention__section-title">{% trans %}Risk by Vertical{% endtrans %}</h2>
+    <div class="cs-retention__risk-grid">
+      {% for vertical_id, card in risk_cards %}
+        {% include '@jaraba_customer_success/partials/_retention-risk-card.html.twig' with {
+          card: card,
+        } only %}
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Playbook execution timeline #}
+  {% include '@jaraba_customer_success/partials/_playbook-timeline.html.twig' with {
+    executions: recent_executions,
+  } only %}
+</div>

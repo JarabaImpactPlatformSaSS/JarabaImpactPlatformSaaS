@@ -3,6 +3,10 @@
  * @file
  * page--legal.html.twig — Dashboard Legal Intelligence Hub.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Template zero-region para /admin/jaraba/legal y rutas legales.
  * Layout full-width mobile-first con parciales reutilizables.
  *
@@ -27,20 +31,6 @@
 {% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
 
 {{ attach_library('jaraba_legal_intelligence/legal.search') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
 
   {# HEADER — Partial reutilizable con menu movil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -96,8 +86,3 @@
     greeting: '¡Hola! Soy tu asistente legal. Puedo ayudarte con búsquedas de jurisprudencia, legislación, alertas normativas y citaciones cruzadas. ¿En qué puedo asistirte?'|t
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

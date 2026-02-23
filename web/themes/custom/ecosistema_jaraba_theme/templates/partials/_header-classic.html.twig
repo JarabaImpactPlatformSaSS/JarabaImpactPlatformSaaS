@@ -42,15 +42,17 @@
         <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
       {% else %}
         <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
-        {% if theme_settings.enable_header_cta %}
-          <a href="{{ theme_settings.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
-            {{ theme_settings.header_cta_text|default('Empezar gratis'|t) }}
-          </a>
-        {% else %}
+        {% if not theme_settings.enable_header_cta %}
           <a href="/user/register" class="btn-primary btn-primary--glow">
             {% trans %}Empezar gratis{% endtrans %}
           </a>
         {% endif %}
+      {% endif %}
+      {# CTA configurable — visible siempre (logueado y anónimo) #}
+      {% if theme_settings.enable_header_cta %}
+        <a href="{{ theme_settings.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
+          {{ theme_settings.header_cta_text|default('Empezar gratis'|t) }}
+        </a>
       {% endif %}
     </div>
 

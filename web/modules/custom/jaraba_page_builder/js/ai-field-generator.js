@@ -314,10 +314,12 @@
         generateBtn.querySelector('.ai-btn-icon').textContent = '⏳';
 
         try {
+            const csrfToken = drupalSettings.csrfToken || drupalSettings.jarabaCanvas?.csrfToken || '';
             const response = await fetch(CONFIG.endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken,
                 },
                 credentials: 'same-origin',
                 body: JSON.stringify({

@@ -16,7 +16,8 @@
 {% set has_scroll = content.scroll_indicator|default(true) %}
 
 <section class="jaraba-video-bg-hero jaraba-video-bg-hero--{{ height }} jaraba-video-bg-hero--align-{{ alignment }} jaraba-block jaraba-block--premium"
-         data-block-type="premium_video_background_hero">
+         data-block-type="premium_video_background_hero"
+         aria-label="{{ title|default('Premium Video Background Hero') }}">
   
   {# Video Background #}
   <div class="jaraba-video-bg-hero__bg">

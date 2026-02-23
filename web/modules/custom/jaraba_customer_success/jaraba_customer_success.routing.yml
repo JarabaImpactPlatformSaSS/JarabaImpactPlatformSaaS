@@ -238,3 +238,81 @@ jaraba_customer_success.api.nps.results:
   methods: [GET]
   options:
     _format: json
+
+# =============================================
+# VERTICAL RETENTION ROUTES
+# =============================================
+
+# Frontend dashboard.
+jaraba_customer_success.retention_dashboard:
+  path: '/customer-success/retention'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionDashboardController::dashboard'
+    _title: 'Retention Dashboard'
+  requirements:
+    _permission: 'view customer health scores'
+
+# API: List retention profiles.
+jaraba_customer_success.api.retention.profiles:
+  path: '/api/v1/retention/profiles'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::listProfiles'
+  methods: [GET]
+  requirements:
+    _permission: 'administer customer success'
+
+# API: Get retention profile detail.
+jaraba_customer_success.api.retention.profile_detail:
+  path: '/api/v1/retention/profiles/{vertical_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::getProfile'
+  methods: [GET]
+  requirements:
+    _permission: 'view customer health scores'
+
+# API: Update retention profile.
+jaraba_customer_success.api.retention.profile_update:
+  path: '/api/v1/retention/profiles/{vertical_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::updateProfile'
+  methods: [PUT]
+  requirements:
+    _permission: 'administer customer success'
+    _csrf_request_header_token: 'TRUE'
+
+# API: Tenant risk assessment.
+jaraba_customer_success.api.retention.risk_assessment:
+  path: '/api/v1/retention/risk-assessment/{tenant_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::riskAssessment'
+  methods: [GET]
+  requirements:
+    _permission: 'view churn predictions'
+
+# API: Seasonal predictions.
+jaraba_customer_success.api.retention.seasonal_predictions:
+  path: '/api/v1/retention/seasonal-predictions'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::seasonalPredictions'
+  methods: [GET]
+  requirements:
+    _permission: 'view churn predictions'
+
+# API: Playbook executions list.
+jaraba_customer_success.api.retention.playbook_executions:
+  path: '/api/v1/retention/playbook-executions'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::playbookExecutions'
+  methods: [GET]
+  requirements:
+    _permission: 'manage playbooks'
+
+# API: Override playbook execution.
+jaraba_customer_success.api.retention.override_execution:
+  path: '/api/v1/retention/playbook-executions/{id}/override'
+  defaults:
+    _controller: '\Drupal\jaraba_customer_success\Controller\RetentionApiController::overrideExecution'
+  methods: [POST]
+  requirements:
+    _permission: 'manage playbooks'
+    _csrf_request_header_token: 'TRUE'

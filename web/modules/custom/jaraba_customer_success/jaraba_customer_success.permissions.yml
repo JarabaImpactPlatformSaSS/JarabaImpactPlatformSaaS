@@ -18,3 +18,11 @@ view churn predictions:
 manage expansion signals:
   title: 'Manage expansion signals'
   description: 'View and action expansion opportunities.'
+
+manage retention profiles:
+  title: 'Manage vertical retention profiles'
+  description: 'Create, edit, and configure vertical retention profiles.'
+
+view seasonal predictions:
+  title: 'View seasonal churn predictions'
+  description: 'View seasonally-adjusted churn predictions.'

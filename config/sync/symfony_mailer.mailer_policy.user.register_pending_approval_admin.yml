@@ -1,0 +1,42 @@
+uuid: 5fd15cf2-3f37-4ece-bd30-17ba48aa2c35
+langcode: es
+status: true
+dependencies:
+  module:
+    - user
+id: user.register_pending_approval_admin
+configuration:
+  email_subject:
+    value: 'Solicitud de cuenta de [user:display-name] en [site:name]'
+  email_body:
+    content:
+      value: |
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #FFFFFF;">
+          <tr>
+            <td style="padding: 48px 40px;">
+              <h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">Nueva solicitud de cuenta</h1>
+              <p style="margin: 0 0 32px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+                <strong style="color: #1A1A2E;">[user:display-name]</strong> ha solicitado una cuenta en [site:name].
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding-top: 8px;">
+                <tr>
+                  <td style="text-align: center; padding: 8px 0;">
+                    <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
+                      <tr>
+                        <td style="background: linear-gradient(135deg, #FF8C42 0%, #FF6B1A 100%); border-radius: 12px; box-shadow: 0 4px 16px rgba(255,140,66,0.35);">
+                          <a href="[user:edit-url]" target="_blank" style="display: inline-block; padding: 16px 48px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #FFFFFF; text-decoration: none;">Revisar solicitud →</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      format: email_html
+  email_to:
+    addresses:
+      -
+        value: '<site>'
+        display: ''

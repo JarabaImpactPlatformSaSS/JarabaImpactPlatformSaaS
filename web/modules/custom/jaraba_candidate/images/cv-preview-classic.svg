@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <rect width="400" height="500" fill="#fafafa" rx="8"/>
+  <!-- Classic header with underline -->
+  <text x="200" y="50" text-anchor="middle" fill="#1a237e" font-size="22" font-weight="bold" font-family="Georgia, serif">María García López</text>
+  <rect x="100" y="58" width="200" height="2" fill="#1a237e"/>
+  <text x="200" y="78" text-anchor="middle" fill="#546e7a" font-size="10" font-family="Georgia, serif">Madrid, España · maria.garcia@ejemplo.com · +34 600 000 000</text>
+  <!-- Horizontal rule -->
+  <rect x="30" y="95" width="340" height="1" fill="#1a237e"/>
+  <!-- Experience -->
+  <text x="30" y="118" fill="#1a237e" font-size="13" font-weight="bold" font-family="Georgia, serif">Experiencia Profesional</text>
+  <rect x="30" y="128" width="220" height="8" rx="2" fill="#cfd8dc"/>
+  <rect x="280" y="128" width="90" height="8" rx="2" fill="#eceff1"/>
+  <rect x="30" y="142" width="300" height="6" rx="2" fill="#eceff1"/>
+  <rect x="30" y="154" width="260" height="6" rx="2" fill="#eceff1"/>
+  <rect x="30" y="174" width="200" height="8" rx="2" fill="#cfd8dc"/>
+  <rect x="280" y="174" width="90" height="8" rx="2" fill="#eceff1"/>
+  <rect x="30" y="188" width="280" height="6" rx="2" fill="#eceff1"/>
+  <!-- Education -->
+  <rect x="30" y="215" width="340" height="1" fill="#1a237e"/>
+  <text x="30" y="238" fill="#1a237e" font-size="13" font-weight="bold" font-family="Georgia, serif">Formación Académica</text>
+  <rect x="30" y="248" width="200" height="8" rx="2" fill="#cfd8dc"/>
+  <rect x="30" y="262" width="160" height="6" rx="2" fill="#eceff1"/>
+  <!-- Skills -->
+  <rect x="30" y="290" width="340" height="1" fill="#1a237e"/>
+  <text x="30" y="313" fill="#1a237e" font-size="13" font-weight="bold" font-family="Georgia, serif">Competencias</text>
+  <rect x="30" y="323" width="100" height="6" rx="2" fill="#eceff1"/>
+  <rect x="30" y="335" width="120" height="6" rx="2" fill="#eceff1"/>
+  <rect x="30" y="347" width="90" height="6" rx="2" fill="#eceff1"/>
+  <!-- Label -->
+  <rect x="140" y="440" width="120" height="30" rx="6" fill="#1a237e"/>
+  <text x="200" y="460" text-anchor="middle" fill="white" font-size="12" font-family="Georgia, serif" font-weight="bold">CLASSIC</text>
+</svg>

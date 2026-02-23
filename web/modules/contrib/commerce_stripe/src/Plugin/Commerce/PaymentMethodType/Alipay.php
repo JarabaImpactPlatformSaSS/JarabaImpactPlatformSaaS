@@ -17,7 +17,7 @@ class Alipay extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
     $created = date('m/d/Y', $payment_method->getCreatedTime());
     return "Alipay ($created)";
   }

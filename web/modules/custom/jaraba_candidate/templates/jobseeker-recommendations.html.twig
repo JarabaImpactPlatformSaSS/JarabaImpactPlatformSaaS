@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Jobseeker Recommendations — Premium list of recommended job postings.
+ *
+ * Variables:
+ * - jobs: Array of recommended job objects/arrays.
+ */
+#}
+
+<div class="recommendations-page">
+
+  <div class="recommendations__header">
+    {{ jaraba_icon('business', 'job', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
+    <div>
+      <h1>{{ 'Ofertas recomendadas para ti'|t }}</h1>
+      <p>{{ 'Basadas en tu perfil profesional y preferencias.'|t }}</p>
+    </div>
+  </div>
+
+  {% if jobs is not empty %}
+    <div class="recommendations__grid">
+      {% for job in jobs %}
+        <article class="recommendation-card">
+          <div class="recommendation-card__header">
+            <h3 class="recommendation-card__title">
+              <a href="{{ path('jaraba_job_board.job_detail', {'job_posting': job.id}) }}">
+                {{ job.title }}
+              </a>
+            </h3>
+            {% if job.match_score is defined %}
+              <span class="recommendation-card__match">{{ job.match_score }}%</span>
+            {% endif %}
+          </div>
+
+          {% if job.company %}
+            <p class="recommendation-card__company">{{ job.company }}</p>
+          {% endif %}
+
+          <div class="recommendation-card__meta">
+            {% if job.location %}
+              <span>{{ jaraba_icon('ui', 'location', { size: '14px' }) }} {{ job.location }}</span>
+            {% endif %}
+            {% if job.job_type %}
+              <span>{{ jaraba_icon('business', 'job', { size: '14px' }) }} {{ job.job_type }}</span>
+            {% endif %}
+            {% if job.salary_range %}
+              <span>{{ jaraba_icon('analytics', 'trending-up', { size: '14px' }) }} {{ job.salary_range }}</span>
+            {% endif %}
+          </div>
+
+          <div class="recommendation-card__actions">
+            <a href="{{ path('jaraba_job_board.job_detail', {'job_posting': job.id}) }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--sm">
+              {{ 'Ver oferta'|t }}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="recommendations__empty">
+      {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'muted' }) }}
+      <h3>{{ 'Aún no tenemos recomendaciones'|t }}</h3>
+      <p>{{ 'Completa tu perfil profesional para recibir ofertas personalizadas basadas en tus habilidades y experiencia.'|t }}</p>
+      <a href="/my-profile/edit" class="jaraba-btn jaraba-btn--primary">
+        {{ 'Completar mi perfil'|t }}
+      </a>
+    </div>
+  {% endif %}
+
+</div>

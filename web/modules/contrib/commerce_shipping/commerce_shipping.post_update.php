@@ -170,10 +170,20 @@ function commerce_shipping_post_update_5(array &$sandbox): void {
     $sandbox['#finished'] = 1;
     return;
   }
+  $sandbox['#finished'] = 0;
 
   // Unmark shipment reference as deleted.
   $database->update($table)
     ->fields(['deleted' => '0'])
     ->condition('shipments_target_id', $deleted_shipments, 'IN')
     ->execute();
+}
+
+/**
+ * Unmark shipment reference as deleted in the database.
+ */
+function commerce_shipping_post_update_6(array &$sandbox): void {
+  // The previous post update function didn't update all rows, because it
+  // considered it was done after updating the first 1000 rows.
+  commerce_shipping_post_update_5($sandbox);
 }

@@ -11,7 +11,8 @@
 {% set direction = content.flip_direction|default('horizontal') %}
 
 <section class="jaraba-flip-cards jaraba-flip-cards--{{ bg_class }} jaraba-block jaraba-block--premium"
-         data-block-type="premium_card_flip_3d">
+         data-block-type="premium_card_flip_3d"
+         aria-label="{{ title|default('Premium Card Flip 3D') }}">
   <div class="jaraba-block__container">
     
     <header class="jaraba-flip-cards__header">

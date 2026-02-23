@@ -110,7 +110,7 @@ class AiTranslateSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Use AI Translate as the default to translate content'),
       '#type' => 'checkbox',
       '#default_value' => $config->get('use_ai_translate') ?? TRUE,
-      '#description' => $this->t('When using this module on its own, keep this box checked. This allows AI Translate to take over the "Translate" tab when editing any entity. When this module is use as a translation framework for other translation mechanisms such as AI TMGMT; however, the default Drupal translation may be desired for the "Translate" tab.'),
+      '#description' => $this->t('When using this module on its own, keep this box checked. This allows AI Translate to take over the "Translate" tab when editing any entity. When this module is used as a translation framework for other translation mechanisms such as AI TMGMT; however, the default Drupal translation may be desired for the "Translate" tab.'),
     ];
 
     // Add translation status setting.

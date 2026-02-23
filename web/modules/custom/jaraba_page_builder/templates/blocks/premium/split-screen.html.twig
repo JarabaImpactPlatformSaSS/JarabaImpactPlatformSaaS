@@ -10,7 +10,8 @@
 {% set min_height = content.min_height|default('fullscreen') %}
 
 <section class="jaraba-split-screen jaraba-split-screen--{{ split_ratio }} jaraba-split-screen--{{ min_height }} jaraba-block jaraba-block--premium"
-         data-block-type="premium_split_screen">
+         data-block-type="premium_split_screen"
+         aria-label="Premium Split Screen">
   
   {# Left Section #}
   <div class="jaraba-split-screen__left jaraba-split-screen__panel jaraba-split-screen__panel--{{ content.left_section.background|default('light') }}"

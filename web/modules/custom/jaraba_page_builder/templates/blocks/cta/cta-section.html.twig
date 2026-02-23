@@ -17,6 +17,7 @@
 
 <section class="jaraba-cta-section jaraba-cta-section--{{ bg_class }} jaraba-cta-section--{{ layout_class }} jaraba-block"
          data-block-type="cta_section"
+         aria-label="{{ title|default('Cta Section') }}"
          {% if has_bg_image %}
            style="--cta-bg-image: url('{{ file_url(content.background_image) }}')"
          {% endif %}>

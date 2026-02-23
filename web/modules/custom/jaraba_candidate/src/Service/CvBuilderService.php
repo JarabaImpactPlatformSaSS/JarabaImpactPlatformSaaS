@@ -52,6 +52,11 @@ class CvBuilderService
     protected FileSystemInterface $fileSystem;
 
     /**
+     * The tenant context service.
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * The logger.
      */
     protected $logger;
@@ -108,8 +113,7 @@ class CvBuilderService
                                 'vertical' => 'empleabilidad',
                             ]);
                     }
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // Non-critical — fail silently.
                 }
 
@@ -120,8 +124,7 @@ class CvBuilderService
                     'gate_result' => $gateResult->toArray(),
                 ];
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Service not available — allow generation (fail-open).
         }
 
@@ -139,8 +142,7 @@ class CvBuilderService
             /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
             $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
             $featureGate->recordUsage($profile->getOwnerId(), 'cv_builder');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Service not available — skip recording.
         }
 
@@ -169,44 +171,96 @@ class CvBuilderService
     {
         $user_id = $profile->getOwnerId();
 
-        // Get experience records
-        $experiences = $this->entityTypeManager
-            ->getStorage('candidate_experience')
-            ->loadByProperties(['profile_id' => $profile->id()]);
+        // Get experience records (resilient to missing entity type).
+        $experiences = [];
+        try {
+            $experiences = $this->entityTypeManager
+                ->getStorage('candidate_experience')
+                ->loadByProperties(['profile_id' => $profile->id()]);
+        } catch (\Exception $e) {
+            // Entity type may not exist yet.
+        }
 
-        // Get education records
-        $educations = $this->entityTypeManager
-            ->getStorage('candidate_education')
-            ->loadByProperties(['profile_id' => $profile->id()]);
+        // Get education records (resilient to missing entity type).
+        $educations = [];
+        try {
+            $educations = $this->entityTypeManager
+                ->getStorage('candidate_education')
+                ->loadByProperties(['profile_id' => $profile->id()]);
+        } catch (\Exception $e) {
+            // Entity type may not exist yet.
+        }
 
-        // Get skills
-        $skills = $this->profileService->getSkills($profile->id());
+        // Get skills.
+        $skills = [];
+        try {
+            $skills = $this->profileService->getSkills($profile->id());
+        } catch (\Exception $e) {
+            // Skills method may fail.
+        }
 
-        // Get certifications from LMS
-        $certifications = $this->getCertifications($user_id);
+        // Get certifications from LMS.
+        $certifications = [];
+        try {
+            $certifications = $this->getCertifications($user_id);
+        } catch (\Exception $e) {
+            // LMS may not be available.
+        }
 
-        // Get languages
-        $languages = $this->getLanguages($profile->id());
+        // Get languages.
+        $languages = [];
+        try {
+            $languages = $this->getLanguages($profile->id());
+        } catch (\Exception $e) {
+            // Language entity may not exist.
+        }
+
+        // Safely get personal data fields.
+        $personal = [
+            'full_name' => $profile->getFullName(),
+            'email' => NULL,
+            'phone' => NULL,
+            'city' => NULL,
+            'country' => NULL,
+            'linkedin' => NULL,
+            'github' => NULL,
+            'portfolio' => NULL,
+            'website' => NULL,
+            'photo_url' => NULL,
+        ];
+        try {
+            $personal['email'] = $profile->get('email')->value ?? NULL;
+            $personal['phone'] = $profile->get('phone')->value ?? NULL;
+            $personal['city'] = $profile->getCity();
+            $personal['country'] = $profile->get('country')->value ?? NULL;
+            $personal['linkedin'] = $profile->get('linkedin_url')->value ?? NULL;
+            $personal['github'] = $profile->get('github_url')->value ?? NULL;
+            $personal['portfolio'] = $profile->get('portfolio_url')->value ?? NULL;
+            $personal['website'] = $profile->get('website_url')->value ?? NULL;
+            $personal['photo_url'] = $this->getPhotoUrl($profile);
+        } catch (\Exception $e) {
+            // Some fields may not exist on the entity.
+        }
+
+        // Safely get professional data.
+        $professional = [
+            'headline' => '',
+            'summary' => '',
+            'experience_years' => 0,
+            'experience_level' => '',
+        ];
+        try {
+            $professional['headline'] = $profile->getHeadline() ?? '';
+            $professional['summary'] = $profile->getSummary() ?? '';
+            $professional['experience_years'] = $profile->getExperienceYears() ?? 0;
+            $professional['experience_level'] = $profile->get('experience_level')->value ?? '';
+        } catch (\Exception $e) {
+            // Some professional fields may not exist.
+        }
 
         return [
-            'personal' => [
-                'full_name' => $profile->getFullName(),
-                'email' => $profile->get('email')->value,
-                'phone' => $profile->get('phone')->value,
-                'city' => $profile->getCity(),
-                'country' => $profile->get('country')->value,
-                'linkedin' => $profile->get('linkedin_url')->value,
-                'github' => $profile->get('github_url')->value,
-                'portfolio' => $profile->get('portfolio_url')->value,
-                'website' => $profile->get('website_url')->value,
-                'photo_url' => $this->getPhotoUrl($profile),
-            ],
-            'professional' => [
-                'headline' => $profile->getHeadline(),
-                'summary' => $profile->getSummary(),
-                'experience_years' => $profile->getExperienceYears(),
-                'experience_level' => $profile->get('experience_level')->value,
-            ],
+            'personal' => $personal,
+            'professional' => $professional,
             'experiences' => $this->formatExperiences($experiences),
             'educations' => $this->formatEducations($educations),
             'skills' => $skills,

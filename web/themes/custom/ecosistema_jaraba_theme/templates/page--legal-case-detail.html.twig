@@ -3,6 +3,10 @@
  * @file
  * page--legal-case-detail.html.twig — Detalle de Expediente Juridico.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Template zero-region para /legal/cases/{id}.
  * Layout full-width con timeline de actividades, datos del cliente
  * y plazos proximos.
@@ -16,20 +20,6 @@
 {% set site_slogan = site_slogan|default('Impulsando el talento y la innovacion') %}
 
 {{ attach_library('jaraba_legal_cases/legal-cases.main') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
 
   {# HEADER #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -175,7 +165,3 @@
     greeting: 'Soy tu asistente para este expediente. Puedo ayudarte con plazos, busqueda de jurisprudencia y preparacion de escritos.'|t
   } %}
 
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

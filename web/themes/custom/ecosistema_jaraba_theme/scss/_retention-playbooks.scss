@@ -1,0 +1,515 @@
+@use 'variables' as *;
+
+// =============================================
+// Retention Dashboard Styles
+// =============================================
+// BEM: cs-retention, cs-heatmap, cs-risk-card, cs-pb-timeline
+// Variables: var(--ej-*) with SCSS fallbacks
+// Mobile-first responsive design
+
+// --- Main Layout ---
+.cs-retention {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $ej-spacing-md;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-md;
+    margin-bottom: $ej-spacing-xl;
+
+    @include respond-to(md) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  &__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: var(--ej-color-text-muted, #64748b);
+    margin: $ej-spacing-xs 0 0;
+  }
+
+  &__nav {
+    display: flex;
+    gap: $ej-spacing-xs;
+    flex-wrap: wrap;
+  }
+
+  &__nav-link {
+    padding: $ej-spacing-xs $ej-spacing-sm;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    text-decoration: none;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--ej-color-corporate, $ej-color-corporate) 10%, transparent);
+    }
+
+    &--active {
+      background-color: var(--ej-color-corporate, $ej-color-corporate);
+      color: #fff;
+    }
+  }
+
+  // --- Stats ---
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $ej-spacing-md;
+    margin-bottom: $ej-spacing-xl;
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: $ej-spacing-lg;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+
+    &--danger {
+      border-color: color-mix(in srgb, var(--ej-color-danger, $ej-color-danger) 30%, transparent);
+    }
+
+    &--success {
+      border-color: color-mix(in srgb, var(--ej-color-success, $ej-color-success) 30%, transparent);
+    }
+  }
+
+  &__stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+  }
+
+  &__stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-muted, #64748b);
+    margin-top: $ej-spacing-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  // --- Risk Section ---
+  &__risk-section {
+    margin-bottom: $ej-spacing-xl;
+  }
+
+  &__section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    margin: 0 0 $ej-spacing-md;
+  }
+
+  &__risk-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $ej-spacing-md;
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+// --- Heatmap ---
+.cs-heatmap {
+  background: #fff;
+  border-radius: 12px;
+  padding: $ej-spacing-lg;
+  margin-bottom: $ej-spacing-xl;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    margin: 0 0 $ej-spacing-md;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 140px repeat(12, 1fr);
+    gap: 2px;
+    min-width: 600px;
+  }
+
+  &__row {
+    display: contents;
+
+    &--header {
+      font-weight: 600;
+    }
+  }
+
+  &__cell {
+    padding: $ej-spacing-xs;
+    text-align: center;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    transition: transform 0.15s, box-shadow 0.15s;
+
+    &--label {
+      text-align: left;
+      justify-content: flex-start;
+      font-weight: 500;
+      color: var(--ej-color-corporate, $ej-color-corporate);
+      background: transparent;
+    }
+
+    &--header {
+      font-weight: 600;
+      font-size: 0.7rem;
+      color: var(--ej-color-text-muted, #64748b);
+    }
+
+    &--low {
+      background-color: color-mix(in srgb, var(--ej-color-success, $ej-color-success) 25%, transparent);
+    }
+
+    &--medium {
+      background-color: color-mix(in srgb, var(--ej-color-warning, $ej-color-warning) 30%, transparent);
+    }
+
+    &--high {
+      background-color: color-mix(in srgb, var(--ej-color-danger, $ej-color-danger) 30%, transparent);
+    }
+
+    &--current {
+      outline: 2px solid var(--ej-color-corporate, $ej-color-corporate);
+      outline-offset: -1px;
+      transform: scale(1.05);
+      z-index: 1;
+    }
+
+    &--current-header {
+      color: var(--ej-color-corporate, $ej-color-corporate);
+      font-weight: 700;
+    }
+
+    &:hover:not(&--label):not(&--header) {
+      transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+    }
+  }
+
+  &__legend {
+    display: flex;
+    gap: $ej-spacing-md;
+    margin-top: $ej-spacing-md;
+    justify-content: center;
+  }
+
+  &__legend-item {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-xs;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-muted, #64748b);
+  }
+
+  &__legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+
+    &--low {
+      background-color: color-mix(in srgb, var(--ej-color-success, $ej-color-success) 40%, transparent);
+    }
+
+    &--medium {
+      background-color: color-mix(in srgb, var(--ej-color-warning, $ej-color-warning) 45%, transparent);
+    }
+
+    &--high {
+      background-color: color-mix(in srgb, var(--ej-color-danger, $ej-color-danger) 45%, transparent);
+    }
+  }
+}
+
+// --- Risk Card ---
+.cs-risk-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: $ej-spacing-lg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $ej-spacing-md;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    margin: 0;
+  }
+
+  &__badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: color-mix(in srgb, var(--ej-color-corporate, $ej-color-corporate) 10%, transparent);
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    font-weight: 500;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $ej-spacing-sm;
+    margin-bottom: $ej-spacing-md;
+  }
+
+  &__stat {
+    text-align: center;
+  }
+
+  &__stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+  }
+
+  &__stat-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--ej-color-text-muted, #64748b);
+    text-transform: uppercase;
+  }
+
+  &__signals {
+    flex: 1;
+    margin-bottom: $ej-spacing-md;
+  }
+
+  &__signals-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ej-color-text-muted, #64748b);
+    text-transform: uppercase;
+    margin: 0 0 $ej-spacing-xs;
+  }
+
+  &__signal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__signal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: $ej-spacing-xs;
+    padding: $ej-spacing-xs 0;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__signal-weight {
+    font-weight: 600;
+    color: var(--ej-color-impulse, $ej-color-impulse);
+    min-width: 36px;
+  }
+
+  &__signal-desc {
+    color: #475569;
+  }
+
+  &__footer {
+    margin-top: auto;
+    padding-top: $ej-spacing-sm;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  &__link {
+    font-size: 0.8rem;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// --- Playbook Timeline ---
+.cs-pb-timeline {
+  background: #fff;
+  border-radius: 12px;
+  padding: $ej-spacing-lg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+    margin: 0 0 $ej-spacing-md;
+  }
+
+  &__list {
+    position: relative;
+  }
+
+  &__item {
+    display: flex;
+    gap: $ej-spacing-md;
+    padding-bottom: $ej-spacing-md;
+
+    &:last-child {
+      padding-bottom: 0;
+
+      .cs-pb-timeline__line {
+        display: none;
+      }
+    }
+  }
+
+  &__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 20px;
+  }
+
+  &__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &--running {
+      background-color: var(--ej-color-success, $ej-color-success);
+    }
+
+    &--completed {
+      background-color: var(--ej-color-innovation, $ej-color-innovation);
+    }
+
+    &--failed {
+      background-color: var(--ej-color-danger, $ej-color-danger);
+    }
+
+    &--cancelled,
+    &--paused,
+    &--pending {
+      background-color: #94a3b8;
+    }
+  }
+
+  &__line {
+    width: 2px;
+    flex: 1;
+    background-color: #e2e8f0;
+    margin-top: 4px;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $ej-spacing-sm;
+  }
+
+  &__playbook {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ej-color-corporate, $ej-color-corporate);
+  }
+
+  &__status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--running {
+      background-color: color-mix(in srgb, var(--ej-color-success, $ej-color-success) 15%, transparent);
+      color: var(--ej-color-success, $ej-color-success);
+    }
+
+    &--completed {
+      background-color: color-mix(in srgb, var(--ej-color-innovation, $ej-color-innovation) 15%, transparent);
+      color: var(--ej-color-innovation, $ej-color-innovation);
+    }
+
+    &--failed {
+      background-color: color-mix(in srgb, var(--ej-color-danger, $ej-color-danger) 15%, transparent);
+      color: var(--ej-color-danger, $ej-color-danger);
+    }
+
+    &--cancelled,
+    &--paused {
+      background-color: #f1f5f9;
+      color: #64748b;
+    }
+  }
+
+  &__tenant {
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    margin-top: $ej-spacing-xs;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-muted, #64748b);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $ej-spacing-xl;
+    color: var(--ej-color-text-muted, #64748b);
+  }
+}

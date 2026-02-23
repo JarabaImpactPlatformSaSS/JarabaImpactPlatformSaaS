@@ -542,10 +542,6 @@ function commerce_promotion_post_update_14(): void {
 
     // Remove coupons field.
     $form_display->removeComponent('coupons');
-    $hidden_components = $form_display->get('hidden');
-    $hidden_components['coupons'] = TRUE;
-    ksort($hidden_components);
-    $form_display->set('hidden', $hidden_components);
     $form_display->save();
   }
 }

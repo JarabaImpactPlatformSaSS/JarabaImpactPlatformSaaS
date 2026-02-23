@@ -1,0 +1,561 @@
+/**
+ * @file
+ * Premium styling for Candidate Profile Edit form (/my-profile/edit).
+ *
+ * Targets form.candidate-profile-form inside dashboard layout.
+ * Uses injectable CSS variables (var(--ej-*)) per Federated Design Tokens.
+ *
+ * COMPILACIÓN:
+ * npx sass scss/main.scss:css/main.css --style=compressed --no-source-map
+ */
+
+@use 'sass:color';
+@use 'variables' as *;
+
+// ============================================================
+// PROFILE EDIT — PREMIUM FORM STYLING
+// ============================================================
+
+// --- Body-level overrides for profile edit route ---
+.page-empleabilidad {
+
+    // Ensure hero-split grid doesn't break form layout
+    &.hero--split {
+        display: block !important;
+        grid-template-columns: unset !important;
+    }
+}
+
+// --- Form Container ---
+form.candidate-profile-form {
+    max-width: 900px;
+    margin-inline: auto;
+    padding: var(--ej-spacing-xl, #{$ej-spacing-xl}) var(--ej-spacing-lg, #{$ej-spacing-lg});
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+
+    @media (max-width: #{$ej-breakpoint-md}) {
+        padding: var(--ej-spacing-lg, #{$ej-spacing-lg}) var(--ej-spacing-md, #{$ej-spacing-md});
+    }
+
+    // --- Details/Fieldset as Premium Glassmorphism Cards ---
+    >details,
+    >.js-form-wrapper>details {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.95),
+                rgba(248, 250, 252, 0.9));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: var(--ej-border-radius, #{$ej-border-radius});
+        box-shadow:
+            0 4px 24px rgba(0, 0, 0, 0.04),
+            0 1px 2px rgba(0, 0, 0, 0.02),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+        padding: 0;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+            box-shadow 0.3s ease;
+
+        // Shine sweep effect on hover
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent);
+            transition: left 0.6s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                0 2px 4px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+            &::before {
+                left: 150%;
+            }
+        }
+
+        // --- Summary (Card Header) ---
+        >summary {
+            display: flex;
+            align-items: center;
+            gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+            padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+            font-family: var(--ej-font-family, 'Outfit', sans-serif);
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--ej-color-corporate, #{$ej-color-corporate});
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+            transition: background $ej-transition-fast, color $ej-transition-fast;
+
+            // Hide default marker
+            &::-webkit-details-marker {
+                display: none;
+            }
+
+            &::marker {
+                display: none;
+                content: '';
+            }
+
+            // Custom chevron
+            &::after {
+                content: '';
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                margin-left: auto;
+                border-right: 2px solid var(--ej-color-corporate, #{$ej-color-corporate});
+                border-bottom: 2px solid var(--ej-color-corporate, #{$ej-color-corporate});
+                transform: rotate(45deg);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            &:hover {
+                background: rgba(var(--ej-color-corporate-rgb, 35, 61, 99), 0.04);
+                color: var(--ej-color-impulse, #{$ej-color-impulse});
+            }
+
+            &:focus-visible {
+                outline: $ej-focus-ring;
+                outline-offset: $ej-focus-ring-offset;
+                border-radius: 4px;
+            }
+        }
+
+        // Chevron rotation when open
+        &[open]>summary::after {
+            transform: rotate(-135deg);
+        }
+
+        // --- Card Body (form fields inside) ---
+        >.details-wrapper {
+            padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+            animation: profileFadeIn 0.3s ease-out;
+        }
+    }
+
+    // --- Input Fields Enhancement ---
+    input[type='text'],
+    input[type='email'],
+    input[type='tel'],
+    input[type='url'],
+    input[type='number'],
+    input[type='password'],
+    textarea,
+    select {
+        width: 100%;
+        padding: var(--ej-spacing-sm, #{$ej-spacing-sm}) var(--ej-spacing-md, #{$ej-spacing-md});
+        font-family: var(--ej-font-family, 'Outfit', sans-serif);
+        font-size: 1rem;
+        color: var(--ej-text-primary, #{$ej-text-primary});
+        background: var(--ej-bg-surface, #{$ej-bg-surface});
+        border: 1.5px solid var(--ej-border-color, #{$ej-border-color});
+        border-radius: var(--ej-btn-radius, #{$ej-btn-radius});
+        transition: border-color $ej-transition-fast, box-shadow $ej-transition-fast;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ej-color-impulse, #{$ej-color-impulse});
+            box-shadow: 0 0 0 #{$ej-focus-ring-width} rgba(255, 140, 66, 0.15);
+        }
+
+        &::placeholder {
+            color: var(--ej-text-muted, #{$ej-text-muted});
+        }
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    // --- Labels ---
+    label,
+    .form-item__label {
+        display: block;
+        margin-bottom: var(--ej-spacing-xs, #{$ej-spacing-xs});
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--ej-color-headings, #{$ej-color-headings});
+        letter-spacing: 0.01em;
+    }
+
+    // --- Form Items ---
+    .form-item {
+        margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+    }
+
+    .form-item__description,
+    .description {
+        font-size: 0.8125rem;
+        color: var(--ej-text-muted, #{$ej-text-muted});
+        margin-top: var(--ej-spacing-xs, #{$ej-spacing-xs});
+    }
+
+    // --- CKEditor Integration ---
+    .ck-editor {
+        border-radius: var(--ej-btn-radius, #{$ej-btn-radius});
+        overflow: hidden;
+        border: 1.5px solid var(--ej-border-color, #{$ej-border-color});
+        transition: border-color $ej-transition-fast, box-shadow $ej-transition-fast;
+
+        &:focus-within {
+            border-color: var(--ej-color-impulse, #{$ej-color-impulse});
+            box-shadow: 0 0 0 #{$ej-focus-ring-width} rgba(255, 140, 66, 0.15);
+        }
+    }
+
+    .ck-editor__editable {
+        min-height: 150px;
+        font-family: var(--ej-font-family, 'Outfit', sans-serif);
+        color: var(--ej-text-primary, #{$ej-text-primary});
+    }
+
+    // --- Photo Upload ---
+    .image-widget {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-md, #{$ej-spacing-md});
+        padding: var(--ej-spacing-md, #{$ej-spacing-md});
+        background: var(--ej-bg-surface, #{$ej-bg-surface});
+        border: 2px dashed var(--ej-border-color, #{$ej-border-color});
+        border-radius: var(--ej-border-radius, #{$ej-border-radius});
+        transition: border-color $ej-transition-fast;
+
+        &:hover {
+            border-color: var(--ej-color-impulse, #{$ej-color-impulse});
+        }
+
+        img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--ej-color-impulse, #{$ej-color-impulse});
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    // --- Checkbox / Radio ---
+    .form-type-checkbox,
+    .form-type-radio {
+        display: flex;
+        align-items: center;
+        gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+        padding: var(--ej-spacing-sm, #{$ej-spacing-sm}) 0;
+
+        input[type='checkbox'],
+        input[type='radio'] {
+            width: auto;
+            accent-color: var(--ej-color-impulse, #{$ej-color-impulse});
+        }
+    }
+
+    // --- Submit Button — Gradient Premium ---
+    .form-actions {
+        margin-top: var(--ej-spacing-xl, #{$ej-spacing-xl});
+        padding-top: var(--ej-spacing-lg, #{$ej-spacing-lg});
+        border-top: 1px solid var(--ej-border-color, #{$ej-border-color});
+
+        .form-submit,
+        .button--primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+            min-width: 200px;
+            padding: 0.875rem 2rem;
+            font-family: var(--ej-font-family, 'Outfit', sans-serif);
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg,
+                var(--ej-color-impulse, #{$ej-color-impulse}),
+                #{color.scale($ej-color-impulse, $lightness: -15%)});
+            border: none;
+            border-radius: var(--ej-btn-radius, #{$ej-btn-radius});
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
+            box-shadow: 0 4px 16px rgba(255, 140, 66, 0.35);
+
+            &:hover {
+                transform: translateY(-2px) scale(#{$ej-hover-scale});
+                box-shadow: 0 8px 24px rgba(255, 140, 66, 0.45);
+            }
+
+            &:active {
+                transform: translateY(0) scale(0.98);
+            }
+
+            &:focus-visible {
+                outline: $ej-focus-ring;
+                outline-offset: $ej-focus-ring-offset;
+            }
+        }
+
+        // Secondary buttons
+        .button:not(.button--primary):not(.form-submit) {
+            padding: 0.75rem 1.5rem;
+            font-family: var(--ej-font-family, 'Outfit', sans-serif);
+            font-weight: 500;
+            color: var(--ej-color-corporate, #{$ej-color-corporate});
+            background: transparent;
+            border: 1.5px solid var(--ej-border-color, #{$ej-border-color});
+            border-radius: var(--ej-btn-radius, #{$ej-btn-radius});
+            cursor: pointer;
+            transition: border-color $ej-transition-fast, background $ej-transition-fast;
+
+            &:hover {
+                border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+                background: rgba(35, 61, 99, 0.05);
+            }
+        }
+    }
+
+    // --- Hide Drupal noise ---
+    .filter-wrapper,
+    .filter-guidelines,
+    a[href*='/filter/tips'],
+    [id*='format-help'] {
+        display: none !important;
+    }
+}
+
+// ============================================================
+// CV BUILDER — PREMIUM STYLING
+// ============================================================
+
+.cv-builder {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: var(--ej-spacing-xl, #{$ej-spacing-xl}) var(--ej-spacing-lg, #{$ej-spacing-lg});
+
+    @media (max-width: #{$ej-breakpoint-md}) {
+        padding: var(--ej-spacing-lg, #{$ej-spacing-lg}) var(--ej-spacing-md, #{$ej-spacing-md});
+    }
+}
+
+.cv-builder__header {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #{$ej-color-corporate}),
+        color.scale($ej-color-corporate, $lightness: 20%));
+    border-radius: var(--ej-border-radius, #{$ej-border-radius});
+    padding: var(--ej-spacing-2xl, #{$ej-spacing-2xl}) var(--ej-spacing-xl, #{$ej-spacing-xl});
+    margin-bottom: var(--ej-spacing-xl, #{$ej-spacing-xl});
+    color: #ffffff;
+
+    h1 {
+        font-family: var(--ej-font-family, 'Outfit', sans-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        margin: var(--ej-spacing-md, #{$ej-spacing-md}) 0 var(--ej-spacing-sm, #{$ej-spacing-sm});
+    }
+
+    p {
+        opacity: 0.85;
+        font-size: 1.0625rem;
+        max-width: 480px;
+    }
+}
+
+.cv-builder__profile-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-md, #{$ej-spacing-md});
+    margin-top: var(--ej-spacing-lg, #{$ej-spacing-lg});
+    padding: var(--ej-spacing-sm, #{$ej-spacing-sm}) var(--ej-spacing-md, #{$ej-spacing-md});
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--ej-btn-radius, #{$ej-btn-radius});
+    width: fit-content;
+
+    span {
+        font-weight: 500;
+    }
+}
+
+.cv-builder__title {
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #{$ej-color-headings});
+    margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+}
+
+// --- Template Grid ---
+.cv-builder__templates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--ej-spacing-lg, #{$ej-spacing-lg});
+
+    @media (max-width: #{$ej-breakpoint-sm}) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// --- Template Card ---
+.cv-template-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95),
+            rgba(248, 250, 252, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--ej-border-radius, #{$ej-border-radius});
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.3s ease;
+
+    // Shine sweep
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent);
+        transition: left 0.6s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    &:hover {
+        transform: translateY(-6px) scale(#{$ej-hover-scale});
+        box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.1),
+            0 4px 8px rgba(0, 0, 0, 0.04),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+        &::before {
+            left: 150%;
+        }
+    }
+
+    .cv-template-card__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        background: rgba(var(--ej-color-corporate-rgb, 35, 61, 99), 0.08);
+        border-radius: 12px;
+        margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+    }
+
+    .cv-template-card__name {
+        font-family: var(--ej-font-family, 'Outfit', sans-serif);
+        font-size: 1.0625rem;
+        font-weight: 600;
+        color: var(--ej-color-headings, #{$ej-color-headings});
+        margin-bottom: var(--ej-spacing-xs, #{$ej-spacing-xs});
+    }
+
+    .cv-template-card__desc {
+        font-size: 0.875rem;
+        color: var(--ej-text-muted, #{$ej-text-muted});
+        line-height: 1.5;
+    }
+
+    .cv-template-card__actions {
+        display: flex;
+        gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+        margin-top: var(--ej-spacing-md, #{$ej-spacing-md});
+
+        a,
+        button {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            font-family: var(--ej-font-family, 'Outfit', sans-serif);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--ej-btn-radius, #{$ej-btn-radius});
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all $ej-transition-fast;
+        }
+    }
+
+    .cv-template-card__preview {
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+        background: transparent;
+        border: 1.5px solid var(--ej-border-color, #{$ej-border-color});
+
+        &:hover {
+            border-color: var(--ej-color-corporate, #{$ej-color-corporate});
+            background: rgba(35, 61, 99, 0.05);
+        }
+    }
+
+    .cv-template-card__download {
+        color: #ffffff;
+        background: linear-gradient(135deg,
+            var(--ej-color-impulse, #{$ej-color-impulse}),
+            #{color.scale($ej-color-impulse, $lightness: -15%)});
+        border: none;
+        box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+
+        &:hover {
+            box-shadow: 0 4px 16px rgba(255, 140, 66, 0.45);
+            transform: translateY(-1px);
+        }
+    }
+}
+
+// --- Empty State ---
+.cv-builder__empty {
+    text-align: center;
+    padding: var(--ej-spacing-2xl, #{$ej-spacing-2xl});
+
+    p {
+        color: var(--ej-text-muted, #{$ej-text-muted});
+        font-size: 1.0625rem;
+        margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+    }
+}
+
+// ============================================================
+// ANIMATION KEYFRAMES
+// ============================================================
+@keyframes profileFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

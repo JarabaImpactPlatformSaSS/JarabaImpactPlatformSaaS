@@ -17,7 +17,8 @@
 {% set overlay_opacity = content.overlay_opacity|default(60) %}
 
 <section class="jaraba-video-hero jaraba-video-hero--{{ height_class }} jaraba-block"
-         data-block-type="video_hero">
+         data-block-type="video_hero"
+         aria-label="{{ title|default('Video Hero') }}">
   
   {# Video de fondo #}
   <div class="jaraba-video-hero__video-wrapper">

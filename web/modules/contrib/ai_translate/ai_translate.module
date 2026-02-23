@@ -57,12 +57,8 @@ function ai_translate_form_locale_translate_edit_form_alter(&$form, FormStateInt
     return;
   }
 
-  // Bail with message if no translation model set.
+  // Bail if no translation model set.
   if (!_ai_translate_check_default_provider_and_model()) {
-    $message = t('Please select a default provider and model for translation via the <a href="@ai_settings">AI settings</a> page.', [
-      '@ai_settings' => Url::fromRoute('ai.settings_form')->toString(),
-    ]);
-    \Drupal::messenger()->addWarning($message);
     return;
   }
 
@@ -192,7 +188,7 @@ function ai_translate_plugin_help($route_name, RouteMatchInterface $route_match)
 function _ai_translate_check_default_provider_and_model(): bool {
   $sets = \Drupal::service('ai.provider')->getDefaultProviderForOperationType('translate_text');
   if (empty($sets['provider_id'])) {
-    \Drupal::messenger()->addMessage(t('Please set a default provider & model for the text translation the <a href=":url">AI module settings</a>.', [':url' => Url::fromRoute('ai.settings_form')->toString()]), 'error', FALSE);
+    \Drupal::messenger()->addMessage(t('Please set a default provider & model for text translation in the <a href=":url">AI module settings</a>.', [':url' => Url::fromRoute('ai.settings_form')->toString()]), 'error', FALSE);
     return FALSE;
   }
   return TRUE;

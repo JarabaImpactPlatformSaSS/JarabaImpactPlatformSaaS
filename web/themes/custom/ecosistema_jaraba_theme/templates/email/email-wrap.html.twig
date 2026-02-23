@@ -1,0 +1,143 @@
+{#
+/**
+ * @file
+ * Branded email wrapper for Jaraba Impact Platform SaaS.
+ *
+ * Overrides modules/contrib/symfony_mailer/templates/email-wrap.html.twig
+ * to provide a premium branded shell with:
+ * - Header with logo from theme config + gradient background
+ * - Light gray background (#F0F2F5)
+ * - Centered 600px max-width container (table-based for Outlook)
+ * - Footer with copyright from theme config
+ * - All inline CSS (no <style> blocks — email clients strip them)
+ *
+ * All branding data injected via ecosistema_jaraba_theme_preprocess_email_wrap().
+ *
+ * Variables (from preprocess):
+ * - body: Email body content (rendered from email.html.twig).
+ * - is_html: True if generating HTML output, false for plain text.
+ * - subject: Email subject.
+ * - type: Email type (e.g., 'ecosistema_jaraba_core').
+ * - sub_type: Email sub-type (e.g., 'user_welcome').
+ * - attributes: HTML attributes for the top-level email element.
+ * - logo_url: Absolute URL to the theme logo (from theme settings).
+ * - site_name: Site name from system.site config.
+ * - site_slogan: Site slogan from system.site config.
+ * - color_corporate: Corporate color hex from theme settings.
+ * - color_primary: Primary/accent color hex from theme settings.
+ * - footer_copyright: Copyright text from theme settings.
+ * - footer_powered_text: "Powered by" text from theme settings.
+ *
+ * @see ecosistema_jaraba_theme_preprocess_email_wrap()
+ * @ingroup themeable
+ */
+#}
+{%
+  set classes = [
+    'email-type-' ~ type|clean_class,
+    'email-sub-type-' ~ sub_type|clean_class,
+  ]
+%}
+
+{% if is_html %}
+{% set _site_name = site_name|default('Jaraba') %}
+{% set _color_corporate = color_corporate|default('#233D63') %}
+{% set _color_primary = color_primary|default('#FF8C42') %}
+{% set _footer_copyright = footer_copyright|default('') %}
+{% set _footer_powered = footer_powered_text|default('Jaraba Impact Platform') %}
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>{{ subject }}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; width: 100%; word-spacing: normal; background-color: #F0F2F5; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  {# Outer wrapper table for background color #}
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F0F2F5;">
+    <tr>
+      <td style="padding: 40px 20px;" align="center">
+        {# Inner container: 600px max-width card #}
+        <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+
+          {# ═══ BRANDED HEADER WITH LOGO ═══ #}
+          <tr>
+            <td style="background: linear-gradient(135deg, {{ _color_corporate }} 0%, #1a2d4a 50%, {{ _color_corporate }} 100%); padding: 40px 40px 32px 40px; text-align: center;">
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
+                <tr>
+                  {# Logo con fallback: fondo con letra + imagen encima. Si la imagen no carga, se ve la letra. #}
+                  <td style="padding-right: 12px; vertical-align: middle;">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, {{ _color_primary }}, #FF6B1A); border-radius: 10px; text-align: center; line-height: 44px; font-size: 22px; font-weight: 700; color: #FFFFFF; font-family: 'Outfit', Arial, sans-serif; overflow: hidden;">
+                      {% if logo_url %}
+                      <img src="{{ logo_url }}" alt="{{ _site_name|first|upper }}" width="44" height="44" style="display: block; width: 44px; height: 44px; border-radius: 10px; border: 0;" />
+                      {% else %}
+                      {{ _site_name|first|upper }}
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td style="vertical-align: middle;">
+                    <span style="font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 26px; font-weight: 700; color: #FFFFFF; letter-spacing: -0.5px;">{{ _site_name }}</span>
+                  </td>
+                </tr>
+              </table>
+              {% if site_slogan %}
+              <p style="margin: 14px 0 0 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: rgba(255,255,255,0.70); letter-spacing: 0.3px;">{{ site_slogan }}</p>
+              {% endif %}
+            </td>
+          </tr>
+
+          {# ═══ EMAIL BODY CONTENT ═══ #}
+          <tr>
+            <td style="background-color: #FFFFFF; padding: 32px 40px;"{{ attributes.addClass(classes) }}>
+              {{ body }}
+            </td>
+          </tr>
+
+          {# ═══ BRANDED FOOTER ═══ #}
+          <tr>
+            <td style="background-color: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 28px 40px; text-align: center;">
+              <p style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #64748B; line-height: 1.5;">
+                {% trans %}Si tienes preguntas, responde a este correo &mdash; nuestro equipo est&aacute; para ayudarte.{% endtrans %}
+              </p>
+              <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #94A3B8;">
+                {% if _footer_copyright %}
+                  {{ _footer_copyright|replace({'[year]': 'now'|date('Y')}) }}
+                {% else %}
+                  &copy; {{ 'now'|date('Y') }} {{ _site_name }}. {% trans %}Todos los derechos reservados.{% endtrans %}
+                {% endif %}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+        {# Powered by footer (outside the card) #}
+        <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; width: 100%;">
+          <tr>
+            <td style="padding: 20px 0; text-align: center;">
+              <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #94A3B8; letter-spacing: 0.5px;">
+                Powered by <strong style="color: #64748B;">{{ _footer_powered }}</strong>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+{% else %}
+{{ body }}
+{% endif %}

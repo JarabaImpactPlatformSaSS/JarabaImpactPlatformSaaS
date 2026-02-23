@@ -1,0 +1,60 @@
+vertical_id: emprendimiento
+label: 'Emprendimiento'
+max_inactivity_days: 30
+health_score_weights:
+  engagement: 30
+  adoption: 30
+  satisfaction: 15
+  support: 15
+  growth: 10
+seasonality_calendar:
+  - { month: 1, risk_level: low, label: 'Propositos / nuevos proyectos', adjustment: -0.10 }
+  - { month: 2, risk_level: low, label: 'Convocatorias subvenciones Q1', adjustment: -0.10 }
+  - { month: 3, risk_level: low, label: 'Aceleradoras spring batch', adjustment: -0.05 }
+  - { month: 4, risk_level: medium, label: 'Desarrollo proyectos', adjustment: 0.0 }
+  - { month: 5, risk_level: medium, label: 'Evaluacion progreso', adjustment: 0.05 }
+  - { month: 6, risk_level: medium, label: 'Pre-verano / demo days', adjustment: 0.0 }
+  - { month: 7, risk_level: high, label: 'Vacaciones - abandono proyectos', adjustment: 0.15 }
+  - { month: 8, risk_level: high, label: 'Agosto - maxima desercion', adjustment: 0.20 }
+  - { month: 9, risk_level: low, label: 'Reactivacion / fall batch', adjustment: -0.10 }
+  - { month: 10, risk_level: low, label: 'Convocatorias Q4', adjustment: -0.10 }
+  - { month: 11, risk_level: medium, label: 'Cierre proyectos anuales', adjustment: 0.05 }
+  - { month: 12, risk_level: medium, label: 'Planificacion siguiente ano', adjustment: 0.05 }
+churn_risk_signals:
+  - { signal_id: bmc_stale_60d, metric: bmc_last_updated_days, operator: '>', threshold: 60, lookback_days: 0, weight: 0.30, description: 'Business Model Canvas sin actualizar en 60 dias' }
+  - { signal_id: no_mentoring_30d, metric: mentoring_sessions, operator: '==', threshold: 0, lookback_days: 30, weight: 0.25, description: 'Sin sesiones de mentoria en 30 dias' }
+  - { signal_id: no_milestones_45d, metric: milestones_completed, operator: '==', threshold: 0, lookback_days: 45, weight: 0.25, description: 'Sin hitos completados en 45 dias' }
+  - { signal_id: no_login_21d, metric: last_login_days, operator: '>', threshold: 21, lookback_days: 21, weight: 0.20, description: 'Sin login en 21 dias' }
+critical_features:
+  - bmc_canvas
+  - mentoring_platform
+  - milestone_tracker
+  - financial_projections
+  - pitch_builder
+reengagement_triggers:
+  - { trigger: stale_project, message_template: project_checkup, delay_days: 0 }
+  - { trigger: new_funding_round, message_template: funding_alert, delay_days: 0 }
+  - { trigger: mentor_available, message_template: mentor_matching, delay_days: 2 }
+upsell_signals:
+  - { signal: mvp_phase_reached, recommended_plan: growth_pack, message: 'Tu MVP esta listo - acelera con el Growth Pack' }
+  - { signal: funding_needed, recommended_plan: investor_connect, message: 'Conecta con inversores de nuestro ecosistema' }
+seasonal_offers:
+  - { months: [1, 2], offer_type: new_year_launch, description: 'Lanzamiento ano nuevo - descuento aceleracion' }
+  - { months: [9, 10], offer_type: fall_accelerator, description: 'Batch de otono - plazas limitadas' }
+expected_usage_pattern:
+  1: high
+  2: high
+  3: high
+  4: medium
+  5: medium
+  6: medium
+  7: low
+  8: low
+  9: high
+  10: high
+  11: medium
+  12: medium
+playbook_overrides:
+  health_drop: 6
+  churn_risk: 11
+  expansion: 16

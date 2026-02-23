@@ -20,6 +20,7 @@
 <section
   class="jaraba-hero jaraba-hero--fullscreen jaraba-block"
   data-block-type="hero_fullscreen"
+         aria-label="{{ title|default('Hero Fullscreen') }}"
   style="
     --hero-overlay-opacity: {{ (content.overlay_opacity|default(50)) / 100 }};
     {% if content.background_image %}

@@ -5,18 +5,20 @@ namespace Drupal\commerce_order\Hook;
 use Drupal\commerce\ConfigurableFieldManagerInterface;
 use Drupal\commerce_order\AddressBookInterface;
 use Drupal\commerce_order\Entity\CustomerProfile;
+use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\commerce_order\Entity\OrderTypeInterface;
 use Drupal\commerce_order\Form\DashboardMetricsForm;
 use Drupal\commerce_order\Form\ProfileAddressBookDeleteForm;
 use Drupal\commerce_order\Form\ProfileAddressBookForm;
 use Drupal\commerce_order\Plugin\Field\FieldFormatter\PriceCalculatedFormatter;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -25,6 +27,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\field\FieldStorageConfigInterface;
 use Drupal\profile\Entity\ProfileType;
 use Drupal\profile\Entity\ProfileTypeInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireServiceClosure;
 
 /**
  * Hook implementations for Commerce Order.
@@ -44,7 +47,7 @@ class CommerceOrderHooks {
    *   The config factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
-   * @param \Drupal\Core\Form\FormBuilderInterface $formBuilder
+   * @param \Closure $formBuilder
    *   The form builder.
    * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
    *   The route match.
@@ -54,7 +57,8 @@ class CommerceOrderHooks {
     protected readonly ConfigurableFieldManagerInterface $configurableFieldManager,
     protected readonly ConfigFactoryInterface $configFactory,
     protected readonly EntityTypeManagerInterface $entityTypeManager,
-    protected readonly FormBuilderInterface $formBuilder,
+    #[AutowireServiceClosure('form_builder')]
+    protected \Closure $formBuilder,
     protected readonly RouteMatchInterface $routeMatch,
   ) {}
 
@@ -200,7 +204,9 @@ class CommerceOrderHooks {
    */
   #[Hook('commerce_dashboard_page_build_alter')]
   public function commerceDashboardPageBuildAlter(&$build): void {
-    $form = $this->formBuilder->getForm(DashboardMetricsForm::class);
+    /** @var \Drupal\Core\Form\FormBuilderInterface $form_builder */
+    $form_builder = ($this->formBuilder)();
+    $form = $form_builder->getForm(DashboardMetricsForm::class);
     // If all periods are disabled, skip rendering the form.
     if (isset($form['periods'])) {
       $build['metrics_form'] = $form;
@@ -351,7 +357,14 @@ class CommerceOrderHooks {
    */
   #[Hook('entity_operation_alter')]
   public function entityOperationAlter(array &$operations, EntityInterface $entity): void {
-    if ($entity->getEntityTypeId() == 'field_config') {
+    if ($entity->getEntityTypeId() === 'commerce_order') {
+      $order_type = $this->entityTypeManager->getStorage('commerce_order_type')->load($entity->bundle());
+      if ($order_type instanceof OrderTypeInterface &&
+        !$order_type->shouldShowOrderEditLinks()) {
+        unset($operations['edit']);
+      }
+    }
+    if ($entity->getEntityTypeId() === 'field_config') {
       /** @var \Drupal\Core\Field\FieldConfigInterface $entity */
       if ($entity->getTargetEntityTypeId() == 'profile' && $entity->getName() == 'address') {
         unset($operations['storage-settings']);
@@ -380,6 +393,30 @@ class CommerceOrderHooks {
         // Available countries are taken from the store.
         $form['settings']['available_countries']['#access'] = FALSE;
       }
+    }
+  }
+
+  /**
+   * Implements hook_menu_local_tasks_alter().
+   *
+   * Hides the "Edit" tab for orders.
+   */
+  #[Hook('menu_local_tasks_alter')]
+  public function menuLocalTasksAlter(&$data, $route_name, RefinableCacheableDependencyInterface &$cacheability): void {
+    if (!isset($data['tabs'][0]['entity.entity_tasks:entity.commerce_order.edit_form'])) {
+      return;
+    }
+    $order = $this->routeMatch->getParameter('commerce_order');
+    if (is_null($order)) {
+      return;
+    }
+    if (!($order instanceof OrderInterface)) {
+      $order = $this->entityTypeManager->getStorage('commerce_order')->load($order);
+    }
+    $order_type = $this->entityTypeManager->getStorage('commerce_order_type')->load($order->bundle());
+    if ($order_type instanceof OrderTypeInterface &&
+      !$order_type->shouldShowOrderEditLinks()) {
+      unset($data['tabs'][0]['entity.entity_tasks:entity.commerce_order.edit_form']);
     }
   }
 

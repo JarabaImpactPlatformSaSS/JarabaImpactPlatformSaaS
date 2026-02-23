@@ -73,7 +73,7 @@ jaraba_copilot_v2.api.chat_stream:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # API Endpoints
 jaraba_copilot_v2.api.chat:
@@ -83,7 +83,7 @@ jaraba_copilot_v2.api.chat:
   methods: [POST]
   requirements:
     _permission: 'access copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     _format: 'json'
 
 # Endpoint público para usuarios anónimos (rate limited)

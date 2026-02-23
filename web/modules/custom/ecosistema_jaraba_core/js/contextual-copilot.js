@@ -156,6 +156,25 @@
         const conversationHistory = [];
         const MAX_HISTORY = 6; // Últimos 6 mensajes (3 turnos user/assistant)
 
+        // CSRF token cache for authenticated requests.
+        let csrfTokenCache = null;
+
+        /**
+         * Obtiene el CSRF token de Drupal para peticiones autenticadas.
+         * @returns {Promise<string>} Token CSRF.
+         */
+        function getCsrfToken() {
+          if (csrfTokenCache) {
+            return Promise.resolve(csrfTokenCache);
+          }
+          return fetch(Drupal.url('session/token'))
+            .then(function (resp) { return resp.text(); })
+            .then(function (token) {
+              csrfTokenCache = token;
+              return token;
+            });
+        }
+
         function sendMessage() {
           const text = input.value.trim();
           if (!text) return;
@@ -180,26 +199,40 @@
 
           // Determine which endpoint to use based on authentication
           const isAuthenticated = drupalSettings.user && drupalSettings.user.uid > 0;
-          const endpoint = isAuthenticated
-            ? '/api/v1/copilot/chat'
-            : '/api/v1/public-copilot/chat';
 
-          // Call real API with conversation history for context
-          fetch(endpoint, {
-            method: 'POST',
-            headers: {
+          const payload = JSON.stringify({
+            message: text,
+            history: conversationHistory.slice(0, -1),
+            context: {
+              current_page: window.location.pathname,
+              avatar: avatarType,
+              agent: agentContext,
+            },
+          });
+
+          // Authenticated users need CSRF token; public endpoint does not.
+          const tokenPromise = isAuthenticated
+            ? getCsrfToken()
+            : Promise.resolve(null);
+
+          tokenPromise.then(function (csrfToken) {
+            const endpoint = isAuthenticated
+              ? '/api/v1/copilot/chat?_format=json'
+              : '/api/v1/public-copilot/chat?_format=json';
+
+            const headers = {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-              message: text,
-              history: conversationHistory.slice(0, -1), // Enviar historial previo (sin el mensaje actual)
-              context: {
-                current_page: window.location.pathname,
-                avatar: avatarType,
-                agent: agentContext,
-              },
-            }),
+            };
+            if (csrfToken) {
+              headers['X-CSRF-Token'] = csrfToken;
+            }
+
+            return fetch(endpoint, {
+              method: 'POST',
+              headers: headers,
+              body: payload,
+            });
           })
             .then(response => response.json())
             .then(data => {

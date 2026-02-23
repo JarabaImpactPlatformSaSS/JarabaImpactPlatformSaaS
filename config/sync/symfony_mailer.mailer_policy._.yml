@@ -12,4 +12,4 @@ configuration:
     plain: false
     swiftmailer: false
   email_theme:
-    theme: ped
+    theme: ecosistema_jaraba_theme

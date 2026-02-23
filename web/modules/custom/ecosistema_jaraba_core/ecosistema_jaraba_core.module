@@ -845,6 +845,38 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = t('El equipo de Jaraba Impact Platform');
       break;
 
+    // =========================================================================
+    // USER WELCOME EMAIL — World-Class HTML (inline CSS)
+    // =========================================================================
+    case 'user_welcome':
+      $account = $params['account'] ?? NULL;
+      $avatarType = $params['avatar'] ?? 'pending';
+      $displayName = $params['display_name'] ?? ($account ? $account->getDisplayName() : 'Usuario');
+
+      // Avatar-specific content map.
+      $avatarConfig = _ecosistema_jaraba_core_get_avatar_email_config($avatarType);
+
+      // Build the base URL for CTA links.
+      $baseUrl = \Drupal::request()->getSchemeAndHttpHost();
+      $ctaUrl = $baseUrl . $avatarConfig['cta_url'];
+
+      // Set subject.
+      $message['subject'] = '¡Bienvenido/a a Jaraba! ' . $avatarConfig['subject_suffix'];
+
+      // Set headers for HTML.
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+
+      // Build HTML body with inline CSS.
+      $html = _ecosistema_jaraba_core_build_welcome_email_html(
+        $displayName,
+        $avatarConfig,
+        $ctaUrl,
+        $account ? $account->getEmail() : ''
+      );
+
+      $message['body'][] = \Drupal\Core\Render\Markup::create($html);
+      break;
+
     // Email de confirmación de downgrade
     case 'reverse_trial_downgraded':
       $message['subject'] = t('📋 Tu cuenta ha cambiado a @plan - @tenant', [
@@ -993,70 +1025,6 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = '';
       $message['body'][] = '---';
       $message['body'][] = t('Sistema de monitorización automática - Jaraba Impact Platform');
-      break;
-
-    // =========================================================================
-    // USER WELCOME EMAIL
-    // =========================================================================
-    case 'user_welcome':
-      $account = $params['account'];
-      $avatar = $params['avatar'] ?? 'pending';
-
-      $message['subject'] = t('🚀 ¡Bienvenido a @site, @name!', [
-        '@site' => \Drupal::config('system.site')->get('name'),
-        '@name' => $account->getDisplayName(),
-      ]);
-
-      $message['body'][] = t('Hola @name,', [
-        '@name' => $account->getDisplayName(),
-      ]);
-
-      $message['body'][] = t('¡Tu cuenta en @site ha sido creada exitosamente!', [
-        '@site' => \Drupal::config('system.site')->get('name'),
-      ]);
-
-      // Ventajas personalizadas por avatar.
-      $benefits = match ($avatar) {
-        'jobseeker' => [
-          t('📊 Diagnóstico de empleabilidad personalizado con IA'),
-          t('🎯 Plan de carrera y mapa de competencias'),
-          t('📚 Formación y certificaciones recomendadas'),
-          t('🤝 Red de contactos profesionales'),
-        ],
-        'entrepreneur' => [
-          t('💡 Diagnóstico de viabilidad de tu idea de negocio'),
-          t('📈 Plan de negocio guiado paso a paso'),
-          t('🏗️ Herramientas de gestión empresarial'),
-          t('💰 Acceso a oportunidades de financiación'),
-        ],
-        'farmer' => [
-          t('🌱 Dashboard agropecuario personalizado'),
-          t('📊 Análisis de mercado y precios'),
-          t('🤝 Red de productores y compradores'),
-          t('📋 Gestión de cultivos y parcelas'),
-        ],
-        default => [
-          t('📊 Herramientas de diagnóstico con IA'),
-          t('🎯 Plan personalizado según tu perfil'),
-          t('📚 Recursos y formación'),
-          t('🤝 Comunidad de impacto'),
-        ],
-      };
-
-      $message['body'][] = t('¿Qué puedes hacer en la plataforma?');
-      foreach ($benefits as $benefit) {
-        $message['body'][] = '  • ' . $benefit;
-      }
-
-      $message['body'][] = '';
-      $message['body'][] = t('Inicia sesión y explora: @url', [
-        '@url' => \Drupal::request()->getSchemeAndHttpHost() . '/user/login',
-      ]);
-
-      $message['body'][] = '---';
-      $message['body'][] = t('El equipo de @site', [
-        '@site' => \Drupal::config('system.site')->get('name'),
-      ]);
       break;
   }
 }
@@ -2243,6 +2211,63 @@ function _ecosistema_jaraba_core_cron_health_check() {
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter() for user_register_form.
+ *
+ * USR-003: Añade submit handler para mostrar un mensaje de confirmación
+ * premium post-registro con instrucciones del proceso de verificación.
+ */
+function ecosistema_jaraba_core_form_user_register_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+  // Añadir nuestro submit handler DESPUÉS de los default de Drupal.
+  $form['actions']['submit']['#submit'][] = '_ecosistema_jaraba_core_register_message_submit';
+}
+
+/**
+ * Submit handler: muestra mensaje de confirmación post-registro.
+ *
+ * Reemplaza el mensaje genérico de Drupal con uno branded que explica
+ * los pasos del proceso de creación de la cuenta.
+ */
+function _ecosistema_jaraba_core_register_message_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+  $messenger = \Drupal::messenger();
+
+  // Eliminar mensajes genéricos de Drupal para reemplazarlos.
+  $messenger->deleteByType('status');
+
+  // Obtener el email del formulario para mostrarlo en el mensaje.
+  $email = $form_state->getValue('mail') ?? '';
+
+  // Construir mensaje HTML premium.
+  $message = '<div style="max-width: 540px;">';
+  $message .= '<h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #1A1A2E;">📬 ¡Solicitud de cuenta recibida!</h3>';
+  $message .= '<p style="margin: 0 0 16px 0; font-size: 15px; color: #334155; line-height: 1.5;">';
+  $message .= 'Hemos enviado un correo de verificación a <strong style="color: #233D63;">' . \Drupal\Component\Utility\Html::escape($email) . '</strong>. ';
+  $message .= 'Sigue estos pasos para activar tu cuenta:</p>';
+  $message .= '<div style="background: #F8FAFC; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px;">';
+  $message .= '<div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">';
+  $message .= '<span style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; background: linear-gradient(135deg, #FF8C42, #FF6B1A); border-radius: 8px; color: #fff; font-weight: 700; font-size: 13px;">1</span>';
+  $message .= '<span style="font-size: 14px; color: #334155; line-height: 1.5;">Abre tu bandeja de correo electrónico</span>';
+  $message .= '</div>';
+  $message .= '<div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">';
+  $message .= '<span style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; background: linear-gradient(135deg, #FF8C42, #FF6B1A); border-radius: 8px; color: #fff; font-weight: 700; font-size: 13px;">2</span>';
+  $message .= '<span style="font-size: 14px; color: #334155; line-height: 1.5;">Busca el correo de <strong>Jaraba</strong> (revisa spam si no lo encuentras)</span>';
+  $message .= '</div>';
+  $message .= '<div style="display: flex; align-items: flex-start; gap: 12px;">';
+  $message .= '<span style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; background: linear-gradient(135deg, #FF8C42, #FF6B1A); border-radius: 8px; color: #fff; font-weight: 700; font-size: 13px;">3</span>';
+  $message .= '<span style="font-size: 14px; color: #334155; line-height: 1.5;">Haz clic en el enlace de verificación para activar tu cuenta</span>';
+  $message .= '</div>';
+  $message .= '</div>';
+  $message .= '<p style="margin: 0; font-size: 13px; color: #64748B;">El enlace de verificación es válido por 24 horas. Si no recibes el correo, <a href="/es/user/login" style="color: #FF8C42; text-decoration: underline;">contacta con nuestro equipo</a>.</p>';
+  $message .= '</div>';
+
+  $messenger->addStatus(\Drupal\Core\Render\Markup::create($message));
+
+  // Redirigir a la página de login para que el mensaje se muestre
+  // en el template de auth (que ahora renderiza clean_messages).
+  // Drupal por defecto redirige a <front> donde el mensaje podría perderse.
+  $form_state->setRedirect('user.login');
+}
+
+/**
  * Implements hook_user_insert().
  *
  * USR-001: Flujo post-registro con deteccion de avatar y vinculacion
@@ -2370,34 +2395,43 @@ function ecosistema_jaraba_core_user_login(\Drupal\user\UserInterface $account):
       }
     }
 
-    // 2. Mapa de redirección por avatar.
-    $redirectMap = [
-      'jobseeker' => '/career-dashboard',
-      'entrepreneur' => '/diagnostic-wizard',
-      'farmer' => '/agro-dashboard',
-      'merchant' => '/comercio-dashboard',
-    ];
-    $destination = $redirectMap[$avatarType] ?? '/career-dashboard';
+    // 2. Redirección por avatar — SOLO si NO viene del enlace de uso único.
+    // Durante el reset, Drupal debe llevar al usuario a /user/{uid}/edit
+    // para que establezca su contraseña. Tras guardarla, el form_alter
+    // (ver ecosistema_jaraba_core_form_user_form_alter) lo redirige.
+    $route = \Drupal::routeMatch()->getRouteName();
+    $isPasswordReset = ($route === 'user.reset.login' || $route === 'user.reset.form');
 
-    // Establecer destino post-login (Drupal respeta ?destination).
-    $request = \Drupal::requestStack()->getCurrentRequest();
-    if ($request && !$request->query->has('destination')) {
-      $request->query->set('destination', $destination);
+    if (!$isPasswordReset) {
+      $redirectMap = [
+        'jobseeker' => '/empleabilidad',
+        'entrepreneur' => '/diagnostic-wizard',
+        'farmer' => '/agro-dashboard',
+        'merchant' => '/comercio-dashboard',
+      ];
+      $destination = $redirectMap[$avatarType] ?? '/empleabilidad';
+
+      $request = \Drupal::requestStack()->getCurrentRequest();
+      if ($request && !$request->query->has('destination')) {
+        $request->query->set('destination', $destination);
+      }
     }
 
-    // 3. Enviar email de bienvenida.
+    // 3. Enviar email de bienvenida SIEMPRE en primer login.
     $mailManager = \Drupal::service('plugin.manager.mail');
+    $displayName = $account->getDisplayName() ?: $account->getAccountName();
     $params = [
       'account' => $account,
       'avatar' => $avatarType,
+      'display_name' => $displayName,
     ];
     $langcode = $account->getPreferredLangcode();
     $mailManager->mail('ecosistema_jaraba_core', 'user_welcome', $account->getEmail(), $langcode, $params);
 
-    $logger->info('USR-002: Primer login usuario @uid. Avatar: @avatar. Redirect: @dest. Welcome email enviado.', [
+    $logger->info('USR-002: Primer login usuario @uid. Avatar: @avatar. Reset: @reset. Welcome email enviado.', [
       '@uid' => $account->id(),
       '@avatar' => $avatarType,
-      '@dest' => $destination,
+      '@reset' => $isPasswordReset ? 'sí' : 'no',
     ]);
   }
   catch (\Exception $e) {
@@ -2405,6 +2439,182 @@ function ecosistema_jaraba_core_user_login(\Drupal\user\UserInterface $account):
       '@error' => $e->getMessage(),
     ]);
   }
+}
+
+// Helper functions for world-class HTML emails are below.
+
+/**
+ * Returns avatar-specific email configuration.
+ *
+ * @param string $avatarType
+ *   The detected avatar type.
+ *
+ * @return array
+ *   Configuration array with keys: label, subject_suffix, cta_text,
+ *   cta_url, accent_color, benefits.
+ */
+function _ecosistema_jaraba_core_get_avatar_email_config(string $avatarType): array {
+  $configs = [
+    'jobseeker' => [
+      'label' => 'Buscador de Empleo',
+      'subject_suffix' => 'Tu carrera profesional empieza aquí',
+      'cta_text' => 'Ir a mi Panel de Empleo →',
+      'cta_url' => '/empleabilidad',
+      'accent_color' => '#00A9A5',
+      'benefits' => [
+        ['icon' => '📄', 'title' => 'CV Inteligente con IA', 'desc' => 'Genera un CV ATS-ready optimizado para las ofertas que te interesan.'],
+        ['icon' => '🎯', 'title' => 'Matching Automático', 'desc' => 'Conectamos tu perfil con ofertas de empleo alineadas a tus competencias.'],
+        ['icon' => '🎓', 'title' => 'Cursos Certificados', 'desc' => 'Accede a formación gratuita para cerrar brechas de empleabilidad.'],
+      ],
+    ],
+    'entrepreneur' => [
+      'label' => 'Emprendedor/a',
+      'subject_suffix' => 'Tu negocio merece crecer',
+      'cta_text' => 'Comenzar mi Diagnóstico →',
+      'cta_url' => '/diagnostic-wizard',
+      'accent_color' => '#FF8C42',
+      'benefits' => [
+        ['icon' => '🔍', 'title' => 'Diagnóstico Empresarial IA', 'desc' => 'Identifica fortalezas y áreas de mejora de tu negocio en minutos.'],
+        ['icon' => '📋', 'title' => 'Plan de Acción Personalizado', 'desc' => 'Recibe recomendaciones concretas para escalar tu emprendimiento.'],
+        ['icon' => '🤝', 'title' => 'Red de Mentores', 'desc' => 'Conecta con expertos que te guiarán en tu proceso de crecimiento.'],
+      ],
+    ],
+    'farmer' => [
+      'label' => 'Agricultor/a',
+      'subject_suffix' => 'Tu campo conectado al mercado',
+      'cta_text' => 'Ir a AgroConecta →',
+      'cta_url' => '/agro-dashboard',
+      'accent_color' => '#556B2F',
+      'benefits' => [
+        ['icon' => '📊', 'title' => 'Precios del Mercado en Tiempo Real', 'desc' => 'Consulta precios actualizados para tomar mejores decisiones de venta.'],
+        ['icon' => '🌤️', 'title' => 'Alertas Climáticas', 'desc' => 'Recibe pronósticos y alertas para proteger tus cultivos.'],
+        ['icon' => '🛒', 'title' => 'Conexión Directa con Compradores', 'desc' => 'Vende tus productos sin intermediarios a través de AgroConecta.'],
+      ],
+    ],
+    'merchant' => [
+      'label' => 'Comerciante',
+      'subject_suffix' => 'Digitaliza tu negocio hoy',
+      'cta_text' => 'Ir a mi Tienda →',
+      'cta_url' => '/comercio-dashboard',
+      'accent_color' => '#FF8C42',
+      'benefits' => [
+        ['icon' => '🏪', 'title' => 'Tienda Online en Minutos', 'desc' => 'Publica tus productos y empieza a vender en línea de inmediato.'],
+        ['icon' => '🧾', 'title' => 'Facturación Electrónica', 'desc' => 'Genera facturas legales automáticas con cada venta.'],
+        ['icon' => '📦', 'title' => 'Gestión de Inventario', 'desc' => 'Controla tu stock y recibe alertas cuando sea necesario reabastecer.'],
+      ],
+    ],
+  ];
+
+  return $configs[$avatarType] ?? [
+    'label' => 'Usuario/a',
+    'subject_suffix' => 'Tu ecosistema de impacto te espera',
+    'cta_text' => 'Explorar la Plataforma →',
+    'cta_url' => '/empleabilidad',
+    'accent_color' => '#00A9A5',
+    'benefits' => [
+      ['icon' => '✨', 'title' => 'Empleabilidad', 'desc' => 'CV inteligente, matching de empleo y cursos para tu carrera profesional.'],
+      ['icon' => '🚀', 'title' => 'Emprendimiento', 'desc' => 'Diagnóstico empresarial, planes de acción y red de mentores expertos.'],
+      ['icon' => '🌱', 'title' => 'AgroConecta', 'desc' => 'Precios de mercado, alertas climáticas y venta directa para el campo.'],
+      ['icon' => '🏪', 'title' => 'ComercioConecta', 'desc' => 'Digitaliza tu tienda local. Catálogo online, gestión de pedidos y pagos integrados.'],
+      ['icon' => '🔧', 'title' => 'ServiciosConecta', 'desc' => 'Gestiona citas y clientes. Agenda online, facturación y fidelización para profesionales.'],
+      ['icon' => '⚖️', 'title' => 'JarabaLex', 'desc' => 'Para abogados, gestores y asesores. Gestión de expedientes, plazos y copiloto jurídico IA.'],
+    ],
+  ];
+}
+
+/**
+ * Builds the HTML body for the welcome email.
+ *
+ * Uses table-based layout with inline styles for maximum email client
+ * compatibility (Gmail, Outlook, Apple Mail, Yahoo).
+ *
+ * @param string $displayName
+ *   The user display name.
+ * @param array $config
+ *   Avatar-specific email config from _get_avatar_email_config().
+ * @param string $ctaUrl
+ *   Full absolute URL for the CTA button.
+ * @param string $email
+ *   User's email address.
+ *
+ * @return string
+ *   Complete HTML string for the email body.
+ */
+function _ecosistema_jaraba_core_build_welcome_email_html(
+  string $displayName,
+  array $config,
+  string $ctaUrl,
+  string $email
+): string {
+  // Escape user-provided values to prevent XSS in HTML email.
+  $displayName = \Drupal\Component\Utility\Html::escape($displayName);
+  $email = \Drupal\Component\Utility\Html::escape($email);
+  $accentColor = $config['accent_color'];
+  $benefitsHtml = '';
+
+  foreach ($config['benefits'] as $benefit) {
+    $benefitsHtml .= <<<BENEFIT
+    <tr>
+      <td style="padding: 0 0 16px 0;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #F8FAFC; border-radius: 12px; border-left: 4px solid {$accentColor};">
+          <tr>
+            <td style="padding: 20px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td width="48" style="vertical-align: top; padding-right: 16px;">
+                    <div style="font-size: 28px; line-height: 1; width: 44px; height: 44px; background-color: #FFFFFF; border-radius: 10px; text-align: center; padding-top: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">{$benefit['icon']}</div>
+                  </td>
+                  <td style="vertical-align: top;">
+                    <p style="margin: 0 0 4px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #1A1A2E; line-height: 1.3;">{$benefit['title']}</p>
+                    <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #64748B; line-height: 1.5;">{$benefit['desc']}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+BENEFIT;
+  }
+
+  // CTA button color from theme config.
+  $themeSettings = \Drupal::config('ecosistema_jaraba_theme.settings');
+  $colorPrimary = $themeSettings->get('color_primary') ?? '#FF8C42';
+
+  // Translatable strings.
+  $t = \Drupal::translation();
+  $greeting = $t->translate('¡Bienvenido/a, @name!', ['@name' => $displayName]);
+  $accountReady = $t->translate('Tu cuenta como <strong style="color: @color;">@label</strong> está lista. Esto es lo que puedes hacer ahora:', ['@color' => $accentColor, '@label' => $config['label']]);
+
+  // Body content only — header, footer and wrapper are provided by email-wrap.html.twig.
+  return <<<HTML
+<!-- Greeting -->
+<h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">{$greeting}</h1>
+<p style="margin: 0 0 32px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+  {$accountReady}
+</p>
+
+<!-- Benefits -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+  {$benefitsHtml}
+</table>
+
+<!-- CTA Button -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="padding-top: 16px;">
+  <tr>
+    <td style="text-align: center; padding: 8px 0;">
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 0 auto;">
+        <tr>
+          <td style="background: linear-gradient(135deg, {$colorPrimary} 0%, #FF6B1A 100%); border-radius: 12px; box-shadow: 0 4px 16px rgba(255,140,66,0.35);">
+            <a href="{$ctaUrl}" target="_blank" style="display: inline-block; padding: 16px 48px; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 600; color: #FFFFFF; text-decoration: none; letter-spacing: 0.3px;">{$config['cta_text']}</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+HTML;
 }
 
 // ===========================================================================
@@ -2676,3 +2886,27 @@ function ecosistema_jaraba_core_theme_suggestions_page_alter(array &$suggestions
     $suggestions[] = 'page__fiscal';
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter() for user_form.
+ *
+ * Redirige a /empleabilidad después de que un usuario nuevo establezca
+ * su contraseña tras hacer clic en el enlace de uso único.
+ */
+function ecosistema_jaraba_core_form_user_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id): void {
+  // Solo actuar si el usuario viene del flujo de reset/one-time login.
+  // Drupal almacena 'pass_reset_{uid}' en la sesión hasta que se guarda el form.
+  $account = $form_state->getFormObject()->getEntity();
+  $session = \Drupal::request()->getSession();
+  if ($session && $account && $session->get('pass_reset_' . $account->id())) {
+    $form['actions']['submit']['#submit'][] = '_ecosistema_jaraba_core_password_set_redirect';
+  }
+}
+
+/**
+ * Submit handler: redirige al dashboard tras establecer la contraseña.
+ */
+function _ecosistema_jaraba_core_password_set_redirect(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+  $form_state->setRedirectUrl(\Drupal\Core\Url::fromUserInput('/empleabilidad'));
+}
+

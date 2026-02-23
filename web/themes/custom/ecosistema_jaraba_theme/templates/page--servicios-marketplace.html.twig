@@ -1,19 +1,19 @@
+{#
+/**
+ * @file
+ * page--servicios-marketplace.html.twig — Servicios Marketplace page template.
+ *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
+ * Body classes migradas a preprocess_html:
+ * - page-wrapper--clean, page--servicios, page--servicios-marketplace
+ */
+#}
 {{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-<body{{ attributes.addClass('page-wrapper--clean', 'page--servicios', 'page--servicios-marketplace') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
-
-  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
     theme_settings: theme_settings|default({}),
     logged_in: logged_in|default(false),
     site_name: site_name|default('Jaraba'),
@@ -43,6 +43,3 @@
     is_expanded: false,
   } %}
 
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-</body>
-</html>

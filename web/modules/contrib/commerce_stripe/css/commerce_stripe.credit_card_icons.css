@@ -14,7 +14,7 @@
   margin: 0 10px 10px 0;
   border-radius: 4px;
   background-size: 40px 25px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 1px rgb(0, 0, 0, 0.1);
 }
 
 @media all and (min-width: 851px) {
@@ -42,6 +42,10 @@
   background-image: url(../images/us-bank-account.svg);
 }
 
+.payment-method-icon--paypal {
+  background-image: url(../images/paypal.svg);
+}
+
 .payment-method-icon--amazon_pay {
   background-image: url(../images/amazon-pay.svg);
 }
@@ -64,4 +68,8 @@
 
 .payment-method-icon--wechat_pay {
   background-image: url(../images/wechat_pay.svg);
+}
+
+.payment-method-icon--link {
+  background-image: url(../images/link.svg);
 }

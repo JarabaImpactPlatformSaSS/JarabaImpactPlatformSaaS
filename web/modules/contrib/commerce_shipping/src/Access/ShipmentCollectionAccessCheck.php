@@ -43,8 +43,6 @@ class ShipmentCollectionAccessCheck implements AccessInterface {
     /** @var \Drupal\commerce_order\Entity\OrderTypeInterface $order_type */
     $order_type = $order_type_storage->load($order->bundle());
     $shipment_type_id = $order_type->getThirdPartySetting('commerce_shipping', 'shipment_type');
-    // Check if this is a cart order.
-    $order_is_cart = $order->hasField('cart') && $order->get('cart')->value;
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('commerce_shipment');
 
     // Only allow access if order type has a corresponding shipment type.
@@ -54,7 +52,6 @@ class ShipmentCollectionAccessCheck implements AccessInterface {
     }
 
     return AccessResult::allowedIf($access_control_handler->createAccess($shipment_type_id, $account))
-      ->andIf(AccessResult::allowedIf(!$order_is_cart))
       ->addCacheableDependency($order_type)
       ->addCacheableDependency($order);
   }

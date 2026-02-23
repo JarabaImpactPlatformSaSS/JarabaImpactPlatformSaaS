@@ -25,11 +25,11 @@ class FiscalDashboardController extends ControllerBase implements ContainerInjec
   public function __construct(
     protected FiscalComplianceService $complianceService,
     protected LoggerInterface $logger,
+    protected readonly TenantContextService $tenantContext,
     protected ?object $hashService = NULL,
     protected ?object $faceClient = NULL,
     protected ?object $paymentStatusService = NULL,
     protected ?object $certificateManager = NULL,
-    protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
   ) {}
 
   /**
@@ -58,11 +58,11 @@ class FiscalDashboardController extends ControllerBase implements ContainerInjec
     return new static(
       $container->get('ecosistema_jaraba_core.fiscal_compliance'),
       $container->get('logger.channel.ecosistema_jaraba_core'),
+      $container->get('ecosistema_jaraba_core.tenant_context'),
       $hashService,
       $faceClient,
       $paymentStatusService,
       $certificateManager,
-      $container->get('ecosistema_jaraba_core.tenant_context'), // AUDIT-CONS-N10: Proper DI for tenant context.
     );
   }
 
