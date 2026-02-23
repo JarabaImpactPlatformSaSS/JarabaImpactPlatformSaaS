@@ -109,7 +109,7 @@ function jaraba_heatmap_page_attachments(array &$attachments) {
     'enabled' => TRUE,
     'tenantId' => $tenant_id,
     'sessionId' => $session_id,
-    'endpoint' => '/api/heatmap/collect',
+    'endpoint' => '/api/v1/heatmap/collect',
     'bufferSize' => (int) $config->get('buffer_size') ?: 50,
     'flushInterval' => (int) $config->get('flush_interval') ?: 10000,
     'throttleMove' => (int) $config->get('throttle_move') ?: 100,
