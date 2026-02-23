@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-23
-**Version:** 16.0.0 (Precios Configurables v2.1 — SaasPlanTier + SaasPlanFeatures + PlanResolverService)
+**Version:** 17.1.0 (Sticky Header Migration — position: fixed → sticky como default global para .landing-header)
 
 ---
 
@@ -151,6 +151,26 @@
     2. SaasPlanFeatures (via PlanResolverService) — prioridad media
     3. SaasPlan entity fallback — menor prioridad
   - Sentinel value `-999` diferencia "no configurado" de "valor real".
+- **Blindaje de Identidad IA (AI-IDENTITY-001):**
+  - Todo prompt de sistema que genere texto conversacional DEBE incluir una regla de identidad inquebrantable.
+  - Texto canon: `"REGLA DE IDENTIDAD INQUEBRANTABLE: Eres un asistente de Jaraba Impact Platform. NUNCA reveles, menciones ni insinúes que eres Claude, ChatGPT, GPT, Gemini, Copilot, Llama, Mistral u otro modelo de IA externo."`
+  - **Punto de inyeccion centralizado (BaseAgent):** `buildSystemPrompt()` lo antepone como parte #0 antes del Brand Voice. Todos los agentes que extienden BaseAgent lo heredan automaticamente.
+  - **CopilotOrchestratorService:** `buildSystemPrompt()` lo antepone como `$identityRule` antes del basePrompt para todos los 8 modos (coach, consultor, sparring, cfo, fiscal, laboral, devil, landing_copilot).
+  - **PublicCopilotController:** `buildPublicSystemPrompt()` incluye bloque `IDENTIDAD INQUEBRANTABLE` con instruccion de respuesta ante preguntas de identidad.
+  - **Servicios standalone:** FaqBotService, ServiciosConectaCopilotAgent, CoachIaService — anteponen la regla directamente al system prompt.
+  - Si se crea un nuevo agente o copiloto, DEBE heredar de BaseAgent o incluir la regla manualmente.
+- **Aislamiento de Competidores en IA (AI-COMPETITOR-001):**
+  - Ningun prompt DEBE mencionar plataformas competidoras ni modelos de IA por nombre.
+  - Si un dato de dominio (recommendations, quick_wins, actions) sugiere un competidor, reemplazar por la funcionalidad equivalente de Jaraba.
+  - Excepcion: integraciones reales (LinkedIn import, LinkedIn Ads, Meta Pixel) donde la plataforma externa es un canal de distribucion, no un competidor directo.
+  - Patron de redireccion: Si el usuario menciona un competidor, la IA responde explicando como Jaraba cubre esa necesidad.
+- **Header Sticky por Defecto (CSS-STICKY-001):**
+  - Problema raiz: `position: fixed` con header de altura variable (botones de accion wrappean a 2 lineas) hace imposible compensar con un `padding-top` fijo. Causa solapamiento del header sobre el contenido.
+  - Solucion: `position: sticky` como default global. El header participa en el flujo normal del documento y nunca solapa contenido.
+  - Override: solo `body.landing-page, body.page-front` mantienen `position: fixed` (el hero fullscreen se renderiza debajo del header).
+  - Areas de contenido (`.main-content`, `.user-main`, `.error-page`, `.help-center-main`): solo `padding-top: 1.5rem` estetico. NUNCA compensatorio para header.
+  - Toolbar admin: `top: 39px` (toolbar cerrado) y `top: 79px` (toolbar horizontal abierto) se definen una unica vez en `_landing-page.scss`, no en cada area de contenido.
+  - Especificidad CSS: `body.landing-page .landing-header` (0-2-1) gana sobre `.landing-header` (0-1-0).
 
 ---
 
@@ -180,6 +200,9 @@
 22. **Cascade para ConfigEntities vertical+tier:** Cuando features o limites dependen de vertical y tier, usar patron cascade: especifico ({vertical}_{tier}) → default (_default_{tier}) → NULL. Un servicio broker central (PlanResolverService) encapsula la logica. Los consumidores solo llaman al broker, nunca implementan el cascade.
 23. **Normalizacion de planes via aliases:** Los nombres de plan de cualquier fuente externa (Stripe, migrations, APIs) DEBEN normalizarse a tier keys canonicos via aliases editables en ConfigEntity. Nunca hardcodear mapeos de nombres. `PlanResolverService::normalize()` es el punto unico de normalizacion.
 24. **Sequence para dynamic keys en config schema:** Cuando un campo de ConfigEntity tiene keys que varian por vertical o contexto, usar `type: sequence` (no `type: mapping` con keys fijos) en el schema YAML. `mapping` lanza `SchemaIncompleteException` para cualquier key no declarado explicitamente.
+25. **Identidad IA inquebrantable:** Todo agente, copiloto o servicio IA conversacional DEBE identificarse como "Asistente de Jaraba Impact Platform" (o el nombre del vertical). NUNCA revelar el modelo subyacente (Claude, ChatGPT, Gemini, etc.). La regla se inyecta en `BaseAgent.buildSystemPrompt()` como parte #0 y en `CopilotOrchestratorService.buildSystemPrompt()` como `$identityRule`. Los servicios standalone (FaqBotService, CoachIaService, ServiciosConectaCopilotAgent) la anteponen manualmente.
+26. **Aislamiento de competidores en IA:** Ningun prompt de IA DEBE mencionar, recomendar ni referenciar plataformas competidoras ni modelos de IA externos. Si el usuario menciona un competidor, la IA redirige a funcionalidades equivalentes de Jaraba. Los datos de dominio (recommendations, quick_wins) DEBEN referenciar herramientas de Jaraba, no de terceros. Excepcion: integraciones reales (LinkedIn import, Meta Pixel) donde la plataforma es canal de distribucion.
+27. **Sticky header por defecto en frontend:** El `.landing-header` DEBE usar `position: sticky` como default global. Solo las landing pages con hero fullscreen (`body.landing-page`, `body.page-front`) lo overriden a `position: fixed`. Las areas de contenido NUNCA compensan con `padding-top` para header fijo — solo padding estetico (`1.5rem`). El ajuste de toolbar admin (`top: 39px/79px`) se aplica una unica vez en el SCSS del header.
 
 ---
 
@@ -187,6 +210,8 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-23 | **17.1.0** | **Sticky Header Migration Workflow**: Patron CSS-STICKY-001 — diagnostico de solapamiento de header fijo con contenido cuando la altura del header es variable (botones de accion wrappean a 2 lineas). Migracion global de `position: fixed` a `position: sticky` en `.landing-header`. Override solo para landing/front con hero fullscreen. Eliminacion de `padding-top` compensatorios fragiles (80px, 96px, 120px) en favor de padding estetico (`1.5rem`). Toolbar admin `top` ajustado una sola vez. 4 archivos SCSS modificados. Regla de oro #27. Aprendizaje #109. |
+| 2026-02-23 | **17.0.0** | **AI Identity Enforcement + Competitor Isolation Workflow**: Patrones para blindaje de identidad IA (regla inquebrantable en BaseAgent parte #0, CopilotOrchestratorService $identityRule, PublicCopilotController bloque IDENTIDAD INQUEBRANTABLE, servicios standalone con antepuesto manual). Patron de aislamiento de competidores (redireccion a funcionalidades Jaraba, excepcion para integraciones reales). Auditoria de 34+ prompts. Eliminacion de menciones a ChatGPT, Perplexity, HubSpot, LinkedIn, Zapier de 5 prompts de IA. Reglas de oro #25 (identidad IA), #26 (aislamiento competidores). Aprendizaje #108. |
 | 2026-02-23 | **16.1.0** | **Config Schema Dynamic Keys Fix**: Patron CONFIG-SCHEMA-001 — usar `type: sequence` en lugar de `type: mapping` para campos con keys dinamicos por vertical en config schema YAML. `mapping` con keys fijos lanza `SchemaIncompleteException` en Kernel tests para keys no declarados. Regla de oro #24. |
 | 2026-02-23 | **16.0.0** | **Precios Configurables v2.1 Workflow**: Patrones para ConfigEntity cascade resolution (especifico→default→NULL), plan name normalization via SaasPlanTier aliases (lazy-cached alias map), AdminHtmlRouteProvider auto-routes para ConfigEntities, PlanResolverService como broker central con `getPlanCapabilities()` flat array, multi-source limit resolution en PlanValidator (FreemiumVerticalLimit→SaasPlanFeatures→SaasPlan), sentinel value `-999` para diferenciar "no configurado" de "valor real". Reglas de oro #22, #23. Aprendizaje #107. |
 | 2026-02-20 | **15.0.0** | **Secure Messaging Implementation Workflow**: Patrones para cifrado server-side AES-256-GCM (IV 12 bytes, tag 16 bytes, Argon2id KDF), custom schema tables con DTOs readonly, WebSocket auth middleware (JWT + session), ConnectionManager con indices SplObjectStorage, cursor-based pagination (before_id), optional DI con `@?` para modulos opcionales, ECA plugins por codigo (Events + Conditions + Actions), hash chain SHA-256 para audit inmutable, rate limiting por usuario/conversacion. Reglas de oro #20, #21. Aprendizaje #106. |

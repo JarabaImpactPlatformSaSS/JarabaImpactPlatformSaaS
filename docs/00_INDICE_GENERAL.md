@@ -4,7 +4,25 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-23
-**Versión:** 81.0.0 (Precios Configurables v2.1 Implementado)
+**Versión:** 83.0.0 (Sticky Header Migration — position: fixed → sticky global)
+
+> **🔧 STICKY HEADER MIGRATION: FIXED → STICKY GLOBAL** (2026-02-23)
+> - **Problema:** `.landing-header` con `position: fixed` causa solapamiento sobre contenido cuando la altura del header es variable (botones de accion wrappean a 2 lineas). Un `padding-top` fijo nunca compensa correctamente una altura variable.
+> - **Solucion:** Migrar a `position: sticky` como default global. El header participa en el flujo del documento y nunca solapa contenido.
+> - **Override:** Solo `body.landing-page` y `body.page-front` mantienen `position: fixed` (hero fullscreen).
+> - **4 archivos SCSS modificados:** `_landing-page.scss` (sticky default + fixed override + toolbar top), `_page-premium.scss` (padding 1.5rem), `_error-pages.scss` (padding 1.5rem), `_user-pages.scss` (padding 1.5rem).
+> - **Toolbar admin:** `top: 39px` (cerrado) / `top: 79px` (horizontal abierto) definido una unica vez en `_landing-page.scss`.
+> - **Regla nueva:** CSS-STICKY-001. Regla de oro #27. Aprendizaje #109.
+> - **Directrices v63.0.0, Arquitectura v63.0.0, Flujo v17.1.0, Indice v83.0.0**
+
+> **🛡️ AI IDENTITY ENFORCEMENT + COMPETITOR ISOLATION** (2026-02-23)
+> - **Problema:** El copiloto FAB del landing se identificaba como "Claude" en vez de como Jaraba. Ningun prompt de IA tenia regla de identidad ni prohibia mencionar competidores.
+> - **Regla AI-IDENTITY-001:** Identidad IA inquebrantable — todo agente/copiloto DEBE identificarse como "Asistente de Jaraba Impact Platform". NUNCA revelar modelo subyacente (Claude, ChatGPT, Gemini, etc.).
+> - **Regla AI-COMPETITOR-001:** Aislamiento de competidores — ningun prompt DEBE mencionar ni recomendar plataformas competidoras ni modelos de IA externos.
+> - **Implementacion centralizada:** `BaseAgent.buildSystemPrompt()` inyecta regla como parte #0 (14+ agentes heredan). `CopilotOrchestratorService` antepone `$identityRule` a 8 modos. `PublicCopilotController` incluye bloque IDENTIDAD INQUEBRANTABLE. Servicios standalone (FaqBotService, ServiciosConectaCopilotAgent, CoachIaService) con antepuesto manual.
+> - **Competidores eliminados de prompts:** ChatGPT, Perplexity en AiContentGeneratorService; LinkedIn/Discord en CoachIaService; HubSpot, Zapier en RecommendationEngineService; ChatGPT en DiagnosticWizardController.
+> - **12 archivos modificados.** Reglas de oro #25, #26. Aprendizaje #108.
+> - **Directrices v63.0.0, Arquitectura v63.0.0, Flujo v17.0.0, Indice v82.0.0**
 
 > **💰 PRECIOS CONFIGURABLES v2.1: ARQUITECTURA IMPLEMENTADA** (2026-02-23)
 > - **Objetivo:** Eliminar hardcodeo de capacidades de plan en 3 puntos (QuotaManager, SaasPlan, PlanValidator).
@@ -127,6 +145,8 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **83.0.0** | **Sticky Header Migration:** `.landing-header` migrado de `position: fixed` a `position: sticky` por defecto. Solo `body.landing-page`/`body.page-front` mantienen `fixed`. Eliminados padding-top compensatorios fragiles. Toolbar admin `top: 39px/79px` global. 4 archivos SCSS. Regla CSS-STICKY-001. Regla de oro #27. Aprendizaje #109. |
+| 2026-02-23 | **82.0.0** | **AI Identity Enforcement + Competitor Isolation:** Blindaje de identidad IA en toda la plataforma. Regla inquebrantable en BaseAgent (14+ agentes), CopilotOrchestratorService (8 modos), PublicCopilotController (landing FAB), FaqBotService, ServiciosConectaCopilotAgent, CoachIaService. Eliminadas 5 menciones de competidores en prompts. 12 archivos modificados. Reglas AI-IDENTITY-001, AI-COMPETITOR-001. Reglas de oro #25, #26. Aprendizaje #108. |
 | 2026-02-23 | **81.0.0** | **Precios Configurables v2.1 Implementado:** 2 ConfigEntities (`SaasPlanTier` + `SaasPlanFeatures`), `PlanResolverService` como broker central, 21 seed YAMLs, update hook 9019, integracion en QuotaManagerService + PlanValidator + BillingWebhookController, Drush `jaraba:validate-plans`, 8 contract tests, SCSS `_plan-admin.scss`, body class `page-plan-admin`. Reglas PLAN-CASCADE-001, PLAN-RESOLVER-001. Aprendizaje #107. |
 | 2026-02-23 | **80.0.0** | **Plan de Remediación v1.1 Recalibrado:** Actualización del documento `docs/implementacion/20260223-Plan_Remediacion_Auditoria_Logica_Negocio_Tecnica_SaaS_v1_Codex.md` con integración de contra-auditoría, esfuerzo ajustado a 180-240h, horizonte 60-75 días, repriorización P0 (aislamiento tenant + contrato tenant + billing coherente) y referencias explícitas a specs 07/134/135/148/158/162. |
 | 2026-02-23 | **79.0.0** | **Plan de Remediación Auditoría Lógica/Técnica SaaS:** Nuevo documento en `docs/implementacion/20260223-Plan_Remediacion_Auditoria_Logica_Negocio_Tecnica_SaaS_v1_Codex.md` con 6 workstreams, backlog `REM-*` P0/P1/P2, plan temporal 30-60-90, estrategia de testing Unit+Kernel+Functional, riesgos/dependencias y KPIs de cierre. |
