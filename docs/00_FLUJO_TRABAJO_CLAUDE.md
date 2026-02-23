@@ -123,6 +123,28 @@
   - Limites numericos van como `key => int` (e.g. `max_pages => 25`).
   - Features booleanas van como `feature_key => TRUE` (e.g. `seo_advanced => TRUE`).
   - Features no configuradas NO aparecen en el array (check con `isset()`).
+- **Config Schema para Dynamic Keys (CONFIG-SCHEMA-001):**
+  - En Drupal config schema, `type: mapping` requiere declarar TODOS los keys posibles. Keys no declarados lanzan `SchemaIncompleteException` en Kernel tests.
+  - Para campos con keys dinamicos por vertical/contexto (ej. `limits` con `products`, `photos_per_product`, `commission_pct`), usar `type: sequence` con inner type.
+  - `type: sequence` con `sequence: type: integer` acepta tanto arrays indexados como mapas asociativos con keys arbitrarios string→integer.
+  - Ejemplo correcto:
+    ```yaml
+    limits:
+      type: sequence
+      label: 'Numeric limits per resource'
+      sequence:
+        type: integer
+        label: 'Limit value'
+    ```
+  - Ejemplo incorrecto (falla con keys no declarados):
+    ```yaml
+    limits:
+      type: mapping
+      mapping:
+        max_pages:
+          type: integer
+        # Falta: products, photos_per_product, etc. → SchemaIncompleteException
+    ```
 - **Multi-Source Limit Resolution en PlanValidator:**
   - `resolveEffectiveLimit()` consulta 3 fuentes en cascade de prioridad:
     1. FreemiumVerticalLimit (via UpgradeTriggerService) — mayor prioridad
@@ -157,6 +179,7 @@
 21. **Custom schema + DTO para alto volumen:** Cuando una entidad requiere tipos de columna no soportados por Entity API (MEDIUMBLOB, VARBINARY) o alto volumen de escrituras, usar `hook_schema()` + DTO readonly. El DTO encapsula filas, el servicio maneja CRUD via `\Drupal::database()`.
 22. **Cascade para ConfigEntities vertical+tier:** Cuando features o limites dependen de vertical y tier, usar patron cascade: especifico ({vertical}_{tier}) → default (_default_{tier}) → NULL. Un servicio broker central (PlanResolverService) encapsula la logica. Los consumidores solo llaman al broker, nunca implementan el cascade.
 23. **Normalizacion de planes via aliases:** Los nombres de plan de cualquier fuente externa (Stripe, migrations, APIs) DEBEN normalizarse a tier keys canonicos via aliases editables en ConfigEntity. Nunca hardcodear mapeos de nombres. `PlanResolverService::normalize()` es el punto unico de normalizacion.
+24. **Sequence para dynamic keys en config schema:** Cuando un campo de ConfigEntity tiene keys que varian por vertical o contexto, usar `type: sequence` (no `type: mapping` con keys fijos) en el schema YAML. `mapping` lanza `SchemaIncompleteException` para cualquier key no declarado explicitamente.
 
 ---
 
@@ -164,6 +187,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-23 | **16.1.0** | **Config Schema Dynamic Keys Fix**: Patron CONFIG-SCHEMA-001 — usar `type: sequence` en lugar de `type: mapping` para campos con keys dinamicos por vertical en config schema YAML. `mapping` con keys fijos lanza `SchemaIncompleteException` en Kernel tests para keys no declarados. Regla de oro #24. |
 | 2026-02-23 | **16.0.0** | **Precios Configurables v2.1 Workflow**: Patrones para ConfigEntity cascade resolution (especifico→default→NULL), plan name normalization via SaasPlanTier aliases (lazy-cached alias map), AdminHtmlRouteProvider auto-routes para ConfigEntities, PlanResolverService como broker central con `getPlanCapabilities()` flat array, multi-source limit resolution en PlanValidator (FreemiumVerticalLimit→SaasPlanFeatures→SaasPlan), sentinel value `-999` para diferenciar "no configurado" de "valor real". Reglas de oro #22, #23. Aprendizaje #107. |
 | 2026-02-20 | **15.0.0** | **Secure Messaging Implementation Workflow**: Patrones para cifrado server-side AES-256-GCM (IV 12 bytes, tag 16 bytes, Argon2id KDF), custom schema tables con DTOs readonly, WebSocket auth middleware (JWT + session), ConnectionManager con indices SplObjectStorage, cursor-based pagination (before_id), optional DI con `@?` para modulos opcionales, ECA plugins por codigo (Events + Conditions + Actions), hash chain SHA-256 para audit inmutable, rate limiting por usuario/conversacion. Reglas de oro #20, #21. Aprendizaje #106. |
 | 2026-02-20 | 14.0.0 | **ServiciosConecta Sprint S3 Workflow**: Patrones para booking API field mapping, state machine con status granulares, cron idempotency con flags, owner pattern. Reglas de oro #17, #18, #19. Aprendizaje #105. |
