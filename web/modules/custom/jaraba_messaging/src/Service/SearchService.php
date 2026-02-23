@@ -61,7 +61,7 @@ class SearchService implements SearchServiceInterface {
           ciphertext: $row['body_encrypted'],
           iv: $row['encryption_iv'],
           tag: $row['encryption_tag'],
-          keyId: $row['encryption_key_id'],
+          key_id: $row['encryption_key_id'],
         );
         $plaintext = $this->encryptionService->decrypt($payload, $tenantId);
 
