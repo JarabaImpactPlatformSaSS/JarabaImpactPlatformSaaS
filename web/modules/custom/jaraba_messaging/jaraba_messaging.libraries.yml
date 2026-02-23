@@ -1,0 +1,22 @@
+messaging:
+  version: 1.0
+  css:
+    theme:
+      css/jaraba-messaging.css: {}
+  js:
+    js/messaging-client.js: {}
+    js/chat-panel.js: {}
+    js/conversation-list.js: {}
+    js/message-composer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+messaging-admin:
+  version: 1.0
+  css:
+    theme:
+      css/jaraba-messaging.css: {}
+  dependencies:
+    - core/drupal

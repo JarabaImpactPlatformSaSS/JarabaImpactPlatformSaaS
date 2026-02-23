@@ -1,0 +1,72 @@
+{#
+/**
+ * @file
+ * templates/page--messaging.html.twig
+ *
+ * Zero-region page template for the messaging interface.
+ * Replaces the default page layout with a full-screen messaging grid.
+ *
+ * Variables:
+ * - conversations: Array of conversation data for the sidebar list.
+ * - unread_total: Total unread message count across all conversations.
+ * - websocket_url: WebSocket endpoint URL for real-time updates.
+ * - current_user_id: Numeric ID of the authenticated user.
+ * - tenant_id: Tenant identifier for multi-tenant isolation.
+ * - theme_settings: Theme configuration passed to header/footer partials.
+ * - navigation_items: Navigation links for the header.
+ * - is_authenticated: Boolean, TRUE if user is logged in.
+ * - current_user: Current user entity object.
+ *
+ * Ref: Doc Tecnico #178 - Sprint 4 Frontend
+ */
+#}
+
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+  theme_settings: theme_settings,
+  navigation_items: navigation_items,
+  logged_in: is_authenticated,
+} %}
+
+<main class="messaging-page" role="main" aria-label="{% trans %}Messaging{% endtrans %}">
+  <div class="messaging-layout"
+       data-ws-url="{{ websocket_url }}"
+       data-user-id="{{ current_user_id }}"
+       data-tenant-id="{{ tenant_id }}"
+       data-api-base="/api/v1/messaging">
+
+    {# Left panel: conversation list #}
+    <aside class="messaging-layout__sidebar" role="navigation" aria-label="{% trans %}Conversations{% endtrans %}">
+      {% include '@jaraba_messaging/partials/_conversation-list.html.twig' with {
+        conversations: conversations,
+        unread_total: unread_total,
+      } %}
+    </aside>
+
+    {# Right panel: thread container #}
+    <section class="messaging-layout__main" role="region" aria-label="{% trans %}Messages{% endtrans %}">
+
+      {# Empty state: shown when no conversation is selected #}
+      <div class="messaging-layout__empty-state" data-messaging-empty-state>
+        <div class="messaging-layout__empty-state-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h2 class="messaging-layout__empty-state-title">{% trans %}Select a conversation{% endtrans %}</h2>
+        <p class="messaging-layout__empty-state-text">{% trans %}Choose a conversation from the list or start a new one.{% endtrans %}</p>
+      </div>
+
+      {# Active thread: hidden until a conversation is selected #}
+      <div class="messaging-layout__thread" data-messaging-thread style="display: none;">
+        {% include '@jaraba_messaging/partials/_message-thread.html.twig' %}
+
+        {% include '@jaraba_messaging/partials/_message-composer.html.twig' %}
+      </div>
+
+    </section>
+  </div>
+</main>
+
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+  theme_settings: theme_settings,
+} %}

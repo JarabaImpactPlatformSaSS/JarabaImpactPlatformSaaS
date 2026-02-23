@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * templates/partials/_chat-panel.html.twig
+ *
+ * Slide-in chat panel for integration into other pages (dashboard, etc.).
+ * Opens from the right edge. Contains a conversation list and thread view.
+ *
+ * Variables:
+ * - conversations: Array of conversation data.
+ * - unread_total: Total unread message count.
+ * - websocket_url: WebSocket endpoint URL.
+ * - current_user_id: Numeric user ID.
+ * - tenant_id: Tenant identifier.
+ *
+ * Usage: Include this partial on any page that needs messaging access.
+ */
+#}
+
+<div class="chat-panel"
+     data-panel-state="closed"
+     data-ws-url="{{ websocket_url }}"
+     data-user-id="{{ current_user_id }}"
+     data-tenant-id="{{ tenant_id }}"
+     data-api-base="/api/v1/messaging"
+     role="complementary"
+     aria-label="{% trans %}Chat panel{% endtrans %}">
+
+  {# Toggle button: always visible, fixed position #}
+  <button class="chat-panel__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="chat-panel-content"
+          aria-label="{% trans %}Open chat{% endtrans %}">
+    <span class="chat-panel__toggle-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </span>
+    {% if unread_total > 0 %}
+      <span class="chat-panel__toggle-badge" data-chat-panel-badge>{{ unread_total }}</span>
+    {% endif %}
+  </button>
+
+  {# Panel content: slides in/out #}
+  <div class="chat-panel__content" id="chat-panel-content" aria-hidden="true">
+
+    {# Panel header #}
+    <div class="chat-panel__header">
+      <h3 class="chat-panel__title">{% trans %}Messages{% endtrans %}</h3>
+      <button class="chat-panel__close"
+              type="button"
+              aria-label="{% trans %}Close chat panel{% endtrans %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    {# Conversation list view #}
+    <div class="chat-panel__list-view" data-chat-panel-view="list">
+      {% include '@jaraba_messaging/partials/_conversation-list.html.twig' with {
+        conversations: conversations,
+        unread_total: unread_total,
+      } %}
+    </div>
+
+    {# Thread view: hidden until conversation is selected #}
+    <div class="chat-panel__thread-view" data-chat-panel-view="thread" style="display: none;">
+      <button class="chat-panel__back"
+              type="button"
+              aria-label="{% trans %}Back to conversation list{% endtrans %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        <span>{% trans %}Back{% endtrans %}</span>
+      </button>
+
+      {% include '@jaraba_messaging/partials/_message-thread.html.twig' %}
+      {% include '@jaraba_messaging/partials/_message-composer.html.twig' %}
+    </div>
+
+  </div>
+
+  {# Overlay backdrop #}
+  <div class="chat-panel__overlay" data-chat-panel-overlay></div>
+</div>

@@ -1,0 +1,13 @@
+jaraba_messaging.admin:
+  title: 'Secure Messaging'
+  description: 'Configure the secure messaging system'
+  route_name: jaraba_messaging.settings
+  parent: system.admin_config_jaraba
+  weight: 10
+
+jaraba_messaging.conversations:
+  title: 'Conversations'
+  description: 'View and manage secure conversations'
+  route_name: entity.secure_conversation.collection
+  parent: system.admin_content
+  weight: 5

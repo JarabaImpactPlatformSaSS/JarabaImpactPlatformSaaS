@@ -1,0 +1,14 @@
+{
+  "name": "jaraba-messaging",
+  "version": "1.0.0",
+  "description": "Frontend build for Jaraba Secure Messaging module (SCSS compilation).",
+  "private": true,
+  "scripts": {
+    "build": "sass scss/main.scss css/jaraba-messaging.css --style=compressed --no-source-map",
+    "build:dev": "sass scss/main.scss css/jaraba-messaging.css --style=expanded --source-map",
+    "watch": "sass --watch scss/main.scss:css/jaraba-messaging.css --style=compressed --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.83.0"
+  }
+}

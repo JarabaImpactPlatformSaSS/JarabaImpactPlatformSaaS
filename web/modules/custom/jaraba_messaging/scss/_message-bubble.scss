@@ -1,0 +1,340 @@
+/**
+ * @file
+ * scss/_message-bubble.scss
+ *
+ * Message bubble variants: --own, --other, --system, --sending, --failed.
+ * BEM structure with modifier classes. Includes reactions and action menu.
+ */
+
+/* ------------------------------------------------------------------
+ * BASE BUBBLE
+ * ------------------------------------------------------------------ */
+
+.message-bubble {
+  position: relative;
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: var(--ej-radius-lg, 12px);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+
+  @media (max-width: 767px) {
+    max-width: 85%;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * VARIANT: OWN
+ * ------------------------------------------------------------------ */
+
+.message-bubble--own {
+  align-self: flex-end;
+  background-color: var(--ej-primary, #1a73e8);
+  color: var(--ej-on-primary, #ffffff);
+  border-bottom-right-radius: var(--ej-radius-sm, 4px);
+
+  .message-bubble__time {
+    color: color-mix(in srgb, var(--ej-on-primary, #ffffff) 70%, transparent);
+  }
+
+  .message-bubble__edited {
+    color: color-mix(in srgb, var(--ej-on-primary, #ffffff) 60%, transparent);
+  }
+
+  .message-bubble__actions-trigger {
+    color: color-mix(in srgb, var(--ej-on-primary, #ffffff) 80%, transparent);
+
+    &:hover {
+      color: var(--ej-on-primary, #ffffff);
+    }
+  }
+
+  a {
+    color: var(--ej-on-primary, #ffffff);
+    text-decoration: underline;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * VARIANT: OTHER
+ * ------------------------------------------------------------------ */
+
+.message-bubble--other {
+  align-self: flex-start;
+  background-color: var(--ej-surface-secondary, #f0f0f0);
+  color: var(--ej-text-primary, #333333);
+  border-bottom-left-radius: var(--ej-radius-sm, 4px);
+}
+
+/* ------------------------------------------------------------------
+ * VARIANT: SYSTEM
+ * ------------------------------------------------------------------ */
+
+.message-bubble--system {
+  align-self: center;
+  max-width: 80%;
+  background-color: transparent;
+  text-align: center;
+  padding: 4px 12px;
+
+  .message-bubble__body {
+    font-size: var(--ej-font-size-xs, 0.75rem);
+    color: var(--ej-text-muted, #999999);
+    font-style: italic;
+  }
+
+  .message-bubble__footer {
+    justify-content: center;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * VARIANT: SENDING (optimistic UI)
+ * ------------------------------------------------------------------ */
+
+.message-bubble--sending {
+  opacity: 0.7;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid color-mix(in srgb, var(--ej-on-primary, #ffffff) 50%, transparent);
+    border-top-color: var(--ej-on-primary, #ffffff);
+    border-radius: 50%;
+    animation: message-bubble-spin 0.6s linear infinite;
+  }
+}
+
+@keyframes message-bubble-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * VARIANT: FAILED
+ * ------------------------------------------------------------------ */
+
+.message-bubble--failed {
+  border: 2px solid var(--ej-error, #d32f2f);
+  opacity: 0.9;
+
+  &::after {
+    content: '!';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--ej-error, #d32f2f);
+    color: var(--ej-on-error, #ffffff);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 20px;
+    text-align: center;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * VARIANT: DELETED
+ * ------------------------------------------------------------------ */
+
+.message-bubble--deleted {
+  opacity: 0.5;
+
+  .message-bubble__deleted-text {
+    margin: 0;
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    color: var(--ej-text-muted, #999999);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * SENDER NAME
+ * ------------------------------------------------------------------ */
+
+.message-bubble__sender {
+  display: block;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--ej-primary, #1a73e8);
+  margin-bottom: 2px;
+}
+
+/* ------------------------------------------------------------------
+ * BODY
+ * ------------------------------------------------------------------ */
+
+.message-bubble__body {
+  font-size: var(--ej-font-size-base, 1rem);
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 8px;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * FOOTER
+ * ------------------------------------------------------------------ */
+
+.message-bubble__footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.message-bubble__time {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-text-muted, #999999);
+}
+
+.message-bubble__edited {
+  font-size: 10px;
+  color: var(--ej-text-muted, #999999);
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------------
+ * ACTIONS MENU
+ * ------------------------------------------------------------------ */
+
+.message-bubble__actions {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .message-bubble:hover & {
+    opacity: 1;
+  }
+}
+
+.message-bubble__actions-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: color-mix(in srgb, #000000 10%, transparent);
+  color: var(--ej-text-secondary, #666666);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, #000000 15%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: 1px;
+    opacity: 1;
+  }
+}
+
+.message-bubble__actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background-color: var(--ej-panel-bg, #ffffff);
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  border-radius: var(--ej-radius-md, 8px);
+  box-shadow: 0 4px 12px color-mix(in srgb, #000000 15%, transparent);
+  min-width: 120px;
+  z-index: 10;
+}
+
+.message-bubble__action-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-text-primary, #333333);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ej-hover-bg, #f0f0f0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: -2px;
+  }
+}
+
+.message-bubble__action-btn--danger {
+  color: var(--ej-error, #d32f2f);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--ej-error, #d32f2f) 8%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * REACTIONS
+ * ------------------------------------------------------------------ */
+
+.message-bubble__reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.message-bubble__reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  border-radius: var(--ej-radius-full, 9999px);
+  background: var(--ej-panel-bg, #ffffff);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ej-hover-bg, #f0f0f0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: 1px;
+  }
+}
+
+.message-bubble__reaction--active {
+  border-color: var(--ej-primary, #1a73e8);
+  background-color: color-mix(in srgb, var(--ej-primary, #1a73e8) 10%, transparent);
+}
+
+.message-bubble__reaction-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.message-bubble__reaction-count {
+  color: var(--ej-text-secondary, #666666);
+  font-weight: 500;
+}

@@ -1,0 +1,230 @@
+/**
+ * @file
+ * scss/_message-thread.scss
+ *
+ * Scrollable message thread container.
+ * Includes thread header, message area, load-more button, and scroll controls.
+ */
+
+.message-thread {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------
+ * HEADER
+ * ------------------------------------------------------------------ */
+
+.message-thread__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--ej-border-color, #e0e0e0);
+  background-color: var(--ej-panel-bg, #ffffff);
+  flex-shrink: 0;
+  min-height: 56px;
+}
+
+.message-thread__header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-thread__title {
+  margin: 0;
+  font-size: var(--ej-font-size-base, 1rem);
+  font-weight: 600;
+  color: var(--ej-text-primary, #333333);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-thread__participants {
+  display: block;
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-text-muted, #999999);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.message-thread__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.message-thread__search-btn,
+.message-thread__info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ej-text-secondary, #666666);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ej-hover-bg, #f0f0f0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: -2px;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * MESSAGES AREA
+ * ------------------------------------------------------------------ */
+
+.message-thread__messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 20px;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--ej-scrollbar-thumb, #cccccc) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ej-scrollbar-thumb, #cccccc);
+    border-radius: 3px;
+  }
+}
+
+.message-thread__message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ------------------------------------------------------------------
+ * LOAD MORE
+ * ------------------------------------------------------------------ */
+
+.message-thread__load-more {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.message-thread__load-more-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  border-radius: var(--ej-radius-full, 9999px);
+  background: transparent;
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-primary, #1a73e8);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--ej-primary, #1a73e8) 6%, transparent);
+    border-color: var(--ej-primary, #1a73e8);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * SCROLL ANCHOR & SCROLL-TO-BOTTOM
+ * ------------------------------------------------------------------ */
+
+.message-thread__scroll-anchor {
+  height: 1px;
+  flex-shrink: 0;
+}
+
+.message-thread__scroll-bottom {
+  position: absolute;
+  bottom: 100px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--ej-panel-bg, #ffffff);
+  color: var(--ej-text-secondary, #666666);
+  box-shadow: 0 2px 8px color-mix(in srgb, #000000 15%, transparent);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 1;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px color-mix(in srgb, #000000 20%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * DATE SEPARATOR (rendered by JS)
+ * ------------------------------------------------------------------ */
+
+.message-thread__date-separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--ej-text-muted, #999999);
+  font-size: var(--ej-font-size-xs, 0.75rem);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--ej-border-light, #f0f0f0);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * RESPONSIVE
+ * ------------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .message-thread__header {
+    padding: 10px 16px;
+  }
+
+  .message-thread__messages {
+    padding: 12px 16px;
+  }
+
+  .message-thread__scroll-bottom {
+    bottom: 80px;
+    right: 16px;
+  }
+}

@@ -1,0 +1,118 @@
+{#
+/**
+ * @file
+ * templates/partials/_message-bubble.html.twig
+ *
+ * Individual message bubble. Rendered server-side for initial load and
+ * used as reference structure for JS-rendered messages.
+ *
+ * Variables:
+ * - message: Object containing:
+ *   - id: Numeric message ID.
+ *   - body: Decrypted message body (HTML-safe).
+ *   - sender_name: Display name of the sender.
+ *   - sender_id: Numeric user ID of the sender.
+ *   - created_at: ISO 8601 timestamp.
+ *   - is_own: Boolean, TRUE if sent by current user.
+ *   - is_edited: Boolean, TRUE if message has been edited.
+ *   - is_deleted: Boolean, TRUE if message was soft-deleted.
+ *   - reactions: Array of reaction objects { emoji, count, users }.
+ *   - type: 'user', 'system'.
+ */
+#}
+
+{% set bubble_class = 'message-bubble' %}
+{% if message.type == 'system' %}
+  {% set bubble_class = bubble_class ~ ' message-bubble--system' %}
+{% elseif message.is_own %}
+  {% set bubble_class = bubble_class ~ ' message-bubble--own' %}
+{% else %}
+  {% set bubble_class = bubble_class ~ ' message-bubble--other' %}
+{% endif %}
+
+{% if message.is_deleted %}
+  {% set bubble_class = bubble_class ~ ' message-bubble--deleted' %}
+{% endif %}
+
+<div class="{{ bubble_class }}"
+     data-message-id="{{ message.id }}"
+     data-sender-id="{{ message.sender_id }}"
+     role="article"
+     aria-label="{{ message.sender_name }}, {{ message.created_at|date('H:i') }}">
+
+  {# Sender name: shown for other users' messages in group conversations #}
+  {% if not message.is_own and message.type != 'system' %}
+    <span class="message-bubble__sender">{{ message.sender_name }}</span>
+  {% endif %}
+
+  {# Message body #}
+  <div class="message-bubble__body">
+    {% if message.is_deleted %}
+      <p class="message-bubble__deleted-text">
+        <em>{% trans %}This message was deleted.{% endtrans %}</em>
+      </p>
+    {% else %}
+      {{ message.body|safe_html }}
+    {% endif %}
+  </div>
+
+  {# Message footer: timestamp + edited indicator #}
+  <div class="message-bubble__footer">
+    <time class="message-bubble__time"
+          datetime="{{ message.created_at }}"
+          data-timestamp="{{ message.created_at }}">
+      {{ message.created_at|date('H:i') }}
+    </time>
+    {% if message.is_edited %}
+      <span class="message-bubble__edited" title="{% trans %}Edited{% endtrans %}">
+        {% trans %}edited{% endtrans %}
+      </span>
+    {% endif %}
+  </div>
+
+  {# Context menu: edit/delete for own messages #}
+  {% if message.is_own and not message.is_deleted and message.type != 'system' %}
+    <div class="message-bubble__actions">
+      <button class="message-bubble__actions-trigger"
+              type="button"
+              aria-label="{% trans %}Message options{% endtrans %}"
+              aria-haspopup="true"
+              aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="5" r="2"/>
+          <circle cx="12" cy="12" r="2"/>
+          <circle cx="12" cy="19" r="2"/>
+        </svg>
+      </button>
+      <ul class="message-bubble__actions-menu" role="menu" style="display: none;">
+        <li role="menuitem">
+          <button class="message-bubble__action-btn" type="button" data-action="edit-message" data-message-id="{{ message.id }}">
+            {% trans %}Edit{% endtrans %}
+          </button>
+        </li>
+        <li role="menuitem">
+          <button class="message-bubble__action-btn message-bubble__action-btn--danger" type="button" data-action="delete-message" data-message-id="{{ message.id }}">
+            {% trans %}Delete{% endtrans %}
+          </button>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+
+  {# Reactions #}
+  {% if message.reactions is not empty %}
+    <div class="message-bubble__reactions">
+      {% for reaction in message.reactions %}
+        <button class="message-bubble__reaction {{ reaction.is_own ? 'message-bubble__reaction--active' : '' }}"
+                type="button"
+                data-action="toggle-reaction"
+                data-emoji="{{ reaction.emoji }}"
+                data-message-id="{{ message.id }}"
+                aria-label="{{ reaction.emoji }} {{ reaction.count }}">
+          <span class="message-bubble__reaction-emoji">{{ reaction.emoji }}</span>
+          <span class="message-bubble__reaction-count">{{ reaction.count }}</span>
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

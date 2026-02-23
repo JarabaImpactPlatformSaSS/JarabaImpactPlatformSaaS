@@ -1,0 +1,11 @@
+name: 'Jaraba Secure Messaging'
+type: module
+description: 'Sistema de mensajería segura bidireccional cifrada con AES-256-GCM, WebSocket, audit trail inmutable y presencia en tiempo real.'
+package: Jaraba
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - group:group
+
+configure: jaraba_messaging.settings

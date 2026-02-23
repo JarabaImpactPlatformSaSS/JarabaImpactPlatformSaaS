@@ -1,0 +1,64 @@
+{#
+/**
+ * @file
+ * templates/email/message-notification.html.twig
+ *
+ * Email notification template for new messages.
+ * Rendered as themed HTML email via Symfony Mailer / Drupal mail system.
+ *
+ * Variables:
+ * - sender_name: Display name of the message sender.
+ * - message_preview: Truncated plain-text preview of the message body.
+ * - conversation_title: Title of the conversation.
+ * - conversation_url: Full absolute URL to the conversation.
+ * - recipient_name: Display name of the email recipient.
+ */
+#}
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+       style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <tr>
+    <td style="padding: 32px 24px 24px; background-color: #ffffff;">
+
+      {# Greeting #}
+      <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.5; color: #333333;">
+        {% trans %}Hello {{ recipient_name }},{% endtrans %}
+      </p>
+
+      {# Notification body #}
+      <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.5; color: #333333;">
+        {% trans %}<strong>{{ sender_name }}</strong> sent you a message in <strong>{{ conversation_title }}</strong>:{% endtrans %}
+      </p>
+
+      {# Message preview block #}
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+             style="margin: 0 0 24px;">
+        <tr>
+          <td style="padding: 16px; background-color: #f5f5f5; border-left: 4px solid #1a73e8; border-radius: 0 4px 4px 0;">
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #555555; font-style: italic;">
+              "{{ message_preview }}"
+            </p>
+          </td>
+        </tr>
+      </table>
+
+      {# Call to action #}
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin: 0 0 24px;">
+        <tr>
+          <td style="border-radius: 6px; background-color: #1a73e8;">
+            <a href="{{ conversation_url }}"
+               style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">
+              {% trans %}View conversation{% endtrans %}
+            </a>
+          </td>
+        </tr>
+      </table>
+
+      {# Footer note #}
+      <p style="margin: 0; font-size: 12px; line-height: 1.5; color: #999999;">
+        {% trans %}You are receiving this email because you are a participant in this conversation. You can adjust your notification preferences in your account settings.{% endtrans %}
+      </p>
+
+    </td>
+  </tr>
+</table>
