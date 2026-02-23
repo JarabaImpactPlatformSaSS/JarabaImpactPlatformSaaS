@@ -3,6 +3,10 @@
  * @file
  * page--admin-center.html.twig — Admin Center Premium layout.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Zero Region Policy:
  * - Sin {{ page.* }} = Sin bloques de Drupal
  * - Usa {{ clean_content }} extraido por preprocess_page()
@@ -14,6 +18,8 @@
  * Layout: Shell con sidebar colapsable + topbar + area principal.
  * Ruta: /admin/jaraba/center
  *
+ * Body classes migradas a preprocess_html: (ninguna - usaba {{ attributes }} sin addClass)
+ *
  * @see .agent/workflows/frontend-page-pattern.md
  * @see docs/tecnicos/20260117f-104_SaaS_Admin_Center_Premium_v1_Claude.md
  */
@@ -23,20 +29,6 @@
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('ecosistema_jaraba_core/admin-center') }}
 {{ attach_library('ecosistema_jaraba_core/admin-command-palette') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
 
   <div class="admin-center-shell">
 
@@ -79,8 +71,3 @@
 
   </div>
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

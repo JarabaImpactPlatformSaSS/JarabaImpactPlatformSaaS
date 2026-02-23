@@ -81,6 +81,16 @@
 // User Pages - Profile, Edit, Logout, Contact, Cancel
 @use 'user-pages';
 
+// Jobseeker Dashboard - Premium empleabilidad dashboard
+@use 'jobseeker-dashboard';
+
+// Employability Pages - Jobs, Applications, LMS catalog & dashboard
+@use 'employability-pages';
+
+// Profile Edit & CV Builder - Premium form styling
+@use 'profile-edit';
+@use 'cv-builder';
+
 // i18n Module - Translation Dashboard & Selector
 @use '../../../../modules/custom/jaraba_i18n/scss/i18n-selector' as i18nSelector;
 @use '../../../../modules/custom/jaraba_i18n/scss/i18n-dashboard' as i18nDashboard;
@@ -105,3 +115,6 @@
 
 // Landing Sections - F4 Doc180 Vertical landing page 9-section components
 @use 'components/landing-sections';
+
+// Retention Playbooks Dashboard - Doc 179 Vertical Retention
+@use 'retention-playbooks';

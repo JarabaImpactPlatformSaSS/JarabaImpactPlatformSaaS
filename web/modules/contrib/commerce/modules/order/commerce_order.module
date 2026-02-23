@@ -9,6 +9,7 @@ use Drupal\commerce_order\Hook\CommerceOrderHooks;
 use Drupal\commerce_order\Hook\CommerceOrderThemeHooks;
 use Drupal\commerce_order\Hook\CommerceOrderTokensHooks;
 use Drupal\commerce_order\Hook\CommerceOrderViewsHooks;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -351,4 +352,12 @@ function commerce_order_preprocess_menu_local_action(array &$variables): void {
 #[LegacyHook]
 function commerce_order_preprocess_username(array &$variables): void {
   \Drupal::service(CommerceOrderThemeHooks::class)->preprocessUsername($variables);
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+#[LegacyHook]
+function commerce_order_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableDependencyInterface &$cacheability) {
+  \Drupal::service(CommerceOrderHooks::class)->menuLocalTasksAlter($data, $route_name, $cacheability);
 }

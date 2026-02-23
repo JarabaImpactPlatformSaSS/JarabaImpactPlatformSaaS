@@ -1,0 +1,60 @@
+vertical_id: agroconecta
+label: 'AgroConecta'
+max_inactivity_days: 60
+health_score_weights:
+  engagement: 25
+  adoption: 35
+  satisfaction: 15
+  support: 10
+  growth: 15
+seasonality_calendar:
+  - { month: 1, risk_level: high, label: 'Entre cosechas (invierno)', adjustment: 0.15 }
+  - { month: 2, risk_level: high, label: 'Pre-siembra', adjustment: 0.10 }
+  - { month: 3, risk_level: medium, label: 'Inicio siembra primavera', adjustment: 0.0 }
+  - { month: 4, risk_level: low, label: 'Siembra activa', adjustment: -0.10 }
+  - { month: 5, risk_level: low, label: 'Crecimiento cultivos', adjustment: -0.15 }
+  - { month: 6, risk_level: low, label: 'Pre-cosecha cereales', adjustment: -0.10 }
+  - { month: 7, risk_level: low, label: 'Cosecha cereales', adjustment: -0.20 }
+  - { month: 8, risk_level: medium, label: 'Post-cosecha / vendimia', adjustment: -0.05 }
+  - { month: 9, risk_level: low, label: 'Cosecha frutas / vendimia', adjustment: -0.15 }
+  - { month: 10, risk_level: medium, label: 'Siembra otono', adjustment: -0.05 }
+  - { month: 11, risk_level: medium, label: 'Fin campana', adjustment: 0.05 }
+  - { month: 12, risk_level: high, label: 'Invierno / inactividad esperada', adjustment: 0.15 }
+churn_risk_signals:
+  - { signal_id: no_products_30d, metric: products_listed, operator: '==', threshold: 0, lookback_days: 30, weight: 0.30, description: 'Sin productos listados en 30 dias' }
+  - { signal_id: no_orders_45d, metric: orders_received, operator: '==', threshold: 0, lookback_days: 45, weight: 0.25, description: 'Sin pedidos recibidos en 45 dias' }
+  - { signal_id: gmv_drop_50pct, metric: gmv_change_pct, operator: '<', threshold: -50, lookback_days: 30, weight: 0.25, description: 'Descenso de GMV superior al 50%' }
+  - { signal_id: no_login_30d, metric: last_login_days, operator: '>', threshold: 30, lookback_days: 30, weight: 0.20, description: 'Sin login en 30 dias' }
+critical_features:
+  - product_listing
+  - order_management
+  - harvest_tracking
+  - weather_alerts
+  - marketplace_visibility
+reengagement_triggers:
+  - { trigger: seasonal_start, message_template: campaign_prep, delay_days: 0 }
+  - { trigger: post_harvest, message_template: review_season, delay_days: 7 }
+  - { trigger: new_feature, message_template: feature_announcement, delay_days: 0 }
+upsell_signals:
+  - { signal: gmv_growth_20pct, recommended_plan: premium_agro, message: 'Tu negocio agricola esta creciendo' }
+  - { signal: hectares_increase, recommended_plan: enterprise_agro, message: 'Gestion de mas explotaciones' }
+seasonal_offers:
+  - { months: [2, 3], offer_type: early_bird, description: 'Descuento pre-campana primavera' }
+  - { months: [8, 9], offer_type: harvest_bundle, description: 'Pack cosecha + logistica' }
+expected_usage_pattern:
+  1: low
+  2: low
+  3: medium
+  4: high
+  5: high
+  6: high
+  7: high
+  8: medium
+  9: high
+  10: medium
+  11: medium
+  12: low
+playbook_overrides:
+  health_drop: 3
+  churn_risk: 7
+  expansion: 12

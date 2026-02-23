@@ -3,6 +3,10 @@
  * @file
  * page--i18n.html.twig - Dashboard de traducciones frontend limpio.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template. El wrapper
+ * DOCTYPE/html/head/body lo proporciona html.html.twig. Este template
+ * solo genera el contenido dentro de body.
+ *
  * ARQUITECTURA LIMPIA (mismo patrón que page--site-builder.html.twig):
  * - Zero Region Policy — usa {{ clean_content }}
  * - Usa {% include %} de partials reutilizables
@@ -14,31 +18,16 @@
  * RUTA: /i18n
  *
  * DIRECTRICES CUMPLIDAS:
- * ✅ Sin regiones heredadas de Drupal
- * ✅ Partials reutilizables (header, footer)
- * ✅ Full-width mobile-first
- * ✅ Variables configurables desde UI
+ * - Sin regiones heredadas de Drupal
+ * - Partials reutilizables (header, footer)
+ * - Full-width mobile-first
+ * - Variables configurables desde UI
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('jaraba_i18n/i18n-dashboard') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-{# Body classes añadidas via hook_preprocess_html() en .theme #}
-<body{{ attributes }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
 
   {# HEADER - Partial reutilizable con variables de tema #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -69,8 +58,3 @@
     theme_settings: theme_settings|default({})
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

@@ -15,7 +15,7 @@ dependencies: []
 
 # When this module is functioning correctly, when a user logs in, there will not be a state key set.
 
-# Information added by Drupal.org packaging script on 2026-01-06
-version: '2.0.0-rc1'
+# Information added by Drupal.org packaging script on 2026-02-04
+version: '2.0.0-rc2'
 project: 'domain'
-datestamp: 1767689084
+datestamp: 1770210889

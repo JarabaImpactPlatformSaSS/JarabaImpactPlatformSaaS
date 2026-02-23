@@ -13,12 +13,13 @@ use Drupal\commerce_payment\Exception\SoftDeclineException;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OnsitePaymentGatewayBase;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_stripe\ErrorHelper;
-use Drupal\commerce_stripe\Event\PaymentIntentEvent;
-use Drupal\commerce_stripe\Event\PaymentMethodCreateEvent;
+use Drupal\commerce_stripe\Event\PaymentIntentCreateEvent;
+use Drupal\commerce_stripe\Event\PaymentIntentUpdateEvent;
 use Drupal\commerce_stripe\Event\StripeEvents;
-use Drupal\commerce_stripe\Event\TransactionDataEvent;
 use Drupal\commerce_stripe\IntentHelper;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Uuid\UuidInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\profile\Entity\ProfileInterface;
@@ -32,7 +33,9 @@ use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\Refund;
 use Stripe\Stripe as StripeLibrary;
+use Stripe\StripeObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Provides the Stripe payment gateway.
@@ -60,26 +63,26 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
    *
    * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
-  protected $eventDispatcher;
+  protected EventDispatcherInterface $eventDispatcher;
 
   /**
    * The module extension list.
    *
    * @var \Drupal\Core\Extension\ModuleExtensionList
    */
-  protected $moduleExtensionList;
+  protected ModuleExtensionList $moduleExtensionList;
 
   /**
    * The UUID service.
    *
    * @var \Drupal\Component\Uuid\UuidInterface
    */
-  protected $uuidService;
+  protected UuidInterface $uuidService;
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): self {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->eventDispatcher = $container->get('event_dispatcher');
     $instance->moduleExtensionList = $container->get('extension.list.module');
@@ -100,7 +103,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * Initializes the SDK.
    */
-  protected function init() {
+  protected function init(): void {
     $extension_info = $this->moduleExtensionList->getExtensionInfo('commerce_stripe');
     $version = !empty($extension_info['version']) ? $extension_info['version'] : '8.x-1.0-dev';
     StripeLibrary::setAppInfo('Centarro Commerce for Drupal', $version, 'https://www.drupal.org/project/commerce_stripe', 'pp_partner_Fa3jTqCJqTDtHD');
@@ -113,23 +116,31 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
       ApiRequestor::setHttpClient($curl);
     }
 
-    StripeLibrary::setApiKey($this->configuration['secret_key']);
+    if (!empty($this->configuration['access_token'])) {
+      StripeLibrary::setApiKey($this->configuration['access_token']);
+    }
+    else {
+      StripeLibrary::setApiKey($this->configuration['secret_key']);
+    }
     StripeLibrary::setApiVersion('2019-12-03');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPublishableKey() {
+  public function getPublishableKey(): ?string {
     return $this->configuration['publishable_key'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
+  public function defaultConfiguration(): array {
     return [
+      'authentication_method' => 'stripe_connect',
       'publishable_key' => '',
+      'access_token' => '',
+      'stripe_user_id' => '',
       'secret_key' => '',
       'enable_credit_card_icons' => TRUE,
     ] + parent::defaultConfiguration();
@@ -138,26 +149,53 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
 
+    $form['access_token'] = [
+      '#type' => 'value',
+      '#default_value' => $this->configuration['access_token'],
+    ];
+    $form['stripe_user_id'] = [
+      '#type' => 'value',
+      '#default_value' => $this->configuration['stripe_user_id'],
+    ];
+    $form['authentication_method'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Authentication Method'),
+      '#description' => $this->t('When "Stripe connect" is selected, connecting to Stripe is done from the payment gateway list page.'),
+      '#options' => [
+        'stripe_connect' => $this->t('Stripe connect (Preferred)'),
+        'api_keys' => $this->t('API keys'),
+      ],
+      '#default_value' => !empty($this->configuration['secret_key']) ? 'api_keys' : $this->configuration['authentication_method'],
+      '#disabled' => !empty($this->configuration['access_token']),
+    ];
+    $stripe_connect_states = [
+      'invisible' => [
+        ':input[name="configuration[' . $this->pluginId . '][authentication_method]"]' => ['value' => 'stripe_connect'],
+      ],
+    ];
     $form['publishable_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Publishable Key'),
       '#default_value' => $this->configuration['publishable_key'],
-      '#required' => TRUE,
+      '#states' => $stripe_connect_states,
+      '#required' => FALSE,
     ];
 
     $form['secret_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Secret Key'),
       '#default_value' => $this->configuration['secret_key'],
-      '#required' => TRUE,
+      '#states' => $stripe_connect_states,
+      '#required' => FALSE,
     ];
 
     $form['validate_api_keys'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Validate API keys upon form submission.'),
+      '#states' => $stripe_connect_states,
       '#default_value' => TRUE,
     ];
 
@@ -174,14 +212,14 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::validateConfigurationForm($form, $form_state);
 
     if (!$form_state->getErrors()) {
       $values = $form_state->getValue($form['#parents']);
       // Validate the secret key.
       $expected_livemode = $values['mode'] === 'live';
-      if (!empty($values['secret_key']) && $values['validate_api_keys']) {
+      if ($values['validate_api_keys'] && $values['authentication_method'] === 'api_keys') {
         try {
           StripeLibrary::setApiKey($values['secret_key']);
           // Make sure we use the right mode for the secret keys.
@@ -189,7 +227,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
             $form_state->setError($form['secret_key'], $this->t('The provided secret key is not for the selected mode (@mode).', ['@mode' => $values['mode']]));
           }
         }
-        catch (ApiErrorException $e) {
+        catch (ApiErrorException) {
           $form_state->setError($form['secret_key'], $this->t('Invalid secret key.'));
         }
       }
@@ -199,13 +237,20 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
 
     if (!$form_state->getErrors()) {
       $values = $form_state->getValue($form['#parents']);
       $this->configuration['publishable_key'] = $values['publishable_key'];
-      $this->configuration['secret_key'] = $values['secret_key'];
+      $this->configuration['authentication_method'] = $values['authentication_method'];
+      if ($values['authentication_method'] === 'api_keys') {
+        $this->configuration['secret_key'] = $values['secret_key'];
+      }
+      else {
+        $this->configuration['access_token'] = $values['access_token'];
+        $this->configuration['stripe_user_id'] = $values['stripe_user_id'];
+      }
       $this->configuration['enable_credit_card_icons'] = $values['enable_credit_card_icons'];
     }
   }
@@ -213,7 +258,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function createPayment(PaymentInterface $payment, $capture = TRUE) {
+  public function createPayment(PaymentInterface $payment, $capture = TRUE): void {
     $this->assertPaymentState($payment, ['new']);
     $payment_method = $payment->getPaymentMethod();
     assert($payment_method instanceof PaymentMethodInterface);
@@ -269,20 +314,16 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
       }
       $payment->save();
 
-      // Add metadata and extra transaction data where required.
-      // @phpstan-ignore-next-line
-      $event = new TransactionDataEvent($payment);
-      // @phpstan-ignore-next-line
-      $this->eventDispatcher->dispatch($event, StripeEvents::TRANSACTION_DATA);
-
-      // Update the transaction data from additional information added through
-      // the event.
       $metadata = $intent->metadata->toArray();
+      $event = new PaymentIntentUpdateEvent($order, $metadata, $payment);
+      $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_INTENT_UPDATE);
       $metadata += $event->getMetadata();
-
-      PaymentIntent::update($intent->id, [
-        'metadata' => $metadata,
-      ]);
+      // If there are no updates, then no need to waste resources on the call.
+      if (!empty($metadata)) {
+        PaymentIntent::update($intent->id, [
+          'metadata' => $metadata,
+        ]);
+      }
 
       $order->unsetData('stripe_intent');
       $order->save();
@@ -295,7 +336,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function capturePayment(PaymentInterface $payment, Price $amount = NULL) {
+  public function capturePayment(PaymentInterface $payment, ?Price $amount = NULL): void {
     $this->assertPaymentState($payment, ['authorization']);
     // If not specified, capture the entire amount.
     $amount = $amount ?: $payment->getAmount();
@@ -349,7 +390,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function voidPayment(PaymentInterface $payment) {
+  public function voidPayment(PaymentInterface $payment): void {
     $this->assertPaymentState($payment, ['authorization']);
     // Void Stripe payment - release uncaptured payment.
     try {
@@ -374,7 +415,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
           PaymentIntent::STATUS_REQUIRES_CONFIRMATION,
           PaymentIntent::STATUS_REQUIRES_ACTION,
         ];
-        if (!in_array($intent->status, $statuses_to_void)) {
+        if (!in_array($intent->status, $statuses_to_void, TRUE)) {
           throw PaymentGatewayException::createForPayment($payment, 'The PaymentIntent cannot be voided.');
         }
         $intent->cancel();
@@ -400,7 +441,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function refundPayment(PaymentInterface $payment, Price $amount = NULL) {
+  public function refundPayment(PaymentInterface $payment, ?Price $amount = NULL): void {
     $this->assertPaymentState($payment, ['completed', 'partially_refunded']);
     // If not specified, refund the entire amount.
     $amount = $amount ?: $payment->getAmount();
@@ -443,7 +484,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function createPaymentMethod(PaymentMethodInterface $payment_method, array $payment_details) {
+  public function createPaymentMethod(PaymentMethodInterface $payment_method, array $payment_details): void {
     $required_keys = [
       // The expected keys are payment gateway specific and usually match
       // the PaymentMethodAddForm form elements. They are expected to be valid.
@@ -455,10 +496,6 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
       }
     }
 
-    // Allow alteration of the payment method before remote creation.
-    $event = new PaymentMethodCreateEvent($payment_method, $payment_details);
-    $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_METHOD_CREATE);
-
     $this->doCreatePaymentMethod($payment_method, $payment_details);
     $payment_method->save();
   }
@@ -466,7 +503,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function deletePaymentMethod(PaymentMethodInterface $payment_method) {
+  public function deletePaymentMethod(PaymentMethodInterface $payment_method): void {
     // Delete the remote record.
     $payment_method_remote_id = $payment_method->getRemoteId();
     try {
@@ -484,14 +521,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
   /**
    * {@inheritdoc}
    */
-  public function createPaymentIntent(OrderInterface $order, $intent_attributes = [], PaymentInterface $payment = NULL) {
-    if (is_bool($intent_attributes)) {
-      $intent_attributes = [
-        'capture_method' => $intent_attributes ? 'automatic' : 'manual',
-      ];
-      @trigger_error('Passing a boolean representing capture method as the second parameter to StripeInterface::createPaymentIntent() is deprecated in commerce_stripe:8.x-1.0 and this parameter must be an array of payment intent attributes in commerce_stripe:9.x-2.0. See https://www.drupal.org/project/commerce_stripe/issues/3259211', E_USER_DEPRECATED);
-    }
-
+  public function createPaymentIntent(OrderInterface $order, array $intent_attributes = [], ?PaymentInterface $payment = NULL): ?PaymentIntent {
     /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
     $payment_method = $payment ? $payment->getPaymentMethod() : $order->get('payment_method')->entity;
     $amount = $payment ? $payment->getAmount() : $order->getBalance();
@@ -516,7 +546,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
     $intent_array = NestedArray::mergeDeep($default_intent_attributes, $intent_attributes);
 
     // Add metadata and extra transaction data where required.
-    $event = new PaymentIntentEvent($order, $intent_array);
+    $event = new PaymentIntentCreateEvent($order, $intent_array);
     $this->eventDispatcher->dispatch($event, StripeEvents::PAYMENT_INTENT_CREATE);
 
     // Alter or extend the intent array from additional information added
@@ -552,7 +582,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function doCreatePaymentMethod(PaymentMethodInterface $payment_method, array $payment_details) {
+  protected function doCreatePaymentMethod(PaymentMethodInterface $payment_method, array $payment_details): StripeObject {
     $stripe_payment_method_id = $payment_details['stripe_payment_method_id'];
     $owner = $payment_method->getOwner();
     $customer_id = NULL;
@@ -620,7 +650,7 @@ class Stripe extends OnsitePaymentGatewayBase implements StripeInterface {
    * @return string
    *   The Commerce credit card type.
    */
-  protected function mapCreditCardType($card_type) {
+  protected function mapCreditCardType(string $card_type): string {
     $map = [
       'amex' => 'amex',
       'diners' => 'dinersclub',

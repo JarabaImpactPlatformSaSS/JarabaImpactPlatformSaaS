@@ -5,6 +5,7 @@
  * Domain-based path rewrites for content.
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
@@ -113,6 +114,15 @@ function domain_source_get(EntityInterface $entity) {
   $field = DomainSourceElementManagerInterface::DOMAIN_SOURCE_FIELD;
   if (!$entity instanceof FieldableEntityInterface || !$entity->hasField($field)) {
     return NULL;
+  }
+
+  // Check that the entity translation has not been removed.
+  // See https://www.drupal.org/i/3568699.
+  if ($entity instanceof ContentEntityInterface) {
+    $langcode = $entity->language()->getId();
+    if (!$entity->hasTranslation($langcode)) {
+      return NULL;
+    }
   }
 
   $item = $entity->get($field)->first();

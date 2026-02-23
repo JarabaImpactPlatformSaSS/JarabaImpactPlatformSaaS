@@ -9,3 +9,9 @@ jaraba_customer_success.calculate_scores:
   route_name: jaraba_customer_success.admin.recalculate
   appears_on:
     - jaraba_customer_success.admin.dashboard
+
+jaraba_customer_success.add_retention_profile:
+  title: 'Add Retention Profile'
+  route_name: entity.vertical_retention_profile.add_form
+  appears_on:
+    - entity.vertical_retention_profile.collection

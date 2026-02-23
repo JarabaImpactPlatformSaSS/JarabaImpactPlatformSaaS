@@ -231,11 +231,13 @@
           var result = validateContainer(iframe.contentDocument.body);
 
           // Enviar al server para validacion completa.
+          var csrfToken = drupalSettings.csrfToken || drupalSettings.jarabaCanvas?.csrfToken || '';
           fetch('/api/v1/page-builder/accessibility/validate', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-Token': csrfToken,
             },
             body: JSON.stringify({
               html: iframe.contentDocument.body.innerHTML,

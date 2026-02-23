@@ -3,7 +3,7 @@
  * @file
  * _auth-social-buttons.html.twig
  *
- * Botones OAuth para Google y LinkedIn via social_auth contrib.
+ * Botones OAuth para Google, LinkedIn y Microsoft via social_auth contrib.
  * Se incluye en page--auth.html.twig para login y registro.
  *
  * Variables:
@@ -45,5 +45,19 @@
       </svg>
       <span>LinkedIn</span>
     </a>
+
+    {# Microsoft OAuth #}
+    <a href="/user/login/microsoft" class="auth-social__btn auth-social__btn--microsoft"
+       data-track-cta="social_auth_microsoft"
+       data-track-position="auth_form">
+      <svg class="auth-social__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+        <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
+        <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
+        <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
+      </svg>
+      <span>Microsoft</span>
+    </a>
   </div>
 </div>
+

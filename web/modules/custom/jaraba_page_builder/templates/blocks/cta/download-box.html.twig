@@ -15,7 +15,8 @@
 {% set file_type = content.file_type|default('pdf') %}
 
 <section class="jaraba-download-box jaraba-download-box--{{ bg_class }} jaraba-block"
-         data-block-type="cta_download_box">
+         data-block-type="cta_download_box"
+         aria-label="{{ title|default('Cta Download Box') }}">
   <div class="jaraba-block__container">
     <div class="jaraba-download-box__wrapper">
       

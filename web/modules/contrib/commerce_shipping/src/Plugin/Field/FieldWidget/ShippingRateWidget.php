@@ -3,6 +3,7 @@
 namespace Drupal\commerce_shipping\Plugin\Field\FieldWidget;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\commerce_shipping\ShippingRate;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\Attribute\FieldWidget;
@@ -84,6 +85,13 @@ class ShippingRateWidget extends WidgetBase implements ContainerFactoryPluginInt
         '#shipment' => $shipment,
       ];
       return $element;
+    }
+
+    // Sort the rates by the amount.
+    if (count($rates) > 1) {
+      uasort($rates, function (ShippingRate $rate1, ShippingRate $rate2) {
+        return $rate1->getAmount()->compareTo($rate2->getAmount());
+      });
     }
 
     $default_rate = $this->shipmentManager->selectDefaultRate($shipment, $rates);

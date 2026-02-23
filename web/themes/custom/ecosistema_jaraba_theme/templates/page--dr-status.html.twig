@@ -3,6 +3,10 @@
  * @file
  * page--dr-status.html.twig — Dashboard de Disaster Recovery y Status Page.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Template zero-region para /admin/jaraba/dr, /status y rutas de DR.
  * Layout full-width mobile-first con parciales reutilizables.
  *
@@ -17,6 +21,9 @@
  * - _header.html.twig: Header con menu movil (reutilizado)
  * - _footer.html.twig: Footer configurable (reutilizado)
  *
+ * Body classes 'page-dr-status', 'compliance-page', 'dashboard-page',
+ * 'full-width-layout' deben añadirse en hook_preprocess_html().
+ *
  * Plan Implementacion Stack Compliance Legal N1 v1 — FASE 0.
  *
  * @see ecosistema_jaraba_theme.theme para preprocess
@@ -26,20 +33,6 @@
 {% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
 
 {{ attach_library('jaraba_dr/dr-dashboard') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-dr-status', 'compliance-page', 'dashboard-page', 'full-width-layout') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Saltar al contenido principal{% endtrans %}
-  </a>
 
   {# HEADER — Partial reutilizable con menu movil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -87,8 +80,3 @@
     theme_settings: theme_settings
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

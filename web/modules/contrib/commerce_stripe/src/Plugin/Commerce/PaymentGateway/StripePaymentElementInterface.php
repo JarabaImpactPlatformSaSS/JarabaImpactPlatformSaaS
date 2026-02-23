@@ -18,12 +18,20 @@ use Stripe\SetupIntent;
 interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, SupportsAuthorizationsInterface, SupportsRefundsInterface, SupportsStoredPaymentMethodsInterface {
 
   /**
+   * Get the Stripe API version of the payment gateway.
+   *
+   * @return string
+   *   The Stripe API version.
+   */
+  public function getApiVersion(): string;
+
+  /**
    * Get the Stripe API Publishable key set for the payment gateway.
    *
    * @return string
    *   The Stripe API publishable key.
    */
-  public function getPublishableKey();
+  public function getPublishableKey(): string;
 
   /**
    * Get the Stripe API Secret key set for the payment gateway.
@@ -31,7 +39,7 @@ interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, 
    * @return string
    *   The Stripe API secret key.
    */
-  public function getSecretKey();
+  public function getSecretKey(): string;
 
   /**
    * Get the Stripe webhook signing secret.
@@ -39,7 +47,7 @@ interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, 
    * @return string
    *   The Stripe webhook signing secret.
    */
-  public function getWebhookSigningSecret();
+  public function getWebhookSigningSecret(): string;
 
   /**
    * Get the Stripe payment_method_usage key for the payment gateway.
@@ -47,7 +55,7 @@ interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, 
    * @return string
    *   The payment_method_usage key for the payment gateway.
    */
-  public function getPaymentMethodUsage();
+  public function getPaymentMethodUsage(): string;
 
   /**
    * Get the Stripe capture_method for the payment gateway.
@@ -58,12 +66,20 @@ interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, 
   public function getCaptureMethod(): ?string;
 
   /**
-   * Get the Stripe checkout_form_display_label key for the payment gateway.
+   * Get the Stripe checkout_form_display_label array for the payment gateway.
    *
-   * @return string
-   *   The checkout_form_display_label key for the payment gateway.
+   * @return array
+   *   The checkout_form_display_label array for the payment gateway.
    */
-  public function getCheckoutFormDisplayLabel();
+  public function getCheckoutFormDisplayLabel(): array;
+
+  /**
+   * Get the Stripe express_checkout key for the payment gateway.
+   *
+   * @return array
+   *   The express_checkout key for the payment gateway.
+   */
+  public function getExpressCheckout(): array;
 
   /**
    * Create an intent for an order.
@@ -81,17 +97,15 @@ interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, 
    *
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The order.
-   * @param bool|array $intent_attributes
-   *   (optional) Either an array of intent attributes or a boolean indicating
-   *   whether the intent capture is automatic or manual. Passing a boolean is
-   *   deprecated in 1.0-rc6. From 2.0 this parameter must be an array.
+   * @param array $intent_attributes
+   *   (optional) An array of intent attributes.
    * @param \Drupal\commerce_payment\Entity\PaymentInterface|null $payment
    *   (optional) The payment.
    *
    * @return \Stripe\PaymentIntent
    *   The payment intent.
    */
-  public function createPaymentIntent(OrderInterface $order, $intent_attributes = [], PaymentInterface $payment = NULL);
+  public function createPaymentIntent(OrderInterface $order, array $intent_attributes = [], ?PaymentInterface $payment = NULL): PaymentIntent;
 
   /**
    * Extracts address from the given Profile and formats it for Stripe.
@@ -108,7 +122,7 @@ interface StripePaymentElementInterface extends OffsitePaymentGatewayInterface, 
    *   - name: The full name of the customer.
    *   - address: The address array.
    */
-  public function getFormattedAddress(ProfileInterface $profile, $type = 'billing'): ?array;
+  public function getFormattedAddress(ProfileInterface $profile, string $type = 'billing'): ?array;
 
   /**
    * Get the intent.

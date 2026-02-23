@@ -1,4 +1,9 @@
 _core:
   default_config_hash: 4qVz27mvzjCZOQkd03vi4Ipqcf8m53p6xPVW-G0tXIA
 default_transport: smtp_ionos
-override: {  }
+override:
+  commerce_order_type: 3
+  update: 3
+  user: 2
+  contact_form: 3
+  contact: 3

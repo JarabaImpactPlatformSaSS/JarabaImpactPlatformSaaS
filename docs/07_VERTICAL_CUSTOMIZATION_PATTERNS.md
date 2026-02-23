@@ -1,24 +1,45 @@
 # Patrones de Customización por Vertical
 
-> **Versión**: 1.1.0  
-> **Última actualización**: 2026-01-10 15:15
+> **Versión**: 2.1.0
+> **Ultima actualizacion**: 2026-02-20
 
 ## 1. Arquitectura Multi-Vertical
 
-La plataforma Jaraba SaaS implementa un modelo **multi-vertical** donde cada vertical (ej: AgroConecta, ImpactHub) puede tener configuraciones, features y agentes IA específicos.
+La plataforma Jaraba SaaS implementa un modelo **multi-vertical** donde cada vertical puede tener configuraciones, features y agentes IA específicos.
+
+### 1.1 Verticales Activos en Producción
+
+| Vertical | Machine Name | Design Tokens | Preview Images (Page Builder) |
+|----------|-------------|---------------|------------------------------|
+| **AgroConecta** | `agroconecta` | `--ej-agro-*` | 11/11 ✅ (verde-dorado) |
+| **ComercioConecta** | `comercioconecta` | `--ej-comercio-*` | 11/11 ✅ (naranja-ámbar) |
+| **Empleabilidad** | `empleabilidad` | `--ej-empleo-*` | 11/11 ✅ (azul-teal) |
+| **Emprendimiento** | `emprendimiento` | `--ej-emprende-*` | 11/11 ✅ (púrpura-violeta) |
+| **ServiciosConecta** | `serviciosconecta` | `--ej-servicios-*` | 11/11 ✅ (teal-cyan) |
+| **JarabaLex** | `jarabalex` | `--ej-legal-*` | 11/11 ✅ (navy-dorado #1E3A5F + #C8A96E) |
 
 ```mermaid
 graph TD
     Platform[Jaraba SaaS Platform]
     V1[Vertical: AgroConecta]
-    V2[Vertical: ImpactHub]
+    V2[Vertical: ComercioConecta]
+    V3[Vertical: Empleabilidad]
+    V4[Vertical: Emprendimiento]
+    V5[Vertical: ServiciosConecta]
+    V6[Vertical: JarabaLex]
     T1[Tenant: Cooperativa Aceites]
-    T2[Tenant: Academia Talento]
+    T2[Tenant: Tienda Local]
+    T3[Tenant: Despacho Jurídico]
     
     Platform --> V1
     Platform --> V2
+    Platform --> V3
+    Platform --> V4
+    Platform --> V5
+    Platform --> V6
     V1 --> T1
     V2 --> T2
+    V6 --> T3
 ```
 
 ## 2. Entidad Vertical
@@ -174,12 +195,30 @@ class MyController {
 }
 ```
 
-## 7. Roadmap
+## 7. Capacidades Cross-Vertical
+
+### 7.1 Mensajeria Segura (jaraba_messaging)
+
+El modulo `jaraba_messaging` soporta conversaciones **contextualizadas por vertical** via el campo `context_type`:
+
+| context_type | Vertical | Caso de Uso |
+|-------------|----------|-------------|
+| `service_booking` | ServiciosConecta | Comunicacion profesional-cliente sobre una reserva |
+| `legal_case` | JarabaLex | Consulta abogado-cliente con confidencialidad |
+| `mentoring` | Emprendimiento | Mentorias entre mentores y emprendedores |
+| `job_application` | Empleabilidad | Comunicacion candidato-empresa sobre oferta |
+| `order` | AgroConecta / ComercioConecta | Consultas sobre pedidos y trazabilidad |
+| `general` | Todos | Conversaciones generales sin contexto especifico |
+
+Cada conversacion hereda el `tenant_id` y las claves de cifrado son per-tenant (Argon2id KDF). Los permisos y roles de participante (`owner`, `member`, `observer`) permiten control granular por vertical.
+
+## 8. Roadmap
 
 | Item | Estado | Prioridad |
 |------|--------|-----------|
 | Features como config entity | ✅ Completado | - |
 | Agentes IA como config entity | ✅ Completado | - |
+| Mensajeria segura cross-vertical | ✅ Completado (jaraba_messaging) | - |
 | UI para theme_overrides | ⏸️ Planeado | Alta |
 | Herencia de features (Vertical → Plan) | ⏸️ Planeado | Baja |
 
@@ -189,5 +228,7 @@ class MyController {
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-20 | **2.1.0** | Seccion 7 nueva: Capacidades Cross-Vertical — documentacion de `jaraba_messaging` como servicio cross-vertical con context_type por vertical. Tabla de 6 context_types con casos de uso. Roadmap actualizado (messaging como completado). |
+| 2026-02-20 | 2.0.0 | Actualizacion con los 6 verticales activos en produccion. Tabla de design tokens y estado de preview images por vertical. |
 | 2026-01-10 | 1.0.0 | Creación inicial con features hardcodeadas |
 | 2026-01-10 | 1.1.0 | Actualización: Features y AIAgents ahora son config entities |

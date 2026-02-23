@@ -14,7 +14,8 @@
 {% set align_class = content.alignment|default('left') %}
 
 <section class="jaraba-rich-text jaraba-rich-text--{{ bg_class }} jaraba-block"
-         data-block-type="content_rich_text">
+         data-block-type="content_rich_text"
+         aria-label="{{ title|default('Content Rich Text') }}">
   <div class="jaraba-block__container">
     <div class="jaraba-rich-text__wrapper jaraba-rich-text__wrapper--{{ width_class }} jaraba-rich-text__wrapper--{{ align_class }}">
       

@@ -57,6 +57,10 @@ jaraba_job_board.apply:
   requirements:
     _permission: 'apply to jobs'
     _csrf_token: 'TRUE'
+  options:
+    parameters:
+      job_posting:
+        type: entity:job_posting
   methods: [GET, POST]
 
 # --- Rutas de Empleadores ---

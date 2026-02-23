@@ -852,56 +852,63 @@ function _jaraba_job_board_create_inapp_notification(int $userId, array $matches
  */
 function jaraba_job_board_preprocess_job_posting_detail(array &$variables): void {
   $job = $variables['job'] ?? NULL;
-  if (!$job) {
+  if (!$job || !is_array($job)) {
     return;
   }
 
-  // Preparar datos para Schema.org.
+  // $job is a plain array passed from JobSearchController::detail().
+  // Preparar datos para Schema.org usando array access.
   $jobData = [
-    'title' => $job->getTitle() ?? '',
-    'description' => $job->get('description')->value ?? '',
-    'date_posted' => $job->getCreatedTime() ? date('Y-m-d', $job->getCreatedTime()) : date('Y-m-d'),
-    'employment_type' => _jaraba_job_board_map_employment_type($job->getJobType() ?? ''),
+    'title' => $job['title'] ?? '',
+    'description' => $job['description'] ?? '',
+    'date_posted' => !empty($job['created']) ? date('Y-m-d', $job['created']) : date('Y-m-d'),
+    'employment_type' => _jaraba_job_board_map_employment_type($job['job_type'] ?? ''),
   ];
 
   // Fecha de expiración.
-  if ($job->hasField('expires') && !$job->get('expires')->isEmpty()) {
-    $jobData['valid_through'] = date('Y-m-d\TH:i:sP', $job->get('expires')->value);
+  if (!empty($job['expires'])) {
+    $jobData['valid_through'] = date('Y-m-d\TH:i:sP', $job['expires']);
   } else {
     $jobData['valid_through'] = date('Y-m-d\TH:i:sP', strtotime('+30 days'));
   }
 
   // Ubicación.
-  if ($job->hasField('location_city') && !$job->get('location_city')->isEmpty()) {
-    $jobData['city'] = $job->get('location_city')->value;
-  }
-  if ($job->hasField('location_region') && !$job->get('location_region')->isEmpty()) {
-    $jobData['region'] = $job->get('location_region')->value;
+  if (!empty($job['location'])) {
+    $jobData['city'] = $job['location'];
   }
 
   // Trabajo remoto.
-  if ($job->hasField('remote_type') && $job->getRemoteType() === 'full_remote') {
+  if (!empty($job['remote_type']) && $job['remote_type'] === 'full_remote') {
     $jobData['remote_work'] = TRUE;
   }
 
   // Salario.
-  $salaryRange = $job->getSalaryRange();
-  if (!empty($salaryRange['min']) && !empty($salaryRange['max'])) {
+  $salaryRange = $job['salary'] ?? [];
+  if (is_array($salaryRange) && !empty($salaryRange['min']) && !empty($salaryRange['max'])) {
     $jobData['salary_min'] = $salaryRange['min'];
     $jobData['salary_max'] = $salaryRange['max'];
     $jobData['salary_period'] = $salaryRange['period'] ?? 'YEAR';
   }
 
   // Skills.
-  $skills = $job->getSkillsRequired();
+  $skills = $job['skills'] ?? [];
   if (!empty($skills)) {
-    $jobData['skills'] = $skills;
+    $jobData['skills'] = is_array($skills) ? array_column($skills, 'name') : [];
   }
 
   // Datos del empleador.
   $tenant = [];
   $employer = $variables['employer'] ?? NULL;
-  if ($employer) {
+  if ($employer && is_array($employer)) {
+    $tenant['name'] = $employer['name'] ?? '';
+    if (!empty($employer['website'])) {
+      $tenant['url'] = $employer['website'];
+    }
+    if (!empty($employer['logo'])) {
+      $tenant['logo'] = $employer['logo'];
+    }
+  }
+  elseif ($employer && is_object($employer)) {
     $tenant['name'] = $employer->label() ?? $employer->getDisplayName() ?? '';
     if ($employer->hasField('field_website') && !$employer->get('field_website')->isEmpty()) {
       $tenant['url'] = $employer->get('field_website')->value;

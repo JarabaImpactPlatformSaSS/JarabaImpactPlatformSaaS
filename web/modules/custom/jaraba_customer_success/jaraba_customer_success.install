@@ -20,3 +20,80 @@ function jaraba_customer_success_install(): void {
 function jaraba_customer_success_uninstall(): void {
   \Drupal::configFactory()->getEditable('jaraba_customer_success.settings')->delete();
 }
+
+/**
+ * Install Vertical Retention Profile and Seasonal Churn Prediction entities.
+ * Seed 5 vertical retention profiles from YAML configuration.
+ */
+function jaraba_customer_success_update_10001(): void {
+  // 1. Install new entity schemas.
+  $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  // Install VerticalRetentionProfile entity type.
+  $entityType = $entityTypeManager->getDefinition('vertical_retention_profile');
+  if ($entityType) {
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+  }
+
+  // Install SeasonalChurnPrediction entity type.
+  $entityType = $entityTypeManager->getDefinition('seasonal_churn_prediction');
+  if ($entityType) {
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+  }
+
+  // 2. Seed vertical retention profiles from YAML files.
+  $configPath = \Drupal::service('extension.list.module')
+    ->getPath('jaraba_customer_success') . '/config/install';
+
+  $verticals = [
+    'agroconecta',
+    'comercioconecta',
+    'serviciosconecta',
+    'empleabilidad',
+    'emprendimiento',
+  ];
+
+  $storage = $entityTypeManager->getStorage('vertical_retention_profile');
+
+  foreach ($verticals as $vertical) {
+    $yamlFile = $configPath . '/jaraba_customer_success.retention_profile.' . $vertical . '.yml';
+    if (!file_exists($yamlFile)) {
+      continue;
+    }
+
+    $data = \Symfony\Component\Yaml\Yaml::parseFile($yamlFile);
+    if (!$data) {
+      continue;
+    }
+
+    // Check if already exists.
+    $existing = $storage->loadByProperties(['vertical_id' => $vertical]);
+    if (!empty($existing)) {
+      continue;
+    }
+
+    // Create entity with JSON-encoded fields.
+    $jsonFields = [
+      'seasonality_calendar', 'churn_risk_signals', 'health_score_weights',
+      'critical_features', 'reengagement_triggers', 'upsell_signals',
+      'seasonal_offers', 'expected_usage_pattern', 'playbook_overrides',
+    ];
+
+    $entityData = [];
+    foreach ($data as $key => $value) {
+      if (in_array($key, $jsonFields, TRUE) && (is_array($value))) {
+        $entityData[$key] = json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+      }
+      else {
+        $entityData[$key] = $value;
+      }
+    }
+
+    $entity = $storage->create($entityData);
+    $entity->save();
+  }
+
+  \Drupal::messenger()->addStatus(t('Vertical Retention Playbooks: 2 entity types installed, 5 profiles seeded.'));
+}

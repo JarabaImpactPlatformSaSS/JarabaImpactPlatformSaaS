@@ -1,0 +1,27 @@
+uuid: 2b6a75c9-9f26-4ef2-a1be-c8e7108b9d06
+langcode: es
+status: true
+dependencies:
+  module:
+    - user
+id: user.register_pending_approval
+configuration:
+  email_subject:
+    value: 'Solicitud de cuenta en [site:name] (pendiente de aprobación)'
+  email_body:
+    content:
+      value: |
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #FFFFFF;">
+          <tr>
+            <td style="padding: 48px 40px;">
+              <h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">¡Gracias por registrarte!</h1>
+              <p style="margin: 0 0 16px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+                [user:display-name], tu solicitud de cuenta en <strong style="color: #00A9A5;">[site:name]</strong> está pendiente de aprobación.
+              </p>
+              <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+                Una vez aprobada, recibirás otro correo con las instrucciones para iniciar sesión y establecer tu contraseña.
+              </p>
+            </td>
+          </tr>
+        </table>
+      format: email_html

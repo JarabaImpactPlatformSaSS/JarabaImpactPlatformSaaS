@@ -67,7 +67,7 @@ class PageAttachmentsHooks
       'pwa_theme_color',
     ];
 
-    // Apple Mobile Web App Capable
+    // Apple Mobile Web App Capable (iOS Safari — required for Add to Home Screen)
     $attachments['#attached']['html_head'][] = [
       [
         '#type' => 'html_tag',
@@ -78,6 +78,19 @@ class PageAttachmentsHooks
         ],
       ],
       'pwa_apple_capable',
+    ];
+
+    // Mobile Web App Capable (W3C Standard — Chrome/Android)
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'mobile-web-app-capable',
+          'content' => 'yes',
+        ],
+      ],
+      'pwa_mobile_capable',
     ];
 
     // Apple Status Bar Style

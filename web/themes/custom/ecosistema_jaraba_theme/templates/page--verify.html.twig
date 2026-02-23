@@ -3,6 +3,10 @@
  * @file
  * page--verify.html.twig - Página de verificación pública de credenciales.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template. El wrapper
+ * DOCTYPE/html/head/body lo proporciona html.html.twig. Este template
+ * solo genera el contenido dentro de body.
+ *
  * DISEÑO PREMIUM con header de partículas animadas.
  * Layout: Header hero top con partículas + Contenido de verificación.
  *
@@ -16,20 +20,6 @@
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 
 {{ attach_library('ecosistema_jaraba_theme/global') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-verify', 'credential-verify-page') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Skip to main content{% endtrans %}
-  </a>
 
   {# ========================================================================
      HEADER PRINCIPAL del sitio - Partial reutilizable
@@ -83,11 +73,6 @@
     theme_settings: theme_settings|default({})
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>
 
 {# ============================================================================
    ESTILOS CRÍTICOS INLINE para el hero con partículas

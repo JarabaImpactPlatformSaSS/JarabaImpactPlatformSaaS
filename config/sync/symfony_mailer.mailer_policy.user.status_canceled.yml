@@ -1,0 +1,26 @@
+uuid: 6d767c8e-69c9-4a35-9d15-24788420cdf8
+langcode: es
+status: true
+dependencies:
+  module:
+    - user
+id: user.status_canceled
+configuration:
+  email_subject:
+    value: 'Tu cuenta en [site:name] ha sido cancelada'
+  email_body:
+    content:
+      value: |
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #FFFFFF;">
+          <tr>
+            <td style="padding: 48px 40px;">
+              <h1 style="margin: 0 0 8px 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; color: #1A1A2E; line-height: 1.2;">Cuenta cancelada</h1>
+              <p style="margin: 0; font-family: 'Outfit', 'Segoe UI', Arial, sans-serif; font-size: 16px; color: #64748B; line-height: 1.5;">
+                [user:display-name], tu cuenta en <strong>[site:name]</strong> ha sido cancelada.
+              </p>
+            </td>
+          </tr>
+        </table>
+      format: email_html
+  email_skip_sending:
+    message: 'Notificación desactivada en configuración'

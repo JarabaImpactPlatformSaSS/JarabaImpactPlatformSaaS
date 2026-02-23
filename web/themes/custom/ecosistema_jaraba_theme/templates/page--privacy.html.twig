@@ -3,6 +3,10 @@
  * @file
  * page--privacy.html.twig — Dashboard de Privacidad GDPR.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Template zero-region para /privacy y rutas de privacidad.
  * Layout full-width mobile-first con parciales reutilizables.
  *
@@ -18,6 +22,9 @@
  * - _footer.html.twig: Footer configurable (reutilizado)
  * - _copilot-fab.html.twig: FAB de copiloto contextual
  *
+ * Body classes 'page-privacy', 'compliance-page', 'dashboard-page',
+ * 'full-width-layout' deben añadirse en hook_preprocess_html().
+ *
  * Plan Implementacion Stack Compliance Legal N1 v1 — FASE 0.
  *
  * @see ecosistema_jaraba_theme.theme para preprocess
@@ -27,20 +34,6 @@
 {% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
 
 {{ attach_library('jaraba_privacy/privacy-dashboard') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-
-<body{{ attributes.addClass('page-privacy', 'compliance-page', 'dashboard-page', 'full-width-layout') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Saltar al contenido principal{% endtrans %}
-  </a>
 
   {# HEADER — Partial reutilizable con menu movil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -96,8 +89,3 @@
     greeting: '¡Hola! Soy tu asistente de privacidad GDPR. Puedo ayudarte con DPAs, cookies, solicitudes ARCO-POL, brechas de seguridad y registro de actividades de tratamiento. ¿En qué puedo asistirte?'|t
   } %}
 
-  {# Drupal Required Placeholders #}
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-
-</body>
-</html>

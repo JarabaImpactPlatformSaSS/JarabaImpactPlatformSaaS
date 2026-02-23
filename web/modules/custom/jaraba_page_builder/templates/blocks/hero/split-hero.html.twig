@@ -15,7 +15,8 @@
 {% set media_position = content.media_position|default('right') %}
 
 <section class="jaraba-split-hero jaraba-split-hero--{{ bg_class }} jaraba-split-hero--media-{{ media_position }} jaraba-block"
-         data-block-type="split_hero">
+         data-block-type="split_hero"
+         aria-label="{{ title|default('Split Hero') }}">
   <div class="jaraba-block__container">
     <div class="jaraba-split-hero__wrapper">
       

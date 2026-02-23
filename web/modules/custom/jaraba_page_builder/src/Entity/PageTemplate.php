@@ -196,12 +196,17 @@ class PageTemplate extends ConfigEntityBase implements PageTemplateInterface
      *
      * Implementa fallback automático: si no hay preview_image configurado,
      * intenta detectar el PNG por convención de nombre (ID del template).
+     *
+     * Incluye cache-busting automático (?v=<mtime>) para evitar que
+     * caches de servidor web (Nginx) o navegador sirvan imágenes obsoletas.
      */
     public function getPreviewImage(): string
     {
         // Prioridad 1: Valor explícito en configuración
         if (!empty($this->preview_image)) {
-            return $this->preview_image;
+            $diskPath = DRUPAL_ROOT . $this->preview_image;
+            $version = file_exists($diskPath) ? filemtime($diskPath) : 0;
+            return $this->preview_image . '?v=' . $version;
         }
 
         // Prioridad 2: Auto-detección por convención de nombre
@@ -212,7 +217,8 @@ class PageTemplate extends ConfigEntityBase implements PageTemplateInterface
         $fullPath = DRUPAL_ROOT . $basePath . $filename;
 
         if (file_exists($fullPath)) {
-            return $basePath . $filename;
+            $version = filemtime($fullPath);
+            return $basePath . $filename . '?v=' . $version;
         }
 
         return '';

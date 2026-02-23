@@ -56,7 +56,8 @@ class TextTranslator implements TextTranslatorInterface {
         $providerConfig['model_id']
       );
 
-      $cleaned = trim(trim($translation->getNormalized(), '```'), ' ');
+      $cleaned = str_replace('```html', '', $translation->getNormalized());
+      $cleaned = trim(trim($cleaned, '```'), ' ');
       return trim($cleaned, '"');
     }
     catch (\Throwable $e) {

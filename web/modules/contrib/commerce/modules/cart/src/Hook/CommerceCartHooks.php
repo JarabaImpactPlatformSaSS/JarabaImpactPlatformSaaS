@@ -3,7 +3,6 @@
 namespace Drupal\commerce_cart\Hook;
 
 use Drupal\commerce\CronInterface;
-use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\CartSessionInterface;
 use Drupal\commerce_cart\Form\AddToCartForm;
 use Drupal\commerce_order\Entity\OrderInterface;
@@ -24,6 +23,7 @@ use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AutowireServiceClosure;
 
 /**
  * Hook implementations for Commerce Cart.
@@ -39,7 +39,7 @@ class CommerceCartHooks {
    *   The commerce cart cron service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
-   * @param \Drupal\commerce_cart\CartProviderInterface $cartProvider
+   * @param \Closure $cartProvider
    *   The cart provider.
    * @param \Drupal\commerce_order\OrderAssignmentInterface $orderAssignment
    *   The order assignment.
@@ -52,7 +52,8 @@ class CommerceCartHooks {
     #[Autowire(service: 'commerce_cart.cron')]
     protected readonly CronInterface $cron,
     protected readonly ModuleHandlerInterface $moduleHandler,
-    protected readonly CartProviderInterface $cartProvider,
+    #[AutowireServiceClosure('commerce_cart.cart_provider')]
+    protected \Closure $cartProvider,
     protected readonly OrderAssignmentInterface $orderAssignment,
     protected readonly CartSessionInterface $cartSession,
     protected readonly EntityTypeManagerInterface $entityTypeManager,
@@ -307,7 +308,9 @@ class CommerceCartHooks {
     // Assign the anonymous user's carts to the logged-in account.
     // This will only affect the carts that are in the user's session.
     $anonymous = new AnonymousUserSession();
-    $carts = $this->cartProvider->getCarts($anonymous);
+    /** @var \Drupal\commerce_cart\CartProviderInterface $cart_provider */
+    $cart_provider = ($this->cartProvider)();
+    $carts = $cart_provider->getCarts($anonymous);
     $this->orderAssignment->assignMultiple($carts, $account);
   }
 

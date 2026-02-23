@@ -57,3 +57,15 @@ expansion-pipeline:
     - core/drupal
     - core/drupalSettings
     - core/once
+
+retention-dashboard:
+  version: '1.0'
+  css:
+    theme:
+      css/retention-dashboard.css: {}
+  js:
+    js/retention-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

@@ -391,7 +391,9 @@ class TemplateRegistryService
                     'id' => $templateId,
                     'label' => $template['label'] ?? $templateId,
                     'description' => $template['description'] ?? '',
-                    'preview_image' => $template['preview_image'] ?? '',
+                    'preview_image' => !empty($template['preview_image'])
+                        ? $template['preview_image'] . '?v=' . (file_exists(DRUPAL_ROOT . $template['preview_image']) ? filemtime(DRUPAL_ROOT . $template['preview_image']) : time())
+                        : '',
                     'is_premium' => $isPremium,
                     'is_accessible' => $isAccessible,
                     'plans_required' => $template['plans_required'] ?? ['starter'],
@@ -614,7 +616,11 @@ class TemplateRegistryService
         // Preferir PNG preview_image cuando esté disponible.
         if (!empty($template['preview_image'])) {
             $label = htmlspecialchars($template['label'] ?? '', ENT_QUOTES, 'UTF-8');
-            $src = htmlspecialchars($template['preview_image'], ENT_QUOTES, 'UTF-8');
+            $imgPath = $template['preview_image'];
+            // Cache-busting: usar mtime del archivo para invalidar caché del servidor web.
+            $fullDiskPath = DRUPAL_ROOT . $imgPath;
+            $version = file_exists($fullDiskPath) ? filemtime($fullDiskPath) : time();
+            $src = htmlspecialchars($imgPath, ENT_QUOTES, 'UTF-8') . '?v=' . $version;
             return '<img src="' . $src . '" alt="' . $label . '" '
                 . 'width="120" height="80" loading="lazy" '
                 . 'style="border-radius:6px; object-fit:cover; width:100%; height:auto;" />';

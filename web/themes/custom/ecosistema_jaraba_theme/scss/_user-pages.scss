@@ -1,11 +1,11 @@
 // =============================================================================
-// User Pages - Perfil, editar, logout, contacto, cancelar
+// User Pages - Premium Profile + Edit/Logout/Contact/Cancel
 // =============================================================================
 //
 // Template: page--user.html.twig
-// Patron: Frontend Page Pattern (header + contenido limpio + footer)
+// Patrón: Frontend Page Pattern (header + premium layout + footer)
 //
-// @since 2026-02-13
+// @since 2026-02-19 – Premium redesign
 // =============================================================================
 
 @use 'variables' as *;
@@ -32,12 +32,599 @@
 .user-main {
   width: 100%;
   min-height: calc(100vh - 160px);
+  // Compensar el header fijo (position: fixed, ~72px de alto)
+  padding-top: 96px;
+  background: linear-gradient(180deg, #f0f4f8 0%, #e8edf3 50%, #f8fafc 100%);
+
+  // Compensar toolbar de admin cuando está logueado
+  .toolbar-fixed & {
+    padding-top: calc(96px + 39px);
+  }
+
+  .toolbar-fixed.toolbar-tray-open.toolbar-horizontal & {
+    padding-top: calc(96px + 79px);
+  }
 }
 
+// =============================================================================
+// SYSTEM MESSAGES
+// =============================================================================
+.user-messages {
+  max-width: 1100px;
+  margin: 0 auto $ej-spacing-lg;
+  padding: 0 $ej-spacing-lg;
+}
+
+// =============================================================================
+// ANIMATIONS
+// =============================================================================
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// =============================================================================
+// PROFILE VIEW — Premium Design
+// =============================================================================
+.user-profile {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 $ej-spacing-lg $ej-spacing-xl;
+
+  @include respond-to(xs) {
+    padding: 0 $ej-spacing-md $ej-spacing-lg;
+  }
+}
+
+// =============================================================================
+// HERO PROFILE CARD — Glassmorphism
+// =============================================================================
+.profile-hero {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: $ej-spacing-xl;
+  animation: fadeInUp 0.6s ease both;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  &__gradient {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        var(--ej-color-corporate, #233D63) 0%,
+        #2B4A7A 30%,
+        var(--ej-color-azul-verdoso, #2B7A78) 70%,
+        var(--ej-color-innovation, #00A9A5) 100%);
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-xl;
+    padding: $ej-spacing-xl * 1.5 $ej-spacing-xl;
+
+    @include respond-to(sm) {
+      flex-direction: column;
+      text-align: center;
+      padding: $ej-spacing-xl $ej-spacing-lg;
+    }
+
+    @include respond-to(xs) {
+      padding: $ej-spacing-lg $ej-spacing-md;
+    }
+  }
+
+  // ── Avatar ──────────────────────────────────────────────────────────────
+  &__avatar {
+    position: relative;
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+
+    @include respond-to(xs) {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  &__avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &__avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    @include respond-to(xs) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__avatar-status {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10B981;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  }
+
+  // ── Info ─────────────────────────────────────────────────────────────────
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 $ej-spacing-xs;
+    line-height: 1.2;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    @include respond-to(xs) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__email {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 $ej-spacing-md;
+
+    @include respond-to(xs) {
+      font-size: 0.875rem;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $ej-spacing-sm $ej-spacing-md;
+
+    @include respond-to(sm) {
+      justify-content: center;
+    }
+  }
+
+  &__roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $ej-spacing-xs;
+  }
+
+  &__role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+  }
+
+  &__member-since {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  // ── Action Buttons ──────────────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-sm;
+    flex-shrink: 0;
+
+    @include respond-to(sm) {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+}
+
+// ── Theme Buttons (scoped to profile-hero to avoid header bleed) ──────────────
+.profile-hero {
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ej-color-corporate, #233D63);
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      background: #f8fafc;
+    }
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// =============================================================================
+// ACCOUNT INFO CARDS
+// =============================================================================
+.account-info {
+  margin-bottom: $ej-spacing-xl;
+  animation: fadeInUp 0.6s ease 0.15s both;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1a202c);
+    margin: 0 0 $ej-spacing-lg;
+
+    .jaraba-icon,
+    img {
+      opacity: 0.7;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $ej-spacing-md;
+
+    @include respond-to(sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__card {
+    display: flex;
+    align-items: flex-start;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-lg;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.35s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.08),
+        0 2px 4px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &__card-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+
+    &--primary {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--ej-color-primary, #4F46E5);
+    }
+
+    &--innovation {
+      background: rgba(0, 169, 165, 0.1);
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+
+    &--impulse {
+      background: rgba(255, 140, 66, 0.1);
+      color: var(--ej-color-impulse, #FF8C42);
+    }
+  }
+
+  &__card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__card-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-color-muted, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__card-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1a202c);
+    word-break: break-all;
+  }
+}
+
+// =============================================================================
+// QUICK ACCESS GRID
+// =============================================================================
+.quick-access {
+  animation: fadeInUp 0.6s ease 0.3s both;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-headings, #1a202c);
+    margin: 0 0 $ej-spacing-lg;
+
+    .jaraba-icon,
+    img {
+      opacity: 0.7;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $ej-spacing-md;
+
+    @include respond-to(sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(xs) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__card {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-lg;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+
+    // Shine effect on hover.
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      transition: left 0.6s ease;
+      pointer-events: none;
+    }
+
+    &:hover::before {
+      left: 150%;
+    }
+
+    &:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    // ── Color variants ────────────────────────────────────────────────────
+    &--primary {
+      --qa-accent: var(--ej-color-primary, #4F46E5);
+
+      &:hover {
+        border-color: rgba(79, 70, 229, 0.3);
+        box-shadow:
+          0 12px 32px rgba(79, 70, 229, 0.12),
+          0 4px 12px rgba(79, 70, 229, 0.08);
+      }
+    }
+
+    &--innovation {
+      --qa-accent: var(--ej-color-innovation, #00A9A5);
+
+      &:hover {
+        border-color: rgba(0, 169, 165, 0.3);
+        box-shadow:
+          0 12px 32px rgba(0, 169, 165, 0.12),
+          0 4px 12px rgba(0, 169, 165, 0.08);
+      }
+    }
+
+    &--impulse {
+      --qa-accent: var(--ej-color-impulse, #FF8C42);
+
+      &:hover {
+        border-color: rgba(255, 140, 66, 0.3);
+        box-shadow:
+          0 12px 32px rgba(255, 140, 66, 0.12),
+          0 4px 12px rgba(255, 140, 66, 0.08);
+      }
+    }
+
+    &--corporate {
+      --qa-accent: var(--ej-color-corporate, #233D63);
+
+      &:hover {
+        border-color: rgba(35, 61, 99, 0.3);
+        box-shadow:
+          0 12px 32px rgba(35, 61, 99, 0.12),
+          0 4px 12px rgba(35, 61, 99, 0.08);
+      }
+    }
+
+    &--danger {
+      --qa-accent: var(--ej-color-danger, #EF4444);
+
+      &:hover {
+        border-color: rgba(239, 68, 68, 0.3);
+        box-shadow:
+          0 12px 32px rgba(239, 68, 68, 0.12),
+          0 4px 12px rgba(239, 68, 68, 0.08);
+      }
+    }
+  }
+
+  &__card-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--qa-accent, var(--ej-color-corporate, #233D63));
+    transition: background 0.3s ease, transform 0.3s ease;
+
+    .quick-access__card:hover & {
+      background: rgba(0, 0, 0, 0.06);
+      transform: scale(1.08);
+    }
+  }
+
+  &__card-label {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1a202c);
+  }
+
+  &__card-arrow,
+  .quick-access__card-arrow {
+    flex-shrink: 0;
+    opacity: 0;
+    width: 16px;
+    height: 16px;
+    transform: translateX(-8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    .quick-access__card:hover & {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+// =============================================================================
+// EDIT/LOGOUT/OTHER VIEWS — Layout limpio existente
+// =============================================================================
 .user-wrapper {
   max-width: 900px;
   margin-inline: auto;
   padding: $ej-spacing-xl $ej-spacing-lg;
+  animation: fadeInUp 0.5s ease both;
 
   @include respond-to(xs) {
     padding: $ej-spacing-lg $ej-spacing-md;
@@ -45,7 +632,7 @@
 }
 
 // =============================================================================
-// SECTION HEADER - Icono + titulo + subtitulo
+// SECTION HEADER - Icono + titulo + subtitulo (edit/logout/etc)
 // =============================================================================
 .user-section-header {
   display: flex;
@@ -103,20 +690,467 @@
 }
 
 // =============================================================================
-// CONTENT AREA - Formulario/vista del usuario
+// CONTENT AREA - Formulario/vista del usuario — Premium Edit
 // =============================================================================
 .user-content-area {
   margin-bottom: $ej-spacing-xl;
 
-  // Formularios dentro de la zona de contenido
+  // ─── BASE FORM ──────────────────────────────────────────────────────────────
   form {
     max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-lg;
   }
 
-  // Campos de formulario
+  // ─── FORM ITEMS — Spacing & typography ──────────────────────────────────────
   .form-item {
     margin-bottom: $ej-spacing-md;
   }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ej-color-headings, #1a202c);
+    letter-spacing: 0.01em;
+  }
+
+  .description {
+    margin-top: 6px;
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, #64748b);
+    line-height: 1.5;
+  }
+
+  // ─── INPUTS — Premium styling ───────────────────────────────────────────────
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--ej-border-color, #e2e8f0);
+    border-radius: 12px;
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    color: var(--ej-text-primary, #1a202c);
+    background: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    outline: none;
+
+    &::placeholder {
+      color: var(--ej-color-muted, #94a3b8);
+    }
+
+    &:hover {
+      border-color: var(--ej-color-corporate, #233D63);
+      background: #fafbfc;
+    }
+
+    &:focus {
+      border-color: var(--ej-color-primary, #4F46E5);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      background: #fff;
+    }
+  }
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-right: 40px;
+  }
+
+  // ─── FIELDSETS → Premium Cards ──────────────────────────────────────────────
+  fieldset.fieldgroup,
+  fieldset.form-composite {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.92) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.35s ease;
+    animation: fadeInUp 0.5s ease both;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.06),
+        0 2px 4px rgba(0, 0, 0, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    legend {
+      float: none;
+      width: 100%;
+      padding: $ej-spacing-md $ej-spacing-lg;
+      margin: 0;
+      font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ej-color-headings, #1a202c);
+      background: linear-gradient(135deg, rgba(35, 61, 99, 0.04) 0%, rgba(35, 61, 99, 0.02) 100%);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      letter-spacing: 0.01em;
+    }
+
+    .fieldset-wrapper {
+      padding: $ej-spacing-lg;
+    }
+
+    // Stagger animation by position
+    &:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    &:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    &:nth-child(6) {
+      animation-delay: 0.3s;
+    }
+
+    &:nth-child(7) {
+      animation-delay: 0.35s;
+    }
+  }
+
+  // ─── DETAILS → Premium Accordions ──────────────────────────────────────────
+  details.js-form-wrapper {
+    margin: 0;
+    border: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.92) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      box-shadow 0.35s ease;
+    animation: fadeInUp 0.5s ease both;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.06),
+        0 2px 4px rgba(0, 0, 0, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    summary {
+      display: flex;
+      align-items: center;
+      gap: $ej-spacing-sm;
+      padding: $ej-spacing-md $ej-spacing-lg;
+      font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ej-color-headings, #1a202c);
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      background: linear-gradient(135deg, rgba(35, 61, 99, 0.04) 0%, rgba(35, 61, 99, 0.02) 100%);
+      border-bottom: 1px solid transparent;
+      transition: background 0.3s ease, border-color 0.3s ease;
+      letter-spacing: 0.01em;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      // Chevron icon
+      &::after {
+        content: '';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-left: auto;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3e%3c/svg%3e");
+        background-size: contain;
+        background-repeat: no-repeat;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        flex-shrink: 0;
+      }
+
+      &:hover {
+        background: rgba(35, 61, 99, 0.06);
+      }
+    }
+
+    &[open] {
+      summary {
+        border-bottom-color: rgba(0, 0, 0, 0.06);
+
+        &::after {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    // Inner content wrapper
+    .details-wrapper {
+      padding: $ej-spacing-lg;
+    }
+  }
+
+  // ─── CHECKBOXES — Custom Premium ────────────────────────────────────────────
+  .form-type-checkbox,
+  .form-type--checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-xs;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border: 2px solid var(--ej-border-color, #cbd5e1);
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      position: relative;
+      margin-top: 2px;
+      transition: all 0.2s ease;
+
+      &:checked {
+        background: var(--ej-color-corporate, #233D63);
+        border-color: var(--ej-color-corporate, #233D63);
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 5px;
+          width: 6px;
+          height: 10px;
+          border: solid #fff;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 3px rgba(35, 61, 99, 0.15);
+      }
+    }
+
+    label {
+      margin-bottom: 0;
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+  }
+
+  // ─── PASSWORD SECTION — Premium ─────────────────────────────────────────────
+  .password-strength {
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: $ej-spacing-sm;
+
+    .password-strength__meter {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--ej-border-color, #e2e8f0);
+      overflow: hidden;
+    }
+
+    .password-strength__indicator {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease, background 0.4s ease;
+    }
+
+    .password-strength__title {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--ej-color-muted, #64748b);
+      margin-top: 4px;
+    }
+  }
+
+  .password-confirm {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  // ─── TABLE ELEMENTS — Clean styling ─────────────────────────────────────────
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+
+    th,
+    td {
+      padding: $ej-spacing-sm $ej-spacing-md;
+      text-align: left;
+      border-bottom: 1px solid var(--ej-border-color, #e2e8f0);
+      font-size: 0.875rem;
+    }
+
+    th {
+      background: rgba(35, 61, 99, 0.04);
+      font-weight: 600;
+      color: var(--ej-color-headings, #1a202c);
+    }
+
+    td {
+      background: #fff;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  // ─── FORM ACTIONS — Premium Sticky Bar ──────────────────────────────────────
+  .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $ej-spacing-md;
+    padding: $ej-spacing-md $ej-spacing-lg;
+    margin: $ej-spacing-lg (
+      -$ej-spacing-lg) (-$ej-spacing-lg
+    );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0 0 16px 16px;
+  animation: fadeInUp 0.5s ease 0.4s both;
+}
+
+// ─── SUBMIT BUTTONS — Premium ───────────────────────────────────────────────
+input[type="submit"],
+button[type="submit"],
+.button--primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 32px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #2B4A7A 100%);
+  color: #fff;
+  font-family: var(--ej-font-family, 'Outfit', sans-serif);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 16px rgba(35, 61, 99, 0.25);
+  letter-spacing: 0.02em;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(35, 61, 99, 0.35);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(35, 61, 99, 0.2);
+  }
+}
+
+// ─── SECONDARY BUTTONS ──────────────────────────────────────────────────────
+.button:not(.button--primary):not([type="submit"]) {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ej-color-corporate, #233D63);
+  font-family: var(--ej-font-family, 'Outfit', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1.5px solid var(--ej-border-color, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: var(--ej-color-corporate, #233D63);
+    transform: translateY(-1px);
+  }
+}
+
+// ─── DRUPAL MESSAGES INSIDE FORM ────────────────────────────────────────────
+.messages {
+  border-radius: 12px;
+  padding: $ej-spacing-md $ej-spacing-lg;
+  margin-bottom: $ej-spacing-md;
+  font-size: 0.875rem;
+  border: none;
+
+  &--status {
+    background: rgba(16, 185, 129, 0.08);
+    color: #065f46;
+  }
+
+  &--warning {
+    background: rgba(245, 158, 11, 0.08);
+    color: #92400e;
+  }
+
+  &--error {
+    background: rgba(239, 68, 68, 0.08);
+    color: #991b1b;
+  }
+}
 }
 
 // =============================================================================

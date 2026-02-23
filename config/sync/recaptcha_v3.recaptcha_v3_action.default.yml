@@ -1,0 +1,8 @@
+uuid: 7b1db8ac-4d7d-4f97-a04f-736ab759ddce
+langcode: es
+status: true
+dependencies: {  }
+id: default
+label: Default
+threshold: 0.5
+challenge: captcha/Math

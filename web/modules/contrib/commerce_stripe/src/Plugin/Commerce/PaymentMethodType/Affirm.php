@@ -17,8 +17,8 @@ class Affirm extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
-    return $this->t('Affirm');
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
+    return $this->t('Affirm')->render();
   }
 
   /**

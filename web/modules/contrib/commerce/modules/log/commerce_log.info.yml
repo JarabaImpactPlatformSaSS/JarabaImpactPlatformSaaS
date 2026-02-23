@@ -3,5 +3,11 @@ type: module
 description: 'Provides activity logs for Commerce entities.'
 package: Commerce
 core_version_requirement: ^10.3 || ^11
+configure: commerce_log.settings
 dependencies:
   - commerce:commerce
+
+# Information added by Drupal.org packaging script on 2026-02-17
+version: '3.3.2'
+project: 'commerce'
+datestamp: 1771359796

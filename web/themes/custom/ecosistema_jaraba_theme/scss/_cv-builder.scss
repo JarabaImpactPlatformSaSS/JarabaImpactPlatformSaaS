@@ -1,0 +1,232 @@
+/**
+ * @file
+ * CV Builder Page — Premium styling for /my-profile/cv.
+ *
+ * Includes: header, template grid, thumbnail cards, preview/download actions.
+ */
+
+.cv-builder-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+// --- Header ---
+.cv-builder__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem 2rem;
+    background: var(--ej-color-surface, #ffffff);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cv-builder__header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cv-builder__header-text {
+    h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--ej-color-text, #1a1a2e);
+        margin: 0;
+    }
+
+    p {
+        margin: 0.25rem 0 0;
+        color: var(--ej-color-text-secondary, #6b7280);
+        font-size: 0.95rem;
+    }
+}
+
+.cv-builder__profile-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.cv-builder__profile-name {
+    font-weight: 600;
+    color: var(--ej-color-text, #1a1a2e);
+    font-size: 0.95rem;
+}
+
+.cv-builder__profile-completion {
+    font-size: 0.85rem;
+    color: var(--ej-color-corporate, #0097A7);
+    font-weight: 500;
+}
+
+// --- Section Title ---
+.cv-builder__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ej-color-text, #1a1a2e);
+    margin-bottom: 1.5rem;
+}
+
+// --- Templates Grid ---
+.cv-builder__templates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+// --- Template Card ---
+.cv-template-card {
+    background: var(--ej-color-surface, #ffffff);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+}
+
+// --- Thumbnail ---
+.cv-template-card__thumbnail {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--ej-color-bg-soft, #f8f9fa);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover img {
+        transform: scale(1.05);
+    }
+}
+
+// --- Icon fallback ---
+.cv-template-card__icon {
+    padding: 1.5rem;
+    text-align: center;
+    background: var(--ej-color-bg-soft, #f8f9fa);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+// --- Card Content ---
+.cv-template-card__name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ej-color-text, #1a1a2e);
+    padding: 1rem 1.25rem 0.25rem;
+}
+
+.cv-template-card__desc {
+    font-size: 0.85rem;
+    color: var(--ej-color-text-secondary, #6b7280);
+    padding: 0 1.25rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+// --- Card Actions ---
+.cv-template-card__actions {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1.25rem;
+    margin-top: auto;
+}
+
+.cv-template-card__preview,
+.cv-template-card__download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.cv-template-card__preview {
+    background: var(--ej-color-bg-soft, #f0f4f8);
+    color: var(--ej-color-corporate, #0097A7);
+    border: 1px solid transparent;
+
+    &:hover {
+        background: var(--ej-color-corporate, #0097A7);
+        color: #fff;
+    }
+}
+
+.cv-template-card__download {
+    background: var(--ej-color-corporate, #0097A7);
+    color: #fff;
+
+    &:hover {
+        background: var(--ej-color-corporate-dark, #00838f);
+        box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3);
+    }
+}
+
+// --- Empty State ---
+.cv-builder__empty {
+    text-align: center;
+    padding: 3rem;
+    background: var(--ej-color-surface, #ffffff);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+    .jaraba-icon {
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    p {
+        max-width: 500px;
+        margin: 0 auto 1.5rem;
+        color: var(--ej-color-text-secondary, #6b7280);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+}
+
+// --- Responsive ---
+@media (max-width: 768px) {
+    .cv-builder__header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.25rem;
+    }
+
+    .cv-builder__profile-badge {
+        align-items: flex-start;
+    }
+
+    .cv-builder__templates {
+        grid-template-columns: 1fr;
+    }
+
+    .cv-template-card__actions {
+        flex-direction: column;
+    }
+}

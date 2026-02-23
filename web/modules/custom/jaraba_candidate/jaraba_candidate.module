@@ -63,6 +63,37 @@ function jaraba_candidate_theme(): array {
       ],
       'template' => 'my-profile-skills',
     ],
+    // === CV Builder ===
+    'cv_builder' => [
+      'variables' => [
+        'profile' => NULL,
+        'templates' => [],
+      ],
+      'template' => 'cv-builder',
+    ],
+    // === CV Templates (for preview/download rendering) ===
+    // All CV variants intentionally use the same base template (cv-template-modern).
+    // Visual differentiation is driven by the cv_data['template'] key at render time.
+    'cv_template_modern' => [
+      'variables' => ['cv_data' => []],
+      'template' => 'cv-template-modern',
+    ],
+    'cv_template_classic' => [
+      'variables' => ['cv_data' => []],
+      'template' => 'cv-template-modern',
+    ],
+    'cv_template_creative' => [
+      'variables' => ['cv_data' => []],
+      'template' => 'cv-template-modern',
+    ],
+    'cv_template_minimal' => [
+      'variables' => ['cv_data' => []],
+      'template' => 'cv-template-modern',
+    ],
+    'cv_template_tech' => [
+      'variables' => ['cv_data' => []],
+      'template' => 'cv-template-modern',
+    ],
     // === JobSeeker Dashboard ===
     'jobseeker_dashboard' => [
       'variables' => [
@@ -76,6 +107,13 @@ function jaraba_candidate_theme(): array {
         'cross_vertical_bridges' => [],
       ],
       'template' => 'jobseeker-dashboard',
+    ],
+    // === JobSeeker Recommendations ===
+    'jobseeker_recommendations' => [
+      'variables' => [
+        'jobs' => [],
+      ],
+      'template' => 'jobseeker-recommendations',
     ],
   ];
 }

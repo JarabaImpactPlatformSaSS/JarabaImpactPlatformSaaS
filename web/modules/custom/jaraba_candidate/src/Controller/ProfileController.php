@@ -8,6 +8,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_candidate\Entity\CandidateProfileInterface;
 use Drupal\jaraba_candidate\Service\CandidateProfileService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller for candidate profile pages.
@@ -190,8 +192,11 @@ class ProfileController extends ControllerBase
 
     /**
      * Edit profile form for current user.
+     *
+     * Supports slide-panel AJAX: if the request is XMLHttpRequest,
+     * returns only the rendered form HTML (no page chrome).
      */
-    public function editProfile(): array
+    public function editProfile(Request $request): array|Response
     {
         $user_id = (int) $this->currentUser()->id();
         $profile = $this->profileService->getProfileByUserId($user_id);
@@ -214,7 +219,16 @@ class ProfileController extends ControllerBase
         // Get the entity form and render it
         $form = \Drupal::service('entity.form_builder')->getForm($profile, 'default');
 
+        // Slide-panel / AJAX → return only the form HTML
+        if ($request->isXmlHttpRequest()) {
+            $html = (string) \Drupal::service('renderer')->render($form);
+            return new Response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+            ]);
+        }
+
         return $form;
     }
 
 }
+

@@ -114,6 +114,9 @@ commerce_order.commerce_order_type.*:
     workflow:
       type: string
       label: 'Workflow'
+    showOrderEditLinks:
+      type: boolean
+      label: 'Show edit links'
     numberPattern:
       type: string
       label: 'Number pattern'

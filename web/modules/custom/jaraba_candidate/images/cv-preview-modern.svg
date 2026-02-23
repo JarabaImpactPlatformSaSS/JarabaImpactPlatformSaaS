@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f8f9fa"/><stop offset="100%" stop-color="#e9ecef"/></linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg)" rx="8"/>
+  <!-- Header band -->
+  <rect x="0" y="0" width="400" height="100" fill="#0097A7" rx="8 8 0 0"/>
+  <rect x="0" y="92" width="400" height="8" fill="#0097A7"/>
+  <!-- Avatar circle -->
+  <circle cx="60" cy="60" r="30" fill="rgba(255,255,255,0.3)" stroke="white" stroke-width="2"/>
+  <text x="60" y="65" text-anchor="middle" fill="white" font-size="24" font-family="Arial">M</text>
+  <!-- Name -->
+  <text x="110" y="50" fill="white" font-size="18" font-weight="bold" font-family="Arial, sans-serif">María García</text>
+  <text x="110" y="72" fill="rgba(255,255,255,0.8)" font-size="11" font-family="Arial, sans-serif">Diseñadora UX/UI</text>
+  <!-- Experience Section -->
+  <text x="30" y="130" fill="#0097A7" font-size="12" font-weight="bold" font-family="Arial">EXPERIENCIA</text>
+  <rect x="30" y="136" width="340" height="1" fill="#e0e0e0"/>
+  <rect x="30" y="145" width="200" height="8" rx="2" fill="#dee2e6"/>
+  <rect x="30" y="158" width="160" height="6" rx="2" fill="#e9ecef"/>
+  <rect x="30" y="170" width="280" height="6" rx="2" fill="#f1f3f5"/>
+  <rect x="30" y="182" width="250" height="6" rx="2" fill="#f1f3f5"/>
+  <!-- Education Section -->
+  <text x="30" y="215" fill="#0097A7" font-size="12" font-weight="bold" font-family="Arial">EDUCACIÓN</text>
+  <rect x="30" y="221" width="340" height="1" fill="#e0e0e0"/>
+  <rect x="30" y="230" width="180" height="8" rx="2" fill="#dee2e6"/>
+  <rect x="30" y="243" width="140" height="6" rx="2" fill="#e9ecef"/>
+  <!-- Skills Section -->
+  <text x="30" y="280" fill="#0097A7" font-size="12" font-weight="bold" font-family="Arial">HABILIDADES</text>
+  <rect x="30" y="286" width="340" height="1" fill="#e0e0e0"/>
+  <rect x="30" y="296" width="120" height="12" rx="6" fill="#e0f7fa"/>
+  <rect x="160" y="296" width="100" height="12" rx="6" fill="#e0f7fa"/>
+  <rect x="270" y="296" width="90" height="12" rx="6" fill="#e0f7fa"/>
+  <rect x="30" y="316" width="110" height="12" rx="6" fill="#e0f7fa"/>
+  <!-- Label -->
+  <rect x="140" y="440" width="120" height="30" rx="6" fill="#0097A7"/>
+  <text x="200" y="460" text-anchor="middle" fill="white" font-size="12" font-family="Arial" font-weight="bold">MODERN</text>
+</svg>

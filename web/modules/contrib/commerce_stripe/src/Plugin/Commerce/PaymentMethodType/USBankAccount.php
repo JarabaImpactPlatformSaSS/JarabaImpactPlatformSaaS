@@ -21,19 +21,19 @@ class USBankAccount extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
     $args = [
       '@stripe_us_bank_account_bank_name' => $payment_method->get('stripe_us_bank_account_bank_name')->getString(),
       '@stripe_us_bank_account_type' => $payment_method->get('stripe_us_bank_account_type')->getString(),
       '@stripe_us_bank_account_account_last4' => $payment_method->get('stripe_us_bank_account_account_last4')->getString(),
     ];
-    return $this->t('@stripe_us_bank_account_bank_name, @stripe_us_bank_account_type ending in @stripe_us_bank_account_account_last4', $args);
+    return $this->t('@stripe_us_bank_account_bank_name, @stripe_us_bank_account_type ending in @stripe_us_bank_account_account_last4', $args)->render();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildFieldDefinitions() {
+  public function buildFieldDefinitions(): array {
     $fields = parent::buildFieldDefinitions();
 
     $fields['stripe_us_bank_account_bank_name'] = BundleFieldDefinition::create('string')

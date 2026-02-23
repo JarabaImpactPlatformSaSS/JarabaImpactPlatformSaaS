@@ -14,7 +14,7 @@ class DecoratedOrderPaymentIntentSubscriber extends OrderPaymentIntentSubscriber
   /**
    * {@inheritdoc}
    */
-  public function destruct() {
+  public function destruct(): void {
     /** @var array $balance */
     foreach ($this->updateList as $intent_id => $balance) {
       try {

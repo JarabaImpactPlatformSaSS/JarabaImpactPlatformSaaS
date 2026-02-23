@@ -160,13 +160,15 @@
      */
     function declareWinner(experimentId, variantId) {
         var apiUrl = drupalSettings.experimentDashboard?.apiBaseUrl || '/api/v1/experiments';
+        var csrfToken = drupalSettings.csrfToken || drupalSettings.experimentDashboard?.csrfToken || '';
         var url = apiUrl + '/' + experimentId + '/declare-winner';
 
         fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken,
             },
             credentials: 'same-origin',
             body: JSON.stringify({ variant_id: parseInt(variantId, 10) })
@@ -266,6 +268,7 @@
      */
     function performExperimentAction(experimentId, action, button) {
         var apiUrl = drupalSettings.experimentDashboard.apiBaseUrl || '/api/v1/experiments';
+        var csrfToken = drupalSettings.csrfToken || drupalSettings.experimentDashboard?.csrfToken || '';
         var url = apiUrl + '/' + experimentId + '/' + action;
 
         // Deshabilitar botón
@@ -277,7 +280,8 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken,
             },
             credentials: 'same-origin'
         })

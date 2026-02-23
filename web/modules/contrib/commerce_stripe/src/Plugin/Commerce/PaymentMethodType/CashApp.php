@@ -21,18 +21,18 @@ class CashApp extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
     $args = [
       '@stripe_cashapp_cashtag' => $payment_method->get('stripe_cashapp_cashtag')->getString(),
       '@stripe_cashapp_buyer_id' => $payment_method->get('stripe_cashapp_buyer_id')->getString(),
     ];
-    return $this->t('Cashapp with cashtag @stripe_cashapp_cashtag (@stripe_cashapp_buyer_id)', $args);
+    return $this->t('Cashapp with cashtag @stripe_cashapp_cashtag (@stripe_cashapp_buyer_id)', $args)->render();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildFieldDefinitions() {
+  public function buildFieldDefinitions(): array {
     $fields = parent::buildFieldDefinitions();
 
     $fields['stripe_cashapp_cashtag'] = BundleFieldDefinition::create('string')

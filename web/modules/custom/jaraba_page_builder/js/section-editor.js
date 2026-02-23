@@ -44,12 +44,14 @@
          * Añade una nueva sección.
          */
         async add(pageId, templateId, content = {}, weight = null) {
+            const csrfToken = drupalSettings.csrfToken || drupalSettings.jarabaCanvas?.csrfToken || '';
             const response = await fetch(`${this.baseUrl}/${pageId}/sections`, {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRF-Token': csrfToken,
                 },
                 body: JSON.stringify({ template_id: templateId, content, weight })
             });

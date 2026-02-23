@@ -17,8 +17,8 @@ class AmazonPay extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
-    return $this->t('Amazon Pay');
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
+    return $this->t('Amazon Pay')->render();
   }
 
   /**

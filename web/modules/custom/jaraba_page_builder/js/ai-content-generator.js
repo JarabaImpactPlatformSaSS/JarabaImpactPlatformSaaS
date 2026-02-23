@@ -153,11 +153,13 @@
                     // Obtener contexto de la página.
                     const pageContext = getPageContext(field);
 
+                    const csrfToken = drupalSettings.csrfToken || drupalSettings.jarabaCanvas?.csrfToken || '';
                     const response = await fetch(API_ENDPOINT, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-Token': csrfToken,
                         },
                         body: JSON.stringify({
                             field_type: fieldType,

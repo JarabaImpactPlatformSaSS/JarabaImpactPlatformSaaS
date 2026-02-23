@@ -123,6 +123,24 @@ interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInte
   public function setShippingService(string $shipping_service): static;
 
   /**
+   * Gets the service label.
+   *
+   * @return string|null
+   *   The service label, or NULL if unknown.
+   */
+  public function getShippingServiceLabel(): ?string;
+
+  /**
+   * Sets the service label.
+   *
+   * @param string $service_label
+   *   The service label.
+   *
+   * @return $this
+   */
+  public function setShippingServiceLabel(string $service_label): static;
+
+  /**
    * Gets the shipping profile.
    *
    * @return \Drupal\profile\Entity\ProfileInterface|null

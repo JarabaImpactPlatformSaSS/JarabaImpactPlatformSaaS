@@ -434,7 +434,14 @@ class Payment extends ContentEntityBase implements PaymentInterface {
       ->setLabel(t('Payment gateway'))
       ->setDescription(t('The payment gateway.'))
       ->setRequired(TRUE)
-      ->setSetting('target_type', 'commerce_payment_gateway');
+      ->setSetting('target_type', 'commerce_payment_gateway')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'settings' => [
+          'link' => FALSE,
+        ],
+      ]);
 
     $fields['payment_gateway_mode'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Payment gateway mode'))

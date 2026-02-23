@@ -91,7 +91,7 @@ abstract class CardElementTestBase extends CommerceWebDriverTestBase {
    * @return \Generator
    *   The data.
    */
-  public function dataProviderUserAuthenticated(): \Generator {
+  public static function dataProviderUserAuthenticated(): \Generator {
     yield [TRUE];
     yield [FALSE];
   }
@@ -102,7 +102,7 @@ abstract class CardElementTestBase extends CommerceWebDriverTestBase {
    * @return \Generator
    *   The data.
    */
-  public function dataProviderUserAuthenticatedAndCardAuthentication(): \Generator {
+  public static function dataProviderUserAuthenticatedAndCardAuthentication(): \Generator {
     // Logged in, card authorized.
     yield [TRUE, TRUE];
     // Anonymous, card authorized.
@@ -119,7 +119,7 @@ abstract class CardElementTestBase extends CommerceWebDriverTestBase {
    * @return \Generator
    *   The data.
    */
-  public function dataProviderExistingPaymentMethodCardNumber(): \Generator {
+  public static function dataProviderExistingPaymentMethodCardNumber(): \Generator {
     // These can be added, but must go through one authentication approval via
     // an on-session payment intent.
     yield ['4000002500003155'];
@@ -182,7 +182,7 @@ abstract class CardElementTestBase extends CommerceWebDriverTestBase {
     if ($driver instanceof Selenium2Driver) {
       $wd_element = $driver->getWebDriverSession()->element('xpath', $element->getXpath());
       foreach (str_split($value) as $char) {
-        $wd_element->postValue(['value' => [$char]]);
+        $wd_element->postValue(['text' => $char]);
         usleep(100);
       }
     }

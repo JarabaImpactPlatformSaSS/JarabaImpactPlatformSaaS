@@ -21,15 +21,28 @@ class Card extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildLabel(PaymentMethodInterface $payment_method) {
-    $stripe_card_type = CreditCardHelper::getType($payment_method->get('stripe_card_type')->getString());
-    $args = [
-      '@stripe_card_type' => $stripe_card_type->getLabel(),
-      '@stripe_card_number' => $payment_method->get('stripe_card_number')->getString(),
-    ];
-    $label = $this->t('@stripe_card_type ending in @stripe_card_number', $args);
+  public function buildLabel(PaymentMethodInterface $payment_method): string {
+    $stripe_card_type = $payment_method->get('stripe_card_type')->getString();
+    $stripe_card_number = $payment_method->get('stripe_card_number')->getString();
     $stripe_wallet_type = $payment_method->get('stripe_card_wallet_type')->getString();
-    if ($stripe_wallet_type) {
+    try {
+      $card_type = CreditCardHelper::getType($stripe_card_type);
+      $card_type_label = $card_type->getLabel();
+    }
+    catch (\Throwable) {
+      $card_type_label = $this->t('Credit card');
+    }
+    if (!empty($stripe_card_number)) {
+      $args = [
+        '@stripe_card_type' => $card_type_label,
+        '@stripe_card_number' => $stripe_card_number,
+      ];
+      $label = $this->t('@stripe_card_type ending in @stripe_card_number', $args)->render();
+    }
+    else {
+      $label = $card_type_label;
+    }
+    if (!empty($stripe_wallet_type)) {
       $label = sprintf('%s (%s)', $label, $stripe_wallet_type);
     }
     return $label;
@@ -38,7 +51,7 @@ class Card extends StripePaymentMethodTypeBase {
   /**
    * {@inheritdoc}
    */
-  public function buildFieldDefinitions() {
+  public function buildFieldDefinitions(): array {
     $fields = parent::buildFieldDefinitions();
 
     $fields['stripe_card_type'] = BundleFieldDefinition::create('list_string')

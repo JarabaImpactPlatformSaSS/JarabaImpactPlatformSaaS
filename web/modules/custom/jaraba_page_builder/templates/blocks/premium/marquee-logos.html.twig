@@ -17,7 +17,8 @@
 {% set grayscale = content.grayscale|default(true) %}
 
 <section class="jaraba-marquee-logos jaraba-marquee-logos--{{ bg_class }} jaraba-block"
-         data-block-type="marquee_logos">
+         data-block-type="marquee_logos"
+         aria-label="{{ title|default('Marquee Logos') }}">
   <div class="jaraba-block__container">
 
     {# Header #}

@@ -1,5 +1,11 @@
+includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+
 parameters:
   level: 1
+
+  excludePaths:
+    - src/Plugin/Field/FieldFormatter/ShippingInformationFormatter.php
 
   ignoreErrors:
     # new static() is a best practice in Drupal, so we cannot fix that.

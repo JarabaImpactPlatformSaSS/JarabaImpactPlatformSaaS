@@ -3,6 +3,10 @@
  * @file
  * page--my-certifications.html.twig - Dashboard de certificaciones del usuario.
  *
+ * NOTA: Este es un PAGE template, NO un HTML template. El wrapper
+ * DOCTYPE/html/head/body lo proporciona html.html.twig. Este template
+ * solo genera el contenido dentro de body.
+ *
  * DISEÑO PREMIUM con header de partículas animadas.
  * Layout: Header hero top con partículas + Grid de credenciales.
  *
@@ -21,17 +25,7 @@
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('jaraba_credentials/dashboard') }}
 
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
+<style>
     /* ======================================
        ESTILOS PREMIUM - MY CERTIFICATIONS
        ====================================== */
@@ -157,12 +151,6 @@
       }
     }
   </style>
-</head>
-
-<body{{ attributes.addClass('certifications-page', 'page-my-certifications') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Saltar al contenido principal{% endtrans %}
-  </a>
 
   {# Header del sitio - usando partial del tema #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
@@ -298,6 +286,3 @@
   })();
   </script>
   
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-</body>
-</html>

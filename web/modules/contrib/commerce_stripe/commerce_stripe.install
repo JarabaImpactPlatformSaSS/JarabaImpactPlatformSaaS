@@ -210,3 +210,11 @@ function commerce_stripe_update_8105() {
   }
   return $message;
 }
+
+/**
+ * Install the new PayPal payment method type fields.
+ */
+function commerce_stripe_update_8106() {
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('commerce_payment_method');
+  \Drupal::service('entity.bundle_plugin_installer')->installBundles($entity_type, ['commerce_stripe']);
+}

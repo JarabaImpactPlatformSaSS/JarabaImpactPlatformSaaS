@@ -3,6 +3,10 @@
  * @file
  * templates/page--auth.html.twig
  *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
  * Template de pagina LIMPIA para autenticacion (login, registro, contrasena).
  * Layout premium SPLIT: Hero izquierda, Formulario derecha.
  * SIN regiones ni bloques de Drupal - Solo el formulario inyectado via preprocess.
@@ -20,23 +24,13 @@
  * - theme_settings: Configuracion del tema desde UI
  * - site_name: Nombre del sitio
  * - logo_url_white: URL del logo en blanco
+ *
+ * Body classes migradas a preprocess_html:
+ * - auth-page, page-auth, clean-layout
  */
 #}
 
 {{ attach_library('ecosistema_jaraba_theme/global') }}
-
-<!DOCTYPE html>
-<html{{ html_attributes }}>
-<head>
-  <head-placeholder token="{{ placeholder_token }}">
-  <title>{{ head_title|safe_join(' | ') }}</title>
-  <css-placeholder token="{{ placeholder_token }}">
-  <js-placeholder token="{{ placeholder_token }}">
-</head>
-<body{{ attributes.addClass('auth-page', 'page-auth', 'clean-layout') }}>
-  <a href="#main-content" class="visually-hidden focusable skip-link">
-    {% trans %}Ir al contenido principal{% endtrans %}
-  </a>
 
   <div class="auth-page--split">
     {# ========================================================================
@@ -165,6 +159,13 @@
               <circle cx="24" cy="30" r="2" fill="var(--ej-color-primary, #FF8C42)"/>
               <path d="M24 32v4" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
             </svg>
+          {% elseif auth_form_type == 'logout' %}
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="24" cy="24" r="22" fill="var(--ej-color-danger, #EF4444)" opacity="0.1"/>
+              <rect x="8" y="8" width="20" height="32" rx="3" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
+              <path d="M32 18l6 6-6 6" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M38 24H22" stroke="var(--ej-color-danger, #EF4444)" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
           {% else %}
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="24" cy="24" r="22" fill="var(--ej-color-corporate, #233D63)" opacity="0.1"/>
@@ -182,6 +183,8 @@
             {% trans %}Crear cuenta{% endtrans %}
           {% elseif auth_form_type == 'password' %}
             {% trans %}Recuperar contrasena{% endtrans %}
+          {% elseif auth_form_type == 'logout' %}
+            {% trans %}Cerrar sesion{% endtrans %}
           {% else %}
             {% trans %}Autenticacion{% endtrans %}
           {% endif %}
@@ -195,8 +198,17 @@
             {% trans %}Unete al ecosistema de impacto{% endtrans %}
           {% elseif auth_form_type == 'password' %}
             {% trans %}Te enviaremos instrucciones por email{% endtrans %}
+          {% elseif auth_form_type == 'logout' %}
+            {% trans %}¿Estas seguro de que deseas salir?{% endtrans %}
           {% endif %}
         </p>
+
+        {# Mensajes del sistema (status, warning, error) #}
+        {# Usa auth_messages (render element directo) en lugar de clean_messages #}
+        {# porque auth usa Zero Region Policy y no tiene system_messages_block #}
+        <div class="auth-messages">
+          {{ auth_messages }}
+        </div>
 
         {# Formulario LIMPIO - Solo el form, sin bloques #}
         {{ auth_form }}
@@ -217,6 +229,8 @@
             <a href="/user/login" class="auth-links__primary">{% trans %}Ya tienes cuenta? Inicia sesion{% endtrans %}</a>
           {% elseif auth_form_type == 'password' %}
             <a href="/user/login" class="auth-links__primary">{% trans %}Volver a iniciar sesion{% endtrans %}</a>
+          {% elseif auth_form_type == 'logout' %}
+            <a href="{{ path('<front>') }}" class="auth-links__primary">{% trans %}Volver al inicio{% endtrans %}</a>
           {% endif %}
         </div>
       </div>
@@ -322,6 +336,3 @@
   })();
   </script>
 
-  <js-bottom-placeholder token="{{ placeholder_token }}">
-</body>
-</html>

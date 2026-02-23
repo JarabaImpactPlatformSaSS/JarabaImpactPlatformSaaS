@@ -188,6 +188,8 @@ jaraba_servicios_conecta/
 
 ## Pendiente para Fases Siguientes
 
+> **NOTA:** Los bugs de `createBooking()`, `updateBooking()` y cron reminders fueron corregidos en Sprint S3 (2026-02-20). Ver Aprendizaje #105.
+
 1. **Fase 2:** Calendar Sync (FullCalendar), Video Conferencing (Jitsi Meet)
 2. **Fase 3:** Buzón de Confianza, Firma Digital PAdES, Portal Cliente Documental
 3. **Fase 4:** AI Triaje de Casos, Presupuestador Automático, Copilot Servicios

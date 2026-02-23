@@ -284,3 +284,15 @@ function commerce_shipping_update_10303(): void {
     $field?->delete();
   }
 }
+
+/**
+ * Adds field to store the rate label in shipment.
+ */
+function commerce_shipping_update_10304(): void {
+  $storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Service label'))
+    ->setDescription(t('The Service label.'))
+    ->setSetting('max_length', 255);
+
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('service_label', 'commerce_shipment', 'commerce_shipment', $storage_definition);
+}
