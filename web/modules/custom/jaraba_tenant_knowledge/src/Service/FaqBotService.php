@@ -7,6 +7,8 @@ namespace Drupal\jaraba_tenant_knowledge\Service;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\TempStore\SharedTempStoreFactory;
 use Drupal\ai\AiProviderPluginManager;
+use Drupal\ai\OperationType\Chat\ChatInput;
+use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\jaraba_rag\Client\QdrantDirectClient;
 use Psr\Log\LoggerInterface;
 
@@ -159,8 +161,8 @@ class FaqBotService {
         $response = $this->buildLowConfidenceResponse($message, $results, $tenantId, $history);
       }
       else {
-        // Escalación directa.
-        $response = $this->buildEscalationResponse($tenantId, $sessionId);
+        // Sin match en KB: responder con conocimiento de plataforma.
+        $response = $this->buildPlatformResponse($message, $tenantId, $history);
       }
 
       // Guardar en historial de sesión.
@@ -230,8 +232,13 @@ class FaqBotService {
    */
   protected function buildEscalationResponse(int $tenantId, string $sessionId): array {
     $config = $this->loadTenantConfig($tenantId);
-    $businessName = $config ? ($config->getBusinessName() ?: 'nuestro equipo') : 'nuestro equipo';
+    $businessName = $config ? ($config->getBusinessName() ?: '') : '';
     $businessHours = $config ? ($config->get('business_hours')->value ?? '') : '';
+
+    // Fallback al nombre del sitio cuando no hay config de tenant.
+    if (empty($businessName)) {
+      $businessName = \Drupal::config('system.site')->get('name') ?: 'Jaraba';
+    }
 
     $text = "No tengo información sobre eso en nuestra base de conocimiento. ";
     $text .= "Si necesitas más ayuda, puedes contactarnos:";
@@ -249,6 +256,174 @@ class FaqBotService {
       'suggestions' => [],
       'session_id' => $sessionId,
     ];
+  }
+
+  /**
+   * Construye respuesta con conocimiento de plataforma (sin KB match).
+   *
+   * Cuando Qdrant no tiene resultados relevantes, el LLM responde usando
+   * el conocimiento general de la plataforma Jaraba.
+   */
+  protected function buildPlatformResponse(string $message, int $tenantId, array $history): array {
+    $siteName = \Drupal::config('system.site')->get('name') ?: 'Jaraba';
+    $systemPrompt = $this->buildPlatformSystemPrompt($siteName);
+
+    $messages = $this->buildLlmMessages($systemPrompt, $message, $history);
+    $responseText = $this->callLlm($messages);
+
+    // CTAs contextuales según la intención del usuario.
+    $suggestions = $this->buildContextualSuggestions($message);
+
+    return [
+      'text' => $responseText,
+      'sources' => [],
+      'escalate' => FALSE,
+      'suggestions' => $suggestions,
+    ];
+  }
+
+  /**
+   * Genera sugerencias/CTAs contextuales según la intención del mensaje.
+   *
+   * Sigue el patrón estándar del SaaS (PublicCopilotController):
+   * - action: identificador de acción (register, view_plans, etc.)
+   * - label: texto visible del botón
+   *
+   * Acciones de redirección soportadas por el frontend:
+   * - register → /user/register
+   * - view_plans → /planes
+   * - view_jobs → /empleo
+   * - view_courses → /formacion
+   * - contact_support → /ayuda
+   */
+  protected function buildContextualSuggestions(string $message): array {
+    $messageLower = mb_strtolower($message);
+
+    // Detectar intención por keywords.
+    $isEmployment = preg_match('/empleo|trabajo|cv|currículum|curriculum|oferta|candidat|entrevista|vacante/', $messageLower);
+    $isEntrepreneurship = preg_match('/emprend|negocio|canvas|startup|idea|empresa|montar/', $messageLower);
+    $isCommerce = preg_match('/tienda|vender|producto|comercio|marketplace|pedido/', $messageLower);
+    $isTraining = preg_match('/curso|formación|formacion|aprender|certificad|capacitación|lms/', $messageLower);
+    $isRegister = preg_match('/regist|cuenta|inscrib|suscrib|crear.*cuenta|darme de alta|apuntar/', $messageLower);
+    $isPricing = preg_match('/precio|plan|coste|costo|gratis|premium|pagar|tarifa/', $messageLower);
+    $isMentoring = preg_match('/mentor|asesor|consult|orientación|guía/', $messageLower);
+
+    $suggestions = [];
+
+    // CTA primario: registro (siempre relevante para anónimos en /ayuda).
+    if ($isRegister || $isEmployment || $isEntrepreneurship || $isCommerce) {
+      $suggestions[] = ['action' => 'register', 'label' => 'Crear cuenta gratis'];
+    }
+
+    // CTAs contextuales por vertical.
+    if ($isEmployment) {
+      $suggestions[] = ['action' => 'view_jobs', 'label' => 'Ver ofertas de empleo'];
+    }
+    if ($isEntrepreneurship || $isMentoring) {
+      $suggestions[] = ['action' => 'register', 'label' => 'Empezar como emprendedor'];
+    }
+    if ($isCommerce) {
+      $suggestions[] = ['action' => 'register', 'label' => 'Crear mi tienda digital'];
+    }
+    if ($isTraining) {
+      $suggestions[] = ['action' => 'view_courses', 'label' => 'Ver cursos disponibles'];
+    }
+    if ($isPricing) {
+      $suggestions[] = ['action' => 'view_plans', 'label' => 'Ver planes y precios'];
+    }
+
+    // Deduplicar por action (mantener la primera aparición).
+    $seen = [];
+    $unique = [];
+    foreach ($suggestions as $s) {
+      if (!isset($seen[$s['action'] . ':' . $s['label']])) {
+        $seen[$s['action'] . ':' . $s['label']] = TRUE;
+        $unique[] = $s;
+      }
+    }
+    $suggestions = array_slice($unique, 0, 3);
+
+    // Fallback: si no se detectó intención, sugerencias genéricas.
+    if (empty($suggestions)) {
+      $suggestions = [
+        ['action' => 'register', 'label' => 'Crear cuenta gratis'],
+        ['action' => 'view_plans', 'label' => 'Ver planes y precios'],
+      ];
+    }
+
+    return $suggestions;
+  }
+
+  /**
+   * System prompt con conocimiento completo de la plataforma Jaraba.
+   */
+  protected function buildPlatformSystemPrompt(string $siteName): string {
+    return <<<PROMPT
+Eres el Asistente de Ayuda de {$siteName} Impact Platform, un SaaS de impacto social que conecta empleo, emprendimiento, formación y comercio digital.
+
+SERVICIOS DE LA PLATAFORMA:
+
+1. **Empleo con IA** (Bolsa de trabajo inteligente)
+   - Búsqueda de ofertas de empleo con matching por IA
+   - Constructor de CV optimizado para ATS (sistemas de seguimiento)
+   - Preparación de entrevistas con simulador IA
+   - Alertas personalizadas de empleo
+   - Panel de candidato con seguimiento de aplicaciones
+   - Los candidatos pueden buscar, aplicar y hacer seguimiento desde su panel
+
+2. **Emprendimiento** (Herramientas para emprendedores)
+   - Business Model Canvas interactivo con análisis IA
+   - Validación de ideas de negocio
+   - Copiloto IA con modos: Coach, Consultor, Sparring Partner y CFO virtual
+   - Mentoring con expertos de la red
+   - Ruta de emprendimiento paso a paso
+
+3. **Comercio Digital** (Marketplace y tiendas)
+   - Creación de tienda digital propia dentro de la plataforma
+   - Gestión de productos y catálogo
+   - Procesamiento de pedidos y pagos
+   - Optimización de fichas de producto con IA
+
+4. **Formación (LMS)**
+   - Cursos online con certificación
+   - Rutas de aprendizaje personalizadas
+   - Seguimiento de progreso
+   - Cursos gratuitos y de pago
+
+5. **Mentoring**
+   - Conexión con mentores expertos
+   - Sesiones programadas
+   - Seguimiento de mentorizados
+   - Feedback estructurado
+
+6. **Autodescubrimiento**
+   - Tests de habilidades y competencias
+   - Orientación profesional con IA
+   - Resultados y recomendaciones personalizadas
+
+7. **Panel B2B** (Para organizaciones, ONGs e instituciones)
+   - Gestión de programas de empleabilidad y emprendimiento
+   - Dashboard con métricas de impacto
+   - Gestión de beneficiarios
+   - Base de conocimiento personalizable (FAQs, políticas)
+
+PLANES Y PRECIOS:
+- Plan gratuito: acceso básico a bolsa de empleo, CV builder y cursos gratuitos
+- Planes premium: acceso completo a copiloto IA, mentoring, Canvas, comercio digital
+- Planes B2B: para organizaciones con panel de gestión y métricas
+- Más información en /planes
+
+REGLAS:
+- Responde de forma amable, profesional y concisa (máximo 3-4 párrafos cortos)
+- Responde en el mismo idioma que la pregunta del usuario
+- Si te preguntan algo que no sabes con certeza, sugiere visitar la sección correspondiente o contactar soporte
+- Enfócate en cómo la plataforma puede ayudar al usuario según su perfil
+- Si el usuario busca empleo, destaca las herramientas de empleabilidad
+- Si el usuario quiere emprender, destaca el Canvas, copiloto y mentoring
+- Si el usuario quiere vender, destaca el comercio digital
+- Termina con una pregunta de seguimiento cuando sea natural
+- Para soporte técnico específico, sugiere escribir a soporte@jaraba.com
+PROMPT;
   }
 
   /**
@@ -287,7 +462,10 @@ class FaqBotService {
    */
   protected function buildSystemPrompt(int $tenantId, string $businessContext, string $kbContext): string {
     $config = $this->loadTenantConfig($tenantId);
-    $businessName = $config ? ($config->getBusinessName() ?: 'la empresa') : 'la empresa';
+    $businessName = $config ? ($config->getBusinessName() ?: '') : '';
+    if (empty($businessName)) {
+      $businessName = \Drupal::config('system.site')->get('name') ?: 'Jaraba';
+    }
     $toneInstructions = $config ? ($config->get('tone_instructions')->value ?? '- Sé amable, profesional y conciso.') : '- Sé amable, profesional y conciso.';
 
     return <<<PROMPT
@@ -339,37 +517,54 @@ PROMPT;
   }
 
   /**
-   * Llama al LLM con failover entre providers.
+   * Llama al LLM usando el patrón ChatInput/ChatMessage del módulo AI.
    */
   protected function callLlm(array $messages): string {
+    // Convertir array de mensajes a objetos ChatMessage.
+    $chatMessages = [];
+    foreach ($messages as $msg) {
+      $chatMessages[] = new ChatMessage($msg['role'], $msg['content']);
+    }
+    $chatInput = new ChatInput($chatMessages);
+
+    // Intentar con el provider por defecto primero.
+    $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+    if ($defaults) {
+      try {
+        $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+        $provider->setConfiguration([
+          'temperature' => 0.3,
+          'max_tokens' => 512,
+        ]);
+        $result = $provider->chat($chatInput, $defaults['model_id']);
+        $text = $result->getNormalized()->getText();
+        if (!empty($text)) {
+          return $text;
+        }
+      }
+      catch (\Exception $e) {
+        $this->logger->warning('FAQ Bot LLM default provider failed: @error', [
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    // Failover: intentar con providers alternativos.
     foreach (self::LLM_PROVIDERS as $providerId) {
+      // Saltar el default que ya falló.
+      if ($defaults && $providerId === $defaults['provider_id']) {
+        continue;
+      }
       try {
         $provider = $this->aiProvider->createInstance($providerId);
-
-        if (!$provider || !method_exists($provider, 'chat')) {
-          continue;
-        }
-
-        $response = $provider->chat($messages, self::LLM_MODEL, [
-          'max_tokens' => 512,
+        $provider->setConfiguration([
           'temperature' => 0.3,
+          'max_tokens' => 512,
         ]);
-
-        if (!empty($response) && is_object($response)) {
-          $text = method_exists($response, 'getNormalized')
-            ? ($response->getNormalized()->getText() ?? '')
-            : (string) $response;
-          if (!empty($text)) {
-            return $text;
-          }
-        }
-
-        if (is_string($response) && !empty($response)) {
-          return $response;
-        }
-
-        if (is_array($response) && !empty($response['text'])) {
-          return $response['text'];
+        $result = $provider->chat($chatInput, self::LLM_MODEL);
+        $text = $result->getNormalized()->getText();
+        if (!empty($text)) {
+          return $text;
         }
       }
       catch (\Exception $e) {
@@ -460,15 +655,12 @@ PROMPT;
   protected function generateEmbedding(string $text): array {
     try {
       $provider = $this->aiProvider->createInstance('openai');
-      $response = $provider->embeddings($text, self::EMBEDDING_MODEL);
+      $result = $provider->embeddings($text, self::EMBEDDING_MODEL);
 
-      if (!empty($response) && isset($response['embedding'])) {
-        return $response['embedding'];
-      }
-
-      if (method_exists($provider, 'vectorize')) {
-        $vector = $provider->vectorize($text);
-        if (!empty($vector)) {
+      // EmbeddingsOutput::getNormalized() returns the vector array.
+      if ($result && method_exists($result, 'getNormalized')) {
+        $vector = $result->getNormalized();
+        if (!empty($vector) && is_array($vector)) {
           return $vector;
         }
       }

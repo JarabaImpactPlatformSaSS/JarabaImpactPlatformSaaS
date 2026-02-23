@@ -344,19 +344,17 @@ class SkillEmbeddingService
         // Esto permite failover automático y gestión centralizada de claves.
         try {
             $provider = $this->aiProvider->createInstance('openai');
-            $response = $provider->embeddings($text, self::EMBEDDING_MODEL);
+            $result = $provider->embeddings($text, self::EMBEDDING_MODEL);
 
-            // El formato de respuesta puede variar según el provider.
-            if (isset($response['data'][0]['embedding'])) {
-                return $response['data'][0]['embedding'];
+            // EmbeddingsOutput::getNormalized() returns the vector array.
+            if ($result && method_exists($result, 'getNormalized')) {
+                $vector = $result->getNormalized();
+                if (!empty($vector) && is_array($vector)) {
+                    return $vector;
+                }
             }
 
-            // Fallback para diferentes formatos de respuesta.
-            if (is_array($response) && count($response) === self::VECTOR_DIMENSIONS) {
-                return $response;
-            }
-
-            throw new \Exception('Formato de respuesta de embedding no reconocido.');
+            return [];
         } catch (\Exception $e) {
             $this->logger->error('Error en AI Provider para embeddings: @error', [
                 '@error' => $e->getMessage(),

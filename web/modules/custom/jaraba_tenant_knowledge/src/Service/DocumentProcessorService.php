@@ -466,15 +466,12 @@ class DocumentProcessorService
     {
         try {
             $provider = $this->aiProvider->createInstance('openai');
-            $response = $provider->embeddings($text, self::EMBEDDING_MODEL);
+            $result = $provider->embeddings($text, self::EMBEDDING_MODEL);
 
-            if (!empty($response) && isset($response['embedding'])) {
-                return $response['embedding'];
-            }
-
-            if (method_exists($provider, 'vectorize')) {
-                $vector = $provider->vectorize($text);
-                if (!empty($vector)) {
+            // EmbeddingsOutput::getNormalized() returns the vector array.
+            if ($result && method_exists($result, 'getNormalized')) {
+                $vector = $result->getNormalized();
+                if (!empty($vector) && is_array($vector)) {
                     return $vector;
                 }
             }

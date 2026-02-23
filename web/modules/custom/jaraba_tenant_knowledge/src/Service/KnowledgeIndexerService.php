@@ -272,17 +272,12 @@ class KnowledgeIndexerService
             // Obtener provider de embeddings.
             $provider = $this->aiProvider->createInstance('openai');
 
-            // Generar embedding.
-            $response = $provider->embeddings($text, self::EMBEDDING_MODEL);
+            // Generar embedding usando el patrón correcto del Drupal AI module.
+            $result = $provider->embeddings($text, self::EMBEDDING_MODEL);
 
-            if (!empty($response) && isset($response['embedding'])) {
-                return $response['embedding'];
-            }
-
-            // Alternativa: intentar con método vectorize.
-            if (method_exists($provider, 'vectorize')) {
-                $vector = $provider->vectorize($text);
-                if (!empty($vector)) {
+            if ($result && method_exists($result, 'getNormalized')) {
+                $vector = $result->getNormalized();
+                if (!empty($vector) && is_array($vector)) {
                     return $vector;
                 }
             }

@@ -1867,3 +1867,49 @@ ecosistema_jaraba_core.fiscal.dashboard:
     _permission: 'view platform analytics'
   options:
     _admin_route: TRUE
+
+# ---------------------------------------------------------------------------
+# PÁGINAS LEGALES E INFORMATIVAS
+# ---------------------------------------------------------------------------
+# Páginas públicas con contenido configurable desde theme settings.
+# Templates limpios (zero-region), SEO-friendly, i18n.
+
+ecosistema_jaraba_core.privacy:
+  path: '/politica-privacidad'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LegalPagesController::privacy'
+    _title: 'Política de Privacidad'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.terms:
+  path: '/terminos-uso'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LegalPagesController::terms'
+    _title: 'Términos de Uso'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.cookies:
+  path: '/politica-cookies'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\LegalPagesController::cookies'
+    _title: 'Política de Cookies'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.about:
+  path: '/sobre-nosotros'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\InfoPagesController::about'
+    _title: 'Sobre Nosotros'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.contact:
+  path: '/contacto'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\InfoPagesController::contact'
+    _title: 'Contacto'
+  requirements:
+    _access: 'TRUE'

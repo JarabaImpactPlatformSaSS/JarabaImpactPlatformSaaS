@@ -5,9 +5,11 @@
  *
  * Hero premium consistente con el dashboard principal.
  * Canvas particles interactivas + gradient-shift + accent gradient.
+ * Iconos SVG via jaraba_icon() — P4-EMOJI-002 compliant.
  *
  * Variables:
  *   - form: El formulario de solicitud renderizado.
+ *   - messages: Mensajes de estado/error de Drupal (status_messages).
  */
 #}
 <div class="aei-solicitud-page">
@@ -17,7 +19,7 @@
     <div class="aei-hero__overlay" aria-hidden="true"></div>
     <div class="aei-hero__content">
       <span class="aei-hero__badge">
-        <span>🚀</span>
+        <span class="aei-hero__badge-icon">{{ jaraba_icon('verticals', 'rocket', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}</span>
         <span>{% trans %}PROGRAMA PÚBLICO{% endtrans %}</span>
       </span>
       <h1 class="aei-hero__title">{% trans %}Solicita tu plaza en Andalucía <span class="aei-hero__accent">+ei</span>{% endtrans %}</h1>
@@ -38,6 +40,7 @@
             <h2>{% trans %}Formulario de solicitud{% endtrans %}</h2>
             <p>{% trans %}Completa tus datos para iniciar el proceso de selección. Todos los campos marcados con * son obligatorios.{% endtrans %}</p>
           </div>
+          {{ messages }}
           {{ form }}
         </div>
       </div>
@@ -48,28 +51,28 @@
           <h3>{% trans %}¿Qué incluye el programa?{% endtrans %}</h3>
           <ul class="aei-solicitud-page__features">
             <li>
-              <span class="aei-solicitud-page__feature-icon">🤖</span>
+              <span class="aei-solicitud-page__feature-icon">{{ jaraba_icon('ai', 'copilot', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}</span>
               <div>
                 <strong>{% trans %}Copilot IA 24/7{% endtrans %}</strong>
                 <p>{% trans %}Asistente de inteligencia artificial para guiarte en tu emprendimiento.{% endtrans %}</p>
               </div>
             </li>
             <li>
-              <span class="aei-solicitud-page__feature-icon">📚</span>
+              <span class="aei-solicitud-page__feature-icon">{{ jaraba_icon('ui', 'graduation', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}</span>
               <div>
                 <strong>{% trans %}50h Formación Acreditada{% endtrans %}</strong>
                 <p>{% trans %}Formación especializada en emprendimiento con certificación oficial.{% endtrans %}</p>
               </div>
             </li>
             <li>
-              <span class="aei-solicitud-page__feature-icon">👥</span>
+              <span class="aei-solicitud-page__feature-icon">{{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}</span>
               <div>
                 <strong>{% trans %}Mentoría Experta{% endtrans %}</strong>
                 <p>{% trans %}Acompañamiento personalizado de mentores profesionales.{% endtrans %}</p>
               </div>
             </li>
             <li>
-              <span class="aei-solicitud-page__feature-icon">🎯</span>
+              <span class="aei-solicitud-page__feature-icon">{{ jaraba_icon('ui', 'compass', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}</span>
               <div>
                 <strong>{% trans %}Itinerario Personalizado{% endtrans %}</strong>
                 <p>{% trans %}Plan de inserción laboral adaptado a tu perfil y objetivos.{% endtrans %}</p>
@@ -104,7 +107,8 @@
           <h3>{% trans %}¿Tienes dudas?{% endtrans %}</h3>
           <p>{% trans %}Escríbenos por WhatsApp y te ayudamos con el proceso de solicitud.{% endtrans %}</p>
           <a href="https://wa.me/34623174304?text=Hola%2C%20me%20interesa%20el%20programa%20Andaluc%C3%ADa%20%2Bei" target="_blank" rel="noopener" class="aei-solicitud-page__contact-link">
-            💬 {% trans %}WhatsApp +34 623 174 304{% endtrans %}
+            {{ jaraba_icon('ui', 'chat', { color: 'verde-innovacion', size: '20px' }) }}
+            {% trans %}WhatsApp +34 623 174 304{% endtrans %}
           </a>
         </div>
       </div>

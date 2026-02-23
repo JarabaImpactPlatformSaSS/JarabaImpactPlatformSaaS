@@ -61,9 +61,8 @@ services:
   jaraba_content_hub.content_embedding:
     class: Drupal\jaraba_content_hub\Service\ContentEmbeddingService
     arguments:
-      - '@http_client'
-      - '@config.factory'
-      - '@logger.factory'
+      - '@ai.provider'
+      - '@logger.channel.jaraba_content_hub'
 
   # Qdrant Content Client
   jaraba_content_hub.qdrant_content:

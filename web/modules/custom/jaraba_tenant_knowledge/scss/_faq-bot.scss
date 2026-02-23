@@ -306,11 +306,28 @@
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  text-decoration: none;
+  color: var(--ej-text-primary, #334155);
+  display: inline-block;
 
   &:hover {
     border-color: var(--ej-faq-color-primary);
     background: rgba(0, 169, 165, 0.05);
     color: var(--ej-faq-color-primary);
+  }
+
+  // CTA: botón de acción destacado (registro, ver planes, etc.)
+  &--cta {
+    background: var(--ej-faq-color-primary);
+    border-color: var(--ej-faq-color-primary);
+    color: #fff;
+    font-weight: 600;
+
+    &:hover {
+      background: var(--ej-faq-color-primary-dark);
+      border-color: var(--ej-faq-color-primary-dark);
+      color: #fff;
+    }
   }
 }
 

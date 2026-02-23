@@ -39,14 +39,19 @@ class HelpCenterController extends ControllerBase {
   protected TenantKnowledgeManager $knowledgeManager;
 
   /**
+   * Servicio de contexto del tenant.
+   */
+  protected TenantContextService $tenantContext;
+
+  /**
    * Constructor con inyección de dependencias.
    */
   public function __construct(
     TenantKnowledgeManager $knowledge_manager,
-    TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+    TenantContextService $tenantContext,
   ) {
-    $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
     $this->knowledgeManager = $knowledge_manager;
+    $this->tenantContext = $tenantContext;
   }
 
   /**
@@ -148,10 +153,22 @@ class HelpCenterController extends ControllerBase {
 
     // Resolver tenant ID.
     if ($this->tenantContext !== NULL) {
-      $tenantContext = $this->tenantContext;
-      $tenant = $tenantContext->getCurrentTenant();
+      $tenant = $this->tenantContext->getCurrentTenant();
       if ($tenant) {
         $faqBotTenantId = (int) $tenant->id();
+      }
+    }
+
+    // Fallback para usuarios anónimos: cargar el primer tenant disponible.
+    if ($faqBotTenantId <= 0) {
+      try {
+        $tenants = $this->entityTypeManager()->getStorage('tenant')->loadMultiple();
+        if (!empty($tenants)) {
+          $faqBotTenantId = (int) reset($tenants)->id();
+        }
+      }
+      catch (\Exception $e) {
+        // Si falla, el widget enviará tenant_id: 0 y el API usará su propio fallback.
       }
     }
 

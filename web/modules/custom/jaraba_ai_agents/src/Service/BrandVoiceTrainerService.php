@@ -398,8 +398,14 @@ PROMPT;
   protected function generateEmbedding(string $text): array {
     try {
       $provider = $this->aiProvider->createInstance('openai');
-      $response = $provider->embeddings($text, self::EMBEDDING_MODEL);
-      return $response['embedding'] ?? [];
+      $result = $provider->embeddings($text, self::EMBEDDING_MODEL);
+      if ($result && method_exists($result, 'getNormalized')) {
+        $vector = $result->getNormalized();
+        if (!empty($vector) && is_array($vector)) {
+          return $vector;
+        }
+      }
+      return [];
     }
     catch (\Exception $e) {
       $this->logger->error('Embedding generation failed: @error', ['@error' => $e->getMessage()]);

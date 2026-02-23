@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_content_hub\Service;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use GuzzleHttp\ClientInterface;
+use Drupal\ai\AiProviderPluginManager;
 use Psr\Log\LoggerInterface;
 
 /**
  * Servicio de embeddings para artículos del Content Hub.
  *
- * Genera embeddings usando OpenAI text-embedding-3-small (1536 dimensiones).
- * Reutiliza la configuración de jaraba_rag para API keys.
+ * Genera embeddings usando el módulo AI de Drupal (text-embedding-3-small,
+ * 1536 dimensiones). Usa la abstracción de proveedores para failover
+ * automático, cost tracking y gestión centralizada de claves.
  *
  * ARQUITECTURA:
+ * - Usa Drupal AI module (AiProviderPluginManager) en vez de HTTP directo
  * - Mismo modelo de embedding que jaraba_rag para consistencia
  * - Optimizado para contenido de blog (título, resumen, body)
  * - Incluye categoría y tags para mejor semántica
@@ -23,7 +24,7 @@ class ContentEmbeddingService
 {
 
     /**
-     * Modelo de embedding de OpenAI.
+     * Modelo de embedding (fallback si no hay default configurado).
      */
     const EMBEDDING_MODEL = 'text-embedding-3-small';
 
@@ -33,40 +34,29 @@ class ContentEmbeddingService
     const VECTOR_DIMENSIONS = 1536;
 
     /**
-     * HTTP client.
-     */
-    protected ClientInterface $httpClient;
-
-    /**
-     * Config factory.
-     */
-    protected ConfigFactoryInterface $configFactory;
-
-    /**
-     * Logger.
-     */
-    protected LoggerInterface $logger;
-
-    /**
      * Cache de embeddings en memoria.
      */
     protected array $cache = [];
 
     /**
      * Constructor.
+     *
+     * @param \Drupal\ai\AiProviderPluginManager $aiProvider
+     *   Gestor de proveedores AI.
+     * @param \Psr\Log\LoggerInterface $logger
+     *   Logger del módulo.
      */
     public function __construct(
-        ClientInterface $http_client,
-        ConfigFactoryInterface $config_factory,
-        $logger_factory,
+        protected AiProviderPluginManager $aiProvider,
+        protected LoggerInterface $logger,
     ) {
-        $this->httpClient = $http_client;
-        $this->configFactory = $config_factory;
-        $this->logger = $logger_factory->get('jaraba_content_hub');
     }
 
     /**
      * Genera embedding para un texto.
+     *
+     * Usa el módulo AI de Drupal para abstracción de proveedores.
+     * Esto permite failover automático y gestión centralizada de claves.
      *
      * @param string $text
      *   Texto a embedear.
@@ -86,34 +76,24 @@ class ContentEmbeddingService
             return $this->cache[$cacheKey];
         }
 
-        $apiKey = $this->getOpenAiApiKey();
-        if (empty($apiKey)) {
-            $this->logger->error('OpenAI API key not configured for embeddings');
-            return [];
-        }
-
         try {
-            $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/embeddings', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'model' => self::EMBEDDING_MODEL,
-                    'input' => $text,
-                ],
-                'timeout' => 15,
-            ]);
-
-            $data = json_decode($response->getBody()->getContents(), TRUE);
-
-            if (isset($data['data'][0]['embedding'])) {
-                $embedding = $data['data'][0]['embedding'];
-                $this->cache[$cacheKey] = $embedding;
-                return $embedding;
+            $defaults = $this->aiProvider->getDefaultProviderForOperationType('embeddings');
+            if (!$defaults) {
+                $this->logger->error('No hay proveedor de embeddings configurado en AI module.');
+                return [];
             }
 
-            $this->logger->warning('Invalid embedding response structure');
+            /** @var \Drupal\ai\OperationType\Embeddings\EmbeddingsInterface $provider */
+            $provider = $this->aiProvider->createInstance($defaults['provider_id']);
+            $result = $provider->embeddings($text, $defaults['model_id'] ?? self::EMBEDDING_MODEL);
+            $vector = $result->getNormalized();
+
+            if (!empty($vector) && is_array($vector)) {
+                $this->cache[$cacheKey] = $vector;
+                return $vector;
+            }
+
+            $this->logger->warning('Invalid embedding response structure from AI provider.');
             return [];
         } catch (\Exception $e) {
             $this->logger->error('Article embedding generation failed: @error', [
@@ -171,43 +151,6 @@ class ContentEmbeddingService
         }
 
         return implode("\n", $parts);
-    }
-
-    /**
-     * Obtiene la API key de OpenAI desde configuración.
-     *
-     * @return string
-     *   API key o string vacío.
-     */
-    protected function getOpenAiApiKey(): string
-    {
-        if (!\Drupal::hasService('key.repository')) {
-            return getenv('OPENAI_API_KEY') ?: '';
-        }
-
-        $keyRepository = \Drupal::service('key.repository');
-
-        // Buscar keys comunes de OpenAI directamente.
-        $keyNames = ['openai_api', 'openai', 'openai_api_key'];
-        foreach ($keyNames as $keyName) {
-            $key = $keyRepository->getKey($keyName);
-            if ($key) {
-                return $key->getKeyValue();
-            }
-        }
-
-        // Intentar desde config de jaraba_rag.
-        $ragConfig = $this->configFactory->get('jaraba_rag.settings');
-        $keyId = $ragConfig->get('openai_api_key');
-        if ($keyId) {
-            $key = $keyRepository->getKey($keyId);
-            if ($key) {
-                return $key->getKeyValue();
-            }
-        }
-
-        // Fallback a variable de entorno.
-        return getenv('OPENAI_API_KEY') ?: '';
     }
 
 }
