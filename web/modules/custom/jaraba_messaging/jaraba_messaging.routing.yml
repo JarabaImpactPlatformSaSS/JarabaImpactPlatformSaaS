@@ -1,0 +1,251 @@
+# =============================================
+# ADMIN ROUTES
+# =============================================
+
+jaraba_messaging.settings:
+  path: '/admin/config/jaraba/messaging'
+  defaults:
+    _form: '\Drupal\jaraba_messaging\Form\MessagingSettingsForm'
+    _title: 'Secure Messaging Settings'
+  requirements:
+    _permission: 'administer jaraba messaging'
+
+# =============================================
+# FRONTEND ROUTES
+# =============================================
+
+jaraba_messaging.messaging_page:
+  path: '/messaging'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessagingPageController::page'
+    _title: 'Messaging'
+  requirements:
+    _permission: 'use jaraba messaging'
+
+# =============================================
+# API: CONVERSATIONS
+# =============================================
+
+jaraba_messaging.api.conversations.list:
+  path: '/api/v1/messaging/conversations'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view own conversations'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.conversations.create:
+  path: '/api/v1/messaging/conversations'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::createConversation'
+  methods: [POST]
+  requirements:
+    _permission: 'create conversations'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.conversations.view:
+  path: '/api/v1/messaging/conversations/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::view'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationAccessCheck::access'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.conversations.update:
+  path: '/api/v1/messaging/conversations/{uuid}'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::update'
+  methods: [PATCH]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationOwnerAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.conversations.close:
+  path: '/api/v1/messaging/conversations/{uuid}/close'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::close'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationOwnerAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.conversations.archive:
+  path: '/api/v1/messaging/conversations/{uuid}/archive'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::archive'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.conversations.participants:
+  path: '/api/v1/messaging/conversations/{uuid}/participants'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ConversationController::participants'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationAccessCheck::access'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+# =============================================
+# API: MESSAGES
+# =============================================
+
+jaraba_messaging.api.messages.list:
+  path: '/api/v1/messaging/conversations/{uuid}/messages'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessageController::list'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationAccessCheck::access'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.messages.send:
+  path: '/api/v1/messaging/conversations/{uuid}/messages'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessageController::send'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\MessageSendAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.messages.edit:
+  path: '/api/v1/messaging/conversations/{uuid}/messages/{message_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessageController::edit'
+  methods: [PATCH]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\MessageOwnerAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+    message_id: '\d+'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.messages.delete:
+  path: '/api/v1/messaging/conversations/{uuid}/messages/{message_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessageController::delete'
+  methods: [DELETE]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\MessageOwnerAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+    message_id: '\d+'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.messages.read:
+  path: '/api/v1/messaging/conversations/{uuid}/read'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessageController::markRead'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.messages.reaction:
+  path: '/api/v1/messaging/conversations/{uuid}/messages/{message_id}/reactions'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\MessageController::addReaction'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\ConversationAccessCheck::access'
+    _csrf_request_header_token: 'TRUE'
+    message_id: '\d+'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+# =============================================
+# API: PRESENCE
+# =============================================
+
+jaraba_messaging.api.presence.status:
+  path: '/api/v1/messaging/presence'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\PresenceController::getStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'use jaraba messaging'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.presence.heartbeat:
+  path: '/api/v1/messaging/presence/heartbeat'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\PresenceController::heartbeat'
+  methods: [POST]
+  requirements:
+    _permission: 'use jaraba messaging'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+# =============================================
+# API: SEARCH
+# =============================================
+
+jaraba_messaging.api.search:
+  path: '/api/v1/messaging/search'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\SearchController::search'
+  methods: [GET]
+  requirements:
+    _permission: 'search messages'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+# =============================================
+# API: AUDIT
+# =============================================
+
+jaraba_messaging.api.audit:
+  path: '/api/v1/messaging/conversations/{uuid}/audit'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\AuditController::log'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\AuditAccessCheck::access'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+jaraba_messaging.api.audit.verify:
+  path: '/api/v1/messaging/conversations/{uuid}/audit/verify'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\AuditController::verify'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\jaraba_messaging\Access\AuditAccessCheck::access'
+  options:
+    _auth: ['jwt_auth', 'cookie']
+
+# =============================================
+# API: EXPORT (GDPR Art. 20)
+# =============================================
+
+jaraba_messaging.api.export:
+  path: '/api/v1/messaging/conversations/{uuid}/export'
+  defaults:
+    _controller: '\Drupal\jaraba_messaging\Controller\ExportController::export'
+  methods: [POST]
+  requirements:
+    _permission: 'export conversations'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    _auth: ['jwt_auth', 'cookie']

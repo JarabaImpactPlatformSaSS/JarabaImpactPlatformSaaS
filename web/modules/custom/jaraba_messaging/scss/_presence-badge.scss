@@ -1,0 +1,111 @@
+/**
+ * @file
+ * scss/_presence-badge.scss
+ *
+ * Online/offline/away presence dots.
+ * Positioned as overlay on avatars and user names.
+ */
+
+.presence-badge {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--ej-panel-bg, #ffffff);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------
+ * VARIANTS
+ * ------------------------------------------------------------------ */
+
+.presence-badge--online {
+  background-color: var(--ej-success, #4caf50);
+}
+
+.presence-badge--offline {
+  background-color: var(--ej-text-muted, #999999);
+}
+
+.presence-badge--away {
+  background-color: var(--ej-warning, #ff9800);
+}
+
+.presence-badge--busy {
+  background-color: var(--ej-error, #d32f2f);
+}
+
+/* ------------------------------------------------------------------
+ * SIZE VARIANTS
+ * ------------------------------------------------------------------ */
+
+.presence-badge--sm {
+  width: 8px;
+  height: 8px;
+  border-width: 1.5px;
+}
+
+.presence-badge--lg {
+  width: 14px;
+  height: 14px;
+  border-width: 2.5px;
+}
+
+/* ------------------------------------------------------------------
+ * POSITIONED ON AVATAR
+ * ------------------------------------------------------------------ */
+
+.presence-badge--avatar {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+/* ------------------------------------------------------------------
+ * INLINE (next to name)
+ * ------------------------------------------------------------------ */
+
+.presence-badge--inline {
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* ------------------------------------------------------------------
+ * PULSE ANIMATION (online only)
+ * ------------------------------------------------------------------ */
+
+.presence-badge--online.presence-badge--pulse {
+  animation: presence-pulse 2s ease-in-out infinite;
+}
+
+@keyframes presence-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ej-success, #4caf50) 40%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ej-success, #4caf50) 0%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * ACCESSIBILITY
+ * ------------------------------------------------------------------ */
+
+.presence-badge[aria-label] {
+  cursor: default;
+}
+
+/* Screen reader text for status */
+.presence-badge__sr-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

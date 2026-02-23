@@ -1,0 +1,54 @@
+administer jaraba messaging:
+  title: 'Administer secure messaging'
+  description: 'Full administrative access to the messaging system configuration and data.'
+  restrict access: true
+
+use jaraba messaging:
+  title: 'Use secure messaging'
+  description: 'Send and receive messages within the platform.'
+
+view own conversations:
+  title: 'View own conversations'
+  description: 'View conversations where the user is a participant.'
+
+create conversations:
+  title: 'Create conversations'
+  description: 'Initiate new conversations with other users.'
+
+close conversations:
+  title: 'Close conversations'
+  description: 'Close conversations the user has initiated.'
+
+archive conversations:
+  title: 'Archive conversations'
+  description: 'Archive conversations for the user.'
+
+send messages:
+  title: 'Send messages'
+  description: 'Send messages within conversations where the user is a participant.'
+
+attach files:
+  title: 'Attach files to messages'
+  description: 'Attach files to messages in conversations.'
+
+view audit log:
+  title: 'View conversation audit log'
+  description: 'View the immutable audit trail for conversations.'
+
+export conversations:
+  title: 'Export conversation data'
+  description: 'Export conversation data for GDPR Art. 20 compliance.'
+
+search messages:
+  title: 'Search messages'
+  description: 'Search within conversations using full-text and semantic search.'
+
+bypass messaging rate limit:
+  title: 'Bypass messaging rate limit'
+  description: 'Bypass rate limiting on message sending. For system and admin use only.'
+  restrict access: true
+
+manage all conversations:
+  title: 'Manage all conversations'
+  description: 'View and manage all conversations across tenants. For super-admin use only.'
+  restrict access: true

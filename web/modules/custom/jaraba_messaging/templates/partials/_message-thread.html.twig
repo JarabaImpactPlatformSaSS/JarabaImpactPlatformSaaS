@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * templates/partials/_message-thread.html.twig
+ *
+ * Message thread container. Displays the conversation header, scrollable
+ * message area, and typing indicator.
+ *
+ * Note: Individual messages are rendered dynamically by JavaScript using
+ * the _message-bubble.html.twig structure as reference. The server-side
+ * template provides the container and initial structure.
+ *
+ * Variables are injected via data attributes and JS.
+ */
+#}
+
+<div class="message-thread" data-message-thread>
+
+  {# Thread header #}
+  <div class="message-thread__header" data-thread-header>
+    <div class="message-thread__header-info">
+      <h3 class="message-thread__title" data-thread-title>
+        {# Populated by JS when conversation is selected #}
+      </h3>
+      <span class="message-thread__participants" data-thread-participants>
+        {# Populated by JS: "You, User A, User B" #}
+      </span>
+    </div>
+    <div class="message-thread__header-actions">
+      <button class="message-thread__search-btn"
+              type="button"
+              data-action="search-messages"
+              aria-label="{% trans %}Search in conversation{% endtrans %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <button class="message-thread__info-btn"
+              type="button"
+              data-action="conversation-info"
+              aria-label="{% trans %}Conversation details{% endtrans %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {# Scrollable message area #}
+  <div class="message-thread__messages"
+       data-message-area
+       role="log"
+       aria-live="polite"
+       aria-label="{% trans %}Message history{% endtrans %}"
+       tabindex="0">
+
+    {# Load more messages trigger #}
+    <div class="message-thread__load-more" data-load-more style="display: none;">
+      <button class="message-thread__load-more-btn" type="button">
+        {% trans %}Load earlier messages{% endtrans %}
+      </button>
+    </div>
+
+    {# Messages are rendered here by JavaScript #}
+    <div class="message-thread__message-list" data-message-list>
+      {# JS inserts message-bubble elements here #}
+    </div>
+
+    {# Scroll anchor #}
+    <div class="message-thread__scroll-anchor" data-scroll-anchor></div>
+  </div>
+
+  {# Scroll to bottom button #}
+  <button class="message-thread__scroll-bottom"
+          type="button"
+          data-scroll-to-bottom
+          style="display: none;"
+          aria-label="{% trans %}Scroll to latest messages{% endtrans %}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+
+  {# Typing indicator #}
+  {% include '@jaraba_messaging/partials/_typing-indicator.html.twig' %}
+
+</div>

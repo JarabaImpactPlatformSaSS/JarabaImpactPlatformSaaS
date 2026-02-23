@@ -1,0 +1,82 @@
+{#
+/**
+ * @file
+ * templates/partials/_conversation-widget.html.twig
+ *
+ * Compact messaging widget for dashboard integration.
+ * Shows unread count badge and the latest conversation previews (max 3).
+ *
+ * Variables:
+ * - conversations: Array of up to 3 latest conversation objects.
+ * - unread_total: Total unread message count across all conversations.
+ */
+#}
+
+<div class="conversation-widget" data-conversation-widget>
+
+  {# Widget header #}
+  <div class="conversation-widget__header">
+    <h3 class="conversation-widget__title">
+      {% trans %}Messages{% endtrans %}
+      {% if unread_total > 0 %}
+        <span class="conversation-widget__badge" data-widget-badge aria-label="{% trans %}{{ unread_total }} unread messages{% endtrans %}">
+          {{ unread_total > 99 ? '99+' : unread_total }}
+        </span>
+      {% endif %}
+    </h3>
+    <a href="/messaging" class="conversation-widget__view-all" aria-label="{% trans %}View all conversations{% endtrans %}">
+      {% trans %}View all{% endtrans %}
+    </a>
+  </div>
+
+  {# Latest conversations (max 3) #}
+  <ul class="conversation-widget__list">
+    {% if conversations is not empty %}
+      {% for conversation in conversations|slice(0, 3) %}
+        <li class="conversation-widget__item {{ conversation.unread_count > 0 ? 'conversation-widget__item--unread' : '' }}">
+          <a href="/messaging?conversation={{ conversation.uuid }}"
+             class="conversation-widget__link"
+             data-conversation-id="{{ conversation.uuid }}">
+
+            {# Avatar #}
+            <div class="conversation-widget__avatar">
+              {% if conversation.avatar_url %}
+                <img src="{{ conversation.avatar_url }}"
+                     alt="{{ conversation.title }}"
+                     class="conversation-widget__avatar-img"
+                     loading="lazy"
+                     width="36"
+                     height="36">
+              {% else %}
+                <span class="conversation-widget__avatar-placeholder" aria-hidden="true">
+                  {{ conversation.title|first|upper }}
+                </span>
+              {% endif %}
+            </div>
+
+            {# Content #}
+            <div class="conversation-widget__content">
+              <span class="conversation-widget__name">{{ conversation.title }}</span>
+              <span class="conversation-widget__preview">{{ conversation.preview|length > 50 ? conversation.preview|slice(0, 50) ~ '...' : conversation.preview }}</span>
+            </div>
+
+            {# Time + badge #}
+            <div class="conversation-widget__meta">
+              <time class="conversation-widget__time"
+                    datetime="{{ conversation.last_message_at|date('c') }}">
+                {{ conversation.last_message_at|date('H:i') }}
+              </time>
+              {% if conversation.unread_count > 0 %}
+                <span class="conversation-widget__unread">{{ conversation.unread_count }}</span>
+              {% endif %}
+            </div>
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="conversation-widget__empty">
+        <p>{% trans %}No messages yet.{% endtrans %}</p>
+      </li>
+    {% endif %}
+  </ul>
+</div>

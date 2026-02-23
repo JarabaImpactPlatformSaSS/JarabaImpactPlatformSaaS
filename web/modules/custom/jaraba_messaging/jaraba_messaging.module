@@ -1,0 +1,130 @@
+<?php
+
+/**
+ * @file
+ * Hooks para el módulo Jaraba Secure Messaging.
+ *
+ * Sistema de mensajería segura bidireccional cifrada con AES-256-GCM,
+ * WebSocket, audit trail inmutable y presencia en tiempo real.
+ *
+ * Ref: Doc Técnico #178 - Platform Secure Messaging
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_messaging_theme(): array {
+  return [
+    'page__messaging' => [
+      'template' => 'page--messaging',
+      'variables' => [
+        'conversations' => [],
+        'unread_total' => 0,
+        'websocket_url' => '',
+        'current_user_id' => 0,
+        'tenant_id' => 0,
+        'theme_settings' => [],
+        'navigation_items' => [],
+        'is_authenticated' => FALSE,
+        'current_user' => NULL,
+      ],
+    ],
+    'jaraba_messaging_email_notification' => [
+      'template' => 'email/message-notification',
+      'variables' => [
+        'sender_name' => '',
+        'message_preview' => '',
+        'conversation_title' => '',
+        'conversation_url' => '',
+        'recipient_name' => '',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ */
+function jaraba_messaging_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'jaraba_messaging.messaging_page') {
+    $suggestions[] = 'page__messaging';
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function jaraba_messaging_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route && str_starts_with($route, 'jaraba_messaging.')) {
+    $variables['attributes']['class'][] = 'page-messaging';
+    $variables['attributes']['class'][] = 'full-width-layout';
+    $variables['attributes']['class'][] = 'no-sidebar';
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Programmed retention cleanup and auto-close of inactive conversations.
+ * Uses state flags for idempotency (CRON-FLAG-001).
+ */
+function jaraba_messaging_cron(): void {
+  $state = \Drupal::state();
+
+  // Run retention cleanup at most once per hour.
+  $last_retention = $state->get('jaraba_messaging.last_retention_run', 0);
+  if (\Drupal::time()->getRequestTime() - $last_retention > 3600) {
+    try {
+      /** @var \Drupal\jaraba_messaging\Service\RetentionService $retention */
+      $retention = \Drupal::service('jaraba_messaging.retention');
+      $retention->runScheduledCleanup();
+      $state->set('jaraba_messaging.last_retention_run', \Drupal::time()->getRequestTime());
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_messaging')->error('Retention cleanup failed: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // Auto-close inactive conversations at most once per day.
+  $last_autoclose = $state->get('jaraba_messaging.last_autoclose_run', 0);
+  if (\Drupal::time()->getRequestTime() - $last_autoclose > 86400) {
+    try {
+      /** @var \Drupal\jaraba_messaging\Service\ConversationService $conversationService */
+      $conversationService = \Drupal::service('jaraba_messaging.conversation');
+      $config = \Drupal::config('jaraba_messaging.settings');
+      $days = $config->get('retention.auto_close_inactive_days') ?? 90;
+      $conversationService->autoCloseInactive($days);
+      $state->set('jaraba_messaging.last_autoclose_run', \Drupal::time()->getRequestTime());
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_messaging')->error('Auto-close failed: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_messaging_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'message_notification':
+      $message['subject'] = t('New message from @sender', [
+        '@sender' => $params['sender_name'],
+      ]);
+      $message['body'][] = $params['body'];
+      break;
+
+    case 'unread_digest':
+      $message['subject'] = t('You have @count unread messages', [
+        '@count' => $params['unread_count'],
+      ]);
+      $message['body'][] = $params['body'];
+      break;
+  }
+}

@@ -1,0 +1,26 @@
+encryption:
+  algorithm: aes-256-gcm
+  argon2id_memory: 65536
+  argon2id_iterations: 3
+
+rate_limiting:
+  messages_per_minute_per_user: 30
+  messages_per_minute_per_conversation: 100
+
+retention:
+  default_message_retention_days: 730
+  audit_log_retention_days: 2555
+  auto_close_inactive_days: 90
+
+websocket:
+  host: '0.0.0.0'
+  port: 8090
+  ping_interval: 30
+  online_ttl: 120
+
+notifications:
+  offline_delay_seconds: 30
+  digest_interval_hours: 4
+
+edit_window_minutes: 15
+max_participants_per_conversation: 50

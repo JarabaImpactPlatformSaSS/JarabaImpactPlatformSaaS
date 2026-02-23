@@ -1,0 +1,208 @@
+/**
+ * @file
+ * scss/_notification-toast.scss
+ *
+ * Toast notification system for messaging events.
+ * Positioned at top-right, auto-dismiss, stackable.
+ */
+
+/* ------------------------------------------------------------------
+ * TOAST CONTAINER (stacks from top-right)
+ * ------------------------------------------------------------------ */
+
+.notification-toast-container {
+  position: fixed;
+  top: calc(var(--ej-header-height, 64px) + 16px);
+  right: 16px;
+  z-index: var(--ej-z-toast, 1100);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 400px;
+  pointer-events: none;
+
+  @media (max-width: 767px) {
+    right: 8px;
+    left: 8px;
+    max-width: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * INDIVIDUAL TOAST
+ * ------------------------------------------------------------------ */
+
+.notification-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--ej-radius-md, 8px);
+  background-color: var(--ej-panel-bg, #ffffff);
+  border: 1px solid var(--ej-border-color, #e0e0e0);
+  box-shadow: 0 4px 16px color-mix(in srgb, #000000 15%, transparent);
+  pointer-events: auto;
+  cursor: pointer;
+  transform: translateX(120%);
+  opacity: 0;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+.notification-toast--visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-toast--exiting {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------------
+ * VARIANTS
+ * ------------------------------------------------------------------ */
+
+.notification-toast--message {
+  border-left: 4px solid var(--ej-primary, #1a73e8);
+}
+
+.notification-toast--success {
+  border-left: 4px solid var(--ej-success, #4caf50);
+}
+
+.notification-toast--warning {
+  border-left: 4px solid var(--ej-warning, #ff9800);
+}
+
+.notification-toast--error {
+  border-left: 4px solid var(--ej-error, #d32f2f);
+}
+
+/* ------------------------------------------------------------------
+ * AVATAR
+ * ------------------------------------------------------------------ */
+
+.notification-toast__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: color-mix(in srgb, var(--ej-primary, #1a73e8) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-toast__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.notification-toast__avatar-placeholder {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--ej-primary, #1a73e8);
+}
+
+/* ------------------------------------------------------------------
+ * CONTENT
+ * ------------------------------------------------------------------ */
+
+.notification-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-toast__title {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--ej-text-primary, #333333);
+  margin: 0 0 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notification-toast__text {
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  color: var(--ej-text-secondary, #666666);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.notification-toast__time {
+  font-size: var(--ej-font-size-xs, 0.75rem);
+  color: var(--ej-text-muted, #999999);
+  margin-top: 4px;
+}
+
+/* ------------------------------------------------------------------
+ * CLOSE BUTTON
+ * ------------------------------------------------------------------ */
+
+.notification-toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ej-text-muted, #999999);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .notification-toast:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background-color: var(--ej-hover-bg, #f0f0f0);
+    color: var(--ej-text-secondary, #666666);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: -2px;
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * PROGRESS BAR (auto-dismiss countdown)
+ * ------------------------------------------------------------------ */
+
+.notification-toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--ej-border-light, #f0f0f0);
+  border-radius: 0 0 var(--ej-radius-md, 8px) var(--ej-radius-md, 8px);
+  overflow: hidden;
+}
+
+.notification-toast__progress-bar {
+  height: 100%;
+  background-color: var(--ej-primary, #1a73e8);
+  transition: width linear;
+
+  .notification-toast--error & {
+    background-color: var(--ej-error, #d32f2f);
+  }
+
+  .notification-toast--success & {
+    background-color: var(--ej-success, #4caf50);
+  }
+}

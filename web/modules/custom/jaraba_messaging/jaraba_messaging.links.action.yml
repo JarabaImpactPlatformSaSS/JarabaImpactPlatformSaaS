@@ -1,0 +1,5 @@
+jaraba_messaging.conversation_add:
+  route_name: jaraba_messaging.api.conversations.create
+  title: 'Create conversation'
+  appears_on:
+    - entity.secure_conversation.collection

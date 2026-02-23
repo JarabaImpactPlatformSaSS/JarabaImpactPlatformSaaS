@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * templates/partials/_typing-indicator.html.twig
+ *
+ * Typing indicator with bouncing dots animation.
+ * Hidden by default; JavaScript toggles visibility based on WebSocket
+ * typing events.
+ *
+ * Variables: None (JS manages display and user name).
+ */
+#}
+
+<div class="typing-indicator" data-typing-indicator style="display: none;" aria-live="polite" role="status">
+  <div class="typing-indicator__content">
+    <span class="typing-indicator__dots" aria-hidden="true">
+      <span class="typing-indicator__dot"></span>
+      <span class="typing-indicator__dot"></span>
+      <span class="typing-indicator__dot"></span>
+    </span>
+    <span class="typing-indicator__text" data-typing-text>
+      {# JS populates: "User X is typing..." #}
+    </span>
+  </div>
+</div>

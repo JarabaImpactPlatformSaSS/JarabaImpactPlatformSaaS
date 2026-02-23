@@ -1,0 +1,126 @@
+{#
+/**
+ * @file
+ * templates/partials/_conversation-list.html.twig
+ *
+ * Conversation list sidebar with search, unread badges, and conversation items.
+ *
+ * Variables:
+ * - conversations: Array of conversation objects, each containing:
+ *   - uuid: Conversation UUID.
+ *   - title: Display title.
+ *   - preview: Last message preview text.
+ *   - last_message_at: Timestamp of last message.
+ *   - unread_count: Number of unread messages.
+ *   - participants: Array of participant objects.
+ *   - avatar_url: Avatar image URL (optional).
+ *   - is_group: Boolean, TRUE if group conversation.
+ *   - status: 'active', 'closed', 'archived'.
+ * - unread_total: Total unread messages across all conversations.
+ */
+#}
+
+<div class="conversation-list" data-conversation-list>
+
+  {# Header: total unread + new conversation button #}
+  <div class="conversation-list__header">
+    <h2 class="conversation-list__title">
+      {% trans %}Conversations{% endtrans %}
+      {% if unread_total > 0 %}
+        <span class="conversation-list__unread-total" data-unread-total aria-label="{% trans %}{{ unread_total }} unread messages{% endtrans %}">
+          {{ unread_total }}
+        </span>
+      {% endif %}
+    </h2>
+    <button class="conversation-list__new-btn"
+            type="button"
+            data-action="new-conversation"
+            aria-label="{% trans %}Start a new conversation{% endtrans %}">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span class="visually-hidden">{% trans %}New conversation{% endtrans %}</span>
+    </button>
+  </div>
+
+  {# Search input #}
+  <div class="conversation-list__search">
+    <label for="conversation-search" class="visually-hidden">{% trans %}Search conversations{% endtrans %}</label>
+    <input type="search"
+           id="conversation-search"
+           class="conversation-list__search-input"
+           placeholder="{% trans %}Search conversations...{% endtrans %}"
+           data-conversation-search
+           aria-label="{% trans %}Search conversations{% endtrans %}"
+           autocomplete="off">
+    <span class="conversation-list__search-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </span>
+  </div>
+
+  {# Conversation items #}
+  <ul class="conversation-list__items" role="listbox" aria-label="{% trans %}Conversation list{% endtrans %}">
+    {% if conversations is not empty %}
+      {% for conversation in conversations %}
+        <li class="conversation-list__item {{ conversation.unread_count > 0 ? 'conversation-list__item--unread' : '' }} {{ conversation.status != 'active' ? 'conversation-list__item--' ~ conversation.status : '' }}"
+            data-conversation-id="{{ conversation.uuid }}"
+            data-conversation-status="{{ conversation.status }}"
+            role="option"
+            tabindex="0"
+            aria-selected="false"
+            aria-label="{{ conversation.title }}{% if conversation.unread_count > 0 %}, {{ conversation.unread_count }} {% trans %}unread{% endtrans %}{% endif %}">
+
+          {# Avatar #}
+          <div class="conversation-list__avatar">
+            {% if conversation.avatar_url %}
+              <img src="{{ conversation.avatar_url }}"
+                   alt="{{ conversation.title }}"
+                   class="conversation-list__avatar-img"
+                   loading="lazy">
+            {% else %}
+              <span class="conversation-list__avatar-placeholder" aria-hidden="true">
+                {{ conversation.title|first|upper }}
+              </span>
+            {% endif %}
+            {% if conversation.is_group %}
+              <span class="conversation-list__group-icon" aria-label="{% trans %}Group conversation{% endtrans %}" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </span>
+            {% endif %}
+          </div>
+
+          {# Content #}
+          <div class="conversation-list__content">
+            <div class="conversation-list__meta">
+              <span class="conversation-list__name">{{ conversation.title }}</span>
+              <time class="conversation-list__time"
+                    datetime="{{ conversation.last_message_at|date('c') }}"
+                    data-timestamp="{{ conversation.last_message_at }}">
+                {{ conversation.last_message_at|date('H:i') }}
+              </time>
+            </div>
+            <div class="conversation-list__preview-row">
+              <p class="conversation-list__preview">{{ conversation.preview|length > 80 ? conversation.preview|slice(0, 80) ~ '...' : conversation.preview }}</p>
+              {% if conversation.unread_count > 0 %}
+                <span class="conversation-list__unread-badge" data-unread-badge>
+                  {{ conversation.unread_count > 99 ? '99+' : conversation.unread_count }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="conversation-list__empty">
+        <p>{% trans %}No conversations yet.{% endtrans %}</p>
+        <p>{% trans %}Start a new conversation to begin messaging.{% endtrans %}</p>
+      </li>
+    {% endif %}
+  </ul>
+</div>

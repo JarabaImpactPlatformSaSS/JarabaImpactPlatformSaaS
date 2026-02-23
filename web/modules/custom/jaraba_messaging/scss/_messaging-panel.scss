@@ -1,0 +1,296 @@
+/**
+ * @file
+ * scss/_messaging-panel.scss
+ *
+ * Main messaging page grid layout and chat panel slide-in styles.
+ * Uses CSS Grid for the two-column (sidebar + thread) layout.
+ * Responsive: stacks vertically on mobile, side-by-side on tablet+.
+ */
+
+/* ------------------------------------------------------------------
+ * MESSAGING PAGE LAYOUT
+ * ------------------------------------------------------------------ */
+
+.messaging-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--ej-header-height, 64px));
+  overflow: hidden;
+  background-color: var(--ej-surface-bg, #f8f9fa);
+}
+
+.messaging-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  flex: 1;
+  overflow: hidden;
+  max-width: var(--ej-max-width, 1440px);
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 320px 1fr;
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+/* Sidebar */
+.messaging-layout__sidebar {
+  display: none;
+  overflow-y: auto;
+  background-color: var(--ej-panel-bg, #ffffff);
+  border-right: 1px solid var(--ej-border-color, #e0e0e0);
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* On mobile, show sidebar by default and hide thread */
+  &.is-active {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Main thread area */
+.messaging-layout__main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--ej-content-bg, #ffffff);
+  position: relative;
+}
+
+/* Empty state */
+.messaging-layout__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.messaging-layout__empty-state-icon {
+  color: var(--ej-text-muted, #999999);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.messaging-layout__empty-state-title {
+  margin: 0 0 8px;
+  font-size: var(--ej-font-size-xl, 1.25rem);
+  font-weight: 600;
+  color: var(--ej-text-primary, #333333);
+}
+
+.messaging-layout__empty-state-text {
+  margin: 0;
+  font-size: var(--ej-font-size-base, 1rem);
+  color: var(--ej-text-secondary, #666666);
+}
+
+/* Thread container */
+.messaging-layout__thread {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------
+ * CHAT PANEL (SLIDE-IN)
+ * ------------------------------------------------------------------ */
+
+.chat-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--ej-z-panel, 1000);
+  pointer-events: none;
+}
+
+.chat-panel[data-panel-state="open"] {
+  pointer-events: auto;
+}
+
+/* Toggle button */
+.chat-panel__toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: calc(var(--ej-z-panel, 1000) + 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--ej-primary, #1a73e8);
+  color: var(--ej-on-primary, #ffffff);
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ej-primary, #1a73e8) 30%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--ej-primary, #1a73e8) 40%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: 2px;
+  }
+}
+
+.chat-panel__toggle-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background-color: var(--ej-error, #d32f2f);
+  color: var(--ej-on-error, #ffffff);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+/* Panel content */
+.chat-panel__content {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--ej-panel-bg, #ffffff);
+  box-shadow: -4px 0 24px color-mix(in srgb, #000000 15%, transparent);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .chat-panel[data-panel-state="open"] & {
+    transform: translateX(0);
+  }
+}
+
+/* Panel header */
+.chat-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ej-border-color, #e0e0e0);
+  flex-shrink: 0;
+}
+
+.chat-panel__title {
+  margin: 0;
+  font-size: var(--ej-font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--ej-text-primary, #333333);
+}
+
+.chat-panel__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ej-text-secondary, #666666);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ej-hover-bg, #f0f0f0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: -2px;
+  }
+}
+
+/* Panel views */
+.chat-panel__list-view,
+.chat-panel__thread-view {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Back button in thread view */
+.chat-panel__back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--ej-primary, #1a73e8);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-focus-ring, #4d90fe);
+    outline-offset: -2px;
+  }
+}
+
+/* Overlay */
+.chat-panel__overlay {
+  position: fixed;
+  inset: 0;
+  background-color: color-mix(in srgb, #000000 40%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: -1;
+
+  .chat-panel[data-panel-state="open"] & {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Mobile: panel takes full width */
+@media (max-width: 767px) {
+  .messaging-layout__sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .messaging-layout__sidebar:not(.is-active) + .messaging-layout__main {
+    display: none;
+  }
+
+  .messaging-layout__main.is-active {
+    display: flex;
+  }
+
+  .chat-panel__content {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,72 @@
+jaraba_messaging.settings:
+  type: config_object
+  label: 'Jaraba Messaging settings'
+  mapping:
+    encryption:
+      type: mapping
+      label: 'Encryption settings'
+      mapping:
+        algorithm:
+          type: string
+          label: 'Encryption algorithm'
+        argon2id_memory:
+          type: integer
+          label: 'Argon2id memory (KB)'
+        argon2id_iterations:
+          type: integer
+          label: 'Argon2id iterations'
+    rate_limiting:
+      type: mapping
+      label: 'Rate limiting'
+      mapping:
+        messages_per_minute_per_user:
+          type: integer
+          label: 'Messages per minute per user'
+        messages_per_minute_per_conversation:
+          type: integer
+          label: 'Messages per minute per conversation'
+    retention:
+      type: mapping
+      label: 'GDPR retention settings'
+      mapping:
+        default_message_retention_days:
+          type: integer
+          label: 'Default message retention (days)'
+        audit_log_retention_days:
+          type: integer
+          label: 'Audit log retention (days)'
+        auto_close_inactive_days:
+          type: integer
+          label: 'Auto-close inactive conversations (days)'
+    websocket:
+      type: mapping
+      label: 'WebSocket server settings'
+      mapping:
+        host:
+          type: string
+          label: 'WebSocket host'
+        port:
+          type: integer
+          label: 'WebSocket port'
+        ping_interval:
+          type: integer
+          label: 'Ping interval (seconds)'
+        online_ttl:
+          type: integer
+          label: 'Online presence TTL (seconds)'
+    notifications:
+      type: mapping
+      label: 'Notification settings'
+      mapping:
+        offline_delay_seconds:
+          type: integer
+          label: 'Offline notification delay (seconds)'
+        digest_interval_hours:
+          type: integer
+          label: 'Unread digest interval (hours)'
+    edit_window_minutes:
+      type: integer
+      label: 'Message edit window (minutes)'
+    max_participants_per_conversation:
+      type: integer
+      label: 'Max participants per conversation'

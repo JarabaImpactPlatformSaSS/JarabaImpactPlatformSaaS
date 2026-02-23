@@ -1,0 +1,28 @@
+/**
+ * @file
+ * scss/main.scss
+ *
+ * Entry point for Jaraba Messaging SCSS.
+ * Compiles to css/jaraba-messaging.css
+ *
+ * Build: npm run build
+ * Watch: npm run watch
+ *
+ * Ref: Doc Tecnico #178 - Sprint 4 Frontend
+ */
+
+// Layout & containers
+@import 'messaging-panel';
+
+// Components
+@import 'conversation-list';
+@import 'message-thread';
+@import 'message-bubble';
+@import 'message-composer';
+@import 'typing-indicator';
+
+// UI elements
+@import 'presence-badge';
+@import 'attachment-preview';
+@import 'search-overlay';
+@import 'notification-toast';
