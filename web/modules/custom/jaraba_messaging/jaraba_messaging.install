@@ -1,0 +1,352 @@
+<?php
+
+/**
+ * @file
+ * Instalación del módulo Jaraba Secure Messaging.
+ *
+ * Define schemas para tablas custom que requieren tipos no soportados
+ * por BaseFieldDefinition: MEDIUMBLOB, VARBINARY, BLOB.
+ *
+ * Ref: Doc Técnico #178 - Platform Secure Messaging
+ */
+
+/**
+ * Implements hook_schema().
+ *
+ * Define 3 tablas custom:
+ * - secure_message: Mensajes cifrados con AES-256-GCM
+ * - message_audit_log: Audit trail inmutable con hash chain SHA-256
+ * - message_read_receipt: Read receipts por mensaje
+ */
+function jaraba_messaging_schema(): array {
+  $schema = [];
+
+  // =========================================================================
+  // Tabla: secure_message
+  // Mensajes cifrados. El body se almacena como MEDIUMBLOB (AES-256-GCM).
+  // =========================================================================
+  $schema['secure_message'] = [
+    'description' => 'Mensajes cifrados con AES-256-GCM.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental del mensaje.',
+      ],
+      'conversation_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'FK a secure_conversation entity.',
+      ],
+      'sender_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'UID del usuario que envía.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'ID del tenant (multi-tenancy).',
+      ],
+      'message_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'text',
+        'description' => 'Tipo: text, file, system, ai_response.',
+      ],
+      'body_encrypted' => [
+        'type' => 'blob',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'Cuerpo cifrado AES-256-GCM (MEDIUMBLOB).',
+      ],
+      'encryption_iv' => [
+        'type' => 'blob',
+        'size' => 'normal',
+        'not null' => TRUE,
+        'description' => 'Initialization vector (12 bytes).',
+      ],
+      'encryption_tag' => [
+        'type' => 'blob',
+        'size' => 'normal',
+        'not null' => TRUE,
+        'description' => 'GCM authentication tag (16 bytes).',
+      ],
+      'encryption_key_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'ID de la clave usada para cifrado.',
+      ],
+      'reply_to_id' => [
+        'type' => 'int',
+        'size' => 'big',
+        'description' => 'ID del mensaje al que responde (nullable).',
+      ],
+      'attachment_ids' => [
+        'type' => 'text',
+        'description' => 'JSON array de IDs de adjuntos cifrados.',
+      ],
+      'reactions' => [
+        'type' => 'text',
+        'description' => 'JSON object de reacciones: {emoji: [uid, ...]}.',
+      ],
+      'metadata' => [
+        'type' => 'text',
+        'description' => 'JSON metadata extensible.',
+      ],
+      'is_edited' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Indica si el mensaje fue editado.',
+      ],
+      'edited_at' => [
+        'type' => 'int',
+        'description' => 'Timestamp de última edición.',
+      ],
+      'is_deleted' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soft-delete flag.',
+      ],
+      'deleted_at' => [
+        'type' => 'int',
+        'description' => 'Timestamp de soft-delete.',
+      ],
+      'created_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp de creación.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'conversation' => ['conversation_id', 'created_at'],
+      'sender' => ['sender_id'],
+      'tenant' => ['tenant_id'],
+      'tenant_conversation' => ['tenant_id', 'conversation_id'],
+      'reply' => ['reply_to_id'],
+    ],
+  ];
+
+  // =========================================================================
+  // Tabla: message_audit_log
+  // Audit trail inmutable con hash chain SHA-256. Append-only.
+  // =========================================================================
+  $schema['message_audit_log'] = [
+    'description' => 'Audit trail inmutable con hash chain SHA-256.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental.',
+      ],
+      'conversation_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'FK a secure_conversation entity.',
+      ],
+      'tenant_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'ID del tenant.',
+      ],
+      'action' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Tipo de acción: conversation.created, message.sent, etc.',
+      ],
+      'actor_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'UID del usuario que realizó la acción.',
+      ],
+      'target_id' => [
+        'type' => 'int',
+        'description' => 'ID del objeto afectado (message_id, participant_id, etc.).',
+      ],
+      'details' => [
+        'type' => 'text',
+        'description' => 'JSON con detalles adicionales de la acción.',
+      ],
+      'ip_address' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'description' => 'Dirección IP del actor.',
+      ],
+      'previous_hash' => [
+        'type' => 'blob',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'description' => 'Hash SHA-256 binario (32 bytes) del registro anterior en la cadena.',
+      ],
+      'current_hash' => [
+        'type' => 'blob',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'description' => 'Hash SHA-256 binario (32 bytes) de este registro.',
+      ],
+      'created_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp con precisión de microsegundos.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'conversation' => ['conversation_id', 'created_at'],
+      'tenant' => ['tenant_id'],
+      'action' => ['action'],
+      'hash_chain' => ['conversation_id', 'id'],
+    ],
+  ];
+
+  // =========================================================================
+  // Tabla: message_read_receipt
+  // Read receipts individuales por mensaje y usuario.
+  // =========================================================================
+  $schema['message_read_receipt'] = [
+    'description' => 'Read receipts por mensaje y usuario.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'ID autoincremental.',
+      ],
+      'message_id' => [
+        'type' => 'int',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'FK a secure_message.',
+      ],
+      'conversation_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'FK a secure_conversation entity.',
+      ],
+      'user_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'UID del usuario que leyó.',
+      ],
+      'read_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unix timestamp de lectura.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'message_user' => ['message_id', 'user_id'],
+    ],
+    'indexes' => [
+      'conversation_user' => ['conversation_id', 'user_id'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_messaging_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Secure Messaging installed. Configure at /admin/config/jaraba/messaging.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_messaging_uninstall(): void {
+  // Clean configuration.
+  \Drupal::configFactory()->getEditable('jaraba_messaging.settings')->delete();
+
+  // Clean state.
+  \Drupal::state()->deleteMultiple([
+    'jaraba_messaging.last_retention_run',
+    'jaraba_messaging.last_autoclose_run',
+  ]);
+
+  \Drupal::messenger()->addStatus(t('Jaraba Secure Messaging uninstalled. Custom tables have been removed.'));
+}
+
+/**
+ * Migrate audit log hash columns from CHAR(64) hex to TINYBLOB binary.
+ *
+ * Converts previous_hash and current_hash from 64-char hex strings
+ * to 32-byte binary blobs, saving ~50% storage per hash column.
+ * The hash chain integrity is preserved: internal logic continues
+ * using hex strings, with hex2bin/bin2hex at the DB boundary.
+ */
+function jaraba_messaging_update_10001(): void {
+  $db = \Drupal::database();
+  $schema = $db->schema();
+
+  // Step 1: Add temporary binary columns.
+  $blob_spec = [
+    'type' => 'blob',
+    'size' => 'tiny',
+    'not null' => FALSE,
+    'description' => 'Temporary binary hash column.',
+  ];
+
+  if (!$schema->fieldExists('message_audit_log', 'previous_hash_bin')) {
+    $schema->addField('message_audit_log', 'previous_hash_bin', $blob_spec);
+  }
+  if (!$schema->fieldExists('message_audit_log', 'current_hash_bin')) {
+    $schema->addField('message_audit_log', 'current_hash_bin', $blob_spec);
+  }
+
+  // Step 2: Migrate data in batches (hex string -> raw binary).
+  $batch_size = 1000;
+  $last_id = 0;
+
+  do {
+    $entries = $db->select('message_audit_log', 'a')
+      ->fields('a', ['id', 'previous_hash', 'current_hash'])
+      ->condition('id', $last_id, '>')
+      ->condition('previous_hash_bin', NULL, 'IS NULL')
+      ->orderBy('id', 'ASC')
+      ->range(0, $batch_size)
+      ->execute()
+      ->fetchAll();
+
+    foreach ($entries as $entry) {
+      $db->update('message_audit_log')
+        ->fields([
+          'previous_hash_bin' => hex2bin($entry->previous_hash),
+          'current_hash_bin' => hex2bin($entry->current_hash),
+        ])
+        ->condition('id', $entry->id)
+        ->execute();
+      $last_id = (int) $entry->id;
+    }
+  } while (!empty($entries));
+
+  // Step 3: Drop old CHAR(64) columns.
+  $schema->dropField('message_audit_log', 'previous_hash');
+  $schema->dropField('message_audit_log', 'current_hash');
+
+  // Step 4: Rename binary columns to original names.
+  $final_spec = [
+    'type' => 'blob',
+    'size' => 'tiny',
+    'not null' => TRUE,
+  ];
+
+  $schema->changeField('message_audit_log', 'previous_hash_bin', 'previous_hash', $final_spec + [
+    'description' => 'Hash SHA-256 binario (32 bytes) del registro anterior en la cadena.',
+  ]);
+  $schema->changeField('message_audit_log', 'current_hash_bin', 'current_hash', $final_spec + [
+    'description' => 'Hash SHA-256 binario (32 bytes) de este registro.',
+  ]);
+}

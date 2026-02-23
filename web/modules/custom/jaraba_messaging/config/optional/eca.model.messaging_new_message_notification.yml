@@ -1,0 +1,41 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_messaging
+    - eca
+id: messaging_new_message_notification
+label: 'Notificación de nuevo mensaje a usuarios offline'
+version: ''
+weight: 0
+events:
+  event_0:
+    plugin_id: jaraba_messaging_message_sent
+    label: 'Mensaje enviado'
+    configuration: {}
+    successors:
+      - id: condition_0
+        state: ''
+conditions:
+  condition_0:
+    plugin_id: jaraba_messaging_recipient_not_online
+    label: 'Destinatario no está online'
+    configuration:
+      recipient_id: '[sender_id]'
+    successors:
+      - id: condition_1
+        state: ''
+  condition_1:
+    plugin_id: jaraba_messaging_notification_not_muted
+    label: 'Notificaciones no silenciadas'
+    configuration: {}
+    successors:
+      - id: action_0
+        state: ''
+actions:
+  action_0:
+    plugin_id: jaraba_messaging_send_notification
+    label: 'Enviar notificación de nuevo mensaje'
+    configuration:
+      message_preview: '[message:body:truncated]'
+gateways: {}

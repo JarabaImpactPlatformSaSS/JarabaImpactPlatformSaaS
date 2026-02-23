@@ -1,0 +1,34 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_messaging
+    - eca
+id: messaging_unread_reminder
+label: 'Recordatorio de mensajes no leídos'
+version: ''
+weight: 0
+events:
+  event_0:
+    plugin_id: jaraba_messaging_message_sent
+    label: 'Mensaje enviado'
+    configuration: {}
+    successors:
+      - id: condition_0
+        state: ''
+conditions:
+  condition_0:
+    plugin_id: jaraba_messaging_recipient_not_online
+    label: 'Destinatario offline'
+    configuration:
+      recipient_id: '[sender_id]'
+    successors:
+      - id: action_0
+        state: ''
+actions:
+  action_0:
+    plugin_id: jaraba_messaging_send_notification
+    label: 'Enviar recordatorio de mensajes no leídos'
+    configuration:
+      message_preview: 'Tienes mensajes sin leer en la conversación "[conversation:title]".'
+gateways: {}
