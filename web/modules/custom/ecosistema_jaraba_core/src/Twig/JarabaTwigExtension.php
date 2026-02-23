@@ -218,7 +218,7 @@ class JarabaTwigExtension extends AbstractExtension
             // AI
             'ai' => ['copilot' => '🤖', 'automation' => '⚡', 'lightbulb' => '💡', 'brain' => '🧠', 'sparkle' => '✨'],
             // UI
-            'ui' => ['search' => '🔍', 'menu' => '☰', 'settings' => '⚙️', 'user' => '👤', 'bell' => '🔔', 'filter' => '🔍', 'clock' => '⏱️', 'calendar' => '📆', 'book' => '📚', 'wrench' => '🔧', 'database' => '💾', 'globe' => '🌐', 'heartbeat' => '💚', 'hospital' => '🏥', 'users' => '👥', 'map' => '🗺️', 'tools' => '🛠️', 'eye' => '👁️', 'warning' => '⚠️', 'lock' => '🔒', 'bolt' => '⚡', 'shield' => '🛡️', 'chart-bar' => '📊', 'arrow-right' => '→', 'chevron-left' => '‹', 'chevron-right' => '›', 'star' => '⭐', 'play' => '▶️', 'arrows-horizontal' => '↔️'],
+            'ui' => ['home' => '🏠', 'search' => '🔍', 'menu' => '☰', 'settings' => '⚙️', 'user' => '👤', 'bell' => '🔔', 'filter' => '🔍', 'clock' => '⏱️', 'calendar' => '📆', 'book' => '📚', 'wrench' => '🔧', 'database' => '💾', 'globe' => '🌐', 'heartbeat' => '💚', 'hospital' => '🏥', 'users' => '👥', 'map' => '🗺️', 'tools' => '🛠️', 'eye' => '👁️', 'warning' => '⚠️', 'lock' => '🔒', 'bolt' => '⚡', 'shield' => '🛡️', 'chart-bar' => '📊', 'arrow-right' => '→', 'chevron-left' => '‹', 'chevron-right' => '›', 'star' => '⭐', 'play' => '▶️', 'arrows-horizontal' => '↔️', 'info' => 'ℹ️'],
             // Verticals
             'verticals' => ['rocket' => '🚀', 'leaf' => '🌱', 'briefcase' => '💼'],
         ];

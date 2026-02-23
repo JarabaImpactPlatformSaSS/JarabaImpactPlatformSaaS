@@ -1,0 +1,20 @@
+id: _default_starter
+label: 'Default - Starter'
+vertical: _default
+tier: starter
+features: []
+limits:
+  max_pages: 5
+  basic_templates: 10
+  premium_templates: 0
+  basic_blocks: 15
+  premium_blocks: 0
+  ab_test_limit: 0
+  max_products: 10
+  orders_per_month: 50
+  copilot_uses_per_month: 20
+  storage_gb: 1
+  ai_queries: 50
+  productores: 3
+description: 'Limites por defecto para el tier Starter.'
+status: true

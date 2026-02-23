@@ -16,12 +16,14 @@ services:
 
   # Gestor de limites y cuotas por plan.
   # P1-01: Integrado con PlanValidator centralizado de billing.
+  # Precios Configurables v2.1: Integrado con PlanResolverService.
   jaraba_page_builder.quota_manager:
     class: Drupal\jaraba_page_builder\Service\QuotaManagerService
     arguments:
       - '@jaraba_page_builder.tenant_resolver'
       - '@config.factory'
       - '@?jaraba_billing.plan_validator'
+      - '@?ecosistema_jaraba_core.plan_resolver'
 
   # Servicio para obtener datos de homepage.
   jaraba_page_builder.homepage_data:

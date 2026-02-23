@@ -5,6 +5,7 @@ namespace Drupal\jaraba_page_builder\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
+use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Drupal\jaraba_billing\Service\PlanValidator;
 
 /**
@@ -50,6 +51,16 @@ class QuotaManagerService
     protected ?PlanValidator $planValidator;
 
     /**
+     * Servicio de resolucion de planes (Precios Configurables v2.1).
+     *
+     * Fuente de verdad para features y limites por vertical+tier.
+     * Inyeccion opcional (@?) para evitar dependencia dura.
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\PlanResolverService|null
+     */
+    protected ?PlanResolverService $planResolver;
+
+    /**
      * Constructor.
      *
      * @param \Drupal\jaraba_page_builder\Service\TenantResolverService $tenant_resolver
@@ -58,15 +69,19 @@ class QuotaManagerService
      *   Factoria de configuracion.
      * @param \Drupal\jaraba_billing\Service\PlanValidator|null $plan_validator
      *   Validador de planes (opcional, inyectado si jaraba_billing esta activo).
+     * @param \Drupal\ecosistema_jaraba_core\Service\PlanResolverService|null $plan_resolver
+     *   Resolver de planes (opcional, inyectado si ecosistema_jaraba_core esta activo).
      */
     public function __construct(
         TenantResolverService $tenant_resolver,
         ConfigFactoryInterface $config_factory,
         ?PlanValidator $plan_validator = NULL,
+        ?PlanResolverService $plan_resolver = NULL,
     ) {
         $this->tenantResolver = $tenant_resolver;
         $this->configFactory = $config_factory;
         $this->planValidator = $plan_validator;
+        $this->planResolver = $plan_resolver;
     }
 
     /**
@@ -141,6 +156,10 @@ class QuotaManagerService
     /**
      * Obtiene las capacidades del plan actual.
      *
+     * Precios Configurables v2.1: Lee de SaasPlanFeatures ConfigEntities
+     * via PlanResolverService cuando disponible. Mantiene fallback hardcoded
+     * para compatibilidad cuando el servicio no esta instalado.
+     *
      * @return array
      *   Capacidades del plan.
      */
@@ -149,8 +168,28 @@ class QuotaManagerService
         $plan = $this->tenantResolver->getCurrentTenantPlan();
         $config = $this->configFactory->get('jaraba_page_builder.settings');
 
-        // Definiciones por defecto.
-        $capabilities = [
+        // Precios Configurables v2.1: Read from ConfigEntity when available.
+        if ($this->planResolver) {
+            $tier = $this->planResolver->normalize($plan);
+            $vertical = '_default';
+            $tenant = $this->tenantResolver->getCurrentTenant();
+            if ($tenant instanceof TenantInterface) {
+                $verticalEntity = $tenant->getVertical();
+                $vertical = $verticalEntity ? ($verticalEntity->id() ?? '_default') : '_default';
+            }
+            $resolved = $this->planResolver->getPlanCapabilities($vertical, $tier);
+            if (!empty($resolved)) {
+                // Apply custom page_limits override from config.
+                $custom_limits = $config->get('page_limits') ?? [];
+                if (isset($custom_limits[$plan])) {
+                    $resolved['max_pages'] = $custom_limits[$plan];
+                }
+                return $resolved;
+            }
+        }
+
+        // Fallback hardcoded (backwards compatibility when PlanResolver unavailable).
+        $fallback = [
             'starter' => [
                 'max_pages' => 5,
                 'basic_templates' => 10,
@@ -192,7 +231,7 @@ class QuotaManagerService
         // Obtener configuración personalizada si existe.
         $custom_limits = $config->get('page_limits') ?? [];
 
-        $plan_capabilities = $capabilities[$plan] ?? $capabilities['starter'];
+        $plan_capabilities = $fallback[$plan] ?? $fallback['starter'];
 
         // Sobrescribir límite de páginas si está configurado.
         if (isset($custom_limits[$plan])) {

@@ -4,7 +4,20 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-23
-**Versión:** 80.0.0 (Plan de Remediación v1.1 Recalibrado)
+**Versión:** 81.0.0 (Precios Configurables v2.1 Implementado)
+
+> **💰 PRECIOS CONFIGURABLES v2.1: ARQUITECTURA IMPLEMENTADA** (2026-02-23)
+> - **Objetivo:** Eliminar hardcodeo de capacidades de plan en 3 puntos (QuotaManager, SaasPlan, PlanValidator).
+> - **2 ConfigEntities nuevas:** `SaasPlanTier` (tiers con aliases y Stripe Price IDs) + `SaasPlanFeatures` (features y limites por vertical+tier).
+> - **21 seed YAMLs:** 3 tiers (starter, professional, enterprise) + 18 features configs (5 verticales x 3 tiers + 3 defaults).
+> - **PlanResolverService:** Broker central con cascade especifico→default→NULL, normalizacion por aliases, resolucion Stripe Price ID→tier.
+> - **Integraciones:** QuotaManagerService (lee de ConfigEntity, fallback hardcoded), PlanValidator (fuente adicional en cascade), BillingWebhookController (resolucion tier desde Stripe).
+> - **Drush command:** `jaraba:validate-plans` para verificar completitud de configuraciones.
+> - **8 contract tests:** PlanConfigContractTest (tier CRUD, features CRUD, normalize, cascade, checkLimit, hasFeature, Stripe resolution, getPlanCapabilities).
+> - **Admin UI:** `/admin/config/jaraba/plan-tiers` y `/admin/config/jaraba/plan-features` con AdminHtmlRouteProvider.
+> - **SCSS:** `_plan-admin.scss` con `var(--ej-*, fallback)`, body class `page-plan-admin`.
+> - **Reglas nuevas:** PLAN-CASCADE-001, PLAN-RESOLVER-001. Aprendizaje #107.
+> - **Directrices v62.0.0, Arquitectura v62.0.0, Flujo v16.0.0, Vertical Patterns v2.2.0, Indice v81.0.0**
 
 > **🛠️ PLAN DE REMEDIACIÓN AUDITORÍA LÓGICA/TÉCNICA (2026-02-23)** (2026-02-23)
 > - **Documento:** `docs/implementacion/20260223-Plan_Remediacion_Auditoria_Logica_Negocio_Tecnica_SaaS_v1_Codex.md`.
@@ -114,6 +127,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **81.0.0** | **Precios Configurables v2.1 Implementado:** 2 ConfigEntities (`SaasPlanTier` + `SaasPlanFeatures`), `PlanResolverService` como broker central, 21 seed YAMLs, update hook 9019, integracion en QuotaManagerService + PlanValidator + BillingWebhookController, Drush `jaraba:validate-plans`, 8 contract tests, SCSS `_plan-admin.scss`, body class `page-plan-admin`. Reglas PLAN-CASCADE-001, PLAN-RESOLVER-001. Aprendizaje #107. |
 | 2026-02-23 | **80.0.0** | **Plan de Remediación v1.1 Recalibrado:** Actualización del documento `docs/implementacion/20260223-Plan_Remediacion_Auditoria_Logica_Negocio_Tecnica_SaaS_v1_Codex.md` con integración de contra-auditoría, esfuerzo ajustado a 180-240h, horizonte 60-75 días, repriorización P0 (aislamiento tenant + contrato tenant + billing coherente) y referencias explícitas a specs 07/134/135/148/158/162. |
 | 2026-02-23 | **79.0.0** | **Plan de Remediación Auditoría Lógica/Técnica SaaS:** Nuevo documento en `docs/implementacion/20260223-Plan_Remediacion_Auditoria_Logica_Negocio_Tecnica_SaaS_v1_Codex.md` con 6 workstreams, backlog `REM-*` P0/P1/P2, plan temporal 30-60-90, estrategia de testing Unit+Kernel+Functional, riesgos/dependencias y KPIs de cierre. |
 | 2026-02-23 | **78.0.0** | **Auditoría Profunda Lógica de Negocio y Técnica SaaS:** Nuevo documento en `docs/tecnicos/auditorias/20260223-Auditoria_Profunda_Logica_Negocio_Tecnica_SaaS_v1_Codex.md` con diagnóstico ejecutivo, hallazgos P0/P1 (tenant model, planes, billing, cuotas, acceso), matriz de riesgo, roadmap 30-60-90, KPIs y tabla de referencias trazables. |

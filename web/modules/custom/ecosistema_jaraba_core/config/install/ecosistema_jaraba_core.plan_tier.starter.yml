@@ -1,0 +1,13 @@
+id: starter
+label: 'Starter'
+tier_key: starter
+aliases:
+  - starter
+  - basico
+  - basic
+  - free
+stripe_price_monthly: ''
+stripe_price_yearly: ''
+description: 'Plan de entrada con funcionalidades basicas para empezar.'
+weight: 0
+status: true

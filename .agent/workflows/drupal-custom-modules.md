@@ -49,6 +49,8 @@ description: Lecciones aprendidas en implementación de módulos custom Drupal c
 |---------|------|---------------|
 | **Feature** | ConfigEntity | Catálogo del producto - definido en código |
 | **AIAgent** | ConfigEntity | Catálogo del producto - definido en código |
+| **SaasPlanTier** | ConfigEntity | Tiers de plan (aliases, Stripe IDs) - exportable YAML |
+| **SaasPlanFeatures** | ConfigEntity | Features+limites por vertical+tier - cascade resolution |
 | **Vertical** | ContentEntity | Admin puede crear nuevas verticales |
 | **Tenant** | ContentEntity | Datos operativos de clientes |
 | **SaasPlan** | ContentEntity | Admin puede crear planes personalizados |
@@ -112,6 +114,10 @@ Antes de dar por completada una Content Entity, verificar **TODOS** estos elemen
 - [ ] **AccessControlHandler** (`src/MyEntityAccessControlHandler.php`)
 
 ### 3. Routing (*.routing.yml)
+
+> [!TIP]
+> **AdminHtmlRouteProvider para ConfigEntities**: Si la entidad usa `"route_provider" = {"html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider"}` en su anotacion, las rutas CRUD (collection, add-form, edit-form, delete-form) se generan automaticamente desde los `links` de la anotacion. NO hace falta editar routing.yml para rutas CRUD basicas. Ejemplo: `SaasPlanTier`, `SaasPlanFeatures`.
+
 - [ ] `entity.myentity.collection` → `/admin/content/myentities`
 - [ ] `entity.myentity.canonical` → `/admin/content/myentity/{myentity}`
 - [ ] `entity.myentity.add_form` → `/admin/content/myentities/add`

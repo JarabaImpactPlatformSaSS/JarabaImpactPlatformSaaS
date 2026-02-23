@@ -1,0 +1,20 @@
+id: comercioconecta_enterprise
+label: 'ComercioConecta - Enterprise'
+vertical: comercioconecta
+tier: enterprise
+features:
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - seo_local_audit
+  - api_access
+  - white_label
+  - schema_org
+limits:
+  products: -1
+  flash_offers_active: -1
+  copilot_uses_per_month: -1
+  qr_codes: -1
+  seo_local_audit: -1
+description: 'Limites del tier Enterprise para la vertical ComercioConecta (ilimitado).'
+status: true

@@ -978,6 +978,21 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'full-width-layout';
   }
 
+  // Precios Configurables v2.1 — Plan Admin body classes.
+  $plan_admin_routes = [
+    'entity.saas_plan_tier.collection',
+    'entity.saas_plan_tier.add_form',
+    'entity.saas_plan_tier.edit_form',
+    'entity.saas_plan_tier.delete_form',
+    'entity.saas_plan_features.collection',
+    'entity.saas_plan_features.add_form',
+    'entity.saas_plan_features.edit_form',
+    'entity.saas_plan_features.delete_form',
+  ];
+  if (in_array($route, $plan_admin_routes, TRUE)) {
+    $variables['attributes']['class'][] = 'page-plan-admin';
+  }
+
   // User page body classes (page--user.html.twig is a page template,
   // so body classes must be added here in preprocess_html).
   $user_routes = [
@@ -1596,6 +1611,19 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   if (in_array($route, $experimentos_routes)) {
     $variables['attributes']['class'][] = 'page-experimentos';
     $variables['attributes']['class'][] = 'ab-testing-page';
+  }
+
+  // =========================================================================
+  // ERROR PAGES — Body classes para 404 y 403
+  // Drupal usa system.404 / system.403 como route names.
+  // =========================================================================
+  if (str_starts_with($route, 'system.404')) {
+    $variables['attributes']['class'][] = 'page--error';
+    $variables['attributes']['class'][] = 'page--404';
+  }
+  if (str_starts_with($route, 'system.403')) {
+    $variables['attributes']['class'][] = 'page--error';
+    $variables['attributes']['class'][] = 'page--403';
   }
 
   // =========================================================================
@@ -3419,4 +3447,53 @@ function ecosistema_jaraba_theme_preprocess_page__admin_center(&$variables) {
   // Nombre del usuario logueado.
   $current_user = \Drupal::currentUser();
   $variables['user_display_name'] = $current_user->getDisplayName();
+}
+
+/**
+ * Implements template_preprocess_page__404().
+ *
+ * Inyecta variables para la pagina 404 premium con busqueda y quick links.
+ */
+function ecosistema_jaraba_theme_preprocess_page__404(&$variables): void {
+  $variables['site_name'] = \Drupal::config('system.site')->get('name') ?? 'Jaraba Impact Platform';
+  $variables['home_url'] = '/';
+  $variables['search_url'] = '/search';
+  $variables['support_url'] = '/ayuda';
+  $variables['quick_links'] = [
+    [
+      'title' => t('Panel de control'),
+      'description' => t('Accede a tu panel principal'),
+      'url' => '/user',
+      'icon_category' => 'ui',
+      'icon_name' => 'home',
+    ],
+    [
+      'title' => t('Centro de ayuda'),
+      'description' => t('Encuentra respuestas a tus preguntas'),
+      'url' => '/ayuda',
+      'icon_category' => 'ui',
+      'icon_name' => 'info',
+    ],
+    [
+      'title' => t('Novedades'),
+      'description' => t('Descubre las ultimas actualizaciones'),
+      'url' => '/',
+      'icon_category' => 'ui',
+      'icon_name' => 'bolt',
+    ],
+  ];
+}
+
+/**
+ * Implements template_preprocess_page__403().
+ *
+ * Inyecta variables para la pagina 403 con estado condicional auth/anon.
+ */
+function ecosistema_jaraba_theme_preprocess_page__403(&$variables): void {
+  $variables['site_name'] = \Drupal::config('system.site')->get('name') ?? 'Jaraba Impact Platform';
+  $variables['is_authenticated'] = \Drupal::currentUser()->isAuthenticated();
+  $variables['login_url'] = '/user/login';
+  $variables['register_url'] = '/user/register';
+  $variables['home_url'] = '/';
+  $variables['support_url'] = '/ayuda';
 }

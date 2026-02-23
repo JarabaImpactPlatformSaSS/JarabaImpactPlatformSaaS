@@ -1,0 +1,127 @@
+{#
+/**
+ * @file
+ * page--404.html.twig — Pagina 404 Not Found premium.
+ *
+ * NOTA: Este es un PAGE template, NO un HTML template.
+ * El wrapper DOCTYPE/html/head/body lo proporciona html.html.twig.
+ * Este template solo genera el contenido dentro de body.
+ *
+ * ARQUITECTURA:
+ * - Zero Region Policy — sin {{ page.* }}
+ * - Usa {% include %} de partials reutilizables
+ * - i18n con {% trans %}
+ * - SVGs decorativos inline (exencion TPL-ICON-EXE-001)
+ * - Quick links via jaraba_icon()
+ *
+ * Body classes migradas a preprocess_html:
+ * - page--error, page--404
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+{# HEADER #}
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+  site_name: site_name,
+  logo: logo|default(''),
+  logged_in: logged_in,
+  theme_settings: theme_settings|default({})
+} %}
+
+{# MAIN CONTENT #}
+<main id="main-content" class="error-page error-page--404">
+
+  <section class="error-page__hero" aria-labelledby="error-title">
+    {# Ilustracion SVG — Astronauta perdido (decorativa, exencion TPL-ICON-EXE-001) #}
+    <div class="error-page__illustration" role="img" aria-label="{% trans %}Ilustracion de pagina no encontrada{% endtrans %}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+        {# Fondo: planeta #}
+        <circle cx="200" cy="260" rx="140" ry="30" fill="var(--ej-color-primary, #FF8C42)" opacity="0.1"/>
+        <circle cx="200" cy="150" r="80" fill="var(--ej-color-corporate, #233D63)" opacity="0.08"/>
+        <circle cx="200" cy="150" r="60" fill="var(--ej-color-corporate, #233D63)" opacity="0.06"/>
+        {# Anillo del planeta #}
+        <ellipse cx="200" cy="150" rx="100" ry="20" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2" opacity="0.3" fill="none"/>
+        {# Estrellas #}
+        <circle cx="60" cy="60" r="2" fill="var(--ej-color-primary, #FF8C42)" opacity="0.6"/>
+        <circle cx="340" cy="40" r="2.5" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.5"/>
+        <circle cx="100" cy="100" r="1.5" fill="var(--ej-color-corporate, #233D63)" opacity="0.4"/>
+        <circle cx="310" cy="90" r="2" fill="var(--ej-color-primary, #FF8C42)" opacity="0.5"/>
+        <circle cx="50" cy="200" r="1.5" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.4"/>
+        <circle cx="350" cy="180" r="2" fill="var(--ej-color-corporate, #233D63)" opacity="0.3"/>
+        {# Astronauta (simplificado) #}
+        <g transform="translate(170, 90)">
+          {# Casco #}
+          <circle cx="30" cy="25" r="22" fill="#fff" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5"/>
+          <circle cx="30" cy="25" r="16" fill="var(--ej-color-corporate, #233D63)" opacity="0.15"/>
+          <rect x="24" y="20" width="12" height="8" rx="2" fill="var(--ej-color-secondary, #00A9A5)" opacity="0.6"/>
+          {# Cuerpo #}
+          <rect x="14" y="45" width="32" height="40" rx="10" fill="#fff" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2"/>
+          {# Mochila #}
+          <rect x="8" y="50" width="8" height="25" rx="4" fill="var(--ej-color-primary, #FF8C42)" opacity="0.7"/>
+          {# Brazo izquierdo (saludando) #}
+          <line x1="14" y1="55" x2="-2" y2="40" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+          {# Brazo derecho #}
+          <line x1="46" y1="55" x2="58" y2="68" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+          {# Piernas #}
+          <line x1="22" y1="85" x2="16" y2="108" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="38" y1="85" x2="44" y2="108" stroke="var(--ej-color-corporate, #233D63)" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        {# Texto 404 grande detras #}
+        <text x="200" y="270" text-anchor="middle" font-family="var(--ej-font-headings, 'Outfit', sans-serif)" font-size="72" font-weight="800" fill="var(--ej-color-corporate, #233D63)" opacity="0.06">404</text>
+      </svg>
+    </div>
+
+    <h1 id="error-title" class="error-page__title">{% trans %}Pagina no encontrada{% endtrans %}</h1>
+    <p class="error-page__subtitle">{% trans %}La pagina que buscas no existe o fue movida a otra ubicacion.{% endtrans %}</p>
+
+    {# Barra de busqueda #}
+    <form class="error-page__search" action="{{ search_url|default('/search') }}" method="get" role="search" aria-label="{% trans %}Buscar en el sitio{% endtrans %}">
+      <input
+        type="search"
+        name="keys"
+        class="error-page__search-input"
+        placeholder="{% trans %}Buscar en {{ site_name }}...{% endtrans %}"
+        aria-label="{% trans %}Termino de busqueda{% endtrans %}"
+      />
+      <button type="submit" class="error-page__search-btn">{% trans %}Buscar{% endtrans %}</button>
+    </form>
+
+    {# Botones de accion #}
+    <div class="error-page__actions">
+      <a href="{{ home_url|default('/') }}" class="error-page__btn--primary">
+        {% trans %}Ir al inicio{% endtrans %}
+      </a>
+      <a href="{{ support_url|default('/ayuda') }}" class="error-page__btn--secondary">
+        {% trans %}Contactar soporte{% endtrans %}
+      </a>
+    </div>
+  </section>
+
+  {# Quick Links Grid #}
+  {% if quick_links is defined and quick_links is not empty %}
+    <section class="error-page__quick-links" aria-label="{% trans %}Enlaces rapidos{% endtrans %}">
+      <h2 class="error-page__quick-links-title">{% trans %}Tambien puedes visitar{% endtrans %}</h2>
+      <div class="error-page__cards">
+        {% for link in quick_links %}
+          <a href="{{ link.url }}" class="error-page__card">
+            <div class="error-page__card-icon">
+              {{ jaraba_icon(link.icon_category, link.icon_name, { variant: 'duotone', size: '28px' }) }}
+            </div>
+            <h3 class="error-page__card-title">{{ link.title }}</h3>
+            <p class="error-page__card-desc">{{ link.description }}</p>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</main>
+
+{# FOOTER #}
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+  site_name: site_name,
+  logo: logo|default(''),
+  theme_settings: theme_settings|default({})
+} %}

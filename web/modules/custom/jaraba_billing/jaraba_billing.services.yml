@@ -28,6 +28,7 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
       - '@?ecosistema_jaraba_core.upgrade_trigger'
+      - '@?ecosistema_jaraba_core.plan_resolver'
     calls:
       - [setStringTranslation, ['@string_translation']]
 

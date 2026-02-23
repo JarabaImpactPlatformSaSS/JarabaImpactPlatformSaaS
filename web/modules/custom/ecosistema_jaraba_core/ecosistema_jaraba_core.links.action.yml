@@ -121,3 +121,23 @@ entity.freemium_vertical_limit.add_form:
   title: 'Añadir Limite Freemium'
   appears_on:
     - entity.freemium_vertical_limit.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - SAAS PLAN TIERS (Precios Configurables v2.1)
+# ---------------------------------------------------------------------------
+
+entity.saas_plan_tier.add_form:
+  route_name: entity.saas_plan_tier.add_form
+  title: 'Añadir Plan Tier'
+  appears_on:
+    - entity.saas_plan_tier.collection
+
+# ---------------------------------------------------------------------------
+# ACCIONES - SAAS PLAN FEATURES (Precios Configurables v2.1)
+# ---------------------------------------------------------------------------
+
+entity.saas_plan_features.add_form:
+  route_name: entity.saas_plan_features.add_form
+  title: 'Añadir Plan Features'
+  appears_on:
+    - entity.saas_plan_features.collection

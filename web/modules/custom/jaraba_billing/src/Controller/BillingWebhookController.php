@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Drupal\jaraba_billing\Service\DunningService;
 use Drupal\jaraba_billing\Service\StripeInvoiceService;
 use Drupal\jaraba_billing\Service\TenantSubscriptionService;
@@ -49,6 +50,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     protected LockBackendInterface $lock,
     protected ?DunningService $dunningService = NULL,
     protected ?MailManagerInterface $mailManager = NULL,
+    protected ?PlanResolverService $planResolver = NULL,
   ) {}
 
   /**
@@ -63,6 +65,9 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       $container->get('lock'),
       $container->get('jaraba_billing.dunning'),
       $container->get('plugin.manager.mail'),
+      $container->has('ecosistema_jaraba_core.plan_resolver')
+        ? $container->get('ecosistema_jaraba_core.plan_resolver')
+        : NULL,
     );
   }
 
@@ -236,9 +241,15 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
           }
 
           // If plan changed (items differ), update subscription_plan.
+          // Use PlanResolver to normalize tier from Stripe Price ID when available.
+          $priceId = $data['items']['data'][0]['price']['id'] ?? NULL;
           $planId = $data['items']['data'][0]['price']['product'] ?? NULL;
           if ($planId) {
-            $tenant->set('subscription_plan', $planId);
+            $resolvedTier = NULL;
+            if ($this->planResolver && $priceId) {
+              $resolvedTier = $this->planResolver->resolveFromStripePriceId($priceId);
+            }
+            $tenant->set('subscription_plan', $resolvedTier ?? $planId);
             $tenant->save();
           }
         }

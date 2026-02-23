@@ -1,0 +1,22 @@
+id: serviciosconecta_enterprise
+label: 'ServiciosConecta - Enterprise'
+vertical: serviciosconecta
+tier: enterprise
+features:
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - calendar_sync
+  - buzon_confianza
+  - firma_digital
+  - api_access
+  - white_label
+  - schema_org
+limits:
+  services: -1
+  bookings_per_month: -1
+  calendar_sync: 1
+  buzon_confianza: 1
+  firma_digital: 1
+description: 'Limites del tier Enterprise para la vertical ServiciosConecta (ilimitado).'
+status: true

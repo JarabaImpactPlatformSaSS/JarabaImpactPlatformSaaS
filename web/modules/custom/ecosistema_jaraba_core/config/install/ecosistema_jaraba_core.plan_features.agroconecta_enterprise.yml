@@ -1,0 +1,21 @@
+id: agroconecta_enterprise
+label: 'AgroConecta - Enterprise'
+vertical: agroconecta
+tier: enterprise
+features:
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - traceability_qr
+  - api_access
+  - white_label
+  - schema_org
+limits:
+  products: -1
+  orders_per_month: -1
+  copilot_uses_per_month: -1
+  photos_per_product: -1
+  commission_pct: 3
+  traceability_qr: -1
+description: 'Limites del tier Enterprise para la vertical AgroConecta (ilimitado).'
+status: true

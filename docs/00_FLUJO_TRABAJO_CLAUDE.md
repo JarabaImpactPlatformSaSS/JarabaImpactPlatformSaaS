@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-02-20
-**Version:** 15.0.0 (Secure Messaging Implementado — Doc 178 jaraba_messaging)
+**Ultima actualizacion:** 2026-02-23
+**Version:** 16.0.0 (Precios Configurables v2.1 — SaasPlanTier + SaasPlanFeatures + PlanResolverService)
 
 ---
 
@@ -101,6 +101,34 @@
   - Los ECA Conditions heredan de `ConditionBase`, implementan `evaluate()` retornando bool.
   - Los ECA Actions heredan de `ConfigurableActionBase`, implementan `execute()`.
   - Registrar el evento Symfony base en `src/Event/` y el plugin ECA que lo adapta en `src/Plugin/ECA/Event/`.
+- **ConfigEntity Cascade Resolution (Precios Configurables v2.1):**
+  - Cuando features/limites dependen de vertical+tier, crear ConfigEntities con ID `{vertical}_{tier}` y defaults `_default_{tier}`.
+  - Cascade: especifico → default → NULL. Un servicio broker central (`PlanResolverService`) encapsula la logica.
+  - Los consumidores llaman al broker (`getFeatures()`, `checkLimit()`, `hasFeature()`), nunca implementan el cascade.
+  - El broker devuelve NULL cuando no hay config, permitiendo fallback en el consumidor.
+  - Ejemplo: `$resolver->getFeatures('agroconecta', 'professional')` busca `agroconecta_professional`, luego `_default_professional`.
+- **Plan Name Normalization via SaasPlanTier:**
+  - Los nombres de plan de fuentes externas (Stripe, APIs, migrations) se normalizan a tier keys canonicos.
+  - `SaasPlanTier` ConfigEntity almacena `aliases` (array de strings editables desde UI).
+  - `PlanResolverService::normalize($planName)` resuelve aliases lazy-cached.
+  - Stripe Price ID → tier: `resolveFromStripePriceId()` busca en `stripe_price_monthly`/`stripe_price_yearly`.
+  - Empty/unknown → fallback a `'starter'` o lowercase del input.
+- **AdminHtmlRouteProvider para ConfigEntities:**
+  - Las ConfigEntities con `AdminHtmlRouteProvider` en `route_provider.html` auto-generan rutas CRUD.
+  - Las rutas se definen via `links` en la anotacion `@ConfigEntityType`, no en `routing.yml`.
+  - Para ConfigEntities admin, usar `/admin/config/{group}/{entity-type}` como base path.
+  - El permiso se define en `admin_permission` de la anotacion.
+- **PlanResolverService como getPlanCapabilities():**
+  - `getPlanCapabilities(vertical, tier)` devuelve array plano compatible con QuotaManagerService.
+  - Limites numericos van como `key => int` (e.g. `max_pages => 25`).
+  - Features booleanas van como `feature_key => TRUE` (e.g. `seo_advanced => TRUE`).
+  - Features no configuradas NO aparecen en el array (check con `isset()`).
+- **Multi-Source Limit Resolution en PlanValidator:**
+  - `resolveEffectiveLimit()` consulta 3 fuentes en cascade de prioridad:
+    1. FreemiumVerticalLimit (via UpgradeTriggerService) — mayor prioridad
+    2. SaasPlanFeatures (via PlanResolverService) — prioridad media
+    3. SaasPlan entity fallback — menor prioridad
+  - Sentinel value `-999` diferencia "no configurado" de "valor real".
 
 ---
 
@@ -127,6 +155,8 @@
 19. **Cron idempotency con flags:** Toda accion cron que envie notificaciones DEBE filtrar por flag NOT sent, marcar flag TRUE tras enviar, y guardar. Previene duplicados en reintentos.
 20. **Cifrado server-side para datos sensibles:** Mensajes, adjuntos y datos PII en tablas custom DEBEN cifrarse con AES-256-GCM. IV aleatorio por registro, tag almacenado junto al ciphertext, clave derivada con Argon2id desde env var. NUNCA almacenar claves en BD ni config.
 21. **Custom schema + DTO para alto volumen:** Cuando una entidad requiere tipos de columna no soportados por Entity API (MEDIUMBLOB, VARBINARY) o alto volumen de escrituras, usar `hook_schema()` + DTO readonly. El DTO encapsula filas, el servicio maneja CRUD via `\Drupal::database()`.
+22. **Cascade para ConfigEntities vertical+tier:** Cuando features o limites dependen de vertical y tier, usar patron cascade: especifico ({vertical}_{tier}) → default (_default_{tier}) → NULL. Un servicio broker central (PlanResolverService) encapsula la logica. Los consumidores solo llaman al broker, nunca implementan el cascade.
+23. **Normalizacion de planes via aliases:** Los nombres de plan de cualquier fuente externa (Stripe, migrations, APIs) DEBEN normalizarse a tier keys canonicos via aliases editables en ConfigEntity. Nunca hardcodear mapeos de nombres. `PlanResolverService::normalize()` es el punto unico de normalizacion.
 
 ---
 
@@ -134,6 +164,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-23 | **16.0.0** | **Precios Configurables v2.1 Workflow**: Patrones para ConfigEntity cascade resolution (especifico→default→NULL), plan name normalization via SaasPlanTier aliases (lazy-cached alias map), AdminHtmlRouteProvider auto-routes para ConfigEntities, PlanResolverService como broker central con `getPlanCapabilities()` flat array, multi-source limit resolution en PlanValidator (FreemiumVerticalLimit→SaasPlanFeatures→SaasPlan), sentinel value `-999` para diferenciar "no configurado" de "valor real". Reglas de oro #22, #23. Aprendizaje #107. |
 | 2026-02-20 | **15.0.0** | **Secure Messaging Implementation Workflow**: Patrones para cifrado server-side AES-256-GCM (IV 12 bytes, tag 16 bytes, Argon2id KDF), custom schema tables con DTOs readonly, WebSocket auth middleware (JWT + session), ConnectionManager con indices SplObjectStorage, cursor-based pagination (before_id), optional DI con `@?` para modulos opcionales, ECA plugins por codigo (Events + Conditions + Actions), hash chain SHA-256 para audit inmutable, rate limiting por usuario/conversacion. Reglas de oro #20, #21. Aprendizaje #106. |
 | 2026-02-20 | 14.0.0 | **ServiciosConecta Sprint S3 Workflow**: Patrones para booking API field mapping, state machine con status granulares, cron idempotency con flags, owner pattern. Reglas de oro #17, #18, #19. Aprendizaje #105. |
 | 2026-02-20 | 13.0.0 | **Page Builder Preview Audit Workflow**: Protocolo de auditoria de 4 escenarios del Page Builder. Patrones para generacion de preview images por vertical, auto-deteccion por convencion de nombre, verificacion browser multi-escenario. Regla de oro #16. Aprendizaje #103. |

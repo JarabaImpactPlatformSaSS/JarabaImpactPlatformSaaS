@@ -1,0 +1,13 @@
+id: serviciosconecta_starter
+label: 'ServiciosConecta - Starter'
+vertical: serviciosconecta
+tier: starter
+features: []
+limits:
+  services: 3
+  bookings_per_month: 20
+  calendar_sync: 0
+  buzon_confianza: 0
+  firma_digital: 0
+description: 'Limites del tier Starter para la vertical ServiciosConecta.'
+status: true

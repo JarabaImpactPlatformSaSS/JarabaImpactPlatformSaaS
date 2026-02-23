@@ -1,7 +1,7 @@
 # Patrones de Customización por Vertical
 
-> **Versión**: 2.1.0
-> **Ultima actualizacion**: 2026-02-20
+> **Versión**: 2.2.0
+> **Ultima actualizacion**: 2026-02-23
 
 ## 1. Arquitectura Multi-Vertical
 
@@ -127,11 +127,35 @@ if (in_array('trazabilidad', $vertical->get('features')->getValue())) {
 }
 ```
 
-### 4.2 Customización por Plan (Nivel Límites)
+### 4.2 Customización por Plan (Nivel Límites) — PlanResolverService v2.1
 
-El Plan SaaS define **límites numéricos** aplicables a todos los tenants con ese plan:
+El Plan SaaS define **límites numéricos y features** aplicables a todos los tenants con ese plan. Desde v2.1, la fuente de verdad son las ConfigEntities `SaasPlanTier` y `SaasPlanFeatures`, accesibles via `PlanResolverService`:
 
 ```php
+// v2.1 — Via PlanResolverService (recomendado)
+$planResolver = \Drupal::service('ecosistema_jaraba_core.plan_resolver');
+$vertical = $tenant->getVertical()->id();
+$tier = $planResolver->normalize($tenant->getSubscriptionPlan());
+
+// Feature check (cascade: especifico → default → NULL)
+if ($planResolver->hasFeature($vertical, $tier, 'advanced_analytics')) {
+    // Mostrar analytics avanzados
+}
+
+// Límite numérico con fallback
+$maxPages = $planResolver->checkLimit($vertical, $tier, 'max_pages', 5);
+
+// Array plano de capacidades (para QuotaManager)
+$capabilities = $planResolver->getPlanCapabilities($vertical, $tier);
+```
+
+**Cascade de resolución (PLAN-CASCADE-001):**
+1. Busca config específica: `{vertical}_{tier}` (ej: `agroconecta_professional`)
+2. Si no existe, busca default: `_default_{tier}` (ej: `_default_professional`)
+3. Si no existe, retorna NULL / fallback
+
+```php
+// Legacy — Via SaasPlan ContentEntity (fallback)
 $plan = $tenant->getSubscriptionPlan();
 $limits = $plan->getLimits();
 
@@ -220,7 +244,7 @@ Cada conversacion hereda el `tenant_id` y las claves de cifrado son per-tenant (
 | Agentes IA como config entity | ✅ Completado | - |
 | Mensajeria segura cross-vertical | ✅ Completado (jaraba_messaging) | - |
 | UI para theme_overrides | ⏸️ Planeado | Alta |
-| Herencia de features (Vertical → Plan) | ⏸️ Planeado | Baja |
+| Herencia de features (Vertical → Plan) | ✅ Completado (PlanResolverService v2.1) | - |
 
 ---
 
@@ -228,6 +252,7 @@ Cada conversacion hereda el `tenant_id` y las claves de cifrado son per-tenant (
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **2.2.0** | **PlanResolverService v2.1:** Seccion 4.2 reescrita con patron PlanResolverService como fuente de verdad para features y limites por vertical+tier. Cascade PLAN-CASCADE-001 documentado (especifico→default→NULL). Roadmap: "Herencia de features" marcado como completado. |
 | 2026-02-20 | **2.1.0** | Seccion 7 nueva: Capacidades Cross-Vertical — documentacion de `jaraba_messaging` como servicio cross-vertical con context_type por vertical. Tabla de 6 context_types con casos de uso. Roadmap actualizado (messaging como completado). |
 | 2026-02-20 | 2.0.0 | Actualizacion con los 6 verticales activos en produccion. Tabla de design tokens y estado de preview images por vertical. |
 | 2026-01-10 | 1.0.0 | Creación inicial con features hardcodeadas |

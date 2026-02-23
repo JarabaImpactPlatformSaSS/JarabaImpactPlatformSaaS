@@ -1359,3 +1359,23 @@ services:
     arguments:
       - '@state'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # PLAN RESOLVER SERVICE (Precios Configurables v2.1)
+  # ===========================================
+  # Central broker for plan tier resolution, features and limits.
+  # Reads from SaasPlanTier and SaasPlanFeatures ConfigEntities.
+  # Cascade: specific vertical+tier → _default tier → NULL.
+  ecosistema_jaraba_core.plan_resolver:
+    class: Drupal\ecosistema_jaraba_core\Service\PlanResolverService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Drush command: jaraba:validate-plans
+  ecosistema_jaraba_core.plan_validation_commands:
+    class: Drupal\ecosistema_jaraba_core\Commands\PlanValidationCommands
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: drush.command }

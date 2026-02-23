@@ -1,0 +1,14 @@
+id: emprendimiento_starter
+label: 'Emprendimiento - Starter'
+vertical: emprendimiento
+tier: starter
+features: []
+limits:
+  hypotheses_active: 3
+  experiments_monthly: 2
+  copilot_sessions_daily: 3
+  mentoring_sessions_monthly: 0
+  bmc_drafts: 2
+  calculadora_uses: 5
+description: 'Limites del tier Starter para la vertical Emprendimiento.'
+status: true

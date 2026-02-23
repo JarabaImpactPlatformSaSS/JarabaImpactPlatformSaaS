@@ -208,3 +208,25 @@ entity.freemium_vertical_limit.collection:
   route_name: entity.freemium_vertical_limit.collection
   parent: system.admin_structure
   weight: -2
+
+# ---------------------------------------------------------------------------
+# MENU DE CONFIGURACION - SAAS PLAN TIERS (Precios Configurables v2.1)
+# ---------------------------------------------------------------------------
+
+entity.saas_plan_tier.collection:
+  title: 'Plan Tiers'
+  description: 'Gestiona los tiers de planes SaaS (Starter, Professional, Enterprise) con aliases y Stripe Price IDs'
+  route_name: entity.saas_plan_tier.collection
+  parent: system.admin_config
+  weight: 55
+
+# ---------------------------------------------------------------------------
+# MENU DE CONFIGURACION - SAAS PLAN FEATURES (Precios Configurables v2.1)
+# ---------------------------------------------------------------------------
+
+entity.saas_plan_features.collection:
+  title: 'Plan Features'
+  description: 'Gestiona las features y limites por combinacion vertical+tier para cada plan SaaS'
+  route_name: entity.saas_plan_features.collection
+  parent: system.admin_config
+  weight: 56
