@@ -62,7 +62,7 @@ class MessageEncryptionService implements MessageEncryptionServiceInterface {
         ciphertext: $ciphertext,
         iv: $iv,
         tag: $tag,
-        keyId: $keyId,
+        key_id: $keyId,
       );
     }
     catch (EncryptionException $e) {
