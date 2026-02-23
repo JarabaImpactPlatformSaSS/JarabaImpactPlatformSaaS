@@ -133,12 +133,47 @@ if ($count >= 30) throw new RateLimitException(30, 60, 'user');
 
 **Regla MSG-RATE-001:** Rate limiting con contadores DB. Excepciones tipadas con `limit`, `windowSeconds`, `scope`.
 
+### 2.10 Dependencias Transitivas en Kernel Tests
+
+**Problema:** Los kernel tests de `jaraba_messaging` fallaban en CI con `ServiceNotFoundException: flexible_permissions.chain_calculator` a pesar de pasar la validacion de sintaxis PHP localmente. El modulo `group` requiere `flexible_permissions` y `entity`, pero estos no estaban en `$modules`.
+
+**Solucion:** Trazar el arbol completo de dependencias transitivas desde `jaraba_messaging.info.yml` hasta las hojas:
+
+```
+jaraba_messaging
+  → group (→ entity, flexible_permissions, options)
+  → ecosistema_jaraba_core (→ jaraba_theming, node, user, file, field, options, datetime)
+    → node (→ text, filter)
+```
+
+Declarar TODOS los modulos explicitamente en `$modules` del kernel test, en orden topologico (hojas primero):
+
+```php
+protected static $modules = [
+  'system', 'user', 'node', 'file', 'field', 'options', 'datetime',
+  'text', 'filter', 'entity', 'flexible_permissions', 'group',
+  'jaraba_theming', 'ecosistema_jaraba_core', 'jaraba_messaging',
+];
+```
+
+**Regla MSG-TEST-001:** En kernel tests, SIEMPRE declarar la cadena completa de dependencias transitivas en `$modules`. Drupal NO resuelve dependencias automaticamente en entorno de test — cada modulo debe listarse explicitamente. Antes de crear un kernel test, ejecutar: `info.yml del modulo` → `info.yml de cada dependencia` → repetir hasta las hojas.
+
+### 2.11 Named Parameters y Value Objects Readonly
+
+**Problema:** `EncryptedPayload` (VO `final readonly class`) define su constructor con `$key_id` (snake_case siguiendo la convencion de la BD), pero los 3 servicios que lo instancian usaban `keyId:` (camelCase). PHP 8+ named parameters exigen coincidencia EXACTA con el nombre del parametro del constructor. El error solo se manifiesta en runtime, no en validacion de sintaxis (`php -l`).
+
+**Solucion:** Corregir `keyId:` a `key_id:` en `MessageEncryptionService`, `MessageService` y `SearchService`.
+
+**Regla MSG-VO-001:** Al usar named parameters con Value Objects `readonly`, verificar que el nombre del argumento coincide EXACTAMENTE con el parametro del constructor. Buscar con grep antes de commit: `grep -r 'NombreDelVO(' --include='*.php' | grep -v 'class '` para detectar todas las instanciaciones.
+
 ## 3. Errores Corregidos
 
 | Error | Causa | Solucion |
 |-------|-------|----------|
 | PHP Fatal: cannot redeclare `create()` | Conflicto con `ControllerBase::create()` (static factory) | Renombrar a `createConversation()` |
 | MessageOwnerAccessCheck no resuelve | Faltaba `@database` en services.yml | Anadir argumento `- '@database'` |
+| CI: `ServiceNotFoundException: flexible_permissions.chain_calculator` (14 kernel tests) | Los kernel tests declaraban `group` en `$modules` sin incluir sus dependencias transitivas (`flexible_permissions`, `entity`) | Trazar el arbol completo de dependencias de `jaraba_messaging.info.yml` y declarar TODOS los modulos en orden: `system`, `user`, `node`, `file`, `field`, `options`, `datetime`, `text`, `filter`, `entity`, `flexible_permissions`, `group`, `jaraba_theming`, `ecosistema_jaraba_core`, `jaraba_messaging` |
+| CI: `Unknown named parameter $keyId` (6 encryption tests) | `EncryptedPayload` define el constructor con `$key_id` (snake_case) pero `MessageEncryptionService`, `MessageService` y `SearchService` lo invocaban como `keyId:` (camelCase). PHP named parameters exigen coincidencia exacta | Cambiar `keyId:` a `key_id:` en los 3 servicios afectados |
 
 ## 4. Metricas Finales
 
@@ -168,6 +203,8 @@ if ($count >= 30) throw new RateLimitException(30, 60, 'user');
 | MSG-ENC-001 | Cifrado Server-Side | AES-256-GCM + Argon2id KDF + env var. NUNCA almacenar claves en BD |
 | MSG-WS-001 | WebSocket Auth Middleware | Auth en onOpen(), JWT o session, cerrar invalidos con 4401 |
 | MSG-RATE-001 | Rate Limiting Mensajeria | 30 msg/min/user, 100 msg/min/conversation. Contadores DB |
+| MSG-TEST-001 | Dependencias Transitivas en Kernel Tests | SIEMPRE declarar cadena completa de modulos en `$modules`. Trazar desde info.yml hasta las hojas |
+| MSG-VO-001 | Named Parameters en Value Objects | Verificar coincidencia EXACTA de nombres al instanciar VOs readonly con named parameters |
 
 ## 6. Post-Audit Hardening (2026-02-23)
 
@@ -210,7 +247,36 @@ PresenceService refactorizado con patron try-Redis-first, catch-fallback-to-memo
 - Update hook `jaraba_messaging_update_10001()` migra datos existentes en batches
 - Chain integrity preservada: la computacion de hash sigue usando hex strings internamente
 
-### 6.6 Metricas Post-Hardening
+### 6.6 Correccion de errores CI (2026-02-23)
+
+Tras el push inicial del hardening, CI detecto 2 categorias de errores:
+
+**Error 1 — Dependencias transitivas faltantes (14 tests fallidos):**
+```
+ServiceNotFoundException: The service "group_permission.calculator" has a dependency
+on a non-existent service "flexible_permissions.chain_calculator".
+```
+- **Causa raiz:** Los kernel tests listaban `group` en `$modules` pero no incluian `flexible_permissions` ni `entity` (dependencias transitivas de `group`). Drupal no resuelve dependencias automaticamente en el entorno de kernel test.
+- **Fix:** Trazar arbol completo: `jaraba_messaging` → `group` (→ `entity`, `flexible_permissions`, `options`) + `ecosistema_jaraba_core` (→ `jaraba_theming`, `node`, `user`, `file`, `field`, `options`, `datetime`) + `node` (→ `text`, `filter`). Declarar los 15 modulos explicitamente en orden topologico.
+- **Resultado:** 14 errores → 0 errores en esta categoria.
+
+**Error 2 — Named parameter mismatch (6 tests fallidos):**
+```
+Error: Unknown named parameter $keyId
+```
+- **Causa raiz:** `EncryptedPayload` define `$key_id` (snake_case) en su constructor, pero 3 servicios lo invocaban como `keyId:` (camelCase). PHP named parameters exigen coincidencia exacta. `php -l` no detecta este error — solo se manifiesta en runtime.
+- **Archivos afectados:** `MessageEncryptionService.php`, `MessageService.php`, `SearchService.php`.
+- **Fix:** Cambiar `keyId:` a `key_id:` en las 3 instanciaciones.
+- **Resultado:** 6 errores → 0 errores.
+
+**Progresion CI:**
+| Intento | Errores | Causa |
+|---------|---------|-------|
+| Push 1 (hardening + modulo) | 14 | `flexible_permissions.chain_calculator` no encontrado |
+| Push 2 (deps transitivas) | 6 | `Unknown named parameter $keyId` |
+| Push 3 (named params) | 0 | CI verde, deploy exitoso a IONOS |
+
+### 6.7 Metricas Post-Hardening
 
 | Metrica | Antes | Despues |
 |---------|-------|---------|
@@ -219,6 +285,8 @@ PresenceService refactorizado con patron try-Redis-first, catch-fallback-to-memo
 | Optional DI correcta | 0 | 2 (vault + redis) |
 | Hash storage efficiency | 64 bytes/hash | 32 bytes/hash |
 | PresenceService backends | Memory only | Redis + Memory fallback |
+| CI status | N/A | Verde (161 tests, 0 errores) |
+| Reglas nuevas | 3 | 5 (+MSG-TEST-001, +MSG-VO-001) |
 
 ## 7. Documentos Actualizados
 
