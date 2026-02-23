@@ -1,0 +1,33 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - jaraba_messaging
+    - eca
+id: messaging_first_message_welcome
+label: 'Auto-respuesta de bienvenida en primer mensaje'
+version: ''
+weight: 0
+events:
+  event_0:
+    plugin_id: jaraba_messaging_message_sent
+    label: 'Mensaje enviado'
+    configuration: {}
+    successors:
+      - id: condition_0
+        state: ''
+conditions:
+  condition_0:
+    plugin_id: jaraba_messaging_is_first_message
+    label: 'Es el primer mensaje de la conversación'
+    configuration: {}
+    successors:
+      - id: action_0
+        state: ''
+actions:
+  action_0:
+    plugin_id: jaraba_messaging_send_auto_reply
+    label: 'Enviar mensaje de bienvenida'
+    configuration:
+      message_body: 'Gracias por iniciar esta conversación. Un profesional atenderá tu consulta lo antes posible.'
+gateways: {}

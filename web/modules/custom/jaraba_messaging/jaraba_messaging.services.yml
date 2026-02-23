@@ -1,0 +1,162 @@
+services:
+  # Logger channel.
+  logger.channel.jaraba_messaging:
+    parent: logger.channel_base
+    arguments: ['jaraba_messaging']
+
+  # Tenant key derivation (Argon2id).
+  jaraba_messaging.tenant_key:
+    class: Drupal\jaraba_messaging\Service\TenantKeyService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_messaging'
+
+  # AES-256-GCM encryption/decryption.
+  jaraba_messaging.encryption:
+    class: Drupal\jaraba_messaging\Service\MessageEncryptionService
+    arguments:
+      - '@jaraba_messaging.tenant_key'
+      - '@logger.channel.jaraba_messaging'
+
+  # Immutable audit trail with SHA-256 hash chain.
+  jaraba_messaging.audit:
+    class: Drupal\jaraba_messaging\Service\MessageAuditService
+    arguments:
+      - '@database'
+      - '@current_user'
+      - '@request_stack'
+      - '@logger.channel.jaraba_messaging'
+
+  # Conversation CRUD service.
+  jaraba_messaging.conversation:
+    class: Drupal\jaraba_messaging\Service\ConversationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@database'
+      - '@jaraba_messaging.audit'
+      - '@logger.channel.jaraba_messaging'
+
+  # Message CRUD service (custom SQL).
+  jaraba_messaging.message:
+    class: Drupal\jaraba_messaging\Service\MessageService
+    arguments:
+      - '@database'
+      - '@jaraba_messaging.encryption'
+      - '@jaraba_messaging.audit'
+      - '@config.factory'
+      - '@current_user'
+      - '@logger.channel.jaraba_messaging'
+
+  # Central orchestrator.
+  jaraba_messaging.messaging:
+    class: Drupal\jaraba_messaging\Service\MessagingService
+    arguments:
+      - '@jaraba_messaging.conversation'
+      - '@jaraba_messaging.message'
+      - '@jaraba_messaging.encryption'
+      - '@jaraba_messaging.audit'
+      - '@jaraba_messaging.notification_bridge'
+      - '@config.factory'
+      - '@current_user'
+      - '@logger.channel.jaraba_messaging'
+
+  # Notification bridge to doc 98.
+  jaraba_messaging.notification_bridge:
+    class: Drupal\jaraba_messaging\Service\NotificationBridgeService
+    arguments:
+      - '@jaraba_messaging.conversation'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_messaging'
+
+  # Attachment bridge to doc 88 (optional DI via @?).
+  jaraba_messaging.attachment_bridge:
+    class: Drupal\jaraba_messaging\Service\AttachmentBridgeService
+    arguments:
+      - '@jaraba_messaging.audit'
+      - '@logger.channel.jaraba_messaging'
+    calls:
+      - [setVaultService, ['@?jaraba_buzon_confianza.vault']]
+
+  # Redis presence service (optional Redis DI via @?).
+  jaraba_messaging.presence:
+    class: Drupal\jaraba_messaging\Service\PresenceService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_messaging'
+    calls:
+      - [setRedisClient, ['@?redis.factory']]
+
+  # GDPR retention cleanup service.
+  jaraba_messaging.retention:
+    class: Drupal\jaraba_messaging\Service\RetentionService
+    arguments:
+      - '@database'
+      - '@jaraba_messaging.audit'
+      - '@config.factory'
+      - '@logger.channel.jaraba_messaging'
+
+  # Full-text + semantic search.
+  jaraba_messaging.search:
+    class: Drupal\jaraba_messaging\Service\SearchService
+    arguments:
+      - '@database'
+      - '@jaraba_messaging.encryption'
+      - '@config.factory'
+      - '@logger.channel.jaraba_messaging'
+
+  # WebSocket connection manager.
+  jaraba_messaging.connection_manager:
+    class: Drupal\jaraba_messaging\WebSocket\ConnectionManager
+    arguments:
+      - '@logger.channel.jaraba_messaging'
+
+  # Access checks.
+  jaraba_messaging.access_check.conversation:
+    class: Drupal\jaraba_messaging\Access\ConversationAccessCheck
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: access_check, applies_to: _jaraba_messaging_conversation_access }
+
+  jaraba_messaging.access_check.conversation_owner:
+    class: Drupal\jaraba_messaging\Access\ConversationOwnerAccessCheck
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: access_check, applies_to: _jaraba_messaging_conversation_owner }
+
+  jaraba_messaging.access_check.message_send:
+    class: Drupal\jaraba_messaging\Access\MessageSendAccessCheck
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@config.factory'
+    tags:
+      - { name: access_check, applies_to: _jaraba_messaging_message_send }
+
+  jaraba_messaging.access_check.message_owner:
+    class: Drupal\jaraba_messaging\Access\MessageOwnerAccessCheck
+    arguments:
+      - '@current_user'
+      - '@database'
+    tags:
+      - { name: access_check, applies_to: _jaraba_messaging_message_owner }
+
+  jaraba_messaging.access_check.attachment:
+    class: Drupal\jaraba_messaging\Access\AttachmentAccessCheck
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: access_check, applies_to: _jaraba_messaging_attachment_access }
+
+  jaraba_messaging.access_check.audit:
+    class: Drupal\jaraba_messaging\Access\AuditAccessCheck
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: access_check, applies_to: _jaraba_messaging_audit_access }
