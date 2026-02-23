@@ -27,14 +27,17 @@ use Symfony\Component\HttpFoundation\Request;
 class CalendarApiController extends ControllerBase {
 
   public function __construct(
-    protected EntityTypeManagerInterface $entityTypeManager,
+    EntityTypeManagerInterface $entityTypeManager,
     protected DeadlineCalculatorService $deadlineCalculator,
     protected LegalAgendaService $agenda,
     protected ClientInterface $httpClient,
-    protected ConfigFactoryInterface $configFactory,
+    ConfigFactoryInterface $configFactory,
     protected CalendarSyncService $calendarSync,
     protected LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->configFactory = $configFactory;
+  }
 
   /**
    * {@inheritdoc}
