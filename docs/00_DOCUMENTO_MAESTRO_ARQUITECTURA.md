@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v62.0
+## Jaraba Impact Platform SaaS v63.0
 
 **Fecha:** 2026-02-23
-**Versión:** 62.0.0 (Precios Configurables v2.1 — SaasPlanTier + SaasPlanFeatures + PlanResolverService)
-**Estado:** Produccion (Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Versión:** 63.0.0 (AI Identity Enforcement + Competitor Isolation)
+**Estado:** Produccion (AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -29,8 +29,21 @@ Integración unificada de soberanía legal y resiliencia técnica:
 ...
 │   📦 jaraba_ai_agents (v2.0) ⭐                                         │
 │   ├── BaseAgent: Clase abstracta con DI flexible (Mock-ready)           │
+│   │   └── buildSystemPrompt(): Inyecta regla identidad (parte #0)      │
 │   ├── AgentOrchestrator: Enrutamiento dinámico de intenciones           │
 │   └── JarabaLexCopilot: Asistente jurídico especializado                │
+│                                                                         │
+│   🛡️ AI IDENTITY ENFORCEMENT (AI-IDENTITY-001 + AI-COMPETITOR-001)     │
+│   ├── BaseAgent.buildSystemPrompt(): Regla identidad como parte #0     │
+│   │   (heredada por 14+ agentes: Emprendimiento, Empleabilidad,        │
+│   │   JarabaLex, Legal, Sales, Merchant, Producer, Marketing, etc.)    │
+│   ├── CopilotOrchestratorService.buildSystemPrompt(): $identityRule    │
+│   │   antepuesto a los 8 modos (coach→landing_copilot)                 │
+│   ├── PublicCopilotController: IDENTIDAD INQUEBRANTABLE en prompt      │
+│   ├── FaqBotService: Regla en ambos prompts (KB + plataforma)          │
+│   ├── ServiciosConectaCopilotAgent: Antepuesto a getSystemPromptFor()  │
+│   ├── CoachIaService: Antepuesto a generateCoachingPrompt()            │
+│   └── AiContentController: Identidad "copywriter de Jaraba"           │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -160,6 +173,8 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **63.0.0** | **AI Identity Enforcement + Competitor Isolation:** Blindaje de identidad IA implementado en toda la plataforma. `BaseAgent.buildSystemPrompt()` inyecta regla de identidad como parte #0 (heredada por 14+ agentes). `CopilotOrchestratorService` antepone `$identityRule` a los 8 modos. `PublicCopilotController` incluye bloque IDENTIDAD INQUEBRANTABLE. Servicios standalone (FaqBotService, ServiciosConectaCopilotAgent, CoachIaService) con regla manual. Eliminadas 5 menciones de competidores en prompts de IA. 12 archivos modificados. Reglas AI-IDENTITY-001, AI-COMPETITOR-001. |
+| 2026-02-23 | **62.2.0** | **Sticky Header Global:** `.landing-header` migrado de `position: fixed` a `position: sticky` por defecto. Solo `body.landing-page`/`body.page-front` mantienen `fixed`. Eliminados padding-top compensatorios fragiles de `.main-content`, `.user-main`, `.error-page`. Toolbar admin ajustado globalmente (`top: 39px/79px`). 4 archivos SCSS modificados. Regla CSS-STICKY-001. |
 | 2026-02-23 | **62.0.0** | **Precios Configurables v2.1:** 2 ConfigEntities (`SaasPlanTier` + `SaasPlanFeatures`) como fuente de verdad para tiers, features y limites. `PlanResolverService` broker central con cascade especifico→default→NULL. Integracion en QuotaManagerService, PlanValidator y BillingWebhookController. 21 seed YAMLs + update hook 9019. Admin UI en `/admin/config/jaraba/plan-tiers` y `plan-features`. Drush command `jaraba:validate-plans`. 14 archivos nuevos + 11 editados. |
 | 2026-02-20 | **61.0.0** | **Secure Messaging Implementado (Doc 178):** Modulo `jaraba_messaging` implementado al completo con 104 archivos. 4 entidades PHP (SecureConversation + ConversationParticipant ContentEntities, SecureMessage + MessageAuditLog custom tables), 3 modelos (SecureMessageDTO readonly, EncryptedPayload, IntegrityReport), 18 servicios + 7 access checks, 7 controladores REST, 4 WebSocket (Ratchet server + ConnectionManager + MessageHandler + AuthMiddleware), 8 ECA plugins (3 eventos + 3 condiciones + 2 acciones), 9 Twig templates (zero-region), 11 SCSS + 4 JS. Cifrado AES-256-GCM server-side + Argon2id KDF. SHA-256 hash chain audit. RGPD Art.20 export. Cursor-based pagination. |
 | 2026-02-20 | 60.0.0 | **Secure Messaging Plan (Doc 178):** Plan de implementacion para `jaraba_messaging`. 64+ archivos planificados en 6 sprints. |
@@ -172,4 +187,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 62.0.0 | **Fecha:** 2026-02-23 | **Autor:** IA Asistente
+> **Versión:** 63.0.0 | **Fecha:** 2026-02-23 | **Autor:** IA Asistente

@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-23
-**Versión:** 62.0.0 (Precios Configurables v2.1 — SaasPlanTier + SaasPlanFeatures + PlanResolverService)
+**Versión:** 63.0.0 (AI Identity Enforcement + Competitor Isolation — Blindaje de identidad IA en todos los agentes y copilotos)
 
 ---
 
@@ -38,7 +38,7 @@
 
 ---
 
-## 6. Testing y Calidad (Actualizado 2026-02-18)
+## 6. Testing y Calidad (Actualizado 2026-02-23)
 
 | Norma | ID | Descripción | Prioridad |
 |-------|----|-------------|-----------|
@@ -69,6 +69,9 @@
 | **ConfigEntity Cascade Resolution** | PLAN-CASCADE-001 | Cuando una ConfigEntity tiene datos por combinacion vertical+tier, la resolucion DEBE seguir cascade: (1) especifico `{vertical}_{tier}`, (2) default `_default_{tier}`, (3) NULL. El servicio broker central (`PlanResolverService`) encapsula esta logica. Los consumidores NUNCA implementan el cascade directamente. | P0 |
 | **Plan Name Normalization via Aliases** | PLAN-RESOLVER-001 | Los nombres de plan de cualquier fuente (Stripe, user input, migration) DEBEN normalizarse via `PlanResolverService::normalize()` antes de usarse para consultar features o limites. El `SaasPlanTier` ConfigEntity almacena aliases editables desde UI. Los consumidores NUNCA hardcodean mapeos de nombres de plan. | P0 |
 | **Config Schema Dynamic Keys** | CONFIG-SCHEMA-001 | Cuando una ConfigEntity tiene campos `mapping` con keys dinamicos por vertical/contexto (ej. `limits`), el schema DEBE usar `type: sequence` con inner `type: integer/string`, NO `type: mapping` con keys fijos. `mapping` con keys fijos lanza `SchemaIncompleteException` en Kernel tests para cualquier key no declarado. | P0 |
+| **Header Sticky por Defecto** | CSS-STICKY-001 | El `.landing-header` DEBE usar `position: sticky` por defecto. Solo las landing pages con hero fullscreen (`body.landing-page`, `body.page-front`) usan `position: fixed`. Las areas de contenido (`main-content`, `user-main`, `error-page`) NO DEBEN tener `padding-top` compensatorio para header fijo — solo padding estetico (`1.5rem`). El ajuste de toolbar admin (`top: 39px/79px`) se aplica globalmente en el SCSS del header. | P0 |
+| **Identidad IA Inquebrantable** | AI-IDENTITY-001 | Todo prompt de sistema de agente, copiloto o servicio IA que genere texto conversacional DEBE incluir una regla de identidad que prohiba revelar el modelo subyacente (Claude, ChatGPT, GPT, Gemini, Copilot, Llama, Mistral). La identidad DEBE ser siempre "Asistente de Jaraba Impact Platform" o el nombre del vertical correspondiente. En `BaseAgent.buildSystemPrompt()` se inyecta como parte #0 antes del Brand Voice. En servicios standalone, se antepone al system prompt. | P0 |
+| **Aislamiento de Competidores en IA** | AI-COMPETITOR-001 | Ningun prompt de IA DEBE mencionar, recomendar ni referenciar plataformas competidoras (LinkedIn, Indeed, InfoJobs, Salesforce, HubSpot, Zoho, Monday, Trello, Slack, Mailchimp, Canva, Gupy) ni modelos de IA (ChatGPT, Claude, Gemini, Perplexity, OpenAI, Google AI). Si el usuario menciona un competidor, la IA DEBE redirigir a las funcionalidades equivalentes de Jaraba. Excepcion: integraciones reales del SaaS (LinkedIn import, LinkedIn Ads, Meta Pixel) donde LinkedIn/Meta son canales de distribucion, no competidores directos. | P0 |
 
 ---
 
@@ -76,6 +79,8 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **62.2.0** | **Sticky Header Global:** Regla CSS-STICKY-001 — `.landing-header` migrado de `position: fixed` a `position: sticky` por defecto. Solo `body.landing-page`/`body.page-front` mantienen `fixed` para hero fullscreen. Eliminados todos los `padding-top` compensatorios de `.main-content` (80px), `.user-main` (120px), `.error-page` (80px). Toolbar admin ajustado globalmente con `top: 39px/79px`. Regla de oro #27. Aprendizaje #109. |
+| 2026-02-23 | **63.0.0** | **AI Identity Enforcement + Competitor Isolation:** 2 reglas nuevas: AI-IDENTITY-001 (identidad IA inquebrantable — todos los agentes y copilotos DEBEN identificarse como Jaraba, NUNCA como Claude/ChatGPT/Gemini) y AI-COMPETITOR-001 (aislamiento de competidores — ningun prompt DEBE mencionar ni recomendar plataformas competidoras ni modelos de IA externos). Implementado en BaseAgent.buildSystemPrompt(), CopilotOrchestratorService, PublicCopilotController, FaqBotService, ServiciosConectaCopilotAgent, CoachIaService y AiContentController. Eliminadas menciones de ChatGPT, Perplexity, HubSpot, LinkedIn y Zapier de 5 prompts/datos de IA. Reglas de oro #25, #26. Aprendizaje #108. |
 | 2026-02-23 | **62.1.0** | **Config Schema Fix:** Regla CONFIG-SCHEMA-001 — ConfigEntities con campos de keys dinamicos (ej. `limits` por vertical) DEBEN usar `type: sequence` en schema, no `type: mapping` con keys fijos. Fix del `SchemaIncompleteException` en Kernel test `PlanConfigContractTest::testFeaturesCascade`. Regla de oro #24. |
 | 2026-02-23 | **62.0.0** | **Precios Configurables v2.1:** 2 ConfigEntities (`SaasPlanTier` con aliases + Stripe Price IDs, `SaasPlanFeatures` con features + limites por vertical+tier). `PlanResolverService` como broker central con cascade especifico→default→NULL. Integracion en QuotaManagerService, PlanValidator y BillingWebhookController via inyeccion opcional `@?`. 2 reglas nuevas: PLAN-CASCADE-001 (cascade resolution), PLAN-RESOLVER-001 (alias normalization). Reglas de oro #22 (cascade ConfigEntities), #23 (normalizacion via aliases). Aprendizaje #107. |
 | 2026-02-20 | **61.0.0** | **Secure Messaging Implementado (Doc 178):** Modulo `jaraba_messaging` implementado con 104 archivos. 3 reglas nuevas: MSG-ENC-001 (cifrado AES-256-GCM server-side con Argon2id KDF), MSG-WS-001 (autenticacion WebSocket con JWT middleware), MSG-RATE-001 (rate limiting por usuario y conversacion). Patrones: custom schema tables con DTOs readonly, hash chain SHA-256 para audit inmutable, optional DI con `@?`, cursor-based pagination, ECA plugins por codigo. Aprendizaje #106. |
