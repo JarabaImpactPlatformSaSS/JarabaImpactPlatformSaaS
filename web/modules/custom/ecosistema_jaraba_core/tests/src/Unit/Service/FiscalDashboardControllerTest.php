@@ -53,10 +53,6 @@ class FiscalDashboardControllerTest extends UnitTestCase {
     $controller = new FiscalDashboardController(
       $complianceService,
       $logger,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
       $tenantContext,
     );
 
@@ -123,10 +119,6 @@ class FiscalDashboardControllerTest extends UnitTestCase {
     $controller = new FiscalDashboardController(
       $complianceService,
       $logger,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
       $tenantContext,
     );
 
@@ -191,11 +183,8 @@ class FiscalDashboardControllerTest extends UnitTestCase {
     $controller = new FiscalDashboardController(
       $complianceService,
       $logger,
-      $hashService,
-      NULL,
-      NULL,
-      NULL,
       $tenantContext,
+      $hashService,
     );
 
     $reflection = new \ReflectionClass($controller);
