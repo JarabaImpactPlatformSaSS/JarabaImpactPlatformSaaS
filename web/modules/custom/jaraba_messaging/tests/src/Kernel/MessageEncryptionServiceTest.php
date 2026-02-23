@@ -13,6 +13,9 @@ use Drupal\KernelTests\KernelTestBase;
 /**
  * Tests AES-256-GCM encryption/decryption roundtrip and tamper detection.
  *
+ * Includes the full module dependency chain required by jaraba_messaging:
+ * group → flexible_permissions + entity, ecosistema_jaraba_core → jaraba_theming.
+ *
  * @coversDefaultClass \Drupal\jaraba_messaging\Service\MessageEncryptionService
  * @group jaraba_messaging
  */
@@ -20,11 +23,25 @@ class MessageEncryptionServiceTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * Full dependency chain:
+   * jaraba_messaging → group (→ entity, flexible_permissions, options)
+   *                   → ecosistema_jaraba_core (→ jaraba_theming, node, user, file, field, options, datetime)
    */
   protected static $modules = [
     'system',
     'user',
+    'node',
+    'file',
+    'field',
+    'options',
+    'datetime',
+    'text',
+    'filter',
+    'entity',
+    'flexible_permissions',
     'group',
+    'jaraba_theming',
     'ecosistema_jaraba_core',
     'jaraba_messaging',
   ];
@@ -108,7 +125,7 @@ class MessageEncryptionServiceTest extends KernelTestBase {
   }
 
   /**
-   * Tests tamper detection: modified ciphertext is rejected.
+   * Tests tamper detection: modified ciphertext is rejected by GCM auth.
    */
   public function testTamperDetection(): void {
     $plaintext = 'Original untampered message.';
