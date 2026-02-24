@@ -7,7 +7,7 @@
  #   - total_pages: Total de paginas.
  #}
 
-<div class="comercio-orders">
+<div class="comercio-orders" role="main" aria-label="{{ 'Mis pedidos'|t }}">
   <h1 class="comercio-orders__title">{{ 'Mis Pedidos'|t }}</h1>
 
   {% if orders is empty %}
@@ -16,7 +16,7 @@
       <a href="/comercio-local" class="btn btn--primary">{{ 'Explorar marketplace'|t }}</a>
     </div>
   {% else %}
-    <div class="comercio-orders__list">
+    <div class="comercio-orders__list" role="list" aria-label="{{ 'Lista de pedidos'|t }}">
       {% for order in orders %}
         {% set status_labels = {
           'draft': 'Borrador'|t,
@@ -44,7 +44,7 @@
     </div>
 
     {% if total_pages > 1 %}
-      <div class="comercio-orders__pager">
+      <div class="comercio-orders__pager" role="navigation" aria-label="{{ 'Paginacion de pedidos'|t }}">
         {% if page > 0 %}
           <a href="?page={{ page - 1 }}" class="btn btn--secondary">{{ 'Anterior'|t }}</a>
         {% endif %}

@@ -7,16 +7,17 @@
  #   - filters: Filtros aplicados.
  #}
 
-<div class="comercio-search">
+<div class="comercio-search" role="main" aria-label="{{ 'Búsqueda de productos'|t }}">
   <div class="comercio-search__header">
     <h1>{{ 'Buscar en Comercio Local'|t }}</h1>
-    <div class="comercio-search__bar">
+    <div class="comercio-search__bar" role="search" aria-label="{{ 'Formulario de búsqueda'|t }}">
       <input type="text"
              class="comercio-search__input"
              placeholder="{{ 'Buscar productos, comercios...'|t }}"
              value="{{ query }}"
              data-search-input
-             autocomplete="off">
+             autocomplete="off"
+             aria-label="{{ 'Buscar productos, comercios'|t }}">
       <button type="button" class="btn btn--primary comercio-search__btn" data-search-submit>
         {{ 'Buscar'|t }}
       </button>
@@ -31,7 +32,7 @@
   {% endif %}
 
   {% if results is not empty %}
-    <div class="comercio-search__results">
+    <div class="comercio-search__results" role="list" aria-label="{{ 'Resultados de búsqueda'|t }}">
       {% for result in results %}
         {% set type_labels = {
           'product_retail': 'Producto'|t,
