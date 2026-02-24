@@ -6,6 +6,7 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,9 +35,12 @@ class AndaluciaEiApiController extends ControllerBase
      *
      * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
      *   El gestor de tipos de entidad.
+     * @param \Drupal\Core\Render\RendererInterface $renderer
+     *   El servicio de renderizado.
      */
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
+        protected readonly RendererInterface $renderer,
     ) {
         $this->entityTypeManager = $entityTypeManager;
     }
@@ -48,6 +52,7 @@ class AndaluciaEiApiController extends ControllerBase
     {
         return new static(
             $container->get('entity_type.manager'),
+            $container->get('renderer'),
         );
     }
 
@@ -66,8 +71,7 @@ class AndaluciaEiApiController extends ControllerBase
             'default'
         );
 
-        $renderer = \Drupal::service('renderer');
-        $html = $renderer->renderRoot($form);
+        $html = $this->renderer->renderRoot($form);
 
         return new Response($html, 200, ['Content-Type' => 'text/html']);
     }
@@ -97,8 +101,7 @@ class AndaluciaEiApiController extends ControllerBase
 
         $form = $this->entityFormBuilder()->getForm($entity, 'default');
 
-        $renderer = \Drupal::service('renderer');
-        $html = $renderer->renderRoot($form);
+        $html = $this->renderer->renderRoot($form);
 
         return new Response($html, 200, ['Content-Type' => 'text/html']);
     }

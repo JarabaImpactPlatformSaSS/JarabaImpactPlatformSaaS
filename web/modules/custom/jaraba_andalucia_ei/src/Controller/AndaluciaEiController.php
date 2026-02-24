@@ -15,11 +15,34 @@ class AndaluciaEiController extends ControllerBase
 {
 
     /**
+     * Constructor.
+     *
+     * @param object|null $healthScoreService
+     *   Servicio opcional de health score.
+     * @param object|null $bridgeService
+     *   Servicio opcional de cross-vertical bridges.
+     * @param object|null $journeyService
+     *   Servicio opcional de journey progression.
+     */
+    public function __construct(
+        protected readonly ?object $healthScoreService,
+        protected readonly ?object $bridgeService,
+        protected readonly ?object $journeyService,
+    ) {}
+
+    /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container): static
     {
-        return new static();
+        return new static(
+            $container->has('ecosistema_jaraba_core.andalucia_ei_health_score')
+                ? $container->get('ecosistema_jaraba_core.andalucia_ei_health_score') : NULL,
+            $container->has('ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge')
+                ? $container->get('ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge') : NULL,
+            $container->has('ecosistema_jaraba_core.andalucia_ei_journey_progression')
+                ? $container->get('ecosistema_jaraba_core.andalucia_ei_journey_progression') : NULL,
+        );
     }
 
     /**
@@ -41,7 +64,7 @@ class AndaluciaEiController extends ControllerBase
         // Verificar si el usuario es participante.
         $participante = $this->entityTypeManager()
             ->getStorage('programa_participante_ei')
-            ->loadByProperties(['user_id' => $user->id()]);
+            ->loadByProperties(['uid' => $user->id()]);
 
         $participante = reset($participante) ?: NULL;
 
@@ -57,9 +80,9 @@ class AndaluciaEiController extends ControllerBase
 
         if ($participante) {
             // Health score del participante.
-            if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_health_score')) {
+            if ($this->healthScoreService) {
                 try {
-                    $healthScore = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_health_score')
+                    $healthScore = $this->healthScoreService
                         ->calculateUserHealth($userId);
                 }
                 catch (\Exception $e) {
@@ -68,9 +91,9 @@ class AndaluciaEiController extends ControllerBase
             }
 
             // Cross-vertical bridges disponibles.
-            if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge')) {
+            if ($this->bridgeService) {
                 try {
-                    $bridges = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_cross_vertical_bridge')
+                    $bridges = $this->bridgeService
                         ->evaluateBridges($userId);
                 }
                 catch (\Exception $e) {
@@ -79,9 +102,9 @@ class AndaluciaEiController extends ControllerBase
             }
 
             // Proactive AI action (FAB dot/expand).
-            if (\Drupal::hasService('ecosistema_jaraba_core.andalucia_ei_journey_progression')) {
+            if ($this->journeyService) {
                 try {
-                    $proactiveAction = \Drupal::service('ecosistema_jaraba_core.andalucia_ei_journey_progression')
+                    $proactiveAction = $this->journeyService
                         ->getPendingAction($userId);
                 }
                 catch (\Exception $e) {

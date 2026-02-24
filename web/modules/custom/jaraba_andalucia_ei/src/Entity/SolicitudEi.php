@@ -419,6 +419,15 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setSetting('max_length', 45)
             ->setDisplayConfigurable('view', TRUE);
 
+        // === TENANT ISOLATION ===
+
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Tenant al que pertenece esta solicitud.'))
+            ->setSetting('target_type', 'tenant')
+            ->setRequired(FALSE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // === TIMESTAMPS ===
 
         $fields['created'] = BaseFieldDefinition::create('created')

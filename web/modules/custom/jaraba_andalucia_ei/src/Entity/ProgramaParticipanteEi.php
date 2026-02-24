@@ -160,10 +160,10 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
 
         // === DATOS DE IDENTIFICACIÓN ===
 
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+        // Owner field (uid) provided by EntityOwnerTrait — configure display.
+        $fields['uid']
             ->setLabel(t('Usuario Drupal'))
             ->setDescription(t('Usuario vinculado al participante.'))
-            ->setSetting('target_type', 'user')
             ->setDisplayOptions('form', [
                 'type' => 'entity_reference_autocomplete',
                 'weight' => -10,

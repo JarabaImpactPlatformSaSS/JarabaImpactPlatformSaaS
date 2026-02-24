@@ -76,3 +76,43 @@ function jaraba_andalucia_ei_uninstall(): void {
   // Limpiar configuración del módulo.
   \Drupal::configFactory()->getEditable('jaraba_andalucia_ei.settings')->delete();
 }
+
+/**
+ * Install tenant_id field on solicitud_ei entity (Regla de Oro #4).
+ */
+function jaraba_andalucia_ei_update_10001(): void {
+  $fieldDefinition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Tenant'))
+    ->setDescription(t('Tenant al que pertenece esta solicitud.'))
+    ->setSetting('target_type', 'tenant')
+    ->setRequired(FALSE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('tenant_id', 'solicitud_ei', 'jaraba_andalucia_ei', $fieldDefinition);
+}
+
+/**
+ * Migrate user_id data to uid and uninstall redundant user_id field.
+ *
+ * ProgramaParticipanteEi used both user_id (manual) and uid (EntityOwnerTrait).
+ * This consolidates into uid only.
+ */
+function jaraba_andalucia_ei_update_10002(): void {
+  $database = \Drupal::database();
+
+  // Copy user_id values to uid where uid is NULL or 0.
+  if ($database->schema()->fieldExists('programa_participante_ei', 'user_id')) {
+    $database->update('programa_participante_ei')
+      ->expression('uid', 'user_id')
+      ->where('(uid IS NULL OR uid = 0) AND user_id IS NOT NULL AND user_id > 0')
+      ->execute();
+
+    // Uninstall the redundant user_id field storage.
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $storageDefinition = $updateManager->getFieldStorageDefinition('user_id', 'programa_participante_ei');
+    if ($storageDefinition) {
+      $updateManager->uninstallFieldStorageDefinition($storageDefinition);
+    }
+  }
+}
