@@ -52,10 +52,11 @@ class CopilotApiControllerTest extends UnitTestCase
         $currentUser = $this->createMock(AccountProxyInterface::class);
         $currentUser->method('id')->willReturn(42);
 
-        $reflector = new \ReflectionClass($this->controller);
         // ControllerBase stores currentUser in a protected property.
-        // We use the string translation trait mock from UnitTestCase.
-        $this->controller->setStringTranslation($this->getStringTranslationStub());
+        // Inject via reflection since there's no public setter.
+        $reflector = new \ReflectionClass($this->controller);
+        $property = $reflector->getProperty('currentUser');
+        $property->setValue($this->controller, $currentUser);
     }
 
     /**
