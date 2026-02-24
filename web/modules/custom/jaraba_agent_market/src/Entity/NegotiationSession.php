@@ -15,6 +15,9 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   id = "negotiation_session",
  *   label = @Translation("Sesión de Negociación"),
  *   base_table = "negotiation_session",
+ *   handlers = {
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *   },
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",

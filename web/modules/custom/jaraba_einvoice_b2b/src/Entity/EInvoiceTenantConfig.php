@@ -36,6 +36,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   admin_permission = "administer einvoice b2b",
  *   links = {

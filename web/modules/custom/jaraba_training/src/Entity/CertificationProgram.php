@@ -36,6 +36,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "certification_program",
  *   admin_permission = "administer certification programs",

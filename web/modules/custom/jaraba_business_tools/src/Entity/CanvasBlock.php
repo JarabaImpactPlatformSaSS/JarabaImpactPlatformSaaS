@@ -21,6 +21,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "access" = "Drupal\jaraba_business_tools\Access\CanvasBlockAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "canvas_block",
  *   entity_keys = {

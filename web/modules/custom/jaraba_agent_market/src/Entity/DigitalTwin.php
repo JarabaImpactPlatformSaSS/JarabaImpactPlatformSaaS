@@ -25,7 +25,8 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  *   handlers = {
  *     "access" = "Drupal\jaraba_agent_market\Access\DigitalTwinAccessControlHandler",
- *   }
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *   },
  * )
  */
 class DigitalTwin extends ContentEntityBase {

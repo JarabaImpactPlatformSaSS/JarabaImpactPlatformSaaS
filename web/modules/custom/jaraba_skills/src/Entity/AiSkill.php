@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_skills\AiSkillAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "ai_skill",
  *   admin_permission = "administer ai skills",

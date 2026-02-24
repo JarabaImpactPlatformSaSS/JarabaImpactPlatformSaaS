@@ -30,6 +30,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_site_builder\SiteRedirectAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "site_redirect",
  *   admin_permission = "manage site redirects",
