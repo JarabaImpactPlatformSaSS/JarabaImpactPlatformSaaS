@@ -18,3 +18,8 @@ services:
   logger.channel.jaraba_mentoring:
     parent: logger.channel_base
     arguments: ['jaraba_mentoring']
+
+  jaraba_mentoring.breadcrumb:
+    class: Drupal\jaraba_mentoring\Breadcrumb\MentoringBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

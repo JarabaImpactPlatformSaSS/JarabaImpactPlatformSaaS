@@ -61,6 +61,42 @@ function jaraba_mentoring_theme(): array {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph meta tags for public mentoring pages.
+ */
+function jaraba_mentoring_page_attachments_alter(array &$attachments): void {
+  $route_match = \Drupal::routeMatch();
+  $route = $route_match->getRouteName() ?: '';
+
+  if ($route === 'jaraba_mentoring.mentor_catalog') {
+    $title = t('Catálogo de Mentores - Jaraba Impact Platform');
+    $description = t('Encuentra mentores expertos para guiar tu transformación digital y crecimiento empresarial.');
+    $url = \Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->getRequestUri();
+
+    $meta_tags = [
+      ['og:title', $title],
+      ['og:description', $description],
+      ['og:type', 'website'],
+      ['og:url', $url],
+      ['twitter:card', 'summary'],
+      ['twitter:title', $title],
+      ['twitter:description', $description],
+    ];
+
+    foreach ($meta_tags as [$property, $content]) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => ['property' => $property, 'content' => $content],
+        ],
+        'jaraba_mentoring_' . str_replace(':', '_', $property),
+      ];
+    }
+  }
+}
+
+/**
  * Implements hook_cron().
  *
  * Procesa automatizaciones periódicas:

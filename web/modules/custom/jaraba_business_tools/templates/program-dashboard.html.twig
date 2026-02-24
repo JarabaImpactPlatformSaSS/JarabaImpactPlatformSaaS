@@ -12,7 +12,7 @@
  */
 #}
 
-<div class="program-dashboard">
+<div class="program-dashboard" role="main" aria-label="{{ 'Panel de programa de emprendimiento'|t }}">
   {# Header #}
   <header class="program-dashboard__header">
     <h1>{{ 'Panel de Programa de Emprendimiento'|t }}</h1>
@@ -20,7 +20,7 @@
   </header>
 
   {# KPIs Grid #}
-  <section class="program-dashboard__kpis">
+  <section class="program-dashboard__kpis" aria-label="{{ 'Indicadores clave del programa'|t }}">
     <article class="kpi-card">
       <div class="kpi-card__icon">
         {{ jaraba_icon('users', 'group', { variant: 'duotone', color: 'innovation', size: '32px' }) }}

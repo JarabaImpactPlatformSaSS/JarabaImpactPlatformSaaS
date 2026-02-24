@@ -13,7 +13,7 @@
  */
 #}
 
-<div class="entrepreneur-dashboard">
+<div class="entrepreneur-dashboard" role="main" aria-label="{{ 'Dashboard del emprendedor'|t }}">
   {# Header Section #}
   <header class="entrepreneur-dashboard__header">
     <div class="welcome-message">
@@ -34,7 +34,7 @@
   </header>
   
   {# KPIs Grid #}
-  <section class="entrepreneur-dashboard__kpis">
+  <section class="entrepreneur-dashboard__kpis" aria-label="{{ 'Indicadores clave'|t }}">
     <article class="kpi-card">
       <div class="kpi-card__icon">
         {{ jaraba_icon('analytics', 'gauge', { variant: 'duotone', color: 'innovation', size: '32px' }) }}
@@ -83,7 +83,7 @@
   {# Main Content Grid #}
   <div class="entrepreneur-dashboard__grid">
     {# Next Steps #}
-    <section class="dashboard-section next-steps">
+    <section class="dashboard-section next-steps" aria-label="{{ 'Próximos pasos'|t }}">
       <header class="dashboard-section__header">
         <h2>{{ 'Próximos Pasos'|t }}</h2>
         {{ jaraba_icon('actions', 'checklist', { size: '20px' }) }}
@@ -166,7 +166,7 @@
     {% endif %}
     
     {# Mentoring Sessions #}
-    <section class="dashboard-section upcoming-sessions">
+    <section class="dashboard-section upcoming-sessions" aria-label="{{ 'Próximas mentorías'|t }}">
       <header class="dashboard-section__header">
         <h2>{{ 'Próximas Mentorías'|t }}</h2>
         <a href="/es/admin/content/mentoring-sessions" class="btn btn--sm btn--secondary">
@@ -202,7 +202,7 @@
     </section>
     
     {# Resources #}
-    <section class="dashboard-section resources">
+    <section class="dashboard-section resources" aria-label="{{ 'Recursos recomendados'|t }}">
       <header class="dashboard-section__header">
         <h2>{{ 'Recursos Recomendados'|t }}</h2>
       </header>
