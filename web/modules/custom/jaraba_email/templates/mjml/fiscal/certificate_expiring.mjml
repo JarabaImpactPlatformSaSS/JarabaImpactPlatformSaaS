@@ -1,20 +1,21 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Arial, Helvetica, sans-serif" />
-      <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#1A365D" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#333333" line-height="1.6" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
     <mj-style>
-      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .footer-link { color: #666666 !important; text-decoration: underline; }
       .fiscal-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
       .fiscal-badge--warning { background-color: #FEF3C7; color: #92400E; }
     </mj-style>
   </mj-head>
-  <mj-body background-color="#f3f4f6" width="600px">
+  <mj-body background-color="#f8f9fa" width="600px">
+    <mj-preview>Tu certificado digital est&aacute; pr&oacute;ximo a caducar &mdash; ren&uacute;evalo</mj-preview>
     <!-- Header -->
-    <mj-section background-color="#1A365D" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }} &mdash; Cumplimiento Fiscal
@@ -49,7 +50,7 @@
         <mj-button href="{{ renew_url }}" align="center" padding="24px 0">
           Renovar certificado
         </mj-button>
-        <mj-text font-size="13px" color="#6b7280">
+        <mj-text font-size="13px" color="#666666">
           <p>Puede renovar su certificado en la FNMT o su proveedor de certificados y subirlo desde la configuraci&oacute;n fiscal.</p>
         </mj-text>
       </mj-column>
@@ -58,16 +59,19 @@
     <!-- Footer -->
     <mj-section padding="24px">
       <mj-column>
-        <mj-divider border-color="#e5e7eb" border-width="1px" />
-        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+        <mj-divider border-color="#E0E0E0" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#666666" padding-top="16px">
           &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
         </mj-text>
-        <mj-text align="center" font-size="12px" color="#6b7280">
+        <mj-text align="center" font-size="12px" color="#666666">
           <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
           <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
         </mj-text>
-        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
+        <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
           Has recibido este correo por ser administrador fiscal de {{ tenant_name }}.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
+          Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>
