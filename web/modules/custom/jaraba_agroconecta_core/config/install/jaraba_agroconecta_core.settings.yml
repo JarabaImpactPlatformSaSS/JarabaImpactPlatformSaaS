@@ -1,5 +1,13 @@
 marketplace_name: 'AgroConecta'
 marketplace_description: 'Marketplace de productos agroalimentarios locales y sostenibles.'
 products_per_page: 12
+orders_per_page: 20
+suborders_per_page: 50
+partners_per_page: 20
+documents_per_page: 20
+reviews_per_page: 10
+notifications_per_page: 20
+qr_codes_per_page: 20
+search_results_per_page: 24
 currency_code: 'EUR'
 commission_percentage: 10

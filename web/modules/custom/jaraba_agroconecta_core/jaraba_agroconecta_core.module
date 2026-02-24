@@ -452,6 +452,67 @@ function jaraba_agroconecta_core_mail(string $key, array &$message, array $param
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph meta tags for AgroConecta public pages.
+ */
+function jaraba_agroconecta_core_page_attachments_alter(array &$attachments): void
+{
+    $route = \Drupal::routeMatch()->getRouteName();
+    if ($route === NULL) {
+        return;
+    }
+
+    $ogRoutes = [
+        'jaraba_agroconecta_core.marketplace' => [
+            'title' => t('Marketplace AgroConecta — Productos frescos y locales'),
+            'description' => t('Descubre productos agroalimentarios de productores locales. Del campo a tu mesa, sin intermediarios.'),
+            'type' => 'website',
+        ],
+        'jaraba_agroconecta_core.product_detail' => [
+            'title' => t('Producto — AgroConecta'),
+            'description' => t('Producto fresco de productor local verificado en AgroConecta.'),
+            'type' => 'product',
+        ],
+        'jaraba_agroconecta_core.category_page' => [
+            'title' => t('Categoría — AgroConecta'),
+            'description' => t('Explora productos por categoría en el marketplace AgroConecta.'),
+            'type' => 'website',
+        ],
+        'jaraba_agroconecta_core.search_page' => [
+            'title' => t('Buscar productos — AgroConecta'),
+            'description' => t('Busca y descubre productos agroalimentarios frescos de tu zona.'),
+            'type' => 'website',
+        ],
+    ];
+
+    if (!isset($ogRoutes[$route])) {
+        return;
+    }
+
+    $og = $ogRoutes[$route];
+    $siteUrl = \Drupal::request()->getSchemeAndHttpHost();
+
+    $meta = [
+        ['property' => 'og:title', 'content' => (string) $og['title']],
+        ['property' => 'og:description', 'content' => (string) $og['description']],
+        ['property' => 'og:type', 'content' => $og['type']],
+        ['property' => 'og:url', 'content' => $siteUrl . \Drupal::request()->getRequestUri()],
+        ['property' => 'og:site_name', 'content' => \Drupal::config('system.site')->get('name')],
+    ];
+
+    foreach ($meta as $tag) {
+        $attachments['#attached']['html_head'][] = [
+            [
+                '#tag' => 'meta',
+                '#attributes' => $tag,
+            ],
+            'og_' . str_replace(':', '_', $tag['property']),
+        ];
+    }
+}
+
+/**
  * Implements hook_preprocess_page().
  *
  * Inyecta variables de página para el zero-region pattern.

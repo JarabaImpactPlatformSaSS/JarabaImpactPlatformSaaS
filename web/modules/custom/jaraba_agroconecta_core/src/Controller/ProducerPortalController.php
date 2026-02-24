@@ -90,6 +90,11 @@ class ProducerPortalController extends ControllerBase implements ContainerInject
                     ],
                 ],
             ],
+            '#cache' => [
+                'tags' => ['producer:' . $producerId, 'order_agro_list', 'product_agro_list'],
+                'contexts' => ['user', 'url.query_args'],
+                'max-age' => 300,
+            ],
         ];
     }
 
