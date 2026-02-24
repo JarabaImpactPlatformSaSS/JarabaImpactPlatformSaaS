@@ -68,6 +68,21 @@ class AndaluciaEiController extends ControllerBase
 
         $participante = reset($participante) ?: NULL;
 
+        // Si no es participante, buscar solicitud pendiente por email.
+        $solicitud = NULL;
+        if (!$participante && $user->isAuthenticated()) {
+            $userEntity = $this->entityTypeManager()
+                ->getStorage('user')
+                ->load($user->id());
+            $email = $userEntity?->getEmail();
+            if ($email) {
+                $solicitudes = $this->entityTypeManager()
+                    ->getStorage('solicitud_ei')
+                    ->loadByProperties(['email' => $email]);
+                $solicitud = reset($solicitudes) ?: NULL;
+            }
+        }
+
         // Determinar si el usuario tiene permisos de gestion (AND-001).
         $isAdmin = $user->hasPermission('create programa participante ei')
             || $user->hasPermission('administer andalucia ei');
@@ -116,6 +131,7 @@ class AndaluciaEiController extends ControllerBase
         return [
             '#theme' => 'andalucia_ei_dashboard',
             '#participante' => $participante,
+            '#solicitud' => $solicitud,
             '#is_admin' => $isAdmin,
             '#health_score' => $healthScore,
             '#bridges' => $bridges,

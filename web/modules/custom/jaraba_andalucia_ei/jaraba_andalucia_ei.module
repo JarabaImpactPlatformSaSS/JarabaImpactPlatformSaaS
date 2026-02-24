@@ -30,6 +30,7 @@ function jaraba_andalucia_ei_theme(): array {
     'andalucia_ei_dashboard' => [
       'variables' => [
         'participante' => NULL,
+        'solicitud' => NULL,
         'is_admin' => FALSE,
         'health_score' => NULL,
         'bridges' => [],
