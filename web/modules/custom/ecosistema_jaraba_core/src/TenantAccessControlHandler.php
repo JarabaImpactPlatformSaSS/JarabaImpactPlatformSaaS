@@ -50,7 +50,7 @@ class TenantAccessControlHandler extends EntityAccessControlHandler implements E
             case 'view':
                 // El admin del tenant puede ver su propio tenant.
                 $admin_user = $entity->getAdminUser();
-                if ($admin_user && $admin_user->id() == $account->id()) {
+                if ($admin_user && (int) $admin_user->id() === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 // Los miembros del tenant también pueden verlo.
@@ -62,7 +62,7 @@ class TenantAccessControlHandler extends EntityAccessControlHandler implements E
             case 'update':
                 // Solo el admin del tenant o admins de plataforma.
                 $admin_user = $entity->getAdminUser();
-                if ($admin_user && $admin_user->id() == $account->id()) {
+                if ($admin_user && (int) $admin_user->id() === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 return AccessResult::forbidden();
