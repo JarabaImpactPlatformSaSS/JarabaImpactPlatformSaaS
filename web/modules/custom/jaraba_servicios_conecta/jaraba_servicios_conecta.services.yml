@@ -53,6 +53,16 @@ services:
   #   de ratings desnormalizados en ProviderProfile
   # Relaciones: consume ReviewServicios, Booking, ProviderProfile
   # =====================================================================
+  # =====================================================================
+  # Breadcrumb builder: contextual breadcrumbs for ServiciosConecta routes
+  # =====================================================================
+  jaraba_servicios_conecta.breadcrumb:
+    class: Drupal\jaraba_servicios_conecta\Breadcrumb\ServiciosConectaBreadcrumbBuilder
+    arguments:
+      - '@current_route_match'
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
+
   jaraba_servicios_conecta.review:
     class: Drupal\jaraba_servicios_conecta\Service\ReviewService
     arguments:

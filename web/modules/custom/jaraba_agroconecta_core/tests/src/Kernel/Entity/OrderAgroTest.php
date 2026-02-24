@@ -22,6 +22,7 @@ class OrderAgroTest extends KernelTestBase
     protected static $modules = [
         'system',
         'user',
+        'taxonomy',
         'jaraba_agroconecta_core',
     ];
 

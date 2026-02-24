@@ -10,7 +10,7 @@
  #}
 {{ attach_library('jaraba_servicios_conecta/booking') }}
 
-<div class="servicios-booking-form">
+<div class="servicios-booking-form" role="main" aria-label="{{ 'Formulario de reserva'|t }}">
   <div class="servicios-booking-form__header">
     <h2 class="servicios-booking-form__title">{% trans %}Book Appointment{% endtrans %}</h2>
     {% if provider %}
