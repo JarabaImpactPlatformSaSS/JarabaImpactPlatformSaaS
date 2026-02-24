@@ -16,6 +16,13 @@ entity.candidate_skill.collection:
   base_route: system.admin_content
   weight: 25
 
+# Tab for Candidate Educations in Content section
+entity.candidate_education.collection:
+  title: 'Educación'
+  route_name: entity.candidate_education.collection
+  base_route: system.admin_content
+  weight: 26
+
 # -----------------------------------------------------------------------------
 # FIELD UI BASE TABS (Settings page as the default tab)
 # Field UI automatically generates the other tabs (Manage fields, etc.)
@@ -34,6 +41,11 @@ entity.candidate_skill.settings_tab:
   route_name: entity.candidate_skill.settings
   base_route: entity.candidate_skill.settings
   weight: -10
+
+entity.candidate_education.settings_tab:
+  title: 'Settings'
+  route_name: entity.candidate_education.settings
+  base_route: entity.candidate_education.settings
 
 entity.candidate_language.settings_tab:
   title: 'Settings'
