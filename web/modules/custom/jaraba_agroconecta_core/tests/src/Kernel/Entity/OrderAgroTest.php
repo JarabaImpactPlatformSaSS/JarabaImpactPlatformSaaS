@@ -22,6 +22,9 @@ class OrderAgroTest extends KernelTestBase
     protected static $modules = [
         'system',
         'user',
+        'field',
+        'text',
+        'datetime',
         'taxonomy',
         'jaraba_agroconecta_core',
     ];
@@ -33,6 +36,7 @@ class OrderAgroTest extends KernelTestBase
     {
         parent::setUp();
         $this->installEntitySchema('user');
+        $this->installEntitySchema('taxonomy_term');
         if ($this->container->get('entity_type.manager')->hasDefinition('order_agro')) {
             $this->installEntitySchema('order_agro');
         }
