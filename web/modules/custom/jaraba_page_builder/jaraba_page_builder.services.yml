@@ -180,3 +180,14 @@ services:
       - '@logger.channel.jaraba_page_builder'
     calls:
       - [setStringTranslation, ['@string_translation']]
+
+  # HAL-01: Path processor para resolver path_alias de PageContent → /page/{id}.
+  # Intercepta URLs amigables (ej: /jarabaimpact) y las reescribe a la ruta
+  # canónica de la entidad (ej: /page/56). Prioridad 200 > core path_alias (100).
+  jaraba_page_builder.path_processor:
+    class: Drupal\jaraba_page_builder\PathProcessor\PathProcessorPageContent
+    arguments:
+      - '@entity_type.manager'
+      - '@language_manager'
+    tags:
+      - { name: path_processor_inbound, priority: 200 }

@@ -1,0 +1,187 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\jaraba_page_builder\PathProcessor;
+
+use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * Procesa URLs amigables del Page Builder resolviendo path_alias → /page/{id}.
+ *
+ * PROPÓSITO (HAL-01):
+ * El campo path_alias de PageContent almacena slugs como "/jarabaimpact",
+ * "/plataforma", etc. pero estos nunca se registraban en el sistema de
+ * routing de Drupal. Este PathProcessor intercepta peticiones entrantes
+ * y las reescribe a la ruta canónica /page/{id} si coinciden con un
+ * path_alias de una PageContent publicada.
+ *
+ * INTEGRACIÓN:
+ * Se registra como servicio taggeado con 'path_processor_inbound'
+ * en jaraba_page_builder.services.yml con prioridad 200 (antes que
+ * path_alias de core que tiene prioridad 100).
+ *
+ * RENDIMIENTO:
+ * Usa una caché estática por request para evitar queries repetidas.
+ * Solo ejecuta query si el path no coincide con rutas conocidas del sistema.
+ *
+ * @package Drupal\jaraba_page_builder\PathProcessor
+ */
+class PathProcessorPageContent implements InboundPathProcessorInterface
+{
+
+    /**
+     * Entity type manager.
+     *
+     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+     */
+    protected EntityTypeManagerInterface $entityTypeManager;
+
+    /**
+     * Language manager.
+     *
+     * @var \Drupal\Core\Language\LanguageManagerInterface
+     */
+    protected LanguageManagerInterface $languageManager;
+
+    /**
+     * Static cache de aliases resueltos en este request.
+     *
+     * @var array
+     */
+    protected static array $resolvedAliases = [];
+
+    /**
+     * Prefijos de sistema que NO deben resolverse como page_content alias.
+     *
+     * Evita queries innecesarias para rutas que sabemos que son del sistema.
+     *
+     * @var string[]
+     */
+    protected const SYSTEM_PREFIXES = [
+        '/admin',
+        '/user',
+        '/node',
+        '/api',
+        '/media',
+        '/batch',
+        '/system',
+        '/devel',
+        '/modules',
+        '/themes',
+        '/sites',
+        '/core',
+        '/page-builder',
+        '/my-pages',
+        '/editor',
+        '/session',
+        '/contextual',
+        '/quickedit',
+        '/entity_reference_autocomplete',
+        '/taxonomy',
+        '/search',
+        '/filter',
+        '/file',
+        '/ajax',
+    ];
+
+    /**
+     * Constructs a PathProcessorPageContent.
+     *
+     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+     *   The entity type manager.
+     * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+     *   The language manager.
+     */
+    public function __construct(
+        EntityTypeManagerInterface $entity_type_manager,
+        LanguageManagerInterface $language_manager
+    ) {
+        $this->entityTypeManager = $entity_type_manager;
+        $this->languageManager = $language_manager;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Intercepta peticiones entrantes y reescribe path_alias de PageContent
+     * a su ruta canónica /page/{id}.
+     *
+     * Ejemplo:
+     *   /jarabaimpact → /page/56
+     *   /plataforma → /page/66
+     */
+    public function processInbound($path, Request $request)
+    {
+        // 1. No procesar paths vacíos o la raíz.
+        if (empty($path) || $path === '/') {
+            return $path;
+        }
+
+        // 2. Saltar rutas del sistema conocidas (rendimiento).
+        $lowerPath = mb_strtolower($path);
+        foreach (self::SYSTEM_PREFIXES as $prefix) {
+            if (str_starts_with($lowerPath, $prefix)) {
+                return $path;
+            }
+        }
+
+        // 3. Saltar la ruta canónica de page_content (evitar loop).
+        if (preg_match('#^/page/\d+#', $path)) {
+            return $path;
+        }
+
+        // 4. Buscar en caché estática (mismo request).
+        if (isset(self::$resolvedAliases[$path])) {
+            return self::$resolvedAliases[$path];
+        }
+
+        // 5. Buscar el path_alias en la tabla page_content_field_data.
+        //    El path_alias se almacena con / al inicio (ej: "/jarabaimpact").
+        try {
+            $storage = $this->entityTypeManager->getStorage('page_content');
+
+            // Buscar coincidencia exacta del path_alias.
+            // El path ya viene con / al inicio desde Drupal.
+            // NOTA: No filtramos por status aquí — el control de acceso se maneja
+            // en el entity access handler (PageContentAccessControlHandler).
+            // Esto permite que admins/autores accedan a borradores por URL amigable.
+            $query = $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('path_alias', $path)
+                ->range(0, 1);
+
+            // Filtrar por idioma actual si hay más de uno disponible.
+            $currentLangcode = $this->languageManager->getCurrentLanguage()->getId();
+            if (count($this->languageManager->getLanguages()) > 1) {
+                $query->condition('langcode', [$currentLangcode, 'und'], 'IN');
+            }
+
+            $ids = $query->execute();
+
+            if (!empty($ids)) {
+                $id = reset($ids);
+                $resolvedPath = '/page/' . $id;
+
+                // Cachear para evitar queries repetidas en el mismo request.
+                self::$resolvedAliases[$path] = $resolvedPath;
+
+                return $resolvedPath;
+            }
+        } catch (\Exception $e) {
+            // Log silencioso — no bloquear la petición por un error de BD.
+            \Drupal::logger('jaraba_page_builder')->warning(
+                'PathProcessor: Error resolviendo alias @path: @error',
+                ['@path' => $path, '@error' => $e->getMessage()]
+            );
+        }
+
+        // 6. No match: devolver el path original sin modificar.
+        self::$resolvedAliases[$path] = $path;
+        return $path;
+    }
+
+}
