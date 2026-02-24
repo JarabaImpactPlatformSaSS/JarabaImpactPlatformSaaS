@@ -34,13 +34,13 @@ class MarketingEventAccessControlHandler extends EntityAccessControlHandler {
         return AccessResult::allowedIfHasPermission($account, 'view marketing events');
 
       case 'update':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('edit own marketing events')
         )->addCacheableDependency($entity)->cachePerUser();
 
       case 'delete':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('delete own marketing events')
         )->addCacheableDependency($entity)->cachePerUser();

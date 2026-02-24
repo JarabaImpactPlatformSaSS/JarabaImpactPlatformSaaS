@@ -27,7 +27,7 @@ class BusinessModelCanvasAccessControlHandler extends EntityAccessControlHandler
             return AccessResult::allowed()->cachePerPermissions();
         }
 
-        $isOwner = $entity->getOwnerId() == $account->id();
+        $isOwner = (int) $entity->getOwnerId() === (int) $account->id();
         $isCollaborator = in_array($account->id(), $entity->getSharedWith());
         $isTemplate = $entity->isTemplate();
 

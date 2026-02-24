@@ -52,7 +52,7 @@ class ProductVariationRetailAccessControlHandler extends EntityAccessControlHand
           $product = $entity->get('product_id')->entity;
           if ($product) {
             $owner_id = $product->getOwnerId();
-            return AccessResult::allowedIf($owner_id == $account->id())
+            return AccessResult::allowedIf((int) $owner_id === (int) $account->id())
               ->addCacheableDependency($entity)
               ->cachePerUser();
           }

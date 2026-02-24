@@ -27,20 +27,20 @@ class JobPostingAccessControlHandler extends EntityAccessControlHandler
                     return AccessResult::allowedIfHasPermission($account, 'view published jobs');
                 }
                 // Owners can view their own drafts
-                if ($entity->get('employer_id')->target_id == $account->id()) {
+                if ((int) $entity->get('employer_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 return AccessResult::allowedIfHasPermission($account, 'view unpublished jobs');
 
             case 'update':
                 // Owners can edit their own jobs
-                if ($entity->get('employer_id')->target_id == $account->id()) {
+                if ((int) $entity->get('employer_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowedIfHasPermission($account, 'edit own job postings');
                 }
                 return AccessResult::allowedIfHasPermission($account, 'edit any job postings');
 
             case 'delete':
-                if ($entity->get('employer_id')->target_id == $account->id()) {
+                if ((int) $entity->get('employer_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowedIfHasPermission($account, 'delete own job postings');
                 }
                 return AccessResult::allowedIfHasPermission($account, 'delete any job postings');

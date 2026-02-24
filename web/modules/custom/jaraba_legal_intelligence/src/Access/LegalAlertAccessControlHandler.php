@@ -36,7 +36,7 @@ class LegalAlertAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    $isOwner = ($entity->get('provider_id')->target_id == $account->id());
+    $isOwner = ((int) $entity->get('provider_id')->target_id === (int) $account->id());
 
     switch ($operation) {
       case 'view':

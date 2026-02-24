@@ -22,7 +22,7 @@ class LegalDeadlineAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    $is_owner = ($entity->getOwnerId() == $account->id());
+    $is_owner = ((int) $entity->getOwnerId() === (int) $account->id());
 
     if ($operation === 'view' && $is_owner && $account->hasPermission('access legal calendar')) {
       return AccessResult::allowed()->addCacheableDependency($entity)->cachePerUser();

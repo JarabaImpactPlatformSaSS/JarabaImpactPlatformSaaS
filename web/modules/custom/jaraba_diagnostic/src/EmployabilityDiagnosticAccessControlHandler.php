@@ -30,14 +30,14 @@ class EmployabilityDiagnosticAccessControlHandler extends EntityAccessControlHan
 
     switch ($operation) {
       case 'view':
-        if ($account->hasPermission('view own employability diagnostic') && $entity->getOwnerId() == $account->id()) {
+        if ($account->hasPermission('view own employability diagnostic') && (int) $entity->getOwnerId() === (int) $account->id()) {
           return AccessResult::allowed()->cachePerPermissions()->cachePerUser();
         }
         // Permitir acceso anonimo con token.
         return AccessResult::neutral();
 
       case 'update':
-        if ($account->hasPermission('edit own employability diagnostic') && $entity->getOwnerId() == $account->id()) {
+        if ($account->hasPermission('edit own employability diagnostic') && (int) $entity->getOwnerId() === (int) $account->id()) {
           return AccessResult::allowed()->cachePerPermissions()->cachePerUser();
         }
         return AccessResult::neutral();

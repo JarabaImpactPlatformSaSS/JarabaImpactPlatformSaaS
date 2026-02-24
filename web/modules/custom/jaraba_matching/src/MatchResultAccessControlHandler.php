@@ -29,7 +29,7 @@ class MatchResultAccessControlHandler extends EntityAccessControlHandler
                 // Candidates can view their own matches
                 if ($account->hasPermission('view own match results')) {
                     $candidate = $entity->get('candidate_id')->entity;
-                    if ($candidate && $candidate->getOwnerId() == $account->id()) {
+                    if ($candidate && (int) $candidate->getOwnerId() === (int) $account->id()) {
                         return AccessResult::allowed()->cachePerUser();
                     }
                 }

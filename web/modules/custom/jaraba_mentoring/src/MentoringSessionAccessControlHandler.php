@@ -36,7 +36,7 @@ class MentoringSessionAccessControlHandler extends EntityAccessControlHandler
         $mentor = $entity->get('mentor_id')->entity;
         $mentee_id = (int) $entity->get('mentee_id')->target_id;
 
-        $is_mentor = $mentor && $mentor->get('user_id')->target_id == $account->id();
+        $is_mentor = $mentor && (int) $mentor->get('user_id')->target_id === (int) $account->id();
         $is_mentee = $mentee_id === (int) $account->id();
 
         switch ($operation) {

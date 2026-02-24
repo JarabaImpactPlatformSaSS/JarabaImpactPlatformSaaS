@@ -23,7 +23,7 @@ class EnrollmentAccessControlHandler extends EntityAccessControlHandler
         switch ($operation) {
             case 'view':
                 // Users can view their own enrollments
-                if ($entity->get('user_id')->target_id == $account->id()) {
+                if ((int) $entity->get('user_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 return AccessResult::allowedIfHasPermission($account, 'view enrollments');

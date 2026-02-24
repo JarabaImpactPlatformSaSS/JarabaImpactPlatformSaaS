@@ -23,7 +23,7 @@ class IdentityWalletAccessControlHandler extends EntityAccessControlHandler {
     }
 
     // Dueño de la wallet.
-    $isOwner = ($entity->getOwnerId() == $account->id());
+    $isOwner = ((int) $entity->getOwnerId() === (int) $account->id());
 
     switch ($operation) {
       case 'view':

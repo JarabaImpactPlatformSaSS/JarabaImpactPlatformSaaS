@@ -25,7 +25,7 @@ class ServiceCatalogAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    $isOwner = $entity->hasField('provider_id') && $entity->get('provider_id')->target_id == $account->id();
+    $isOwner = $entity->hasField('provider_id') && (int) $entity->get('provider_id')->target_id === (int) $account->id();
 
     switch ($operation) {
       case 'view':

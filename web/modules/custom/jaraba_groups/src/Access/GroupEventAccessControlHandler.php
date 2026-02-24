@@ -30,13 +30,13 @@ class GroupEventAccessControlHandler extends EntityAccessControlHandler
                 return AccessResult::allowedIfHasPermission($account, 'view group events');
 
             case 'update':
-                if ($entity->get('organizer_id')->target_id == $account->id()) {
+                if ((int) $entity->get('organizer_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'manage group events');
 
             case 'delete':
-                if ($entity->get('organizer_id')->target_id == $account->id()) {
+                if ((int) $entity->get('organizer_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'manage group events');

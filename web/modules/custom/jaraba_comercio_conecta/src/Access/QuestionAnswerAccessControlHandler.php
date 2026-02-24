@@ -55,7 +55,7 @@ class QuestionAnswerAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::neutral()->addCacheableDependency($entity);
     }
 
-    $is_merchant_owner = $merchant->getOwnerId() == $account->id();
+    $is_merchant_owner = (int) $merchant->getOwnerId() === (int) $account->id();
     return AccessResult::allowedIf(
       $is_merchant_owner && $account->hasPermission('answer comercio questions')
     )->addCacheableDependency($entity)->addCacheableDependency($merchant)->cachePerUser();

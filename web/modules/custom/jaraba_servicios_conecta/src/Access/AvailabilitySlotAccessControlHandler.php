@@ -25,13 +25,13 @@ class AvailabilitySlotAccessControlHandler extends EntityAccessControlHandler {
     switch ($operation) {
       case 'view':
       case 'update':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('manage servicios availability')
         )->addCacheableDependency($entity)->cachePerUser();
 
       case 'delete':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('manage servicios availability')
         )->addCacheableDependency($entity)->cachePerUser();

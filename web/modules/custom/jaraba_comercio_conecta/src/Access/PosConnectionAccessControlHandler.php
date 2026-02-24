@@ -47,7 +47,7 @@ class PosConnectionAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::neutral()->addCacheableDependency($entity);
     }
 
-    $is_owner = $merchant->getOwnerId() == $account->id();
+    $is_owner = (int) $merchant->getOwnerId() === (int) $account->id();
     return AccessResult::allowedIf(
       $is_owner && $account->hasPermission('manage own comercio pos connections')
     )->addCacheableDependency($entity)->addCacheableDependency($merchant)->cachePerUser();

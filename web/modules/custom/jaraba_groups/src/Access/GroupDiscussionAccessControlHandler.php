@@ -30,13 +30,13 @@ class GroupDiscussionAccessControlHandler extends EntityAccessControlHandler
                 return AccessResult::allowedIfHasPermission($account, 'view group discussions');
 
             case 'update':
-                if ($entity->get('author_id')->target_id == $account->id()) {
+                if ((int) $entity->get('author_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'moderate group content');
 
             case 'delete':
-                if ($entity->get('author_id')->target_id == $account->id()) {
+                if ((int) $entity->get('author_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'moderate group content');
