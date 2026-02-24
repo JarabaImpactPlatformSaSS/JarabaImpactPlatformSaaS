@@ -4,7 +4,7 @@
  # Variables: provider, bookings, availability_slots, current_week
  #}
 
-<div class="servicios-provider-calendar">
+<div class="servicios-provider-calendar" role="main" aria-label="{{ 'Calendario del profesional'|t }}">
   <header class="servicios-provider-calendar__header">
     <h1>{{ 'Calendario'|t }}</h1>
     <p>{{ 'Semana del %date'|t({'%date': current_week}) }}</p>

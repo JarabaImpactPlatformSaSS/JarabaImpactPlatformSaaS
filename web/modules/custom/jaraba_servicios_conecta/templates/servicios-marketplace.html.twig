@@ -4,7 +4,7 @@
  # Variables: providers, categories, modalities, current_filters, total_results, pager
  #}
 
-<div class="servicios-marketplace">
+<div class="servicios-marketplace" role="main" aria-label="{{ 'Marketplace de servicios profesionales'|t }}">
   <header class="servicios-marketplace__header">
     <h1 class="servicios-marketplace__title">{{ 'Servicios Profesionales'|t }}</h1>
     <p class="servicios-marketplace__subtitle">{{ 'Encuentra profesionales de confianza cerca de ti'|t }}</p>
@@ -12,7 +12,7 @@
 
   {# Barra de filtros #}
   <div class="servicios-marketplace__filters">
-    <form class="servicios-filters" method="get" action="">
+    <form class="servicios-filters" method="get" action="" role="search" aria-label="{{ 'Filtrar profesionales'|t }}">
       <div class="servicios-filters__group">
         <input
           type="text"
@@ -50,7 +50,7 @@
 
   {# Grid de profesionales #}
   {% if providers|length > 0 %}
-    <div class="servicios-marketplace__grid">
+    <div class="servicios-marketplace__grid" role="list" aria-label="{{ 'Listado de profesionales'|t }}">
       {% for provider in providers %}
         {% include '@jaraba_servicios_conecta/partials/provider-card.html.twig' with {
           provider: provider
