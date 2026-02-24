@@ -47,3 +47,11 @@ function jaraba_candidate_update_10001(): void {
     ]);
   }
 }
+
+/**
+ * Install the CandidateEducation entity type schema.
+ */
+function jaraba_candidate_update_10002(): void {
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_education');
+  \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+}
