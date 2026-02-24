@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v68.0
+## Jaraba Impact Platform SaaS v69.0
 
 **Fecha:** 2026-02-24
-**Versión:** 68.0.0 (Empleabilidad Profile Premium — Fase Final: CandidateEducation + XSS Fix)
-**Estado:** Produccion (Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Versión:** 69.0.0 (Auditoria Horizontal — Strict Equality + CAN-SPAM MJML)
+**Estado:** Produccion (Horizontal Audit Complete + Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -233,12 +233,55 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      SEGURIDAD: ACCESS HANDLERS ⭐                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ACCESS-STRICT-001 (Auditoria Horizontal)                             │
+│   ├── 52 instancias de == (loose equality) → (int) === (int)          │
+│   ├── 39 access handlers en 21 modulos                                 │
+│   ├── Patrones corregidos:                                             │
+│   │   ├── $entity->getOwnerId() == $account->id()                    │
+│   │   ├── $entity->get('field')->target_id == $account->id()          │
+│   │   └── $merchant->getOwnerId() == $account->id()                  │
+│   ├── Fix universal: (int) LHS === (int) $account->id()              │
+│   ├── Previene type juggling: "0"==false, null==0, ""==0             │
+│   └── Verificacion: grep "== $account->id()" | grep -v "===" → 0    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      EMAIL: CAN-SPAM COMPLIANCE ⭐                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_email (28 plantillas horizontales)                         │
+│   ├── Grupos: base (1) + auth (5) + billing (7) + marketplace (6)    │
+│   │   + fiscal (3) + andalucia_ei (6)                                 │
+│   ├── CAN-SPAM Compliance:                                             │
+│   │   ├── <mj-preview>: Preheader unico por plantilla (28/28)        │
+│   │   ├── Direccion postal: Juncaril, Albolote (28/28)               │
+│   │   └── Opt-out: {{ unsubscribe_url }} (ya existia)                │
+│   ├── Brand Consistency:                                               │
+│   │   ├── Font: Outfit, Arial, Helvetica, sans-serif (28/28)         │
+│   │   ├── Azul primario: #1565C0 (unificado desde 4 variantes)       │
+│   │   ├── Body text: #333333, Muted: #666666, BG: #f8f9fa            │
+│   │   ├── Dividers: #E0E0E0, Disclaimer: #999999                     │
+│   │   └── Headings: #1565C0                                           │
+│   └── Colores semanticos preservados:                                  │
+│       ├── Error: #dc2626 (payment_failed, dunning_notice)             │
+│       ├── Exito: #16a34a (subscription_created, orders)               │
+│       ├── Warning: #f59e0b (trial_ending), #D97706 (fiscal)          │
+│       └── Andalucia EI: #FF8C42 (naranja), #00A9A5 (teal)           │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
 ---
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **69.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (ACCESS-STRICT-001). 28 plantillas MJML horizontales con compliance CAN-SPAM completo: mj-preview, postal Juncaril, font Outfit, paleta de marca unificada (#1565C0 como azul primario, 6 colores universales reemplazados). Colores semanticos preservados. Secciones de arquitectura: Access Handlers + Email CAN-SPAM. 5 reglas nuevas. Aprendizaje #119. |
 | 2026-02-24 | **68.0.0** | **Empleabilidad Profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity completa con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil premium. Controller fallback cleanup → render array con template premium. Seccion de arquitectura Empleabilidad documentada (6 entidades, 7 secciones glassmorphism, ProfileController resiliente). 3 ficheros creados, 6 modificados. Aprendizaje #118. |
 | 2026-02-24 | **67.0.0** | **Entity Admin UI Remediation Complete:** 286 entidades auditadas, 175 Field UI tabs, CI 100% green. |
 | 2026-02-24 | **66.0.0** | **Icon System — Zero Chinchetas:** Sistema de iconos `jaraba_icon()` auditado y completado. 305 pares unicos verificados en todo el codebase con 0 chinchetas restantes. ~170 SVGs/symlinks nuevos en 8 bridge categories. 32 llamadas con convencion rota corregidas en 4 modulos (jaraba_interactive, jaraba_i18n, jaraba_facturae, jaraba_resources). 177 templates Page Builder verificados. 2 symlinks circulares y 1 roto reparados. Reglas ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001. |

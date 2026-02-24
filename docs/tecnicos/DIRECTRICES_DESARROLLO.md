@@ -1,7 +1,7 @@
 # DIRECTRICES DE DESARROLLO - JARABA IMPACT PLATFORM
 
 > **Documento Central de Referencia Obligatoria**
-> Versión: 3.7 | Fecha: 2026-02-24
+> Versión: 3.8 | Fecha: 2026-02-24
 
 ---
 
@@ -276,6 +276,26 @@ Este checklist DEBE revisarse antes de cualquier commit o PR.
 - [ ] **Ejemplo**: `@ecosistema_jaraba_core.agroconecta_feature_gate` → `@?ecosistema_jaraba_core.agroconecta_feature_gate`
 - [ ] **Cuando aplicar**: Siempre que un modulo dependa de servicios de otro modulo que podria no estar instalado (especialmente en tests)
 
+### 32. Strict Equality en Access Handlers (ACCESS-STRICT-001)
+
+- [ ] **Nunca `==` en ownership checks**: Toda comparacion con `$account->id()` DEBE usar `(int) ... === (int) ...`
+- [ ] **Cast en ambos lados**: `(int) $entity->getOwnerId() === (int) $account->id()` — `===` sin cast falla (`"42" === 42` es `false`)
+- [ ] **target_id tambien**: `(int) $entity->get('field')->target_id === (int) $account->id()`
+- [ ] **Entidades intermedias**: `(int) $merchant->getOwnerId() === (int) $account->id()`
+- [ ] **Verificar con grep**: `grep -rn "== $account->id()" web/modules/custom/ --include="*.php" | grep -v "==="` → DEBE dar 0 resultados
+- [ ] **Buscar en src/ y src/Access/**: Algunos modulos ponen access handlers directamente en `src/`, no en `src/Access/`
+
+### 33. Plantillas MJML Email — CAN-SPAM + Marca (EMAIL-PREVIEW-001 / EMAIL-POSTAL-001 / BRAND-FONT-001 / BRAND-COLOR-001)
+
+- [ ] **mj-preview obligatorio**: `<mj-preview>Texto unico</mj-preview>` justo despues de `<mj-body>`. Usar HTML entities para acentos
+- [ ] **Direccion postal**: `Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a` en el footer de toda plantilla
+- [ ] **Font Outfit primero**: `font-family="Outfit, Arial, Helvetica, sans-serif"` en `<mj-all>`
+- [ ] **Colores universales**: `#374151`→`#333333`, `#6b7280`→`#666666`, `#f3f4f6`→`#f8f9fa`, `#e5e7eb`→`#E0E0E0`, `#9ca3af`→`#999999`, `#111827`→`#1565C0`
+- [ ] **Azul primario**: `#1565C0` — reemplaza `#2563eb` (Tailwind), `#1A365D` (fiscal), `#553C9A` (fiscal), `#233D63` (andalucia_ei)
+- [ ] **Preservar semanticos**: NO cambiar `#dc2626` (error), `#16a34a` (exito), `#f59e0b` (warning), `#FF8C42` (Andalucia EI), `#10b981` (progreso), `#D97706` (fiscal warning), ni sus fondos asociados
+- [ ] **Verificar con grep**: `grep -rn "#2563eb\|#374151\|#6b7280\|#f3f4f6\|#e5e7eb\|#9ca3af\|#111827"` en MJML horizontales → 0 resultados
+- [ ] **Template base**: Usar tokens de marca desde el dia 0 al scaffoldear nuevas plantillas MJML
+
 ---
 
 ## 📁 Referencias a Workflows
@@ -322,8 +342,10 @@ Para guías detalladas, consultar:
 - [ ] Field UI tab: Entidad con `field_ui_base_route` tiene default settings tab en links.task.yml
 - [ ] Kernel test deps: $modules lista TODOS los modulos requeridos (datetime, text, taxonomy, options)
 - [ ] Optional services: Cross-module refs usan `@?` en services.yml + constructor nullable
+- [ ] Access strict: `(int) ... === (int) ...` en toda comparacion con `$account->id()`, nunca `==`
+- [ ] MJML email: `<mj-preview>`, direccion postal, font Outfit, colores brand (no Tailwind defaults)
 ```
 
 ---
 
-*Ultima actualizacion: 2026-02-24 (v3.7 — Field UI Settings Tab, Kernel Test Deps, Optional Service DI)*
+*Ultima actualizacion: 2026-02-24 (v3.8 — Strict Equality Access Handlers, MJML CAN-SPAM + Brand)*

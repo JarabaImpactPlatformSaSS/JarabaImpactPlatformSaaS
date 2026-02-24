@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-24
-**Version:** 22.0.0 (Empleabilidad Profile Premium — Fase Final: CandidateEducation + XSS Fix)
+**Version:** 23.0.0 (Auditoria Horizontal — Strict Equality + CAN-SPAM MJML)
 
 ---
 
@@ -213,6 +213,24 @@
   - **Colores Jaraba:** `azul-corporativo`, `naranja-impulso`, `verde-innovacion`, `white`, `neutral`. NUNCA colores genericos ni hex.
   - **Auditoria completa:** Extraer todos los pares unicos `jaraba_icon('category', 'name')` con grep → verificar cada SVG en filesystem → crear symlinks/SVGs faltantes → re-verificar con `find -type l ! -exec test -e {}` para detectar symlinks rotos.
   - **Symlinks circulares:** `readlink -f` para detectar. Ejemplo: `save.svg → save.svg` (se apunta a si mismo). Fix: eliminar y recrear apuntando a `save-duotone.svg` o variante correcta.
+- **Strict Equality en Access Handlers (ACCESS-STRICT-001):**
+  - Toda comparacion de ownership en access handlers DEBE usar `(int) ... === (int) ...`, NUNCA `==`.
+  - PHP loose equality permite type juggling: `"0" == false`, `null == 0`, `"" == 0`. En checks de ownership esto es un vector de bypass de acceso.
+  - Patron: `(int) $entity->getOwnerId() === (int) $account->id()` y `(int) $entity->get('field')->target_id === (int) $account->id()`.
+  - El cast `(int)` normaliza `string|null` a entero y documenta la intencion de comparacion numerica.
+  - `===` sin cast falla: `"42" === 42` es `false` en PHP. Por eso se necesita `(int)` en ambos lados.
+  - Buscar con: `grep -rn "== \$account->id()" web/modules/custom/ --include="*.php" | grep -v "==="` — DEBE retornar 0 resultados.
+  - Los access handlers pueden estar en `src/Access/` O directamente en `src/`. Buscar siempre en `**/*AccessControlHandler.php`.
+- **Plantillas MJML Email — Compliance CAN-SPAM + Marca (EMAIL-PREVIEW-001, EMAIL-POSTAL-001, BRAND-FONT-001, BRAND-COLOR-001):**
+  - Toda plantilla MJML DEBE tener `<mj-preview>` con texto descriptivo unico justo despues de `<mj-body>`. Usar HTML entities para acentos.
+  - Toda plantilla MJML DEBE incluir direccion postal en el footer: `Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a`.
+  - Font-family: `Outfit, Arial, Helvetica, sans-serif` — `Outfit` es la fuente de marca y siempre va primero.
+  - Colores: usar exclusivamente tokens de marca. Tabla de reemplazos universales:
+    - `#374151` → `#333333` (body text), `#6b7280` → `#666666` (muted/footer), `#f3f4f6` → `#f8f9fa` (body bg), `#e5e7eb` → `#E0E0E0` (dividers), `#9ca3af` → `#999999` (disclaimer), `#111827` → `#1565C0` (headings).
+  - Azul primario de marca: `#1565C0`. Reemplaza Tailwind `#2563eb`, fiscal `#1A365D`/`#553C9A`, andalucia_ei `#233D63`.
+  - PRESERVAR colores semanticos: `#dc2626` (error), `#16a34a` (exito), `#f59e0b` (warning), `#FF8C42` (Andalucia EI), `#10b981` (progreso), `#D97706` (fiscal warning). Y sus fondos asociados.
+  - Verificar con: `grep -rn "#2563eb\|#1A365D\|#553C9A\|#233D63\|#374151\|#6b7280\|#f3f4f6\|#e5e7eb\|#9ca3af\|#111827"` en MJML — DEBE retornar 0 resultados.
+  - El template base DEBE usar tokens de marca desde el dia 0 para evitar deuda multiplicada por N plantillas.
 - **Header Sticky por Defecto (CSS-STICKY-001):**
   - Problema raiz: `position: fixed` con header de altura variable (botones de accion wrappean a 2 lineas) hace imposible compensar con un `padding-top` fijo. Causa solapamiento del header sobre el contenido.
   - Solucion: `position: sticky` como default global. El header participa en el flujo normal del documento y nunca solapa contenido.
@@ -276,6 +294,7 @@
 30. **Kernel tests: dependencias explicitas de modulos:** `KernelTestBase::$modules` NO auto-resuelve dependencias de modulos. Listar TODOS los modulos requeridos por los field types de la entidad (`datetime`, `text`, `options`, `taxonomy`) e instalar schemas de entidades referenciadas (ej. `taxonomy_term`) ANTES del schema de la entidad bajo test. Patron: `$this->installEntitySchema('taxonomy_term');` antes de `$this->installEntitySchema('order_agro');`.
 31. **Cross-module services opcionales con @?:** Servicios que referencian otros modulos (que pueden no estar instalados) DEBEN usar `@?` en services.yml y constructores nullable (`?Type $param = NULL`). El codigo DEBE null-guard antes de usar el servicio. Critico para testabilidad con Kernel tests que solo habilitan un modulo.
 32. **jaraba_icon() convencion estricta y zero chinchetas:** Toda llamada a `jaraba_icon()` DEBE seguir la firma `jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' })`. Antes de crear un template nuevo, verificar que los pares category/name existen como SVGs en `ecosistema_jaraba_core/images/icons/{category}/`. Si falta un icono, crear un symlink en la bridge category correspondiente apuntando a una categoria primaria (actions, fiscal, media, micro, ui, users). Verificar con `find images/icons/ -type l ! -exec test -e {} \; -print` que no hay symlinks rotos. El objetivo es 0 chinchetas (📌) en toda la plataforma.
+33. **Auditorias horizontales periodicas:** Despues de completar auditorias verticales, ejecutar siempre una auditoria horizontal que revise flujos cross-cutting: access handlers (strict equality), plantillas de email (CAN-SPAM, colores de marca, font, preheader, postal), CSRF, permisos. Los bugs sistematicos no se descubren auditando un solo vertical — requieren vision transversal. Al scaffoldear plantillas desde un template base, usar tokens de marca desde el dia 0 para evitar deuda multiplicada.
 
 ---
 
@@ -283,6 +302,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-24 | **23.0.0** | **Auditoria Horizontal Workflow**: Patron ACCESS-STRICT-001 — strict equality `(int) === (int)` obligatorio en access handlers, previene type juggling en ownership checks. Buscar con `grep "== $account->id()" \| grep -v "==="`. Los access handlers pueden estar en `src/Access/` O directamente en `src/`. Patron MJML email compliance — 5 cambios por plantilla: mj-preview, postal CAN-SPAM, font Outfit, colores universales, colores de grupo. Tabla de reemplazos de colores off-brand → brand. Preservar colores semanticos. Verificar con grep de colores off-brand → 0 resultados. Regla de oro #33. Aprendizaje #119. |
 | 2026-02-24 | **22.0.0** | **Empleabilidad Profile Premium — Fase Final Workflow**: Patron de creacion de ContentEntity completa con AdminHtmlRouteProvider + field_ui_base_route + SettingsForm + links.task.yml (collection tab + settings tab) + routing.yml (settings route) + permissions.yml + update hook para instalar schema. Refuerzo de TWIG-XSS-001 (`\|raw` → `\|safe_html` en perfil candidato). Patron de cleanup: reemplazar `#markup` con HTML hardcodeado por `#theme` que reutiliza template premium existente. Aprendizaje #118. |
 | 2026-02-24 | **21.0.0** | **Entity Admin UI Remediation Complete Workflow**: Patrones KERNEL-TEST-DEPS-001 — dependencias de modulos explicitas en Kernel tests (datetime, text, field, taxonomy + installEntitySchema previo). Patron OPTIONAL-SERVICE-DI-001 — `@?` para servicios cross-module opcionales con constructores nullable y null-guards (7 refs en agroconecta, 1 en job_board). Patron FIELD-UI-SETTINGS-TAB-001 — default local task tab obligatorio para Field UI (175 entidades en 46 modulos). Patron de mocking: ContentEntityInterface con `get()` callback y anonymous class para `->value`/`->target_id`. Inyeccion currentUser via ReflectionProperty::setValue(). Reglas de oro #29, #30, #31. Aprendizaje #116. |
 | 2026-02-24 | **20.0.0** | **Icon System — Zero Chinchetas Workflow**: Patron ICON-CONVENTION-001 — firma estricta `jaraba_icon('category', 'name', {options})`, nunca path-style ni args posicionales ni invertidos. Patron de bridge categories (symlinks a categorias primarias) para iconos referenciados desde multiples convenciones de nombre. Auditoria sistematica: extraer pares unicos con grep → verificar SVGs en filesystem → crear symlinks faltantes → re-verificar con `find -type l ! -exec test -e {}`. Deteccion de symlinks circulares con `readlink -f`. Duotone-first policy (ICON-DUOTONE-001). Colores Jaraba exclusivos (ICON-COLOR-001). Regla de oro #32. Aprendizaje #117. |
