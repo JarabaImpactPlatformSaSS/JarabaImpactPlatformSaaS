@@ -28,8 +28,8 @@ class ProducerCopilotService
 
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
-        protected ProducerCopilotAgent $copilotAgent,
-        protected AgroConectaFeatureGateService $featureGate,
+        protected ?ProducerCopilotAgent $copilotAgent = NULL,
+        protected ?AgroConectaFeatureGateService $featureGate = NULL,
     ) {
     }
 

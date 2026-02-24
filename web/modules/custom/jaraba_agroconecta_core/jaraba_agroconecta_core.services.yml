@@ -13,7 +13,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.factory'
-      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.producer_service -> jaraba_agroconecta_core.producer_service
   jaraba_agroconecta_core.producer_service:
@@ -39,17 +39,17 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.factory'
-      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.stripe_payment_service -> jaraba_agroconecta_core.stripe_payment_service
   jaraba_agroconecta_core.stripe_payment_service:
     class: Drupal\jaraba_agroconecta_core\Service\StripePaymentService
     arguments:
-      - '@jaraba_foc.stripe_connect'
+      - '@?jaraba_foc.stripe_connect'
       - '@entity_type.manager'
       - '@logger.factory'
       - '@config.factory'
-      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.producer_dashboard_service -> jaraba_agroconecta_core.producer_dashboard_service
   jaraba_agroconecta_core.producer_dashboard_service:
@@ -162,8 +162,8 @@ services:
     class: Drupal\jaraba_agroconecta_core\Service\ProducerCopilotService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_ai_agents.producer_copilot_agent'
-      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@?jaraba_ai_agents.producer_copilot_agent'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # Fase 9: Demand Forecaster (Doc 67 §4.4)
 
@@ -241,5 +241,5 @@ services:
     class: Drupal\jaraba_agroconecta_core\Service\AgroConectaCopilotBridgeService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.agroconecta_feature_gate'
+      - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
       - '@logger.channel.jaraba_agroconecta_core'

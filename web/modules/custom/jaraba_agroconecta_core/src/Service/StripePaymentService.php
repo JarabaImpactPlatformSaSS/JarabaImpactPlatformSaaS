@@ -33,11 +33,11 @@ class StripePaymentService
      * Constructor del servicio.
      */
     public function __construct(
-        protected StripeConnectService $stripeConnect,
+        protected ?StripeConnectService $stripeConnect,
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerInterface $logger,
         protected ConfigFactoryInterface $configFactory,
-        protected AgroConectaFeatureGateService $featureGate,
+        protected ?AgroConectaFeatureGateService $featureGate = NULL,
     ) {
     }
 

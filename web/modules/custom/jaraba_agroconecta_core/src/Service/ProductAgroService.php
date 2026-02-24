@@ -27,7 +27,7 @@ class ProductAgroService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected AccountProxyInterface $currentUser,
         protected LoggerInterface $logger,
-        protected AgroConectaFeatureGateService $featureGate,
+        protected ?AgroConectaFeatureGateService $featureGate = NULL,
     ) {
     }
 
