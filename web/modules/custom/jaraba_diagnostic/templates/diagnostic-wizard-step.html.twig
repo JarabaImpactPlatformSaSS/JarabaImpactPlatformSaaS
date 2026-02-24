@@ -159,7 +159,7 @@
         const msg = document.createElement('div');
         msg.className = 'validation-message';
         msg.setAttribute('role', 'alert');
-        msg.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2" fill="none"/></svg> Esta pregunta es obligatoria';
+        msg.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2" fill="none"/></svg> ' + Drupal.t('Esta pregunta es obligatoria');
         q.element.appendChild(msg);
       }
     });
@@ -170,7 +170,7 @@
     }
     
     // Mostrar toast de error
-    showToast('Por favor, responde todas las preguntas antes de continuar', 'error');
+    showToast(Drupal.t('Por favor, responde todas las preguntas antes de continuar'), 'error');
   }
   
   /**
@@ -235,12 +235,15 @@
     }
     
     const settings = drupalSettings.diagnosticWizard || {};
-    
+
+    // Fetch CSRF token before submitting answers.
+    fetch(Drupal.url('session/token')).then(r => r.text()).then(csrfToken => {
     fetch(settings.apiEndpoint || '/api/v1/diagnostics/{{ uuid }}/answers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({
         answers: answers,
@@ -270,6 +273,7 @@
         window.location.href = '/diagnostic/{{ uuid }}/step/' + nextButton.dataset.nextSection;
       }
     });
+    }); // CSRF token fetch
   });
 })();
 </script>

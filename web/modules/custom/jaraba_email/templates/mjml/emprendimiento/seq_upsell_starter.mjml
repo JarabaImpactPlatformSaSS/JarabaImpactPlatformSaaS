@@ -1,20 +1,21 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
       <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#f59e0b" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
+    <mj-preview>Desbloquea m&aacute;s herramientas para acelerar tu emprendimiento.</mj-preview>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
       .benefit-item { padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
-      .check-icon { color: #16a34a; font-weight: bold; margin-right: 8px; }
+      .check-icon { color: #1565C0; font-weight: bold; margin-right: 8px; }
     </mj-style>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#f59e0b" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }}
@@ -32,7 +33,7 @@
           <p>Hola {{ user_name }},</p>
           <p>Ya has creado <strong>{{ total_hypotheses }} hip&oacute;tesis</strong> y tu perfil est&aacute; al <strong>{{ profile_completion }}%</strong>. Est&aacute;s avanzando r&aacute;pido en la validaci&oacute;n de tu modelo de negocio.</p>
         </mj-text>
-        <mj-text font-size="16px" font-weight="bold" color="#92400e" padding-top="16px">
+        <mj-text font-size="16px" font-weight="bold" color="#0D47A1" padding-top="16px">
           Con el plan Starter desbloqueas:
         </mj-text>
         <mj-text>
@@ -60,6 +61,9 @@
         <mj-text align="center" font-size="12px" color="#6b7280">
           <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
           <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="4px">
+          Jaraba Impact Platform &mdash; Pol&iacute;gono Industrial Juncaril, C/ Abedul s/n, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>

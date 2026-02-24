@@ -7,6 +7,14 @@
 (function (Drupal, drupalSettings, once) {
     'use strict';
 
+    /**
+     * Fetches a CSRF token from Drupal's session/token endpoint.
+     */
+    function getCsrfToken() {
+        return fetch(Drupal.url('session/token'))
+            .then(function (response) { return response.text(); });
+    }
+
     Drupal.behaviors.entrepreneurAgentFab = {
         attach: function (context) {
             once('entrepreneur-agent-fab', '.agent-fab-container', context).forEach(function (container) {
@@ -134,11 +142,13 @@
     }
 
     function analyzeCanvas(canvasId, chatMessages, settings) {
+        getCsrfToken().then(function (token) {
         fetch('/api/v1/canvas/' + canvasId + '/analyze', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-CSRF-Token': token
             }
         })
             .then(function (response) {
@@ -177,6 +187,7 @@
                     showRating: false
                 });
             });
+        }); // getCsrfToken
     }
 
     function suggestImprovements(chatMessages, settings) {
@@ -266,11 +277,13 @@
             showRating: false
         });
 
+        getCsrfToken().then(function (token) {
         fetch('/api/v1/canvas/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-CSRF-Token': token
             },
             body: JSON.stringify({
                 description: businessDescription,
@@ -324,6 +337,7 @@
                     showRating: false
                 });
             });
+        }); // getCsrfToken
     }
 
     /**
@@ -355,10 +369,14 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'agent-response-wrapper';
 
-        // Main message
+        // Main message (sanitized: allow only <strong> and <br> via safe regex)
         const msg = document.createElement('div');
         msg.className = 'chat-message from-agent';
-        msg.innerHTML = response.message;
+        const safeMsg = Drupal.checkPlain(response.message)
+            .replace(/&lt;strong&gt;/g, '<strong>')
+            .replace(/&lt;\/strong&gt;/g, '</strong>')
+            .replace(/&lt;br\s*\/?&gt;/g, '<br>');
+        msg.innerHTML = safeMsg;
         wrapper.appendChild(msg);
 
         // Tips
@@ -366,7 +384,7 @@
             response.tips.forEach(function (tip) {
                 const tipEl = document.createElement('div');
                 tipEl.className = 'chat-message from-agent tip-message';
-                tipEl.innerHTML = tip;
+                tipEl.textContent = tip;
                 wrapper.appendChild(tipEl);
             });
         }
@@ -380,7 +398,11 @@
                 const btn = document.createElement('a');
                 btn.href = action.url;
                 btn.className = 'response-cta';
-                btn.innerHTML = '<span class="cta-icon">' + (action.icon || '→') + '</span> ' + action.label;
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'cta-icon';
+                iconSpan.textContent = action.icon || '→';
+                btn.appendChild(iconSpan);
+                btn.appendChild(document.createTextNode(' ' + Drupal.checkPlain(action.label)));
                 actionsContainer.appendChild(btn);
             });
             wrapper.appendChild(actionsContainer);
@@ -411,18 +433,21 @@
                         : '<span class="rating-thanks">📝 ' + Drupal.t('Anotado para mejorar') + '</span>';
 
                     // Send rating to backend for AI learning.
-                    fetch('/api/v1/business-tools/agent-rating', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({
-                            rating: ratingValue,
-                            session_id: window.jarabaAgentSessionId || 'unknown',
-                            context: { agent: 'entrepreneur', timestamp: Date.now() },
-                        }),
-                    }).catch(function (err) { console.warn('Rating submit failed:', err); });
+                    getCsrfToken().then(function (csrfToken) {
+                        fetch('/api/v1/business-tools/agent-rating', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-Token': csrfToken,
+                            },
+                            body: JSON.stringify({
+                                rating: ratingValue,
+                                session_id: window.jarabaAgentSessionId || 'unknown',
+                                context: { agent: 'entrepreneur', timestamp: Date.now() },
+                            }),
+                        }).catch(function (err) { console.warn('Rating submit failed:', err); });
+                    });
                 });
             });
             wrapper.appendChild(rating);

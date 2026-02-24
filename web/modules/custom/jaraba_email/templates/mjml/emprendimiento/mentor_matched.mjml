@@ -3,16 +3,17 @@
     <mj-attributes>
       <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
       <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#00897B" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
+    <mj-preview>Hemos encontrado un mentor compatible con tu perfil emprendedor.</mj-preview>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
     </mj-style>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#00897B" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }} Emprendimiento
@@ -31,9 +32,9 @@
           <p>{{ t('Hemos encontrado un mentor ideal para acompanarte en tu proyecto de emprendimiento.') }}</p>
         </mj-text>
 
-        <mj-section background-color="#E0F2F1" padding="16px" border-radius="6px">
+        <mj-section background-color="#E3F2FD" padding="16px" border-radius="6px">
           <mj-column>
-            <mj-text font-size="14px" color="#1A2E2B">
+            <mj-text font-size="14px" color="#0D47A1">
               <strong>{{ t('Mentor') }}:</strong> {{ mentor_name }}<br />
               <strong>{{ t('Especialidad') }}:</strong> {{ mentor_specialty }}<br />
               <strong>{{ t('Compatibilidad') }}:</strong> {{ match_score }}%
@@ -68,6 +69,9 @@
         </mj-text>
         <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
           Has recibido este correo porque tienes un perfil activo en {{ site_name }} Emprendimiento.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="4px">
+          Jaraba Impact Platform &mdash; Pol&iacute;gono Industrial Juncaril, C/ Abedul s/n, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>
