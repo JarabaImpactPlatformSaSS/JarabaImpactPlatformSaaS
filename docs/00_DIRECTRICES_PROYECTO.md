@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-24
-**Versión:** 65.0.0 (Empleabilidad Audit — 7 P0 Security/Business + P1 i18n + P2 XSS Hardening)
+**Versión:** 66.0.0 (Icon System — Zero Chinchetas + jaraba_icon() Convention Enforcement)
 
 ---
 
@@ -79,6 +79,9 @@
 | **XSS innerHTML en JS** | INNERHTML-XSS-001 | Todo dato recibido de una respuesta API que se inserte en el DOM via `innerHTML` DEBE pasar por `Drupal.checkPlain()` antes de la insercion. Valores numericos DEBEN pasar por `parseInt()`/`parseFloat()`. Solo se permite HTML generado client-side (tags `<strong>`, `<br>`, `<em>`) post-sanitizacion. | P0 |
 | **Cache de CSRF Token JS** | CSRF-JS-CACHE-001 | El token CSRF obtenido de `/session/token` DEBE cachearse en una variable de modulo (promise cacheada) para evitar multiples peticiones al servidor. Patron: `var _csrfTokenPromise = null; function getCsrfToken() { if (!_csrfTokenPromise) { _csrfTokenPromise = fetch('/session/token').then(r => r.text()); } return _csrfTokenPromise; }`. | P1 |
 | **Whitelist de Campos en APIs** | API-WHITELIST-001 | Todo endpoint que acepte campos dinamicos del request JSON para actualizar una entidad DEBE definir una constante `ALLOWED_FIELDS` y filtrar el input contra ella antes de ejecutar `$entity->set()`. Nunca iterar directamente sobre `$data` del request sin filtrar. | P0 |
+| **Convencion jaraba_icon()** | ICON-CONVENTION-001 | La funcion Twig `jaraba_icon()` DEBE invocarse siempre como `jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' })`. NUNCA usar estilo path (`'ui/arrow-left'`), argumentos posicionales (`'download', 'outline', 'white', '20'`), argumentos invertidos (`'name', 'category'`) ni tamaños sin unidad. Las categorias validas son: `actions`, `fiscal`, `media`, `micro`, `ui`, `users` y las bridge categories (`achievement`, `finance`, `general`, `legal`, `navigation`, `status`, `tools`). | P0 |
+| **Duotone-First en Iconos** | ICON-DUOTONE-001 | Todo icono en templates premium DEBE usar `variant: 'duotone'` por defecto. El variante `duotone` aplica `opacity: 0.2` + `fill: currentColor` a capas de fondo, creando profundidad visual coherente con el diseno glassmorphism. Solo usar `outline` para contextos minimalistas (breadcrumbs, inline text). | P1 |
+| **Colores Jaraba en Iconos** | ICON-COLOR-001 | Los iconos DEBEN usar colores de la paleta Jaraba: `azul-corporativo` (#233D63), `naranja-impulso` (#FF8C42), `verde-innovacion` (#00A9A5), `white`, `neutral`. NUNCA usar colores genericos (`primary`, `blue`, `red`) ni codigos hex directos en la llamada a `jaraba_icon()`. | P1 |
 
 ---
 
@@ -86,6 +89,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **66.0.0** | **Icon System — Zero Chinchetas:** Auditoria completa de 305 pares unicos `jaraba_icon()` en todo el codebase. 0 chinchetas restantes. Creados ~170 SVGs/symlinks nuevos en 8 bridge categories (achievement, finance, general, legal, navigation, status, tools, media, users). Corregidas 32 llamadas con convencion rota en 4 modulos (jaraba_interactive 17, jaraba_i18n 9, jaraba_facturae 8, jaraba_resources 13): path-style, args invertidos, args posicionales. 177 templates de Page Builder verificados (1 symlink circular corregido). 3 reglas nuevas: ICON-CONVENTION-001 (P0), ICON-DUOTONE-001 (P1), ICON-COLOR-001 (P1). Aprendizaje #117. |
 | 2026-02-24 | **65.0.0** | **Empleabilidad Audit — 105 Hallazgos, 10 Corregidos (7 P0 + 1 P1 + 2 P2):** Auditoria multidimensional (15 roles senior) del vertical Empleabilidad. P0 corregidos: (1) Fraude tier Starter con limites identicos al Free, (2) XSS via innerHTML en 8 puntos de agent-fab.js, (3) CSRF tokens ausentes en 6 endpoints POST/DELETE, (4) Bypass de acceso en EmployerController sin verificacion de ownership, (5) API field injection sin whitelist en updateProfile(), (6) CAN-SPAM compliance en 7 emails MJML, (7) Color primario inconsistente (3 colores diferentes unificados a #1565C0). P1: 31 strings de interfaz sin traducir → `\|t`. P2: 2 templates con `\|raw` → `\|safe_html`. 4 reglas nuevas: FREEMIUM-TIER-001, INNERHTML-XSS-001, CSRF-JS-CACHE-001, API-WHITELIST-001. 22 ficheros modificados. Aprendizaje #113. |
 | 2026-02-23 | **62.2.0** | **Sticky Header Global:** Regla CSS-STICKY-001 — `.landing-header` migrado de `position: fixed` a `position: sticky` por defecto. Solo `body.landing-page`/`body.page-front` mantienen `fixed` para hero fullscreen. Eliminados todos los `padding-top` compensatorios de `.main-content` (80px), `.user-main` (120px), `.error-page` (80px). Toolbar admin ajustado globalmente con `top: 39px/79px`. Regla de oro #27. Aprendizaje #109. |
 | 2026-02-23 | **64.0.0** | **Andalucia +ei Launch Readiness:** Fix critico de formulario que tragaba errores silenciosamente (`{{ messages }}` + preprocess hook). 6 emojis → `jaraba_icon()`. 5 paginas legales/informativas nuevas con rutas canonicas en espanol. Footer actualizado. Badge "6 verticales". TAB 14 en theme settings. 3 reglas nuevas: FORM-MSG-001 (mensajes en templates custom), LEGAL-ROUTE-001 (URLs canonicas), LEGAL-CONFIG-001 (contenido legal desde UI). 13 ficheros modificados. Aprendizaje #110. |

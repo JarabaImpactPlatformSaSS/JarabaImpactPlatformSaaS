@@ -4,7 +4,30 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-24
-**Versión:** 88.0.0 (Premium HTML Emails + Dashboard URLs Fix)
+**Versión:** 89.0.0 (Entity Admin UI Remediation Complete + CI Green + Field UI Tabs)
+
+> **🏗️ ENTITY ADMIN UI REMEDIATION COMPLETA: P0-P5 + CI GREEN** (2026-02-24)
+> - **Problema:** 286 entidades auditadas en 62 modulos. Faltaban views_data, collection links, field_ui_base_route, routes, menu links. Ademas, 175 entidades tenian `field_ui_base_route` pero sin default settings tab, impidiendo que Field UI mostrase pestanas "Administrar campos" / "Administrar visualizacion de formulario".
+> - **P0 (COMPLETADO):** views_data handler anadido a 19 entidades → 286/286 (100%).
+> - **P1 (COMPLETADO):** collection link + routing + task tabs a 41 entidades.
+> - **P2 (COMPLETADO):** field_ui_base_route + SettingsForm a entidades sin gestion de campos.
+> - **P3 (COMPLETADO):** Normalizacion de rutas al patron `/admin/content/`.
+> - **P4 (COMPLETADO):** links.menu.yml a 19 modulos.
+> - **P5 (COMPLETADO):** Default settings tabs anadidos a 175 entidades en 46 modulos — habilita Field UI tabs.
+> - **CI estabilizado:** 12 Unit test errors + 18 Kernel test errors corregidos. 0 errors en Unit (2859 tests) y Kernel (211 tests).
+> - **Reglas nuevas:** KERNEL-TEST-DEPS-001, OPTIONAL-SERVICE-DI-001, FIELD-UI-SETTINGS-TAB-001. Directrices v3.7 (secciones 29, 30, 31). Aprendizaje #116.
+
+> **🎨 ICON SYSTEM: ZERO CHINCHETAS — 305 PARES VERIFICADOS** (2026-02-24)
+> - **Problema:** Templates en 4 modulos usaban convenciones rotas de `jaraba_icon()` (path-style, args invertidos, args posicionales) que causaban fallback a emoji 📌 (chincheta). Faltaban ~170 SVGs en categorias bridge y primarias.
+> - **Auditoria completa:** 305 pares unicos `jaraba_icon('category', 'name')` extraidos de todo el codebase. Cada par verificado contra filesystem.
+> - **32 llamadas corregidas en 4 modulos:** jaraba_interactive (17 path-style), jaraba_i18n (9 args invertidos), jaraba_facturae (8 invertidos), jaraba_resources (13 posicionales).
+> - **~170 SVGs/symlinks creados:** 8 bridge categories (achievement, finance, general, legal, navigation, status, tools, media, users) con symlinks a categorias primarias (actions, fiscal, ui).
+> - **6 iconos nuevos:** ui/maximize, ui/infinity (outline + duotone), media/play-circle, users/group, ui/certificate, ui/device-phone.
+> - **3 symlinks reparados:** ui/save.svg circular, bookmark.svg circular, general/alert-duotone.svg roto.
+> - **177 templates Page Builder** verificados (1 symlink circular corregido).
+> - **Resultado:** 0 chinchetas en toda la plataforma.
+> - **4 commits, ~230 ficheros.** Reglas nuevas: ICON-CONVENTION-001 (P0), ICON-DUOTONE-001 (P1), ICON-COLOR-001 (P1). Regla de oro #32. Aprendizaje #117.
+> - **Directrices v66.0.0, Arquitectura v66.0.0, Flujo v20.0.0, Indice v90.0.0**
 
 > **📧 EMAILS PREMIUM HTML + DASHBOARD URLS CORREGIDAS** (2026-02-24)
 > - **Problema:** Los 3 correos de Andalucia +ei usaban texto plano dentro del wrapper branded. Las tarjetas de acceso rapido en el dashboard enlazaban a landing pages publicas en vez de paginas funcionales.
@@ -192,6 +215,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **90.0.0** | **Icon System — Zero Chinchetas:** 305 pares `jaraba_icon()` auditados en todo el codebase. 0 chinchetas restantes. ~170 SVGs/symlinks nuevos en 8 bridge categories. 32 llamadas con convencion rota corregidas en 4 modulos. 177 templates Page Builder verificados. 3 symlinks reparados (2 circulares, 1 roto). Reglas ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001. Regla de oro #32. Aprendizaje #117. |
 | 2026-02-24 | **88.0.0** | **Premium HTML Emails + Dashboard URLs:** 3 emails Andalucia +ei reescritos de texto plano a HTML premium con `Markup::create()`, inline CSS, table layout. Tarjetas resumen, CTAs naranjas, triaje IA color-coded (verde/amarillo/rojo). URLs dashboard corregidas: `/empleo`→`/jobs`, `/talento`→`/my-profile` via `path()`. Reglas EMAIL-HTML-PREMIUM-001, TWIG-ROUTE-PATH-001. Aprendizaje #115. |
 | 2026-02-24 | **87.0.0** | **SolicitudEi Entity View + AI Triage E2E:** Vista canonica vacia por falta de `view_builder` handler y `setDisplayOptions('view')` en 22 campos. Triaje IA roto por API incompatible (ChatInput/ChatMessage, getNormalized()->getText(), modelo explicito). Key module: `base64_encoded` string truthy corrupts keys. CRLF en .env + lando rebuild. Reglas ENTITY-VIEW-DISPLAY-001, DRUPAL-AI-CHAT-001, KEY-MODULE-BOOL-001, ENV-FILE-CRLF-001. Aprendizaje #114. |
 | 2026-02-24 | **86.0.0** | **SolicitudEiPublicForm Runtime Bugs:** Browser testing descubre 4 bugs que bloqueaban el formulario. BUG-1: time-gate `#value` se regenera en rebuild → `getUserInput()`. BUG-2: `entityTypeManager()` no existe en FormBase → DI explicita. BUG-3: `catch (\Exception)` no captura TypeError → `\Throwable`. BUG-4: `tenant_context` (por usuario) en form anonimo → `tenant_manager` (por dominio). Reglas DRUPAL-HIDDEN-VALUE-001, DRUPAL-FORMBASE-DI-001, PHP-THROWABLE-001, TENANT-RESOLVER-001. Aprendizaje #112. |

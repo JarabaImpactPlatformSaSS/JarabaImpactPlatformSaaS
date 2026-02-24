@@ -1,0 +1,47 @@
+{#
+ # Template: JarabaLex - Areas de Practica
+ # Category: jarabalex
+ # Type: features
+ #
+ # Header centrado + grid de 3 feature cards (icono + titulo + descripcion)
+ # Premium: staggered animations, jaraba_icon system, configurable columns
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--features pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_features"
+         aria-label="{{ title|default('Áreas de Práctica')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Especialidades')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Áreas de práctica especializadas')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Cobertura legal integral para empresas y particulares.')|t }}</p>
+    </div>
+    <div class="pb-section__features-grid pb-section__features-grid--{{ columns|default(3) }}-cols">
+      {% set default_features = [
+        { icon: 'shield-check', title: 'Derecho mercantil', desc: 'Constitución de sociedades, contratos comerciales, fusiones y adquisiciones con seguridad jurídica total.' },
+        { icon: 'document', title: 'Derecho laboral', desc: 'Asesoramiento en contratación, despidos, convenios colectivos y cumplimiento normativo laboral.' },
+        { icon: 'chart-bar', title: 'Derecho fiscal', desc: 'Planificación tributaria, inspecciones fiscales, recursos y optimización de la carga impositiva.' }
+      ] %}
+      {% set items = features|default(default_features) %}
+      {% set icon_map = {
+        'shield-check': { category: 'ui', name: 'shield-check' },
+        'document': { category: 'ui', name: 'document' },
+        'chart-bar': { category: 'analytics', name: 'chart-bar' }
+      } %}
+      {% for feature in items %}
+        <div class="pb-section__feature-card"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__feature-icon" aria-hidden="true">
+            {% set icon_info = icon_map[feature.icon|default('shield-check')]|default({ category: 'ui', name: 'shield-check' }) %}
+            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'primary' }) }}
+          </div>
+          <h3 class="pb-section__feature-title">{{ feature.title|default('Área legal')|t }}</h3>
+          <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción del área de práctica.')|t }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

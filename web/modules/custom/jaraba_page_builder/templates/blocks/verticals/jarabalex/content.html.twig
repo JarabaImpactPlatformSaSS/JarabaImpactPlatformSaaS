@@ -1,0 +1,35 @@
+{#
+ # Template: JarabaLex - Marco Juridico
+ # Category: jarabalex
+ # Type: content
+ #
+ # Seccion de contenido con texto enriquecido, imagen opcional y CTA
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--content pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_content"
+         aria-label="{{ title|default('Marco Jurídico')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__content-layout {{ image ? 'pb-section__content-layout--with-media' : '' }}">
+      <div class="pb-section__content-text">
+        <span class="pb-section__eyebrow">{{ eyebrow|default('Sobre nosotros')|t }}</span>
+        <h2 class="pb-section__title">{{ title|default('Un despacho con más de 20 años de experiencia')|t }}</h2>
+        <div class="pb-section__body">
+          {{ description|default('<p>Nuestro equipo de abogados combina rigor jurídico con un enfoque práctico y cercano. Creemos que la mejor defensa legal es anticiparse a los problemas antes de que surjan.</p><p>Acompañamos a empresas en todas las fases de su crecimiento, desde la constitución hasta la expansión internacional, ofreciendo soluciones legales innovadoras y eficaces.</p>')|raw }}
+        </div>
+        {% if cta_text is defined %}
+          <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+            {{ cta_text|t }}
+          </a>
+        {% endif %}
+      </div>
+      {% if image %}
+        <div class="pb-section__content-media" data-effect="fade-left">
+          <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
