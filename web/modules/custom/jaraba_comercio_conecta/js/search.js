@@ -95,8 +95,9 @@
 
         var html = '';
         result.data.forEach(function (item) {
+          var safe = Drupal.checkPlain(item.title);
           html += '<div class="comercio-search__autocomplete-item" data-value="' +
-            item.title.replace(/"/g, '&quot;') + '">' + item.title + '</div>';
+            safe + '">' + safe + '</div>';
         });
 
         container.innerHTML = html;
