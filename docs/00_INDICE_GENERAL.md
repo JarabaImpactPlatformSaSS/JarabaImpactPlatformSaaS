@@ -3,8 +3,31 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-02-23
-**Versión:** 83.0.0 (Sticky Header Migration — position: fixed → sticky global)
+**Última actualización:** 2026-02-24
+**Versión:** 85.0.0 (Andalucia +ei Deep Flow Review — P0/P1 Security + DI + Tenant Isolation Fixes)
+
+> **🔒 ANDALUCIA +EI DEEP FLOW REVIEW: 2 P0 + 6 P1 CORREGIDOS** (2026-02-24)
+> - **Auditoria:** Revision exhaustiva del flujo Andalucia +ei desde 9 perspectivas senior revelo 2 hallazgos P0 (criticos) y 6 P1 (altos).
+> - **P0-1 (CSRF):** Ruta DELETE API sin `_csrf_request_header_token`. Corregido en routing.yml.
+> - **P0-2 (Tenant):** Entidad `SolicitudEi` sin campo `tenant_id` — viola Regla de Oro #4. Campo anadido + resolucion en formulario + update hook 10001.
+> - **P1-3 (Emojis email):** Eliminados emojis Unicode del email de confirmacion (subject + body).
+> - **P1-4 (SCSS):** Literal `⚠` reemplazado por escape `\26A0` en 2 selectores CSS.
+> - **P1-5/P1-6 (DI):** Inyeccion de dependencias corregida en 2 controladores (renderer + 3 servicios opcionales).
+> - **P1-7 (user_id/uid):** Eliminado campo `user_id` redundante en `ProgramaParticipanteEi`, unificado en `uid` (EntityOwnerTrait) + update hook 10002 migracion.
+> - **P1-8 (_format):** Anadido `_format: 'json'` a 3 rutas API GET.
+> - **9 ficheros modificados, +113/-21 lineas.** Reglas reforzadas: CSRF-API-001, DI-CONTROLLER-001. Reglas nuevas: API-FORMAT-001, ENTITY-OWNER-001. Aprendizaje #111.
+
+> **🚀 ANDALUCIA +EI LAUNCH READINESS: 8 INCIDENCIAS CORREGIDAS** (2026-02-23)
+> - **Problema:** El formulario de solicitud del programa Andalucia +ei tragaba silenciosamente errores de validacion y mensajes de exito. Ademas, usaba emojis Unicode, las paginas legales devolvian 404, y el badge de features decia "4 verticales" en vez de "6".
+> - **C1 (Critica):** Template `solicitud-ei-page.html.twig` no tenia `{{ messages }}`. Anadido preprocess hook que inyecta `['#type' => 'status_messages']`.
+> - **C2 (Critica):** 6 emojis Unicode reemplazados por `jaraba_icon()` SVG duotone.
+> - **C3 (Critica):** Enlace de privacidad corregido de `/privacidad` a `/politica-privacidad`.
+> - **A1-A3 (Alta):** 5 rutas nuevas en `ecosistema_jaraba_core` con controladores que leen contenido de `theme_get_setting()`. 3 templates zero-region. Footer actualizado con URLs canonicas en espanol.
+> - **M1 (Media):** Badge corregido a "6 verticales" con descripcion actualizada.
+> - **M2 (Media):** Aplazado — requiere assets de diseno.
+> - **Theme Settings:** TAB 14 "Paginas Legales" con campos para contenido de privacidad, terminos, cookies, sobre nosotros, contacto.
+> - **13 ficheros modificados.** Reglas FORM-MSG-001, LEGAL-ROUTE-001, LEGAL-CONFIG-001. Regla de oro #28. Aprendizaje #110.
+> - **Directrices v64.0.0, Arquitectura v64.0.0, Flujo v18.0.0, Desarrollo v3.4, Indice v84.0.0**
 
 > **🔧 STICKY HEADER MIGRATION: FIXED → STICKY GLOBAL** (2026-02-23)
 > - **Problema:** `.landing-header` con `position: fixed` causa solapamiento sobre contenido cuando la altura del header es variable (botones de accion wrappean a 2 lineas). Un `padding-top` fijo nunca compensa correctamente una altura variable.
@@ -145,6 +168,8 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **85.0.0** | **Andalucia +ei Deep Flow Review P0/P1:** Auditoria profunda desde 9 perspectivas. P0-1: CSRF en DELETE API + _format json en 4 rutas. P0-2: tenant_id en SolicitudEi (campo + form submit + update hook 10001). P1-3: emojis eliminados de email. P1-4: SCSS Unicode escape \26A0. P1-5/P1-6: DI corregida en 2 controladores (renderer + 3 servicios opcionales nullable). P1-7: user_id eliminado, unificado en uid (EntityOwnerTrait) + update hook 10002 migracion. 9 ficheros, +113/-21. Reglas API-FORMAT-001, ENTITY-OWNER-001. Aprendizaje #111. |
+| 2026-02-23 | **84.0.0** | **Andalucia +ei Launch Readiness:** 8 incidencias corregidas para 2a edicion. Fix critico: `{{ messages }}` + preprocess hook para formulario que tragaba errores. 6 emojis → `jaraba_icon()`. 5 rutas legales/info nuevas con URLs canonicas espanol. Controladores con `theme_get_setting()`. 3 templates zero-region. Footer actualizado. Badge "6 verticales". TAB 14 theme settings. 13 ficheros. Reglas FORM-MSG-001, LEGAL-ROUTE-001, LEGAL-CONFIG-001. Regla de oro #28. Aprendizaje #110. |
 | 2026-02-23 | **83.0.0** | **Sticky Header Migration:** `.landing-header` migrado de `position: fixed` a `position: sticky` por defecto. Solo `body.landing-page`/`body.page-front` mantienen `fixed`. Eliminados padding-top compensatorios fragiles. Toolbar admin `top: 39px/79px` global. 4 archivos SCSS. Regla CSS-STICKY-001. Regla de oro #27. Aprendizaje #109. |
 | 2026-02-23 | **82.0.0** | **AI Identity Enforcement + Competitor Isolation:** Blindaje de identidad IA en toda la plataforma. Regla inquebrantable en BaseAgent (14+ agentes), CopilotOrchestratorService (8 modos), PublicCopilotController (landing FAB), FaqBotService, ServiciosConectaCopilotAgent, CoachIaService. Eliminadas 5 menciones de competidores en prompts. 12 archivos modificados. Reglas AI-IDENTITY-001, AI-COMPETITOR-001. Reglas de oro #25, #26. Aprendizaje #108. |
 | 2026-02-23 | **81.0.0** | **Precios Configurables v2.1 Implementado:** 2 ConfigEntities (`SaasPlanTier` + `SaasPlanFeatures`), `PlanResolverService` como broker central, 21 seed YAMLs, update hook 9019, integracion en QuotaManagerService + PlanValidator + BillingWebhookController, Drush `jaraba:validate-plans`, 8 contract tests, SCSS `_plan-admin.scss`, body class `page-plan-admin`. Reglas PLAN-CASCADE-001, PLAN-RESOLVER-001. Aprendizaje #107. |
