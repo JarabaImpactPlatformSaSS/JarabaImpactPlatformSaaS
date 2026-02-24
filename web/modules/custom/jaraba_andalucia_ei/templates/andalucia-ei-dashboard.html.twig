@@ -351,21 +351,21 @@
           {% trans %}Jaraba Impact Platform pone a tu disposicion herramientas gratuitas que puedes aprovechar desde ya:{% endtrans %}
         </p>
         <div class="aei-solicitud-state__features">
-          <a href="/empleo" class="aei-solicitud-state__feature">
+          <a href="{{ path('jaraba_job_board.search') }}" class="aei-solicitud-state__feature">
             {{ jaraba_icon('ui', 'compass', { variant: 'duotone', color: 'naranja-impulso', size: '22px' }) }}
             <span class="aei-solicitud-state__feature-text">
               <strong>{% trans %}Ofertas de empleo{% endtrans %}</strong>
               <small>{% trans %}Busca oportunidades en tu zona{% endtrans %}</small>
             </span>
           </a>
-          <a href="/talento" class="aei-solicitud-state__feature">
+          <a href="{{ path('jaraba_candidate.my_profile') }}" class="aei-solicitud-state__feature">
             {{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'azul-corporativo', size: '22px' }) }}
             <span class="aei-solicitud-state__feature-text">
               <strong>{% trans %}Tu perfil profesional{% endtrans %}</strong>
               <small>{% trans %}Completa tu CV digital{% endtrans %}</small>
             </span>
           </a>
-          <a href="/emprender" class="aei-solicitud-state__feature">
+          <a href="{{ path('ecosistema_jaraba_core.landing.emprendimiento') }}" class="aei-solicitud-state__feature">
             {{ jaraba_icon('verticals', 'rocket', { variant: 'duotone', color: 'verde-innovacion', size: '22px' }) }}
             <span class="aei-solicitud-state__feature-text">
               <strong>{% trans %}Herramientas de emprendimiento{% endtrans %}</strong>

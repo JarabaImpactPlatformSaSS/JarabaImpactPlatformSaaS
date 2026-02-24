@@ -484,6 +484,11 @@ class SolicitudEiPublicForm extends FormBase
         $params = [
             'nombre' => $solicitud->getNombre(),
             'colectivo' => $colectivos[$solicitud->getColectivoInferido()] ?? 'Por determinar',
+            'dashboard_url' => \Drupal\Core\Url::fromRoute(
+                'jaraba_andalucia_ei.dashboard',
+                [],
+                ['absolute' => TRUE]
+            )->toString(),
         ];
 
         $this->mailManager->mail(
