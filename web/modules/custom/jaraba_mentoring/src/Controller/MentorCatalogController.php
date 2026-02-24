@@ -44,12 +44,13 @@ class MentorCatalogController extends ControllerBase
         $storage = $this->entityTypeManager()->getStorage('mentor_profile');
 
         // Get active mentors.
+        $pageSize = (int) $this->config('jaraba_mentoring.settings')->get('catalog_page_size') ?: 20;
         $query = $storage->getQuery()
             ->accessCheck(TRUE)
             ->condition('status', 'active')
             ->condition('is_available', TRUE)
             ->sort('average_rating', 'DESC')
-            ->range(0, 20);
+            ->range(0, $pageSize);
 
         $mentor_ids = $query->execute();
         $mentors = $storage->loadMultiple($mentor_ids);

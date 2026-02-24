@@ -38,6 +38,11 @@ class EntrepreneurDashboardController extends ControllerBase
                     'jaraba_business_tools/entrepreneur-dashboard',
                 ],
             ],
+            '#cache' => [
+                'tags' => ['user:' . $user->id(), 'business_model_canvas_list', 'business_diagnostic_list'],
+                'contexts' => ['user'],
+                'max-age' => 300,
+            ],
         ];
     }
 

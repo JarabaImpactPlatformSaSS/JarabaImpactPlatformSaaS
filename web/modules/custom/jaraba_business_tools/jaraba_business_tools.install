@@ -171,6 +171,41 @@ function _jaraba_business_tools_create_template(array $data): void {
 }
 
 /**
+ * Add database indexes for business_model_canvas, mvp_hypothesis, financial_projection.
+ */
+function jaraba_business_tools_update_10002(): void {
+  $schema = \Drupal::database()->schema();
+  $indexes = [
+    'business_model_canvas' => [
+      'idx_user_status' => ['user_id', 'status'],
+      'idx_sector' => ['sector'],
+      'idx_created' => ['created'],
+    ],
+    'mvp_hypothesis' => [
+      'idx_canvas_id' => ['canvas_id'],
+      'idx_status' => ['result_status'],
+    ],
+    'financial_projection' => [
+      'idx_canvas_id' => ['canvas_id'],
+    ],
+  ];
+
+  foreach ($indexes as $table => $tableIndexes) {
+    if ($schema->tableExists($table)) {
+      foreach ($tableIndexes as $name => $fields) {
+        if (!$schema->indexExists($table, $name)) {
+          $spec = [];
+          foreach ($fields as $field) {
+            $spec[$field] = ['type' => 'varchar', 'length' => 255];
+          }
+          $schema->addIndex($table, $name, $fields, ['fields' => $spec]);
+        }
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function jaraba_business_tools_uninstall(): void {

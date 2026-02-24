@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_theme().
@@ -361,6 +362,42 @@ function _jaraba_business_tools_notify_pending_experiments(): void {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph meta tags for public business tools pages.
+ */
+function jaraba_business_tools_page_attachments_alter(array &$attachments): void {
+  $route_match = \Drupal::routeMatch();
+  $route = $route_match->getRouteName() ?: '';
+
+  if ($route === 'jaraba_business_tools.entrepreneur_dashboard') {
+    $title = t('Dashboard Emprendedor - Jaraba Impact Platform');
+    $description = t('Centro de control para la digitalización de tu negocio. Canvas, diagnósticos y mentoría.');
+    $url = \Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->getRequestUri();
+
+    $meta_tags = [
+      ['og:title', $title],
+      ['og:description', $description],
+      ['og:type', 'website'],
+      ['og:url', $url],
+      ['twitter:card', 'summary'],
+      ['twitter:title', $title],
+      ['twitter:description', $description],
+    ];
+
+    foreach ($meta_tags as [$property, $content]) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => ['property' => $property, 'content' => $content],
+        ],
+        'jaraba_bt_' . str_replace(':', '_', $property),
+      ];
+    }
+  }
+}
+
+/**
  * Implements hook_mail().
  */
 function jaraba_business_tools_mail($key, &$message, $params): void {
@@ -375,7 +412,7 @@ function jaraba_business_tools_mail($key, &$message, $params): void {
         '@hypothesis' => $hypothesis->getHypothesis(),
       ]);
       $message['body'][] = t('Registra los resultados para validar o invalidar tu hipótesis:');
-      $message['body'][] = 'https://jaraba-saas.lndo.site/mvp/' . $hypothesis->id() . '/edit';
+      $message['body'][] = Url::fromRoute('entity.mvp_hypothesis.edit_form', ['mvp_hypothesis' => $hypothesis->id()])->setAbsolute()->toString();
       break;
   }
 }
