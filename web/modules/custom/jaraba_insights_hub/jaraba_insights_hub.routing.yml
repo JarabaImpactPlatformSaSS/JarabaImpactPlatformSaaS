@@ -157,3 +157,55 @@ jaraba_insights_hub.api.uptime.add_endpoint:
   requirements:
     _permission: 'manage uptime checks'
   methods: [POST]
+
+# ============================================
+# FIELD UI SETTINGS ROUTES
+# ============================================
+
+entity.insights_error_log.settings:
+  path: '/admin/structure/insights-error-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_insights_hub\Form\InsightsErrorLogSettingsForm'
+    _title: 'Insights Error Log settings'
+  requirements:
+    _permission: 'administer insights hub'
+
+entity.search_console_connection.settings:
+  path: '/admin/structure/search-console-connection/settings'
+  defaults:
+    _form: 'Drupal\jaraba_insights_hub\Form\SearchConsoleConnectionSettingsForm'
+    _title: 'Search Console Connection settings'
+  requirements:
+    _permission: 'administer insights hub'
+
+entity.search_console_data.settings:
+  path: '/admin/structure/search-console-data/settings'
+  defaults:
+    _form: 'Drupal\jaraba_insights_hub\Form\SearchConsoleDataSettingsForm'
+    _title: 'Search Console Data settings'
+  requirements:
+    _permission: 'administer insights hub'
+
+entity.uptime_check.settings:
+  path: '/admin/structure/uptime-check/settings'
+  defaults:
+    _form: 'Drupal\jaraba_insights_hub\Form\UptimeCheckSettingsForm'
+    _title: 'Uptime Check settings'
+  requirements:
+    _permission: 'administer insights hub'
+
+entity.uptime_incident.settings:
+  path: '/admin/structure/uptime-incident/settings'
+  defaults:
+    _form: 'Drupal\jaraba_insights_hub\Form\UptimeIncidentSettingsForm'
+    _title: 'Uptime Incident settings'
+  requirements:
+    _permission: 'administer insights hub'
+
+entity.web_vitals_metric.settings:
+  path: '/admin/structure/web-vitals-metric/settings'
+  defaults:
+    _form: 'Drupal\jaraba_insights_hub\Form\WebVitalsMetricSettingsForm'
+    _title: 'Web Vitals Metric settings'
+  requirements:
+    _permission: 'administer insights hub'

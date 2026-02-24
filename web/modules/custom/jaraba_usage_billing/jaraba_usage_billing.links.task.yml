@@ -7,3 +7,13 @@ jaraba_usage_billing.pricing_rule.settings:
   title: 'Configuración'
   route_name: jaraba_usage_billing.pricing_rule.settings
   base_route: jaraba_usage_billing.pricing_rule.settings
+
+entity.usage_aggregate.settings_tab:
+  title: 'Settings'
+  route_name: entity.usage_aggregate.settings
+  base_route: entity.usage_aggregate.settings
+
+entity.usage_event.settings_tab:
+  title: 'Settings'
+  route_name: entity.usage_event.settings
+  base_route: entity.usage_event.settings

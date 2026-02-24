@@ -50,6 +50,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "add-form" = "/admin/content/invoice-lines/add",
  *     "canonical" = "/admin/content/invoice-lines/{invoice_line}",
  *   },
+ *   field_ui_base_route = "entity.invoice_line.settings",
  * )
  */
 class InvoiceLine extends ContentEntityBase {

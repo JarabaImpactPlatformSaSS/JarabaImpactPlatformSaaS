@@ -372,3 +372,19 @@ jaraba_content_hub.api.recommendations.reindex:
     _permission: 'administer content articles'
     _csrf_token: 'TRUE'
 
+entity.ai_generation_log.settings:
+  path: '/admin/structure/ai-generation-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_content_hub\Form\AiGenerationLogSettingsForm'
+    _title: 'AI Generation Log settings'
+  requirements:
+    _permission: 'administer ai generation logs'
+
+entity.content_category.settings:
+  path: '/admin/structure/content-category/settings'
+  defaults:
+    _form: 'Drupal\jaraba_content_hub\Form\ContentCategorySettingsForm'
+    _title: 'Content Category settings'
+  requirements:
+    _permission: 'administer content categories'
+

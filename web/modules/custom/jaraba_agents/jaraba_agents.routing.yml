@@ -196,3 +196,21 @@ jaraba_agents.agent_handoff.settings:
     _title: 'Configuracion de Handoffs'
   requirements:
     _permission: 'administer agents'
+
+# --- Entity settings (field_ui_base_route) ---
+
+entity.agent_conversation.settings:
+  path: '/admin/structure/agent-conversation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agents\Form\AgentConversationSettingsForm'
+    _title: 'Agent Conversation settings'
+  requirements:
+    _permission: 'administer agents'
+
+entity.agent_handoff.settings:
+  path: '/admin/structure/agent-handoff/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agents\Form\AgentHandoffSettingsForm'
+    _title: 'Agent Handoff settings'
+  requirements:
+    _permission: 'administer agents'

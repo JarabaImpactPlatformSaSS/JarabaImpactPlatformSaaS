@@ -53,6 +53,7 @@ use Drupal\ecosistema_jaraba_core\Trait\CopilotConversationTrait;
  *     "canonical" = "/admin/content/copilot-conversations/{copilot_conversation}",
  *     "delete-form" = "/admin/content/copilot-conversations/{copilot_conversation}/delete",
  *   },
+ *   field_ui_base_route = "entity.copilot_conversation.settings",
  * )
  */
 class CopilotConversation extends ContentEntityBase implements CopilotConversationInterface

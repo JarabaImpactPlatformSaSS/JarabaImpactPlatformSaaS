@@ -281,3 +281,61 @@ jaraba_mentoring.api.engagements.terminate:
   options:
     _format: json
 
+entity.session_notes.collection:
+  path: '/admin/content/session-notes'
+  defaults:
+    _entity_list: 'session_notes'
+    _title: 'Session Notes'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.session_review.collection:
+  path: '/admin/content/session-reviews'
+  defaults:
+    _entity_list: 'session_review'
+    _title: 'Session Reviews'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.session_task.collection:
+  path: '/admin/content/session-tasks'
+  defaults:
+    _entity_list: 'session_task'
+    _title: 'Session Tasks'
+  requirements:
+    _permission: 'administer site configuration'
+
+# Settings Routes (Field UI) for additional entities
+
+entity.availability_slot.settings:
+  path: '/admin/structure/availability-slot/settings'
+  defaults:
+    _form: 'Drupal\jaraba_mentoring\Form\AvailabilitySlotSettingsForm'
+    _title: 'Slot de Disponibilidad settings'
+  requirements:
+    _permission: 'administer mentor profiles'
+
+entity.session_notes.settings:
+  path: '/admin/structure/session-notes/settings'
+  defaults:
+    _form: 'Drupal\jaraba_mentoring\Form\SessionNotesSettingsForm'
+    _title: 'Notas de Sesion settings'
+  requirements:
+    _permission: 'manage sessions'
+
+entity.session_review.settings:
+  path: '/admin/structure/session-review/settings'
+  defaults:
+    _form: 'Drupal\jaraba_mentoring\Form\SessionReviewSettingsForm'
+    _title: 'Review de Sesion settings'
+  requirements:
+    _permission: 'manage sessions'
+
+entity.session_task.settings:
+  path: '/admin/structure/session-task/settings'
+  defaults:
+    _form: 'Drupal\jaraba_mentoring\Form\SessionTaskSettingsForm'
+    _title: 'Tarea de Sesion settings'
+  requirements:
+    _permission: 'manage sessions'
+

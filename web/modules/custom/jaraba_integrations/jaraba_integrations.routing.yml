@@ -249,3 +249,31 @@ jaraba_integrations.app_submission:
     parameters:
       connector:
         type: entity:connector
+
+# =============================================================================
+# FIELD UI SETTINGS ROUTES
+# =============================================================================
+
+entity.connector_installation.settings:
+  path: '/admin/structure/connector-installation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_integrations\Form\ConnectorInstallationSettingsForm'
+    _title: 'Connector Installation settings'
+  requirements:
+    _permission: 'administer integrations'
+
+entity.oauth_client.settings:
+  path: '/admin/structure/oauth-client/settings'
+  defaults:
+    _form: 'Drupal\jaraba_integrations\Form\OauthClientSettingsForm'
+    _title: 'OAuth Client settings'
+  requirements:
+    _permission: 'administer integrations'
+
+entity.webhook_subscription.settings:
+  path: '/admin/structure/webhook-subscription/settings'
+  defaults:
+    _form: 'Drupal\jaraba_integrations\Form\WebhookSubscriptionSettingsForm'
+    _title: 'Webhook Subscription settings'
+  requirements:
+    _permission: 'administer integrations'

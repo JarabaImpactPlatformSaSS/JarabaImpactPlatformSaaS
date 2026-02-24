@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-notification-log/{comercio_notification_log}",
  *     "collection" = "/admin/content/comercio-notification-logs",
  *   },
+ *   field_ui_base_route = "entity.comercio_notification_log.settings",
  * )
  */
 class NotificationLog extends ContentEntityBase {

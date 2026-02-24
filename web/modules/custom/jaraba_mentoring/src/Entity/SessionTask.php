@@ -45,6 +45,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *     "label" = "title",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/session-tasks",
+ *   },
+ *   field_ui_base_route = "entity.session_task.settings",
  * )
  */
 class SessionTask extends ContentEntityBase

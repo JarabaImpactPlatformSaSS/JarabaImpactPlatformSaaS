@@ -53,3 +53,23 @@ jaraba_pwa.api.sync:
   requirements:
     _permission: 'receive push notifications'
   methods: [POST]
+
+# ==============================================
+# Entity settings (Field UI base routes)
+# ==============================================
+
+entity.pending_sync_action.settings:
+  path: '/admin/structure/pending-sync-action/settings'
+  defaults:
+    _form: 'Drupal\jaraba_pwa\Form\PendingSyncActionSettingsForm'
+    _title: 'Pending Sync Action settings'
+  requirements:
+    _permission: 'administer pwa'
+
+entity.push_subscription.settings:
+  path: '/admin/structure/push-subscription/settings'
+  defaults:
+    _form: 'Drupal\jaraba_pwa\Form\PushSubscriptionSettingsForm'
+    _title: 'Push Subscription settings'
+  requirements:
+    _permission: 'administer pwa'

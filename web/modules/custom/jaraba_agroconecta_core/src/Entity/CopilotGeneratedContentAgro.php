@@ -45,6 +45,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "collection" = "/admin/content/agro-generated-content",
  *     "canonical" = "/admin/content/agro-generated-content/{copilot_generated_content_agro}",
  *   },
+ *   field_ui_base_route = "entity.copilot_generated_content_agro.settings",
  * )
  */
 class CopilotGeneratedContentAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {

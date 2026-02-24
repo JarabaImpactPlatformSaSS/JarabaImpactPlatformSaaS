@@ -49,6 +49,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/risk-assessments/{risk_assessment}/edit",
  *     "delete-form" = "/admin/content/risk-assessments/{risk_assessment}/delete",
  *   },
+ *   field_ui_base_route = "entity.risk_assessment.settings",
  * )
  */
 class RiskAssessment extends ContentEntityBase implements RiskAssessmentInterface {

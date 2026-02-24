@@ -50,6 +50,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "delete-form" = "/admin/content/social-accounts/{social_account}/delete",
  *     "collection" = "/admin/content/social-accounts",
  *   },
+ *   field_ui_base_route = "entity.social_account.settings",
  * )
  */
 class SocialAccount extends ContentEntityBase

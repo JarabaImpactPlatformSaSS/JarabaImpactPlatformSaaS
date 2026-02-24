@@ -2,3 +2,13 @@ jaraba_pwa.settings:
   title: 'Settings'
   route_name: jaraba_pwa.settings
   base_route: jaraba_pwa.settings
+
+entity.pending_sync_action.settings_tab:
+  title: 'Settings'
+  route_name: entity.pending_sync_action.settings
+  base_route: entity.pending_sync_action.settings
+
+entity.push_subscription.settings_tab:
+  title: 'Settings'
+  route_name: entity.push_subscription.settings
+  base_route: entity.push_subscription.settings

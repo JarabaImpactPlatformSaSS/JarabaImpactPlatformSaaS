@@ -49,6 +49,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/content/employer/{employer_profile}/delete",
  *     "collection" = "/admin/content/employers",
  *   },
+ *   field_ui_base_route = "entity.employer_profile.settings",
  * )
  */
 class EmployerProfile extends ContentEntityBase implements EmployerProfileInterface

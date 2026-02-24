@@ -38,6 +38,7 @@ use Drupal\user\EntityOwnerTrait;
  *   links = {
  *     "collection" = "/admin/reports/ai-generations",
  *   },
+ *   field_ui_base_route = "entity.ai_generation_log.settings",
  * )
  */
 class AiGenerationLog extends ContentEntityBase implements EntityOwnerInterface

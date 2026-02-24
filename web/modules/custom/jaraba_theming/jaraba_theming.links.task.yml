@@ -1,0 +1,4 @@
+entity.tenant_theme_config.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_theme_config.settings
+  base_route: entity.tenant_theme_config.settings

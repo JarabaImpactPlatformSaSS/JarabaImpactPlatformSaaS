@@ -29,6 +29,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   label_singular = @Translation("pending approval"),
  *   label_plural = @Translation("pending approvals"),
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "pending_approval",
@@ -37,6 +38,10 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/pending-approvals",
+ *   },
+ *   field_ui_base_route = "entity.pending_approval.settings",
  * )
  */
 class PendingApproval extends ContentEntityBase

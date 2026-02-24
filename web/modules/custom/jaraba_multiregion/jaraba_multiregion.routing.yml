@@ -162,3 +162,15 @@ jaraba_multiregion.api.compliance.check:
   options:
     _auth: ['basic_auth', 'cookie']
     no_cache: TRUE
+
+# ============================================
+# Field UI Settings — Entity settings forms
+# ============================================
+
+entity.vies_validation.settings:
+  path: '/admin/structure/vies-validation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_multiregion\Form\ViesValidationSettingsForm'
+    _title: 'Validacion VIES settings'
+  requirements:
+    _permission: 'administer multiregion'

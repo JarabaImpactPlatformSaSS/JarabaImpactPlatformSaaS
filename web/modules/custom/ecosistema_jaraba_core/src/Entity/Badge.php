@@ -51,6 +51,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/config/badges/{badge}/edit",
  *     "delete-form" = "/admin/config/badges/{badge}/delete",
  *   },
+ *   field_ui_base_route = "entity.badge.settings",
  * )
  */
 class Badge extends ContentEntityBase

@@ -50,6 +50,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/uptime-checks",
  *   },
+ *   field_ui_base_route = "entity.uptime_check.settings",
  * )
  */
 class UptimeCheck extends ContentEntityBase implements ContentEntityInterface {

@@ -47,6 +47,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/seguridad/audit-log/{audit_log}",
  *     "delete-form" = "/admin/seguridad/audit-log/{audit_log}/delete",
  *   },
+ *   field_ui_base_route = "entity.audit_log.settings",
  * )
  */
 class AuditLog extends ContentEntityBase {

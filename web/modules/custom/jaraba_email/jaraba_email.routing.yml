@@ -343,3 +343,43 @@ jaraba_email.api.webhooks.sendgrid:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+entity.email_campaign.settings:
+  path: '/admin/structure/email-campaign/settings'
+  defaults:
+    _form: 'Drupal\jaraba_email\Form\EmailCampaignSettingsForm'
+    _title: 'Email Campaign settings'
+  requirements:
+    _permission: 'administer email campaigns'
+
+entity.email_list.settings:
+  path: '/admin/structure/email-list/settings'
+  defaults:
+    _form: 'Drupal\jaraba_email\Form\EmailListSettingsForm'
+    _title: 'Email List settings'
+  requirements:
+    _permission: 'administer email lists'
+
+entity.email_sequence.settings:
+  path: '/admin/structure/email-sequence/settings'
+  defaults:
+    _form: 'Drupal\jaraba_email\Form\EmailSequenceSettingsForm'
+    _title: 'Email Sequence settings'
+  requirements:
+    _permission: 'administer email sequences'
+
+entity.email_subscriber.settings:
+  path: '/admin/structure/email-subscriber/settings'
+  defaults:
+    _form: 'Drupal\jaraba_email\Form\EmailSubscriberSettingsForm'
+    _title: 'Email Subscriber settings'
+  requirements:
+    _permission: 'administer email subscribers'
+
+entity.email_template.settings:
+  path: '/admin/structure/email-template/settings'
+  defaults:
+    _form: 'Drupal\jaraba_email\Form\EmailTemplateSettingsForm'
+    _title: 'Email Template settings'
+  requirements:
+    _permission: 'administer email templates'

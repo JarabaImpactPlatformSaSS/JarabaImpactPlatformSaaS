@@ -119,3 +119,21 @@ jaraba_predictive.forecast.settings:
     _title: 'Configuracion de Forecasting'
   requirements:
     _permission: 'administer predictions'
+
+# === Field UI Settings — Entity settings forms ===
+
+entity.churn_prediction.settings:
+  path: '/admin/structure/churn-prediction/settings'
+  defaults:
+    _form: 'Drupal\jaraba_predictive\Form\ChurnPredictionSettingsForm'
+    _title: 'Prediccion de Churn settings'
+  requirements:
+    _permission: 'administer predictions'
+
+entity.forecast.settings:
+  path: '/admin/structure/forecast/settings'
+  defaults:
+    _form: 'Drupal\jaraba_predictive\Form\ForecastSettingsForm'
+    _title: 'Forecast settings'
+  requirements:
+    _permission: 'administer predictions'

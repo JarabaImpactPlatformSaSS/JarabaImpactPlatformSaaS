@@ -33,6 +33,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   label_plural = @Translation("SLA measurements"),
  *   handlers = {
  *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\jaraba_sla\Access\SlaMeasurementAccessControlHandler",
  *   },
  *   base_table = "sla_measurement",
@@ -41,6 +42,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/sla-measurements",
+ *   },
+ *   field_ui_base_route = "entity.sla_measurement.settings",
  * )
  */
 class SlaMeasurement extends ContentEntityBase {

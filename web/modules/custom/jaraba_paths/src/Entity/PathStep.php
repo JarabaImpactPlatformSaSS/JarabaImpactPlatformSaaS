@@ -47,6 +47,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/structure/path-step/{path_step}/edit",
  *     "delete-form" = "/admin/structure/path-step/{path_step}/delete",
  *   },
+ *   field_ui_base_route = "entity.path_step.settings",
  * )
  */
 class PathStep extends ContentEntityBase

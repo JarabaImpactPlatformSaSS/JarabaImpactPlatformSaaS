@@ -43,6 +43,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "collection" = "/admin/content/match-feedbacks",
  *     "add-form" = "/admin/content/match-feedback/add",
  *   },
+ *   field_ui_base_route = "entity.match_feedback.settings",
  * )
  */
 class MatchFeedback extends ContentEntityBase

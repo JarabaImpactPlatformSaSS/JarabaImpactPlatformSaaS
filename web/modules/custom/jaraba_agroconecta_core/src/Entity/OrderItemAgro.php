@@ -24,6 +24,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_agroconecta_core\Entity\OrderAgroAccessControlHandler",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   base_table = "order_item_agro",
  *   admin_permission = "administer agroconecta",
@@ -32,6 +33,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *     "label" = "title",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/agro-order-items",
+ *   },
+ *   field_ui_base_route = "entity.order_item_agro.settings",
  * )
  */
 class OrderItemAgro extends ContentEntityBase

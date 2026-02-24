@@ -57,6 +57,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "add-form" = "/admin/content/legal-case-activities/add",
  *     "canonical" = "/admin/content/legal-case-activities/{case_activity}",
  *   },
+ *   field_ui_base_route = "entity.case_activity.settings",
  * )
  */
 class CaseActivity extends ContentEntityBase implements EntityOwnerInterface {

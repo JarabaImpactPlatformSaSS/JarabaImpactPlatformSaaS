@@ -41,6 +41,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "collection" = "/admin/content/seasonal-predictions",
  *     "canonical" = "/admin/content/seasonal-predictions/{seasonal_churn_prediction}",
  *   },
+ *   field_ui_base_route = "entity.seasonal_churn_prediction.settings",
  * )
  */
 class SeasonalChurnPrediction extends ContentEntityBase implements SeasonalChurnPredictionInterface {

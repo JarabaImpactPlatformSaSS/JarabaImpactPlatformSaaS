@@ -59,3 +59,8 @@ jaraba_page_builder.scheduled_publish_settings:
   base_route: entity.scheduled_publish.settings
   weight: -10
 
+entity.experiment_variant.collection:
+  title: 'Experiment Variants'
+  route_name: entity.experiment_variant.collection
+  base_route: system.admin_content
+

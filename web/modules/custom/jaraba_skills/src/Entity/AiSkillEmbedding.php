@@ -37,6 +37,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\jaraba_skills\AiSkillAccessControlHandler",
  *   },
  *   base_table = "ai_skill_embedding",
@@ -45,6 +46,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/ai-skill-embeddings",
+ *   },
+ *   field_ui_base_route = "entity.ai_skill_embedding.settings",
  * )
  */
 class AiSkillEmbedding extends ContentEntityBase

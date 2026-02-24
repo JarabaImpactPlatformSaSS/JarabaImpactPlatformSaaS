@@ -1,0 +1,9 @@
+entity.match_feedback.settings_tab:
+  title: 'Settings'
+  route_name: entity.match_feedback.settings
+  base_route: entity.match_feedback.settings
+
+entity.match_result.settings_tab:
+  title: 'Settings'
+  route_name: entity.match_result.settings
+  base_route: entity.match_result.settings

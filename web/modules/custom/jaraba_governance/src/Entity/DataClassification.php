@@ -26,6 +26,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label_collection = @Translation("Data Classifications"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_governance\Entity\DataClassificationAccessControlHandler",
  *   },
@@ -36,6 +37,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *     "label" = "entity_type_id",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/data-classifications",
+ *   },
+ *   field_ui_base_route = "entity.data_classification.settings",
  * )
  */
 class DataClassification extends ContentEntityBase implements DataClassificationInterface {

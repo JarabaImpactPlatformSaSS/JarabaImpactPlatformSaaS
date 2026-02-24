@@ -53,6 +53,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/structure/diagnostic-question/{diagnostic_question}/edit",
  *     "delete-form" = "/admin/structure/diagnostic-question/{diagnostic_question}/delete",
  *   },
+ *   field_ui_base_route = "entity.diagnostic_question.settings",
  * )
  */
 class DiagnosticQuestion extends ContentEntityBase

@@ -74,6 +74,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "edit-form" = "/admin/content/employability-diagnostic/{employability_diagnostic}/edit",
  *     "delete-form" = "/admin/content/employability-diagnostic/{employability_diagnostic}/delete",
  *   },
+ *   field_ui_base_route = "entity.employability_diagnostic.settings",
  * )
  */
 class EmployabilityDiagnostic extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {

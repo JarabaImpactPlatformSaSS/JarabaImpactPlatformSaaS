@@ -63,6 +63,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/kb-categories/{kb_category}/edit",
  *     "delete-form" = "/admin/content/kb-categories/{kb_category}/delete",
  *   },
+ *   field_ui_base_route = "entity.kb_category.settings",
  * )
  */
 class KbCategory extends ContentEntityBase implements EntityChangedInterface

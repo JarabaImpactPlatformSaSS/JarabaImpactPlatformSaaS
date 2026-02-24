@@ -57,6 +57,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "canonical" = "/admin/content/legal-query-logs/{legal_query_log}",
  *     "collection" = "/admin/content/legal-query-logs",
  *   },
+ *   field_ui_base_route = "entity.legal_query_log.settings",
  * )
  */
 class LegalQueryLog extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {

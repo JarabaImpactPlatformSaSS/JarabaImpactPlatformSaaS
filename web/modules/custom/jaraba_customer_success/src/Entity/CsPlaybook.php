@@ -63,6 +63,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "edit-form" = "/admin/content/playbooks/{cs_playbook}/edit",
  *     "delete-form" = "/admin/content/playbooks/{cs_playbook}/delete",
  *   },
+ *   field_ui_base_route = "entity.cs_playbook.settings",
  * )
  */
 class CsPlaybook extends ContentEntityBase {

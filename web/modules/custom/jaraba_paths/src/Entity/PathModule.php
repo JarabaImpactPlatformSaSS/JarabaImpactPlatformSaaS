@@ -47,6 +47,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/structure/path-module/{path_module}/edit",
  *     "delete-form" = "/admin/structure/path-module/{path_module}/delete",
  *   },
+ *   field_ui_base_route = "entity.path_module.settings",
  * )
  */
 class PathModule extends ContentEntityBase

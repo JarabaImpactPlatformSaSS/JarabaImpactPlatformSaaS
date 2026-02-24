@@ -50,6 +50,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/search-console-data",
  *   },
+ *   field_ui_base_route = "entity.search_console_data.settings",
  * )
  */
 class SearchConsoleData extends ContentEntityBase implements ContentEntityInterface {

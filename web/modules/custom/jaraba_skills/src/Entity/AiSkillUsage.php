@@ -35,6 +35,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/ai-skills/usage",
  *   },
+ *   field_ui_base_route = "entity.ai_skill_usage.settings",
  * )
  */
 class AiSkillUsage extends ContentEntityBase

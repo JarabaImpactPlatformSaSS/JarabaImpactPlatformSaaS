@@ -106,3 +106,19 @@ jaraba_social.api.makecom.webhook:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+entity.social_account.settings:
+  path: '/admin/structure/social-account/settings'
+  defaults:
+    _form: 'Drupal\jaraba_social\Form\SocialAccountSettingsForm'
+    _title: 'Social Account settings'
+  requirements:
+    _permission: 'administer social accounts'
+
+entity.social_post.settings:
+  path: '/admin/structure/social-post/settings'
+  defaults:
+    _form: 'Drupal\jaraba_social\Form\SocialPostSettingsForm'
+    _title: 'Social Post settings'
+  requirements:
+    _permission: 'administer social posts'

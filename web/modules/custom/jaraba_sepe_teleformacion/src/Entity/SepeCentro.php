@@ -49,6 +49,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/sepe-centros/{sepe_centro}/edit",
  *     "delete-form" = "/admin/content/sepe-centros/{sepe_centro}/delete",
  *   },
+ *   field_ui_base_route = "entity.sepe_centro.settings",
  * )
  */
 class SepeCentro extends ContentEntityBase

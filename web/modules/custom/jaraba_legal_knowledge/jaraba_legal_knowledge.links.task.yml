@@ -10,3 +10,23 @@ jaraba_legal_knowledge.sync:
   route_name: jaraba_legal_knowledge.sync
   base_route: jaraba_legal_knowledge.settings
   weight: 5
+
+entity.legal_chunk.settings_tab:
+  title: 'Settings'
+  route_name: entity.legal_chunk.settings
+  base_route: entity.legal_chunk.settings
+
+entity.legal_norm.settings_tab:
+  title: 'Settings'
+  route_name: entity.legal_norm.settings
+  base_route: entity.legal_norm.settings
+
+entity.legal_query_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.legal_query_log.settings
+  base_route: entity.legal_query_log.settings
+
+entity.norm_change_alert.settings_tab:
+  title: 'Settings'
+  route_name: entity.norm_change_alert.settings
+  base_route: entity.norm_change_alert.settings

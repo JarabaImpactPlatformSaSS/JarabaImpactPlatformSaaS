@@ -58,10 +58,12 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "langcode" = "langcode",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/tenant-product-enrichments",
  *     "add-form" = "/knowledge/products/add",
  *     "edit-form" = "/knowledge/products/{tenant_product_enrichment}/edit",
  *     "delete-form" = "/knowledge/products/{tenant_product_enrichment}/delete",
  *   },
+ *   field_ui_base_route = "entity.tenant_product_enrichment.settings",
  * )
  */
 class TenantProductEnrichment extends ContentEntityBase implements EntityChangedInterface

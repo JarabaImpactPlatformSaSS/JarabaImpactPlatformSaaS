@@ -52,6 +52,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "collection" = "/admin/foc/alerts",
  *     "canonical" = "/admin/foc/alert/{foc_alert}",
  *   },
+ *   field_ui_base_route = "entity.foc_alert.settings",
  * )
  */
 class FocAlert extends ContentEntityBase

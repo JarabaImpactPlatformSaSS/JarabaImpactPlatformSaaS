@@ -49,6 +49,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/sepe-acciones/{sepe_accion_formativa}/edit",
  *     "delete-form" = "/admin/content/sepe-acciones/{sepe_accion_formativa}/delete",
  *   },
+ *   field_ui_base_route = "entity.sepe_accion_formativa.settings",
  * )
  */
 class SepeAccionFormativa extends ContentEntityBase

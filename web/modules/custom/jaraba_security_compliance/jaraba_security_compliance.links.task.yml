@@ -27,3 +27,28 @@ jaraba_security_compliance.admin.settings:
   title: 'Configuración'
   base_route: jaraba_security_compliance.admin
   weight: 40
+
+entity.compliance_assessment_v2.settings_tab:
+  title: 'Settings'
+  route_name: entity.compliance_assessment_v2.settings
+  base_route: entity.compliance_assessment_v2.settings
+
+entity.ens_compliance.settings_tab:
+  title: 'Settings'
+  route_name: entity.ens_compliance.settings
+  base_route: entity.ens_compliance.settings
+
+entity.risk_assessment.settings_tab:
+  title: 'Settings'
+  route_name: entity.risk_assessment.settings
+  base_route: entity.risk_assessment.settings
+
+entity.security_audit_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.security_audit_log.settings
+  base_route: entity.security_audit_log.settings
+
+entity.security_policy_v2.settings_tab:
+  title: 'Settings'
+  route_name: entity.security_policy_v2.settings
+  base_route: entity.security_policy_v2.settings

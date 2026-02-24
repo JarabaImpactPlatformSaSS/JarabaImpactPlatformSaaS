@@ -65,6 +65,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "delete-form" = "/admin/structure/content-hub/categories/{content_category}/delete",
  *     "collection" = "/admin/structure/content-hub/categories",
  *   },
+ *   field_ui_base_route = "entity.content_category.settings",
  * )
  */
 class ContentCategory extends ContentEntityBase

@@ -53,6 +53,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/content/mobile-devices/{mobile_device}/delete",
  *     "collection" = "/admin/content/mobile-devices",
  *   },
+ *   field_ui_base_route = "entity.mobile_device.settings",
  * )
  */
 class MobileDevice extends ContentEntityBase implements MobileDeviceInterface, EntityChangedInterface, EntityOwnerInterface {

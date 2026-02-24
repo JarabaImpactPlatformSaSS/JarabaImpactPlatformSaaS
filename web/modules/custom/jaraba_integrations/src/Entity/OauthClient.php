@@ -57,6 +57,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "edit-form" = "/admin/structure/integrations/oauth/{oauth_client}/edit",
  *     "delete-form" = "/admin/structure/integrations/oauth/{oauth_client}/delete",
  *   },
+ *   field_ui_base_route = "entity.oauth_client.settings",
  * )
  */
 class OauthClient extends ContentEntityBase {

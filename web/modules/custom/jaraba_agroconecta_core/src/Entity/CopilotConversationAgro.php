@@ -48,6 +48,7 @@ use Drupal\ecosistema_jaraba_core\Trait\CopilotConversationTrait;
  *     "canonical" = "/admin/content/agro-copilot-conversations/{copilot_conversation_agro}",
  *     "collection" = "/admin/content/agro-copilot-conversations",
  *   },
+ *   field_ui_base_route = "entity.copilot_conversation_agro.settings",
  * )
  */
 class CopilotConversationAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface, CopilotConversationInterface

@@ -40,6 +40,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/agro-download-logs/{document_download_log}",
  *     "collection" = "/admin/content/agro-download-logs",
  *   },
+ *   field_ui_base_route = "entity.document_download_log.settings",
  * )
  */
 class DocumentDownloadLog extends ContentEntityBase

@@ -249,3 +249,29 @@ jaraba_messaging.api.export:
     _csrf_request_header_token: 'TRUE'
   options:
     _auth: ['jwt_auth', 'cookie']
+
+entity.conversation_participant.collection:
+  path: '/admin/content/conversation-participants'
+  defaults:
+    _entity_list: 'conversation_participant'
+    _title: 'Conversation Participants'
+  requirements:
+    _permission: 'administer site configuration'
+
+# Settings Routes (Field UI)
+
+entity.conversation_participant.settings:
+  path: '/admin/structure/conversation-participant/settings'
+  defaults:
+    _form: 'Drupal\jaraba_messaging\Form\ConversationParticipantSettingsForm'
+    _title: 'Conversation Participant settings'
+  requirements:
+    _permission: 'administer jaraba messaging'
+
+entity.secure_conversation.settings:
+  path: '/admin/structure/secure-conversation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_messaging\Form\SecureConversationSettingsForm'
+    _title: 'Secure Conversation settings'
+  requirements:
+    _permission: 'administer jaraba messaging'

@@ -309,3 +309,37 @@ jaraba_legal_billing.api.quotes.portal.pdf:
   requirements:
     _access: 'TRUE'
     token: '[a-zA-Z0-9]+'
+
+# --- Field UI Settings Routes ---
+
+entity.credit_note.settings:
+  path: '/admin/structure/credit-note/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_billing\Form\CreditNoteSettingsForm'
+    _title: 'Nota de Credito settings'
+  requirements:
+    _permission: 'administer billing'
+
+entity.invoice_line.settings:
+  path: '/admin/structure/invoice-line/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_billing\Form\InvoiceLineSettingsForm'
+    _title: 'Linea de Factura settings'
+  requirements:
+    _permission: 'administer billing'
+
+entity.quote_line_item.settings:
+  path: '/admin/structure/quote-line-item/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_billing\Form\QuoteLineItemSettingsForm'
+    _title: 'Linea de Presupuesto settings'
+  requirements:
+    _permission: 'administer billing'
+
+entity.service_catalog_item.settings:
+  path: '/admin/structure/service-catalog-item/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_billing\Form\ServiceCatalogItemSettingsForm'
+    _title: 'Servicio del Catalogo settings'
+  requirements:
+    _permission: 'administer billing'

@@ -59,6 +59,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/conversations/{secure_conversation}/edit",
  *     "delete-form" = "/admin/content/conversations/{secure_conversation}/delete",
  *   },
+ *   field_ui_base_route = "entity.secure_conversation.settings",
  * )
  */
 class SecureConversation extends ContentEntityBase implements SecureConversationInterface {

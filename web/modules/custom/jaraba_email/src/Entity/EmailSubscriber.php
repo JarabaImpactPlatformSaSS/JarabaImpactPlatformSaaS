@@ -78,6 +78,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "delete-form" = "/admin/jaraba/email/subscribers/{email_subscriber}/delete",
  *     "collection" = "/admin/jaraba/email/subscribers",
  *   },
+ *   field_ui_base_route = "entity.email_subscriber.settings",
  * )
  */
 class EmailSubscriber extends ContentEntityBase

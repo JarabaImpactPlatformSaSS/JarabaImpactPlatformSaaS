@@ -48,6 +48,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/appearance/theme-configs/{tenant_theme_config}/edit",
  *     "delete-form" = "/admin/appearance/theme-configs/{tenant_theme_config}/delete",
  *   },
+ *   field_ui_base_route = "entity.tenant_theme_config.settings",
  * )
  */
 class TenantThemeConfig extends ContentEntityBase

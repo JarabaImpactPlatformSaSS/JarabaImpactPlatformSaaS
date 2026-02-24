@@ -58,6 +58,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "canonical" = "/admin/content/document-deliveries/{document_delivery}",
  *     "delete-form" = "/admin/content/document-deliveries/{document_delivery}/delete",
  *   },
+ *   field_ui_base_route = "entity.document_delivery.settings",
  * )
  */
 class DocumentDelivery extends ContentEntityBase {

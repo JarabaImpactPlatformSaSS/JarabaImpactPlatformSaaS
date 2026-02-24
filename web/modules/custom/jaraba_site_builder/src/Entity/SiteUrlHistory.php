@@ -33,6 +33,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *   },
  *   admin_permission = "administer site structure",
+ *   links = {
+ *     "collection" = "/admin/content/site-url-history",
+ *   },
+ *   field_ui_base_route = "entity.site_url_history.settings",
  * )
  */
 class SiteUrlHistory extends ContentEntityBase

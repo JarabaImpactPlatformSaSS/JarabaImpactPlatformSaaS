@@ -56,6 +56,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/email-templates/{whitelabel_email_template}/edit",
  *     "delete-form" = "/admin/content/email-templates/{whitelabel_email_template}/delete",
  *   },
+ *   field_ui_base_route = "entity.whitelabel_email_template.settings",
  * )
  */
 class WhitelabelEmailTemplate extends ContentEntityBase {

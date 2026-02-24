@@ -53,6 +53,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "delete-form" = "/admin/content/social-posts/{social_post}/delete",
  *     "collection" = "/admin/content/social-posts",
  *   },
+ *   field_ui_base_route = "entity.social_post.settings",
  * )
  */
 class SocialPost extends ContentEntityBase

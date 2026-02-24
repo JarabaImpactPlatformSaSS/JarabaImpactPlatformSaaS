@@ -44,6 +44,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "edit-form" = "/admin/config/system/scheduled-reports/{scheduled_report}/edit",
  *     "delete-form" = "/admin/config/system/scheduled-reports/{scheduled_report}/delete",
  *   },
+ *   field_ui_base_route = "entity.scheduled_report.settings",
  * )
  */
 class ScheduledReport extends ContentEntityBase

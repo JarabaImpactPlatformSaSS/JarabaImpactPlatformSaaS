@@ -233,3 +233,29 @@ jaraba_legal_vault.api.portal.activity:
   requirements:
     _access: 'TRUE'
     token: '[a-zA-Z0-9]+'
+
+# --- Settings Routes (Field UI) for additional entities ---
+
+entity.document_access.settings:
+  path: '/admin/structure/document-access/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_vault\Form\DocumentAccessSettingsForm'
+    _title: 'Acceso a Documento settings'
+  requirements:
+    _permission: 'administer vault'
+
+entity.document_audit_log.settings:
+  path: '/admin/structure/document-audit-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_vault\Form\DocumentAuditLogSettingsForm'
+    _title: 'Log de Auditoria Documental settings'
+  requirements:
+    _permission: 'administer vault'
+
+entity.document_delivery.settings:
+  path: '/admin/structure/document-delivery/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_vault\Form\DocumentDeliverySettingsForm'
+    _title: 'Entrega de Documento settings'
+  requirements:
+    _permission: 'administer vault'

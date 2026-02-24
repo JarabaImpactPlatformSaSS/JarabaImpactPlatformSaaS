@@ -25,6 +25,7 @@ use Drupal\user\EntityOwnerTrait;
  *   label_singular = @Translation("conexion de calendario"),
  *   label_plural = @Translation("conexiones de calendario"),
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "form" = {
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
@@ -43,8 +44,10 @@ use Drupal\user\EntityOwnerTrait;
  *     "owner" = "provider_id",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/calendar-connections",
  *     "delete-form" = "/admin/content/calendar-connections/{calendar_connection}/delete",
  *   },
+ *   field_ui_base_route = "entity.calendar_connection.settings",
  * )
  */
 class CalendarConnection extends ContentEntityBase implements EntityOwnerInterface {

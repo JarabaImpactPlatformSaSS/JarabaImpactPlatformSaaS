@@ -37,3 +37,13 @@ jaraba_content_hub.article_settings:
   title: 'Article Settings'
   route_name: entity.content_article.settings
   base_route: entity.content_article.settings
+
+entity.ai_generation_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.ai_generation_log.settings
+  base_route: entity.ai_generation_log.settings
+
+entity.content_category.settings_tab:
+  title: 'Settings'
+  route_name: entity.content_category.settings
+  base_route: entity.content_category.settings

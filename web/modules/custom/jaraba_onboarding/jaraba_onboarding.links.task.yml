@@ -7,3 +7,13 @@ jaraba_onboarding.onboarding_template.settings:
   title: 'Configuracion'
   route_name: jaraba_onboarding.onboarding_template.settings
   base_route: jaraba_onboarding.onboarding_template.settings
+
+entity.tenant_onboarding_progress.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_onboarding_progress.settings
+  base_route: entity.tenant_onboarding_progress.settings
+
+entity.user_onboarding_progress.settings_tab:
+  title: 'Settings'
+  route_name: entity.user_onboarding_progress.settings
+  base_route: entity.user_onboarding_progress.settings

@@ -68,6 +68,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "edit-form" = "/admin/content/service-catalog/{service_catalog_item}/edit",
  *     "delete-form" = "/admin/content/service-catalog/{service_catalog_item}/delete",
  *   },
+ *   field_ui_base_route = "entity.service_catalog_item.settings",
  * )
  */
 class ServiceCatalogItem extends ContentEntityBase implements EntityOwnerInterface {

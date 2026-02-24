@@ -16,12 +16,17 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label = @Translation("Sesión de Negociación"),
  *   base_table = "negotiation_session",
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
+ *   },
+ *   links = {
+ *     "collection" = "/admin/content/negotiation-sessions",
  *   },
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
- *   }
+ *   },
+ *   field_ui_base_route = "entity.negotiation_session.settings",
  * )
  */
 class NegotiationSession extends ContentEntityBase {

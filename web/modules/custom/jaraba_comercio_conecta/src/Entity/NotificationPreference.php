@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-notification-pref/{comercio_notification_pref}",
  *     "collection" = "/admin/content/comercio-notification-prefs",
  *   },
+ *   field_ui_base_route = "entity.comercio_notification_pref.settings",
  * )
  */
 class NotificationPreference extends ContentEntityBase {

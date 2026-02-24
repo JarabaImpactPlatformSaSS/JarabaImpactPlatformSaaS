@@ -82,3 +82,12 @@ jaraba_journey.settings:
   options:
     _admin_route: TRUE
 
+# Field UI Settings Routes
+entity.journey_state.settings:
+  path: '/admin/structure/journey-state/settings'
+  defaults:
+    _form: 'Drupal\jaraba_journey\Form\JourneyStateSettingsForm'
+    _title: 'Journey State settings'
+  requirements:
+    _permission: 'administer journey states'
+

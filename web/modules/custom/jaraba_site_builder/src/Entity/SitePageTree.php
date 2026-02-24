@@ -44,7 +44,9 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "add-form" = "/admin/structure/site-builder/tree/add",
  *     "edit-form" = "/admin/structure/site-builder/tree/{site_page_tree}/edit",
  *     "delete-form" = "/admin/structure/site-builder/tree/{site_page_tree}/delete",
+ *     "collection" = "/admin/content/site-page-tree",
  *   },
+ *   field_ui_base_route = "entity.site_page_tree.settings",
  * )
  */
 class SitePageTree extends ContentEntityBase

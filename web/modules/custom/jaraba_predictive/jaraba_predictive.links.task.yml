@@ -38,3 +38,13 @@ jaraba_predictive.forecast.settings_tab:
   route_name: jaraba_predictive.forecast.settings
   base_route: entity.forecast.collection
   weight: 100
+
+entity.churn_prediction.settings_tab:
+  title: 'Settings'
+  route_name: entity.churn_prediction.settings
+  base_route: entity.churn_prediction.settings
+
+entity.forecast.settings_tab:
+  title: 'Settings'
+  route_name: entity.forecast.settings
+  base_route: entity.forecast.settings

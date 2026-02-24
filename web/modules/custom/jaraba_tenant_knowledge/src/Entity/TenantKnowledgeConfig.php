@@ -53,8 +53,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "label" = "business_name",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/tenant-knowledge-config",
  *     "edit-form" = "/knowledge/config/{tenant_knowledge_config}/edit",
  *   },
+ *   field_ui_base_route = "entity.tenant_knowledge_config.settings",
  * )
  */
 class TenantKnowledgeConfig extends ContentEntityBase implements EntityChangedInterface

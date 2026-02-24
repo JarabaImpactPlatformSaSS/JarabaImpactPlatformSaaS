@@ -2,3 +2,13 @@ jaraba_mobile.settings:
   title: 'Settings'
   route_name: jaraba_mobile.settings
   base_route: jaraba_mobile.settings
+
+entity.mobile_device.settings_tab:
+  title: 'Settings'
+  route_name: entity.mobile_device.settings
+  base_route: entity.mobile_device.settings
+
+entity.push_notification.settings_tab:
+  title: 'Settings'
+  route_name: entity.push_notification.settings
+  base_route: entity.push_notification.settings

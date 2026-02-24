@@ -66,6 +66,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/foc/transaction/{financial_transaction}",
  *     "add-form" = "/admin/foc/transaction/add",
  *   },
+ *   field_ui_base_route = "entity.financial_transaction.settings",
  * )
  */
 class FinancialTransaction extends ContentEntityBase implements FinancialTransactionInterface

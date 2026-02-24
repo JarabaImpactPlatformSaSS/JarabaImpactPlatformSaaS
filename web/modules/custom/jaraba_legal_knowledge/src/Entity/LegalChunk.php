@@ -52,6 +52,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/legal-chunks/{legal_chunk}",
  *     "collection" = "/admin/content/legal-chunks",
  *   },
+ *   field_ui_base_route = "entity.legal_chunk.settings",
  * )
  */
 class LegalChunk extends ContentEntityBase implements EntityChangedInterface {

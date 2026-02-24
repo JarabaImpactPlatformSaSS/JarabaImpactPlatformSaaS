@@ -1,0 +1,54 @@
+entity.impersonation_audit_log.collection:
+  title: 'Impersonation Audit Log'
+  route_name: entity.impersonation_audit_log.collection
+  base_route: system.admin_content
+
+entity.alert_rule.settings_tab:
+  title: 'Settings'
+  route_name: entity.alert_rule.settings
+  base_route: entity.alert_rule.settings
+
+entity.audit_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.audit_log.settings
+  base_route: entity.audit_log.settings
+
+entity.badge.settings_tab:
+  title: 'Settings'
+  route_name: entity.badge.settings
+  base_route: entity.badge.settings
+
+entity.badge_award.settings_tab:
+  title: 'Settings'
+  route_name: entity.badge_award.settings
+  base_route: entity.badge_award.settings
+
+entity.compliance_assessment.settings_tab:
+  title: 'Settings'
+  route_name: entity.compliance_assessment.settings
+  base_route: entity.compliance_assessment.settings
+
+entity.impersonation_audit_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.impersonation_audit_log.settings
+  base_route: entity.impersonation_audit_log.settings
+
+entity.push_subscription.settings_tab:
+  title: 'Settings'
+  route_name: entity.push_subscription.settings
+  base_route: entity.push_subscription.settings
+
+entity.reseller.settings_tab:
+  title: 'Settings'
+  route_name: entity.reseller.settings
+  base_route: entity.reseller.settings
+
+entity.scheduled_report.settings_tab:
+  title: 'Settings'
+  route_name: entity.scheduled_report.settings
+  base_route: entity.scheduled_report.settings
+
+entity.security_policy.settings_tab:
+  title: 'Settings'
+  route_name: entity.security_policy.settings
+  base_route: entity.security_policy.settings

@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-cart-item/{comercio_cart_item}",
  *     "collection" = "/admin/content/comercio-cart-items",
  *   },
+ *   field_ui_base_route = "entity.comercio_cart_item.settings",
  * )
  */
 class CartItem extends ContentEntityBase {

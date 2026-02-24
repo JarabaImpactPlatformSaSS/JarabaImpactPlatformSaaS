@@ -28,10 +28,14 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   },
  *   base_table = "impersonation_audit_log",
  *   admin_permission = "administer impersonation",
+ *   links = {
+ *     "collection" = "/admin/content/impersonation-audit-log",
+ *   },
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   field_ui_base_route = "entity.impersonation_audit_log.settings",
  * )
  */
 class ImpersonationAuditLog extends ContentEntityBase

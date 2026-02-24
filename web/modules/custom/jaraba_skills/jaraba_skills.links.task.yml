@@ -4,3 +4,23 @@ entity.ai_skill.collection:
   route_name: entity.ai_skill.collection
   base_route: system.admin_content
   weight: 25
+
+entity.ai_skill_embedding.collection:
+  title: 'AI Skill Embeddings'
+  route_name: entity.ai_skill_embedding.collection
+  base_route: system.admin_content
+
+entity.ai_skill_embedding.settings_tab:
+  title: 'Settings'
+  route_name: entity.ai_skill_embedding.settings
+  base_route: entity.ai_skill_embedding.settings
+
+entity.ai_skill_revision.settings_tab:
+  title: 'Settings'
+  route_name: entity.ai_skill_revision.settings
+  base_route: entity.ai_skill_revision.settings
+
+entity.ai_skill_usage.settings_tab:
+  title: 'Settings'
+  route_name: entity.ai_skill_usage.settings
+  base_route: entity.ai_skill_usage.settings

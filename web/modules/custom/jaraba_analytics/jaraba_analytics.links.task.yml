@@ -1,0 +1,44 @@
+entity.analytics_daily.collection:
+  title: 'Analytics Daily'
+  route_name: entity.analytics_daily.collection
+  base_route: system.admin_content
+
+entity.analytics_event.collection:
+  title: 'Analytics Events'
+  route_name: entity.analytics_event.collection
+  base_route: system.admin_content
+
+entity.analytics_daily.settings_tab:
+  title: 'Settings'
+  route_name: entity.analytics_daily.settings
+  base_route: entity.analytics_daily.settings
+
+entity.analytics_event.settings_tab:
+  title: 'Settings'
+  route_name: entity.analytics_event.settings
+  base_route: entity.analytics_event.settings
+
+entity.cohort_definition.settings_tab:
+  title: 'Settings'
+  route_name: entity.cohort_definition.settings
+  base_route: entity.cohort_definition.settings
+
+entity.custom_report.settings_tab:
+  title: 'Settings'
+  route_name: entity.custom_report.settings
+  base_route: entity.custom_report.settings
+
+entity.dashboard_widget.settings_tab:
+  title: 'Settings'
+  route_name: entity.dashboard_widget.settings
+  base_route: entity.dashboard_widget.settings
+
+entity.funnel_definition.settings_tab:
+  title: 'Settings'
+  route_name: entity.funnel_definition.settings
+  base_route: entity.funnel_definition.settings
+
+entity.scheduled_report.settings_tab:
+  title: 'Settings'
+  route_name: entity.scheduled_report.settings
+  base_route: entity.scheduled_report.settings

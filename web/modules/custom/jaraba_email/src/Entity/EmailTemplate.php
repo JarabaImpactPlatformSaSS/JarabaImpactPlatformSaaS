@@ -75,6 +75,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/jaraba/email/templates/{email_template}/delete",
  *     "collection" = "/admin/jaraba/email/templates",
  *   },
+ *   field_ui_base_route = "entity.email_template.settings",
  * )
  */
 class EmailTemplate extends ContentEntityBase implements EntityOwnerInterface

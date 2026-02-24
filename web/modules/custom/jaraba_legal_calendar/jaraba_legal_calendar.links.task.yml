@@ -15,3 +15,33 @@ jaraba_legal_calendar.settings_tab:
   route_name: jaraba_legal_calendar.settings
   base_route: jaraba_legal_calendar.settings
   weight: 0
+
+entity.calendar_connection.collection:
+  title: 'Calendar Connections'
+  route_name: entity.calendar_connection.collection
+  base_route: system.admin_content
+
+entity.external_event_cache.collection:
+  title: 'External Event Cache'
+  route_name: entity.external_event_cache.collection
+  base_route: system.admin_content
+
+entity.synced_calendar.collection:
+  title: 'Synced Calendars'
+  route_name: entity.synced_calendar.collection
+  base_route: system.admin_content
+
+entity.calendar_connection.settings_tab:
+  title: 'Settings'
+  route_name: entity.calendar_connection.settings
+  base_route: entity.calendar_connection.settings
+
+entity.external_event_cache.settings_tab:
+  title: 'Settings'
+  route_name: entity.external_event_cache.settings
+  base_route: entity.external_event_cache.settings
+
+entity.synced_calendar.settings_tab:
+  title: 'Settings'
+  route_name: entity.synced_calendar.settings
+  base_route: entity.synced_calendar.settings

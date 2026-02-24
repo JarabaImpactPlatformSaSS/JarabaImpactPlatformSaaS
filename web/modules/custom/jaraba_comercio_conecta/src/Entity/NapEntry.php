@@ -52,6 +52,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/comercio-nap-entries",
  *   },
+ *   field_ui_base_route = "entity.comercio_nap_entry.settings",
  * )
  */
 class NapEntry extends ContentEntityBase implements EntityChangedInterface {

@@ -45,3 +45,23 @@ entity.financial_projection.settings_tab:
   route_name: entity.financial_projection.settings
   base_route: entity.financial_projection.settings
   weight: -10
+
+entity.canvas_block.collection:
+  title: 'Canvas Blocks'
+  route_name: entity.canvas_block.collection
+  base_route: system.admin_content
+
+entity.canvas_version.collection:
+  title: 'Canvas Versions'
+  route_name: entity.canvas_version.collection
+  base_route: system.admin_content
+
+entity.canvas_block.settings_tab:
+  title: 'Settings'
+  route_name: entity.canvas_block.settings
+  base_route: entity.canvas_block.settings
+
+entity.canvas_version.settings_tab:
+  title: 'Settings'
+  route_name: entity.canvas_version.settings
+  base_route: entity.canvas_version.settings

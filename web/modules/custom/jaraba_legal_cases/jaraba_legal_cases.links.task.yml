@@ -16,3 +16,13 @@ jaraba_legal_cases.client_inquiry.collection:
   route_name: entity.client_inquiry.collection
   base_route: system.admin_content
   weight: 71
+
+entity.case_activity.settings_tab:
+  title: 'Settings'
+  route_name: entity.case_activity.settings
+  base_route: entity.case_activity.settings
+
+entity.inquiry_triage.settings_tab:
+  title: 'Settings'
+  route_name: entity.inquiry_triage.settings
+  base_route: entity.inquiry_triage.settings

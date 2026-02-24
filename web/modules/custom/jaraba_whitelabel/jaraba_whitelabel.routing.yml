@@ -95,3 +95,35 @@ jaraba_whitelabel.api.add_domain:
     _permission: 'manage custom domains'
   options:
     no_cache: TRUE
+
+entity.custom_domain.settings:
+  path: '/admin/structure/custom-domain/settings'
+  defaults:
+    _form: 'Drupal\jaraba_whitelabel\Form\CustomDomainSettingsForm'
+    _title: 'Custom Domain settings'
+  requirements:
+    _permission: 'administer whitelabel'
+
+entity.whitelabel_config.settings:
+  path: '/admin/structure/whitelabel-config/settings'
+  defaults:
+    _form: 'Drupal\jaraba_whitelabel\Form\WhitelabelConfigSettingsForm'
+    _title: 'Whitelabel Config settings'
+  requirements:
+    _permission: 'administer whitelabel'
+
+entity.whitelabel_email_template.settings:
+  path: '/admin/structure/whitelabel-email-template/settings'
+  defaults:
+    _form: 'Drupal\jaraba_whitelabel\Form\WhitelabelEmailTemplateSettingsForm'
+    _title: 'Whitelabel Email Template settings'
+  requirements:
+    _permission: 'administer whitelabel'
+
+entity.whitelabel_reseller.settings:
+  path: '/admin/structure/whitelabel-reseller/settings'
+  defaults:
+    _form: 'Drupal\jaraba_whitelabel\Form\WhitelabelResellerSettingsForm'
+    _title: 'Whitelabel Reseller settings'
+  requirements:
+    _permission: 'administer whitelabel'

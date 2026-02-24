@@ -26,3 +26,18 @@ jaraba_integrations.settings_tab:
   route_name: jaraba_integrations.settings
   base_route: jaraba_integrations.admin_dashboard
   weight: 20
+
+entity.connector_installation.settings_tab:
+  title: 'Settings'
+  route_name: entity.connector_installation.settings
+  base_route: entity.connector_installation.settings
+
+entity.oauth_client.settings_tab:
+  title: 'Settings'
+  route_name: entity.oauth_client.settings
+  base_route: entity.oauth_client.settings
+
+entity.webhook_subscription.settings_tab:
+  title: 'Settings'
+  route_name: entity.webhook_subscription.settings
+  base_route: entity.webhook_subscription.settings

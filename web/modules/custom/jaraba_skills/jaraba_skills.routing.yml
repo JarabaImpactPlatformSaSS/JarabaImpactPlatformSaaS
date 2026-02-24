@@ -200,4 +200,34 @@ jaraba_skills.api.compare:
     _permission: 'view ai skills'
   methods: [GET]
 
+entity.ai_skill_embedding.collection:
+  path: '/admin/content/ai-skill-embeddings'
+  defaults:
+    _entity_list: 'ai_skill_embedding'
+    _title: 'AI Skill Embeddings'
+  requirements:
+    _permission: 'administer site configuration'
 
+entity.ai_skill_embedding.settings:
+  path: '/admin/structure/ai-skill-embedding/settings'
+  defaults:
+    _form: 'Drupal\jaraba_skills\Form\AiSkillEmbeddingSettingsForm'
+    _title: 'Embedding de Habilidad IA settings'
+  requirements:
+    _permission: 'administer ai skills'
+
+entity.ai_skill_revision.settings:
+  path: '/admin/structure/ai-skill-revision/settings'
+  defaults:
+    _form: 'Drupal\jaraba_skills\Form\AiSkillRevisionSettingsForm'
+    _title: 'Revision de Habilidad IA settings'
+  requirements:
+    _permission: 'administer ai skills'
+
+entity.ai_skill_usage.settings:
+  path: '/admin/structure/ai-skill-usage/settings'
+  defaults:
+    _form: 'Drupal\jaraba_skills\Form\AiSkillUsageSettingsForm'
+    _title: 'Uso de Habilidad IA settings'
+  requirements:
+    _permission: 'administer ai skills'

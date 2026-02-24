@@ -54,6 +54,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "add-form" = "/admin/content/experiments/{page_experiment}/variants/add",
  *     "edit-form" = "/admin/content/experiments/{page_experiment}/variants/{experiment_variant}/edit",
  *     "delete-form" = "/admin/content/experiments/{page_experiment}/variants/{experiment_variant}/delete",
+ *     "collection" = "/admin/content/experiment-variants",
  *   },
  * )
  */

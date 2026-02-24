@@ -98,6 +98,15 @@ entity.life_timeline.canonical:
   requirements:
     _permission: 'administer self discovery'
 
+# Settings para Field UI
+entity.life_timeline.settings:
+  path: '/admin/structure/life-timeline/settings'
+  defaults:
+    _form: '\Drupal\jaraba_self_discovery\Form\LifeTimelineSettingsForm'
+    _title: 'Life Timeline settings'
+  requirements:
+    _permission: 'administer self discovery'
+
 # ============================================
 # INTEREST PROFILE (RIASEC)
 # ============================================

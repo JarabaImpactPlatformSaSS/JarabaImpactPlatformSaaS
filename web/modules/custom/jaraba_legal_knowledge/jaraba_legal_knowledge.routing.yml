@@ -92,3 +92,37 @@ jaraba_legal_knowledge.api.iva:
   requirements:
     _permission: 'use legal calculators'
   methods: [POST]
+
+# --- Field UI Settings Routes ---
+
+entity.legal_chunk.settings:
+  path: '/admin/structure/legal-chunk/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_knowledge\Form\LegalChunkSettingsForm'
+    _title: 'Legal Chunk settings'
+  requirements:
+    _permission: 'administer legal knowledge'
+
+entity.legal_norm.settings:
+  path: '/admin/structure/legal-norm/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_knowledge\Form\LegalNormSettingsForm'
+    _title: 'Legal Norm settings'
+  requirements:
+    _permission: 'administer legal knowledge'
+
+entity.legal_query_log.settings:
+  path: '/admin/structure/legal-query-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_knowledge\Form\LegalQueryLogSettingsForm'
+    _title: 'Legal Query Log settings'
+  requirements:
+    _permission: 'administer legal knowledge'
+
+entity.norm_change_alert.settings:
+  path: '/admin/structure/norm-change-alert/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_knowledge\Form\NormChangeAlertSettingsForm'
+    _title: 'Norm Change Alert settings'
+  requirements:
+    _permission: 'administer legal knowledge'

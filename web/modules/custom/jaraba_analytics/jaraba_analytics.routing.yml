@@ -395,3 +395,75 @@ jaraba_analytics.api.programa.reports.generate:
     _permission: 'generate institutional reports'
     _csrf_token: 'TRUE'
 
+entity.analytics_daily.collection:
+  path: '/admin/content/analytics-daily'
+  defaults:
+    _entity_list: 'analytics_daily'
+    _title: 'Analytics Daily'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.analytics_event.collection:
+  path: '/admin/content/analytics-events'
+  defaults:
+    _entity_list: 'analytics_event'
+    _title: 'Analytics Events'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.analytics_daily.settings:
+  path: '/admin/structure/analytics-daily/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\AnalyticsDailySettingsForm'
+    _title: 'Analytics Daily settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.analytics_event.settings:
+  path: '/admin/structure/analytics-event/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\AnalyticsEventSettingsForm'
+    _title: 'Analytics Event settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.cohort_definition.settings:
+  path: '/admin/structure/cohort-definition/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\CohortDefinitionSettingsForm'
+    _title: 'Cohort Definition settings'
+  requirements:
+    _permission: 'administer jaraba analytics'
+
+entity.custom_report.settings:
+  path: '/admin/structure/custom-report/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\CustomReportSettingsForm'
+    _title: 'Informe Personalizado settings'
+  requirements:
+    _permission: 'administer jaraba analytics'
+
+entity.dashboard_widget.settings:
+  path: '/admin/structure/dashboard-widget/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\DashboardWidgetSettingsForm'
+    _title: 'Dashboard Widget settings'
+  requirements:
+    _permission: 'administer jaraba analytics'
+
+entity.funnel_definition.settings:
+  path: '/admin/structure/funnel-definition/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\FunnelDefinitionSettingsForm'
+    _title: 'Funnel Definition settings'
+  requirements:
+    _permission: 'administer jaraba analytics'
+
+entity.scheduled_report.settings:
+  path: '/admin/structure/scheduled-report/settings'
+  defaults:
+    _form: 'Drupal\jaraba_analytics\Form\ScheduledReportSettingsForm'
+    _title: 'Scheduled Report settings'
+  requirements:
+    _permission: 'administer jaraba analytics'
+

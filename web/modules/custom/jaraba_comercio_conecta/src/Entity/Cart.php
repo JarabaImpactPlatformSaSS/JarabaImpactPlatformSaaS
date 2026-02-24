@@ -46,6 +46,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/content/comercio-cart/{comercio_cart}/delete",
  *     "collection" = "/admin/content/comercio-carts",
  *   },
+ *   field_ui_base_route = "entity.comercio_cart.settings",
  * )
  */
 class Cart extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {

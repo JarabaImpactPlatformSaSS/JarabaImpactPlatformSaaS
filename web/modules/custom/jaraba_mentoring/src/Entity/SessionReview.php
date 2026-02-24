@@ -24,6 +24,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "form" = {
  *       "default" = "Drupal\Core\Entity\ContentEntityForm",
  *     },
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "session_review",
@@ -32,6 +33,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/session-reviews",
+ *   },
+ *   field_ui_base_route = "entity.session_review.settings",
  * )
  */
 class SessionReview extends ContentEntityBase

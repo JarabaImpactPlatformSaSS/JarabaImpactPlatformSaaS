@@ -398,4 +398,35 @@ jaraba_business_tools.api.agent_rating:
   requirements:
     _permission: 'access content'
 
+entity.canvas_block.collection:
+  path: '/admin/content/canvas-blocks'
+  defaults:
+    _entity_list: 'canvas_block'
+    _title: 'Canvas Blocks'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.canvas_version.collection:
+  path: '/admin/content/canvas-versions'
+  defaults:
+    _entity_list: 'canvas_version'
+    _title: 'Canvas Versions'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.canvas_block.settings:
+  path: '/admin/structure/canvas-block/settings'
+  defaults:
+    _form: 'Drupal\jaraba_business_tools\Form\CanvasBlockSettingsForm'
+    _title: 'Canvas Block settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.canvas_version.settings:
+  path: '/admin/structure/canvas-version/settings'
+  defaults:
+    _form: 'Drupal\jaraba_business_tools\Form\CanvasVersionSettingsForm'
+    _title: 'Canvas Version settings'
+  requirements:
+    _permission: 'administer site configuration'
 

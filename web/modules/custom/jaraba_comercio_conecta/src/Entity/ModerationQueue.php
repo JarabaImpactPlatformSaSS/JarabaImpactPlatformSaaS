@@ -36,6 +36,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-moderation-queue/{comercio_moderation_queue}",
  *     "collection" = "/admin/content/comercio-moderation-queue",
  *   },
+ *   field_ui_base_route = "entity.comercio_moderation_queue.settings",
  * )
  */
 class ModerationQueue extends ContentEntityBase implements EntityChangedInterface {

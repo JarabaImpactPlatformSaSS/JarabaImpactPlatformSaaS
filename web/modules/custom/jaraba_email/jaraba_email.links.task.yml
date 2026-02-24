@@ -1,0 +1,24 @@
+entity.email_campaign.settings_tab:
+  title: 'Settings'
+  route_name: entity.email_campaign.settings
+  base_route: entity.email_campaign.settings
+
+entity.email_list.settings_tab:
+  title: 'Settings'
+  route_name: entity.email_list.settings
+  base_route: entity.email_list.settings
+
+entity.email_sequence.settings_tab:
+  title: 'Settings'
+  route_name: entity.email_sequence.settings
+  base_route: entity.email_sequence.settings
+
+entity.email_subscriber.settings_tab:
+  title: 'Settings'
+  route_name: entity.email_subscriber.settings
+  base_route: entity.email_subscriber.settings
+
+entity.email_template.settings_tab:
+  title: 'Settings'
+  route_name: entity.email_template.settings
+  base_route: entity.email_template.settings

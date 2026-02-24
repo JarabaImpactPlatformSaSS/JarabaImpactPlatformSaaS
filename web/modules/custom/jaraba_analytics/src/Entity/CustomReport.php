@@ -69,6 +69,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/analytics/reports/{custom_report}/edit",
  *     "delete-form" = "/admin/analytics/reports/{custom_report}/delete",
  *   },
+ *   field_ui_base_route = "entity.custom_report.settings",
  * )
  */
 class CustomReport extends ContentEntityBase {

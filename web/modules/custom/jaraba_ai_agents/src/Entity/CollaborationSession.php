@@ -60,6 +60,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/config/ai/collaboration-sessions/{collaboration_session}",
  *     "delete-form" = "/admin/config/ai/collaboration-sessions/{collaboration_session}/delete",
  *   },
+ *   field_ui_base_route = "entity.collaboration_session.settings",
  * )
  */
 class CollaborationSession extends ContentEntityBase implements EntityChangedInterface {

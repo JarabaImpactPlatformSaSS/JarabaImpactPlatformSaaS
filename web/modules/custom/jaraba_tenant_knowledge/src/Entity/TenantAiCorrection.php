@@ -64,10 +64,12 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "langcode" = "langcode",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/tenant-ai-corrections",
  *     "add-form" = "/knowledge/corrections/add",
  *     "edit-form" = "/knowledge/corrections/{tenant_ai_correction}/edit",
  *     "delete-form" = "/knowledge/corrections/{tenant_ai_correction}/delete",
  *   },
+ *   field_ui_base_route = "entity.tenant_ai_correction.settings",
  * )
  */
 class TenantAiCorrection extends ContentEntityBase implements EntityChangedInterface

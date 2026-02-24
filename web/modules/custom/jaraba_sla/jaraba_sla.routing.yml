@@ -72,3 +72,43 @@ jaraba_sla.status_page:
     _title: 'System Status'
   requirements:
     _access: 'TRUE'
+
+entity.sla_incident.collection:
+  path: '/admin/content/sla-incidents'
+  defaults:
+    _entity_list: 'sla_incident'
+    _title: 'SLA Incidents'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.sla_measurement.collection:
+  path: '/admin/content/sla-measurements'
+  defaults:
+    _entity_list: 'sla_measurement'
+    _title: 'SLA Measurements'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.sla_agreement.settings:
+  path: '/admin/structure/sla-agreement/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sla\Form\SlaAgreementSettingsForm'
+    _title: 'SLA Agreement settings'
+  requirements:
+    _permission: 'administer sla'
+
+entity.sla_incident.settings:
+  path: '/admin/structure/sla-incident/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sla\Form\SlaIncidentSettingsForm'
+    _title: 'SLA Incident settings'
+  requirements:
+    _permission: 'administer sla'
+
+entity.sla_measurement.settings:
+  path: '/admin/structure/sla-measurement/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sla\Form\SlaMeasurementSettingsForm'
+    _title: 'SLA Measurement settings'
+  requirements:
+    _permission: 'administer sla'

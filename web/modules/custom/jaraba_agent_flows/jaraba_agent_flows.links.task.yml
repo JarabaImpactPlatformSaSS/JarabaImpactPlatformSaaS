@@ -12,3 +12,13 @@ jaraba_agent_flows.settings:
   title: 'Configuracion'
   route_name: jaraba_agent_flows.settings
   base_route: jaraba_agent_flows.settings
+
+entity.agent_flow_execution.settings_tab:
+  title: 'Settings'
+  route_name: entity.agent_flow_execution.settings
+  base_route: entity.agent_flow_execution.settings
+
+entity.agent_flow_step_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.agent_flow_step_log.settings
+  base_route: entity.agent_flow_step_log.settings

@@ -44,6 +44,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/agent-flow-step-logs",
  *   },
+ *   field_ui_base_route = "entity.agent_flow_step_log.settings",
  * )
  */
 class AgentFlowStepLog extends ContentEntityBase {

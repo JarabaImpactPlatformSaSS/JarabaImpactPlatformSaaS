@@ -56,3 +56,38 @@ entity.mentoring_session.settings_tab:
   route_name: entity.mentoring_session.settings
   base_route: entity.mentoring_session.settings
   weight: -10
+
+entity.session_notes.collection:
+  title: 'Session Notes'
+  route_name: entity.session_notes.collection
+  base_route: system.admin_content
+
+entity.session_review.collection:
+  title: 'Session Reviews'
+  route_name: entity.session_review.collection
+  base_route: system.admin_content
+
+entity.session_task.collection:
+  title: 'Session Tasks'
+  route_name: entity.session_task.collection
+  base_route: system.admin_content
+
+entity.availability_slot.settings_tab:
+  title: 'Settings'
+  route_name: entity.availability_slot.settings
+  base_route: entity.availability_slot.settings
+
+entity.session_notes.settings_tab:
+  title: 'Settings'
+  route_name: entity.session_notes.settings
+  base_route: entity.session_notes.settings
+
+entity.session_review.settings_tab:
+  title: 'Settings'
+  route_name: entity.session_review.settings
+  base_route: entity.session_review.settings
+
+entity.session_task.settings_tab:
+  title: 'Settings'
+  route_name: entity.session_task.settings
+  base_route: entity.session_task.settings

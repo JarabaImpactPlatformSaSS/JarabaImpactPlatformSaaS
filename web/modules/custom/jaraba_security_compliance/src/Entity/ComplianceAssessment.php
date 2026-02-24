@@ -53,6 +53,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/compliance-assessments/{compliance_assessment_v2}/edit",
  *     "delete-form" = "/admin/content/compliance-assessments/{compliance_assessment_v2}/delete",
  *   },
+ *   field_ui_base_route = "entity.compliance_assessment_v2.settings",
  * )
  */
 class ComplianceAssessment extends ContentEntityBase {

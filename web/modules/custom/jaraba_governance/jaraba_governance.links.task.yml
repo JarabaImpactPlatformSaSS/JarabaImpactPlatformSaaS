@@ -1,0 +1,29 @@
+entity.data_classification.collection:
+  title: 'Data Classifications'
+  route_name: entity.data_classification.collection
+  base_route: system.admin_content
+
+entity.data_lineage_event.collection:
+  title: 'Data Lineage Events'
+  route_name: entity.data_lineage_event.collection
+  base_route: system.admin_content
+
+entity.erasure_request.collection:
+  title: 'Erasure Requests'
+  route_name: entity.erasure_request.collection
+  base_route: system.admin_content
+
+entity.data_classification.settings_tab:
+  title: 'Settings'
+  route_name: entity.data_classification.settings
+  base_route: entity.data_classification.settings
+
+entity.data_lineage_event.settings_tab:
+  title: 'Settings'
+  route_name: entity.data_lineage_event.settings
+  base_route: entity.data_lineage_event.settings
+
+entity.erasure_request.settings_tab:
+  title: 'Settings'
+  route_name: entity.erasure_request.settings
+  base_route: entity.erasure_request.settings

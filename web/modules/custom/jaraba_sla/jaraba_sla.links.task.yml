@@ -1,0 +1,24 @@
+entity.sla_incident.collection:
+  title: 'SLA Incidents'
+  route_name: entity.sla_incident.collection
+  base_route: system.admin_content
+
+entity.sla_measurement.collection:
+  title: 'SLA Measurements'
+  route_name: entity.sla_measurement.collection
+  base_route: system.admin_content
+
+entity.sla_agreement.settings_tab:
+  title: 'Settings'
+  route_name: entity.sla_agreement.settings
+  base_route: entity.sla_agreement.settings
+
+entity.sla_incident.settings_tab:
+  title: 'Settings'
+  route_name: entity.sla_incident.settings
+  base_route: entity.sla_incident.settings
+
+entity.sla_measurement.settings_tab:
+  title: 'Settings'
+  route_name: entity.sla_measurement.settings
+  base_route: entity.sla_measurement.settings

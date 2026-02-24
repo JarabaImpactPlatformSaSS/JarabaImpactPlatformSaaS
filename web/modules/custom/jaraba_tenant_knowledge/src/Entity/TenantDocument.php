@@ -62,10 +62,12 @@ use Drupal\file\FileInterface;
  *     "langcode" = "langcode",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/tenant-documents",
  *     "add-form" = "/knowledge/documents/add",
  *     "edit-form" = "/knowledge/documents/{tenant_document}/edit",
  *     "delete-form" = "/knowledge/documents/{tenant_document}/delete",
  *   },
+ *   field_ui_base_route = "entity.tenant_document.settings",
  * )
  */
 class TenantDocument extends ContentEntityBase implements EntityChangedInterface

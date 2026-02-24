@@ -40,7 +40,9 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "canonical" = "/admin/structure/site-builder/config/{site_config}",
  *     "add-form" = "/admin/structure/site-builder/config/add",
  *     "edit-form" = "/admin/structure/site-builder/config/{site_config}/edit",
+ *     "collection" = "/admin/content/site-configs",
  *   },
+ *   field_ui_base_route = "entity.site_config.settings",
  * )
  */
 class SiteConfig extends ContentEntityBase

@@ -35,3 +35,18 @@ entity.candidate_skill.settings_tab:
   base_route: entity.candidate_skill.settings
   weight: -10
 
+entity.candidate_language.settings_tab:
+  title: 'Settings'
+  route_name: entity.candidate_language.settings
+  base_route: entity.candidate_language.settings
+
+entity.copilot_conversation.settings_tab:
+  title: 'Settings'
+  route_name: entity.copilot_conversation.settings
+  base_route: entity.copilot_conversation.settings
+
+entity.copilot_message.settings_tab:
+  title: 'Settings'
+  route_name: entity.copilot_message.settings
+  base_route: entity.copilot_message.settings
+

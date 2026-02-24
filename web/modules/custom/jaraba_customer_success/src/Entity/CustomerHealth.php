@@ -58,6 +58,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "canonical" = "/admin/content/customer-health/{customer_health}",
  *     "delete-form" = "/admin/content/customer-health/{customer_health}/delete",
  *   },
+ *   field_ui_base_route = "entity.customer_health.settings",
  * )
  */
 class CustomerHealth extends ContentEntityBase {

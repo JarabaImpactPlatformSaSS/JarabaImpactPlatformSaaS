@@ -44,6 +44,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "delete-form" = "/admin/content/comercio-order-item/{order_item_retail}/delete",
  *     "collection" = "/admin/content/comercio-order-items",
  *   },
+ *   field_ui_base_route = "entity.order_item_retail.settings",
  * )
  */
 class OrderItemRetail extends ContentEntityBase implements EntityChangedInterface {

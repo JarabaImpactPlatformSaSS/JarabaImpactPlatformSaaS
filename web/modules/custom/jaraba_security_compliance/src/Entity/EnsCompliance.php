@@ -50,6 +50,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/ens-compliance/{ens_compliance}/edit",
  *     "delete-form" = "/admin/content/ens-compliance/{ens_compliance}/delete",
  *   },
+ *   field_ui_base_route = "entity.ens_compliance.settings",
  * )
  */
 class EnsCompliance extends ContentEntityBase implements EnsComplianceInterface {

@@ -345,4 +345,13 @@ jaraba_job_board.api.agent_rating:
     _permission: 'access content'
     _csrf_token: 'TRUE'
 
+# --- Field UI Settings Routes ---
+entity.employer_profile.settings:
+  path: '/admin/structure/employer-profile/settings'
+  defaults:
+    _form: 'Drupal\jaraba_job_board\Form\EmployerProfileSettingsForm'
+    _title: 'Employer Profile settings'
+  requirements:
+    _permission: 'administer job board'
+
 

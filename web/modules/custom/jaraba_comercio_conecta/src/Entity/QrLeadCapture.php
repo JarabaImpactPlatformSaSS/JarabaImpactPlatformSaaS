@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-qr-lead/{comercio_qr_lead}",
  *     "collection" = "/admin/content/comercio-qr-leads",
  *   },
+ *   field_ui_base_route = "entity.comercio_qr_lead.settings",
  * )
  */
 class QrLeadCapture extends ContentEntityBase {

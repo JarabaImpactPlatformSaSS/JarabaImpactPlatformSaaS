@@ -15,3 +15,8 @@ jaraba_multiregion.currency_rates:
   route_name: entity.currency_rate.collection
   base_route: system.admin_content
   weight: 45
+
+entity.vies_validation.settings_tab:
+  title: 'Settings'
+  route_name: entity.vies_validation.settings
+  base_route: entity.vies_validation.settings

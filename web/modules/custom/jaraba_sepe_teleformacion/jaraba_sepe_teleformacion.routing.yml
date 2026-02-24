@@ -42,3 +42,27 @@ entity.sepe_accion_formativa.collection:
     _title: 'Acciones Formativas SEPE'
   requirements:
     _permission: 'administer sepe teleformacion'
+
+entity.sepe_accion_formativa.settings:
+  path: '/admin/structure/sepe-accion-formativa/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sepe_teleformacion\Form\SepeAccionFormativaSettingsForm'
+    _title: 'Accion Formativa SEPE settings'
+  requirements:
+    _permission: 'administer sepe teleformacion'
+
+entity.sepe_centro.settings:
+  path: '/admin/structure/sepe-centro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sepe_teleformacion\Form\SepeCentroSettingsForm'
+    _title: 'Centro SEPE settings'
+  requirements:
+    _permission: 'administer sepe teleformacion'
+
+entity.sepe_participante.settings:
+  path: '/admin/structure/sepe-participante/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sepe_teleformacion\Form\SepeParticipanteSettingsForm'
+    _title: 'Participante SEPE settings'
+  requirements:
+    _permission: 'administer sepe teleformacion'

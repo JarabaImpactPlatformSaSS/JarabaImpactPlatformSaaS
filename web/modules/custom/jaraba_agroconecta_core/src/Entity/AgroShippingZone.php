@@ -38,6 +38,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/structure/agro-shipping-zones/{agro_shipping_zone}/edit",
  *     "delete-form" = "/admin/structure/agro-shipping-zones/{agro_shipping_zone}/delete",
  *   },
+ *   field_ui_base_route = "entity.agro_shipping_zone.settings",
  * )
  */
 class AgroShippingZone extends ContentEntityBase {

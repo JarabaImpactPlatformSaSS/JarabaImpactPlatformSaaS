@@ -44,6 +44,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "edit-form" = "/admin/config/system/alert-rules/{alert_rule}/edit",
  *     "delete-form" = "/admin/config/system/alert-rules/{alert_rule}/delete",
  *   },
+ *   field_ui_base_route = "entity.alert_rule.settings",
  * )
  */
 class AlertRule extends ContentEntityBase

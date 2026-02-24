@@ -63,6 +63,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/jaraba/analytics/cohorts/{cohort_definition}/edit",
  *     "delete-form" = "/admin/jaraba/analytics/cohorts/{cohort_definition}/delete",
  *   },
+ *   field_ui_base_route = "entity.cohort_definition.settings",
  * )
  */
 class CohortDefinition extends ContentEntityBase {

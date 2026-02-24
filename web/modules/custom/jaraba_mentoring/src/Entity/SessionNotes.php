@@ -25,6 +25,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *       "default" = "Drupal\Core\Entity\ContentEntityForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "session_notes",
@@ -33,6 +34,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/session-notes",
+ *   },
+ *   field_ui_base_route = "entity.session_notes.settings",
  * )
  */
 class SessionNotes extends ContentEntityBase

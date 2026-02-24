@@ -52,6 +52,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/web-vitals",
  *   },
+ *   field_ui_base_route = "entity.web_vitals_metric.settings",
  * )
  */
 class WebVitalsMetric extends ContentEntityBase implements ContentEntityInterface {

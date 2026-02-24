@@ -18,3 +18,8 @@ entity.strength_assessment.collection:
   route_name: entity.strength_assessment.collection
   base_route: system.admin_content
   weight: 52
+
+entity.life_timeline.settings_tab:
+  title: 'Settings'
+  route_name: entity.life_timeline.settings
+  base_route: entity.life_timeline.settings

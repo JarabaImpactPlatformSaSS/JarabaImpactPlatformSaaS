@@ -36,6 +36,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/ai-skills/{ai_skill}/revisions/{ai_skill_revision}",
  *     "collection" = "/admin/content/ai-skills/{ai_skill}/revisions",
  *   },
+ *   field_ui_base_route = "entity.ai_skill_revision.settings",
  * )
  */
 class AiSkillRevision extends ContentEntityBase

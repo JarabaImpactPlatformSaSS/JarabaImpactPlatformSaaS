@@ -55,6 +55,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "canonical" = "/admin/content/sla-agreements/{sla_agreement}",
  *     "delete-form" = "/admin/content/sla-agreements/{sla_agreement}/delete",
  *   },
+ *   field_ui_base_route = "entity.sla_agreement.settings",
  * )
  */
 class SlaAgreement extends ContentEntityBase implements SlaAgreementInterface {

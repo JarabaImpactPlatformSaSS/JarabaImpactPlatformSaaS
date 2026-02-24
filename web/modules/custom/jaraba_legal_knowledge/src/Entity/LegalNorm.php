@@ -68,6 +68,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "edit-form" = "/admin/content/legal-norms/{legal_norm}/edit",
  *     "delete-form" = "/admin/content/legal-norms/{legal_norm}/delete",
  *   },
+ *   field_ui_base_route = "entity.legal_norm.settings",
  * )
  */
 class LegalNorm extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {

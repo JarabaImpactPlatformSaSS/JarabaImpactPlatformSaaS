@@ -463,3 +463,27 @@ entity.candidate_skill.settings:
   requirements:
     _permission: 'administer candidate skills'
 
+entity.candidate_language.settings:
+  path: '/admin/structure/candidate-language/settings'
+  defaults:
+    _form: 'Drupal\jaraba_candidate\Form\CandidateLanguageSettingsForm'
+    _title: 'Candidate Language settings'
+  requirements:
+    _permission: 'administer candidate skills'
+
+entity.copilot_conversation.settings:
+  path: '/admin/structure/copilot-conversation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_candidate\Form\CopilotConversationSettingsForm'
+    _title: 'Copilot Conversation settings'
+  requirements:
+    _permission: 'administer copilot conversations'
+
+entity.copilot_message.settings:
+  path: '/admin/structure/copilot-message/settings'
+  defaults:
+    _form: 'Drupal\jaraba_candidate\Form\CopilotMessageSettingsForm'
+    _title: 'Copilot Message settings'
+  requirements:
+    _permission: 'administer copilot conversations'
+

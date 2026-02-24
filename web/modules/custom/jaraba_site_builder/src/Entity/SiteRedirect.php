@@ -44,7 +44,9 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "add-form" = "/admin/structure/site-builder/redirects/add",
  *     "edit-form" = "/admin/structure/site-builder/redirects/{site_redirect}/edit",
  *     "delete-form" = "/admin/structure/site-builder/redirects/{site_redirect}/delete",
+ *     "collection" = "/admin/content/site-redirects",
  *   },
+ *   field_ui_base_route = "entity.site_redirect.settings",
  * )
  */
 class SiteRedirect extends ContentEntityBase

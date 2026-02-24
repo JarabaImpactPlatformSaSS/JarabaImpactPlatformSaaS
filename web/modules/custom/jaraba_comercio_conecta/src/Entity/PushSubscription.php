@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-push-subscription/{comercio_push_subscription}",
  *     "collection" = "/admin/content/comercio-push-subscriptions",
  *   },
+ *   field_ui_base_route = "entity.comercio_push_subscription.settings",
  * )
  */
 class PushSubscription extends ContentEntityBase {

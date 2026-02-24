@@ -80,11 +80,13 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "revision_log_message" = "revision_log",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/tenant-faqs",
  *     "add-form" = "/knowledge/faqs/add",
  *     "edit-form" = "/knowledge/faqs/{tenant_faq}/edit",
  *     "delete-form" = "/knowledge/faqs/{tenant_faq}/delete",
  *     "version-history" = "/knowledge/faqs/{tenant_faq}/revisions",
  *   },
+ *   field_ui_base_route = "entity.tenant_faq.settings",
  * )
  */
 class TenantFaq extends ContentEntityBase implements EntityChangedInterface, RevisionLogInterface

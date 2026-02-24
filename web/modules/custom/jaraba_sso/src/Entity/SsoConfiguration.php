@@ -33,6 +33,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   base_table = "sso_configuration",
  *   admin_permission = "administer sso",
@@ -41,6 +42,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *     "label" = "provider_name",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/sso-configurations",
+ *   },
+ *   field_ui_base_route = "entity.sso_configuration.settings",
  * )
  */
 class SsoConfiguration extends ContentEntityBase implements SsoConfigurationInterface {
