@@ -71,7 +71,7 @@
   {# Barra de navegación inferior #}
   <div class="course-presentation__navigation">
     <button class="course-presentation__nav-btn course-presentation__nav-btn--prev" disabled aria-label="{% trans %}Anterior{% endtrans %}">
-      {{ jaraba_icon('ui/chevron-left', 'outline') }}
+      {{ jaraba_icon('ui', 'chevron-left', { variant: 'duotone', size: '16px' }) }}
       <span>{% trans %}Anterior{% endtrans %}</span>
     </button>
 
@@ -93,7 +93,7 @@
 
     <button class="course-presentation__nav-btn course-presentation__nav-btn--next" aria-label="{% trans %}Siguiente{% endtrans %}">
       <span>{% trans %}Siguiente{% endtrans %}</span>
-      {{ jaraba_icon('ui/chevron-right', 'outline') }}
+      {{ jaraba_icon('ui', 'chevron-right', { variant: 'duotone', size: '16px' }) }}
     </button>
   </div>
 

@@ -32,7 +32,7 @@
     {# Controles personalizados #}
     <div class="interactive-video__controls">
       <button class="interactive-video__play-btn" aria-label="{% trans %}Reproducir{% endtrans %}">
-        {{ jaraba_icon('media/play-circle', 'duotone') }}
+        {{ jaraba_icon('media', 'play-circle', { variant: 'duotone', size: '24px' }) }}
       </button>
       <div class="interactive-video__progress">
         <div class="interactive-video__progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -49,7 +49,7 @@
       </div>
       <span class="interactive-video__time">0:00 / 0:00</span>
       <button class="interactive-video__fullscreen-btn" aria-label="{% trans %}Pantalla completa{% endtrans %}">
-        {{ jaraba_icon('ui/maximize', 'outline') }}
+        {{ jaraba_icon('ui', 'maximize', { variant: 'duotone', size: '16px' }) }}
       </button>
     </div>
   </div>

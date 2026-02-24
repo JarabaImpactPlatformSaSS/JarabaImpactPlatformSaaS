@@ -23,7 +23,7 @@
            class="ej-kit-detail__image">
     {% else %}
       <div class="ej-kit-detail__image ej-kit-detail__image--placeholder">
-        {{ jaraba_icon('document', 'duotone', 'primary', '64') }}
+        {{ jaraba_icon('ui', 'document', { variant: 'duotone', color: 'azul-corporativo', size: '64px' }) }}
       </div>
     {% endif %}
     
@@ -58,7 +58,7 @@
         </div>
         
         <div class="ej-kit-card__downloads">
-          {{ jaraba_icon('download', 'outline', 'muted', '16') }}
+          {{ jaraba_icon('actions', 'download', { variant: 'duotone', color: 'neutral', size: '16px' }) }}
           <span>{{ kit.download_count }} {{ 'descargas'|t }}</span>
         </div>
       </div>
@@ -66,7 +66,7 @@
       {# CTA Button #}
       {% if user_access %}
         <a href="#files" class="ej-btn ej-btn--primary ej-btn--lg">
-          {{ jaraba_icon('download', 'outline', 'white', '20') }}
+          {{ jaraba_icon('actions', 'download', { variant: 'duotone', color: 'white', size: '20px' }) }}
           <span>{{ 'Descargar Kit'|t }}</span>
         </a>
       {% else %}
@@ -75,7 +75,7 @@
             {{ 'Este kit requiere el plan'|t }} <strong>{{ kit.access_level.value|capitalize }}</strong>
           </p>
           <a href="{{ path('jaraba_resources.pricing') }}" class="ej-btn ej-btn--primary ej-btn--lg">
-            {{ jaraba_icon('sparkles', 'outline', 'white', '20') }}
+            {{ jaraba_icon('actions', 'sparkles', { variant: 'duotone', color: 'white', size: '20px' }) }}
             <span>{{ 'Mejorar Plan'|t }}</span>
           </a>
         </div>
@@ -95,7 +95,7 @@
   {% if user_access and files|length > 0 %}
     <div id="files" class="ej-kit-detail__section">
       <h2 class="ej-section-title">
-        {{ jaraba_icon('folder', 'duotone', 'primary', '24') }}
+        {{ jaraba_icon('ui', 'folder', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
         {{ 'Archivos del Kit'|t }} ({{ files|length }})
       </h2>
       
@@ -105,17 +105,17 @@
             <div class="ej-kit-detail__file-icon">
               {% set extension = file.filename|split('.')|last %}
               {% if extension in ['pdf'] %}
-                {{ jaraba_icon('file-pdf', 'duotone', 'danger', '24') }}
+                {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
               {% elseif extension in ['doc', 'docx'] %}
-                {{ jaraba_icon('file-word', 'duotone', 'info', '24') }}
+                {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
               {% elseif extension in ['xls', 'xlsx'] %}
-                {{ jaraba_icon('file-excel', 'duotone', 'success', '24') }}
+                {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
               {% elseif extension in ['ppt', 'pptx'] %}
-                {{ jaraba_icon('file-powerpoint', 'duotone', 'warning', '24') }}
+                {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
               {% elseif extension in ['zip', 'rar'] %}
-                {{ jaraba_icon('archive', 'duotone', 'muted', '24') }}
+                {{ jaraba_icon('ui', 'folder', { variant: 'duotone', color: 'neutral', size: '24px' }) }}
               {% else %}
-                {{ jaraba_icon('document', 'duotone', 'primary', '24') }}
+                {{ jaraba_icon('ui', 'document', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
               {% endif %}
             </div>
             
@@ -127,7 +127,7 @@
             <a href="{{ path('jaraba_resources.api.kit_download', {kit: kit.id}) }}?file={{ file.fid }}" 
                class="ej-btn ej-btn--outline ej-btn--sm"
                download>
-              {{ jaraba_icon('download', 'outline', 'primary', '16') }}
+              {{ jaraba_icon('actions', 'download', { variant: 'duotone', color: 'azul-corporativo', size: '16px' }) }}
               {{ 'Descargar'|t }}
             </a>
           </div>
@@ -138,7 +138,7 @@
     <div class="ej-kit-detail__section">
       <div class="ej-alert ej-alert--info">
         <div class="ej-alert__icon">
-          {{ jaraba_icon('lock', 'duotone', 'info', '24') }}
+          {{ jaraba_icon('ui', 'lock', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
         </div>
         <div class="ej-alert__content">
           <strong>{{ 'Contenido Premium'|t }}</strong>
