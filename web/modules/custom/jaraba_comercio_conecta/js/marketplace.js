@@ -116,7 +116,10 @@
             if (stock > 0) {
               availEl.className = 'comercio-product-detail__availability comercio-product-detail__availability--in-stock';
               if (stock <= 5) {
-                availEl.innerHTML = Drupal.t('En stock') + ' <small>(' + Drupal.t('últimas @count unidades', {'@count': stock}) + ')</small>';
+                availEl.textContent = Drupal.t('En stock') + ' ';
+                var small = document.createElement('small');
+                small.textContent = '(' + Drupal.t('últimas @count unidades', {'@count': stock}) + ')';
+                availEl.appendChild(small);
               } else {
                 availEl.textContent = Drupal.t('En stock');
               }

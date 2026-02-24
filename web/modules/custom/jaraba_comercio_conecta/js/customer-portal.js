@@ -12,6 +12,15 @@
 (function (Drupal) {
   'use strict';
 
+  // CSRF token cache for POST/PATCH/DELETE requests.
+  var _csrfToken = null;
+  function getCsrfToken() {
+    if (_csrfToken) return Promise.resolve(_csrfToken);
+    return fetch('/session/token')
+      .then(function (r) { return r.text(); })
+      .then(function (token) { _csrfToken = token; return token; });
+  }
+
   /**
    * Comportamiento: Eliminar item de wishlist.
    *
@@ -36,39 +45,42 @@
           btn.disabled = true;
           btn.textContent = Drupal.t('Eliminando...');
 
-          fetch('/api/v1/comercio/wishlist/remove', {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: JSON.stringify({ product_id: parseInt(productId, 10) }),
-          })
-            .then(function (response) { return response.json(); })
-            .then(function (result) {
-              if (result.data && result.data.success) {
-                if (card) {
-                  card.style.opacity = '0';
-                  card.style.transform = 'scale(0.95)';
-                  card.style.transition = 'all 300ms ease';
-                  setTimeout(function () {
-                    card.remove();
-                    // Comprobar si la lista queda vacía
-                    var grid = document.querySelector('.comercio-wishlist__grid');
-                    if (grid && grid.children.length === 0) {
-                      window.location.reload();
-                    }
-                  }, 300);
+          getCsrfToken().then(function (token) {
+            fetch('/api/v1/comercio/wishlist/remove', {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': token,
+              },
+              body: JSON.stringify({ product_id: parseInt(productId, 10) }),
+            })
+              .then(function (response) { return response.json(); })
+              .then(function (result) {
+                if (result.data && result.data.success) {
+                  if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    card.style.transition = 'all 300ms ease';
+                    setTimeout(function () {
+                      card.remove();
+                      // Comprobar si la lista queda vacía
+                      var grid = document.querySelector('.comercio-wishlist__grid');
+                      if (grid && grid.children.length === 0) {
+                        window.location.reload();
+                      }
+                    }, 300);
+                  }
+                } else {
+                  btn.disabled = false;
+                  btn.textContent = Drupal.t('Eliminar');
                 }
-              } else {
+              })
+              .catch(function () {
                 btn.disabled = false;
                 btn.textContent = Drupal.t('Eliminar');
-              }
-            })
-            .catch(function () {
-              btn.disabled = false;
-              btn.textContent = Drupal.t('Eliminar');
-            });
+              });
+          });
         });
       });
     }
@@ -96,28 +108,31 @@
           btn.disabled = true;
           var originalText = btn.textContent;
 
-          fetch('/api/v1/comercio/wishlist/add', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: JSON.stringify({ product_id: parseInt(productId, 10) }),
-          })
-            .then(function (response) { return response.json(); })
-            .then(function (result) {
-              if (result.data && result.data.success) {
-                btn.textContent = Drupal.t('En tu lista');
-                btn.classList.add('comercio-wishlist-btn--active');
-              } else {
+          getCsrfToken().then(function (token) {
+            fetch('/api/v1/comercio/wishlist/add', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': token,
+              },
+              body: JSON.stringify({ product_id: parseInt(productId, 10) }),
+            })
+              .then(function (response) { return response.json(); })
+              .then(function (result) {
+                if (result.data && result.data.success) {
+                  btn.textContent = Drupal.t('En tu lista');
+                  btn.classList.add('comercio-wishlist-btn--active');
+                } else {
+                  btn.disabled = false;
+                  btn.textContent = originalText;
+                }
+              })
+              .catch(function () {
                 btn.disabled = false;
                 btn.textContent = originalText;
-              }
-            })
-            .catch(function () {
-              btn.disabled = false;
-              btn.textContent = originalText;
-            });
+              });
+          });
         });
       });
     }

@@ -12,6 +12,15 @@
 (function (Drupal) {
   'use strict';
 
+  // CSRF token cache for POST/PATCH/DELETE requests.
+  var _csrfToken = null;
+  function getCsrfToken() {
+    if (_csrfToken) return Promise.resolve(_csrfToken);
+    return fetch('/session/token')
+      .then(function (r) { return r.text(); })
+      .then(function (token) { _csrfToken = token; return token; });
+  }
+
   /**
    * Comportamiento: Cambio de estado de pedido desde el portal.
    *
@@ -34,35 +43,38 @@
 
           select.disabled = true;
 
-          fetch('/api/v1/comercio/orders/' + orderId + '/status', {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: JSON.stringify({ status: newStatus }),
-          })
-            .then(function (response) { return response.json(); })
-            .then(function (result) {
-              select.disabled = false;
-              if (result.data && result.data.success) {
-                // Actualizar el badge visual
-                var row = select.closest('tr');
-                if (row) {
-                  var badge = row.querySelector('.comercio-merchant-orders__status');
-                  if (badge) {
-                    badge.className = 'comercio-merchant-orders__status comercio-merchant-orders__status--' + newStatus;
-                  }
-                }
-              } else {
-                var msg = (result.meta && result.meta.message) || Drupal.t('Error actualizando estado.');
-                alert(msg);
-              }
+          getCsrfToken().then(function (token) {
+            fetch('/api/v1/comercio/orders/' + orderId + '/status', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': token,
+              },
+              body: JSON.stringify({ status: newStatus }),
             })
-            .catch(function () {
-              select.disabled = false;
-              alert(Drupal.t('Error de conexión.'));
-            });
+              .then(function (response) { return response.json(); })
+              .then(function (result) {
+                select.disabled = false;
+                if (result.data && result.data.success) {
+                  // Actualizar el badge visual
+                  var row = select.closest('tr');
+                  if (row) {
+                    var badge = row.querySelector('.comercio-merchant-orders__status');
+                    if (badge) {
+                      badge.className = 'comercio-merchant-orders__status comercio-merchant-orders__status--' + newStatus;
+                    }
+                  }
+                } else {
+                  var msg = (result.meta && result.meta.message) || Drupal.t('Error actualizando estado.');
+                  alert(msg);
+                }
+              })
+              .catch(function () {
+                select.disabled = false;
+                alert(Drupal.t('Error de conexión.'));
+              });
+          });
         });
       });
     }

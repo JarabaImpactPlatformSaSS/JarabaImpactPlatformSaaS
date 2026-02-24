@@ -10,6 +10,8 @@ use Drupal\jaraba_comercio_conecta\Service\ProductRetailService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
@@ -140,6 +142,9 @@ class ProductApiController extends ControllerBase {
       ], 400);
     }
 
+    // P0-4: Verify current user owns the merchant profile.
+    $this->verifyMerchantOwnership((int) $content['merchant_id']);
+
     $product = $this->entityTypeManager()
       ->getStorage('product_retail')
       ->create([
@@ -178,6 +183,9 @@ class ProductApiController extends ControllerBase {
     if (!$product) {
       throw new NotFoundHttpException();
     }
+
+    // P0-4: Verify current user owns the product's merchant.
+    $this->verifyMerchantOwnership((int) $product->get('merchant_id')->target_id);
 
     $content = json_decode($request->getContent(), TRUE);
     $updatable = ['title', 'description', 'price', 'compare_at_price', 'status', 'stock_quantity'];
@@ -238,6 +246,15 @@ class ProductApiController extends ControllerBase {
         'error' => $this->t('Campos obligatorios: product_id, quantity'),
       ], 400);
     }
+
+    // P0-4: Verify current user owns the product's merchant.
+    $product = $this->entityTypeManager()
+      ->getStorage('product_retail')
+      ->load((int) $content['product_id']);
+    if (!$product) {
+      throw new NotFoundHttpException();
+    }
+    $this->verifyMerchantOwnership((int) $product->get('merchant_id')->target_id);
 
     $this->productService->updateStock(
       (int) $content['product_id'],
@@ -374,6 +391,30 @@ class ProductApiController extends ControllerBase {
     }
 
     return new JsonResponse(['success' => TRUE, 'data' => $data, 'meta' => ['timestamp' => time()]]);
+  }
+
+  /**
+   * Verifies that the current user owns the given merchant profile.
+   *
+   * @param int $merchant_id
+   *   The merchant profile entity ID.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+   *   If the current user is not the owner of the merchant profile.
+   */
+  protected function verifyMerchantOwnership(int $merchant_id): void {
+    $merchant = $this->entityTypeManager()
+      ->getStorage('merchant_profile')
+      ->load($merchant_id);
+
+    if (!$merchant) {
+      throw new NotFoundHttpException();
+    }
+
+    $owner_uid = (int) $merchant->get('uid')->target_id;
+    if ($owner_uid !== (int) $this->currentUser()->id()) {
+      throw new AccessDeniedHttpException($this->t('No tienes permiso para modificar productos de este comercio.'));
+    }
   }
 
   /**

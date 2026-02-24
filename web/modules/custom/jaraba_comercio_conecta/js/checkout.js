@@ -12,6 +12,15 @@
 (function (Drupal) {
   'use strict';
 
+  // CSRF token cache for POST/PATCH/DELETE requests.
+  var _csrfToken = null;
+  function getCsrfToken() {
+    if (_csrfToken) return Promise.resolve(_csrfToken);
+    return fetch('/session/token')
+      .then(function (r) { return r.text(); })
+      .then(function (token) { _csrfToken = token; return token; });
+  }
+
   /**
    * Comportamiento: Actualización de cantidades en checkout.
    *
@@ -71,31 +80,34 @@
         couponBtn.disabled = true;
         couponBtn.textContent = Drupal.t('Aplicando...');
 
-        fetch('/api/v1/comercio/cart/coupon', { // AUDIT-CONS-N07: Added API versioning prefix.
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-          },
-          body: JSON.stringify({ code: code }),
-        })
-          .then(function (response) { return response.json(); })
-          .then(function (result) {
-            if (result.data && result.data.success) {
-              _comercioShowMessage(Drupal.t('Cupón aplicado correctamente.'), 'success');
-              window.location.reload();
-            } else {
-              var msg = (result.meta && result.meta.message) || Drupal.t('Cupón no válido.');
-              _comercioShowMessage(msg, 'error');
-            }
+        getCsrfToken().then(function (token) {
+          fetch('/api/v1/comercio/cart/coupon', { // AUDIT-CONS-N07: Added API versioning prefix.
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-Token': token,
+            },
+            body: JSON.stringify({ code: code }),
           })
-          .catch(function () {
-            _comercioShowMessage(Drupal.t('Error al aplicar el cupón. Inténtalo de nuevo.'), 'error');
-          })
-          .finally(function () {
-            couponBtn.disabled = false;
-            couponBtn.textContent = Drupal.t('Aplicar');
-          });
+            .then(function (response) { return response.json(); })
+            .then(function (result) {
+              if (result.data && result.data.success) {
+                _comercioShowMessage(Drupal.t('Cupón aplicado correctamente.'), 'success');
+                window.location.reload();
+              } else {
+                var msg = (result.meta && result.meta.message) || Drupal.t('Cupón no válido.');
+                _comercioShowMessage(msg, 'error');
+              }
+            })
+            .catch(function () {
+              _comercioShowMessage(Drupal.t('Error al aplicar el cupón. Inténtalo de nuevo.'), 'error');
+            })
+            .finally(function () {
+              couponBtn.disabled = false;
+              couponBtn.textContent = Drupal.t('Aplicar');
+            });
+        });
       });
     }
   };
@@ -119,34 +131,37 @@
         payBtn.textContent = Drupal.t('Procesando pago...');
         payBtn.classList.add('comercio-checkout__pay-btn--loading');
 
-        fetch('/checkout/procesar', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-          },
-          body: JSON.stringify({
-            payment_method: 'stripe',
-          }),
-        })
-          .then(function (response) { return response.json(); })
-          .then(function (result) {
-            if (result.data && result.data.order_id) {
-              window.location.href = '/checkout/confirmacion/' + result.data.order_id;
-            } else {
-              var msg = (result.meta && result.meta.message) || Drupal.t('Error procesando el pago.');
-              _comercioShowMessage(msg, 'error');
+        getCsrfToken().then(function (token) {
+          fetch('/checkout/procesar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-Token': token,
+            },
+            body: JSON.stringify({
+              payment_method: 'stripe',
+            }),
+          })
+            .then(function (response) { return response.json(); })
+            .then(function (result) {
+              if (result.data && result.data.order_id) {
+                window.location.href = '/checkout/confirmacion/' + result.data.order_id;
+              } else {
+                var msg = (result.meta && result.meta.message) || Drupal.t('Error procesando el pago.');
+                _comercioShowMessage(msg, 'error');
+                payBtn.disabled = false;
+                payBtn.textContent = originalText;
+                payBtn.classList.remove('comercio-checkout__pay-btn--loading');
+              }
+            })
+            .catch(function () {
+              _comercioShowMessage(Drupal.t('Error de conexión. Inténtalo de nuevo.'), 'error');
               payBtn.disabled = false;
               payBtn.textContent = originalText;
               payBtn.classList.remove('comercio-checkout__pay-btn--loading');
-            }
-          })
-          .catch(function () {
-            _comercioShowMessage(Drupal.t('Error de conexión. Inténtalo de nuevo.'), 'error');
-            payBtn.disabled = false;
-            payBtn.textContent = originalText;
-            payBtn.classList.remove('comercio-checkout__pay-btn--loading');
-          });
+            });
+        });
       });
     }
   };
@@ -158,25 +173,28 @@
    * @param {number} quantity - Nueva cantidad.
    */
   function _comercioUpdateCartItem(itemId, quantity) {
-    fetch('/api/v1/comercio/cart/update/' + itemId, { // AUDIT-CONS-N07: Added API versioning prefix.
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      body: JSON.stringify({ quantity: quantity }),
-    })
-      .then(function (response) { return response.json(); })
-      .then(function (result) {
-        if (result.data && result.data.success) {
-          window.location.reload();
-        } else {
-          _comercioShowMessage(Drupal.t('Error actualizando cantidad.'), 'error');
-        }
+    getCsrfToken().then(function (token) {
+      fetch('/api/v1/comercio/cart/update/' + itemId, { // AUDIT-CONS-N07: Added API versioning prefix.
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': token,
+        },
+        body: JSON.stringify({ quantity: quantity }),
       })
-      .catch(function () {
-        _comercioShowMessage(Drupal.t('Error de conexión.'), 'error');
-      });
+        .then(function (response) { return response.json(); })
+        .then(function (result) {
+          if (result.data && result.data.success) {
+            window.location.reload();
+          } else {
+            _comercioShowMessage(Drupal.t('Error actualizando cantidad.'), 'error');
+          }
+        })
+        .catch(function () {
+          _comercioShowMessage(Drupal.t('Error de conexión.'), 'error');
+        });
+    });
   }
 
   /**

@@ -1,22 +1,23 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Arial, Helvetica, sans-serif" />
-      <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-all font-family="Outfit, sans-serif" />
+      <mj-text font-size="14px" color="#333333" line-height="1.6" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
+    <mj-preview>{{ t('Tu comercio está creciendo — desbloquea más con el Plan Starter') }}</mj-preview>
     <mj-style>
-      .footer-link { color: #6b7280 !important; text-decoration: underline; }
-      .plan-feature { padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+      .footer-link { color: #666666 !important; text-decoration: underline; }
+      .plan-feature { padding: 8px 0; border-bottom: 1px solid #E0E0E0; }
       .plan-feature:last-child { border-bottom: none; }
-      .check-icon { color: #FF8C42; font-weight: bold; margin-right: 8px; }
-      .upgrade-banner { background: linear-gradient(135deg, #FF8C42 0%, #FFB380 100%); border-radius: 8px; padding: 20px; text-align: center; }
+      .check-icon { color: #1565C0; font-weight: bold; margin-right: 8px; }
+      .upgrade-banner { background: linear-gradient(135deg, #1565C0 0%, #42A5F5 100%); border-radius: 8px; padding: 20px; text-align: center; }
     </mj-style>
   </mj-head>
-  <mj-body background-color="#f3f4f6" width="600px">
+  <mj-body background-color="#f8f9fa" width="600px">
     <!-- Header -->
-    <mj-section background-color="#FF8C42" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ t('ComercioConecta') }}
@@ -27,14 +28,14 @@
     <!-- Contenido -->
     <mj-section background-color="#ffffff" padding="32px 24px">
       <mj-column>
-        <mj-text font-size="22px" font-weight="bold" color="#FF8C42" padding-bottom="8px">
+        <mj-text font-size="22px" font-weight="bold" color="#1565C0" padding-bottom="8px">
           {{ t('Tu comercio est&aacute; creciendo') }}
         </mj-text>
         <mj-text>
           <p>{{ t('Hola') }} {{ user_name }},</p>
           <p>{{ t('Has alcanzado el <strong>{{ usage_pct }}%</strong> de tu l&iacute;mite de productos en el plan Gratuito. &iexcl;Tu negocio est&aacute; despegando en el barrio!') }}</p>
         </mj-text>
-        <mj-text font-size="16px" font-weight="bold" color="#FF8C42" padding-top="16px">
+        <mj-text font-size="16px" font-weight="bold" color="#1565C0" padding-top="16px">
           {{ t('Con el Plan Starter desbloqueas:') }}
         </mj-text>
         <mj-text>
@@ -47,7 +48,7 @@
         <mj-button href="{{ upgrade_url }}" align="center" padding="24px 0">
           {{ t('Ver plan Starter') }}
         </mj-button>
-        <mj-text font-size="13px" color="#6b7280" align="center">
+        <mj-text font-size="13px" color="#666666" align="center">
           {{ t('Desde solo {{ starter_price }}/mes. Sin permanencia, cancela cuando quieras.') }}
         </mj-text>
       </mj-column>
@@ -56,13 +57,16 @@
     <!-- Footer -->
     <mj-section padding="24px">
       <mj-column>
-        <mj-divider border-color="#e5e7eb" border-width="1px" />
-        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+        <mj-divider border-color="#E0E0E0" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#666666" padding-top="16px">
           &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
         </mj-text>
-        <mj-text align="center" font-size="12px" color="#6b7280">
+        <mj-text align="center" font-size="12px" color="#666666">
           <a href="{{ unsubscribe_url }}" class="footer-link">{{ t('Cancelar suscripci&oacute;n') }}</a> &nbsp;|&nbsp;
           <a href="{{ site_url }}/privacy" class="footer-link">{{ t('Pol&iacute;tica de privacidad') }}</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#666666" padding-top="8px">
+          Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, España
         </mj-text>
       </mj-column>
     </mj-section>
