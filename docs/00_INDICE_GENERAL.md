@@ -4,7 +4,17 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-24
-**Versión:** 86.0.0 (SolicitudEiPublicForm — 4 Runtime Bugs Fixed via Browser Testing)
+**Versión:** 87.0.0 (SolicitudEi Entity View Display + AI Triage E2E Operativo)
+
+> **🔬 SOLICITUD VIEW + TRIAJE IA END-TO-END OPERATIVO** (2026-02-24)
+> - **Problema:** La pagina canonica `/admin/content/andalucia-ei/solicitudes/{id}` no renderizaba ningun campo. El triaje IA no se ejecutaba por incompatibilidad con la API del modulo Drupal AI.
+> - **P1 (Critica):** Entidad sin `view_builder` handler + campos sin `setDisplayOptions('view', ...)`. Solo `setDisplayConfigurable()` no basta.
+> - **P2/P3 (Alta):** API de chat requiere `ChatInput`/`ChatMessage` (no arrays planos). Respuesta via `getNormalized()->getText()` (no `getText()`).
+> - **P4 (Media):** Modelo `claude-haiku-4-5-latest` no soportado → `claude-3-haiku-20240307`.
+> - **P5 (Media):** Key module: `base64_encoded: "false"` (string) es truthy en PHP → corrompe API keys.
+> - **P6 (Media):** CRLF en `.env` anade `\r` a valores en containers Linux. Fix: `sed` + `lando rebuild`.
+> - **Resultado:** Triaje IA operativo (Anthropic → OpenAI failover). Score 75, recomendacion "admitir". 22 campos visibles en vista admin.
+> - **2 ficheros modificados.** Reglas nuevas: ENTITY-VIEW-DISPLAY-001, DRUPAL-AI-CHAT-001, KEY-MODULE-BOOL-001, ENV-FILE-CRLF-001. Aprendizaje #114.
 
 > **🧪 SOLICITUD FORM: 4 RUNTIME BUGS CORREGIDOS VIA BROWSER TESTING** (2026-02-24)
 > - **Contexto:** Browser testing del recorrido de candidato en Andalucia +ei descubre 4 bugs de runtime que bloqueaban el envio del formulario. Ninguno era detectable por inspeccion estatica.
@@ -176,6 +186,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **87.0.0** | **SolicitudEi Entity View + AI Triage E2E:** Vista canonica vacia por falta de `view_builder` handler y `setDisplayOptions('view')` en 22 campos. Triaje IA roto por API incompatible (ChatInput/ChatMessage, getNormalized()->getText(), modelo explicito). Key module: `base64_encoded` string truthy corrupts keys. CRLF en .env + lando rebuild. Reglas ENTITY-VIEW-DISPLAY-001, DRUPAL-AI-CHAT-001, KEY-MODULE-BOOL-001, ENV-FILE-CRLF-001. Aprendizaje #114. |
 | 2026-02-24 | **86.0.0** | **SolicitudEiPublicForm Runtime Bugs:** Browser testing descubre 4 bugs que bloqueaban el formulario. BUG-1: time-gate `#value` se regenera en rebuild → `getUserInput()`. BUG-2: `entityTypeManager()` no existe en FormBase → DI explicita. BUG-3: `catch (\Exception)` no captura TypeError → `\Throwable`. BUG-4: `tenant_context` (por usuario) en form anonimo → `tenant_manager` (por dominio). Reglas DRUPAL-HIDDEN-VALUE-001, DRUPAL-FORMBASE-DI-001, PHP-THROWABLE-001, TENANT-RESOLVER-001. Aprendizaje #112. |
 | 2026-02-24 | **85.0.0** | **Andalucia +ei Deep Flow Review P0/P1:** Auditoria profunda desde 9 perspectivas. P0-1: CSRF en DELETE API + _format json en 4 rutas. P0-2: tenant_id en SolicitudEi (campo + form submit + update hook 10001). P1-3: emojis eliminados de email. P1-4: SCSS Unicode escape \26A0. P1-5/P1-6: DI corregida en 2 controladores (renderer + 3 servicios opcionales nullable). P1-7: user_id eliminado, unificado en uid (EntityOwnerTrait) + update hook 10002 migracion. 9 ficheros, +113/-21. Reglas API-FORMAT-001, ENTITY-OWNER-001. Aprendizaje #111. |
 | 2026-02-23 | **84.0.0** | **Andalucia +ei Launch Readiness:** 8 incidencias corregidas para 2a edicion. Fix critico: `{{ messages }}` + preprocess hook para formulario que tragaba errores. 6 emojis → `jaraba_icon()`. 5 rutas legales/info nuevas con URLs canonicas espanol. Controladores con `theme_get_setting()`. 3 templates zero-region. Footer actualizado. Badge "6 verticales". TAB 14 theme settings. 13 ficheros. Reglas FORM-MSG-001, LEGAL-ROUTE-001, LEGAL-CONFIG-001. Regla de oro #28. Aprendizaje #110. |
