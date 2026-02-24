@@ -28,7 +28,7 @@ class SolicitudTriageService
      * Proveedores con failover ordenados por preferencia.
      */
     private const PROVIDERS = [
-        ['id' => 'anthropic', 'model' => 'claude-haiku-4-5-latest'],
+        ['id' => 'anthropic', 'model' => 'claude-3-haiku-20240307'],
         ['id' => 'openai', 'model' => 'gpt-4o-mini'],
     ];
 
@@ -61,7 +61,7 @@ class SolicitudTriageService
                 $input->setSystemPrompt($systemPrompt);
                 $response = $llm->chat($input, $providerConfig['model']);
 
-                $text = $response->getText();
+                $text = $response->getNormalized()->getText();
                 $result = $this->parseResponse($text);
 
                 $this->logger->info('Triaje IA completado para solicitud @nombre (score: @score, rec: @rec)', [
