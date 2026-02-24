@@ -1,0 +1,132 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_pricing
+label: 'JarabaLex: Planes Legales'
+description: 'Sección tabla de precios especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Planes Legales'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    toggle_discount:
+      type: boolean
+      title: 'Mostrar descuento'
+      default: false
+    toggle_label_monthly:
+      type: string
+      title: 'Etiqueta mensual'
+      default: Mensual
+    toggle_label_annual:
+      type: string
+      title: 'Etiqueta anual'
+      default: Anual
+    plans:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            maxLength: 100
+          price:
+            type: string
+            maxLength: 20
+          period:
+            type: string
+            maxLength: 20
+          featured:
+            type: boolean
+          badge:
+            type: string
+            maxLength: 50
+          cta:
+            type: string
+            maxLength: 50
+          url:
+            type: string
+            format: uri
+          features:
+            type: array
+            items:
+              type: string
+              maxLength: 100
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-pricing.png
+preview_data:
+  eyebrow: Planes
+  title: 'Planes de asesoría jurídica a tu medida'
+  subtitle: 'Elige el nivel de servicio que mejor se adapte a las necesidades de tu empresa.'
+  show_toggle: false
+  plans:
+    -
+      name: Consulta
+      price: 0€
+      period: /primera sesión
+      featured: false
+      badge: ''
+      cta: 'Reservar consulta'
+      url: /consulta-gratuita
+      features:
+        - 'Sesión de 30 minutos'
+        - 'Evaluación inicial'
+        - 'Orientación legal básica'
+    -
+      name: Pyme
+      price: 149€
+      period: /mes
+      featured: true
+      badge: 'Más popular'
+      cta: Contratar
+      url: /planes/pyme
+      features:
+        - 'Asesoría mercantil y laboral'
+        - 'Revisión de contratos'
+        - 'Consultas ilimitadas'
+        - 'Soporte prioritario'
+    -
+      name: Corporativo
+      price: 499€
+      period: /mes
+      featured: false
+      badge: ''
+      cta: Contactar
+      url: /planes/corporativo
+      features:
+        - 'Todo de Pyme'
+        - 'Litigios incluidos'
+        - 'Compliance integral'
+        - 'Abogado dedicado'
+animation: fade-up
+weight: 2

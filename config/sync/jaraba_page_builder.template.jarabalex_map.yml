@@ -1,0 +1,52 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_map
+label: 'JarabaLex: Ubicación del Despacho'
+description: 'Sección de mapa y ubicación especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/map.html.twig'
+fields_schema:
+  type: object
+  title: 'Ubicación del Despacho'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    map_embed:
+      type: string
+      title: 'Código embed del mapa'
+      format: html
+    address:
+      type: string
+      title: Dirección
+      maxLength: 300
+    phone:
+      type: string
+      title: Teléfono
+      maxLength: 50
+    email:
+      type: string
+      title: Email
+      maxLength: 100
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-map.png
+preview_data:
+  eyebrow: Ubicación
+  title: 'Visítanos en nuestro despacho'
+  subtitle: 'Estamos en el centro de la ciudad, con fácil acceso en transporte público.'
+  address: 'Calle Gran Vía 28, Planta 5ª, 28013 Madrid'
+  phone: '+34 91 123 45 67'
+  email: info@jarabalex.com
+weight: 8

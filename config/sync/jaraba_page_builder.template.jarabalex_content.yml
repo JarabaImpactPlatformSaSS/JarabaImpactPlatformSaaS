@@ -1,0 +1,52 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_content
+label: 'JarabaLex: Marco Jurídico'
+description: 'Sección de contenido especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Marco Jurídico'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-content.png
+preview_data:
+  eyebrow: 'Sobre nosotros'
+  title: 'Un despacho con más de 20 años de experiencia'
+  subtitle: 'Combinamos rigor jurídico con un enfoque práctico y cercano.'
+  description: '<p>Nuestro equipo de abogados combina rigor jurídico con un enfoque práctico y cercano. Creemos que la mejor defensa legal es anticiparse a los problemas antes de que surjan.</p><p>Acompañamos a empresas en todas las fases de su crecimiento, desde la constitución hasta la expansión internacional, ofreciendo soluciones legales innovadoras y eficaces.</p>'
+  cta_text: 'Conocer al equipo'
+  cta_url: /equipo
+weight: 6

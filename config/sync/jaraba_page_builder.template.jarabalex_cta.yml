@@ -1,0 +1,63 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_cta
+label: 'JarabaLex: Consulta Gratuita'
+description: 'Sección de conversión especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/cta.html.twig'
+fields_schema:
+  type: object
+  title: 'Consulta Gratuita'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-cta.png
+preview_data:
+  eyebrow: Contacto
+  title: '¿Necesitas orientación legal?'
+  subtitle: 'Reserva tu primera consulta gratuita y descubre cómo podemos proteger tu negocio. Sin compromiso.'
+  cta_text: 'Reservar consulta gratuita'
+  cta_url: /consulta
+  cta_secondary_text: 'Ver nuestros planes'
+  cta_secondary_url: /planes
+  countdown_date: ''
+  background_image: ''
+weight: 4

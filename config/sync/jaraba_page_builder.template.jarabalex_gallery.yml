@@ -1,0 +1,81 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_gallery
+label: 'JarabaLex: Galería del Despacho'
+description: 'Sección galería de imágenes especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/gallery.html.twig'
+fields_schema:
+  type: object
+  title: 'Galería del Despacho'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    images:
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            format: image
+          alt:
+            type: string
+            maxLength: 200
+          caption:
+            type: string
+            maxLength: 200
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-gallery.png
+preview_data:
+  eyebrow: 'Nuestro despacho'
+  title: 'Conoce nuestras instalaciones y equipo'
+  subtitle: 'Un entorno profesional diseñado para ofrecer el mejor servicio a nuestros clientes.'
+  columns: 3
+  images:
+    -
+      src: ''
+      alt: 'Sala de reuniones'
+      caption: 'Sala de reuniones principal'
+    -
+      src: ''
+      alt: 'Equipo de abogados'
+      caption: 'Nuestro equipo jurídico'
+    -
+      src: ''
+      alt: 'Biblioteca legal'
+      caption: 'Biblioteca especializada'
+    -
+      src: ''
+      alt: 'Recepción del despacho'
+      caption: 'Área de recepción'
+    -
+      src: ''
+      alt: 'Despacho privado'
+      caption: 'Despacho de consultas'
+    -
+      src: ''
+      alt: 'Sala de mediación'
+      caption: 'Sala de mediación'
+weight: 7
