@@ -9,6 +9,15 @@
 (function (Drupal, drupalSettings, once) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     Drupal.behaviors.agroconectaProducerPortal = {
         attach: function (context) {
             // === Chart.js: Gráfico de ventas ===
@@ -75,13 +84,16 @@
                     this.disabled = true;
                     this.textContent = Drupal.t('Procesando...');
 
-                    fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify({ tracking_number: action === 'ship' ? trackingNumber : undefined }),
+                    getCsrfToken().then(function (token) {
+                        return fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-Token': token,
+                            },
+                            body: JSON.stringify({ tracking_number: action === 'ship' ? trackingNumber : undefined }),
+                        });
                     })
                         .then(function (response) { return response.json(); })
                         .then(function (data) {

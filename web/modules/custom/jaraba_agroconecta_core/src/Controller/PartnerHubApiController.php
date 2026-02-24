@@ -80,7 +80,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
         }
 
         $result = $this->partnerService()->createRelationship(
-            (int) ($data['producer_id'] ?? $this->currentUser()->id()),
+            (int) $this->currentUser()->id(),
             $data['partner_email'],
             $data['partner_name'],
             $data['partner_type'],
@@ -103,7 +103,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
      */
     public function listPartners(Request $request): JsonResponse
     {
-        $producerId = (int) $request->query->get('producer_id', $this->currentUser()->id());
+        $producerId = (int) $this->currentUser()->id();
         $page = (int) $request->query->get('page', 0);
         $limit = min((int) $request->query->get('limit', 20), 100);
 
@@ -130,6 +130,11 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
 
         /** @var \Drupal\jaraba_agroconecta_core\Entity\PartnerRelationship $entity */
         $entity = reset($entities);
+
+        // Verify ownership.
+        if ((int) $entity->get('producer_id')->value !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['error' => $this->t('Acceso denegado.')], 403);
+        }
 
         $updatable = ['access_level', 'status', 'notes', 'allowed_products', 'allowed_categories'];
         foreach ($updatable as $field) {
@@ -159,6 +164,16 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
      */
     public function revokePartner(string $uuid): JsonResponse
     {
+        // Verify ownership before revoking.
+        $storage = \Drupal::entityTypeManager()->getStorage('partner_relationship');
+        $entities = $storage->loadByProperties(['uuid' => $uuid]);
+        if (!empty($entities)) {
+            $entity = reset($entities);
+            if ((int) $entity->get('producer_id')->value !== (int) $this->currentUser()->id()) {
+                return new JsonResponse(['error' => $this->t('Acceso denegado.')], 403);
+            }
+        }
+
         $revoked = $this->partnerService()->revokeRelationship($uuid);
 
         if (!$revoked) {
@@ -192,7 +207,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
             ], 400);
         }
 
-        $data['producer_id'] = $data['producer_id'] ?? $this->currentUser()->id();
+        $data['producer_id'] = (int) $this->currentUser()->id();
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? (int) ($data['tenant_id'] ?? 1);
 
         $result = $this->partnerService()->uploadDocument($data, $tenantId);
@@ -206,7 +221,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
      */
     public function listDocuments(Request $request): JsonResponse
     {
-        $producerId = (int) $request->query->get('producer_id', $this->currentUser()->id());
+        $producerId = (int) $this->currentUser()->id();
         $page = (int) $request->query->get('page', 0);
         $limit = min((int) $request->query->get('limit', 20), 100);
 
@@ -221,6 +236,16 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
      */
     public function updateDocument(Request $request, string $uuid): JsonResponse
     {
+        // Verify document ownership.
+        $docStorage = \Drupal::entityTypeManager()->getStorage('partner_document');
+        $docs = $docStorage->loadByProperties(['uuid' => $uuid]);
+        if (!empty($docs)) {
+            $doc = reset($docs);
+            if ((int) $doc->get('producer_id')->value !== (int) $this->currentUser()->id()) {
+                return new JsonResponse(['error' => $this->t('Acceso denegado.')], 403);
+            }
+        }
+
         $data = json_decode($request->getContent(), TRUE);
         $result = $this->partnerService()->updateDocument($uuid, $data);
 
@@ -240,6 +265,16 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
      */
     public function deleteDocument(string $uuid): JsonResponse
     {
+        // Verify document ownership.
+        $docStorage = \Drupal::entityTypeManager()->getStorage('partner_document');
+        $docs = $docStorage->loadByProperties(['uuid' => $uuid]);
+        if (!empty($docs)) {
+            $doc = reset($docs);
+            if ((int) $doc->get('producer_id')->value !== (int) $this->currentUser()->id()) {
+                return new JsonResponse(['error' => $this->t('Acceso denegado.')], 403);
+            }
+        }
+
         $deleted = $this->partnerService()->deleteDocument($uuid);
 
         if (!$deleted) {
@@ -258,7 +293,7 @@ class PartnerHubApiController extends ControllerBase implements ContainerInjecti
      */
     public function getAnalytics(Request $request): JsonResponse
     {
-        $producerId = (int) $request->query->get('producer_id', $this->currentUser()->id());
+        $producerId = (int) $this->currentUser()->id();
         $result = $this->partnerService()->getProducerAnalytics($producerId);
         return new JsonResponse(['success' => TRUE, 'data' => $result, 'meta' => ['timestamp' => time()]]);
     }

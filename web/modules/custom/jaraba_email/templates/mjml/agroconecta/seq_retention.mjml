@@ -1,26 +1,27 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-all font-family="Outfit, sans-serif" />
       <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
-      .metric-box { background-color: #f0f5e8; border-radius: 8px; padding: 16px; text-align: center; margin: 8px 0; }
-      .metric-value { font-size: 24px; font-weight: bold; color: #556B2F; }
+      .metric-box { background-color: #E3F2FD; border-radius: 8px; padding: 16px; text-align: center; margin: 8px 0; }
+      .metric-value { font-size: 24px; font-weight: bold; color: #0D47A1; }
       .metric-label { font-size: 12px; color: #6b7280; text-transform: uppercase; }
     </mj-style>
+    <mj-preview>{{ t('Tu resumen mensual en AgroConecta — mira cómo crece tu negocio.') }}</mj-preview>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#556B2F" padding="20px 0">
+    <mj-section background-color="#0D47A1" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ t('AgroConecta') }}
         </mj-text>
-        <mj-text align="center" color="#e0e7d8" font-size="13px">
+        <mj-text align="center" color="#BBDEFB" font-size="13px">
           {{ t('Tu resumen mensual') }}
         </mj-text>
       </mj-column>
@@ -29,7 +30,7 @@
     <!-- Contenido -->
     <mj-section background-color="#ffffff" padding="32px 24px">
       <mj-column>
-        <mj-text font-size="22px" font-weight="bold" color="#556B2F" padding-bottom="8px">
+        <mj-text font-size="22px" font-weight="bold" color="#0D47A1" padding-bottom="8px">
           {{ t('&iexcl;{{ months_active }} meses contigo!') }}
         </mj-text>
         <mj-text>
@@ -94,6 +95,9 @@
       <mj-column>
         <mj-divider border-color="#e5e7eb" border-width="1px" />
         <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          {{ site_name }} — Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
           &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
         </mj-text>
         <mj-text align="center" font-size="12px" color="#6b7280">

@@ -13,6 +13,15 @@
 (function (Drupal) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     /**
      * Comportamiento principal: Dashboard del Productor.
      *
@@ -164,7 +173,12 @@
             if (!confirm(Drupal.t('Revocar el acceso de este partner?'))) {
                 return;
             }
-            fetch('/api/v1/hub/partners/' + uuid, { method: 'DELETE' })
+            getCsrfToken().then(function (token) {
+                return fetch('/api/v1/hub/partners/' + uuid, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-Token': token }
+                });
+            })
                 .then(function (r) { return r.json(); })
                 .then(function () {
                     self.loadPartners(tbody, 0);
@@ -176,7 +190,12 @@
             if (!confirm(Drupal.t('Desactivar este documento?'))) {
                 return;
             }
-            fetch('/api/v1/hub/documents/' + uuid, { method: 'DELETE' })
+            getCsrfToken().then(function (token) {
+                return fetch('/api/v1/hub/documents/' + uuid, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-Token': token }
+                });
+            })
                 .then(function (r) { return r.json(); })
                 .then(function () {
                     self.loadDocuments(grid, 0);
@@ -342,8 +361,11 @@
             btn.disabled = true;
             btn.textContent = Drupal.t('Generando...');
 
-            fetch('/api/v1/portal/' + token + '/products/' + productId + '/download-pack', {
-                method: 'POST'
+            getCsrfToken().then(function (csrfToken) {
+                return fetch('/api/v1/portal/' + token + '/products/' + productId + '/download-pack', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-Token': csrfToken }
+                });
             })
                 .then(function (r) {
                     if (!r.ok) throw new Error('Pack error');

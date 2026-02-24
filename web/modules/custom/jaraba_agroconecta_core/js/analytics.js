@@ -89,8 +89,8 @@
             var rankClass = idx < 3 ? 'agro-ranking-card__rank--' + (idx + 1) : 'agro-ranking-card__rank--default';
             html += '<li class="agro-ranking-card__item">' +
                 '<span class="agro-ranking-card__rank ' + rankClass + '">' + (idx + 1) + '</span>' +
-                '<span class="agro-ranking-card__name">' + item.name + '</span>' +
-                '<span class="agro-ranking-card__value">' + item.value + '</span>' +
+                '<span class="agro-ranking-card__name">' + Drupal.checkPlain(item.name) + '</span>' +
+                '<span class="agro-ranking-card__value">' + Drupal.checkPlain(String(item.value)) + '</span>' +
                 '</li>';
         });
         list.innerHTML = html;
@@ -113,10 +113,10 @@
             html += '<div class="agro-alert-item agro-alert-item--' + alert.severity + '">' +
                 '<span class="agro-alert-item__icon" aria-hidden="true"></span>' +
                 '<div class="agro-alert-item__content">' +
-                '<strong>' + alert.title + '</strong>' +
-                '<small>' + alert.message + '</small>' +
+                '<strong>' + Drupal.checkPlain(alert.title) + '</strong>' +
+                '<small>' + Drupal.checkPlain(alert.message) + '</small>' +
                 '</div>' +
-                '<span class="agro-alert-item__time">' + alert.time_ago + '</span>' +
+                '<span class="agro-alert-item__time">' + Drupal.checkPlain(alert.time_ago) + '</span>' +
                 '</div>';
         });
         container.innerHTML = html;
@@ -144,8 +144,8 @@
                     labels: sparklines[key].labels || [],
                     datasets: [{
                         data: sparklines[key].data || [],
-                        borderColor: '#2d6a4f',
-                        backgroundColor: 'rgba(45, 106, 79, 0.1)',
+                        borderColor: '#1565C0',
+                        backgroundColor: 'rgba(21, 101, 192, 0.1)',
                         fill: true,
                         tension: 0.4,
                         borderWidth: 2,

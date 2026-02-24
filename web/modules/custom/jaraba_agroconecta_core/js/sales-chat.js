@@ -12,6 +12,15 @@
 (function (Drupal, drupalSettings, once) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     /**
      * Behavior: Sales Agent Chat Widget.
      */
@@ -93,19 +102,22 @@
                     if (sendBtn) sendBtn.disabled = true;
                     if (typingIndicator) typingIndicator.classList.add('agro-sales-chat__typing--visible');
 
-                    fetch('/api/v1/sales/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({
-                            message: text,
-                            session_id: sessionId,
-                            tenant_id: drupalSettings.jaraba ? drupalSettings.jaraba.tenantId : null,
-                            page: window.location.pathname,
-                            product_id: getProductIdFromPage()
-                        })
+                    getCsrfToken().then(function (token) {
+                        return fetch('/api/v1/sales/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-Token': token
+                            },
+                            body: JSON.stringify({
+                                message: text,
+                                session_id: sessionId,
+                                tenant_id: drupalSettings.jaraba ? drupalSettings.jaraba.tenantId : null,
+                                page: window.location.pathname,
+                                product_id: getProductIdFromPage()
+                            })
+                        });
                     })
                         .then(function (r) { return r.json(); })
                         .then(function (data) {
@@ -172,7 +184,7 @@
 
         if (type === 'bot') {
             // Markdown básico
-            msg.innerHTML = text
+            msg.innerHTML = Drupal.checkPlain(text)
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>');
         } else {
@@ -221,13 +233,16 @@
         btn.disabled = true;
         btn.textContent = Drupal.t('Añadiendo...');
 
-        fetch('/api/v1/sales/cart/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({ product_id: productId, quantity: 1 })
+        getCsrfToken().then(function (token) {
+            return fetch('/api/v1/sales/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': token
+                },
+                body: JSON.stringify({ product_id: productId, quantity: 1 })
+            });
         })
             .then(function (r) { return r.json(); })
             .then(function (data) {

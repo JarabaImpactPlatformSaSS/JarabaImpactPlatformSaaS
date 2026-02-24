@@ -1,24 +1,25 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-all font-family="Outfit, sans-serif" />
       <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
-      .step-number { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background-color: #556B2F; color: #ffffff; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
+      .step-number { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background-color: #0D47A1; color: #ffffff; text-align: center; line-height: 28px; font-weight: bold; margin-right: 8px; }
     </mj-style>
+    <mj-preview>{{ t('Bienvenido a AgroConecta — completa tu perfil y publica tu primer producto.') }}</mj-preview>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#556B2F" padding="20px 0">
+    <mj-section background-color="#0D47A1" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ t('AgroConecta') }}
         </mj-text>
-        <mj-text align="center" color="#e0e7d8" font-size="13px">
+        <mj-text align="center" color="#BBDEFB" font-size="13px">
           {{ t('Del campo a tu mesa, sin intermediarios') }}
         </mj-text>
       </mj-column>
@@ -27,14 +28,14 @@
     <!-- Contenido -->
     <mj-section background-color="#ffffff" padding="32px 24px">
       <mj-column>
-        <mj-text font-size="22px" font-weight="bold" color="#556B2F" padding-bottom="8px">
+        <mj-text font-size="22px" font-weight="bold" color="#0D47A1" padding-bottom="8px">
           {{ t('&iexcl;Bienvenido a AgroConecta, productor!') }}
         </mj-text>
         <mj-text>
           <p>{{ t('Hola') }} {{ user_name }},</p>
           <p>{{ t('Te has registrado como productor en AgroConecta. Ahora puedes conectar directamente con consumidores y vender tus productos frescos sin intermediarios.') }}</p>
         </mj-text>
-        <mj-text font-size="16px" font-weight="bold" color="#556B2F" padding-top="16px">
+        <mj-text font-size="16px" font-weight="bold" color="#0D47A1" padding-top="16px">
           {{ t('Tus primeros pasos:') }}
         </mj-text>
         <mj-text>
@@ -56,6 +57,9 @@
       <mj-column>
         <mj-divider border-color="#e5e7eb" border-width="1px" />
         <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+          {{ site_name }} — Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#6b7280">
           &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
         </mj-text>
         <mj-text align="center" font-size="12px" color="#6b7280">
