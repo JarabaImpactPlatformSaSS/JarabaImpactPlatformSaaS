@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Jaraba Candidate module.
+ */
+
+/**
+ * Add database indexes to candidate_profile table.
+ */
+function jaraba_candidate_update_10001(): void {
+  $schema = \Drupal::database()->schema();
+  $table = 'candidate_profile';
+
+  // user_id has a UniqueField constraint but verify the index exists.
+  if (!$schema->indexExists($table, 'idx_availability')) {
+    $schema->addIndex($table, 'idx_availability', ['availability_status'], [
+      'fields' => [
+        'availability_status' => ['type' => 'varchar', 'length' => 32],
+      ],
+    ]);
+  }
+
+  if (!$schema->indexExists($table, 'idx_city')) {
+    $schema->addIndex($table, 'idx_city', ['city'], [
+      'fields' => [
+        'city' => ['type' => 'varchar', 'length' => 128],
+      ],
+    ]);
+  }
+
+  if (!$schema->indexExists($table, 'idx_experience_level')) {
+    $schema->addIndex($table, 'idx_experience_level', ['experience_level'], [
+      'fields' => [
+        'experience_level' => ['type' => 'varchar', 'length' => 32],
+      ],
+    ]);
+  }
+
+  // Compound index for matching queries (availability + experience).
+  if (!$schema->indexExists($table, 'idx_availability_experience')) {
+    $schema->addIndex($table, 'idx_availability_experience', ['availability_status', 'experience_level'], [
+      'fields' => [
+        'availability_status' => ['type' => 'varchar', 'length' => 32],
+        'experience_level' => ['type' => 'varchar', 'length' => 32],
+      ],
+    ]);
+  }
+}

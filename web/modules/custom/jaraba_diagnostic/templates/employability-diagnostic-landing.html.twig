@@ -12,7 +12,7 @@
  */
 #}
 
-<div class="ej-diagnostic" data-diagnostic-wizard>
+<div class="ej-diagnostic" data-diagnostic-wizard role="main" aria-label="{{ 'Employability diagnostic'|t }}">
   {# Hero section #}
   <div class="ej-diagnostic__hero">
     <div class="ej-diagnostic__hero-content">
@@ -30,22 +30,22 @@
         {{ jaraba_icon('ui', 'check', { size: '16px' }) }}
         <span>{{ '100% gratuito'|t }}</span>
       </div>
-      <button type="button" class="ej-diagnostic__start-btn" data-diagnostic-start>
+      <button type="button" class="ej-diagnostic__start-btn" data-diagnostic-start aria-label="{{ 'Start employability diagnostic'|t }}">
         {{ 'Empezar diagnostico'|t }}
       </button>
     </div>
   </div>
 
   {# Progress bar #}
-  <div class="ej-diagnostic__progress" data-diagnostic-progress style="display: none;">
+  <div class="ej-diagnostic__progress" data-diagnostic-progress style="display: none;" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="{{ 'Diagnostic progress'|t }}">
     <div class="ej-diagnostic__progress-bar">
       <div class="ej-diagnostic__progress-fill" data-progress-fill style="width: 0%"></div>
     </div>
-    <span class="ej-diagnostic__progress-text" data-progress-text>{{ 'Paso 1 de 3'|t }}</span>
+    <span class="ej-diagnostic__progress-text" data-progress-text aria-live="polite">{{ 'Paso 1 de 3'|t }}</span>
   </div>
 
   {# Wizard steps #}
-  <div class="ej-diagnostic__wizard" data-diagnostic-steps style="display: none;">
+  <div class="ej-diagnostic__wizard" data-diagnostic-steps style="display: none;" role="form" aria-label="{{ 'Diagnostic questions'|t }}">
     {% for question in questions %}
       <div class="ej-diagnostic__step" data-step="{{ loop.index }}" {% if not loop.first %}style="display: none;"{% endif %}>
         <div class="ej-diagnostic__step-header">
@@ -80,7 +80,8 @@
         <input type="email"
                class="ej-diagnostic__email-input"
                data-diagnostic-email
-               placeholder="{{ 'tu@email.com'|t }}" />
+               placeholder="{{ 'tu@email.com'|t }}"
+               aria-label="{{ 'Your email address'|t }}" />
         <button type="button" class="ej-diagnostic__submit-btn" data-diagnostic-submit>
           {{ 'Ver mis resultados'|t }}
         </button>
@@ -92,7 +93,7 @@
   </div>
 
   {# Results section (rendered by JS after API response) #}
-  <div class="ej-diagnostic__results" data-diagnostic-results style="display: none;">
+  <div class="ej-diagnostic__results" data-diagnostic-results style="display: none;" aria-live="polite">
     {# Score ring SVG #}
     <div class="ej-diagnostic__score-container">
       <svg class="ej-diagnostic__score-ring" viewBox="0 0 120 120">
@@ -153,8 +154,8 @@
   </div>
 
   {# Loading state #}
-  <div class="ej-diagnostic__loading" data-diagnostic-loading style="display: none;">
-    <div class="ej-diagnostic__spinner"></div>
+  <div class="ej-diagnostic__loading" data-diagnostic-loading style="display: none;" role="status" aria-live="assertive">
+    <div class="ej-diagnostic__spinner" aria-hidden="true"></div>
     <p>{{ 'Analizando tu perfil...'|t }}</p>
   </div>
 </div>

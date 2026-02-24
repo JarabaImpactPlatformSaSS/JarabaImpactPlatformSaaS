@@ -131,16 +131,17 @@
     {% endif %}
   </div>
 
-  <aside class="job-detail__sidebar">
+  <aside class="job-detail__sidebar" role="complementary" aria-label="{{ 'Job actions'|t }}">
     <div class="job-detail__apply-box">
       {% if can_apply and not has_applied %}
         <a href="{{ path('jaraba_job_board.apply', {'job_posting': job.id}) }}"
-           class="jaraba-btn jaraba-btn--primary jaraba-btn--block">
+           class="jaraba-btn jaraba-btn--primary jaraba-btn--block"
+           aria-label="{{ 'Apply for: %title'|t({'%title': job.title}) }}">
           {{ jaraba_icon('ui', 'send', { size: '18px' }) }}
           {{ 'Aplicar ahora'|t }}
         </a>
       {% elseif has_applied %}
-        <div class="job-detail__applied-badge">
+        <div class="job-detail__applied-badge" role="status">
           {{ jaraba_icon('ui', 'check', { size: '18px' }) }}
           {{ 'Ya has aplicado'|t }}
         </div>
@@ -154,7 +155,8 @@
       {% endif %}
 
       <button type="button" class="jaraba-btn jaraba-btn--ghost jaraba-btn--block job-save-btn"
-              data-job-id="{{ job.id }}">
+              data-job-id="{{ job.id }}"
+              aria-label="{{ 'Save job: %title'|t({'%title': job.title}) }}">
         {{ jaraba_icon('ui', 'bookmark', { size: '18px' }) }}
         {{ 'Guardar oferta'|t }}
       </button>
@@ -171,7 +173,7 @@
   </aside>
 
   {% if similar_jobs %}
-    <section class="job-detail__similar">
+    <section class="job-detail__similar" aria-label="{{ 'Similar job offers'|t }}">
       <h2>{{ 'Ofertas similares'|t }}</h2>
       <div class="similar-jobs-grid">
         {% for similar in similar_jobs %}

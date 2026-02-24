@@ -282,14 +282,18 @@ class MatchingService
      */
     public function getRecommendedJobs(int $candidate_id, int $limit = 10): array
     {
-        // Limit candidate pool to recent published jobs (max 100) to avoid
+        $config = $this->configFactory->get('jaraba_job_board.settings');
+        $poolSize = (int) ($config->get('matching.candidate_pool_size') ?? 100);
+        $threshold = (int) ($config->get('matching.score_threshold') ?? 50);
+
+        // Limit candidate pool to recent published jobs to avoid
         // loading all entities. Sorted by newest first for relevance.
         $storage = $this->entityTypeManager->getStorage('job_posting');
         $job_ids = $storage->getQuery()
             ->accessCheck(TRUE)
             ->condition('status', 'published')
             ->sort('published_at', 'DESC')
-            ->range(0, 100)
+            ->range(0, $poolSize)
             ->execute();
 
         $jobs = $storage->loadMultiple($job_ids);
@@ -297,7 +301,7 @@ class MatchingService
         $scored_jobs = [];
         foreach ($jobs as $job) {
             $score = $this->calculateCandidateJobScore($candidate_id, $job);
-            if ($score >= 50) { // Minimum threshold
+            if ($score >= $threshold) {
                 $scored_jobs[$job->id()] = [
                     'job_id' => $job->id(),
                     'score' => $score,

@@ -4,19 +4,19 @@
  * Template for job search results.
  */
 #}
-<div class="job-search-results">
+<div class="job-search-results" role="main" aria-label="{{ 'Job search results'|t }}">
   <header class="job-search-header">
     <h1 class="job-search-title">{{ 'Job Search'|t }}</h1>
-    
+
     {% if total > 0 %}
-      <p class="job-search-count">{{ total }} {{ 'jobs found'|t }}</p>
+      <p class="job-search-count" aria-live="polite">{{ total }} {{ 'jobs found'|t }}</p>
     {% endif %}
   </header>
 
   {% if jobs is not empty %}
-    <div class="job-listings">
+    <div class="job-listings" role="list" aria-label="{{ 'Job listings'|t }}">
       {% for job in jobs %}
-        <article class="job-card">
+        <article class="job-card" role="listitem">
           <div class="job-card__content">
             <h2 class="job-card__title">
               <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}">
@@ -57,7 +57,7 @@
           </div>
           
           <div class="job-card__actions">
-            <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}" class="btn btn--primary">
+            <a href="{{ path('entity.job_posting.canonical', {'job_posting': job.id}) }}" class="btn btn--primary" aria-label="{{ 'View details for %title'|t({'%title': job.title}) }}">
               {{ 'View Details'|t }}
             </a>
           </div>
@@ -70,7 +70,7 @@
     {% endif %}
     
   {% else %}
-    <div class="job-search-empty">
+    <div class="job-search-empty" role="status" aria-live="polite">
       <p>{{ 'No jobs found matching your criteria.'|t }}</p>
       <p>{{ 'Try adjusting your filters or check back later.'|t }}</p>
     </div>

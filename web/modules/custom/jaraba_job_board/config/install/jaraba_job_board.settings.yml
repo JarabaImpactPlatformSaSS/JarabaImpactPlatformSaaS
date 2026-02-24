@@ -1,0 +1,34 @@
+# Jaraba Job Board - Module settings.
+#
+# Centralized configuration for limits, thresholds, and defaults
+# that were previously hardcoded across controllers and services.
+
+# Search & pagination.
+search:
+  # Default results per page for job search.
+  page_size: 20
+  # Maximum results per page allowed via API.
+  max_page_size: 100
+  # Number of similar jobs shown on detail page.
+  similar_jobs_limit: 4
+
+# Matching engine.
+matching:
+  # Minimum match score (0-100) to include in recommendations.
+  score_threshold: 50
+  # Max recent jobs evaluated for recommendations.
+  candidate_pool_size: 100
+  # Default number of recommendations returned.
+  recommendation_limit: 10
+
+# Job alerts.
+alerts:
+  # Max matching jobs per alert notification.
+  max_matches_per_alert: 10
+
+# Cron & queues.
+cron:
+  # Max items per cron queue run.
+  queue_batch_size: 50
+  # Digest send hour (24h format).
+  digest_hour: 9

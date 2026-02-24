@@ -7,14 +7,14 @@
  * - applications: Array of applications with id, job_title, company, status, applied_at.
  */
 #}
-<div class="my-applications">
+<div class="my-applications" role="main" aria-label="{{ 'My job applications'|t }}">
   {% if applications %}
-    <div class="applications-list">
+    <div class="applications-list" role="list" aria-label="{{ 'Applications list'|t }}">
       {% for app in applications %}
-        <div class="application-card status-{{ app.status }}">
+        <div class="application-card status-{{ app.status }}" role="listitem">
           <div class="application-header">
             <h3 class="job-title">{{ app.job_title }}</h3>
-            <span class="status-badge status-{{ app.status }}">
+            <span class="status-badge status-{{ app.status }}" role="status">
               {% if app.status == 'applied' %}
                 {{ 'En revisión'|t }}
               {% elseif app.status == 'screening' %}
@@ -49,7 +49,7 @@
       </div>
       <h3 class="empty-title">{{ 'Tu historial de candidaturas está vacío'|t }}</h3>
       <p class="empty-message">{{ 'Cuando apliques a ofertas de empleo, aparecerán aquí para que puedas hacer seguimiento de tu progreso.'|t }}</p>
-      <a href="{{ path('jaraba_job_board.search') }}" class="btn btn-primary btn-large">
+      <a href="{{ path('jaraba_job_board.search') }}" class="btn btn-primary btn-large" aria-label="{{ 'Browse available job offers'|t }}">
         {{ 'Explorar ofertas de empleo'|t }}
       </a>
     </div>

@@ -122,13 +122,46 @@ function jaraba_candidate_theme(): array {
 /**
  * Implements hook_page_attachments_alter().
  *
- * Adjunta la librería modal-system a las rutas del módulo candidato
- * para que los enlaces CRUD abran en modal (Fase 2 Empleabilidad).
+ * - Adjunta la librería modal-system a las rutas del módulo candidato.
+ * - Adds Open Graph meta tags for public candidate profiles.
  */
 function jaraba_candidate_page_attachments_alter(array &$attachments): void {
-  $route = \Drupal::routeMatch()->getRouteName() ?: '';
+  $route_match = \Drupal::routeMatch();
+  $route = $route_match->getRouteName() ?: '';
+
   if (str_starts_with($route, 'jaraba_candidate.')) {
     $attachments['#attached']['library'][] = 'jaraba_candidate/modal-actions';
+  }
+
+  // Open Graph meta tags for public candidate profile.
+  if ($route === 'jaraba_candidate.profile_view') {
+    $profile = $route_match->getParameter('candidate_profile');
+    if ($profile && $profile->isPublic()) {
+      $title = $profile->getFullName() . ' - ' . ($profile->getHeadline() ?: t('Candidate Profile'));
+      $description = mb_substr(strip_tags($profile->getSummary()), 0, 160);
+      $url = \Drupal::request()->getSchemeAndHttpHost() . '/profile/' . $profile->id();
+
+      $meta_tags = [
+        ['og:title', $title],
+        ['og:description', $description],
+        ['og:type', 'profile'],
+        ['og:url', $url],
+        ['twitter:card', 'summary'],
+        ['twitter:title', $title],
+        ['twitter:description', $description],
+      ];
+
+      foreach ($meta_tags as [$property, $content]) {
+        $tag = [
+          '#tag' => 'meta',
+          '#attributes' => [
+            'property' => $property,
+            'content' => $content,
+          ],
+        ];
+        $attachments['#attached']['html_head'][] = [$tag, 'jaraba_cp_' . $property];
+      }
+    }
   }
 }
 

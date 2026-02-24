@@ -209,6 +209,42 @@ function jaraba_diagnostic_on_diagnostic_completed(EntityInterface $diagnostic):
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph meta tags for the employability diagnostic landing.
+ */
+function jaraba_diagnostic_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  if ($route === 'jaraba_diagnostic.employability.landing') {
+    $title = t('Diagnóstico de Empleabilidad - Jaraba Impact Platform');
+    $description = t('Descubre tu perfil profesional en 2 minutos. Diagnóstico express gratuito con recomendaciones personalizadas para impulsar tu carrera.');
+    $url = \Drupal::request()->getSchemeAndHttpHost() . '/empleabilidad/diagnostico';
+
+    $meta_tags = [
+      ['og:title', (string) $title],
+      ['og:description', (string) $description],
+      ['og:type', 'website'],
+      ['og:url', $url],
+      ['twitter:card', 'summary'],
+      ['twitter:title', (string) $title],
+      ['twitter:description', (string) $description],
+    ];
+
+    foreach ($meta_tags as [$property, $content]) {
+      $tag = [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'property' => $property,
+          'content' => $content,
+        ],
+      ];
+      $attachments['#attached']['html_head'][] = [$tag, 'jaraba_diag_' . $property];
+    }
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function jaraba_diagnostic_theme(): array {

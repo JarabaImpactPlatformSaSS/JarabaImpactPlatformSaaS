@@ -52,8 +52,11 @@ class JobBoardApiController extends ControllerBase
      */
     public function listJobs(Request $request): JsonResponse
     {
+        $config = $this->config('jaraba_job_board.settings');
+        $defaultPageSize = (int) ($config->get('search.page_size') ?? 20);
+        $maxPageSize = (int) ($config->get('search.max_page_size') ?? 100);
         $page = (int) $request->query->get('page', 0);
-        $limit = min((int) $request->query->get('limit', 20), 100);
+        $limit = min((int) $request->query->get('limit', $defaultPageSize), $maxPageSize);
 
         $storage = $this->entityTypeManager()->getStorage('job_posting');
 

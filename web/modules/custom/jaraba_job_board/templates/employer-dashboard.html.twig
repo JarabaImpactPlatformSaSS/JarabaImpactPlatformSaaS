@@ -21,7 +21,7 @@
 #}
 {{ attach_library('jaraba_job_board/employer_dashboard') }}
 
-<div class="employer-dashboard">
+<div class="employer-dashboard" role="main" aria-label="{{ 'Employer Dashboard'|t }}">
   
   {# Header Premium con saludo y CTA principal #}
   <header class="dashboard-header">
@@ -57,7 +57,7 @@
     {# ========================================
        KPI STATS - Tarjetas Clickeables
        ======================================== #}
-    <section class="dashboard-card dashboard-card--stats">
+    <section class="dashboard-card dashboard-card--stats" aria-label="{{ 'Key metrics summary'|t }}">
       <div class="card-header">
         <h2>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
@@ -126,7 +126,7 @@
     {# ========================================
        MIS OFERTAS - Lista Moderna
        ======================================== #}
-    <section class="dashboard-card dashboard-card--jobs">
+    <section class="dashboard-card dashboard-card--jobs" aria-label="{{ 'My job postings'|t }}">
       <div class="card-header">
         <h2>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
@@ -229,7 +229,7 @@
     {# ========================================
        ACCIONES RÁPIDAS
        ======================================== #}
-    <section class="dashboard-card dashboard-card--actions">
+    <section class="dashboard-card dashboard-card--actions" aria-label="{{ 'Quick actions'|t }}">
       <div class="card-header">
         <h2>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">

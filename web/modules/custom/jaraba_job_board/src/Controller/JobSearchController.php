@@ -76,7 +76,8 @@ class JobSearchController extends ControllerBase
         ];
 
         $page = (int) $request->query->get('page', 0);
-        $limit = 20;
+        $config = $this->config('jaraba_job_board.settings');
+        $limit = (int) ($config->get('search.page_size') ?? 20);
 
         // Get jobs with filters
         $result = $this->getFilteredJobs($filters, $page, $limit);

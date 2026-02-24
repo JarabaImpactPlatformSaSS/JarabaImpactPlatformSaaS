@@ -444,18 +444,52 @@ Creados:
 
 ---
 
-## 9. Hallazgos Pendientes (para sprints posteriores)
+## 9. Sprint 3 — Pendientes Completados
+
+### 9a. Database Indexes (P4-PERF)
+- Creado `jaraba_job_board.install` con `update_10001()`: 10 indexes en `job_posting` y `job_application`
+  - `idx_employer_status` (compound), `idx_status_published` (compound), `idx_job_type`, `idx_remote_type`, `idx_experience_level`, `idx_location_city`
+  - `idx_job_id`, `idx_candidate_id`, `idx_job_status` (compound), `idx_applied_at`
+- Creado `jaraba_candidate.install` con `update_10001()`: 4 indexes en `candidate_profile`
+  - `idx_availability`, `idx_city`, `idx_experience_level`, `idx_availability_experience` (compound)
+
+### 9b. Open Graph Meta Tags (P4-SEO)
+- `jaraba_job_board.module`: Added `hook_page_attachments_alter()` — og:title, og:description, og:type, og:url, twitter:card for job detail pages
+- `jaraba_candidate.module`: Extended `hook_page_attachments_alter()` — og meta for public candidate profiles (only when `isPublic()`)
+- `jaraba_diagnostic.module`: Added `hook_page_attachments_alter()` — og meta for diagnostic landing with translated description
+
+### 9c. Accessibility ARIA (P4-A11Y)
+- `job-search-results.html.twig`: `role="main"`, `role="list/listitem"`, `aria-live="polite"` on count, `aria-label` on "View Details" links
+- `job-posting-detail.html.twig`: `aria-label` on apply/save buttons with job title context, `role="complementary"` on sidebar, `role="status"` on applied badge
+- `employability-diagnostic-landing.html.twig`: `role="main"`, `role="progressbar"` + `aria-valuenow/min/max`, `aria-live="polite/assertive"`, `role="form"`, `aria-label` on email input, `aria-hidden` on spinner
+- `my-applications.html.twig`: `role="main/list/listitem"`, `role="status"` on badges, `aria-label` on CTA
+- `jobseeker-dashboard.html.twig`: `role="main"`, `aria-label` on 5 section cards
+- `employer-dashboard.html.twig`: `role="main"`, `aria-label` on stats/jobs/actions sections
+
+### 9d. Config Extraction (P4-CONFIG)
+- Created `jaraba_job_board.settings.yml` with centralized settings:
+  - `search.page_size: 20`, `search.max_page_size: 100`, `search.similar_jobs_limit: 4`
+  - `matching.score_threshold: 50`, `matching.candidate_pool_size: 100`, `matching.recommendation_limit: 10`
+  - `cron.queue_batch_size: 50`, `cron.digest_hour: 9`
+- Updated `MatchingService::getRecommendedJobs()` to read `score_threshold` and `candidate_pool_size` from config
+- Updated `JobSearchController::index()` to read `page_size` from config
+- Updated `JobBoardApiController::listJobs()` to read `page_size` and `max_page_size` from config
+- Updated `jaraba_job_board_cron()` to read `queue_batch_size` from config
+- Updated `_jaraba_job_board_process_digest()` to read `digest_hour` from config
+
+### 9e. PHPUnit Tests (P3-5)
+- Created `tests/src/Unit/Service/MatchingServiceTest.php`:
+  - 6 tests: score returns 0 without job, score is numeric, perfect match > 80, no skills < 80, experience level data provider, remote ignores location
+- Created `tests/src/Kernel/EntityInstallTest.php`:
+  - 7 tests: entity creation, status transitions (publish/close), applications count, ATS pipeline statuses (8 data provider cases), hire workflow, rejection with feedback, field definitions
+- Created `phpunit.xml` config for `jaraba_job_board` module
+
+### 9f. Remaining Items (future sprints)
 
 | # | Tipo | Descripcion |
 |---|------|-------------|
-| P3-5 | Testing | 0 tests unitarios/kernel para controladores y servicios del vertical |
-| P4-SEO | SEO | Falta meta tags (og:title, og:description) en templates de candidato y diagnostico |
 | P4-SEO | SEO | Falta breadcrumbs en los 3 modulos del vertical |
 | P4-SEO | SEO | Falta sitemap XML configuration para job postings |
-| P4-PERF | Performance | Missing database indexes en campos frecuentemente consultados de entities |
-| P4-CONFIG | Config | Missing config/install YAML files en jaraba_candidate y jaraba_diagnostic |
-| P4-CONFIG | Config | Valores hardcoded (page size=20, score threshold=50, recommendation limit=5) |
-| P4-A11Y | Accesibilidad | Faltan aria-labels en botones con solo iconos, roles ARIA en acordeones |
 
 ---
 
