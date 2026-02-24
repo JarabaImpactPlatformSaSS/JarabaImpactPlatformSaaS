@@ -4,6 +4,6 @@ vapid_subject: 'mailto:admin@jaraba.es'
 activecampaign_webhook_url: ''
 activecampaign_api_key: ''
 activecampaign_account_id: ''
-email_from_name: 'Jaraba Empleabilidad'
+email_from_name: 'Jaraba Impact Platform'
 email_from_email: 'empleo@jaraba.es'
 email_use_html: true

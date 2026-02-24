@@ -21,7 +21,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .email-header {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
       color: white;
       padding: 30px 20px;
       text-align: center;
@@ -47,11 +47,11 @@
       border-radius: 8px;
       padding: 20px;
       margin: 20px 0;
-      border-left: 4px solid #6366f1;
+      border-left: 4px solid #1565C0;
     }
     .job-card h3 {
       margin: 0 0 10px 0;
-      color: #6366f1;
+      color: #1565C0;
     }
     .job-card .meta {
       color: #666;
@@ -68,7 +68,7 @@
     }
     .btn {
       display: inline-block;
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
       color: white;
       text-decoration: none;
       padding: 12px 30px;
@@ -87,7 +87,7 @@
       color: #666;
     }
     .email-footer a {
-      color: #6366f1;
+      color: #1565C0;
       text-decoration: none;
     }
     .status-badge {
@@ -139,7 +139,7 @@
       
       {% if tips %}
         <div style="background: #fffbeb; border-radius: 8px; padding: 15px; margin-top: 20px;">
-          <strong>💡 {{ 'Consejo:'|t }}</strong>
+          <strong>{{ jaraba_icon('ui', 'lightbulb', { size: '16px' }) }} {{ 'Consejo:'|t }}</strong>
           <p style="margin: 10px 0 0 0;">{{ tips }}</p>
         </div>
       {% endif %}

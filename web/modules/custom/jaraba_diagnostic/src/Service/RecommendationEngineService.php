@@ -73,7 +73,7 @@ class RecommendationEngineService
                 'title' => 'Digitalizar operaciones básicas',
                 'description' => 'Gestión manual de clientes, inventario y facturación.',
                 'action' => 'Implementar herramientas de gestión (CRM, facturación).',
-                'quick_wins' => ['CRM integrado en Jaraba', 'Gestión de facturas digital'],
+                'quick_wins' => ['CRM integrado en Jaraba Impact Platform', 'Gestión de facturas digital'],
             ],
             'medium' => [
                 'title' => 'Integrar sistemas',

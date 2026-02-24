@@ -71,8 +71,45 @@ class CandidateController extends ControllerBase
      */
     public function savedJobs(): array
     {
+        $user_id = (int) $this->currentUser()->id();
+
+        // Load saved jobs from user data storage.
+        $saved = [];
+        try {
+            $userData = \Drupal::service('user.data');
+            $saved_ids = $userData->get('jaraba_job_board', $user_id, 'saved_jobs') ?: [];
+
+            if (!empty($saved_ids)) {
+                $jobs = $this->entityTypeManager()
+                    ->getStorage('job_posting')
+                    ->loadMultiple($saved_ids);
+
+                foreach ($jobs as $job) {
+                    $saved[] = [
+                        'id' => $job->id(),
+                        'title' => $job->getTitle(),
+                        'location' => $job->getLocationCity(),
+                        'job_type' => $job->getJobType(),
+                        'status' => $job->getStatus(),
+                        'published_at' => $job->get('published_at')->value,
+                    ];
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // Fail gracefully.
+        }
+
         return [
-            '#markup' => $this->t('Saved jobs - Coming soon'),
+            '#theme' => 'saved_jobs',
+            '#jobs' => $saved,
+            '#attached' => [
+                'library' => ['jaraba_job_board/saved_jobs'],
+            ],
+            '#cache' => [
+                'contexts' => ['user'],
+                'max-age' => 300,
+            ],
         ];
     }
 
@@ -81,8 +118,40 @@ class CandidateController extends ControllerBase
      */
     public function alerts(): array
     {
+        $user_id = (int) $this->currentUser()->id();
+
+        // Load configured job alerts for this user.
+        $alerts = [];
+        try {
+            $userData = \Drupal::service('user.data');
+            $alertData = $userData->get('jaraba_job_board', $user_id, 'job_alerts') ?: [];
+
+            foreach ($alertData as $alert) {
+                $alerts[] = [
+                    'id' => $alert['id'] ?? '',
+                    'keywords' => $alert['keywords'] ?? '',
+                    'location' => $alert['location'] ?? '',
+                    'job_type' => $alert['job_type'] ?? '',
+                    'frequency' => $alert['frequency'] ?? 'daily',
+                    'created' => $alert['created'] ?? time(),
+                    'active' => $alert['active'] ?? TRUE,
+                ];
+            }
+        }
+        catch (\Exception $e) {
+            // Fail gracefully.
+        }
+
         return [
-            '#markup' => $this->t('Job alerts - Coming soon'),
+            '#theme' => 'job_alerts',
+            '#alerts' => $alerts,
+            '#attached' => [
+                'library' => ['jaraba_job_board/job_alerts'],
+            ],
+            '#cache' => [
+                'contexts' => ['user'],
+                'max-age' => 300,
+            ],
         ];
     }
 

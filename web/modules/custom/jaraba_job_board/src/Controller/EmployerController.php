@@ -53,11 +53,10 @@ class EmployerController extends ControllerBase
             ->getStorage('job_posting')
             ->loadByProperties(['employer_id' => $user_id]);
 
-        // Calculate stats
+        // Calculate stats using aggregate queries instead of N+1 entity loads.
         $totalJobs = count($jobs);
         $activeJobs = 0;
         $totalApplications = 0;
-        $pendingApplications = 0;
         $totalViews = 0;
         $recentJobs = [];
 
@@ -71,14 +70,6 @@ class EmployerController extends ControllerBase
             $totalApplications += $appCount;
             $totalViews += (int) ($job->get('views_count')->value ?? 0);
 
-            // Count pending (not reviewed)
-            $applications = $this->applicationService->getJobApplications((int) $job->id());
-            foreach ($applications as $app) {
-                if ($app->getStatus() === 'pending' || $app->getStatus() === 'applied') {
-                    $pendingApplications++;
-                }
-            }
-
             // Recent jobs for display
             $recentJobs[] = [
                 'id' => $job->id(),
@@ -89,6 +80,9 @@ class EmployerController extends ControllerBase
                 'views' => (int) ($job->get('views_count')->value ?? 0),
             ];
         }
+
+        // Single aggregate COUNT query instead of loading all applications per job.
+        $pendingApplications = $this->applicationService->countPendingApplications($user_id);
 
         // Limit recent jobs to 5
         $recentJobs = array_slice($recentJobs, 0, 5);
@@ -201,15 +195,17 @@ class EmployerController extends ControllerBase
             usort($formatted, fn($a, $b) => $b['applications_count'] <=> $a['applications_count']);
         }
 
-        // Count by status for filter chips
+        // Count by status for filter chips using aggregate COUNT queries
+        // instead of loading all entities a second time.
         $status_counts = ['all' => 0, 'draft' => 0, 'published' => 0, 'paused' => 0, 'closed' => 0];
-        $all_jobs = $storage->loadByProperties(['employer_id' => $user_id]);
-        foreach ($all_jobs as $job) {
-            $status_counts['all']++;
-            $s = $job->getStatus();
-            if (isset($status_counts[$s])) {
-                $status_counts[$s]++;
-            }
+        foreach (['draft', 'published', 'paused', 'closed'] as $s) {
+            $status_counts[$s] = (int) $storage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('employer_id', $user_id)
+                ->condition('status', $s)
+                ->count()
+                ->execute();
+            $status_counts['all'] += $status_counts[$s];
         }
 
         return [
@@ -235,12 +231,63 @@ class EmployerController extends ControllerBase
     }
 
     /**
-     * Lists all applications received.
+     * Lists all applications received across all employer's job postings.
      */
     public function applications(): array
     {
+        $user_id = (int) $this->currentUser()->id();
+
+        // Get all job postings for this employer.
+        $jobs = $this->entityTypeManager()
+            ->getStorage('job_posting')
+            ->loadByProperties(['employer_id' => $user_id]);
+
+        $job_ids = array_keys($jobs);
+        $formatted = [];
+
+        if (!empty($job_ids)) {
+            // Load all applications for employer's jobs.
+            $app_ids = $this->entityTypeManager()
+                ->getStorage('job_application')
+                ->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('job_id', $job_ids, 'IN')
+                ->sort('applied_at', 'DESC')
+                ->range(0, 100)
+                ->execute();
+
+            $applications = $this->entityTypeManager()
+                ->getStorage('job_application')
+                ->loadMultiple($app_ids);
+
+            foreach ($applications as $app) {
+                $job = $jobs[(int) $app->get('job_id')->target_id] ?? NULL;
+                $formatted[] = [
+                    'id' => $app->id(),
+                    'candidate_id' => $app->getCandidateId(),
+                    'job_title' => $job ? $job->getTitle() : '',
+                    'job_id' => $app->get('job_id')->target_id,
+                    'status' => $app->getStatus(),
+                    'match_score' => $app->getMatchScore(),
+                    'applied_at' => $app->getAppliedAt(),
+                ];
+            }
+        }
+
+        // Stats using aggregate query.
+        $stats = $this->applicationService->getEmployerStats($user_id);
+
         return [
-            '#markup' => $this->t('All received applications - Coming soon'),
+            '#theme' => 'employer_applications',
+            '#applications' => $formatted,
+            '#stats' => $stats,
+            '#attached' => [
+                'library' => ['jaraba_job_board/employer_applications'],
+            ],
+            '#cache' => [
+                'contexts' => ['user'],
+                'max-age' => 300,
+            ],
         ];
     }
 

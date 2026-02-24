@@ -33,11 +33,13 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('push', (event) => {
     console.log('[SW] Push recibido:', event);
 
+    // NOTE: Service Workers cannot use Drupal.t() — translatable defaults
+    // must be provided via the server push payload. These are fallbacks only.
     let data = {
-        title: 'Jaraba Empleabilidad',
-        body: 'Tienes una nueva notificación',
-        icon: '/themes/custom/agroconecta_theme/images/icon-192.png',
-        badge: '/themes/custom/agroconecta_theme/images/badge-72.png',
+        title: 'Jaraba Impact Platform',
+        body: '',
+        icon: '/themes/custom/ecosistema_jaraba_theme/images/icon-192.png',
+        badge: '/themes/custom/ecosistema_jaraba_theme/images/badge-72.png',
         tag: 'default',
         data: {}
     };

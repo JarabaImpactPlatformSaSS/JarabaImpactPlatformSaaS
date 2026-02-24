@@ -3,9 +3,10 @@
     <mj-attributes>
       <mj-all font-family="Arial, Helvetica, sans-serif" />
       <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
+    <mj-preview>&iexcl;Felicidades {{ user_name }}! Has conseguido el puesto de {{ job_title }}.</mj-preview>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
       .celebration { font-size: 48px; text-align: center; padding: 16px 0; }
@@ -13,7 +14,7 @@
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#16a34a" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }}
@@ -45,11 +46,11 @@
             </mj-text>
           </mj-column>
         </mj-section>
-        <mj-button href="{{ share_url }}" align="center" padding="24px 0" background-color="#16a34a">
+        <mj-button href="{{ share_url }}" align="center" padding="24px 0" background-color="#1565C0">
           Compartir mi logro
         </mj-button>
         <mj-text font-size="13px" color="#6b7280" align="center">
-          <p>&iquest;Conoces a alguien que busca empleo? <a href="{{ referral_url }}" style="color: #2563eb;">Inv&iacute;talo y gana 1 mes gratis.</a></p>
+          <p>&iquest;Conoces a alguien que busca empleo? <a href="{{ referral_url }}" style="color: #1565C0;">Inv&iacute;talo y gana 1 mes gratis.</a></p>
         </mj-text>
       </mj-column>
     </mj-section>
@@ -64,6 +65,9 @@
         <mj-text align="center" font-size="12px" color="#6b7280">
           <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
           <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="4px">
+          Jaraba Impact Platform &mdash; Pol&iacute;gono Industrial Juncaril, C/ Abedul s/n, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>

@@ -10,6 +10,8 @@ use Drupal\jaraba_job_board\Service\ApplicationService;
 use Drupal\jaraba_job_board\Service\JobSearchService;
 use Drupal\jaraba_job_board\Service\MatchingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Render\Markup;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -133,8 +135,12 @@ class JobSearchController extends ControllerBase
         $job_posting->set('views_count', $views + 1);
         $job_posting->save();
 
+        // Build JSON-LD JobPosting schema for Google Job Search & GEO.
+        $schema_org_json_ld = $this->buildJobPostingJsonLd($job_posting, $employer);
+
         return [
             '#theme' => 'job_posting_detail',
+            '#schema_org_json_ld' => Markup::create($schema_org_json_ld),
             '#job' => [
                 'id' => $job_posting->id(),
                 'title' => $job_posting->getTitle(),
@@ -172,8 +178,9 @@ class JobSearchController extends ControllerBase
                 'library' => ['jaraba_job_board/job_detail'],
             ],
             '#cache' => [
-                'contexts' => ['user'],
+                'contexts' => ['user', 'url.query_args'],
                 'tags' => ['job_posting:' . $job_posting->id()],
+                'max-age' => 3600,
             ],
         ];
     }
@@ -481,6 +488,84 @@ class JobSearchController extends ControllerBase
         }
         $days = floor($diff / 86400);
         return $this->t('@count day ago|@count days ago', ['@count' => $days]);
+    }
+
+    /**
+     * Builds JSON-LD JobPosting schema for SEO and GEO.
+     *
+     * @param \Drupal\jaraba_job_board\Entity\JobPostingInterface $job
+     *   The job posting entity.
+     * @param array $employer
+     *   Employer information array.
+     *
+     * @return string
+     *   JSON-LD script tag.
+     */
+    protected function buildJobPostingJsonLd(JobPostingInterface $job, array $employer): string
+    {
+        $published = $job->get('published_at')->value ?? $job->get('created')->value;
+        $json_ld = [
+            '@context' => 'https://schema.org',
+            '@type' => 'JobPosting',
+            'title' => $job->getTitle(),
+            'description' => strip_tags($job->get('description')->value ?? ''),
+            'datePosted' => date('Y-m-d', (int) $published),
+            'jobLocation' => [
+                '@type' => 'Place',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => $job->getLocationCity() ?: '',
+                    'addressCountry' => 'ES',
+                ],
+            ],
+        ];
+
+        // Employment type mapping per schema.org.
+        $type_map = [
+            'full_time' => 'FULL_TIME',
+            'part_time' => 'PART_TIME',
+            'contract' => 'CONTRACTOR',
+            'internship' => 'INTERN',
+            'freelance' => 'CONTRACTOR',
+        ];
+        $job_type = $job->getJobType();
+        if (isset($type_map[$job_type])) {
+            $json_ld['employmentType'] = $type_map[$job_type];
+        }
+
+        // Remote type.
+        $remote = $job->getRemoteType();
+        if ($remote === 'remote') {
+            $json_ld['jobLocationType'] = 'TELECOMMUTE';
+        }
+
+        // Hiring organization.
+        if (!empty($employer['name'])) {
+            $json_ld['hiringOrganization'] = [
+                '@type' => 'Organization',
+                'name' => $employer['name'],
+            ];
+            if (!empty($employer['logo_url'])) {
+                $json_ld['hiringOrganization']['logo'] = $employer['logo_url'];
+            }
+        }
+
+        // Salary.
+        $salary = $job->getSalaryRange();
+        if ($salary && $job->get('salary_visible')->value) {
+            $json_ld['baseSalary'] = [
+                '@type' => 'MonetaryAmount',
+                'currency' => 'EUR',
+                'value' => [
+                    '@type' => 'QuantitativeValue',
+                    'minValue' => $salary['min'] ?? 0,
+                    'maxValue' => $salary['max'] ?? 0,
+                    'unitText' => strtoupper($salary['period'] ?? 'YEAR'),
+                ],
+            ];
+        }
+
+        return '<script type="application/ld+json">' . json_encode($json_ld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
     }
 
 }

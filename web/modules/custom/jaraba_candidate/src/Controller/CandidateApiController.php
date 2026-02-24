@@ -131,19 +131,104 @@ class CandidateApiController extends ControllerBase
     }
 
     /**
-     * Gets experiences for the profile.
+     * Fields allowed for experience creation/update.
+     */
+    private const ALLOWED_EXPERIENCE_FIELDS = [
+        'company_name',
+        'job_title',
+        'description',
+        'location',
+        'start_date',
+        'end_date',
+        'is_current',
+    ];
+
+    /**
+     * Gets experiences for the current user's profile.
      */
     public function getExperiences(): JsonResponse
     {
-        return new JsonResponse(['experiences' => []]);
+        $user_id = (int) $this->currentUser()->id();
+
+        try {
+            $experiences = $this->entityTypeManager()
+                ->getStorage('candidate_experience')
+                ->loadByProperties(['user_id' => $user_id]);
+        }
+        catch (\Exception $e) {
+            // Entity type may not be installed yet.
+            return new JsonResponse(['experiences' => []]);
+        }
+
+        $formatted = [];
+        foreach ($experiences as $exp) {
+            $formatted[] = [
+                'id' => (int) $exp->id(),
+                'company_name' => $exp->getCompanyName(),
+                'job_title' => $exp->getJobTitle(),
+                'description' => $exp->getDescription(),
+                'location' => $exp->getLocation(),
+                'start_date' => $exp->getStartDate(),
+                'end_date' => $exp->getEndDate(),
+                'is_current' => $exp->isCurrent(),
+            ];
+        }
+
+        // Sort by start_date descending (most recent first).
+        usort($formatted, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
+
+        return new JsonResponse(['experiences' => $formatted]);
     }
 
     /**
-     * Adds an experience.
+     * Adds an experience to the current user's profile.
      */
     public function addExperience(Request $request): JsonResponse
     {
-        return new JsonResponse(['success' => TRUE, 'id' => 0]);
+        $user_id = (int) $this->currentUser()->id();
+        $data = json_decode($request->getContent(), TRUE);
+
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'Invalid request body'], 400);
+        }
+
+        // Validate required fields.
+        if (empty($data['company_name']) || empty($data['job_title'])) {
+            return new JsonResponse(['error' => 'company_name and job_title are required'], 400);
+        }
+
+        if (empty($data['start_date'])) {
+            return new JsonResponse(['error' => 'start_date is required'], 400);
+        }
+
+        // Build entity values from allowed fields only.
+        $values = ['user_id' => $user_id];
+        foreach ($data as $field => $value) {
+            if (in_array($field, self::ALLOWED_EXPERIENCE_FIELDS, TRUE)) {
+                $values[$field] = $value;
+            }
+        }
+
+        // Link to profile if available.
+        $profile = $this->profileService->getProfileByUserId($user_id);
+        if ($profile) {
+            $values['profile_id'] = (int) $profile->id();
+        }
+
+        try {
+            $experience = $this->entityTypeManager()
+                ->getStorage('candidate_experience')
+                ->create($values);
+            $experience->save();
+        }
+        catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to create experience'], 500);
+        }
+
+        return new JsonResponse([
+            'success' => TRUE,
+            'id' => (int) $experience->id(),
+        ]);
     }
 
     /**

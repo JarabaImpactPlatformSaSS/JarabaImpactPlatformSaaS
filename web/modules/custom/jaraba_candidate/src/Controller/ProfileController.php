@@ -98,8 +98,43 @@ class ProfileController extends ControllerBase
      */
     public function experienceSection(): array
     {
+        $user_id = (int) $this->currentUser()->id();
+
+        // Load experiences (resilient to missing entity type).
+        $experiences = [];
+        try {
+            $loaded = $this->entityTypeManager()
+                ->getStorage('candidate_experience')
+                ->loadByProperties(['user_id' => $user_id]);
+            foreach ($loaded as $exp) {
+                $experiences[] = [
+                    'id' => $exp->id(),
+                    'company_name' => $exp->getCompanyName(),
+                    'job_title' => $exp->getJobTitle(),
+                    'description' => $exp->getDescription(),
+                    'location' => $exp->getLocation(),
+                    'start_date' => $exp->getStartDate(),
+                    'end_date' => $exp->getEndDate(),
+                    'is_current' => $exp->isCurrent(),
+                ];
+            }
+            // Sort by start_date descending.
+            usort($experiences, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
+        }
+        catch (\Exception $e) {
+            // Entity type may not be installed yet.
+        }
+
         return [
-            '#markup' => $this->t('Work Experience section - Coming soon'),
+            '#theme' => 'my_profile_experience',
+            '#experiences' => $experiences,
+            '#attached' => [
+                'library' => ['jaraba_candidate/profile_experience'],
+            ],
+            '#cache' => [
+                'contexts' => ['user'],
+                'max-age' => 300,
+            ],
         ];
     }
 
@@ -108,8 +143,39 @@ class ProfileController extends ControllerBase
      */
     public function educationSection(): array
     {
+        $user_id = (int) $this->currentUser()->id();
+
+        // Load education records (resilient to missing entity type).
+        $educations = [];
+        try {
+            $loaded = $this->entityTypeManager()
+                ->getStorage('candidate_education')
+                ->loadByProperties(['user_id' => $user_id]);
+            foreach ($loaded as $edu) {
+                $educations[] = [
+                    'id' => $edu->id(),
+                    'institution' => $edu->get('institution')->value ?? '',
+                    'degree' => $edu->get('degree')->value ?? '',
+                    'field_of_study' => $edu->get('field_of_study')->value ?? '',
+                    'start_date' => $edu->get('start_date')->value ?? NULL,
+                    'end_date' => $edu->get('end_date')->value ?? NULL,
+                ];
+            }
+        }
+        catch (\Exception $e) {
+            // Entity type may not be installed yet.
+        }
+
         return [
-            '#markup' => $this->t('Education section - Coming soon'),
+            '#theme' => 'my_profile_education',
+            '#educations' => $educations,
+            '#attached' => [
+                'library' => ['jaraba_candidate/profile_education'],
+            ],
+            '#cache' => [
+                'contexts' => ['user'],
+                'max-age' => 300,
+            ],
         ];
     }
 

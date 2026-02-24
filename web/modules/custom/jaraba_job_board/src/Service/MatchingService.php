@@ -282,10 +282,17 @@ class MatchingService
      */
     public function getRecommendedJobs(int $candidate_id, int $limit = 10): array
     {
-        // Get published jobs
-        $jobs = $this->entityTypeManager
-            ->getStorage('job_posting')
-            ->loadByProperties(['status' => 'published']);
+        // Limit candidate pool to recent published jobs (max 100) to avoid
+        // loading all entities. Sorted by newest first for relevance.
+        $storage = $this->entityTypeManager->getStorage('job_posting');
+        $job_ids = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', 'published')
+            ->sort('published_at', 'DESC')
+            ->range(0, 100)
+            ->execute();
+
+        $jobs = $storage->loadMultiple($job_ids);
 
         $scored_jobs = [];
         foreach ($jobs as $job) {

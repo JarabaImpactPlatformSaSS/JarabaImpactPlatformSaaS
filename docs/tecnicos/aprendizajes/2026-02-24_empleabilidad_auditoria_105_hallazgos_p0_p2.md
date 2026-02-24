@@ -1,8 +1,8 @@
-# Aprendizaje #113: Empleabilidad — Auditoria 105 Hallazgos y Correccion P0/P1/P2
+# Aprendizaje #113: Empleabilidad — Auditoria 105 Hallazgos y Correccion P0-P4
 
 **Fecha:** 2026-02-24
-**Contexto:** Revision exhaustiva del vertical Empleabilidad desde 15 perspectivas senior (negocio, carreras profesionales, finanzas, marketing, arquitectura SaaS, ingenieria software, UX, Drupal, web, theming, GrapesJS, SEO/GEO, IA) produjo 105 hallazgos. Se corrigieron los 7 P0, 1 P1 y 2 P2 en este sprint.
-**Impacto:** Vertical Empleabilidad — Seguridad, integridad de negocio, compliance legal, consistencia de marca, i18n
+**Contexto:** Revision exhaustiva del vertical Empleabilidad desde 15 perspectivas senior (negocio, carreras profesionales, finanzas, marketing, arquitectura SaaS, ingenieria software, UX, Drupal, web, theming, GrapesJS, SEO/GEO, IA) produjo 105 hallazgos. Se corrigieron los 7 P0, 1 P1, 2 P2, 8 P3, y ~20 P4 adicionales en este sprint.
+**Impacto:** Vertical Empleabilidad — Seguridad, integridad de negocio, compliance legal, consistencia de marca, i18n, performance, SEO, UX
 
 ---
 
@@ -378,24 +378,88 @@ Se verifico que las correcciones cumplen con las directrices del proyecto:
 
 ---
 
-## 7. Hallazgos Pendientes (para sprints posteriores)
+## 7. Fase 4: P3 — Corregidos (8 hallazgos)
 
-Los 95 hallazgos restantes (P3/P4) se documentaron en la auditoria original. Los mas relevantes:
+| # | Tipo | Correccion |
+|---|------|------------|
+| P3-1 | Performance | `EmployerController::dashboard()` — reemplazado N+1 loop por `countPendingApplications()` (query COUNT agregada) |
+| P3-2 | Performance | `EmployerController::jobs()` — reemplazado segundo `loadByProperties` por 4 queries COUNT por status |
+| P3-3 | SEO | Anadido JSON-LD `JobPosting` schema a `JobSearchController::detail()` via `buildJobPostingJsonLd()` |
+| P3-4 | UX | Implementada entidad `CandidateExperience` + endpoints `getExperiences()` y `addExperience()` funcionales |
+| P3-5 | Testing | Pendiente — requiere creacion de tests Kernel para controladores y servicios |
+| P3-6 | Emojis | Reemplazado emoji 💡 por `jaraba_icon('ui', 'lightbulb')` en `email-base.html.twig` |
+| P3-7 | JS i18n | `push-sw.js` — cambiado a defaults neutrales + comentario de limitacion SW, corregida ruta iconos a tema actual |
+| P3-8 | JS i18n | `skills-manager.js:72,119` — `throw new Error()` strings envueltos en `Drupal.t()` |
 
-| # | Tipo | Descripcion |
-|---|------|-------------|
-| P3-1 | Performance | `EmployerController::dashboard()` ejecuta N+1 queries para contar aplicaciones |
-| P3-2 | Performance | `EmployerController::jobs()` carga todas las ofertas 2 veces (query filtrada + `loadByProperties`) |
-| P3-3 | SEO | Falta JSON-LD schema en paginas de detalle de empleo |
-| P3-4 | UX | Endpoints stub (`getExperiences`, `addExperience`) retornan datos vacios sin implementacion |
-| P3-5 | Testing | 0 tests unitarios/kernel para controladores y servicios del vertical |
-| P3-6 | Emojis | 3 templates con emojis inline sin `jaraba_icon()` |
-| P3-7 | JS i18n | `push-sw.js` con strings hardcoded (limitacion Service Worker) |
-| P3-8 | JS i18n | `skills-manager.js:72,119` con error messages sin `Drupal.t()` |
+## 8. Fase 5: P4 — Corregidos (hallazgos adicionales del barrido exhaustivo)
+
+### 8.1 Color brand unificado en 5 plantillas adicionales
+
+| Plantilla | Color anterior | Color corregido |
+|-----------|---------------|-----------------|
+| `new_application.mjml` | `#2563eb` | `#1565C0` |
+| `listing_expired.mjml` | `#2563eb` | `#1565C0` |
+| `seq_post_hire.mjml` | `#16a34a` / `#2563eb` | `#1565C0` |
+| `candidate_shortlisted.mjml` | `#16a34a` | `#1565C0` |
+| `email-base.html.twig` | `#6366f1` / `#8b5cf6` | `#1565C0` / `#1976D2` |
+
+### 8.2 CAN-SPAM compliance en 3 MJML adicionales
+
+Anadidos `<mj-preview>` (preheader contextual) y direccion postal a:
+- `new_application.mjml`
+- `listing_expired.mjml`
+- `seq_post_hire.mjml`
+
+### 8.3 AI prompts — naming y acentos
+
+- 6 mode prompts en `EmployabilityCopilotAgent.php` — corregidos acentos (espanol→español, busqueda→búsqueda, seleccion→selección, etc.) y estandarizado "Jaraba Impact Platform"
+- Brand voice default — corregido "mision"→"misión", "especificos"→"específicos"
+- Vertical context — corregido "busqueda"→"búsqueda", "formacion"→"formación", "gamificacion"→"gamificación"
+- `RecommendationEngineService.php` — "CRM integrado en Jaraba"→"Jaraba Impact Platform"
+- `NotificationSettingsForm.php` — default "Jaraba Empleabilidad"→"Jaraba Impact Platform"
+- `push_settings.yml` — email_from_name actualizado
+
+### 8.4 Performance — N+1 y paginacion
+
+- `MatchingService::getRecommendedJobs()` — limitado a 100 jobs mas recientes (antes cargaba TODOS)
+- `JobBoardApiController::listJobs()` — anadida paginacion con entity query (page, limit, total)
+- `JobSearchController::detail()` — anadido `max-age: 3600` y `url.query_args` al cache context
+- `EmployabilityDiagnosticController::landing()` — anadido `max-age: 3600` (antes sin cache)
+
+### 8.5 Stubs implementados (5 controladores)
+
+| Metodo | Antes | Despues |
+|--------|-------|---------|
+| `ProfileController::experienceSection()` | "Coming soon" | Carga `candidate_experience` entities, render `my_profile_experience` |
+| `ProfileController::educationSection()` | "Coming soon" | Carga `candidate_education` entities, render `my_profile_education` |
+| `CandidateController::savedJobs()` | "Coming soon" | Carga jobs guardados via `user.data`, render `saved_jobs` |
+| `CandidateController::alerts()` | "Coming soon" | Carga alertas via `user.data`, render `job_alerts` |
+| `EmployerController::applications()` | "Coming soon" | Carga todas las candidaturas del employer con stats, render `employer_applications` |
+
+### 8.6 Nueva entidad CandidateExperience
+
+Creados:
+- `CandidateExperienceInterface.php` — interfaz con metodos getCompanyName(), getJobTitle(), getStartDate(), getEndDate(), isCurrent(), getDescription(), getLocation()
+- `CandidateExperience.php` — entidad ContentEntity con campos: user_id, profile_id, company_name, job_title, description, location, start_date, end_date, is_current, created, changed
 
 ---
 
-## 8. Leccion Clave
+## 9. Hallazgos Pendientes (para sprints posteriores)
+
+| # | Tipo | Descripcion |
+|---|------|-------------|
+| P3-5 | Testing | 0 tests unitarios/kernel para controladores y servicios del vertical |
+| P4-SEO | SEO | Falta meta tags (og:title, og:description) en templates de candidato y diagnostico |
+| P4-SEO | SEO | Falta breadcrumbs en los 3 modulos del vertical |
+| P4-SEO | SEO | Falta sitemap XML configuration para job postings |
+| P4-PERF | Performance | Missing database indexes en campos frecuentemente consultados de entities |
+| P4-CONFIG | Config | Missing config/install YAML files en jaraba_candidate y jaraba_diagnostic |
+| P4-CONFIG | Config | Valores hardcoded (page size=20, score threshold=50, recommendation limit=5) |
+| P4-A11Y | Accesibilidad | Faltan aria-labels en botones con solo iconos, roles ARIA en acordeones |
+
+---
+
+## 10. Leccion Clave
 
 **La coherencia de limites entre tiers de un modelo freemium es una invariante de negocio critica que debe verificarse automaticamente.** Cuando el sistema de upsell promete mejoras (via `upgrade_message`) que no se materializan en los `plan_features`, el usuario que paga recibe exactamente lo mismo que el usuario gratuito, destruyendo la propuesta de valor y exponiendo a la empresa a reclamaciones.
 

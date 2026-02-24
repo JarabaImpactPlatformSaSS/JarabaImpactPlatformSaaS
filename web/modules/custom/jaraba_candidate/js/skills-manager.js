@@ -69,7 +69,7 @@
                                 // Reload page to show new skill
                                 window.location.reload();
                             } else {
-                                throw new Error('Failed to add skill');
+                                throw new Error(Drupal.t('Failed to add skill'));
                             }
                         })
                         .catch(function (error) {
@@ -116,7 +116,7 @@
                                     badge.textContent = count;
                                 }
                             } else {
-                                throw new Error('Failed to remove skill');
+                                throw new Error(Drupal.t('Failed to remove skill'));
                             }
                         })
                         .catch(function (error) {
