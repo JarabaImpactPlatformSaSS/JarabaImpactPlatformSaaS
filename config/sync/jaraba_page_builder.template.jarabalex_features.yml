@@ -1,0 +1,92 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_features
+label: 'JarabaLex: Áreas de Práctica'
+description: 'Sección rejilla de áreas especializadas para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/features.html.twig'
+fields_schema:
+  type: object
+  title: 'Áreas de Práctica'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    features:
+      type: array
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+            maxLength: 100
+          desc:
+            type: string
+            maxLength: 300
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-features.png
+preview_data:
+  eyebrow: Especialidades
+  title: 'Áreas de práctica especializadas'
+  subtitle: 'Cobertura legal integral para empresas y particulares.'
+  columns: 3
+  features:
+    -
+      icon: shield-check
+      icon_category: ui
+      title: 'Derecho mercantil'
+      desc: 'Constitución de sociedades, contratos comerciales, fusiones y adquisiciones con seguridad jurídica total.'
+    -
+      icon: document
+      icon_category: ui
+      title: 'Derecho laboral'
+      desc: 'Asesoramiento en contratación, despidos, convenios colectivos y cumplimiento normativo laboral.'
+    -
+      icon: chart-bar
+      icon_category: analytics
+      title: 'Derecho fiscal'
+      desc: 'Planificación tributaria, inspecciones fiscales, recursos y optimización de la carga impositiva.'
+animation: fade-up
+weight: 1

@@ -1,0 +1,57 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_stats
+label: 'JarabaLex: Cifras del Despacho'
+description: 'Sección de estadísticas especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Cifras del Despacho'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    stats:
+      type: array
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+            maxLength: 20
+          label:
+            type: string
+            maxLength: 100
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-stats.png
+preview_data:
+  eyebrow: 'En cifras'
+  title: 'Resultados que hablan por nosotros'
+  subtitle: 'Más de dos décadas ofreciendo excelencia jurídica.'
+  stats:
+    -
+      value: '20+'
+      label: 'Años de experiencia'
+    -
+      value: '500+'
+      label: 'Casos resueltos'
+    -
+      value: '98%'
+      label: 'Tasa de éxito'
+    -
+      value: '150+'
+      label: 'Empresas confían en nosotros'
+weight: 9

@@ -1,0 +1,57 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_faq
+label: 'JarabaLex: Preguntas Frecuentes'
+description: 'Sección de preguntas frecuentes especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Preguntas Frecuentes'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    faqs:
+      type: array
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            maxLength: 300
+          answer:
+            type: string
+            maxLength: 1000
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-faq.png
+preview_data:
+  eyebrow: FAQ
+  title: 'Preguntas frecuentes sobre nuestros servicios legales'
+  subtitle: 'Resolvemos tus dudas más habituales sobre asesoría jurídica.'
+  faqs:
+    -
+      question: '¿La primera consulta es realmente gratuita?'
+      answer: 'Sí. Ofrecemos una sesión inicial de 30 minutos sin coste para evaluar tu situación y orientarte sobre los pasos a seguir.'
+    -
+      question: '¿En qué áreas del derecho están especializados?'
+      answer: 'Nos especializamos en derecho mercantil, laboral, fiscal, propiedad intelectual y compliance corporativo.'
+    -
+      question: '¿Trabajan con empresas de cualquier tamaño?'
+      answer: 'Sí, desde autónomos y startups hasta grandes corporaciones. Adaptamos nuestros servicios al tamaño y necesidades de cada cliente.'
+    -
+      question: '¿Puedo cambiar de plan en cualquier momento?'
+      answer: 'Por supuesto. Puedes escalar o reducir tu plan mensualmente sin penalización, adaptándote a la evolución de tu empresa.'
+weight: 5

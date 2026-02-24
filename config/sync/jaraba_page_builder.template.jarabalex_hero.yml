@@ -1,0 +1,67 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_hero
+label: 'JarabaLex: Despacho Profesional'
+description: 'Sección héroe especializada para despachos de abogados y servicios jurídicos.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Despacho Profesional'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    description:
+      type: string
+      title: Descripcion
+      format: html
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+    background_image:
+      type: string
+      title: 'Imagen de fondo'
+      format: image
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: true
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-hero.png
+preview_data:
+  eyebrow: JarabaLex
+  title: 'Asesoría jurídica de confianza para tu empresa'
+  subtitle: 'Abogados especializados en derecho mercantil, laboral y fiscal. Protegemos tus intereses con rigor y cercanía.'
+  cta_text: 'Solicitar consulta gratuita'
+  cta_url: /consulta
+  cta_secondary_text: 'Áreas de práctica'
+  cta_secondary_url: /areas
+  background_image: ''
+animation: fade-up
+weight: 0

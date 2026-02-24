@@ -1,0 +1,60 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_social_proof
+label: 'JarabaLex: Reconocimientos'
+description: 'Sección de reconocimientos y acreditaciones especializada para despachos de abogados.'
+category: jarabalex
+twig_template: '@jaraba_page_builder/blocks/verticals/jarabalex/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: Reconocimientos
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    badges:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            maxLength: 100
+          description:
+            type: string
+            maxLength: 300
+          logo:
+            type: string
+            format: image
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/jarabalex-social-proof.png
+preview_data:
+  eyebrow: Reconocimientos
+  title: 'Acreditaciones y reconocimientos profesionales'
+  subtitle: 'Comprometidos con los más altos estándares de calidad y ética profesional.'
+  badges:
+    -
+      title: 'Colegio de Abogados'
+      description: 'Miembros del Ilustre Colegio de Abogados de Madrid'
+    -
+      title: 'Best Lawyers'
+      description: 'Reconocidos en el ranking Best Lawyers 2024'
+    -
+      title: 'ISO 27001'
+      description: 'Certificación en seguridad de la información'
+    -
+      title: 'Chambers & Partners'
+      description: 'Incluidos en Chambers & Partners Europe'
+weight: 10
