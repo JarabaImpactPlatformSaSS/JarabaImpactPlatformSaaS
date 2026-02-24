@@ -15,7 +15,7 @@
   <header class="interactive-editor__header">
     <div class="interactive-editor__header-left">
       <a href="/interactive" class="interactive-editor__back" aria-label="{% trans %}Volver al dashboard{% endtrans %}">
-        {{ jaraba_icon('ui/arrow-left', 'outline') }}
+        {{ jaraba_icon('ui', 'arrow-left', { variant: 'duotone', size: '20px' }) }}
       </a>
       <input type="text"
              class="interactive-editor__title-input"
@@ -33,17 +33,17 @@
       </select>
 
       <button class="interactive-editor__preview-btn" aria-label="{% trans %}Vista previa{% endtrans %}">
-        {{ jaraba_icon('ui/eye', 'outline') }}
+        {{ jaraba_icon('ui', 'eye', { variant: 'duotone', size: '16px' }) }}
         <span>{% trans %}Preview{% endtrans %}</span>
       </button>
 
       <button class="interactive-editor__save-btn" aria-label="{% trans %}Guardar{% endtrans %}">
-        {{ jaraba_icon('ui/save', 'outline') }}
+        {{ jaraba_icon('ui', 'save', { variant: 'duotone', size: '16px' }) }}
         <span>{% trans %}Guardar{% endtrans %}</span>
       </button>
 
       <button class="interactive-editor__publish-btn {{ content.status ? 'is-published' : '' }}" aria-label="{% trans %}Publicar{% endtrans %}">
-        {{ jaraba_icon('ui/globe', 'outline') }}
+        {{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '16px' }) }}
         <span>{{ content.status ? '{% trans %}Publicado{% endtrans %}' : '{% trans %}Borrador{% endtrans %}' }}</span>
       </button>
     </div>
@@ -88,7 +88,7 @@
       <div class="interactive-editor__preview-header">
         <h3>{% trans %}Vista previa{% endtrans %}</h3>
         <button class="interactive-editor__preview-close" aria-label="{% trans %}Cerrar preview{% endtrans %}">
-          {{ jaraba_icon('ui/x', 'outline') }}
+          {{ jaraba_icon('ui', 'x', { variant: 'duotone', size: '16px' }) }}
         </button>
       </div>
       <iframe class="interactive-editor__preview-iframe" id="preview-iframe" src="about:blank"></iframe>

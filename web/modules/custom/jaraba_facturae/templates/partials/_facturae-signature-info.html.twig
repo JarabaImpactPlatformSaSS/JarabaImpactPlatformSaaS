@@ -11,7 +11,7 @@
 #}
 <div class="facturae-signature {{ document.signature_status.value == 'signed' ? 'facturae-signature--signed' : 'facturae-signature--unsigned' }}">
   <h3 class="facturae-signature__title">
-    <span class="facturae-signature__icon" aria-hidden="true">{{ jaraba_icon('certificate', 'fiscal') }}</span>
+    <span class="facturae-signature__icon" aria-hidden="true">{{ jaraba_icon('actions', 'shield-check', { variant: 'duotone', size: '20px' }) }}</span>
     {% trans %}Digital Signature{% endtrans %}
   </h3>
 

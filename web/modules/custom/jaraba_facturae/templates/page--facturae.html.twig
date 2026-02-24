@@ -20,7 +20,7 @@
     <div class="facturae-dashboard__header">
       <div class="facturae-dashboard__title-group">
         <h1 class="facturae-dashboard__title">
-          <span class="facturae-dashboard__icon" aria-hidden="true">{{ jaraba_icon('invoice', 'fiscal') }}</span>
+          <span class="facturae-dashboard__icon" aria-hidden="true">{{ jaraba_icon('fiscal', 'invoice', { variant: 'duotone', size: '24px' }) }}</span>
           {% trans %}Facturae B2G{% endtrans %}
         </h1>
         <p class="facturae-dashboard__description">
@@ -75,19 +75,19 @@
       <h2 class="facturae-dashboard__section-title">{% trans %}Quick Actions{% endtrans %}</h2>
       <div class="facturae-dashboard__actions-grid">
         <a href="{{ path('jaraba_facturae.documents') }}" class="facturae-dashboard__action-card">
-          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('list', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('ui', 'list', { variant: 'duotone', size: '24px' }) }}</span>
           <span class="facturae-dashboard__action-label">{% trans %}All Documents{% endtrans %}</span>
         </a>
         <a href="{{ path('jaraba_facturae.face_log') }}" class="facturae-dashboard__action-card">
-          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('log', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('ui', 'file-text', { variant: 'duotone', size: '24px' }) }}</span>
           <span class="facturae-dashboard__action-label">{% trans %}FACe Log{% endtrans %}</span>
         </a>
         <a href="{{ path('jaraba_facturae.config') }}" class="facturae-dashboard__action-card">
-          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('settings', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '24px' }) }}</span>
           <span class="facturae-dashboard__action-label">{% trans %}Configuration{% endtrans %}</span>
         </a>
         <a href="{{ path('jaraba_facturae.api.dir3_search') }}" class="facturae-dashboard__action-card">
-          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('search', 'fiscal') }}</span>
+          <span class="facturae-dashboard__action-icon" aria-hidden="true">{{ jaraba_icon('actions', 'search', { variant: 'duotone', size: '24px' }) }}</span>
           <span class="facturae-dashboard__action-label">{% trans %}DIR3 Directory{% endtrans %}</span>
         </a>
       </div>

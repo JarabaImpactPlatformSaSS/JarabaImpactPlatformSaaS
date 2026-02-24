@@ -50,11 +50,11 @@
           <div class="branching-scenario__end branching-scenario__end--{{ node.end_type|default('partial') }}">
             <div class="branching-scenario__end-icon">
               {% if node.end_type|default('partial') == 'success' %}
-                {{ jaraba_icon('ui/check-circle', 'duotone') }}
+                {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', size: '24px' }) }}
               {% elseif node.end_type|default('partial') == 'failure' %}
-                {{ jaraba_icon('ui/x-circle', 'duotone') }}
+                {{ jaraba_icon('ui', 'x-circle', { variant: 'duotone', size: '24px' }) }}
               {% else %}
-                {{ jaraba_icon('ui/info', 'duotone') }}
+                {{ jaraba_icon('ui', 'info', { variant: 'duotone', size: '24px' }) }}
               {% endif %}
             </div>
             {% if node.end_message is defined and node.end_message %}
@@ -84,7 +84,7 @@
   <div class="branching-scenario__controls">
     {% if settings.allow_restart|default(true) %}
       <button class="branching-scenario__restart" style="display: none;" aria-label="{% trans %}Reiniciar{% endtrans %}">
-        {{ jaraba_icon('ui/refresh-cw', 'outline') }}
+        {{ jaraba_icon('ui', 'refresh-cw', { variant: 'duotone', size: '16px' }) }}
         <span>{% trans %}Reiniciar escenario{% endtrans %}</span>
       </button>
     {% endif %}

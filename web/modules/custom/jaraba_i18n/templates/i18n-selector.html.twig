@@ -77,22 +77,22 @@
             <span class="i18n-selector__status">
               <template x-if="info.is_original">
                 <span class="i18n-selector__badge i18n-selector__badge--original" title="{% trans %}Original{% endtrans %}">
-                  {{ jaraba_icon('star', 'micro') }}
+                  {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '12px' }) }}
                 </span>
               </template>
               <template x-if="info.exists && !info.is_original && !info.outdated">
                 <span class="i18n-selector__badge i18n-selector__badge--complete" title="{% trans %}Traducido{% endtrans %}">
-                  {{ jaraba_icon('check-circle', 'micro') }}
+                  {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', size: '12px' }) }}
                 </span>
               </template>
               <template x-if="info.outdated">
                 <span class="i18n-selector__badge i18n-selector__badge--outdated" title="{% trans %}Desactualizado{% endtrans %}">
-                  {{ jaraba_icon('alert-triangle', 'micro') }}
+                  {{ jaraba_icon('ui', 'alert-triangle', { variant: 'duotone', size: '12px' }) }}
                 </span>
               </template>
               <template x-if="!info.exists && !info.is_original">
                 <span class="i18n-selector__badge i18n-selector__badge--missing" title="{% trans %}Sin traducir{% endtrans %}">
-                  {{ jaraba_icon('plus-circle', 'micro') }}
+                  {{ jaraba_icon('actions', 'plus-circle', { variant: 'duotone', size: '12px' }) }}
                 </span>
               </template>
             </span>
@@ -114,7 +114,7 @@
               title="{% trans %}Traducir contenido con IA{% endtrans %}">
         <template x-if="!isTranslating">
           <span class="i18n-selector__ai-icon">
-            {{ jaraba_icon('sparkles', 'small') }}
+            {{ jaraba_icon('actions', 'sparkles', { variant: 'duotone', size: '16px' }) }}
           </span>
         </template>
         <template x-if="isTranslating">
@@ -145,7 +145,7 @@
     <div class="jaraba-modal__content" @click.stop>
       <header class="jaraba-modal__header">
         <h2 class="jaraba-modal__title">
-          {{ jaraba_icon('globe', 'medium') }}
+          {{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '24px' }) }}
           {% trans %}Traducir con IA{% endtrans %}
         </h2>
         <button type="button"
@@ -213,7 +213,7 @@
                 class="jaraba-btn jaraba-btn--primary"
                 @click="startTranslation()"
                 :disabled="isTranslating || targetLanguages.length === 0">
-          {{ jaraba_icon('sparkles', 'small') }}
+          {{ jaraba_icon('actions', 'sparkles', { variant: 'duotone', size: '16px' }) }}
           {% trans %}Iniciar traducción{% endtrans %}
         </button>
       </footer>

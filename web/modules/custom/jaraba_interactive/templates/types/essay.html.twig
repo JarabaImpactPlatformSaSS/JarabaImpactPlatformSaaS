@@ -102,7 +102,7 @@
 
     {% if settings.allow_draft|default(true) %}
       <button class="essay__save-draft" aria-label="{% trans %}Guardar borrador{% endtrans %}">
-        {{ jaraba_icon('ui/save', 'outline') }}
+        {{ jaraba_icon('ui', 'save', { variant: 'duotone', size: '16px' }) }}
         <span>{% trans %}Guardar borrador{% endtrans %}</span>
       </button>
     {% endif %}
@@ -111,7 +111,7 @@
   {# Botón de envío #}
   <div class="essay__submit">
     <button class="essay__submit-btn" aria-label="{% trans %}Enviar ensayo{% endtrans %}">
-      {{ jaraba_icon('ui/send', 'outline') }}
+      {{ jaraba_icon('actions', 'send', { variant: 'duotone', size: '16px' }) }}
       <span>{% trans %}Enviar ensayo{% endtrans %}</span>
     </button>
     <p class="essay__submit-note">
