@@ -1,0 +1,23 @@
+# Default settings for the ComercioConecta module.
+# These values can be overridden via the Drupal configuration system.
+
+# Number of orders shown per page in customer/merchant portals.
+orders_per_page: 20
+
+# Number of search results per page.
+search_results_per_page: 24
+
+# Number of flash offers per page in the marketplace.
+flash_offers_per_page: 12
+
+# Number of reviews per page on product detail.
+reviews_per_page: 10
+
+# Number of notifications per page in notification center.
+notifications_per_page: 20
+
+# Number of orders per page in the merchant portal.
+merchant_orders_per_page: 25
+
+# Default radius (in km) for nearby merchant searches.
+nearby_radius_default: 10

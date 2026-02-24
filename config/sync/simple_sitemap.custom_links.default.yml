@@ -29,3 +29,11 @@ links:
     path: /agroconecta/buscar
     priority: '0.7'
     changefreq: weekly
+  -
+    path: /comercio-local
+    priority: '0.9'
+    changefreq: daily
+  -
+    path: /comercio-local/buscar
+    priority: '0.7'
+    changefreq: weekly

@@ -623,6 +623,66 @@ function jaraba_comercio_conecta_preprocess_page(array &$variables): void {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph meta tags for ComercioConecta public pages.
+ */
+function jaraba_comercio_conecta_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route === NULL) {
+    return;
+  }
+
+  $ogRoutes = [
+    'jaraba_comercio_conecta.marketplace' => [
+      'title' => t('Marketplace ComercioConecta — Comercio local de proximidad'),
+      'description' => t('Descubre productos de comercios locales de tu barrio. Compra cerca, compra local.'),
+      'type' => 'website',
+    ],
+    'jaraba_comercio_conecta.marketplace.merchant' => [
+      'title' => t('Comercio local — ComercioConecta'),
+      'description' => t('Productos y ofertas de tu comercio de barrio en ComercioConecta.'),
+      'type' => 'profile',
+    ],
+    'jaraba_comercio_conecta.marketplace.product' => [
+      'title' => t('Producto — ComercioConecta'),
+      'description' => t('Producto de comercio local verificado en ComercioConecta.'),
+      'type' => 'product',
+    ],
+    'jaraba_comercio_conecta.search' => [
+      'title' => t('Buscar productos — ComercioConecta'),
+      'description' => t('Busca y descubre productos de comercios locales de tu zona.'),
+      'type' => 'website',
+    ],
+  ];
+
+  if (!isset($ogRoutes[$route])) {
+    return;
+  }
+
+  $og = $ogRoutes[$route];
+  $siteUrl = \Drupal::request()->getSchemeAndHttpHost();
+
+  $meta = [
+    ['property' => 'og:title', 'content' => (string) $og['title']],
+    ['property' => 'og:description', 'content' => (string) $og['description']],
+    ['property' => 'og:type', 'content' => $og['type']],
+    ['property' => 'og:url', 'content' => $siteUrl . \Drupal::request()->getRequestUri()],
+    ['property' => 'og:site_name', 'content' => \Drupal::config('system.site')->get('name')],
+  ];
+
+  foreach ($meta as $tag) {
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => $tag,
+      ],
+      'og_' . str_replace(':', '_', $tag['property']),
+    ];
+  }
+}
+
+/**
  * Genera un slug URL-friendly a partir de un texto.
  *
  * Lógica: Convierte a minúsculas, elimina acentos y caracteres

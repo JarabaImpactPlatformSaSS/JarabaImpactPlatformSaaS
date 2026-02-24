@@ -162,6 +162,11 @@ class MarketplaceController extends ControllerBase {
           'jaraba_comercio_conecta/marketplace',
         ],
       ],
+      '#cache' => [
+        'contexts' => ['url.path', 'user.permissions'],
+        'tags' => ['merchant_profile:' . $merchant->id(), 'product_retail_list'],
+        'max-age' => 300,
+      ],
     ];
   }
 
@@ -200,7 +205,9 @@ class MarketplaceController extends ControllerBase {
         ],
       ],
       '#cache' => [
+        'contexts' => ['url.path', 'user.permissions'],
         'tags' => ['product_retail:' . $product_retail],
+        'max-age' => 300,
       ],
     ];
   }
