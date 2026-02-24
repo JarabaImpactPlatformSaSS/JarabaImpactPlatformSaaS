@@ -332,10 +332,15 @@ class ServiceApiController extends ControllerBase {
 
     // Verify the current user has permission (provider or client).
     $currentUserId = (int) $this->currentUser()->id();
-    $providerId = (int) $bookingEntity->get('provider_id')->target_id;
+    $providerProfileId = (int) $bookingEntity->get('provider_id')->target_id;
+    $providerProfile = $this->entityTypeManager()->getStorage('provider_profile')->load($providerProfileId);
+    if (!$providerProfile) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Provider not found']], 404);
+    }
+    $providerOwnerUid = (int) $providerProfile->getOwnerId();
     $clientUid = (int) $bookingEntity->getOwnerId();
 
-    if ($currentUserId !== $providerId && $currentUserId !== $clientUid) {
+    if ($currentUserId !== $providerOwnerUid && $currentUserId !== $clientUid) {
       return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'FORBIDDEN', 'message' => 'Access denied']], 403);
     }
 
@@ -346,7 +351,7 @@ class ServiceApiController extends ControllerBase {
       return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => 'Missing status field']], 400);
     }
 
-    $isProvider = ($currentUserId === $providerId);
+    $isProvider = ($currentUserId === $providerOwnerUid);
 
     // Map generic 'cancelled' to role-specific status.
     if ($newStatus === 'cancelled') {
@@ -378,7 +383,7 @@ class ServiceApiController extends ControllerBase {
     // If cancelled, release the availability slot.
     if (str_starts_with($newStatus, 'cancelled_')) {
       $this->availabilityService->releaseSlot(
-        $providerId,
+        $providerProfileId,
         $bookingEntity->get('booking_date')->value ?? '',
         (int) $bookingEntity->get('duration_minutes')->value
       );

@@ -1,26 +1,27 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Inter, Arial, Helvetica, sans-serif" />
-      <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#FF8C42" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-all font-family="Outfit, sans-serif" />
+      <mj-text font-size="14px" color="#333333" line-height="1.6" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
     <mj-style>
-      .footer-link { color: #6b7280 !important; text-decoration: underline; }
-      .metric-box { background-color: #EFF6FF; border-radius: 8px; padding: 16px; text-align: center; margin: 8px 0; }
-      .metric-value { font-size: 24px; font-weight: bold; color: #233D63; }
-      .metric-label { font-size: 12px; color: #6b7280; text-transform: uppercase; }
+      .footer-link { color: #666666 !important; text-decoration: underline; }
+      .metric-box { background-color: #E3F2FD; border-radius: 8px; padding: 16px; text-align: center; margin: 8px 0; }
+      .metric-value { font-size: 24px; font-weight: bold; color: #1565C0; }
+      .metric-label { font-size: 12px; color: #666666; text-transform: uppercase; }
     </mj-style>
   </mj-head>
-  <mj-body background-color="#f3f4f6" width="600px">
+  <mj-body background-color="#f8f9fa" width="600px">
+    <mj-preview>{{ t('Tu resumen mensual de actividad en ServiciosConecta') }}</mj-preview>
     <!-- Header -->
-    <mj-section background-color="#233D63" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ t('ServiciosConecta') }}
         </mj-text>
-        <mj-text align="center" color="#94a3b8" font-size="13px">
+        <mj-text align="center" color="#BBDEFB" font-size="13px">
           {{ t('Tu resumen mensual') }}
         </mj-text>
       </mj-column>
@@ -29,7 +30,7 @@
     <!-- Contenido -->
     <mj-section background-color="#ffffff" padding="32px 24px">
       <mj-column>
-        <mj-text font-size="22px" font-weight="bold" color="#233D63" padding-bottom="8px">
+        <mj-text font-size="22px" font-weight="bold" color="#1565C0" padding-bottom="8px">
           {{ t('&iexcl;{{ months_active }} meses contigo!') }}
         </mj-text>
         <mj-text>
@@ -92,11 +93,14 @@
     <!-- Footer -->
     <mj-section padding="24px">
       <mj-column>
-        <mj-divider border-color="#e5e7eb" border-width="1px" />
-        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+        <mj-divider border-color="#E0E0E0" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#666666" padding-top="16px">
           &copy; {{ current_year }} {{ site_name }}. {{ t('Todos los derechos reservados.') }}
         </mj-text>
-        <mj-text align="center" font-size="12px" color="#6b7280">
+        <mj-text align="center" font-size="11px" color="#666666">
+          Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a
+        </mj-text>
+        <mj-text align="center" font-size="12px" color="#666666">
           <a href="{{ unsubscribe_url }}" class="footer-link">{{ t('Cancelar suscripci&oacute;n') }}</a> &nbsp;|&nbsp;
           <a href="{{ site_url }}/privacy" class="footer-link">{{ t('Pol&iacute;tica de privacidad') }}</a>
         </mj-text>
