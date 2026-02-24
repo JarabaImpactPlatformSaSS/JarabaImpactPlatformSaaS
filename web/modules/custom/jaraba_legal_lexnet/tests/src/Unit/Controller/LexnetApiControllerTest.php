@@ -134,13 +134,14 @@ class LexnetApiControllerTest extends UnitTestCase {
     $strictMatch = ((int) $ownerId === (int) $accountId);
     $this->assertTrue($strictMatch);
 
-    // Demonstrates why strict is important: prevents "0" == false issues.
-    $zeroString = '0';
-    $falseValue = FALSE;
-
+    // Loose == matches string '5' to int 5 via type juggling.
     // phpcs:ignore
-    $this->assertTrue($zeroString == $falseValue, 'Loose equality treats "0" as false');
-    $this->assertFalse((int) $zeroString === (int) $falseValue, 'Strict cast prevents false match');
+    $this->assertTrue('5' == 5, 'Loose equality coerces string to int');
+    // Strict === rejects mismatched types without casting.
+    $this->assertFalse('5' === 5, 'Strict equality rejects type mismatch');
+
+    // With explicit (int) cast, comparison is predictable regardless of source types.
+    $this->assertTrue((int) $ownerId === (int) $accountId, 'Cast match for same ID');
 
     // Non-matching IDs.
     $differentOwner = '7';
