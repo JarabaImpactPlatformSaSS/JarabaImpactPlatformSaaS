@@ -16,3 +16,71 @@ function jaraba_legal_lexnet_install(): void {
   // Inicializar estado de ultimo sync.
   \Drupal::state()->set('jaraba_legal_lexnet.last_sync', 0);
 }
+
+/**
+ * Add performance indexes to lexnet_notification and lexnet_submission tables.
+ */
+function jaraba_legal_lexnet_update_10001(): void {
+  $schema = \Drupal::database()->schema();
+
+  // --- lexnet_notification indexes ---
+  if ($schema->tableExists('lexnet_notification')) {
+    if (!$schema->indexExists('lexnet_notification', 'idx_status_received')) {
+      $schema->addIndex('lexnet_notification', 'idx_status_received', ['status', 'received_at'], [
+        'fields' => [
+          'status' => ['type' => 'varchar', 'length' => 32],
+          'received_at' => ['type' => 'varchar', 'length' => 20],
+        ],
+      ]);
+    }
+    if (!$schema->indexExists('lexnet_notification', 'idx_case_id')) {
+      $schema->addIndex('lexnet_notification', 'idx_case_id', ['case_id'], [
+        'fields' => [
+          'case_id' => ['type' => 'int', 'unsigned' => TRUE],
+        ],
+      ]);
+    }
+    if (!$schema->indexExists('lexnet_notification', 'idx_external_id')) {
+      $schema->addIndex('lexnet_notification', 'idx_external_id', ['external_id'], [
+        'fields' => [
+          'external_id' => ['type' => 'varchar', 'length' => 64],
+        ],
+      ]);
+    }
+  }
+
+  // --- lexnet_submission indexes ---
+  if ($schema->tableExists('lexnet_submission')) {
+    if (!$schema->indexExists('lexnet_submission', 'idx_uid_status')) {
+      $schema->addIndex('lexnet_submission', 'idx_uid_status', ['uid', 'status'], [
+        'fields' => [
+          'uid' => ['type' => 'int', 'unsigned' => TRUE],
+          'status' => ['type' => 'varchar', 'length' => 32],
+        ],
+      ]);
+    }
+    if (!$schema->indexExists('lexnet_submission', 'idx_case_id')) {
+      $schema->addIndex('lexnet_submission', 'idx_case_id', ['case_id'], [
+        'fields' => [
+          'case_id' => ['type' => 'int', 'unsigned' => TRUE],
+        ],
+      ]);
+    }
+    if (!$schema->indexExists('lexnet_submission', 'idx_court_status')) {
+      $schema->addIndex('lexnet_submission', 'idx_court_status', ['court', 'status'], [
+        'fields' => [
+          'court' => ['type' => 'varchar', 'length' => 255],
+          'status' => ['type' => 'varchar', 'length' => 32],
+        ],
+      ]);
+    }
+    if (!$schema->indexExists('lexnet_submission', 'idx_tenant_created')) {
+      $schema->addIndex('lexnet_submission', 'idx_tenant_created', ['tenant_id', 'created'], [
+        'fields' => [
+          'tenant_id' => ['type' => 'int', 'unsigned' => TRUE],
+          'created' => ['type' => 'int'],
+        ],
+      ]);
+    }
+  }
+}
