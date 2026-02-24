@@ -48,7 +48,7 @@
          class="btn btn--primary btn--glow"
          data-slide-panel="large"
          data-slide-panel-title="{% trans %}Nueva Página{% endtrans %}">
-        {{ jaraba_icon('ui', 'plus', { color: 'neutral', size: '16px' }) }}
+        {{ jaraba_icon('actions', 'plus', { variant: 'duotone', size: '16px' }) }}
         {% trans %}Nueva Página{% endtrans %}
       </a>
     </div>
@@ -60,7 +60,7 @@
     {# Total páginas #}
     <div class="site-kpi-card site-kpi-card--total">
       <div class="site-kpi-card__icon">
-        {{ jaraba_icon('ui', 'document', { color: 'corporate', size: '24px' }) }}
+        {{ jaraba_icon('ui', 'document', { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
       </div>
       <div class="site-kpi-card__value" data-value="{{ kpis.total_pages|default(0) }}">0</div>
       <div class="site-kpi-card__label">{% trans %}Total Páginas{% endtrans %}</div>
@@ -69,7 +69,7 @@
     {# Publicadas #}
     <div class="site-kpi-card site-kpi-card--published">
       <div class="site-kpi-card__icon">
-        {{ jaraba_icon('ui', 'check', { variant: 'duotone', color: 'success', size: '24px' }) }}
+        {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', color: 'success', size: '24px' }) }}
       </div>
       <div class="site-kpi-card__value" data-value="{{ kpis.published_pages|default(0) }}">0</div>
       <div class="site-kpi-card__label">{% trans %}Publicadas{% endtrans %}</div>
@@ -78,7 +78,7 @@
     {# SEO Score #}
     <div class="site-kpi-card site-kpi-card--seo">
       <div class="site-kpi-card__icon">
-        {{ jaraba_icon('ui', 'bolt', { variant: 'duotone', color: 'innovation', size: '24px' }) }}
+        {{ jaraba_icon('ui', 'bolt', { variant: 'duotone', color: 'verde-innovacion', size: '24px' }) }}
       </div>
       <div class="site-kpi-card__value" data-value="{{ kpis.seo_score|default('—') }}">
         {{ kpis.seo_score is not null ? kpis.seo_score : '—' }}
@@ -89,7 +89,7 @@
     {# Última actualización #}
     <div class="site-kpi-card site-kpi-card--updated">
       <div class="site-kpi-card__icon">
-        {{ jaraba_icon('ui', 'clock', { color: 'warning', size: '24px' }) }}
+        {{ jaraba_icon('ui', 'clock', { variant: 'duotone', color: 'warning', size: '24px' }) }}
       </div>
       <div class="site-kpi-card__value" data-value="{{ kpis.last_updated_formatted|default('—') }}">
         {{ kpis.last_updated_formatted|default('—') }}
@@ -137,7 +137,7 @@
         </h3>
         <div class="site-preview__container">
           <div class="site-preview__empty">
-            {{ jaraba_icon('ui', 'monitor', { color: 'neutral', size: '40px' }) }}
+            {{ jaraba_icon('ui', 'monitor', { variant: 'duotone', color: 'neutral', size: '40px' }) }}
             <p>{% trans %}Haz clic en una página del árbol para ver la vista previa{% endtrans %}</p>
           </div>
           <iframe class="site-preview__iframe" hidden
@@ -156,31 +156,31 @@
              data-slide-panel="large"
              data-slide-panel-title="{% trans %}Nueva Página{% endtrans %}">
             <span class="quick-action__icon quick-action__icon--primary">
-              {{ jaraba_icon('ui', 'plus', { color: 'corporate', size: '20px' }) }}
+              {{ jaraba_icon('actions', 'plus', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
             </span>
             <span class="quick-action__title">{% trans %}Nueva Página{% endtrans %}</span>
           </a>
           <a href="/site-builder/tree" class="quick-action">
             <span class="quick-action__icon">
-              {{ jaraba_icon('ui', 'list', { color: 'neutral', size: '20px' }) }}
+              {{ jaraba_icon('ui', 'list', { variant: 'duotone', color: 'neutral', size: '20px' }) }}
             </span>
             <span class="quick-action__title">{% trans %}Gestionar Árbol{% endtrans %}</span>
           </a>
           <a href="/site-builder/config" class="quick-action">
             <span class="quick-action__icon">
-              {{ jaraba_icon('ui', 'cog', { color: 'neutral', size: '20px' }) }}
+              {{ jaraba_icon('ui', 'cog', { variant: 'duotone', color: 'neutral', size: '20px' }) }}
             </span>
             <span class="quick-action__title">{% trans %}Configuración{% endtrans %}</span>
           </a>
           <a href="/site-builder/redirects" class="quick-action">
             <span class="quick-action__icon">
-              {{ jaraba_icon('ui', 'arrow-right', { color: 'neutral', size: '20px' }) }}
+              {{ jaraba_icon('ui', 'arrow-right', { variant: 'duotone', color: 'neutral', size: '20px' }) }}
             </span>
             <span class="quick-action__title">{% trans %}Redirects{% endtrans %}</span>
           </a>
           <a href="/site-builder/sitemap" class="quick-action">
             <span class="quick-action__icon">
-              {{ jaraba_icon('ui', 'globe', { color: 'neutral', size: '20px' }) }}
+              {{ jaraba_icon('ui', 'globe', { variant: 'duotone', color: 'neutral', size: '20px' }) }}
             </span>
             <span class="quick-action__title">{% trans %}Sitemap{% endtrans %}</span>
           </a>
