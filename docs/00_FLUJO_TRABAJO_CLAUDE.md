@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-24
-**Version:** 21.0.0 (Entity Admin UI Remediation Complete — P0-P5 + CI Green + 175 Field UI Tabs)
+**Version:** 22.0.0 (Empleabilidad Profile Premium — Fase Final: CandidateEducation + XSS Fix)
 
 ---
 
@@ -283,6 +283,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-24 | **22.0.0** | **Empleabilidad Profile Premium — Fase Final Workflow**: Patron de creacion de ContentEntity completa con AdminHtmlRouteProvider + field_ui_base_route + SettingsForm + links.task.yml (collection tab + settings tab) + routing.yml (settings route) + permissions.yml + update hook para instalar schema. Refuerzo de TWIG-XSS-001 (`\|raw` → `\|safe_html` en perfil candidato). Patron de cleanup: reemplazar `#markup` con HTML hardcodeado por `#theme` que reutiliza template premium existente. Aprendizaje #118. |
 | 2026-02-24 | **21.0.0** | **Entity Admin UI Remediation Complete Workflow**: Patrones KERNEL-TEST-DEPS-001 — dependencias de modulos explicitas en Kernel tests (datetime, text, field, taxonomy + installEntitySchema previo). Patron OPTIONAL-SERVICE-DI-001 — `@?` para servicios cross-module opcionales con constructores nullable y null-guards (7 refs en agroconecta, 1 en job_board). Patron FIELD-UI-SETTINGS-TAB-001 — default local task tab obligatorio para Field UI (175 entidades en 46 modulos). Patron de mocking: ContentEntityInterface con `get()` callback y anonymous class para `->value`/`->target_id`. Inyeccion currentUser via ReflectionProperty::setValue(). Reglas de oro #29, #30, #31. Aprendizaje #116. |
 | 2026-02-24 | **20.0.0** | **Icon System — Zero Chinchetas Workflow**: Patron ICON-CONVENTION-001 — firma estricta `jaraba_icon('category', 'name', {options})`, nunca path-style ni args posicionales ni invertidos. Patron de bridge categories (symlinks a categorias primarias) para iconos referenciados desde multiples convenciones de nombre. Auditoria sistematica: extraer pares unicos con grep → verificar SVGs en filesystem → crear symlinks faltantes → re-verificar con `find -type l ! -exec test -e {}`. Deteccion de symlinks circulares con `readlink -f`. Duotone-first policy (ICON-DUOTONE-001). Colores Jaraba exclusivos (ICON-COLOR-001). Regla de oro #32. Aprendizaje #117. |
 | 2026-02-23 | **18.0.0** | **Andalucia +ei Launch Readiness Workflow**: Patron FORM-MSG-001 — templates de formulario custom DEBEN declarar variable `messages` en hook_theme, inyectar `['#type' => 'status_messages']` en preprocess, y renderizar `{{ messages }}` antes de `{{ form }}`. Patron LEGAL-ROUTE-001 — paginas legales con URLs canonicas en espanol (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`, `/sobre-nosotros`, `/contacto`). Patron LEGAL-CONFIG-001 — controladores leen contenido de `theme_get_setting()`, templates zero-region con placeholder informativo, TAB 14 en theme settings. Protocolo de testing en browser: bypass HTML5 con `novalidate` para verificar mensajes server-side. Regla de oro #28. Aprendizaje #110. |

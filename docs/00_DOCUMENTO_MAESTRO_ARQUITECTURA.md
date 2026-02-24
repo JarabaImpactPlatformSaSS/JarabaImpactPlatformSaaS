@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v67.0
+## Jaraba Impact Platform SaaS v68.0
 
 **Fecha:** 2026-02-24
-**Versión:** 67.0.0 (Entity Admin UI Remediation Complete — P0-P5 + CI Green + 175 Field UI Tabs)
-**Estado:** Produccion (Entity Admin UI 100% + Empleabilidad Hardened + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Versión:** 68.0.0 (Empleabilidad Profile Premium — Fase Final: CandidateEducation + XSS Fix)
+**Estado:** Produccion (Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -168,6 +168,30 @@ Integración unificada de soberanía legal y resiliencia técnica:
 ```
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│                      VERTICAL: EMPLEABILIDAD ⭐                        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_candidate (v2.0 — Profile Premium) ⭐                     │
+│   ├── Entidades (6): CandidateProfile, CandidateSkill,                │
+│   │   CandidateExperience, CandidateEducation (NEW),                  │
+│   │   CandidateLanguage, CopilotConversation + CopilotMessage         │
+│   ├── Premium /my-profile: 7 secciones glassmorphism                  │
+│   │   ├── Hero: Avatar, nombre, headline, ubicacion, badge            │
+│   │   ├── About: Summary (|safe_html XSS-safe) + nivel educacion     │
+│   │   ├── Experience: Timeline cronologica descendente                 │
+│   │   ├── Education: Grid de registros CandidateEducation              │
+│   │   ├── Skills: Pills con badge de verificacion                     │
+│   │   ├── Links: LinkedIn, GitHub, Portfolio, Website                  │
+│   │   └── CTA: Completion ring SVG + enlace a edicion                 │
+│   ├── Empty State: Glassmorphism card + benefit cards + CTA            │
+│   ├── ProfileController: Carga resiliente (try/catch por entidad)     │
+│   ├── SCSS: 920 lineas, design tokens --ej-*, BEM cp-*, responsive   │
+│   ├── Iconos: 15 pares jaraba_icon() duotone verificados              │
+│   └── Admin: /admin/content/candidate-educations con Field UI         │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │                      ICON SYSTEM: ZERO CHINCHETAS ⭐                   │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -215,6 +239,8 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **68.0.0** | **Empleabilidad Profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity completa con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil premium. Controller fallback cleanup → render array con template premium. Seccion de arquitectura Empleabilidad documentada (6 entidades, 7 secciones glassmorphism, ProfileController resiliente). 3 ficheros creados, 6 modificados. Aprendizaje #118. |
+| 2026-02-24 | **67.0.0** | **Entity Admin UI Remediation Complete:** 286 entidades auditadas, 175 Field UI tabs, CI 100% green. |
 | 2026-02-24 | **66.0.0** | **Icon System — Zero Chinchetas:** Sistema de iconos `jaraba_icon()` auditado y completado. 305 pares unicos verificados en todo el codebase con 0 chinchetas restantes. ~170 SVGs/symlinks nuevos en 8 bridge categories. 32 llamadas con convencion rota corregidas en 4 modulos (jaraba_interactive, jaraba_i18n, jaraba_facturae, jaraba_resources). 177 templates Page Builder verificados. 2 symlinks circulares y 1 roto reparados. Reglas ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001. |
 | 2026-02-23 | **64.0.0** | **Andalucia +ei Launch Readiness:** Correccion de 8 incidencias bloqueantes para la 2a edicion. Fix critico: `{{ messages }}` en template de solicitud (formulario tragaba errores silenciosamente). 6 emojis reemplazados por `jaraba_icon()`. 5 rutas nuevas para paginas legales/informativas (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`, `/sobre-nosotros`, `/contacto`). Controladores con `theme_get_setting()` para contenido configurable. 3 templates zero-region. Footer con URLs canonicas en espanol. Badge "6 verticales" corregido. TAB 14 en theme settings para contenido legal. 13 ficheros modificados. Reglas FORM-MSG-001, LEGAL-ROUTE-001, LEGAL-CONFIG-001. Aprendizaje #110. |
 | 2026-02-23 | **63.0.0** | **AI Identity Enforcement + Competitor Isolation:** Blindaje de identidad IA implementado en toda la plataforma. `BaseAgent.buildSystemPrompt()` inyecta regla de identidad como parte #0 (heredada por 14+ agentes). `CopilotOrchestratorService` antepone `$identityRule` a los 8 modos. `PublicCopilotController` incluye bloque IDENTIDAD INQUEBRANTABLE. Servicios standalone (FaqBotService, ServiciosConectaCopilotAgent, CoachIaService) con regla manual. Eliminadas 5 menciones de competidores en prompts de IA. 12 archivos modificados. Reglas AI-IDENTITY-001, AI-COMPETITOR-001. |
@@ -231,4 +257,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 64.0.0 | **Fecha:** 2026-02-23 | **Autor:** IA Asistente
+> **Versión:** 68.0.0 | **Fecha:** 2026-02-24 | **Autor:** IA Asistente

@@ -4,7 +4,14 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-24
-**Versión:** 89.0.0 (Entity Admin UI Remediation Complete + CI Green + Field UI Tabs)
+**Versión:** 91.0.0 (Empleabilidad Profile Premium — Fase Final: CandidateEducation + XSS Fix)
+
+> **🎯 EMPLEABILIDAD /MY-PROFILE PREMIUM — FASE FINAL** (2026-02-24)
+> - **Contexto:** Sesion anterior implemento 90% del perfil premium (7 secciones glassmorphism, `jaraba_icon()` duotone, stagger animations, timeline experiencia, skill pills, completion ring SVG). Faltaba la entidad `CandidateEducation`, fix XSS y cleanup del controller.
+> - **Nueva entidad `CandidateEducation`:** ContentEntity con `AdminHtmlRouteProvider`, `field_ui_base_route`, 6 rutas admin, 6 campos (institution, degree, field_of_study, start_date, end_date + user_id). Interface con getters tipados. SettingsForm + settings tab + collection tab "Educacion". Update hook `10002`. Permiso `administer candidate educations`.
+> - **Fix XSS (TWIG-XSS-001):** `{{ profile.summary|raw }}` → `{{ profile.summary|safe_html }}` en template de perfil. Verificado: elimina `<script>`, preserva `<b>`.
+> - **Controller cleanup:** HTML hardcodeado en fallback de `editProfile()` → render array con `#theme => 'my_profile_empty'`.
+> - **3 ficheros creados, 6 modificados.** Reglas aplicadas: TWIG-XSS-001, FIELD-UI-SETTINGS-TAB-001. Aprendizaje #118.
 
 > **🏗️ ENTITY ADMIN UI REMEDIATION COMPLETA: P0-P5 + CI GREEN** (2026-02-24)
 > - **Problema:** 286 entidades auditadas en 62 modulos. Faltaban views_data, collection links, field_ui_base_route, routes, menu links. Ademas, 175 entidades tenian `field_ui_base_route` pero sin default settings tab, impidiendo que Field UI mostrase pestanas "Administrar campos" / "Administrar visualizacion de formulario".
@@ -215,6 +222,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **91.0.0** | **Empleabilidad /my-profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, collection tab, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil (TWIG-XSS-001). Controller cleanup: HTML hardcodeado → `#theme => 'my_profile_empty'`. Permiso `administer candidate educations`. 3 ficheros creados, 6 modificados. Aprendizaje #118. |
 | 2026-02-24 | **90.0.0** | **Icon System — Zero Chinchetas:** 305 pares `jaraba_icon()` auditados en todo el codebase. 0 chinchetas restantes. ~170 SVGs/symlinks nuevos en 8 bridge categories. 32 llamadas con convencion rota corregidas en 4 modulos. 177 templates Page Builder verificados. 3 symlinks reparados (2 circulares, 1 roto). Reglas ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001. Regla de oro #32. Aprendizaje #117. |
 | 2026-02-24 | **88.0.0** | **Premium HTML Emails + Dashboard URLs:** 3 emails Andalucia +ei reescritos de texto plano a HTML premium con `Markup::create()`, inline CSS, table layout. Tarjetas resumen, CTAs naranjas, triaje IA color-coded (verde/amarillo/rojo). URLs dashboard corregidas: `/empleo`→`/jobs`, `/talento`→`/my-profile` via `path()`. Reglas EMAIL-HTML-PREMIUM-001, TWIG-ROUTE-PATH-001. Aprendizaje #115. |
 | 2026-02-24 | **87.0.0** | **SolicitudEi Entity View + AI Triage E2E:** Vista canonica vacia por falta de `view_builder` handler y `setDisplayOptions('view')` en 22 campos. Triaje IA roto por API incompatible (ChatInput/ChatMessage, getNormalized()->getText(), modelo explicito). Key module: `base64_encoded` string truthy corrupts keys. CRLF en .env + lando rebuild. Reglas ENTITY-VIEW-DISPLAY-001, DRUPAL-AI-CHAT-001, KEY-MODULE-BOOL-001, ENV-FILE-CRLF-001. Aprendizaje #114. |
