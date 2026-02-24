@@ -1,0 +1,52 @@
+{#
+ # Template: JarabaLex - Casos de Exito
+ # Category: jarabalex
+ # Type: testimonials
+ #
+ # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo
+ # Premium: staggered animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--testimonials pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_testimonials"
+         aria-label="{{ title|default('Casos de Éxito')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Lo que dicen nuestros clientes')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Empresas y particulares que confían en nuestro equipo jurídico.')|t }}</p>
+    </div>
+    <div class="pb-section__testimonials-grid">
+      {% set default_testimonials = [
+        { quote: 'Resolvieron un conflicto mercantil que llevábamos arrastrando dos años. Profesionalidad y eficacia extraordinarias.', name: 'Carlos Mendoza', role: 'CEO, Grupo Meridian', initials: 'CM' },
+        { quote: 'Gracias a su asesoría fiscal ahorramos un 30% en impuestos de forma completamente legal. Imprescindibles para cualquier pyme.', name: 'Ana García', role: 'Directora Financiera, TechStart', initials: 'AG' },
+        { quote: 'Su equipo laboral nos acompañó en toda la reestructuración. Atención personalizada y resultados impecables.', name: 'David Ruiz', role: 'RRHH, Industrias Navarro', initials: 'DR' }
+      ] %}
+      {% set items = testimonials|default(default_testimonials) %}
+      {% for testimonial in items %}
+        <div class="pb-section__testimonial"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__testimonial-quote-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'chat', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
+          <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Excelente servicio jurídico.')|t }}</p>
+          <div class="pb-section__testimonial-author">
+            <div class="pb-section__testimonial-avatar">
+              {% if testimonial.avatar|default('') %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.name|default('') }}" loading="lazy" />
+              {% else %}
+                {{ testimonial.initials|default('??') }}
+              {% endif %}
+            </div>
+            <div>
+              <div class="pb-section__testimonial-name">{{ testimonial.name|default('Cliente')|t }}</div>
+              <div class="pb-section__testimonial-role">{{ testimonial.role|default('Empresa')|t }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

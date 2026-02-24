@@ -1,0 +1,30 @@
+{#
+ # Template: JarabaLex - Consulta Gratuita
+ # Category: jarabalex
+ # Type: cta
+ #
+ # Banner con gradient, titulo, subtitle y 2 CTAs (primary + secondary)
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--cta pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_cta"
+         aria-label="{{ title|default('Consulta Gratuita')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <h2 class="pb-section__title">{{ title|default('¿Necesitas orientación legal?')|t }}</h2>
+    <p class="pb-section__subtitle">{{ subtitle|default('Reserva tu primera consulta gratuita y descubre cómo podemos proteger tu negocio. Sin compromiso.')|t }}</p>
+    <div class="pb-section__actions">
+      <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+        {{ cta_text|default('Reservar consulta gratuita')|t }}
+      </a>
+      {% if cta_secondary_text is defined %}
+        <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+          {{ cta_secondary_text }}
+        </a>
+      {% else %}
+        <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Ver nuestros planes'|t }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>

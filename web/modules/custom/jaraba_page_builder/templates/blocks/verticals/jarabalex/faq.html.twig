@@ -1,0 +1,45 @@
+{#
+ # Template: JarabaLex - Preguntas Frecuentes
+ # Category: jarabalex
+ # Type: faq
+ #
+ # Header + accordion con preguntas/respuestas legales
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--faq pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_faq"
+         aria-label="{{ title|default('Preguntas Frecuentes')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Preguntas frecuentes sobre nuestros servicios legales')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas más habituales sobre asesoría jurídica.')|t }}</p>
+    </div>
+    <div class="pb-section__faq-list">
+      {% set default_faqs = [
+        { question: '¿La primera consulta es realmente gratuita?', answer: 'Sí. Ofrecemos una sesión inicial de 30 minutos sin coste para evaluar tu situación y orientarte sobre los pasos a seguir.' },
+        { question: '¿En qué áreas del derecho están especializados?', answer: 'Nos especializamos en derecho mercantil, laboral, fiscal, propiedad intelectual y compliance corporativo.' },
+        { question: '¿Trabajan con empresas de cualquier tamaño?', answer: 'Sí, desde autónomos y startups hasta grandes corporaciones. Adaptamos nuestros servicios al tamaño y necesidades de cada cliente.' },
+        { question: '¿Puedo cambiar de plan en cualquier momento?', answer: 'Por supuesto. Puedes escalar o reducir tu plan mensualmente sin penalización, adaptándote a la evolución de tu empresa.' }
+      ] %}
+      {% set items = faqs|default(default_faqs) %}
+      {% for faq in items %}
+        <details class="pb-section__faq-item"
+                 data-effect="fade-up"
+                 data-delay="{{ loop.index0 * 80 }}">
+          <summary class="pb-section__faq-question">
+            {{ faq.question|default('Pregunta frecuente')|t }}
+            <span class="pb-section__faq-toggle" aria-hidden="true">
+              {{ jaraba_icon('ui', 'chevron-down', { variant: 'outline', size: '20px', color: 'primary' }) }}
+            </span>
+          </summary>
+          <div class="pb-section__faq-answer">
+            <p>{{ faq.answer|default('Respuesta a la pregunta frecuente.')|t }}</p>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>

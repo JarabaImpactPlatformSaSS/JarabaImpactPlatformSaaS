@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-24
-**Version:** 19.0.0 (Empleabilidad Audit — 7 P0 Security/Business + P1 i18n + P2 XSS Hardening)
+**Version:** 21.0.0 (Entity Admin UI Remediation Complete — P0-P5 + CI Green + 175 Field UI Tabs)
 
 ---
 
@@ -99,10 +99,40 @@
   - Para endpoints con alto volumen (mensajes), usar cursor en lugar de offset: `?before_id=123&limit=50`.
   - La query usa `WHERE id < :before_id ORDER BY id DESC LIMIT :limit`. Mas eficiente que OFFSET en tablas grandes.
   - El response incluye `meta.has_more` y `meta.oldest_id` para la siguiente pagina.
-- **Optional DI con @?:**
+- **Optional DI con @? (OPTIONAL-SERVICE-DI-001):**
   - Servicios que dependen de modulos opcionales (ej. `AttachmentBridgeService` depende de `jaraba_vault`) usan `@?` en `services.yml`.
   - El constructor acepta `?ServiceInterface $service = NULL` y degrada gracefully con fallback local.
   - Patron: `$this->vaultService?->store($data) ?? $this->storeLocally($data)`.
+  - **Critico para Kernel tests:** Cuando un modulo A referencia un servicio de modulo B con `@moduloB.service`, y un Kernel test solo habilita modulo A, el test falla con `ServiceNotFoundException`. Usar `@?moduloB.service` y nullable constructor resuelve esto.
+  - Ejemplo real: `jaraba_agroconecta_core` tenia 7 hard refs a `@ecosistema_jaraba_core.agroconecta_feature_gate` → cambiados a `@?`.
+- **Kernel Test Module Dependencies (KERNEL-TEST-DEPS-001):**
+  - `KernelTestBase::$modules` NO resuelve dependencias automaticamente — TODOS los modulos requeridos deben listarse explicitamente.
+  - Si la entidad usa campos `datetime` → anadir `datetime` al array `$modules`.
+  - Si la entidad referencia `taxonomy_term` → anadir `taxonomy`, `text`, `field` Y llamar `$this->installEntitySchema('taxonomy_term')` ANTES del schema de la entidad.
+  - Si la entidad usa campos `list_string` → anadir `options`. Campos `text_long` → anadir `text`.
+  - Los schemas de entidades referenciadas DEBEN instalarse antes que la entidad que las referencia.
+- **Field UI Settings Tab Obligatorio (FIELD-UI-SETTINGS-TAB-001):**
+  - Toda entidad con `field_ui_base_route` DEBE tener un default local task tab en `links.task.yml`.
+  - Sin este tab, Field UI no puede renderizar "Administrar campos" ni "Administrar visualizacion de formulario".
+  - El tab debe tener `route_name` y `base_route` apuntando a la misma ruta settings:
+    ```yaml
+    entity.ENTITY_ID.settings_tab:
+      title: 'Configuración'
+      route_name: entity.ENTITY_ID.settings
+      base_route: entity.ENTITY_ID.settings
+    ```
+  - Verificar con: `lando drush ev "\$m = \Drupal::service('plugin.manager.menu.local_task'); print_r(\$m->getLocalTasksForRoute('entity.ENTITY_ID.settings'));"`
+- **PHPUnit Mocking — Entity Mocks con ContentEntityInterface:**
+  - NUNCA usar `createMock(\stdClass::class)` para entidades. Usar `ContentEntityInterface`.
+  - Configurar `get()` con callback que retorne anonymous class con `->value` y `->target_id`:
+    ```php
+    $entity->method('get')->willReturnCallback(function (string $field) use ($values) {
+        $v = $values[$field] ?? NULL;
+        return new class($v) { public $value; public function __construct($v) { $this->value = $v; } };
+    });
+    ```
+  - Para `hasField()`: `$entity->method('hasField')->willReturnCallback(fn($f) => isset($values[$f]));`
+  - Para ControllerBase: inyectar `currentUser` via `ReflectionProperty::setValue()` (no hay setter publico).
 - **ECA Plugins por Codigo:**
   - Los ECA Events heredan de `EventBase`, definen `defaultConfiguration()`, `getEntity()` y `static::EVENT_NAME`.
   - Los ECA Conditions heredan de `ConditionBase`, implementan `evaluate()` retornando bool.
@@ -171,6 +201,18 @@
   - Si un dato de dominio (recommendations, quick_wins, actions) sugiere un competidor, reemplazar por la funcionalidad equivalente de Jaraba.
   - Excepcion: integraciones reales (LinkedIn import, LinkedIn Ads, Meta Pixel) donde la plataforma externa es un canal de distribucion, no un competidor directo.
   - Patron de redireccion: Si el usuario menciona un competidor, la IA responde explicando como Jaraba cubre esa necesidad.
+- **Sistema de Iconos jaraba_icon() (ICON-CONVENTION-001):**
+  - **Firma correcta:** `jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' })`.
+  - **Convenciones rotas detectadas y corregidas:**
+    - Path-style: `jaraba_icon('ui/arrow-left', 'outline')` → separar category y name.
+    - Args invertidos: `jaraba_icon('star', 'micro')` → `jaraba_icon('ui', 'star', ...)`.
+    - Args posicionales: `jaraba_icon('download', 'outline', 'white', '20')` → usar objeto `{options}`.
+  - **Resolucion de SVG:** `{modulePath}/images/icons/{category}/{name}[-variant].svg`. Si no existe, emoji fallback via `getFallbackEmoji()`. Fallback final: 📌 (chincheta).
+  - **Bridge categories:** Directorios de symlinks que mapean categorias faltantes a iconos existentes. Ejemplo: `achievement/trophy.svg → ../actions/trophy.svg`. Cubren: achievement, finance, general, legal, navigation, status, tools, media, users.
+  - **Duotone-first:** Todo icono en templates premium DEBE usar `variant: 'duotone'`. El duotone aplica `opacity: 0.2` + `fill: currentColor` a capas de fondo.
+  - **Colores Jaraba:** `azul-corporativo`, `naranja-impulso`, `verde-innovacion`, `white`, `neutral`. NUNCA colores genericos ni hex.
+  - **Auditoria completa:** Extraer todos los pares unicos `jaraba_icon('category', 'name')` con grep → verificar cada SVG en filesystem → crear symlinks/SVGs faltantes → re-verificar con `find -type l ! -exec test -e {}` para detectar symlinks rotos.
+  - **Symlinks circulares:** `readlink -f` para detectar. Ejemplo: `save.svg → save.svg` (se apunta a si mismo). Fix: eliminar y recrear apuntando a `save-duotone.svg` o variante correcta.
 - **Header Sticky por Defecto (CSS-STICKY-001):**
   - Problema raiz: `position: fixed` con header de altura variable (botones de accion wrappean a 2 lineas) hace imposible compensar con un `padding-top` fijo. Causa solapamiento del header sobre el contenido.
   - Solucion: `position: sticky` como default global. El header participa en el flujo normal del documento y nunca solapa contenido.
@@ -230,6 +272,10 @@
 26. **Aislamiento de competidores en IA:** Ningun prompt de IA DEBE mencionar, recomendar ni referenciar plataformas competidoras ni modelos de IA externos. Si el usuario menciona un competidor, la IA redirige a funcionalidades equivalentes de Jaraba. Los datos de dominio (recommendations, quick_wins) DEBEN referenciar herramientas de Jaraba, no de terceros. Excepcion: integraciones reales (LinkedIn import, Meta Pixel) donde la plataforma es canal de distribucion.
 27. **Sticky header por defecto en frontend:** El `.landing-header` DEBE usar `position: sticky` como default global. Solo las landing pages con hero fullscreen (`body.landing-page`, `body.page-front`) lo overriden a `position: fixed`. Las areas de contenido NUNCA compensan con `padding-top` para header fijo — solo padding estetico (`1.5rem`). El ajuste de toolbar admin (`top: 39px/79px`) se aplica una unica vez en el SCSS del header.
 28. **Mensajes obligatorios en templates de formulario:** Cuando un modulo define un `#theme` custom para renderizar un formulario, el hook_theme DEBE declarar variable `messages`, el preprocess DEBE inyectar `['#type' => 'status_messages']`, y el template DEBE renderizar `{{ messages }}` antes de `{{ form }}`. Sin esto, los errores de validacion server-side se pierden silenciosamente (la validacion HTML5 del browser oculta el problema). Las paginas legales/informativas DEBEN usar URLs canonicas en espanol (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`) y contenido editable desde theme settings via `theme_get_setting()`.
+29. **Field UI settings tab obligatorio:** Toda entidad con `field_ui_base_route` DEBE tener un default local task tab en `links.task.yml` donde `route_name == base_route == field_ui_base_route`. Sin este tab, Field UI no puede montar las pestanas "Administrar campos" / "Administrar visualizacion de formulario". Verificar tras crear entidades con `\Drupal::service('plugin.manager.menu.local_task')->getLocalTasksForRoute()`.
+30. **Kernel tests: dependencias explicitas de modulos:** `KernelTestBase::$modules` NO auto-resuelve dependencias de modulos. Listar TODOS los modulos requeridos por los field types de la entidad (`datetime`, `text`, `options`, `taxonomy`) e instalar schemas de entidades referenciadas (ej. `taxonomy_term`) ANTES del schema de la entidad bajo test. Patron: `$this->installEntitySchema('taxonomy_term');` antes de `$this->installEntitySchema('order_agro');`.
+31. **Cross-module services opcionales con @?:** Servicios que referencian otros modulos (que pueden no estar instalados) DEBEN usar `@?` en services.yml y constructores nullable (`?Type $param = NULL`). El codigo DEBE null-guard antes de usar el servicio. Critico para testabilidad con Kernel tests que solo habilitan un modulo.
+32. **jaraba_icon() convencion estricta y zero chinchetas:** Toda llamada a `jaraba_icon()` DEBE seguir la firma `jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' })`. Antes de crear un template nuevo, verificar que los pares category/name existen como SVGs en `ecosistema_jaraba_core/images/icons/{category}/`. Si falta un icono, crear un symlink en la bridge category correspondiente apuntando a una categoria primaria (actions, fiscal, media, micro, ui, users). Verificar con `find images/icons/ -type l ! -exec test -e {} \; -print` que no hay symlinks rotos. El objetivo es 0 chinchetas (📌) en toda la plataforma.
 
 ---
 
@@ -237,6 +283,8 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-24 | **21.0.0** | **Entity Admin UI Remediation Complete Workflow**: Patrones KERNEL-TEST-DEPS-001 — dependencias de modulos explicitas en Kernel tests (datetime, text, field, taxonomy + installEntitySchema previo). Patron OPTIONAL-SERVICE-DI-001 — `@?` para servicios cross-module opcionales con constructores nullable y null-guards (7 refs en agroconecta, 1 en job_board). Patron FIELD-UI-SETTINGS-TAB-001 — default local task tab obligatorio para Field UI (175 entidades en 46 modulos). Patron de mocking: ContentEntityInterface con `get()` callback y anonymous class para `->value`/`->target_id`. Inyeccion currentUser via ReflectionProperty::setValue(). Reglas de oro #29, #30, #31. Aprendizaje #116. |
+| 2026-02-24 | **20.0.0** | **Icon System — Zero Chinchetas Workflow**: Patron ICON-CONVENTION-001 — firma estricta `jaraba_icon('category', 'name', {options})`, nunca path-style ni args posicionales ni invertidos. Patron de bridge categories (symlinks a categorias primarias) para iconos referenciados desde multiples convenciones de nombre. Auditoria sistematica: extraer pares unicos con grep → verificar SVGs en filesystem → crear symlinks faltantes → re-verificar con `find -type l ! -exec test -e {}`. Deteccion de symlinks circulares con `readlink -f`. Duotone-first policy (ICON-DUOTONE-001). Colores Jaraba exclusivos (ICON-COLOR-001). Regla de oro #32. Aprendizaje #117. |
 | 2026-02-23 | **18.0.0** | **Andalucia +ei Launch Readiness Workflow**: Patron FORM-MSG-001 — templates de formulario custom DEBEN declarar variable `messages` en hook_theme, inyectar `['#type' => 'status_messages']` en preprocess, y renderizar `{{ messages }}` antes de `{{ form }}`. Patron LEGAL-ROUTE-001 — paginas legales con URLs canonicas en espanol (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`, `/sobre-nosotros`, `/contacto`). Patron LEGAL-CONFIG-001 — controladores leen contenido de `theme_get_setting()`, templates zero-region con placeholder informativo, TAB 14 en theme settings. Protocolo de testing en browser: bypass HTML5 con `novalidate` para verificar mensajes server-side. Regla de oro #28. Aprendizaje #110. |
 | 2026-02-23 | **17.1.0** | **Sticky Header Migration Workflow**: Patron CSS-STICKY-001 — diagnostico de solapamiento de header fijo con contenido cuando la altura del header es variable (botones de accion wrappean a 2 lineas). Migracion global de `position: fixed` a `position: sticky` en `.landing-header`. Override solo para landing/front con hero fullscreen. Eliminacion de `padding-top` compensatorios fragiles (80px, 96px, 120px) en favor de padding estetico (`1.5rem`). Toolbar admin `top` ajustado una sola vez. 4 archivos SCSS modificados. Regla de oro #27. Aprendizaje #109. |
 | 2026-02-23 | **17.0.0** | **AI Identity Enforcement + Competitor Isolation Workflow**: Patrones para blindaje de identidad IA (regla inquebrantable en BaseAgent parte #0, CopilotOrchestratorService $identityRule, PublicCopilotController bloque IDENTIDAD INQUEBRANTABLE, servicios standalone con antepuesto manual). Patron de aislamiento de competidores (redireccion a funcionalidades Jaraba, excepcion para integraciones reales). Auditoria de 34+ prompts. Eliminacion de menciones a ChatGPT, Perplexity, HubSpot, LinkedIn, Zapier de 5 prompts de IA. Reglas de oro #25 (identidad IA), #26 (aislamiento competidores). Aprendizaje #108. |

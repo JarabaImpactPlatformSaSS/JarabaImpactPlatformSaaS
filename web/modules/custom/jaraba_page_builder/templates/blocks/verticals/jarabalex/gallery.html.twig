@@ -1,0 +1,48 @@
+{#
+ # Template: JarabaLex - Galeria del Despacho
+ # Category: jarabalex
+ # Type: gallery
+ #
+ # Header + grid de imagenes con lightbox
+ # Premium: staggered animations, hover effects
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--gallery pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_gallery"
+         aria-label="{{ title|default('Galería del Despacho')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Nuestro despacho')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Conoce nuestras instalaciones y equipo')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Un entorno profesional diseñado para ofrecer el mejor servicio a nuestros clientes.')|t }}</p>
+    </div>
+    <div class="pb-section__gallery-grid pb-section__gallery-grid--{{ columns|default(3) }}-cols">
+      {% set default_images = [
+        { src: '', alt: 'Sala de reuniones', caption: 'Sala de reuniones principal' },
+        { src: '', alt: 'Equipo de abogados', caption: 'Nuestro equipo jurídico' },
+        { src: '', alt: 'Biblioteca legal', caption: 'Biblioteca especializada' },
+        { src: '', alt: 'Recepción del despacho', caption: 'Área de recepción' },
+        { src: '', alt: 'Despacho privado', caption: 'Despacho de consultas' },
+        { src: '', alt: 'Sala de mediación', caption: 'Sala de mediación' }
+      ] %}
+      {% set items = images|default(default_images) %}
+      {% for item in items %}
+        <div class="pb-section__gallery-item"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 80 }}">
+          {% if item.src %}
+            <img src="{{ item.src }}" alt="{{ item.alt|default('')|t }}" loading="lazy" />
+          {% else %}
+            <div class="pb-section__img-placeholder" aria-hidden="true">
+              {{ jaraba_icon('business', 'building', { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            </div>
+          {% endif %}
+          {% if item.caption %}
+            <p class="pb-section__gallery-caption">{{ item.caption|t }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

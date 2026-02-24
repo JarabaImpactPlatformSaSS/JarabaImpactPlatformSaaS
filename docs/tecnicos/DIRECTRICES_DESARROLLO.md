@@ -1,7 +1,7 @@
 # DIRECTRICES DE DESARROLLO - JARABA IMPACT PLATFORM
 
 > **Documento Central de Referencia Obligatoria**
-> Versión: 3.6 | Fecha: 2026-02-24
+> Versión: 3.7 | Fecha: 2026-02-24
 
 ---
 
@@ -246,6 +246,36 @@ Este checklist DEBE revisarse antes de cualquier commit o PR.
 - [ ] **Prefijo idioma**: `path()` incluye automaticamente `/es/`, `/en/`. Paths hardcodeados lo pierden
 - [ ] **Landing vs funcional**: Para usuarios autenticados, enlazar a rutas funcionales (`jaraba_job_board.search` → `/jobs`), NO a landings publicas (`ecosistema_jaraba_core.vertical.empleo` → `/empleo`)
 
+### 29. Entity Admin UI Completo (FIELD-UI-SETTINGS-TAB-001)
+
+- [ ] **Default settings tab**: Toda entidad con `field_ui_base_route` DEBE tener un local task en `links.task.yml` donde `route_name == base_route == field_ui_base_route`
+- [ ] **Sin tab, sin Field UI**: Sin este default tab, las pestanas "Administrar campos" y "Administrar visualizacion de formulario" NO aparecen
+- [ ] **Template**:
+  ```yaml
+  entity.ENTITY_ID.settings_tab:
+    title: 'Configuración'
+    route_name: entity.ENTITY_ID.settings
+    base_route: entity.ENTITY_ID.settings
+  ```
+- [ ] **Verificar**: `lando drush ev "\$m = \Drupal::service('plugin.manager.menu.local_task'); foreach(\$m->getLocalTasksForRoute('entity.ENTITY_ID.settings') as \$l => \$items) foreach(\$items as \$id => \$t) echo \$id.' => '.\$t->getTitle().PHP_EOL;"`
+
+### 30. Kernel Test Dependencies (KERNEL-TEST-DEPS-001)
+
+- [ ] **Modulos explicitos**: `KernelTestBase::$modules` NO resuelve dependencias automaticamente. Listar TODOS los modulos requeridos
+- [ ] **datetime fields**: Si la entidad usa `BaseFieldDefinition::create('datetime')` → anadir `'datetime'` a `$modules`
+- [ ] **taxonomy refs**: Si la entidad referencia `taxonomy_term` → anadir `'taxonomy'`, `'text'`, `'field'` a `$modules`
+- [ ] **list_string**: Si la entidad usa `list_string` → anadir `'options'` a `$modules`
+- [ ] **text_long**: Si la entidad usa `text_long` → anadir `'text'` a `$modules`
+- [ ] **Schema order**: Instalar schemas de entidades referenciadas ANTES de la entidad bajo test: `$this->installEntitySchema('taxonomy_term');` antes de `$this->installEntitySchema('order_agro');`
+
+### 31. Cross-Module Optional Services (OPTIONAL-SERVICE-DI-001)
+
+- [ ] **`@?` prefix**: Servicios que referencian otros modulos DEBEN usar `@?` en `services.yml` (Symfony pasa NULL si no existe)
+- [ ] **Constructor nullable**: El parametro DEBE ser nullable con default: `?ServiceInterface $param = NULL`
+- [ ] **Null guard**: El codigo DEBE verificar antes de usar: `if ($this->featureGate) { ... }` o `$this->service?->method()`
+- [ ] **Ejemplo**: `@ecosistema_jaraba_core.agroconecta_feature_gate` → `@?ecosistema_jaraba_core.agroconecta_feature_gate`
+- [ ] **Cuando aplicar**: Siempre que un modulo dependa de servicios de otro modulo que podria no estar instalado (especialmente en tests)
+
 ---
 
 ## 📁 Referencias a Workflows
@@ -289,8 +319,11 @@ Para guías detalladas, consultar:
 - [ ] Entity view: `view_builder` handler + `setDisplayOptions('view')` en cada campo, no solo `setDisplayConfigurable`
 - [ ] Drupal AI: ChatInput/ChatMessage tipados, getNormalized()->getText(), modelos explicitos, \Throwable
 - [ ] Key module: Booleanos con `drush ev` (no `drush cset`), .env LF no CRLF, `lando rebuild` para reload
+- [ ] Field UI tab: Entidad con `field_ui_base_route` tiene default settings tab en links.task.yml
+- [ ] Kernel test deps: $modules lista TODOS los modulos requeridos (datetime, text, taxonomy, options)
+- [ ] Optional services: Cross-module refs usan `@?` en services.yml + constructor nullable
 ```
 
 ---
 
-*Ultima actualizacion: 2026-02-24 (v3.5 — Entity View Display, Drupal AI Chat API, Key Module booleans)*
+*Ultima actualizacion: 2026-02-24 (v3.7 — Field UI Settings Tab, Kernel Test Deps, Optional Service DI)*

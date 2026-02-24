@@ -1,0 +1,43 @@
+{#
+ # Template: JarabaLex - Despacho Profesional
+ # Category: jarabalex
+ # Type: hero
+ #
+ # Split layout: hero content (eyebrow + h1 + subtitle + CTAs) + media
+ # Premium: animations, parallax media, background image, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--hero pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_hero"
+         aria-label="{{ title|default('Despacho Profesional')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__hero-content">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('JarabaLex')|t }}</span>
+      <h1 class="pb-section__title">{{ title|default('Asesoría jurídica de confianza para tu empresa')|t }}</h1>
+      <p class="pb-section__subtitle">{{ subtitle|default('Abogados especializados en derecho mercantil, laboral y fiscal. Protegemos tus intereses con rigor y cercanía.')|t }}</p>
+      <div class="pb-section__actions">
+        <a href="{{ cta_url|default('#') }}" class="pb-section__cta pb-section__cta--primary">
+          {{ cta_text|default('Solicitar consulta gratuita')|t }}
+        </a>
+        {% if cta_secondary_text is defined %}
+          <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+            {{ cta_secondary_text }}
+          </a>
+        {% else %}
+          <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Áreas de práctica'|t }}</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="pb-section__media" data-parallax="0.3">
+      {% if image %}
+        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
