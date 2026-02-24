@@ -49,6 +49,121 @@ class ProfileController extends ControllerBase
             throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
         }
 
+        $user_id = (int) $candidate_profile->getOwnerId();
+
+        // Build photo URL if available.
+        $photo_url = NULL;
+        try {
+            $photo_ref = $candidate_profile->get('photo')->target_id;
+            if ($photo_ref) {
+                $file = $this->entityTypeManager()->getStorage('file')->load($photo_ref);
+                if ($file) {
+                    $photo_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // Photo not available.
+        }
+
+        // Availability label map.
+        $availability_labels = [
+            'active' => $this->t('Actively looking'),
+            'passive' => $this->t('Open to opportunities'),
+            'not_looking' => $this->t('Not looking'),
+            'employed' => $this->t('Employed'),
+        ];
+        $availability_raw = $candidate_profile->getAvailability();
+
+        // Experience level label map.
+        $level_labels = [
+            'entry' => $this->t('Entry level'),
+            'junior' => $this->t('Junior'),
+            'mid' => $this->t('Mid-level'),
+            'senior' => $this->t('Senior'),
+            'executive' => $this->t('Executive'),
+        ];
+        $exp_level_raw = $candidate_profile->get('experience_level')->value ?? '';
+
+        // Education level label map.
+        $edu_labels = [
+            'secondary' => $this->t('Secondary'),
+            'vocational' => $this->t('Vocational'),
+            'bachelor' => $this->t('Bachelor'),
+            'master' => $this->t('Master'),
+            'phd' => $this->t('PhD'),
+        ];
+        $edu_level_raw = $candidate_profile->getEducationLevel();
+
+        // Load skills (resilient).
+        $skills = [];
+        try {
+            $skill_entities = $this->entityTypeManager()
+                ->getStorage('candidate_skill')
+                ->loadByProperties(['user_id' => $user_id]);
+            foreach ($skill_entities as $skill_entity) {
+                $skill_term_id = $skill_entity->get('skill_id')->target_id;
+                if ($skill_term_id) {
+                    $term = $this->entityTypeManager()->getStorage('taxonomy_term')->load($skill_term_id);
+                    if ($term) {
+                        $skills[] = [
+                            'name' => $term->label(),
+                            'level' => $skill_entity->get('level')->value ?? 'intermediate',
+                            'verified' => (bool) $skill_entity->get('is_verified')->value,
+                        ];
+                    }
+                }
+            }
+        }
+        catch (\Exception $e) {
+            // Entity type may not be installed yet.
+        }
+
+        // Load experiences (resilient).
+        $experiences = [];
+        try {
+            $loaded = $this->entityTypeManager()
+                ->getStorage('candidate_experience')
+                ->loadByProperties(['user_id' => $user_id]);
+            foreach ($loaded as $exp) {
+                $experiences[] = [
+                    'company_name' => $exp->getCompanyName(),
+                    'job_title' => $exp->getJobTitle(),
+                    'description' => $exp->getDescription(),
+                    'location' => $exp->getLocation(),
+                    'start_date' => $exp->getStartDate(),
+                    'end_date' => $exp->getEndDate(),
+                    'is_current' => $exp->isCurrent(),
+                ];
+            }
+            usort($experiences, fn($a, $b) => ($b['start_date'] ?? 0) <=> ($a['start_date'] ?? 0));
+        }
+        catch (\Exception $e) {
+            // Entity type may not be installed yet.
+        }
+
+        // Load education (resilient).
+        $educations = [];
+        try {
+            $loaded = $this->entityTypeManager()
+                ->getStorage('candidate_education')
+                ->loadByProperties(['user_id' => $user_id]);
+            foreach ($loaded as $edu) {
+                $educations[] = [
+                    'institution' => $edu->get('institution')->value ?? '',
+                    'degree' => $edu->get('degree')->value ?? '',
+                    'field_of_study' => $edu->get('field_of_study')->value ?? '',
+                    'start_date' => $edu->get('start_date')->value ?? NULL,
+                    'end_date' => $edu->get('end_date')->value ?? NULL,
+                ];
+            }
+        }
+        catch (\Exception $e) {
+            // Entity type may not be installed yet.
+        }
+
+        $is_own_profile = ($user_id == $this->currentUser()->id());
+
         return [
             '#theme' => 'candidate_profile_view',
             '#profile' => [
@@ -56,7 +171,25 @@ class ProfileController extends ControllerBase
                 'headline' => $candidate_profile->getHeadline(),
                 'summary' => $candidate_profile->getSummary(),
                 'city' => $candidate_profile->getCity(),
+                'province' => $candidate_profile->get('province')->value ?? '',
                 'experience_years' => $candidate_profile->getExperienceYears(),
+                'experience_level' => $level_labels[$exp_level_raw] ?? '',
+                'education_level' => $edu_labels[$edu_level_raw] ?? '',
+                'availability' => $availability_labels[$availability_raw] ?? '',
+                'availability_raw' => $availability_raw,
+                'completion_percent' => $candidate_profile->getCompletionPercent(),
+                'photo_url' => $photo_url,
+                'linkedin_url' => $candidate_profile->get('linkedin_url')->value ?? '',
+                'github_url' => $candidate_profile->get('github_url')->value ?? '',
+                'portfolio_url' => $candidate_profile->get('portfolio_url')->value ?? '',
+                'website_url' => $candidate_profile->get('website_url')->value ?? '',
+                'skills' => $skills,
+                'experiences' => $experiences,
+                'educations' => $educations,
+            ],
+            '#is_own_profile' => $is_own_profile,
+            '#attached' => [
+                'library' => ['jaraba_candidate/profile_view'],
             ],
             '#cache' => [
                 'contexts' => ['user'],
@@ -77,7 +210,7 @@ class ProfileController extends ControllerBase
             return [
                 '#theme' => 'my_profile_empty',
                 '#attached' => [
-                    'library' => ['jaraba_candidate/profile'],
+                    'library' => ['jaraba_candidate/profile_view'],
                 ],
             ];
         }

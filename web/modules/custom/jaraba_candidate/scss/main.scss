@@ -1,0 +1,11 @@
+/**
+ * Entry point SCSS para jaraba_candidate profile view.
+ *
+ * DIRECTRIZ: Federated Design Tokens — Consume solo var(--ej-*) del core.
+ *
+ * COMPILACION:
+ * docker exec jarabasaas_appserver_1 bash -c \
+ *   "cd /app/web/modules/custom/jaraba_candidate && npx sass scss/main.scss css/profile-view.css --style=compressed"
+ */
+
+@use 'profile-view';

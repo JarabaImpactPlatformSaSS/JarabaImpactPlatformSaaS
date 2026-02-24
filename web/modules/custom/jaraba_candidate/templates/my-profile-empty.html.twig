@@ -1,49 +1,60 @@
 {#
 /**
  * @file
- * Template for empty profile state.
+ * Premium empty state for /my-profile when no profile exists.
+ *
+ * Follows Andalucia +ei empty state pattern: glassmorphism card,
+ * jaraba_icon duotone, benefit cards, motivational CTA.
  */
 #}
-<div class="my-profile-empty">
-  <div class="empty-state-premium">
-    <div class="empty-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
+
+<div class="cp-empty cp-animate-in" style="--cp-stagger: 0">
+  <div class="cp-empty__card">
+
+    <div class="cp-empty__icon">
+      {{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'corporate', size: '64px' }) }}
     </div>
-    <h3 class="empty-title">{{ 'Tu perfil profesional te espera'|t }}</h3>
-    <p class="empty-message">{{ 'Crea tu perfil para destacar ante empleadores, recibir recomendaciones personalizadas y generar tu CV con un clic.'|t }}</p>
-    <div class="empty-actions">
-      <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="btn btn-primary btn-large">
-        {{ 'Crear mi perfil'|t }}
-      </a>
+
+    <h2 class="cp-empty__title">{% trans %}Tu perfil profesional te espera{% endtrans %}</h2>
+    <p class="cp-empty__desc">{% trans %}Crea tu perfil para destacar ante empleadores, recibir recomendaciones personalizadas y generar tu CV con un clic.{% endtrans %}</p>
+
+    <a href="{{ path('jaraba_candidate.my_profile.edit') }}"
+       class="cp-btn cp-btn--primary cp-btn--lg">
+      {{ jaraba_icon('actions', 'add', { size: '20px' }) }}
+      {% trans %}Crear mi perfil{% endtrans %}
+    </a>
+
+    <div class="cp-empty__benefits">
+      <div class="cp-empty__benefit cp-animate-in" style="--cp-stagger: 1">
+        <span class="cp-empty__benefit-icon cp-empty__benefit-icon--impulse">
+          {{ jaraba_icon('ai', 'brain', { size: '24px' }) }}
+        </span>
+        <div>
+          <strong>{% trans %}Matching inteligente{% endtrans %}</strong>
+          <p>{% trans %}Conectamos tu perfil con las ofertas que mejor encajan contigo.{% endtrans %}</p>
+        </div>
+      </div>
+
+      <div class="cp-empty__benefit cp-animate-in" style="--cp-stagger: 2">
+        <span class="cp-empty__benefit-icon cp-empty__benefit-icon--innovation">
+          {{ jaraba_icon('ui', 'document', { size: '24px' }) }}
+        </span>
+        <div>
+          <strong>{% trans %}CV con un clic{% endtrans %}</strong>
+          <p>{% trans %}Genera un CV profesional desde tu perfil en segundos.{% endtrans %}</p>
+        </div>
+      </div>
+
+      <div class="cp-empty__benefit cp-animate-in" style="--cp-stagger: 3">
+        <span class="cp-empty__benefit-icon cp-empty__benefit-icon--corporate">
+          {{ jaraba_icon('analytics', 'chart-line', { size: '24px' }) }}
+        </span>
+        <div>
+          <strong>{% trans %}Recomendaciones personalizadas{% endtrans %}</strong>
+          <p>{% trans %}Cursos y formaciones adaptados a tus objetivos profesionales.{% endtrans %}</p>
+        </div>
+      </div>
     </div>
-    <div class="empty-benefits">
-      <div class="benefit">
-        <span class="benefit-icon">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-        </span>
-        <span class="benefit-text">{{ 'Matching inteligente con ofertas'|t }}</span>
-      </div>
-      <div class="benefit">
-        <span class="benefit-icon">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-          </svg>
-        </span>
-        <span class="benefit-text">{{ 'Genera tu CV automáticamente'|t }}</span>
-      </div>
-      <div class="benefit">
-        <span class="benefit-icon">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-          </svg>
-        </span>
-        <span class="benefit-text">{{ 'Cursos recomendados para ti'|t }}</span>
-      </div>
-    </div>
+
   </div>
 </div>

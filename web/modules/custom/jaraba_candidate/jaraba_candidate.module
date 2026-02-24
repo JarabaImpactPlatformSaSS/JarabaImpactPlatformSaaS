@@ -24,6 +24,7 @@ function jaraba_candidate_theme(): array {
     'candidate_profile_view' => [
       'variables' => [
         'profile' => NULL,
+        'is_own_profile' => FALSE,
       ],
       'template' => 'candidate-profile-view',
     ],
