@@ -4,7 +4,15 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-24
-**Versión:** 91.0.0 (Empleabilidad Profile Premium — Fase Final: CandidateEducation + XSS Fix)
+**Versión:** 92.0.0 (Auditoria Horizontal — Strict Equality + CAN-SPAM MJML)
+
+> **🔒 AUDITORIA HORIZONTAL: SEGURIDAD ACCESS HANDLERS + CAN-SPAM EMAILS** (2026-02-24)
+> - **Contexto:** Primera auditoria cross-cutting del SaaS tras 6 auditorias verticales. Revisa flujos horizontales que cruzan los 21 modulos: strict equality en access handlers (seguridad) y compliance CAN-SPAM en plantillas MJML transaccionales.
+> - **Sprint 1 — Seguridad P0:** 52 instancias de `==` (loose equality) reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos. Previene type juggling en comparaciones de ownership (`getOwnerId()`, `target_id`, `id()`). TenantAccessControlHandler (ruta `src/` sin subdirectorio `Access/`) corregido manualmente.
+> - **Sprint 2 — CAN-SPAM P0:** 28 plantillas MJML horizontales (base + auth + billing + marketplace + fiscal + andalucia_ei) actualizadas con: (1) `<mj-preview>` con preheader unico por plantilla, (2) direccion postal CAN-SPAM en footer (Juncaril, Albolote), (3) font `Outfit` como primario, (4) 6 colores universales off-brand reemplazados (#374151→#333333, #6b7280→#666666, #f3f4f6→#f8f9fa, #e5e7eb→#E0E0E0, #9ca3af→#999999, #111827→#1565C0), (5) colores de grupo unificados a #1565C0 (#2563eb, #1A365D, #553C9A, #233D63). Colores semanticos preservados (error red, success green, warning amber, Andalucia EI naranja/teal).
+> - **Verificacion:** 0 loose equality restantes, 28/28 con mj-preview + Juncaril + Outfit, 0 colores off-brand, PHPUnit 19 tests OK.
+> - **5 reglas nuevas:** ACCESS-STRICT-001, EMAIL-PREVIEW-001, EMAIL-POSTAL-001, BRAND-FONT-001, BRAND-COLOR-001. Regla de oro #33. Aprendizaje #119.
+> - **4 commits, ~67 ficheros.** Directrices v68.0.0, Arquitectura v69.0.0, Flujo v23.0.0, Desarrollo v3.8, Indice v92.0.0.
 
 > **🎯 EMPLEABILIDAD /MY-PROFILE PREMIUM — FASE FINAL** (2026-02-24)
 > - **Contexto:** Sesion anterior implemento 90% del perfil premium (7 secciones glassmorphism, `jaraba_icon()` duotone, stagger animations, timeline experiencia, skill pills, completion ring SVG). Faltaba la entidad `CandidateEducation`, fix XSS y cleanup del controller.
@@ -222,6 +230,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **92.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. Sprint 1: 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (previene type juggling en ownership checks). Sprint 2: 28 plantillas MJML horizontales con mj-preview, postal CAN-SPAM, font Outfit, y paleta de marca unificada (6 colores universales + 4 de grupo reemplazados, semanticos preservados). 5 reglas nuevas: ACCESS-STRICT-001, EMAIL-PREVIEW-001, EMAIL-POSTAL-001, BRAND-FONT-001, BRAND-COLOR-001. Regla de oro #33. Aprendizaje #119. |
 | 2026-02-24 | **91.0.0** | **Empleabilidad /my-profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, collection tab, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil (TWIG-XSS-001). Controller cleanup: HTML hardcodeado → `#theme => 'my_profile_empty'`. Permiso `administer candidate educations`. 3 ficheros creados, 6 modificados. Aprendizaje #118. |
 | 2026-02-24 | **90.0.0** | **Icon System — Zero Chinchetas:** 305 pares `jaraba_icon()` auditados en todo el codebase. 0 chinchetas restantes. ~170 SVGs/symlinks nuevos en 8 bridge categories. 32 llamadas con convencion rota corregidas en 4 modulos. 177 templates Page Builder verificados. 3 symlinks reparados (2 circulares, 1 roto). Reglas ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001. Regla de oro #32. Aprendizaje #117. |
 | 2026-02-24 | **88.0.0** | **Premium HTML Emails + Dashboard URLs:** 3 emails Andalucia +ei reescritos de texto plano a HTML premium con `Markup::create()`, inline CSS, table layout. Tarjetas resumen, CTAs naranjas, triaje IA color-coded (verde/amarillo/rojo). URLs dashboard corregidas: `/empleo`→`/jobs`, `/talento`→`/my-profile` via `path()`. Reglas EMAIL-HTML-PREMIUM-001, TWIG-ROUTE-PATH-001. Aprendizaje #115. |
