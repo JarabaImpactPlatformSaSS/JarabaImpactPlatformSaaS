@@ -99,7 +99,7 @@
         {% trans %}Sobre mí{% endtrans %}
       </h2>
       <div class="cp-section__body">
-        {{ profile.summary|raw }}
+        {{ profile.summary|safe_html }}
       </div>
 
       {% if profile.education_level %}
