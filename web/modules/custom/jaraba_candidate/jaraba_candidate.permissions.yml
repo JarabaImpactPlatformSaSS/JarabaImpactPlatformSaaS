@@ -79,6 +79,12 @@ view own copilot history:
   title: 'View own copilot history'
   description: 'View own conversation history with AI copilotos'
 
+# --- Permisos de CandidateEducation Entity ---
+administer candidate educations:
+  title: 'Administer candidate educations'
+  description: 'Full administration of candidate education entities'
+  restrict access: true
+
 # --- Permisos de CandidateSkill Entity ---
 administer candidate skills:
   title: 'Administer candidate skills'

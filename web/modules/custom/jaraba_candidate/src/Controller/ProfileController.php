@@ -404,13 +404,12 @@ class ProfileController extends ControllerBase
             // Create a new profile for this user
             $profile = $this->profileService->createProfile($user_id);
             if (!$profile) {
-                // Fallback: just show a message with link to create
+                // Fallback: show premium empty state template.
                 return [
-                    '#markup' => '<div class="empty-state-premium" style="text-align: center; padding: 3rem;">
-                        <h3>' . $this->t('No tienes un perfil todavía') . '</h3>
-                        <p>' . $this->t('Crea tu perfil profesional para empezar a buscar oportunidades.') . '</p>
-                        <a href="/admin/content/candidates/add" class="btn btn-primary">' . $this->t('Crear mi perfil') . '</a>
-                    </div>',
+                    '#theme' => 'my_profile_empty',
+                    '#attached' => [
+                        'library' => ['jaraba_candidate/profile_view'],
+                    ],
                 ];
             }
         }

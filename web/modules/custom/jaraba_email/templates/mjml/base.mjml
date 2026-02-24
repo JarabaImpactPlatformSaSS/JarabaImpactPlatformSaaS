@@ -3,7 +3,7 @@
     <mj-attributes>
       <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
       <mj-text font-size="14px" color="#333333" line-height="1.6" />
-      <mj-button background-color="#2563eb" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
     <mj-style>
@@ -15,7 +15,7 @@
   <mj-body background-color="#f8f9fa" width="600px">
     <mj-preview>Informaci&oacute;n importante de tu cuenta en {{ site_name }}</mj-preview>
     <!-- Header -->
-    <mj-section background-color="#2563eb" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }}
