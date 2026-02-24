@@ -93,6 +93,7 @@ class ProviderPortalController extends ControllerBase {
       '#cache' => [
         'contexts' => ['user'],
         'tags' => ['provider_profile:' . $provider->id()],
+        'max-age' => 60,
       ],
     ];
   }
@@ -116,6 +117,11 @@ class ProviderPortalController extends ControllerBase {
       '#current_filters' => [],
       '#attached' => [
         'library' => ['jaraba_servicios_conecta/provider-portal'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['provider_profile:' . $provider->id(), 'service_offering_list'],
+        'max-age' => 60,
       ],
     ];
   }
@@ -181,6 +187,11 @@ class ProviderPortalController extends ControllerBase {
       '#current_week' => date('Y-m-d'),
       '#attached' => [
         'library' => ['jaraba_servicios_conecta/provider-portal'],
+      ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['provider_profile:' . $provider->id(), 'availability_slot_list'],
+        'max-age' => 0,
       ],
     ];
   }

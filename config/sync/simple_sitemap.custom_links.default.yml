@@ -37,3 +37,11 @@ links:
     path: /comercio-local/buscar
     priority: '0.7'
     changefreq: weekly
+  -
+    path: /servicios
+    priority: '0.9'
+    changefreq: daily
+  -
+    path: /servicios/buscar
+    priority: '0.7'
+    changefreq: weekly

@@ -29,7 +29,7 @@ class BookingAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    $is_owner = $entity->getOwnerId() == $account->id();
+    $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
 
     switch ($operation) {
       case 'view':

@@ -648,6 +648,81 @@ function jaraba_servicios_conecta_mail($key, &$message, $params): void {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph meta tags for ServiciosConecta public pages.
+ */
+function jaraba_servicios_conecta_page_attachments_alter(array &$attachments): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  $og_routes = [
+    'jaraba_servicios_conecta.marketplace',
+    'jaraba_servicios_conecta.marketplace.provider',
+    'jaraba_servicios_conecta.marketplace.booking',
+  ];
+
+  if (!in_array($route_name, $og_routes, TRUE)) {
+    return;
+  }
+
+  $site_name = \Drupal::config('system.site')->get('name') ?? 'Jaraba Impact Platform';
+  $request = \Drupal::request();
+  $current_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+
+  $og_defaults = [
+    'og:type' => 'website',
+    'og:site_name' => $site_name,
+    'og:url' => $current_url,
+    'og:locale' => 'es_ES',
+  ];
+
+  switch ($route_name) {
+    case 'jaraba_servicios_conecta.marketplace':
+      $og_defaults['og:title'] = t('Servicios Profesionales — @site', ['@site' => $site_name]);
+      $og_defaults['og:description'] = t('Encuentra profesionales de confianza cerca de ti. Reserva citas con abogados, médicos, consultores y más.');
+      break;
+
+    case 'jaraba_servicios_conecta.marketplace.provider':
+      $slug = \Drupal::routeMatch()->getParameter('provider_slug');
+      if ($slug) {
+        try {
+          $provider = \Drupal::service('jaraba_servicios_conecta.provider')->getProviderBySlug($slug);
+          if ($provider) {
+            $og_defaults['og:title'] = $provider->get('display_name')->value . ' — ' . $site_name;
+            $og_defaults['og:description'] = mb_substr(strip_tags($provider->get('description')->value ?? ''), 0, 160);
+          }
+        }
+        catch (\Exception $e) {
+          // Provider not found — use defaults.
+        }
+      }
+      if (empty($og_defaults['og:title'])) {
+        $og_defaults['og:title'] = t('Profesional — @site', ['@site' => $site_name]);
+        $og_defaults['og:description'] = t('Perfil de profesional en ServiciosConecta.');
+      }
+      break;
+
+    case 'jaraba_servicios_conecta.marketplace.booking':
+      $og_defaults['og:title'] = t('Reservar Cita — @site', ['@site' => $site_name]);
+      $og_defaults['og:description'] = t('Reserva una cita con un profesional de confianza.');
+      break;
+  }
+
+  foreach ($og_defaults as $property => $content) {
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'property' => $property,
+          'content' => $content,
+        ],
+      ],
+      'jaraba_servicios_conecta_' . str_replace(':', '_', $property),
+    ];
+  }
+}
+
+/**
  * Genera un slug URL-friendly a partir de un texto.
  *
  * Lógica: Convierte a minúsculas, elimina acentos y caracteres

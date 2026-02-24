@@ -34,13 +34,13 @@ class ProviderProfileAccessControlHandler extends EntityAccessControlHandler {
         return AccessResult::allowedIfHasPermission($account, 'view servicios providers');
 
       case 'update':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('edit own provider profile')
         )->addCacheableDependency($entity)->cachePerUser();
 
       case 'delete':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('delete own provider profile')
         )->addCacheableDependency($entity)->cachePerUser();

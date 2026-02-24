@@ -102,6 +102,7 @@ class MarketplaceController extends ControllerBase {
       '#cache' => [
         'contexts' => ['url.query_args'],
         'tags' => ['provider_profile_list'],
+        'max-age' => 300,
       ],
     ];
   }
@@ -156,7 +157,9 @@ class MarketplaceController extends ControllerBase {
         'library' => ['jaraba_servicios_conecta/marketplace'],
       ],
       '#cache' => [
+        'contexts' => ['url.path'],
         'tags' => ['provider_profile:' . $provider->id()],
+        'max-age' => 300,
       ],
     ];
   }
@@ -184,6 +187,11 @@ class MarketplaceController extends ControllerBase {
         . '</div>',
       '#attached' => [
         'library' => ['jaraba_servicios_conecta/booking'],
+      ],
+      '#cache' => [
+        'contexts' => ['url.path', 'user.roles:authenticated'],
+        'tags' => ['service_offering:' . $offering->id(), 'provider_profile:' . $provider->id()],
+        'max-age' => 0,
       ],
     ];
   }
