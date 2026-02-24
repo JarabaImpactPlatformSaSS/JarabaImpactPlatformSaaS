@@ -31,6 +31,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_site_builder\SitePageTreeAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "site_page_tree",
  *   admin_permission = "administer site structure",

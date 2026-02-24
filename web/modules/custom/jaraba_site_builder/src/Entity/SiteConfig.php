@@ -27,6 +27,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *       "edit" = "Drupal\jaraba_site_builder\Form\SiteConfigForm",
  *     },
  *     "access" = "Drupal\jaraba_site_builder\SiteConfigAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "site_config",
  *   admin_permission = "administer site structure",

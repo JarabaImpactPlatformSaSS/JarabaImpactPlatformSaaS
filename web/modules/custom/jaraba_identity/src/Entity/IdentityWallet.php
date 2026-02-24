@@ -25,7 +25,8 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  *   handlers = {
  *     "access" = "Drupal\jaraba_identity\Access\IdentityWalletAccessControlHandler",
- *   }
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *   },
  * )
  */
 class IdentityWallet extends ContentEntityBase {

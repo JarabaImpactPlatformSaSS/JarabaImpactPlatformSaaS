@@ -24,6 +24,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_skills\AiSkillRevisionListBuilder",
  *     "access" = "Drupal\jaraba_skills\AiSkillAccessControlHandler",
+ *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
  *   base_table = "ai_skill_revision",
  *   admin_permission = "administer ai skills",
