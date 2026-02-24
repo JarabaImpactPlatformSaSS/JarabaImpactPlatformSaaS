@@ -7,9 +7,9 @@ namespace Drupal\Tests\jaraba_job_board\Unit\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\jaraba_job_board\Entity\JobApplicationInterface;
 use Drupal\jaraba_job_board\Entity\JobPostingInterface;
@@ -53,6 +53,16 @@ class MatchingServiceTest extends UnitTestCase
     protected ConfigFactoryInterface $configFactory;
 
     /**
+     * Storage mock for candidate_profile entities.
+     */
+    protected EntityStorageInterface $profileStorage;
+
+    /**
+     * Storage mock for candidate_skill entities.
+     */
+    protected EntityStorageInterface $skillStorage;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp(): void
@@ -76,6 +86,20 @@ class MatchingServiceTest extends UnitTestCase
 
         $loggerFactory = $this->createMock(LoggerChannelFactoryInterface::class);
         $loggerFactory->method('get')->willReturn($this->createMock(LoggerInterface::class));
+
+        // Separate storages per entity type so candidate_profile and
+        // candidate_skill queries return the correct mock data.
+        $this->profileStorage = $this->createMock(EntityStorageInterface::class);
+        $this->skillStorage = $this->createMock(EntityStorageInterface::class);
+
+        $this->entityTypeManager->method('getStorage')
+            ->willReturnCallback(function (string $entity_type) {
+                return match ($entity_type) {
+                    'candidate_profile' => $this->profileStorage,
+                    'candidate_skill' => $this->skillStorage,
+                    default => $this->createMock(EntityStorageInterface::class),
+                };
+            });
 
         $this->service = new MatchingService(
             $this->entityTypeManager,
@@ -204,7 +228,7 @@ class MatchingServiceTest extends UnitTestCase
     }
 
     /**
-     * Creates a mock JobPostingInterface.
+     * Creates a mock JobPostingInterface with proper field value access.
      */
     protected function createMockJob(
         string $status,
@@ -224,61 +248,108 @@ class MatchingServiceTest extends UnitTestCase
         $job->method('getStatus')->willReturn($status);
         $job->method('isPublished')->willReturn($status === 'published');
 
-        // Mock field item lists for ->get('field')->value access.
-        $this->mockFieldValue($job, 'experience_level', $experienceLevel);
-        $this->mockFieldValue($job, 'education_level', $educationLevel);
-        $this->mockFieldValue($job, 'status', $status);
+        // Configure get() to return objects with ->value for field access.
+        // The service calls $job->get('experience_level')->value, etc.
+        $fieldValues = [
+            'experience_level' => $experienceLevel,
+            'education_level' => $educationLevel,
+            'status' => $status,
+        ];
+        $job->method('get')->willReturnCallback(function (string $field) use ($fieldValues) {
+            $value = $fieldValues[$field] ?? NULL;
+            return new class($value) {
+                public $value;
+
+                public function __construct($value)
+                {
+                    $this->value = $value;
+                }
+
+                public function isEmpty(): bool
+                {
+                    return $this->value === NULL || $this->value === '';
+                }
+            };
+        });
 
         return $job;
     }
 
     /**
-     * Mocks a field value on an entity.
-     */
-    protected function mockFieldValue(object $entity, string $field, $value): void
-    {
-        $fieldItem = new \stdClass();
-        $fieldItem->value = $value;
-
-        $fieldList = $this->createMock(FieldItemListInterface::class);
-        $fieldList->method('__get')
-            ->with('value')
-            ->willReturn($value);
-
-        // The get() method on entities returns field item lists.
-        // We use willReturnMap for multiple field accesses.
-        // Since createMock doesn't support adding to willReturnMap after creation,
-        // we handle this in createMockJob via a callback.
-    }
-
-    /**
-     * Sets up candidate profile mocks.
+     * Sets up candidate profile entity mocks with proper field access.
+     *
+     * Creates a ContentEntityInterface mock that supports hasField() and
+     * get()->value / get()->isEmpty() as used by MatchingService.
      */
     protected function setupCandidateProfile(int $uid, string $expLevel, string $eduLevel, string $city): void
     {
-        $storage = $this->createMock(EntityStorageInterface::class);
+        $fieldValues = [
+            'experience_level' => $expLevel,
+            'education_level' => $eduLevel,
+            'city' => $city,
+        ];
 
-        $profile = new \stdClass();
-        $profile->experience_level = (object) ['value' => $expLevel];
-        $profile->education_level = (object) ['value' => $eduLevel];
-        $profile->city = (object) ['value' => $city];
+        $profile = $this->createMock(ContentEntityInterface::class);
+        $profile->method('hasField')->willReturnCallback(function (string $field) use ($fieldValues) {
+            return array_key_exists($field, $fieldValues);
+        });
+        $profile->method('get')->willReturnCallback(function (string $field) use ($fieldValues) {
+            $value = $fieldValues[$field] ?? NULL;
+            return new class($value) {
+                public $value;
 
-        $storage->method('loadByProperties')
+                public function __construct($value)
+                {
+                    $this->value = $value;
+                }
+
+                public function isEmpty(): bool
+                {
+                    return $this->value === NULL || $this->value === '';
+                }
+            };
+        });
+
+        $this->profileStorage->method('loadByProperties')
             ->willReturn([$profile]);
-
-        $this->entityTypeManager->method('getStorage')
-            ->willReturnCallback(function (string $entity_type) use ($storage) {
-                return $storage;
-            });
     }
 
     /**
-     * Sets up candidate skills mock.
+     * Sets up candidate skill entity mocks.
+     *
+     * Creates ContentEntityInterface mocks where get('skill_id')->target_id
+     * returns each skill's taxonomy term ID.
      */
     protected function setupCandidateSkills(int $uid, array $skillIds): void
     {
-        // Candidate skills are loaded from candidate_skill entity storage,
-        // which is already handled by the general storage mock above.
+        $skills = [];
+        foreach ($skillIds as $skillId) {
+            $skill = $this->createMock(ContentEntityInterface::class);
+            $skill->method('get')->willReturnCallback(function (string $field) use ($skillId) {
+                if ($field === 'skill_id') {
+                    return new class($skillId) {
+                        public $target_id;
+
+                        public function __construct($id)
+                        {
+                            $this->target_id = $id;
+                        }
+                    };
+                }
+                return new class(NULL) {
+                    public $value;
+
+                    public function __construct($v)
+                    {
+                        $this->value = $v;
+                    }
+                };
+            });
+            $skills[] = $skill;
+        }
+
+        $this->skillStorage->method('loadByProperties')
+            ->willReturn($skills);
     }
 
 }
