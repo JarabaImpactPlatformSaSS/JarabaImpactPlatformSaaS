@@ -100,7 +100,13 @@ class SolicitudEiListBuilder extends EntityListBuilder
                 '#url' => $url,
                 '#attributes' => [
                     'class' => array_filter([
-                        'solicitud-ei-tab',
+                        'tabs__link',
+                        $isActive ? 'is-active' : '',
+                    ]),
+                ],
+                '#wrapper_attributes' => [
+                    'class' => array_filter([
+                        'tabs__tab',
                         $isActive ? 'is-active' : '',
                     ]),
                 ],
@@ -110,10 +116,9 @@ class SolicitudEiListBuilder extends EntityListBuilder
         return [
             '#theme' => 'item_list',
             '#items' => $items,
-            '#attributes' => ['class' => ['solicitud-ei-tabs', 'tabs', 'tabs--secondary']],
-            '#attached' => [
-                'library' => ['core/drupal.functional'],
-            ],
+            '#list_type' => 'ul',
+            '#attributes' => ['class' => ['tabs', 'tabs--secondary']],
+            '#wrapper_attributes' => ['class' => ['tabs-wrapper', 'is-horizontal']],
         ];
     }
 
