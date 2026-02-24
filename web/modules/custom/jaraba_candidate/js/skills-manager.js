@@ -6,6 +6,16 @@
 (function (Drupal) {
     'use strict';
 
+    // Cache CSRF token for reuse across requests.
+    var csrfTokenPromise = null;
+    function getCsrfToken() {
+        if (!csrfTokenPromise) {
+            csrfTokenPromise = fetch('/session/token')
+                .then(function (response) { return response.text(); });
+        }
+        return csrfTokenPromise;
+    }
+
     Drupal.behaviors.skillsManager = {
         attach: function (context) {
             // Accordion toggle
@@ -40,10 +50,12 @@
                     this.textContent = Drupal.t('Adding...');
 
                     // AJAX request to add skill
+                    getCsrfToken().then(function (token) {
                     fetch('/api/v1/profile/skills', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRF-Token': token,
                         },
                         body: JSON.stringify({
                             skill_id: skillId,
@@ -66,6 +78,7 @@
                             btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> ' + skillName;
                             alert(Drupal.t('Error adding skill. Please try again.'));
                         });
+                    }); // getCsrfToken
                 });
             });
 
@@ -87,8 +100,10 @@
                     if (card) card.style.opacity = '0.5';
 
                     // AJAX request to remove skill
+                    getCsrfToken().then(function (token) {
                     fetch('/api/v1/profile/skills/' + skillEntityId, {
                         method: 'DELETE',
+                        headers: { 'X-CSRF-Token': token },
                         credentials: 'same-origin'
                     })
                         .then(function (response) {
@@ -109,6 +124,7 @@
                             if (card) card.style.opacity = '1';
                             alert(Drupal.t('Error removing skill. Please try again.'));
                         });
+                    }); // getCsrfToken
                 });
             });
         }

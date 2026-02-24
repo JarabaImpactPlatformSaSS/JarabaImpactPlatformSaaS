@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v63.0
+## Jaraba Impact Platform SaaS v65.0
 
-**Fecha:** 2026-02-23
-**Versión:** 63.0.0 (AI Identity Enforcement + Competitor Isolation)
-**Estado:** Produccion (AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Fecha:** 2026-02-24
+**Versión:** 65.0.0 (Empleabilidad Audit — 7 P0 Security/Business + P1 i18n + P2 XSS Hardening)
+**Estado:** Produccion (Empleabilidad Hardened + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -173,6 +173,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-23 | **64.0.0** | **Andalucia +ei Launch Readiness:** Correccion de 8 incidencias bloqueantes para la 2a edicion. Fix critico: `{{ messages }}` en template de solicitud (formulario tragaba errores silenciosamente). 6 emojis reemplazados por `jaraba_icon()`. 5 rutas nuevas para paginas legales/informativas (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`, `/sobre-nosotros`, `/contacto`). Controladores con `theme_get_setting()` para contenido configurable. 3 templates zero-region. Footer con URLs canonicas en espanol. Badge "6 verticales" corregido. TAB 14 en theme settings para contenido legal. 13 ficheros modificados. Reglas FORM-MSG-001, LEGAL-ROUTE-001, LEGAL-CONFIG-001. Aprendizaje #110. |
 | 2026-02-23 | **63.0.0** | **AI Identity Enforcement + Competitor Isolation:** Blindaje de identidad IA implementado en toda la plataforma. `BaseAgent.buildSystemPrompt()` inyecta regla de identidad como parte #0 (heredada por 14+ agentes). `CopilotOrchestratorService` antepone `$identityRule` a los 8 modos. `PublicCopilotController` incluye bloque IDENTIDAD INQUEBRANTABLE. Servicios standalone (FaqBotService, ServiciosConectaCopilotAgent, CoachIaService) con regla manual. Eliminadas 5 menciones de competidores en prompts de IA. 12 archivos modificados. Reglas AI-IDENTITY-001, AI-COMPETITOR-001. |
 | 2026-02-23 | **62.2.0** | **Sticky Header Global:** `.landing-header` migrado de `position: fixed` a `position: sticky` por defecto. Solo `body.landing-page`/`body.page-front` mantienen `fixed`. Eliminados padding-top compensatorios fragiles de `.main-content`, `.user-main`, `.error-page`. Toolbar admin ajustado globalmente (`top: 39px/79px`). 4 archivos SCSS modificados. Regla CSS-STICKY-001. |
 | 2026-02-23 | **62.0.0** | **Precios Configurables v2.1:** 2 ConfigEntities (`SaasPlanTier` + `SaasPlanFeatures`) como fuente de verdad para tiers, features y limites. `PlanResolverService` broker central con cascade especifico→default→NULL. Integracion en QuotaManagerService, PlanValidator y BillingWebhookController. 21 seed YAMLs + update hook 9019. Admin UI en `/admin/config/jaraba/plan-tiers` y `plan-features`. Drush command `jaraba:validate-plans`. 14 archivos nuevos + 11 editados. |
@@ -187,4 +188,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 63.0.0 | **Fecha:** 2026-02-23 | **Autor:** IA Asistente
+> **Versión:** 64.0.0 | **Fecha:** 2026-02-23 | **Autor:** IA Asistente

@@ -161,11 +161,13 @@
           email: answers.email || ''
         };
 
+        fetch('/session/token').then(function (r) { return r.text(); }).then(function (csrfToken) {
         fetch('/empleabilidad/diagnostico', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': csrfToken
           },
           body: JSON.stringify(payload)
         })
@@ -180,6 +182,7 @@
           stepsEl.style.display = 'block';
           progressEl.style.display = 'block';
         });
+        }); // CSRF token fetch
       }
 
       /**
@@ -243,7 +246,7 @@
 
         // Determinar color segun score.
         var color = score >= 8 ? 'var(--ej-success, #10B981)' :
-                    score >= 6 ? 'var(--ej-primary, #4F46E5)' :
+                    score >= 6 ? 'var(--ej-color-primary, #1565C0)' :
                     score >= 4 ? 'var(--ej-warning, #F59E0B)' :
                                  'var(--ej-danger, #EF4444)';
 

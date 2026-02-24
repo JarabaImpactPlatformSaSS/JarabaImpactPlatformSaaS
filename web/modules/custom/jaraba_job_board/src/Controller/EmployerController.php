@@ -305,6 +305,12 @@ class EmployerController extends ControllerBase
      */
     public function jobApplications(JobPostingInterface $job_posting): array
     {
+        // Verify current user owns this job posting.
+        $user_id = (int) $this->currentUser()->id();
+        if ((int) $job_posting->get('employer_id')->value !== $user_id) {
+            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
+        }
+
         $applications = $this->applicationService->getJobApplications((int) $job_posting->id());
 
         $formatted = [];
@@ -336,6 +342,14 @@ class EmployerController extends ControllerBase
      */
     public function applicationDetail(JobApplicationInterface $job_application): array
     {
+        // Verify current user owns the related job posting.
+        $user_id = (int) $this->currentUser()->id();
+        $job_id = (int) $job_application->get('job_id')->target_id;
+        $job = $this->entityTypeManager()->getStorage('job_posting')->load($job_id);
+        if (!$job || (int) $job->get('employer_id')->value !== $user_id) {
+            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
+        }
+
         $job_application->markAsViewed();
         $job_application->save();
 
@@ -356,6 +370,14 @@ class EmployerController extends ControllerBase
      */
     public function updateStatus(JobApplicationInterface $job_application, Request $request): JsonResponse
     {
+        // Verify current user owns the related job posting.
+        $user_id = (int) $this->currentUser()->id();
+        $job_id = (int) $job_application->get('job_id')->target_id;
+        $job = $this->entityTypeManager()->getStorage('job_posting')->load($job_id);
+        if (!$job || (int) $job->get('employer_id')->value !== $user_id) {
+            return new JsonResponse(['error' => 'Access denied'], 403);
+        }
+
         $data = json_decode($request->getContent(), TRUE);
         $new_status = $data['status'] ?? NULL;
 

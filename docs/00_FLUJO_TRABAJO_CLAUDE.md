@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-02-23
-**Version:** 17.1.0 (Sticky Header Migration — position: fixed → sticky como default global para .landing-header)
+**Ultima actualizacion:** 2026-02-24
+**Version:** 19.0.0 (Empleabilidad Audit — 7 P0 Security/Business + P1 i18n + P2 XSS Hardening)
 
 ---
 
@@ -28,11 +28,18 @@
 - **Seguridad API (CSRF):**
   - Rutas API consumidas via `fetch()` DEBEN usar `_csrf_request_header_token: 'TRUE'` (NO `_csrf_token`).
   - El JS DEBE obtener token de `Drupal.url('session/token')`, cachearlo, y enviarlo como header `X-CSRF-Token`.
+  - Cachear el token CSRF en una promise de modulo para evitar multiples peticiones: `var _csrfTokenPromise = null; function getCsrfToken() { ... }` (CSRF-JS-CACHE-001).
   - Siempre incluir `?_format=json` en la URL cuando la ruta requiere `_format: 'json'`.
+- **Seguridad JS (XSS innerHTML):**
+  - Todo dato de respuesta API insertado via `innerHTML` DEBE pasar por `Drupal.checkPlain()`. Valores numericos por `parseInt()`. Solo HTML generado client-side post-sanitizacion (INNERHTML-XSS-001).
 - **Seguridad Twig (XSS):**
   - Contenido de usuario: `|safe_html` (NUNCA `|raw`). Solo `|raw` para JSON-LD schema y HTML auto-generado.
   - Escapar datos de usuario en HTML de emails con `Html::escape()`.
   - Cast `(string)` en TranslatableMarkup al asignar a variables de render array.
+- **Seguridad API (Whitelist):**
+  - Todo endpoint que acepte campos dinamicos del request para actualizar una entidad DEBE definir constante `ALLOWED_FIELDS` y filtrar antes de `$entity->set()` (API-WHITELIST-001).
+- **Freemium (Coherencia de Tiers):**
+  - Al modificar limites Free o Starter, verificar coherencia: Starter > Free para cada metrica. Los `upgrade_message` DEBEN reflejar valores reales del Starter (FREEMIUM-TIER-001).
 - **Remediacion Multi-IA:**
   - Protocolo: CLASIFICAR (REVERT/FIX/KEEP) → REVERT (git checkout) → FIX (ediciones manuales) → VERIFICAR → DOCUMENTAR.
   - Verificar roles especificos (nunca solo `authenticated`), URLs via `Url::fromRoute()` (nunca hardcoded).
@@ -171,6 +178,25 @@
   - Areas de contenido (`.main-content`, `.user-main`, `.error-page`, `.help-center-main`): solo `padding-top: 1.5rem` estetico. NUNCA compensatorio para header.
   - Toolbar admin: `top: 39px` (toolbar cerrado) y `top: 79px` (toolbar horizontal abierto) se definen una unica vez en `_landing-page.scss`, no en cada area de contenido.
   - Especificidad CSS: `body.landing-page .landing-header` (0-2-1) gana sobre `.landing-header` (0-1-0).
+- **Mensajes en Templates de Formulario Custom (FORM-MSG-001):**
+  - Problema raiz: cuando un modulo define su propio `#theme` para envolver un formulario (patron zero-region), los `status_messages` de Drupal NO se renderizan automaticamente. Los errores de `setErrorByName()` y mensajes de `addStatus()` se pierden silenciosamente.
+  - Solucion: el `hook_theme()` DEBE declarar `'messages' => NULL` como variable. Un preprocess hook DEBE inyectar `$variables['messages'] = ['#type' => 'status_messages']`. El template DEBE renderizar `{{ messages }}` ANTES de `{{ form }}`.
+  - Patron de preprocess:
+    ```php
+    function mimodulo_preprocess_mi_formulario_page(array &$variables): void {
+      $variables['messages'] = ['#type' => 'status_messages'];
+    }
+    ```
+  - Este es un error silencioso: no hay warnings en logs, y la validacion HTML5 del browser oculta el problema en la mayoria de los casos.
+- **Paginas Legales/Informativas Configurables (LEGAL-ROUTE-001 / LEGAL-CONFIG-001):**
+  - Las paginas legales se definen como rutas en `ecosistema_jaraba_core.routing.yml` (plataforma global, no vertical-especifico).
+  - URLs canonicas en espanol: `/politica-privacidad`, `/terminos-uso`, `/politica-cookies`, `/sobre-nosotros`, `/contacto`.
+  - Los controladores leen contenido de `theme_get_setting('legal_*_content', 'ecosistema_jaraba_theme')`.
+  - Templates zero-region reutilizables (ej: `legal-page.html.twig` para las 3 paginas legales).
+  - Theme hooks declarados en `ecosistema_jaraba_core.module` con variables: `page_type`, `title`, `content`, `last_updated`.
+  - TAB 14 "Paginas Legales" en theme settings permite editar contenido desde la UI de Drupal.
+  - Cache tags: `config:ecosistema_jaraba_theme.settings` para invalidar cuando se actualiza el contenido.
+  - El footer (`_footer.html.twig`) DEBE tener defaults que apunten a las URLs canonicas, no a rutas en ingles.
 
 ---
 
@@ -203,6 +229,7 @@
 25. **Identidad IA inquebrantable:** Todo agente, copiloto o servicio IA conversacional DEBE identificarse como "Asistente de Jaraba Impact Platform" (o el nombre del vertical). NUNCA revelar el modelo subyacente (Claude, ChatGPT, Gemini, etc.). La regla se inyecta en `BaseAgent.buildSystemPrompt()` como parte #0 y en `CopilotOrchestratorService.buildSystemPrompt()` como `$identityRule`. Los servicios standalone (FaqBotService, CoachIaService, ServiciosConectaCopilotAgent) la anteponen manualmente.
 26. **Aislamiento de competidores en IA:** Ningun prompt de IA DEBE mencionar, recomendar ni referenciar plataformas competidoras ni modelos de IA externos. Si el usuario menciona un competidor, la IA redirige a funcionalidades equivalentes de Jaraba. Los datos de dominio (recommendations, quick_wins) DEBEN referenciar herramientas de Jaraba, no de terceros. Excepcion: integraciones reales (LinkedIn import, Meta Pixel) donde la plataforma es canal de distribucion.
 27. **Sticky header por defecto en frontend:** El `.landing-header` DEBE usar `position: sticky` como default global. Solo las landing pages con hero fullscreen (`body.landing-page`, `body.page-front`) lo overriden a `position: fixed`. Las areas de contenido NUNCA compensan con `padding-top` para header fijo — solo padding estetico (`1.5rem`). El ajuste de toolbar admin (`top: 39px/79px`) se aplica una unica vez en el SCSS del header.
+28. **Mensajes obligatorios en templates de formulario:** Cuando un modulo define un `#theme` custom para renderizar un formulario, el hook_theme DEBE declarar variable `messages`, el preprocess DEBE inyectar `['#type' => 'status_messages']`, y el template DEBE renderizar `{{ messages }}` antes de `{{ form }}`. Sin esto, los errores de validacion server-side se pierden silenciosamente (la validacion HTML5 del browser oculta el problema). Las paginas legales/informativas DEBEN usar URLs canonicas en espanol (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`) y contenido editable desde theme settings via `theme_get_setting()`.
 
 ---
 
@@ -210,6 +237,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-23 | **18.0.0** | **Andalucia +ei Launch Readiness Workflow**: Patron FORM-MSG-001 — templates de formulario custom DEBEN declarar variable `messages` en hook_theme, inyectar `['#type' => 'status_messages']` en preprocess, y renderizar `{{ messages }}` antes de `{{ form }}`. Patron LEGAL-ROUTE-001 — paginas legales con URLs canonicas en espanol (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`, `/sobre-nosotros`, `/contacto`). Patron LEGAL-CONFIG-001 — controladores leen contenido de `theme_get_setting()`, templates zero-region con placeholder informativo, TAB 14 en theme settings. Protocolo de testing en browser: bypass HTML5 con `novalidate` para verificar mensajes server-side. Regla de oro #28. Aprendizaje #110. |
 | 2026-02-23 | **17.1.0** | **Sticky Header Migration Workflow**: Patron CSS-STICKY-001 — diagnostico de solapamiento de header fijo con contenido cuando la altura del header es variable (botones de accion wrappean a 2 lineas). Migracion global de `position: fixed` a `position: sticky` en `.landing-header`. Override solo para landing/front con hero fullscreen. Eliminacion de `padding-top` compensatorios fragiles (80px, 96px, 120px) en favor de padding estetico (`1.5rem`). Toolbar admin `top` ajustado una sola vez. 4 archivos SCSS modificados. Regla de oro #27. Aprendizaje #109. |
 | 2026-02-23 | **17.0.0** | **AI Identity Enforcement + Competitor Isolation Workflow**: Patrones para blindaje de identidad IA (regla inquebrantable en BaseAgent parte #0, CopilotOrchestratorService $identityRule, PublicCopilotController bloque IDENTIDAD INQUEBRANTABLE, servicios standalone con antepuesto manual). Patron de aislamiento de competidores (redireccion a funcionalidades Jaraba, excepcion para integraciones reales). Auditoria de 34+ prompts. Eliminacion de menciones a ChatGPT, Perplexity, HubSpot, LinkedIn, Zapier de 5 prompts de IA. Reglas de oro #25 (identidad IA), #26 (aislamiento competidores). Aprendizaje #108. |
 | 2026-02-23 | **16.1.0** | **Config Schema Dynamic Keys Fix**: Patron CONFIG-SCHEMA-001 — usar `type: sequence` en lugar de `type: mapping` para campos con keys dinamicos por vertical en config schema YAML. `mapping` con keys fijos lanza `SchemaIncompleteException` en Kernel tests para keys no declarados. Regla de oro #24. |

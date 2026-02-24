@@ -7,6 +7,16 @@
 (function (Drupal) {
     'use strict';
 
+    // Cache CSRF token for reuse across requests.
+    var _csrfTokenPromise = null;
+    function getCsrfToken() {
+        if (!_csrfTokenPromise) {
+            _csrfTokenPromise = fetch('/session/token')
+                .then(function (response) { return response.text(); });
+        }
+        return _csrfTokenPromise;
+    }
+
     Drupal.behaviors.employabilityAgentFab = {
         attach: function (context) {
             const containers = context.querySelectorAll('.agent-fab-container');
@@ -103,10 +113,12 @@
                     loadingMsg.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
                     // Call Self-Discovery context API for proactive responses.
+                    getCsrfToken().then(function (csrfToken) {
                     fetch('/api/v1/self-discovery/copilot/context', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken,
                         },
                         body: JSON.stringify({ query: message })
                     })
@@ -134,6 +146,7 @@
                                 message: Drupal.t('Lo siento, no pude procesar tu consulta. Inténtalo de nuevo.'),
                             });
                         });
+                    }); // getCsrfToken
                 };
 
                 sendBtn?.addEventListener('click', sendMessage);
@@ -216,42 +229,43 @@
                 // Phase indicator with progress ring
                 const phaseIndicator = document.createElement('div');
                 phaseIndicator.className = 'phase-indicator';
-                phaseIndicator.innerHTML = `
-                    <div class="phase-badge phase-${onboarding.phase_indicator?.phase || 1}">
-                        <span class="phase-emoji">${onboarding.phase_indicator?.emoji || '🎯'}</span>
-                        <span class="phase-name">${onboarding.phase_indicator?.name || 'Evaluando'}</span>
-                    </div>
-                    <div class="completeness-bar">
-                        <div class="completeness-fill" style="width: ${onboarding.phase_indicator?.completeness || 0}%"></div>
-                    </div>
-                    <span class="completeness-label">${onboarding.phase_indicator?.completeness || 0}% completitud</span>
-                `;
+                var phaseNum = parseInt(onboarding.phase_indicator?.phase, 10) || 1;
+                var phaseEmoji = Drupal.checkPlain(String(onboarding.phase_indicator?.emoji || ''));
+                var phaseName = Drupal.checkPlain(onboarding.phase_indicator?.name || 'Evaluando');
+                var completeness = Math.max(0, Math.min(100, parseInt(onboarding.phase_indicator?.completeness, 10) || 0));
+                phaseIndicator.innerHTML =
+                    '<div class="phase-badge phase-' + phaseNum + '">' +
+                        '<span class="phase-emoji">' + phaseEmoji + '</span>' +
+                        '<span class="phase-name">' + phaseName + '</span>' +
+                    '</div>' +
+                    '<div class="completeness-bar">' +
+                        '<div class="completeness-fill" style="width: ' + completeness + '%"></div>' +
+                    '</div>' +
+                    '<span class="completeness-label">' + completeness + '% completitud</span>';
                 wrapper.appendChild(phaseIndicator);
 
                 // Main message
                 const mainMsg = document.createElement('div');
                 mainMsg.className = 'chat-message from-agent onboarding-main';
-                mainMsg.innerHTML = `<strong>${onboarding.greeting}</strong><br>${onboarding.main_message}`;
+                mainMsg.innerHTML = '<strong>' + Drupal.checkPlain(onboarding.greeting) + '</strong><br>' + Drupal.checkPlain(onboarding.main_message);
                 wrapper.appendChild(mainMsg);
 
                 // Itinerary steps
                 if (onboarding.itinerary && onboarding.itinerary.steps) {
                     const itinerary = document.createElement('div');
                     itinerary.className = 'itinerary-card';
-                    itinerary.innerHTML = `
-                        <div class="itinerary-header">
-                            <span class="itinerary-icon">🗺️</span>
-                            <span class="itinerary-title">${onboarding.itinerary.name}</span>
-                        </div>
-                        <ul class="itinerary-steps">
-                            ${onboarding.itinerary.steps.map((step, i) => `
-                                <li class="itinerary-step">
-                                    <span class="step-number">${i + 1}</span>
-                                    <span class="step-text">${step}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    `;
+                    var stepsHtml = onboarding.itinerary.steps.map(function (step, i) {
+                        return '<li class="itinerary-step">' +
+                            '<span class="step-number">' + (i + 1) + '</span>' +
+                            '<span class="step-text">' + Drupal.checkPlain(step) + '</span>' +
+                        '</li>';
+                    }).join('');
+                    itinerary.innerHTML =
+                        '<div class="itinerary-header">' +
+                            '<span class="itinerary-icon">\uD83D\uDDFA\uFE0F</span>' +
+                            '<span class="itinerary-title">' + Drupal.checkPlain(onboarding.itinerary.name) + '</span>' +
+                        '</div>' +
+                        '<ul class="itinerary-steps">' + stepsHtml + '</ul>';
                     wrapper.appendChild(itinerary);
                 }
 
@@ -260,10 +274,9 @@
                     const cta = document.createElement('a');
                     cta.href = onboarding.primary_action.url;
                     cta.className = 'onboarding-cta primary-cta';
-                    cta.innerHTML = `
-                        <span class="cta-icon">${onboarding.primary_action.icon || '→'}</span>
-                        <span class="cta-label">${onboarding.primary_action.label}</span>
-                    `;
+                    cta.innerHTML =
+                        '<span class="cta-icon">' + Drupal.checkPlain(onboarding.primary_action.icon || '\u2192') + '</span>' +
+                        '<span class="cta-label">' + Drupal.checkPlain(onboarding.primary_action.label) + '</span>';
                     wrapper.appendChild(cta);
                 }
 
@@ -271,7 +284,7 @@
                 if (onboarding.motivation) {
                     const motivation = document.createElement('div');
                     motivation.className = 'motivation-message';
-                    motivation.innerHTML = `<span class="motivation-icon">💪</span> ${onboarding.motivation}`;
+                    motivation.innerHTML = '<span class="motivation-icon">\uD83D\uDCAA</span> ' + Drupal.checkPlain(onboarding.motivation);
                     wrapper.appendChild(motivation);
                 }
 
@@ -317,7 +330,9 @@
                 // Main message
                 const msg = document.createElement('div');
                 msg.className = 'chat-message from-agent';
-                msg.innerHTML = response.message;
+                msg.innerHTML = Drupal.checkPlain(response.message)
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
                 wrapper.appendChild(msg);
 
                 // Tips
@@ -339,7 +354,7 @@
                         const btn = document.createElement('a');
                         btn.href = action.url;
                         btn.className = 'response-cta';
-                        btn.innerHTML = `<span class="cta-icon">${action.icon || '→'}</span> ${action.label}`;
+                        btn.innerHTML = '<span class="cta-icon">' + Drupal.checkPlain(action.icon || '\u2192') + '</span> ' + Drupal.checkPlain(action.label);
                         btn.addEventListener('click', (e) => {
                             if (action.url.startsWith('#')) {
                                 e.preventDefault();
@@ -376,18 +391,21 @@
                             : `<span class="rating-thanks">📝 ${Drupal.t('Anotado para mejorar')}</span>`;
 
                         // Enviar rating al backend.
-                        fetch('/api/v1/job-board/agent-rating', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                            },
-                            body: JSON.stringify({
-                                rating: ratingValue,
-                                session_id: window.jarabaAgentSessionId || 'unknown',
-                                context: { agent: currentAgent, timestamp: Date.now() },
-                            }),
-                        }).catch(err => console.warn('Rating submit failed:', err));
+                        getCsrfToken().then(function (csrfToken) {
+                            fetch('/api/v1/job-board/agent-rating', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-Token': csrfToken,
+                                },
+                                body: JSON.stringify({
+                                    rating: ratingValue,
+                                    session_id: window.jarabaAgentSessionId || 'unknown',
+                                    context: { agent: currentAgent, timestamp: Date.now() },
+                                }),
+                            }).catch(err => console.warn('Rating submit failed:', err));
+                        });
                     });
                 });
                 wrapper.appendChild(rating);
@@ -653,7 +671,7 @@
 
                 var msg = document.createElement('div');
                 msg.className = 'chat-message from-agent proactive';
-                msg.innerHTML = '<span class="proactive-badge">' + Drupal.t('Sugerencia') + '</span><br>' + action.message;
+                msg.innerHTML = '<span class="proactive-badge">' + Drupal.t('Sugerencia') + '</span><br>' + Drupal.checkPlain(action.message);
                 wrapper.appendChild(msg);
 
                 if (action.cta_label && action.cta_url) {
@@ -663,21 +681,24 @@
                     var cta = document.createElement('a');
                     cta.href = action.cta_url;
                     cta.className = 'response-cta proactive-cta';
-                    cta.innerHTML = '<span class="cta-icon">\u2192</span> ' + action.cta_label;
+                    cta.innerHTML = '<span class="cta-icon">\u2192</span> ' + Drupal.checkPlain(action.cta_label);
                     actionsContainer.appendChild(cta);
 
                     var dismiss = document.createElement('button');
                     dismiss.className = 'response-cta proactive-dismiss';
                     dismiss.textContent = Drupal.t('Ahora no');
                     dismiss.addEventListener('click', function () {
-                        fetch('/api/v1/copilot/employability/proactive', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: JSON.stringify({ rule_id: action.rule_id, action: 'dismiss' })
-                        }).catch(function () {});
+                        getCsrfToken().then(function (csrfToken) {
+                            fetch('/api/v1/copilot/employability/proactive', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-Token': csrfToken,
+                                },
+                                body: JSON.stringify({ rule_id: action.rule_id, action: 'dismiss' })
+                            }).catch(function () {});
+                        });
                         wrapper.classList.add('fade-out');
                         setTimeout(function () { wrapper.remove(); }, 300);
                     });

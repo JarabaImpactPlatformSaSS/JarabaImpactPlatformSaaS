@@ -6,13 +6,14 @@
       <mj-button background-color="#16a34a" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
+    <mj-preview>&iexcl;Buenas noticias! Tu candidatura ha avanzado a la fase de preselecci&oacute;n.</mj-preview>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
     </mj-style>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#2563eb" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }}
@@ -60,6 +61,9 @@
         </mj-text>
         <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
           Has recibido este correo porque tienes una candidatura activa en {{ site_name }}.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="4px">
+          Jaraba Impact Platform &mdash; Pol&iacute;gono Industrial Juncaril, C/ Abedul s/n, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>
