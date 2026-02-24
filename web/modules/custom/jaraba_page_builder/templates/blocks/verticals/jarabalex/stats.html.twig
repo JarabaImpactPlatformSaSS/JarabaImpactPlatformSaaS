@@ -1,0 +1,40 @@
+{#
+ # Template: JarabaLex - Cifras del Despacho
+ # Category: jarabalex
+ # Type: stats
+ #
+ # Header + grid de 4 counters con numero animado + etiqueta
+ # Premium: staggered animations, counter animation, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--stats pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_stats"
+         aria-label="{{ title|default('Cifras del Despacho')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('En cifras')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Resultados que hablan por nosotros')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Más de dos décadas ofreciendo excelencia jurídica.')|t }}</p>
+    </div>
+    <div class="pb-section__stats-grid">
+      {% set default_stats = [
+        { value: '20+', label: 'Años de experiencia' },
+        { value: '500+', label: 'Casos resueltos' },
+        { value: '98%', label: 'Tasa de éxito' },
+        { value: '150+', label: 'Empresas confían en nosotros' }
+      ] %}
+      {% set items = stats|default(default_stats) %}
+      {% for stat in items %}
+        <div class="pb-section__stat"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__stat-value" data-counter="{{ stat.value|default('0') }}">
+            {{ stat.value|default('0') }}
+          </div>
+          <div class="pb-section__stat-label">{{ stat.label|default('Métrica')|t }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

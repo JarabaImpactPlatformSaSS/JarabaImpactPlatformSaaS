@@ -1,0 +1,62 @@
+{#
+ # Template: JarabaLex - Ubicacion del Despacho
+ # Category: jarabalex
+ # Type: map
+ #
+ # Header + mapa embebido con direccion y contato
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--map pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_map"
+         aria-label="{{ title|default('Ubicación del Despacho')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Ubicación')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Visítanos en nuestro despacho')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Estamos en el centro de la ciudad, con fácil acceso en transporte público.')|t }}</p>
+    </div>
+    <div class="pb-section__map-layout">
+      <div class="pb-section__map-embed">
+        {% if map_embed %}
+          {{ map_embed|raw }}
+        {% else %}
+          <div class="pb-section__map-placeholder" aria-hidden="true">
+            {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+            <p>{{ 'Configura tu mapa desde el editor'|t }}</p>
+          </div>
+        {% endif %}
+      </div>
+      <div class="pb-section__map-info">
+        <div class="pb-section__map-detail">
+          <div class="pb-section__map-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
+          <div>
+            <strong>{{ 'Dirección'|t }}</strong>
+            <p>{{ address|default('Calle Gran Vía 28, Planta 5ª, 28013 Madrid')|t }}</p>
+          </div>
+        </div>
+        <div class="pb-section__map-detail">
+          <div class="pb-section__map-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
+          <div>
+            <strong>{{ 'Teléfono'|t }}</strong>
+            <p>{{ phone|default('+34 91 123 45 67')|t }}</p>
+          </div>
+        </div>
+        <div class="pb-section__map-detail">
+          <div class="pb-section__map-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '24px', color: 'primary' }) }}
+          </div>
+          <div>
+            <strong>{{ 'Email'|t }}</strong>
+            <p>{{ email|default('info@jarabalex.com')|t }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
