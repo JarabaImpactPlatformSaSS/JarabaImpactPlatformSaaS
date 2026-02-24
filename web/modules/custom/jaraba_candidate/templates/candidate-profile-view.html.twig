@@ -43,14 +43,14 @@
       <div class="cp-hero__meta">
         {% if profile.city %}
           <span class="cp-hero__meta-item">
-            {{ jaraba_icon('ui', 'pin', { size: '16px' }) }}
+            {{ jaraba_icon('ui', 'map-pin', { variant: 'duotone', size: '16px' }) }}
             {{ profile.city }}{% if profile.province %}, {{ profile.province }}{% endif %}
           </span>
         {% endif %}
 
         {% if profile.experience_years %}
           <span class="cp-hero__meta-item">
-            {{ jaraba_icon('business', 'job', { size: '16px' }) }}
+            {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', size: '16px' }) }}
             {{ profile.experience_years }} {{ 'años'|t }}
             {% if profile.experience_level %} · {{ profile.experience_level }}{% endif %}
           </span>
@@ -84,7 +84,7 @@
            class="cp-btn cp-btn--primary"
            data-dialog-type="modal"
            data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>
-          {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+          {{ jaraba_icon('actions', 'edit', { variant: 'duotone', size: '16px' }) }}
           {{ 'Editar perfil'|t }}
         </a>
       </div>
@@ -95,7 +95,7 @@
   {% if profile.summary %}
     <section class="cp-section cp-section--about cp-animate-in" style="--cp-stagger: 1">
       <h2 class="cp-section__title">
-        {{ jaraba_icon('ui', 'users', { size: '20px' }) }}
+        {{ jaraba_icon('ui', 'user', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
         {% trans %}Sobre mí{% endtrans %}
       </h2>
       <div class="cp-section__body">
@@ -104,7 +104,7 @@
 
       {% if profile.education_level %}
         <div class="cp-about__detail">
-          {{ jaraba_icon('business', 'company', { size: '16px' }) }}
+          {{ jaraba_icon('education', 'book-open', { variant: 'duotone', color: 'verde-innovacion', size: '16px' }) }}
           <span>{% trans %}Formación:{% endtrans %} {{ profile.education_level }}</span>
         </div>
       {% endif %}
@@ -115,7 +115,7 @@
   {% if profile.experiences|length > 0 %}
     <section class="cp-section cp-section--experience cp-animate-in" style="--cp-stagger: 2">
       <h2 class="cp-section__title">
-        {{ jaraba_icon('business', 'job', { size: '20px' }) }}
+        {{ jaraba_icon('business', 'briefcase', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
         {% trans %}Experiencia{% endtrans %}
       </h2>
       <div class="cp-timeline">
@@ -153,7 +153,7 @@
   {% if profile.educations|length > 0 %}
     <section class="cp-section cp-section--education cp-animate-in" style="--cp-stagger: 3">
       <h2 class="cp-section__title">
-        {{ jaraba_icon('business', 'company', { size: '20px' }) }}
+        {{ jaraba_icon('education', 'graduation-cap', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
         {% trans %}Educación{% endtrans %}
       </h2>
       <div class="cp-edu-grid">
@@ -175,7 +175,7 @@
   {% if profile.skills|length > 0 %}
     <section class="cp-section cp-section--skills cp-animate-in" style="--cp-stagger: 4">
       <h2 class="cp-section__title">
-        {{ jaraba_icon('ai', 'brain', { size: '20px' }) }}
+        {{ jaraba_icon('ai', 'brain', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
         {% trans %}Habilidades{% endtrans %}
       </h2>
       <div class="cp-skills">
@@ -184,7 +184,7 @@
             {{ skill.name }}
             {% if skill.verified %}
               <span class="cp-skill__verified" title="{% trans %}Verificada{% endtrans %}">
-                {{ jaraba_icon('ui', 'check', { size: '12px' }) }}
+                {{ jaraba_icon('actions', 'verified', { variant: 'duotone', size: '12px' }) }}
               </span>
             {% endif %}
           </span>
@@ -198,31 +198,31 @@
   {% if has_links %}
     <section class="cp-section cp-section--links cp-animate-in" style="--cp-stagger: 5">
       <h2 class="cp-section__title">
-        {{ jaraba_icon('ui', 'link', { size: '20px' }) }}
+        {{ jaraba_icon('ui', 'external-link', { variant: 'duotone', color: 'naranja-impulso', size: '20px' }) }}
         {% trans %}Enlaces{% endtrans %}
       </h2>
       <div class="cp-links">
         {% if profile.linkedin_url %}
           <a href="{{ profile.linkedin_url }}" class="cp-link" target="_blank" rel="noopener">
-            {{ jaraba_icon('ui', 'link', { size: '20px' }) }}
+            {{ jaraba_icon('social', 'linkedin', { variant: 'duotone', size: '20px' }) }}
             <span>LinkedIn</span>
           </a>
         {% endif %}
         {% if profile.github_url %}
           <a href="{{ profile.github_url }}" class="cp-link" target="_blank" rel="noopener">
-            {{ jaraba_icon('ui', 'link', { size: '20px' }) }}
+            {{ jaraba_icon('ui', 'code', { variant: 'duotone', size: '20px' }) }}
             <span>GitHub</span>
           </a>
         {% endif %}
         {% if profile.portfolio_url %}
           <a href="{{ profile.portfolio_url }}" class="cp-link" target="_blank" rel="noopener">
-            {{ jaraba_icon('ui', 'link', { size: '20px' }) }}
+            {{ jaraba_icon('ui', 'palette', { variant: 'duotone', size: '20px' }) }}
             <span>{% trans %}Portfolio{% endtrans %}</span>
           </a>
         {% endif %}
         {% if profile.website_url %}
           <a href="{{ profile.website_url }}" class="cp-link" target="_blank" rel="noopener">
-            {{ jaraba_icon('ui', 'link', { size: '20px' }) }}
+            {{ jaraba_icon('ui', 'globe', { variant: 'duotone', size: '20px' }) }}
             <span>{% trans %}Web personal{% endtrans %}</span>
           </a>
         {% endif %}
@@ -234,7 +234,7 @@
   {% if is_own_profile and completion < 100 %}
     <section class="cp-cta cp-animate-in" style="--cp-stagger: 6">
       <div class="cp-cta__icon">
-        {{ jaraba_icon('analytics', 'chart-line', { variant: 'duotone', size: '32px' }) }}
+        {{ jaraba_icon('analytics', 'trending-up', { variant: 'duotone', color: 'naranja-impulso', size: '32px' }) }}
       </div>
       <div class="cp-cta__content">
         <h3 class="cp-cta__title">{% trans %}Completa tu perfil para destacar{% endtrans %}</h3>
@@ -244,7 +244,7 @@
          class="cp-btn cp-btn--secondary"
          data-dialog-type="modal"
          data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>
-        {{ jaraba_icon('actions', 'edit', { size: '16px' }) }}
+        {{ jaraba_icon('actions', 'edit', { variant: 'duotone', size: '16px' }) }}
         {% trans %}Completar perfil{% endtrans %}
       </a>
     </section>
