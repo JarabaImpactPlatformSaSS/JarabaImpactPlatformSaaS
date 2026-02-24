@@ -21,3 +21,11 @@ links:
     path: /entrepreneur/mentors
     priority: '0.7'
     changefreq: weekly
+  -
+    path: /agroconecta/marketplace
+    priority: '0.9'
+    changefreq: daily
+  -
+    path: /agroconecta/buscar
+    priority: '0.7'
+    changefreq: weekly

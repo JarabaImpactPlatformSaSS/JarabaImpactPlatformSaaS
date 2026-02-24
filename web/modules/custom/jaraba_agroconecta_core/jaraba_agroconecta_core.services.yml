@@ -229,6 +229,12 @@ services:
     arguments:
       - '@entity_type.manager'
 
+  # Breadcrumb builder for AgroConecta routes.
+  jaraba_agroconecta_core.breadcrumb_builder:
+    class: Drupal\jaraba_agroconecta_core\Breadcrumb\AgroConectaBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
+
   # Plan Elevacion AgroConecta Clase Mundial v1 — Fase 2: CopilotBridge
   # AUDIT-CONS-N05: jaraba_agroconecta.copilot_bridge -> jaraba_agroconecta_core.copilot_bridge
   jaraba_agroconecta_core.copilot_bridge:
