@@ -48,7 +48,7 @@ class OrderService
         protected EntityTypeManagerInterface $entityTypeManager,
         protected AccountInterface $currentUser,
         protected LoggerInterface $logger,
-        protected AgroConectaFeatureGateService $featureGate,
+        protected ?AgroConectaFeatureGateService $featureGate = NULL,
     ) {
     }
 

@@ -55,9 +55,9 @@ class ApplicationService
         JobPostingService $job_posting_service,
         LoggerChannelFactoryInterface $logger_factory,
         EventDispatcherInterface $event_dispatcher,
-        TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+        ?TenantContextService $tenantContext = NULL, // AUDIT-CONS-N10: Proper DI for tenant context.
     ) {
-        $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
+        $this->tenantContext = $tenantContext;
         $this->entityTypeManager = $entity_type_manager;
         $this->currentUser = $current_user;
         $this->jobPostingService = $job_posting_service;
@@ -93,16 +93,17 @@ class ApplicationService
 
                 // Fire upgrade trigger (Plan Elevación Empleabilidad v1 — Fase 5).
                 try {
-                    $tenantContext = $this->tenantContext;
-                    $tenant = $tenantContext->getCurrentTenant();
-                    if ($tenant) {
-                        /** @var \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService $upgradeTrigger */
-                        $upgradeTrigger = \Drupal::service('ecosistema_jaraba_core.upgrade_trigger');
-                        $upgradeTrigger->fire('limit_reached', $tenant, [
-                            'feature_key' => 'job_applications_per_day',
-                            'current_usage' => $gateResult->used,
-                            'vertical' => 'empleabilidad',
-                        ]);
+                    if ($this->tenantContext) {
+                        $tenant = $this->tenantContext->getCurrentTenant();
+                        if ($tenant) {
+                            /** @var \Drupal\ecosistema_jaraba_core\Service\UpgradeTriggerService $upgradeTrigger */
+                            $upgradeTrigger = \Drupal::service('ecosistema_jaraba_core.upgrade_trigger');
+                            $upgradeTrigger->fire('limit_reached', $tenant, [
+                                'feature_key' => 'job_applications_per_day',
+                                'current_usage' => $gateResult->used,
+                                'vertical' => 'empleabilidad',
+                            ]);
+                        }
                     }
                 }
                 catch (\Exception $e) {
@@ -163,9 +164,8 @@ class ApplicationService
             $totalApps = count($this->getCandidateApplications($candidate_id));
 
             // 5-application engagement milestone → upgrade trigger.
-            if ($totalApps === 5) {
-                $tenantContext = $this->tenantContext;
-                $tenant = $tenantContext->getCurrentTenant();
+            if ($totalApps === 5 && $this->tenantContext) {
+                $tenant = $this->tenantContext->getCurrentTenant();
                 if ($tenant) {
                     \Drupal::service('ecosistema_jaraba_core.upgrade_trigger')
                         ->fire('engagement_high', $tenant, [

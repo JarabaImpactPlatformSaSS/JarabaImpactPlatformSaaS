@@ -20,7 +20,7 @@ class AgroConectaCopilotBridgeService {
 
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
-    protected readonly AgroConectaFeatureGateService $featureGate,
+    protected readonly ?AgroConectaFeatureGateService $featureGate = NULL,
     protected readonly LoggerInterface $logger,
   ) {
   }

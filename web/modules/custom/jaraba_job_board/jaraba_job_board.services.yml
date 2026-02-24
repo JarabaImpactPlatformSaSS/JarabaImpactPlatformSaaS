@@ -20,7 +20,7 @@ services:
       - '@jaraba_job_board.job_posting'
       - '@logger.factory'
       - '@event_dispatcher'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_job_board.employer:
     class: Drupal\jaraba_job_board\Service\EmployerService
