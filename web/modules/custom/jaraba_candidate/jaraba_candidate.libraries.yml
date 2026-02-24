@@ -25,6 +25,15 @@ skills_manager:
     - core/drupalSettings
     - core/drupal.ajax
 
+# Profile view — Premium glassmorphism layout
+profile_view:
+  version: 1.x
+  css:
+    theme:
+      css/profile-view.css: {}
+  dependencies:
+    - core/drupal
+
 # Modal CRUD actions — Plan Elevación Empleabilidad Fase 2
 modal-actions:
   version: 1.x
