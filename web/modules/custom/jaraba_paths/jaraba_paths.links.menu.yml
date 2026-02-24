@@ -6,3 +6,17 @@ entity.digitalization_path.settings:
   route_name: entity.digitalization_path.settings
   parent: system.admin_structure
   weight: 40
+
+entity.path_enrollment.settings:
+  title: 'Inscripción en Itinerario settings'
+  description: 'Manage Inscripción en Itinerario entity type settings, fields and display.'
+  route_name: entity.path_enrollment.settings
+  parent: system.admin_structure
+  weight: 50
+
+entity.path_enrollment.collection:
+  title: 'Inscripciones'
+  description: 'Manage Inscripciones.'
+  route_name: entity.path_enrollment.collection
+  parent: system.admin_content
+  weight: 51

@@ -11,3 +11,17 @@ jaraba_messaging.conversations:
   route_name: entity.secure_conversation.collection
   parent: system.admin_content
   weight: 5
+
+entity.conversation_participant.settings:
+  title: 'Conversation Participant settings'
+  description: 'Manage Conversation Participant entity type settings, fields and display.'
+  route_name: entity.conversation_participant.settings
+  parent: system.admin_structure
+  weight: 20
+
+entity.conversation_participant.collection:
+  title: 'Participants'
+  description: 'Manage Participants.'
+  route_name: entity.conversation_participant.collection
+  parent: system.admin_content
+  weight: 21

@@ -42,11 +42,11 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "label" = "name",
  *   },
  *   links = {
- *     "collection" = "/admin/appearance/theme-configs",
- *     "add-form" = "/admin/appearance/theme-configs/add",
- *     "canonical" = "/admin/appearance/theme-configs/{tenant_theme_config}",
- *     "edit-form" = "/admin/appearance/theme-configs/{tenant_theme_config}/edit",
- *     "delete-form" = "/admin/appearance/theme-configs/{tenant_theme_config}/delete",
+ *     "collection" = "/admin/structure/theme-configs",
+ *     "add-form" = "/admin/structure/theme-configs/add",
+ *     "canonical" = "/admin/structure/theme-configs/{tenant_theme_config}",
+ *     "edit-form" = "/admin/structure/theme-configs/{tenant_theme_config}/edit",
+ *     "delete-form" = "/admin/structure/theme-configs/{tenant_theme_config}/delete",
  *   },
  *   field_ui_base_route = "entity.tenant_theme_config.settings",
  * )

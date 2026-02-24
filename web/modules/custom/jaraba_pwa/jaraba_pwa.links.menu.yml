@@ -5,6 +5,20 @@ jaraba_pwa.settings:
   parent: system.admin_config
   weight: 50
 
+entity.pending_sync_action.settings:
+  title: 'Pending Sync Action settings'
+  description: 'Manage Pending Sync Action entity type settings, fields and display.'
+  route_name: entity.pending_sync_action.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.push_subscription.settings:
+  title: 'Push Subscription settings'
+  description: 'Manage Push Subscription entity type settings, fields and display.'
+  route_name: entity.push_subscription.settings
+  parent: system.admin_structure
+  weight: 11
+
 jaraba_pwa.push_subscriptions:
   title: 'Push Subscriptions'
   description: 'View and manage push notification subscriptions.'

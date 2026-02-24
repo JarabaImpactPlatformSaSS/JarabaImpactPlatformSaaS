@@ -43,9 +43,9 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *   },
  *   links = {
- *     "collection" = "/admin/seguridad/audit-log",
- *     "canonical" = "/admin/seguridad/audit-log/{audit_log}",
- *     "delete-form" = "/admin/seguridad/audit-log/{audit_log}/delete",
+ *     "collection" = "/admin/content/audit-logs",
+ *     "canonical" = "/admin/content/audit-logs/{audit_log}",
+ *     "delete-form" = "/admin/content/audit-logs/{audit_log}/delete",
  *   },
  *   field_ui_base_route = "entity.audit_log.settings",
  * )

@@ -32,3 +32,45 @@ jaraba_mentoring.config:
   parent: jaraba_config
   route_name: jaraba_mentoring.settings
   weight: 30
+
+entity.session_notes.settings:
+  title: 'Notas de Sesión settings'
+  description: 'Manage Notas de Sesión entity type settings, fields and display.'
+  route_name: entity.session_notes.settings
+  parent: system.admin_structure
+  weight: 30
+
+entity.session_notes.collection:
+  title: 'Notas de Sesiones'
+  description: 'Manage Notas de Sesiones.'
+  route_name: entity.session_notes.collection
+  parent: system.admin_content
+  weight: 31
+
+entity.session_review.settings:
+  title: 'Review de Sesión settings'
+  description: 'Manage Review de Sesión entity type settings, fields and display.'
+  route_name: entity.session_review.settings
+  parent: system.admin_structure
+  weight: 32
+
+entity.session_review.collection:
+  title: 'Reviews de Sesiones'
+  description: 'Manage Reviews de Sesiones.'
+  route_name: entity.session_review.collection
+  parent: system.admin_content
+  weight: 33
+
+entity.session_task.settings:
+  title: 'Tarea de Sesión settings'
+  description: 'Manage Tarea de Sesión entity type settings, fields and display.'
+  route_name: entity.session_task.settings
+  parent: system.admin_structure
+  weight: 34
+
+entity.session_task.collection:
+  title: 'Tareas de Sesión'
+  description: 'Manage Tareas de Sesión.'
+  route_name: entity.session_task.collection
+  parent: system.admin_content
+  weight: 35

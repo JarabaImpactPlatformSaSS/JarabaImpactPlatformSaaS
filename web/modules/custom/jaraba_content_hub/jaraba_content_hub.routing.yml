@@ -335,7 +335,7 @@ jaraba_content_hub.api.ai.apply_seo:
 
 # AI Generation Logs (Admin)
 jaraba_content_hub.ai_logs:
-  path: '/admin/reports/ai-generations'
+  path: '/admin/content/ai-generation-logs'
   defaults:
     _entity_list: 'ai_generation_log'
     _title: 'AI Generation Logs'

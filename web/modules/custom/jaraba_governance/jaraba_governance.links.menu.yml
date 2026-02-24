@@ -1,0 +1,41 @@
+entity.data_classification.settings:
+  title: 'Data Classification settings'
+  description: 'Manage Data Classification entity type settings, fields and display.'
+  route_name: entity.data_classification.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.data_classification.collection:
+  title: 'Data Classifications'
+  description: 'Manage Data Classifications.'
+  route_name: entity.data_classification.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.data_lineage_event.settings:
+  title: 'Data Lineage Event settings'
+  description: 'Manage Data Lineage Event entity type settings, fields and display.'
+  route_name: entity.data_lineage_event.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.data_lineage_event.collection:
+  title: 'Data Lineage Events'
+  description: 'Manage Data Lineage Events.'
+  route_name: entity.data_lineage_event.collection
+  parent: system.admin_content
+  weight: 21
+
+entity.erasure_request.settings:
+  title: 'Erasure Request settings'
+  description: 'Manage Erasure Request entity type settings, fields and display.'
+  route_name: entity.erasure_request.settings
+  parent: system.admin_structure
+  weight: 12
+
+entity.erasure_request.collection:
+  title: 'Erasure Requests'
+  description: 'Manage Erasure Requests.'
+  route_name: entity.erasure_request.collection
+  parent: system.admin_content
+  weight: 22

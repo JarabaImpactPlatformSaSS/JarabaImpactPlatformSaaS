@@ -1,0 +1,27 @@
+entity.mfa_policy.settings:
+  title: 'MFA Policy settings'
+  description: 'Manage MFA Policy entity type settings, fields and display.'
+  route_name: entity.mfa_policy.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.mfa_policy.collection:
+  title: 'MFA Policies'
+  description: 'Manage MFA Policies.'
+  route_name: entity.mfa_policy.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.sso_configuration.settings:
+  title: 'SSO Configuration settings'
+  description: 'Manage SSO Configuration entity type settings, fields and display.'
+  route_name: entity.sso_configuration.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.sso_configuration.collection:
+  title: 'SSO Configurations'
+  description: 'Manage SSO Configurations.'
+  route_name: entity.sso_configuration.collection
+  parent: system.admin_content
+  weight: 21

@@ -1,0 +1,27 @@
+entity.match_feedback.settings:
+  title: 'Match Feedback settings'
+  description: 'Manage Match Feedback entity type settings, fields and display.'
+  route_name: entity.match_feedback.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.match_feedback.collection:
+  title: 'Match Feedback'
+  description: 'Manage Match Feedback.'
+  route_name: entity.match_feedback.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.match_result.settings:
+  title: 'Match Result settings'
+  description: 'Manage Match Result entity type settings, fields and display.'
+  route_name: entity.match_result.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.match_result.collection:
+  title: 'Match Results'
+  description: 'Manage Match Results.'
+  route_name: entity.match_result.collection
+  parent: system.admin_content
+  weight: 21

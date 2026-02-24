@@ -36,7 +36,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "owner" = "user_id",
  *   },
  *   links = {
- *     "collection" = "/admin/reports/ai-generations",
+ *     "collection" = "/admin/content/ai-generation-logs",
  *   },
  *   field_ui_base_route = "entity.ai_generation_log.settings",
  * )

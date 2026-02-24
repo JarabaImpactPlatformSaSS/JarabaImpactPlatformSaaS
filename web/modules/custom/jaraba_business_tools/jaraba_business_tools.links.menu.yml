@@ -47,3 +47,35 @@ entity.financial_projection.collection:
   route_name: entity.financial_projection.collection
   parent: system.admin_content
   weight: 42
+
+# Entrada en /admin/structure para Field UI - Canvas Block
+entity.canvas_block.settings:
+  title: 'Canvas Block settings'
+  description: 'Manage Canvas Block entity type settings, fields and display.'
+  route_name: entity.canvas_block.settings
+  parent: system.admin_structure
+  weight: 50
+
+# Entrada en /admin/structure para Field UI - Canvas Version
+entity.canvas_version.settings:
+  title: 'Canvas Version settings'
+  description: 'Manage Canvas Version entity type settings, fields and display.'
+  route_name: entity.canvas_version.settings
+  parent: system.admin_structure
+  weight: 51
+
+# Entrada en /admin/content - Canvas Blocks
+entity.canvas_block.collection:
+  title: 'Canvas Blocks'
+  description: 'Manage Canvas Blocks.'
+  route_name: entity.canvas_block.collection
+  parent: system.admin_content
+  weight: 50
+
+# Entrada en /admin/content - Canvas Versions
+entity.canvas_version.collection:
+  title: 'Canvas Versions'
+  description: 'Manage Canvas Versions.'
+  route_name: entity.canvas_version.collection
+  parent: system.admin_content
+  weight: 51

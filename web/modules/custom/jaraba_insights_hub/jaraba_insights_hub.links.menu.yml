@@ -12,3 +12,89 @@ jaraba_insights_hub.settings:
   parent: system.admin_config_services
   route_name: jaraba_insights_hub.settings
   weight: 10
+
+# Settings entries (admin/structure)
+entity.insights_error_log.settings:
+  title: 'Insights Error Log settings'
+  description: 'Manage Insights Error Log entity type settings, fields and display.'
+  route_name: entity.insights_error_log.settings
+  parent: system.admin_structure
+  weight: 20
+
+entity.search_console_connection.settings:
+  title: 'Search Console Connection settings'
+  description: 'Manage Search Console Connection entity type settings, fields and display.'
+  route_name: entity.search_console_connection.settings
+  parent: system.admin_structure
+  weight: 21
+
+entity.search_console_data.settings:
+  title: 'Search Console Data settings'
+  description: 'Manage Search Console Data entity type settings, fields and display.'
+  route_name: entity.search_console_data.settings
+  parent: system.admin_structure
+  weight: 22
+
+entity.uptime_check.settings:
+  title: 'Uptime Check settings'
+  description: 'Manage Uptime Check entity type settings, fields and display.'
+  route_name: entity.uptime_check.settings
+  parent: system.admin_structure
+  weight: 23
+
+entity.uptime_incident.settings:
+  title: 'Uptime Incident settings'
+  description: 'Manage Uptime Incident entity type settings, fields and display.'
+  route_name: entity.uptime_incident.settings
+  parent: system.admin_structure
+  weight: 24
+
+entity.web_vitals_metric.settings:
+  title: 'Web Vitals Metric settings'
+  description: 'Manage Web Vitals Metric entity type settings, fields and display.'
+  route_name: entity.web_vitals_metric.settings
+  parent: system.admin_structure
+  weight: 25
+
+# Collection entries (admin/content)
+entity.insights_error_log.collection:
+  title: 'Insights Error Logs'
+  description: 'Manage Insights Error Logs.'
+  route_name: entity.insights_error_log.collection
+  parent: system.admin_content
+  weight: 30
+
+entity.search_console_connection.collection:
+  title: 'Search Console Connections'
+  description: 'Manage Search Console Connections.'
+  route_name: entity.search_console_connection.collection
+  parent: system.admin_content
+  weight: 31
+
+entity.search_console_data.collection:
+  title: 'Search Console Data'
+  description: 'Manage Search Console Data.'
+  route_name: entity.search_console_data.collection
+  parent: system.admin_content
+  weight: 32
+
+entity.uptime_check.collection:
+  title: 'Uptime Checks'
+  description: 'Manage Uptime Checks.'
+  route_name: entity.uptime_check.collection
+  parent: system.admin_content
+  weight: 33
+
+entity.uptime_incident.collection:
+  title: 'Uptime Incidents'
+  description: 'Manage Uptime Incidents.'
+  route_name: entity.uptime_incident.collection
+  parent: system.admin_content
+  weight: 34
+
+entity.web_vitals_metric.collection:
+  title: 'Web Vitals Metrics'
+  description: 'Manage Web Vitals Metrics.'
+  route_name: entity.web_vitals_metric.collection
+  parent: system.admin_content
+  weight: 35

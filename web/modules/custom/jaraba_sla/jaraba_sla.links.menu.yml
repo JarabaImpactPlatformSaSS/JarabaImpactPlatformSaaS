@@ -1,0 +1,27 @@
+entity.sla_incident.settings:
+  title: 'SLA Incident settings'
+  description: 'Manage SLA Incident entity type settings, fields and display.'
+  route_name: entity.sla_incident.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.sla_incident.collection:
+  title: 'SLA Incidents'
+  description: 'Manage SLA Incidents.'
+  route_name: entity.sla_incident.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.sla_measurement.settings:
+  title: 'SLA Measurement settings'
+  description: 'Manage SLA Measurement entity type settings, fields and display.'
+  route_name: entity.sla_measurement.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.sla_measurement.collection:
+  title: 'SLA Measurements'
+  description: 'Manage SLA Measurements.'
+  route_name: entity.sla_measurement.collection
+  parent: system.admin_content
+  weight: 21

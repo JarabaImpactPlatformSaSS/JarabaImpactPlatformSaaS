@@ -5,3 +5,17 @@ jaraba_journey.admin:
   parent: system.admin_config_jaraba
   route_name: jaraba_journey.dashboard
   weight: 25
+
+entity.journey_state.settings:
+  title: 'Journey State settings'
+  description: 'Manage Journey State entity type settings, fields and display.'
+  route_name: entity.journey_state.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.journey_state.collection:
+  title: 'Journey States'
+  description: 'Manage Journey States.'
+  route_name: entity.journey_state.collection
+  parent: system.admin_content
+  weight: 20

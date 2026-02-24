@@ -1,0 +1,13 @@
+entity.identity_wallet.settings:
+  title: 'Cartera de Identidad settings'
+  description: 'Manage Cartera de Identidad entity type settings, fields and display.'
+  route_name: entity.identity_wallet.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.identity_wallet.collection:
+  title: 'Carteras de Identidad'
+  description: 'Manage Carteras de Identidad.'
+  route_name: entity.identity_wallet.collection
+  parent: system.admin_content
+  weight: 20

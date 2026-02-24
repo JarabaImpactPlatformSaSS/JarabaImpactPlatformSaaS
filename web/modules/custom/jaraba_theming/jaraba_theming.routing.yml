@@ -1,6 +1,6 @@
 # Admin collection (solo para superadmins)
 entity.tenant_theme_config.collection:
-  path: '/admin/appearance/theme-configs'
+  path: '/admin/structure/theme-configs'
   defaults:
     _entity_list: 'tenant_theme_config'
     _title: 'Configuraciones de Tema'
