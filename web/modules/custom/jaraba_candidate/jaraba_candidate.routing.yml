@@ -463,6 +463,14 @@ entity.candidate_skill.settings:
   requirements:
     _permission: 'administer candidate skills'
 
+entity.candidate_education.settings:
+  path: '/admin/structure/candidate-education/settings'
+  defaults:
+    _form: 'Drupal\jaraba_candidate\Form\CandidateEducationSettingsForm'
+    _title: 'Candidate Education settings'
+  requirements:
+    _permission: 'administer candidate educations'
+
 entity.candidate_language.settings:
   path: '/admin/structure/candidate-language/settings'
   defaults:
