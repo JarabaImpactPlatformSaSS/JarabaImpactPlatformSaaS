@@ -1,0 +1,45 @@
+{#
+ # Template: JarabaLex - Reconocimientos
+ # Category: jarabalex
+ # Type: social_proof
+ #
+ # Header + grid de logos/badges de reconocimientos y certificaciones
+ # Premium: staggered animations, hover effects, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--social-proof pb-section--jarabalex jaraba-block jaraba-block--premium"
+         data-block-type="jarabalex_social_proof"
+         aria-label="{{ title|default('Reconocimientos')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Reconocimientos')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Acreditaciones y reconocimientos profesionales')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Comprometidos con los más altos estándares de calidad y ética profesional.')|t }}</p>
+    </div>
+    <div class="pb-section__social-proof-grid">
+      {% set default_items = [
+        { title: 'Colegio de Abogados', description: 'Miembros del Ilustre Colegio de Abogados de Madrid' },
+        { title: 'Best Lawyers', description: 'Reconocidos en el ranking Best Lawyers 2024' },
+        { title: 'ISO 27001', description: 'Certificación en seguridad de la información' },
+        { title: 'Chambers & Partners', description: 'Incluidos en Chambers & Partners Europe' }
+      ] %}
+      {% set items = badges|default(default_items) %}
+      {% for item in items %}
+        <div class="pb-section__social-proof-item"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__social-proof-icon" aria-hidden="true">
+            {% if item.logo %}
+              <img src="{{ item.logo }}" alt="{{ item.title|default('') }}" loading="lazy" />
+            {% else %}
+              {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            {% endif %}
+          </div>
+          <h3 class="pb-section__social-proof-title">{{ item.title|default('Reconocimiento')|t }}</h3>
+          <p class="pb-section__social-proof-desc">{{ item.description|default('Descripción del reconocimiento.')|t }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
