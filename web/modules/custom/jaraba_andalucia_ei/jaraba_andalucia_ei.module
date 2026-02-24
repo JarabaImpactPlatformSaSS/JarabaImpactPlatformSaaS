@@ -97,7 +97,7 @@ function _jaraba_andalucia_ei_track_ia_hours(\Drupal\Core\Entity\EntityInterface
 
     // Buscar participante vinculado.
     $storage = \Drupal::entityTypeManager()->getStorage('programa_participante_ei');
-    $participantes = $storage->loadByProperties(['user_id' => $userId]);
+    $participantes = $storage->loadByProperties(['uid' => $userId]);
     $participante = reset($participantes);
 
     if (!$participante) {
@@ -370,14 +370,14 @@ function jaraba_andalucia_ei_mail(string $key, array &$message, array $params): 
       break;
 
     case 'confirmacion_solicitud':
-      $message['subject'] = t('Tu solicitud Andalucía +ei ha sido recibida ✅');
+      $message['subject'] = t('Tu solicitud Andalucía +ei ha sido recibida');
       $message['body'][] = t(
         "Hola @nombre,\n\n" .
         "Hemos recibido correctamente tu solicitud de participación en el programa Andalucía +ei.\n\n" .
-        "📋 RESUMEN DE TU SOLICITUD:\n" .
+        "RESUMEN DE TU SOLICITUD:\n" .
         "- Programa: Andalucía +ei — Emprendimiento Aumentado con IA\n" .
         "- Colectivo asignado: @colectivo\n\n" .
-        "📌 PRÓXIMOS PASOS:\n" .
+        "PRÓXIMOS PASOS:\n" .
         "1. Nuestro equipo revisará tu solicitud en los próximos días laborables.\n" .
         "2. Te contactaremos por teléfono o email para confirmar tu participación.\n" .
         "3. Si tienes cualquier duda, escríbenos por WhatsApp al +34 623 174 304.\n\n" .

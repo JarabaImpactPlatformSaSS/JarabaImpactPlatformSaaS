@@ -104,6 +104,7 @@ jaraba_andalucia_ei.api.participants.list:
   methods: [GET]
   requirements:
     _permission: 'view programa participante ei'
+    _format: 'json'
 
 jaraba_andalucia_ei.api.participant.get:
   path: '/api/v1/andalucia-ei/participant/{id}'
@@ -112,6 +113,7 @@ jaraba_andalucia_ei.api.participant.get:
   methods: [GET]
   requirements:
     _permission: 'view programa participante ei'
+    _format: 'json'
     id: '\d+'
 
 jaraba_andalucia_ei.api.participant.delete:
@@ -121,6 +123,8 @@ jaraba_andalucia_ei.api.participant.delete:
   methods: [DELETE]
   requirements:
     _permission: 'delete programa participante ei'
+    _csrf_request_header_token: 'TRUE'
+    _format: 'json'
     id: '\d+'
 
 # === FORMULARIO DE SOLICITUD (PÚBLICO) ===

@@ -320,7 +320,19 @@ class SolicitudEiPublicForm extends FormBase
      */
     public function submitForm(array &$form, FormStateInterface $form_state): void
     {
-        $storage = \Drupal::entityTypeManager()->getStorage('solicitud_ei');
+        $storage = $this->entityTypeManager()->getStorage('solicitud_ei');
+
+        // Resolve tenant_id from context (Regla de Oro #4: tenant_id obligatorio).
+        $tenantId = NULL;
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+            try {
+                $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+                $tenantId = $tenant?->id();
+            }
+            catch (\Exception $e) {
+                // Non-critical — solicitud se crea sin tenant.
+            }
+        }
 
         /** @var \Drupal\jaraba_andalucia_ei\Entity\SolicitudEiInterface $solicitud */
         $solicitud = $storage->create([
@@ -340,6 +352,7 @@ class SolicitudEiPublicForm extends FormBase
             'motivacion' => $form_state->getValue('motivacion'),
             'estado' => 'pendiente',
             'ip_address' => $this->getRequest()->getClientIp() ?? '',
+            'tenant_id' => $tenantId,
         ]);
 
         // Inferir colectivo automáticamente.
