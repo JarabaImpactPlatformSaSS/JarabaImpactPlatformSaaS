@@ -108,3 +108,12 @@ services:
       - '@entity_type.manager'
       - '@http_client'
       - '@logger.channel.jaraba_job_board'
+
+  # ============================================================================
+  # BREADCRUMBS
+  # ============================================================================
+
+  jaraba_job_board.breadcrumb:
+    class: Drupal\jaraba_job_board\Breadcrumb\JobBoardBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

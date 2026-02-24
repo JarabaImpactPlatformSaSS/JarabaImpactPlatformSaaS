@@ -17,6 +17,16 @@
 (function (Drupal) {
   'use strict';
 
+  // Cache CSRF token for reuse across requests.
+  var _csrfTokenPromise = null;
+  function getCsrfToken() {
+    if (!_csrfTokenPromise) {
+      _csrfTokenPromise = fetch('/session/token')
+        .then(function (r) { return r.text(); });
+    }
+    return _csrfTokenPromise;
+  }
+
   Drupal.behaviors.employabilityDiagnostic = {
     attach: function (context) {
       var wizard = context.querySelector('[data-diagnostic-wizard]');
@@ -161,7 +171,7 @@
           email: answers.email || ''
         };
 
-        fetch('/session/token').then(function (r) { return r.text(); }).then(function (csrfToken) {
+        getCsrfToken().then(function (csrfToken) {
         fetch('/empleabilidad/diagnostico', {
           method: 'POST',
           headers: {

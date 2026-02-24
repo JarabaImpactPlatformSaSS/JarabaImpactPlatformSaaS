@@ -484,12 +484,36 @@ Creados:
   - 7 tests: entity creation, status transitions (publish/close), applications count, ATS pipeline statuses (8 data provider cases), hire workflow, rejection with feedback, field definitions
 - Created `phpunit.xml` config for `jaraba_job_board` module
 
-### 9f. Remaining Items (future sprints)
+### 9f. Breadcrumbs (P4-SEO)
+- Creado `jaraba_job_board/src/Breadcrumb/JobBoardBreadcrumbBuilder.php`: 13 rutas con breadcrumbs (search, detail, apply, my-applications, saved-jobs, alerts, employer dashboard/jobs/applications/detail, my-company)
+- Creado `jaraba_candidate/src/Breadcrumb/CandidateBreadcrumbBuilder.php`: 13 rutas (profile view, my-profile + edit/experience/education/skills/privacy, cv-builder/preview/download, dashboard + recommendations/stats)
+- Creado `jaraba_diagnostic/src/Breadcrumb/DiagnosticBreadcrumbBuilder.php`: 5 rutas (employability landing/results, wizard start/step/results)
+- Registrados como servicios con `breadcrumb_builder` tag (priority 100) en los 3 `services.yml`
 
-| # | Tipo | Descripcion |
-|---|------|-------------|
-| P4-SEO | SEO | Falta breadcrumbs en los 3 modulos del vertical |
-| P4-SEO | SEO | Falta sitemap XML configuration para job postings |
+### 9g. Sitemap XML (P4-SEO)
+- Actualizado `config/sync/simple_sitemap.custom_links.default.yml`: anadidas `/jobs` (priority 0.9, daily) y `/empleabilidad/diagnostico` (priority 0.7, monthly)
+- Actualizado `config/sync/simple_sitemap.settings.yml`: anadido `job_posting` a `enabled_entity_types`
+- Creado `config/sync/simple_sitemap.bundle_settings.default.job_posting.job_posting.yml`: index=true, priority 0.7, changefreq daily
+
+### 9h. Correccion post-auditoria (gaps detectados en verificacion exhaustiva)
+- `skills-manager.js:78` — innerHTML sin `Drupal.checkPlain()` en `skillName` → Corregido
+- `employability-diagnostic.js` — CSRF token no cacheado (re-fetch en cada request) → Anadido `getCsrfToken()` con promise cacheada
+- `application_sent.mjml` — 2 colores verde `#16a34a`/`#166534` restantes → Corregidos a `#1565C0`/`#0d47a1`
+- `seq_upsell_starter.mjml` — `.check-icon` con color `#16a34a` → Corregido a `#1565C0`
+
+### 9i. Verificacion exhaustiva completada
+
+Todos los 105 hallazgos han sido verificados contra el codigo fuente real:
+
+| Fase | Hallazgos | Estado |
+|------|-----------|--------|
+| P0 (7 criticos) | Starter tier, XSS innerHTML, CSRF, ownership, field injection, CAN-SPAM, colores | PASS |
+| P1 (1 alto) | 31 strings i18n | PASS |
+| P2 (2 medios) | \|raw → \|safe_html | PASS |
+| P3 (8 altos-medios) | Performance N+1, JSON-LD, stubs, emojis, JS i18n | PASS |
+| P4 (~87 adicionales) | Colores, CAN-SPAM extra, AI prompts, paginacion, cache, entidad CandidateExperience, indexes, OG meta, ARIA, config, tests, breadcrumbs, sitemap | PASS |
+
+**No quedan hallazgos pendientes.**
 
 ---
 
