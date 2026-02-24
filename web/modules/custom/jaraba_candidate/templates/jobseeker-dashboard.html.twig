@@ -13,7 +13,7 @@
  * - quick_actions: Acciones rápidas sugeridas
  */
 #}
-<div class="jobseeker-dashboard">
+<div class="jobseeker-dashboard" role="main" aria-label="{{ 'JobSeeker Dashboard'|t }}">
   {# Header con saludo y acciones rápidas #}
   <header class="dashboard-header">
     <div class="dashboard-header__greeting">
@@ -45,7 +45,7 @@
   <div class="dashboard-grid">
     
     {# Card: Perfil #}
-    <section class="dashboard-card dashboard-card--profile">
+    <section class="dashboard-card dashboard-card--profile" aria-label="{{ 'Profile summary'|t }}">
       <div class="card-header">
         <h2>{{ 'Your Profile'|t }}</h2>
         <a href="/my-profile/edit" class="card-action" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>{{ 'Edit'|t }}</a>
@@ -99,7 +99,7 @@
     </section>
 
     {# Card: Aplicaciones #}
-    <section class="dashboard-card dashboard-card--applications">
+    <section class="dashboard-card dashboard-card--applications" aria-label="{{ 'Your applications'|t }}">
       <div class="card-header">
         <h2>{{ 'Applications'|t }} <span class="badge">{{ applications_count }}</span></h2>
         <a href="/my-applications" class="card-action">{{ 'View all'|t }}</a>
@@ -132,7 +132,7 @@
     </section>
 
     {# Card: Estadísticas #}
-    <section class="dashboard-card dashboard-card--stats">
+    <section class="dashboard-card dashboard-card--stats" aria-label="{{ 'Your statistics'|t }}">
       <div class="card-header">
         <h2>{{ 'Your Stats'|t }}</h2>
       </div>
@@ -158,7 +158,7 @@
     </section>
 
     {# Card: Aprendizaje #}
-    <section class="dashboard-card dashboard-card--learning">
+    <section class="dashboard-card dashboard-card--learning" aria-label="{{ 'Your learning progress'|t }}">
       <div class="card-header">
         <h2>{{ 'Your Learning'|t }}</h2>
         <a href="/my-learning" class="card-action">{{ 'View all'|t }}</a>
@@ -187,7 +187,7 @@
     </section>
 
     {# Card: Recomendaciones #}
-    <section class="dashboard-card dashboard-card--recommendations dashboard-card--wide">
+    <section class="dashboard-card dashboard-card--recommendations dashboard-card--wide" aria-label="{{ 'Job recommendations'|t }}">
       <div class="card-header">
         <h2>{{ 'Recommended for You'|t }}</h2>
         <a href="/jobseeker/recommendations" class="card-action">{{ 'See more'|t }}</a>

@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Jaraba Job Board module.
+ */
+
+/**
+ * Add database indexes to job_posting and job_application tables.
+ */
+function jaraba_job_board_update_10001(): void {
+  $schema = \Drupal::database()->schema();
+
+  // --- job_posting indexes ---
+  $table = 'job_posting';
+
+  // Compound index for employer dashboard queries (WHERE employer_id = ? AND status = ?).
+  if (!$schema->indexExists($table, 'idx_employer_status')) {
+    $schema->addIndex($table, 'idx_employer_status', ['employer_id', 'status'], [
+      'fields' => [
+        'employer_id' => ['type' => 'int', 'not null' => TRUE],
+        'status' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  // Index for public job search (WHERE status = 'published' ORDER BY published_at).
+  if (!$schema->indexExists($table, 'idx_status_published')) {
+    $schema->addIndex($table, 'idx_status_published', ['status', 'published_at'], [
+      'fields' => [
+        'status' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+        'published_at' => ['type' => 'int'],
+      ],
+    ]);
+  }
+
+  // Index for faceted search filters.
+  if (!$schema->indexExists($table, 'idx_job_type')) {
+    $schema->addIndex($table, 'idx_job_type', ['job_type'], [
+      'fields' => [
+        'job_type' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  if (!$schema->indexExists($table, 'idx_remote_type')) {
+    $schema->addIndex($table, 'idx_remote_type', ['remote_type'], [
+      'fields' => [
+        'remote_type' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  if (!$schema->indexExists($table, 'idx_experience_level')) {
+    $schema->addIndex($table, 'idx_experience_level', ['experience_level'], [
+      'fields' => [
+        'experience_level' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  if (!$schema->indexExists($table, 'idx_location_city')) {
+    $schema->addIndex($table, 'idx_location_city', ['location_city'], [
+      'fields' => [
+        'location_city' => ['type' => 'varchar', 'length' => 128],
+      ],
+    ]);
+  }
+
+  // --- job_application indexes ---
+  $table = 'job_application';
+
+  // Index for listing applications per job (WHERE job_id = ?).
+  if (!$schema->indexExists($table, 'idx_job_id')) {
+    $schema->addIndex($table, 'idx_job_id', ['job_id'], [
+      'fields' => [
+        'job_id' => ['type' => 'int', 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  // Index for candidate's own applications (WHERE candidate_id = ?).
+  if (!$schema->indexExists($table, 'idx_candidate_id')) {
+    $schema->addIndex($table, 'idx_candidate_id', ['candidate_id'], [
+      'fields' => [
+        'candidate_id' => ['type' => 'int', 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  // Compound index for employer stats queries (WHERE job_id IN (...) AND status = ?).
+  if (!$schema->indexExists($table, 'idx_job_status')) {
+    $schema->addIndex($table, 'idx_job_status', ['job_id', 'status'], [
+      'fields' => [
+        'job_id' => ['type' => 'int', 'not null' => TRUE],
+        'status' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      ],
+    ]);
+  }
+
+  // Index for sorting by applied_at.
+  if (!$schema->indexExists($table, 'idx_applied_at')) {
+    $schema->addIndex($table, 'idx_applied_at', ['applied_at'], [
+      'fields' => [
+        'applied_at' => ['type' => 'int', 'not null' => TRUE],
+      ],
+    ]);
+  }
+}

@@ -130,8 +130,8 @@ function jaraba_job_board_theme(): array {
  * - job_alert_digest: Digest diario/semanal
  */
 function jaraba_job_board_cron(): void {
-  // Límite de items por cron run
-  $limit = 50;
+  $config = \Drupal::config('jaraba_job_board.settings');
+  $limit = (int) ($config->get('cron.queue_batch_size') ?? 50);
 
   // 1. Procesar emails de notificación de aplicaciones
   _jaraba_job_board_process_notification_queue('application_notification_mail', $limit);
@@ -774,9 +774,10 @@ function _jaraba_job_board_process_alert_queue(int $limit): void {
  * Procesa digest de alertas.
  */
 function _jaraba_job_board_process_digest(): void {
-  // Ejecutar solo a las 9:00 AM
+  $config = \Drupal::config('jaraba_job_board.settings');
+  $digestHour = (int) ($config->get('cron.digest_hour') ?? 9);
   $currentHour = (int) date('G');
-  if ($currentHour !== 9) {
+  if ($currentHour !== $digestHour) {
     return;
   }
 
@@ -843,6 +844,50 @@ function _jaraba_job_board_create_inapp_notification(int $userId, array $matches
       'created' => time(),
     ])
     ->execute();
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * Adds Open Graph and Twitter Card meta tags for job detail pages.
+ */
+function jaraba_job_board_page_attachments_alter(array &$attachments): void {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  if ($route_name !== 'jaraba_job_board.job_detail') {
+    return;
+  }
+
+  $job = $route_match->getParameter('job_posting');
+  if (!$job) {
+    return;
+  }
+
+  $title = $job->getTitle() . ' - ' . $job->getLocationCity();
+  $description = mb_substr(strip_tags($job->get('description')->value ?? ''), 0, 160);
+  $url = \Drupal::request()->getSchemeAndHttpHost() . '/jobs/' . $job->id();
+
+  $meta_tags = [
+    ['og:title', $title],
+    ['og:description', $description],
+    ['og:type', 'website'],
+    ['og:url', $url],
+    ['twitter:card', 'summary'],
+    ['twitter:title', $title],
+    ['twitter:description', $description],
+  ];
+
+  foreach ($meta_tags as [$property, $content]) {
+    $tag = [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'property' => $property,
+        'content' => $content,
+      ],
+    ];
+    $attachments['#attached']['html_head'][] = [$tag, 'jaraba_jb_' . $property];
+  }
 }
 
 /**
