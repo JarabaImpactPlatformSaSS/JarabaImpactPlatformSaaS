@@ -18,7 +18,7 @@
 #}
 
 {# === Hero del Marketplace === #}
-<section class="comercio-marketplace-hero">
+<section class="comercio-marketplace-hero" role="main" aria-label="{{ 'Marketplace Local'|trans }}">
   <div class="comercio-marketplace-hero__inner container">
     <h1 class="comercio-marketplace-hero__title">{% trans %}Marketplace Local{% endtrans %}</h1>
     <p class="comercio-marketplace-hero__subtitle">
@@ -29,7 +29,7 @@
     </p>
 
     {# Barra de búsqueda #}
-    <div class="comercio-marketplace-hero__search">
+    <div class="comercio-marketplace-hero__search" role="search">
       <form class="comercio-search-form" method="get" action="">
         <input type="search"
                name="q"
@@ -158,7 +158,7 @@
 
     {# Grid de productos #}
     {% if products|length > 0 %}
-      <div class="comercio-products-grid">
+      <div class="comercio-products-grid" role="list">
         {% for product in products %}
           {% include '@jaraba_comercio_conecta/partials/_comercio-product-card.html.twig' with {
             'product': product

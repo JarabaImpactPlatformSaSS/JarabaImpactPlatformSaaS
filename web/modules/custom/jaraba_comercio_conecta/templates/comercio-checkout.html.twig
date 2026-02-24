@@ -7,7 +7,7 @@
  #   - subtotal, discount, shipping, total: Importes.
  #}
 
-<div class="comercio-checkout">
+<div class="comercio-checkout" role="main" aria-label="{{ 'Checkout'|t }}">
   {% if empty %}
     <div class="comercio-checkout__empty">
       <h2>{{ 'Tu carrito esta vacio'|t }}</h2>
@@ -37,7 +37,7 @@
         {% endfor %}
       </div>
 
-      <div class="comercio-checkout__summary">
+      <div class="comercio-checkout__summary" aria-label="{{ 'Resumen del pedido'|t }}">
         <h3>{{ 'Resumen del pedido'|t }}</h3>
         <div class="comercio-checkout__summary-row">
           <span>{{ 'Subtotal'|t }}</span>
@@ -58,8 +58,8 @@
           <span>{{ total|number_format(2, ',', '.') }} EUR</span>
         </div>
 
-        <div class="comercio-checkout__coupon">
-          <input type="text" placeholder="{{ 'Codigo de cupon'|t }}" class="comercio-checkout__coupon-input">
+        <div class="comercio-checkout__coupon" aria-label="{{ 'Pasos del checkout'|t }}">
+          <input type="text" placeholder="{{ 'Codigo de cupon'|t }}" class="comercio-checkout__coupon-input" aria-label="{{ 'Codigo de cupon'|t }}">
           <button type="button" class="btn btn--secondary comercio-checkout__coupon-btn">{{ 'Aplicar'|t }}</button>
         </div>
 

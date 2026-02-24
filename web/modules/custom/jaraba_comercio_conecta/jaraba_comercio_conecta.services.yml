@@ -271,3 +271,14 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'
+
+  # =====================================================================
+  # Breadcrumb builder for ComercioConecta routes
+  # Priority 100 ensures it takes precedence over default breadcrumb builders
+  # =====================================================================
+  jaraba_comercio_conecta.breadcrumb:
+    class: Drupal\jaraba_comercio_conecta\Breadcrumb\ComercioConectaBreadcrumbBuilder
+    arguments:
+      - '@current_route_match'
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
