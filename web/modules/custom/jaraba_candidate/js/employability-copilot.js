@@ -19,6 +19,16 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
+  // Cache CSRF token for reuse across requests.
+  var _csrfTokenPromise = null;
+  function getCsrfToken() {
+    if (!_csrfTokenPromise) {
+      _csrfTokenPromise = fetch('/session/token')
+        .then(function (r) { return r.text(); });
+    }
+    return _csrfTokenPromise;
+  }
+
   Drupal.behaviors.employabilityCopilot = {
     attach: function (context) {
       var fab = context.querySelector('[data-copilot-fab]');
@@ -121,11 +131,13 @@
         // Mostrar indicador de typing.
         var typingId = appendMessage('assistant', '...', 'typing');
 
+        getCsrfToken().then(function (csrfToken) {
         fetch('/api/v1/copilot/employability/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': csrfToken
           },
           body: JSON.stringify({
             message: message,
@@ -149,6 +161,7 @@
           removeMessage(typingId);
           appendMessage('assistant', Drupal.t('Error de conexion. Intentalo de nuevo.'), 'error');
         });
+        }); // getCsrfToken
       }
 
       /**

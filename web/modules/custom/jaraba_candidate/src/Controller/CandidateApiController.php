@@ -72,6 +72,30 @@ class CandidateApiController extends ControllerBase
     }
 
     /**
+     * Fields allowed to be updated via the public API.
+     */
+    private const ALLOWED_PROFILE_FIELDS = [
+        'first_name',
+        'last_name',
+        'headline',
+        'summary',
+        'city',
+        'country',
+        'phone',
+        'experience_years',
+        'desired_salary_min',
+        'desired_salary_max',
+        'availability',
+        'job_search_status',
+        'remote_preference',
+        'relocation_willing',
+        'linkedin_url',
+        'github_url',
+        'portfolio_url',
+        'website_url',
+    ];
+
+    /**
      * Updates the current user's profile.
      */
     public function updateProfile(Request $request): JsonResponse
@@ -85,15 +109,25 @@ class CandidateApiController extends ControllerBase
 
         $data = json_decode($request->getContent(), TRUE);
 
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'Invalid request body'], 400);
+        }
+
+        $updated = [];
         foreach ($data as $field => $value) {
-            if ($profile->hasField($field)) {
+            if (in_array($field, self::ALLOWED_PROFILE_FIELDS, TRUE) && $profile->hasField($field)) {
                 $profile->set($field, $value);
+                $updated[] = $field;
             }
+        }
+
+        if (empty($updated)) {
+            return new JsonResponse(['error' => 'No valid fields to update'], 400);
         }
 
         $profile->save();
 
-        return new JsonResponse(['success' => TRUE, 'message' => 'Profile updated']);
+        return new JsonResponse(['success' => TRUE, 'message' => 'Profile updated', 'updated_fields' => $updated]);
     }
 
     /**

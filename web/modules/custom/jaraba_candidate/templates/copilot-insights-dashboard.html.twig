@@ -14,8 +14,8 @@
 <div class="copilot-insights-dashboard">
   {# === Header KPIs === #}
   <div class="insights-header">
-    <h2 class="insights-title">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }} Análisis de Copilotos IA</h2>
-    <p class="insights-subtitle">Última semana • Datos actualizados cada 5 min</p>
+    <h2 class="insights-title">{{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }} {{ 'Análisis de Copilotos IA'|t }}</h2>
+    <p class="insights-subtitle">{{ 'Última semana • Datos actualizados cada 5 min'|t }}</p>
   </div>
 
   <div class="insights-kpis">
@@ -23,7 +23,7 @@
       <span class="kpi-icon">{{ jaraba_icon('ui', 'message', { variant: 'duotone', color: 'corporate', size: '32px' }) }}</span>
       <div class="kpi-content">
         <span class="kpi-value">{{ metrics.total_conversations }}</span>
-        <span class="kpi-label">Conversaciones</span>
+        <span class="kpi-label">{{ 'Conversaciones'|t }}</span>
       </div>
     </div>
 
@@ -31,7 +31,7 @@
       <span class="kpi-icon">{{ jaraba_icon('actions', 'check', { color: 'success', size: '32px' }) }}</span>
       <div class="kpi-content">
         <span class="kpi-value">{{ metrics.resolution_rate }}%</span>
-        <span class="kpi-label">Tasa Resolución</span>
+        <span class="kpi-label">{{ 'Tasa Resolución'|t }}</span>
       </div>
     </div>
 
@@ -39,7 +39,7 @@
       <span class="kpi-icon">{{ jaraba_icon('business', 'achievement', { color: 'naranja-impulso', size: '32px' }) }}</span>
       <div class="kpi-content">
         <span class="kpi-value">{{ metrics.average_rating ?: 'N/A' }}</span>
-        <span class="kpi-label">Rating Promedio</span>
+        <span class="kpi-label">{{ 'Rating Promedio'|t }}</span>
       </div>
     </div>
 
@@ -47,7 +47,7 @@
       <span class="kpi-icon">{{ jaraba_icon('analytics', 'euro', { variant: 'duotone', color: 'success', size: '32px' }) }}</span>
       <div class="kpi-content">
         <span class="kpi-value">${{ metrics.total_cost_usd }}</span>
-        <span class="kpi-label">Costo Total</span>
+        <span class="kpi-label">{{ 'Costo Total'|t }}</span>
       </div>
     </div>
   </div>
@@ -57,7 +57,7 @@
     
     {# === Topics Chart === #}
     <div class="insights-card topics-card">
-      <h3 class="card-title">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '20px' }) }} Intents Más Frecuentes</h3>
+      <h3 class="card-title">{{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '20px' }) }} {{ 'Intents Más Frecuentes'|t }}</h3>
       <div class="topics-list">
         {% for topic in topics %}
           <div class="topic-item">
@@ -68,14 +68,14 @@
             <span class="topic-count">{{ topic.count }}</span>
           </div>
         {% else %}
-          <p class="empty-state">No hay datos suficientes</p>
+          <p class="empty-state">{{ 'No hay datos suficientes'|t }}</p>
         {% endfor %}
       </div>
     </div>
 
     {# === Popular Questions === #}
     <div class="insights-card questions-card">
-      <h3 class="card-title">{{ jaraba_icon('ui', 'question', { size: '20px' }) }} Preguntas Más Comunes</h3>
+      <h3 class="card-title">{{ jaraba_icon('ui', 'question', { size: '20px' }) }} {{ 'Preguntas Más Comunes'|t }}</h3>
       <ul class="questions-list">
         {% for question in popular_questions %}
           <li class="question-item">
@@ -83,15 +83,15 @@
             <span class="question-badge">{{ question.count }}x</span>
           </li>
         {% else %}
-          <li class="empty-state">Sin datos todavía</li>
+          <li class="empty-state">{{ 'Sin datos todavía'|t }}</li>
         {% endfor %}
       </ul>
     </div>
 
     {# === Unresolved Queries (Gaps) === #}
     <div class="insights-card gaps-card">
-      <h3 class="card-title">{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '20px' }) }} Consultas Sin Resolver</h3>
-      <p class="card-subtitle">Posibles gaps en la base de conocimiento</p>
+      <h3 class="card-title">{{ jaraba_icon('ui', 'alert-triangle', { color: 'warning', size: '20px' }) }} {{ 'Consultas Sin Resolver'|t }}</h3>
+      <p class="card-subtitle">{{ 'Posibles gaps en la base de conocimiento'|t }}</p>
       <ul class="gaps-list">
         {% for query in unresolved_queries %}
           <li class="gap-item">
@@ -103,27 +103,27 @@
             <span class="gap-intent-badge">{{ query.intent }}</span>
           </li>
         {% else %}
-          <li class="success-state">{{ jaraba_icon('ui', 'party', { size: '16px' }) }} ¡Todas las consultas fueron resueltas!</li>
+          <li class="success-state">{{ jaraba_icon('ui', 'party', { size: '16px' }) }} {{ '¡Todas las consultas fueron resueltas!'|t }}</li>
         {% endfor %}
       </ul>
     </div>
 
     {# === Token Usage === #}
     <div class="insights-card tokens-card">
-      <h3 class="card-title">{{ jaraba_icon('analytics', 'hash', { size: '20px' }) }} Uso de Tokens</h3>
+      <h3 class="card-title">{{ jaraba_icon('analytics', 'hash', { size: '20px' }) }} {{ 'Uso de Tokens'|t }}</h3>
       <div class="tokens-stats">
         <div class="token-stat">
-          <span class="token-label">Input</span>
+          <span class="token-label">{{ 'Input'|t }}</span>
           <span class="token-value">{{ metrics.total_tokens_input|number_format }}</span>
         </div>
         <div class="token-stat">
-          <span class="token-label">Output</span>
+          <span class="token-label">{{ 'Output'|t }}</span>
           <span class="token-value">{{ metrics.total_tokens_output|number_format }}</span>
         </div>
       </div>
       <div class="cost-breakdown">
-        <p>Modelo: Claude 3.5 Sonnet</p>
-        <p>Costo estimado: <strong>${{ metrics.total_cost_usd }}</strong></p>
+        <p>{{ 'Modelo: @model'|t({'@model': 'Claude 3.5 Sonnet'}) }}</p>
+        <p>{{ 'Costo estimado:'|t }} <strong>${{ metrics.total_cost_usd }}</strong></p>
       </div>
     </div>
 

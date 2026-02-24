@@ -82,16 +82,16 @@
     <meta itemprop="availability" content="{{ product.status.value ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}" />
     
     <span class="product__price" itemprop="price" content="{{ price_number|default('0') }}">
-      {{ price_formatted|default('Consultar precio') }}
+      {{ price_formatted|default('Consultar precio'|t) }}
     </span>
     
     {% if product.status.value %}
     <span class="product__availability product__availability--in-stock">
-      ✓ Disponible
+      {{ 'Disponible'|t }}
     </span>
     {% else %}
     <span class="product__availability product__availability--out-of-stock">
-      Agotado
+      {{ 'Agotado'|t }}
     </span>
     {% endif %}
   </section>
@@ -99,9 +99,9 @@
   {# Descripción completa #}
   {% if product.body.value %}
   <section class="product__description">
-    <h2>Descripción del Producto</h2>
+    <h2>{{ 'Descripción del Producto'|t }}</h2>
     <div class="product__body" itemprop="description">
-      {{ product.body.value|striptags('<p><br><strong><em><ul><ol><li><a><h3><h4><img><table><tr><td><th><thead><tbody>')|raw }}
+      {{ product.body.value|safe_html }}
     </div>
   </section>
   {% endif %}
@@ -109,7 +109,7 @@
   {# Atributos/Especificaciones (para LLMs que buscan specs) #}
   {% if product.field_specifications is defined and product.field_specifications|length > 0 %}
   <section class="product__specifications">
-    <h2>Especificaciones</h2>
+    <h2>{{ 'Especificaciones'|t }}</h2>
     <dl class="product__specs-list">
       {% for spec in product.field_specifications %}
       <div class="product__spec-item">
@@ -126,7 +126,7 @@
     {{ product_variations|default('') }}
     
     <button type="submit" class="product__add-to-cart btn btn--primary">
-      Añadir al Carrito
+      {{ 'Añadir al Carrito'|t }}
     </button>
   </section>
 
@@ -134,11 +134,11 @@
   <nav class="product__breadcrumb" aria-label="Migas de pan">
     <ol itemscope itemtype="https://schema.org/BreadcrumbList">
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a href="/" itemprop="item"><span itemprop="name">Inicio</span></a>
+        <a href="/" itemprop="item"><span itemprop="name">{{ 'Inicio'|t }}</span></a>
         <meta itemprop="position" content="1" />
       </li>
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a href="/productos" itemprop="item"><span itemprop="name">Productos</span></a>
+        <a href="/productos" itemprop="item"><span itemprop="name">{{ 'Productos'|t }}</span></a>
         <meta itemprop="position" content="2" />
       </li>
       <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
