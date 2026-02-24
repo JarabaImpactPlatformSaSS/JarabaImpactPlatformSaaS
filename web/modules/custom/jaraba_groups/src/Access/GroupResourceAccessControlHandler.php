@@ -31,7 +31,7 @@ class GroupResourceAccessControlHandler extends EntityAccessControlHandler
 
             case 'update':
             case 'delete':
-                if ($entity->get('uploader_id')->target_id == $account->id()) {
+                if ((int) $entity->get('uploader_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'moderate group content');

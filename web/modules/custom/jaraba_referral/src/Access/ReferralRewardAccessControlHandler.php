@@ -37,7 +37,7 @@ class ReferralRewardAccessControlHandler extends EntityAccessControlHandler {
     switch ($operation) {
       case 'view':
         // Los usuarios pueden ver sus propias recompensas.
-        $is_owner = $entity->get('user_id')->target_id == $account->id();
+        $is_owner = (int) $entity->get('user_id')->target_id === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('view referral program')
         )->addCacheableDependency($entity)->cachePerUser();

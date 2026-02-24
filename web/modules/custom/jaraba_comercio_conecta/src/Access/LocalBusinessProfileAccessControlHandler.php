@@ -52,7 +52,7 @@ class LocalBusinessProfileAccessControlHandler extends EntityAccessControlHandle
       return AccessResult::neutral()->addCacheableDependency($entity);
     }
 
-    $is_owner = $merchant->getOwnerId() == $account->id();
+    $is_owner = (int) $merchant->getOwnerId() === (int) $account->id();
     return AccessResult::allowedIf(
       $is_owner && $account->hasPermission($permission)
     )->addCacheableDependency($entity)->addCacheableDependency($merchant)->cachePerUser();

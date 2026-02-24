@@ -37,13 +37,13 @@ class CollaborationGroupAccessControlHandler extends EntityAccessControlHandler
                 return AccessResult::forbidden();
 
             case 'update':
-                if ($entity->getOwnerId() == $account->id()) {
+                if ((int) $entity->getOwnerId() === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'edit any group');
 
             case 'delete':
-                if ($entity->getOwnerId() == $account->id()) {
+                if ((int) $entity->getOwnerId() === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
                 }
                 return AccessResult::allowedIfHasPermission($account, 'delete any group');

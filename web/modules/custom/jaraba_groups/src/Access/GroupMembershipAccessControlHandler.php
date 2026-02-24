@@ -25,7 +25,7 @@ class GroupMembershipAccessControlHandler extends EntityAccessControlHandler
         }
 
         // Owner can always view/update their own membership.
-        if ($entity->getOwnerId() == $account->id()) {
+        if ((int) $entity->getOwnerId() === (int) $account->id()) {
             return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
         }
 

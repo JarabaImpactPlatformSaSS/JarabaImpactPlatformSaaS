@@ -19,7 +19,7 @@ class DigitalTwinAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed();
     }
 
-    $isOwner = ($entity->getOwnerId() == $account->id());
+    $isOwner = ((int) $entity->getOwnerId() === (int) $account->id());
 
     return $isOwner ? AccessResult::allowed() : AccessResult::neutral();
   }

@@ -88,7 +88,7 @@ class ProductRetailAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::neutral()->addCacheableDependency($entity);
     }
 
-    $is_owner = $merchant->getOwnerId() == $account->id();
+    $is_owner = (int) $merchant->getOwnerId() === (int) $account->id();
     return AccessResult::allowedIf(
       $is_owner && $account->hasPermission('edit own comercio products')
     )->addCacheableDependency($entity)->addCacheableDependency($merchant)->cachePerUser();

@@ -23,7 +23,7 @@ class CandidateProfileAccessControlHandler extends EntityAccessControlHandler
         switch ($operation) {
             case 'view':
                 // Owners can always view their own profile
-                if ($entity->get('user_id')->target_id == $account->id()) {
+                if ((int) $entity->get('user_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 // Public profiles can be viewed
@@ -34,7 +34,7 @@ class CandidateProfileAccessControlHandler extends EntityAccessControlHandler
 
             case 'update':
                 // Owners can edit their own profile
-                if ($entity->get('user_id')->target_id == $account->id()) {
+                if ((int) $entity->get('user_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 return AccessResult::allowedIfHasPermission($account, 'edit any candidate profiles');

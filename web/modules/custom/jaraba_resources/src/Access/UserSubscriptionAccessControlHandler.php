@@ -25,7 +25,7 @@ class UserSubscriptionAccessControlHandler extends EntityAccessControlHandler
         }
 
         // Users can only view/manage their own subscriptions.
-        if ($entity->getOwnerId() == $account->id()) {
+        if ((int) $entity->getOwnerId() === (int) $account->id()) {
             switch ($operation) {
                 case 'view':
                     return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);

@@ -27,10 +27,10 @@ class QuoteAccessControlHandler extends EntityAccessControlHandler {
     }
 
     $isOwner = FALSE;
-    if ($entity->hasField('provider_id') && $entity->get('provider_id')->target_id == $account->id()) {
+    if ($entity->hasField('provider_id') && (int) $entity->get('provider_id')->target_id === (int) $account->id()) {
       $isOwner = TRUE;
     }
-    elseif ($entity->hasField('uid') && $entity->get('uid')->target_id == $account->id()) {
+    elseif ($entity->hasField('uid') && (int) $entity->get('uid')->target_id === (int) $account->id()) {
       $isOwner = TRUE;
     }
 

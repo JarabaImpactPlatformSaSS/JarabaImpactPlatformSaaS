@@ -34,7 +34,7 @@ class ReferralAccessControlHandler extends EntityAccessControlHandler {
     switch ($operation) {
       case 'view':
         // Los usuarios pueden ver sus propios referidos.
-        $is_referrer = $entity->get('referrer_uid')->target_id == $account->id();
+        $is_referrer = (int) $entity->get('referrer_uid')->target_id === (int) $account->id();
         return AccessResult::allowedIf(
           $is_referrer && $account->hasPermission('view referral dashboard')
         )->addCacheableDependency($entity)->cachePerUser();

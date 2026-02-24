@@ -28,7 +28,7 @@ class SecureDocumentAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    $is_owner = ($entity->get('owner_id')->target_id == $account->id());
+    $is_owner = ((int) $entity->get('owner_id')->target_id === (int) $account->id());
 
     switch ($operation) {
       case 'view':

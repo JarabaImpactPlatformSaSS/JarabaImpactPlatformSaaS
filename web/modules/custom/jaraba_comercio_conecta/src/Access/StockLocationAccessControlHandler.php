@@ -40,7 +40,7 @@ class StockLocationAccessControlHandler extends EntityAccessControlHandler {
           $merchant = $entity->get('merchant_id')->entity;
           if ($merchant) {
             $owner_id = $merchant->getOwnerId();
-            return AccessResult::allowedIf($owner_id == $account->id())
+            return AccessResult::allowedIf((int) $owner_id === (int) $account->id())
               ->addCacheableDependency($entity)
               ->cachePerUser();
           }

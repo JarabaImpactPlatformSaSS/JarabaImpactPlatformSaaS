@@ -29,10 +29,10 @@ class DocumentAccessAccessControlHandler extends EntityAccessControlHandler {
     }
 
     $is_owner = FALSE;
-    if ($entity->hasField('granted_by') && $entity->get('granted_by')->target_id == $account->id()) {
+    if ($entity->hasField('granted_by') && (int) $entity->get('granted_by')->target_id === (int) $account->id()) {
       $is_owner = TRUE;
     }
-    elseif ($entity->hasField('uid') && $entity->get('uid')->target_id == $account->id()) {
+    elseif ($entity->hasField('uid') && (int) $entity->get('uid')->target_id === (int) $account->id()) {
       $is_owner = TRUE;
     }
 

@@ -35,7 +35,7 @@ class LegalBookmarkAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    $isOwner = ($entity->get('user_id')->target_id == $account->id());
+    $isOwner = ((int) $entity->get('user_id')->target_id === (int) $account->id());
 
     switch ($operation) {
       case 'view':

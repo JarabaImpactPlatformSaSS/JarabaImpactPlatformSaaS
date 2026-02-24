@@ -24,7 +24,7 @@ class FinancialProjectionAccessControlHandler extends EntityAccessControlHandler
             return AccessResult::allowed()->cachePerPermissions();
         }
 
-        if ($entity->getOwnerId() == $account->id()) {
+        if ((int) $entity->getOwnerId() === (int) $account->id()) {
             return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
         }
 

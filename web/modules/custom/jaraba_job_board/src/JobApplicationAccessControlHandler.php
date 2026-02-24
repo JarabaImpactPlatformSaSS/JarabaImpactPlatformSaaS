@@ -23,7 +23,7 @@ class JobApplicationAccessControlHandler extends EntityAccessControlHandler
         switch ($operation) {
             case 'view':
                 // Candidates can view their own applications
-                if ($entity->get('candidate_id')->target_id == $account->id()) {
+                if ((int) $entity->get('candidate_id')->target_id === (int) $account->id()) {
                     return AccessResult::allowed()->cachePerUser();
                 }
                 return AccessResult::allowedIfHasPermission($account, 'view job applications');

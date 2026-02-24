@@ -37,14 +37,14 @@ class ReferralCodeAccessControlHandler extends EntityAccessControlHandler {
     switch ($operation) {
       case 'view':
         // Los propietarios del código pueden verlo, o quienes tengan permiso de gestión.
-        $is_owner = $entity->get('user_id')->target_id == $account->id();
+        $is_owner = (int) $entity->get('user_id')->target_id === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('manage referral codes')
         )->addCacheableDependency($entity)->cachePerUser();
 
       case 'update':
         // Solo propietarios con permiso de gestión pueden editar.
-        $is_owner = $entity->get('user_id')->target_id == $account->id();
+        $is_owner = (int) $entity->get('user_id')->target_id === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('manage referral codes')
         )->addCacheableDependency($entity)->cachePerUser();

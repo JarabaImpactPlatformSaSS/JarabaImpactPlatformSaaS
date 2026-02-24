@@ -34,7 +34,7 @@ class MerchantProfileAccessControlHandler extends EntityAccessControlHandler {
         return AccessResult::allowedIfHasPermission($account, 'view comercio merchants');
 
       case 'update':
-        $is_owner = $entity->getOwnerId() == $account->id();
+        $is_owner = (int) $entity->getOwnerId() === (int) $account->id();
         return AccessResult::allowedIf(
           $is_owner && $account->hasPermission('edit own merchant profile')
         )->addCacheableDependency($entity)->cachePerUser();
