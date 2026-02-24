@@ -18,3 +18,47 @@ jaraba_ai_agents.dashboard:
   route_name: jaraba_ai_agents.dashboard
   parent: system.admin_reports
   weight: 20
+
+# Settings entries (admin/structure)
+entity.ai_usage_log.settings:
+  title: 'AI Usage Log settings'
+  description: 'Manage AI Usage Log entity type settings, fields and display.'
+  route_name: entity.ai_usage_log.settings
+  parent: system.admin_structure
+  weight: 30
+
+entity.collaboration_session.settings:
+  title: 'Collaboration Session settings'
+  description: 'Manage Collaboration Session entity type settings, fields and display.'
+  route_name: entity.collaboration_session.settings
+  parent: system.admin_structure
+  weight: 31
+
+entity.pending_approval.settings:
+  title: 'Pending Approval settings'
+  description: 'Manage Pending Approval entity type settings, fields and display.'
+  route_name: entity.pending_approval.settings
+  parent: system.admin_structure
+  weight: 32
+
+# Collection entries (admin/content)
+entity.ai_usage_log.collection:
+  title: 'AI Usage Logs'
+  description: 'Manage AI usage logs.'
+  route_name: entity.ai_usage_log.collection
+  parent: system.admin_content
+  weight: 40
+
+entity.collaboration_session.collection:
+  title: 'Collaboration Sessions'
+  description: 'Manage collaboration sessions.'
+  route_name: entity.collaboration_session.collection
+  parent: system.admin_content
+  weight: 41
+
+entity.pending_approval.collection:
+  title: 'Pending Approvals'
+  description: 'Manage pending approvals.'
+  route_name: entity.pending_approval.collection
+  parent: system.admin_content
+  weight: 42

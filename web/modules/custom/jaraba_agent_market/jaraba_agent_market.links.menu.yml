@@ -1,0 +1,27 @@
+entity.digital_twin.settings:
+  title: 'Gemelo Digital settings'
+  description: 'Manage Gemelo Digital entity type settings, fields and display.'
+  route_name: entity.digital_twin.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.digital_twin.collection:
+  title: 'Gemelos Digitales'
+  description: 'Manage Gemelos Digitales.'
+  route_name: entity.digital_twin.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.negotiation_session.settings:
+  title: 'Sesión de Negociación settings'
+  description: 'Manage Sesión de Negociación entity type settings, fields and display.'
+  route_name: entity.negotiation_session.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.negotiation_session.collection:
+  title: 'Sesiones de Negociación'
+  description: 'Manage Sesiones de Negociación.'
+  route_name: entity.negotiation_session.collection
+  parent: system.admin_content
+  weight: 21

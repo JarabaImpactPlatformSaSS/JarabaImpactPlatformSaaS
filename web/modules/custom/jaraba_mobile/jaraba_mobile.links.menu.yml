@@ -4,3 +4,31 @@ jaraba_mobile.settings:
   route_name: jaraba_mobile.settings
   parent: system.admin_config
   weight: 60
+
+entity.mobile_device.settings:
+  title: 'Mobile Device settings'
+  description: 'Manage Mobile Device entity type settings, fields and display.'
+  route_name: entity.mobile_device.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.push_notification.settings:
+  title: 'Push Notification settings'
+  description: 'Manage Push Notification entity type settings, fields and display.'
+  route_name: entity.push_notification.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.mobile_device.collection:
+  title: 'Mobile Devices'
+  description: 'Manage Mobile Devices.'
+  route_name: entity.mobile_device.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.push_notification.collection:
+  title: 'Push Notifications'
+  description: 'Manage Push Notifications.'
+  route_name: entity.push_notification.collection
+  parent: system.admin_content
+  weight: 21

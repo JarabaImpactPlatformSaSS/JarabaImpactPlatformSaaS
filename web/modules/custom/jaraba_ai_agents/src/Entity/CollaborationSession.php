@@ -56,9 +56,9 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *   },
  *   links = {
- *     "collection" = "/admin/config/ai/collaboration-sessions",
- *     "canonical" = "/admin/config/ai/collaboration-sessions/{collaboration_session}",
- *     "delete-form" = "/admin/config/ai/collaboration-sessions/{collaboration_session}/delete",
+ *     "collection" = "/admin/content/collaboration-sessions",
+ *     "canonical" = "/admin/content/collaboration-sessions/{collaboration_session}",
+ *     "delete-form" = "/admin/content/collaboration-sessions/{collaboration_session}/delete",
  *   },
  *   field_ui_base_route = "entity.collaboration_session.settings",
  * )

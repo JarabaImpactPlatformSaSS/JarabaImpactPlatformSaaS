@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityListBuilder;
  * Lista de registros de auditoría con badges de severidad.
  *
  * PROPÓSITO:
- * Renderiza la tabla administrativa de AuditLog en /admin/seguridad/audit-log.
+ * Renderiza la tabla administrativa de AuditLog en /admin/content/audit-logs.
  *
  * LÓGICA:
  * Muestra: tipo de evento, severidad (badge color), actor, objetivo, IP, fecha.

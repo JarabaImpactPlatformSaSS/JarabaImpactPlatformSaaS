@@ -1,0 +1,41 @@
+entity.sepe_accion_formativa.settings:
+  title: 'Acción Formativa SEPE settings'
+  description: 'Manage Acción Formativa SEPE entity type settings, fields and display.'
+  route_name: entity.sepe_accion_formativa.settings
+  parent: system.admin_structure
+  weight: 10
+
+entity.sepe_accion_formativa.collection:
+  title: 'Acciones Formativas SEPE'
+  description: 'Manage Acciones Formativas SEPE.'
+  route_name: entity.sepe_accion_formativa.collection
+  parent: system.admin_content
+  weight: 20
+
+entity.sepe_centro.settings:
+  title: 'Centro SEPE settings'
+  description: 'Manage Centro SEPE entity type settings, fields and display.'
+  route_name: entity.sepe_centro.settings
+  parent: system.admin_structure
+  weight: 11
+
+entity.sepe_centro.collection:
+  title: 'Centros SEPE'
+  description: 'Manage Centros SEPE.'
+  route_name: entity.sepe_centro.collection
+  parent: system.admin_content
+  weight: 21
+
+entity.sepe_participante.settings:
+  title: 'Participante SEPE settings'
+  description: 'Manage Participante SEPE entity type settings, fields and display.'
+  route_name: entity.sepe_participante.settings
+  parent: system.admin_structure
+  weight: 12
+
+entity.sepe_participante.collection:
+  title: 'Participantes SEPE'
+  description: 'Manage Participantes SEPE.'
+  route_name: entity.sepe_participante.collection
+  parent: system.admin_content
+  weight: 22

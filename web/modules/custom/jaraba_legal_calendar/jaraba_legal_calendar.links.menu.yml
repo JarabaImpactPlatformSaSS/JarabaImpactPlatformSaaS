@@ -11,3 +11,45 @@ jaraba_legal_calendar.admin_hearings:
   route_name: entity.court_hearing.collection
   parent: system.admin_structure
   weight: 31
+
+entity.calendar_connection.settings:
+  title: 'Conexion de Calendario settings'
+  description: 'Manage Conexion de Calendario entity type settings, fields and display.'
+  route_name: entity.calendar_connection.settings
+  parent: system.admin_structure
+  weight: 40
+
+entity.calendar_connection.collection:
+  title: 'Conexiones de Calendario'
+  description: 'Manage Conexiones de Calendario.'
+  route_name: entity.calendar_connection.collection
+  parent: system.admin_content
+  weight: 41
+
+entity.external_event_cache.settings:
+  title: 'Evento Externo (Cache) settings'
+  description: 'Manage Evento Externo (Cache) entity type settings, fields and display.'
+  route_name: entity.external_event_cache.settings
+  parent: system.admin_structure
+  weight: 42
+
+entity.external_event_cache.collection:
+  title: 'Eventos Externos (Cache)'
+  description: 'Manage Eventos Externos (Cache).'
+  route_name: entity.external_event_cache.collection
+  parent: system.admin_content
+  weight: 43
+
+entity.synced_calendar.settings:
+  title: 'Calendario Sincronizado settings'
+  description: 'Manage Calendario Sincronizado entity type settings, fields and display.'
+  route_name: entity.synced_calendar.settings
+  parent: system.admin_structure
+  weight: 44
+
+entity.synced_calendar.collection:
+  title: 'Calendarios Sincronizados'
+  description: 'Manage Calendarios Sincronizados.'
+  route_name: entity.synced_calendar.collection
+  parent: system.admin_content
+  weight: 45

@@ -5,3 +5,17 @@ jaraba_skills.admin:
   route_name: entity.ai_skill.admin_form
   parent: system.admin_structure
   weight: 50
+
+entity.ai_skill_embedding.settings:
+  title: 'Embedding de Habilidad IA settings'
+  description: 'Manage Embedding de Habilidad IA entity type settings, fields and display.'
+  route_name: entity.ai_skill_embedding.settings
+  parent: system.admin_structure
+  weight: 20
+
+entity.ai_skill_embedding.collection:
+  title: 'Embeddings de Habilidades IA'
+  description: 'Manage Embeddings de Habilidades IA.'
+  route_name: entity.ai_skill_embedding.collection
+  parent: system.admin_content
+  weight: 21

@@ -32,3 +32,33 @@ entity.diagnostic_question.collection:
   parent: system.admin_structure
   weight: 32
 
+# Settings entries (admin/structure)
+entity.diagnostic_answer.settings:
+  title: 'Diagnostic Answer settings'
+  description: 'Manage Diagnostic Answer entity type settings, fields and display.'
+  route_name: entity.diagnostic_answer.settings
+  parent: system.admin_structure
+  weight: 40
+
+entity.diagnostic_recommendation.settings:
+  title: 'Diagnostic Recommendation settings'
+  description: 'Manage Diagnostic Recommendation entity type settings, fields and display.'
+  route_name: entity.diagnostic_recommendation.settings
+  parent: system.admin_structure
+  weight: 41
+
+# Collection entries (admin/content)
+entity.diagnostic_answer.collection:
+  title: 'Diagnostic Answers'
+  description: 'Manage Diagnostic Answers.'
+  route_name: entity.diagnostic_answer.collection
+  parent: system.admin_content
+  weight: 40
+
+entity.diagnostic_recommendation.collection:
+  title: 'Diagnostic Recommendations'
+  description: 'Manage Diagnostic Recommendations.'
+  route_name: entity.diagnostic_recommendation.collection
+  parent: system.admin_content
+  weight: 41
+
