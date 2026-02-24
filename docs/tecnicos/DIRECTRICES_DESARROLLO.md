@@ -1,7 +1,7 @@
 # DIRECTRICES DE DESARROLLO - JARABA IMPACT PLATFORM
 
 > **Documento Central de Referencia Obligatoria**
-> Versión: 3.5 | Fecha: 2026-02-24
+> Versión: 3.6 | Fecha: 2026-02-24
 
 ---
 
@@ -230,6 +230,21 @@ Este checklist DEBE revisarse antes de cualquier commit o PR.
 - [ ] **Booleanos en Key module**: `drush cset` almacena `false` como string `"false"` (truthy en PHP). Usar `drush ev` con PHP nativo para settings booleanos (`base64_encoded`, `strip_line_breaks`)
 - [ ] **Line endings .env**: Archivos `.env` DEBEN tener LF (Unix). CRLF anade `\r` a valores, corrompiendo API keys. Verificar con `file .env`
 - [ ] **Lando env reload**: `lando restart` NO recarga `env_file`. Usar `lando rebuild -y` para aplicar cambios en `.env`
+
+### 27. Emails HTML Premium (EMAIL-HTML-PREMIUM-001)
+
+- [ ] **Markup::create()**: Body HTML en `hook_mail()` DEBE envolverse en `\Drupal\Core\Render\Markup::create()` — sin esto, Drupal escapa el HTML
+- [ ] **Inline CSS**: TODOS los estilos inline en cada elemento. Email clients eliminan bloques `<style>`
+- [ ] **Table layout**: Usar `<table>` para estructura (Outlook no soporta flexbox/grid). Siempre `cellpadding="0" cellspacing="0" border="0" role="presentation"`
+- [ ] **Escapado**: `htmlspecialchars()` para valores en atributos HTML. `t()` con `@placeholders` para texto traducible (auto-escapa)
+- [ ] **URLs absolutas**: CTAs con `Url::fromRoute(..., ['absolute' => TRUE])` — emails se leen fuera del navegador
+- [ ] **Paleta Jaraba**: Corporativo #233D63, primario #FF8C42, exito #10B981. NO usar colores arbitrarios
+
+### 28. Rutas en Templates Twig (TWIG-ROUTE-PATH-001)
+
+- [ ] **`path()` obligatorio**: Enlaces internos via `{{ path('route.name') }}`, NUNCA hardcodear paths (`/empleo`, `/my-profile`)
+- [ ] **Prefijo idioma**: `path()` incluye automaticamente `/es/`, `/en/`. Paths hardcodeados lo pierden
+- [ ] **Landing vs funcional**: Para usuarios autenticados, enlazar a rutas funcionales (`jaraba_job_board.search` → `/jobs`), NO a landings publicas (`ecosistema_jaraba_core.vertical.empleo` → `/empleo`)
 
 ---
 
