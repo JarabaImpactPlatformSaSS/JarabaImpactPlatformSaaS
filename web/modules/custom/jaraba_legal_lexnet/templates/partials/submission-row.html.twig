@@ -2,12 +2,12 @@
  # submission-row.html.twig — Fila de presentacion LexNET BEM.
  #}
 {% set status = submission.status|default('draft') %}
-<div class="ej-lexnet-submission ej-lexnet-submission--{{ status }}">
+<div class="ej-lexnet-submission ej-lexnet-submission--{{ status }}" role="listitem">
   <div class="ej-lexnet-submission__icon"></div>
   <div class="ej-lexnet-submission__content">
     <span class="ej-lexnet-submission__subject">{{ submission.subject }}</span>
     <span class="ej-lexnet-submission__court">{{ submission.court }}</span>
   </div>
   <span class="ej-lexnet-submission__type">{{ submission.submission_type }}</span>
-  <span class="ej-lexnet-submission__badge ej-lexnet-submission__badge--{{ status }}">{{ status }}</span>
+  <span class="ej-lexnet-submission__badge ej-lexnet-submission__badge--{{ status }}" role="status">{{ status }}</span>
 </div>

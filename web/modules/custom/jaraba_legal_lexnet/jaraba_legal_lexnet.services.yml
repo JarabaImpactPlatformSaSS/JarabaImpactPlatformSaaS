@@ -31,3 +31,8 @@ services:
       - '@jaraba_legal_lexnet.client'
       - '@current_user'
       - '@logger.channel.jaraba_legal_lexnet'
+
+  jaraba_legal_lexnet.breadcrumb:
+    class: Drupal\jaraba_legal_lexnet\Breadcrumb\LexnetBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

@@ -2,18 +2,18 @@
  # lexnet-dashboard.html.twig — Dashboard de LexNET.
  # Zero-region: datos inyectados via drupalSettings.jarabaLegalLexnet.
  #}
-<div class="legal-lexnet-dashboard">
+<div class="legal-lexnet-dashboard" role="main" aria-label="{{ 'Panel de comunicaciones judiciales LexNET'|t }}">
   <div class="legal-lexnet-dashboard__header">
     <h2>{{ 'LexNET — Comunicaciones Judiciales'|t }}</h2>
   </div>
 
   <div class="legal-lexnet-dashboard__stats" data-lexnet-stats></div>
 
-  <div class="legal-lexnet-dashboard__filters">
-    <button class="ej-lexnet-filter active" data-lexnet-filter="all">{{ 'Todos'|t }}</button>
-    <button class="ej-lexnet-filter" data-lexnet-filter="pending">{{ 'Pendientes'|t }}</button>
-    <button class="ej-lexnet-filter" data-lexnet-filter="read">{{ 'Leidos'|t }}</button>
-    <button class="ej-lexnet-filter" data-lexnet-filter="linked">{{ 'Vinculados'|t }}</button>
+  <div class="legal-lexnet-dashboard__filters" role="toolbar" aria-label="{{ 'Filtros de notificaciones'|t }}">
+    <button class="ej-lexnet-filter active" data-lexnet-filter="all" aria-pressed="true">{{ 'Todos'|t }}</button>
+    <button class="ej-lexnet-filter" data-lexnet-filter="pending" aria-pressed="false">{{ 'Pendientes'|t }}</button>
+    <button class="ej-lexnet-filter" data-lexnet-filter="read" aria-pressed="false">{{ 'Leidos'|t }}</button>
+    <button class="ej-lexnet-filter" data-lexnet-filter="linked" aria-pressed="false">{{ 'Vinculados'|t }}</button>
   </div>
 
   <div class="legal-lexnet-dashboard__grid" data-lexnet-grid></div>
