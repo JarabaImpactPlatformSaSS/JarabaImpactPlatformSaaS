@@ -1,7 +1,7 @@
 # DIRECTRICES DE DESARROLLO - JARABA IMPACT PLATFORM
 
 > **Documento Central de Referencia Obligatoria**
-> Versión: 3.3 | Fecha: 2026-02-20
+> Versión: 3.5 | Fecha: 2026-02-24
 
 ---
 
@@ -189,6 +189,48 @@ Este checklist DEBE revisarse antes de cualquier commit o PR.
 - [ ] **Foreign keys**: Mantener relaciones con entidades via columnas de referencia (conversation_id → entity.id)
 - [ ] **readonly class**: Los DTOs DEBEN ser `final readonly class` para inmutabilidad en memoria
 
+### 22. Mensajes en Templates de Formulario Custom (FORM-MSG-001)
+
+- [ ] **Variable messages**: Todo `hook_theme()` que declare un template de formulario DEBE incluir `'messages' => NULL` en `variables`
+- [ ] **Preprocess hook**: Crear `hook_preprocess_HOOK()` que inyecte `$variables['messages'] = ['#type' => 'status_messages']`
+- [ ] **Template Twig**: Renderizar `{{ messages }}` ANTES de `{{ form }}` en el template
+- [ ] **SCSS existente**: Verificar que el SCSS del modulo tiene estilos para `.messages--error` y `.messages--status`
+- [ ] **Validacion HTML5**: Los errores HTML5 del browser NO sustituyen los mensajes server-side — ambos son necesarios
+- [ ] **Ejemplo**: `solicitud_ei_page` — el template renderiza el formulario de solicitud con mensajes de validacion visibles
+
+### 23. Paginas Legales e Informativas (LEGAL-ROUTE-001 / LEGAL-CONFIG-001)
+
+- [ ] **URLs canonicas**: Usar siempre rutas en espanol SEO-friendly (`/politica-privacidad`, `/terminos-uso`, `/politica-cookies`)
+- [ ] **Nunca inglés**: No usar `/privacy`, `/terms`, `/cookies`, `/about`, `/contact` como rutas
+- [ ] **Contenido desde theme_get_setting()**: Los controladores DEBEN leer el contenido de `theme_get_setting('legal_*_content', 'ecosistema_jaraba_theme')`
+- [ ] **Placeholder informativo**: Si no hay contenido configurado, mostrar texto indicando "configurar desde Apariencia > Configuracion del tema"
+- [ ] **Cache tags**: Incluir `config:ecosistema_jaraba_theme.settings` en los cache tags del render array
+- [ ] **Template zero-region**: Las paginas legales usan templates propios sin depender de `{{ page.content }}` ni bloques Drupal
+- [ ] **Footer coherente**: Los enlaces del footer DEBEN apuntar a las mismas URLs canonicas que los controladores definen
+
+### 24. Entity View Display para Content Entities (ENTITY-VIEW-DISPLAY-001)
+
+- [ ] **view_builder handler**: Toda entidad con `links.canonical` DEBE declarar `"view_builder" = "Drupal\Core\Entity\EntityViewBuilder"` en handlers
+- [ ] **setDisplayOptions('view')**: CADA campo base que deba mostrarse DEBE tener `setDisplayOptions('view', ['label' => ..., 'type' => ..., 'weight' => ...])` — sin esto, el campo NO aparece
+- [ ] **setDisplayConfigurable no basta**: `setDisplayConfigurable('view', TRUE)` solo habilita Field UI — NO muestra el campo por defecto
+- [ ] **Formatter por tipo**: `string` → `string`, `email` → `email_mailto`, `list_string` → `list_default`, `boolean` → `boolean`, `string_long` → `basic_string`, `integer` → `number_integer`, `entity_reference` → `entity_reference_label`, `created`/`changed` → `timestamp`
+- [ ] **Label position**: `inline` para campos cortos (nombre, email, estado), `above` para campos largos (motivacion, notas)
+
+### 25. Integracion con Drupal AI Module (DRUPAL-AI-CHAT-001)
+
+- [ ] **ChatInput tipado**: `new ChatInput([new ChatMessage('user', $prompt)])` — NO arrays planos
+- [ ] **System prompt**: `$input->setSystemPrompt($text)` — NO como clave de array
+- [ ] **Leer respuesta**: `$response->getNormalized()->getText()` — `getNormalized()` devuelve `ChatMessage`, NO usar `getText()` directo en `ChatOutput`
+- [ ] **Modelos explicitos**: Usar IDs como `claude-3-haiku-20240307`, NO aliases como `claude-haiku-4-5-latest`
+- [ ] **Failover**: `catch (\Throwable)` para capturar `TypeError`/`Error` de proveedores ademas de `Exception`
+- [ ] **Providers**: Declarar array con failover ordenado: `[['id' => 'anthropic', 'model' => '...'], ['id' => 'openai', 'model' => '...']]`
+
+### 26. Key Module y Variables de Entorno (KEY-MODULE-BOOL-001 / ENV-FILE-CRLF-001)
+
+- [ ] **Booleanos en Key module**: `drush cset` almacena `false` como string `"false"` (truthy en PHP). Usar `drush ev` con PHP nativo para settings booleanos (`base64_encoded`, `strip_line_breaks`)
+- [ ] **Line endings .env**: Archivos `.env` DEBEN tener LF (Unix). CRLF anade `\r` a valores, corrompiendo API keys. Verificar con `file .env`
+- [ ] **Lando env reload**: `lando restart` NO recarga `env_file`. Usar `lando rebuild -y` para aplicar cambios en `.env`
+
 ---
 
 ## 📁 Referencias a Workflows
@@ -227,8 +269,13 @@ Para guías detalladas, consultar:
 - [ ] Cifrado: AES-256-GCM con IV 12 bytes aleatorio, tag 16 bytes, clave Argon2id desde env var
 - [ ] WebSocket: Auth en onOpen(), JWT o session, cerrar conexiones invalidas
 - [ ] Custom tables: DTOs readonly con factory fromRow(), servicio CRUD via @database
+- [ ] Form messages: Template custom de formulario incluye `{{ messages }}` + preprocess con `status_messages`
+- [ ] Legal pages: URLs canonicas en espanol, contenido desde `theme_get_setting()`, placeholder si vacio
+- [ ] Entity view: `view_builder` handler + `setDisplayOptions('view')` en cada campo, no solo `setDisplayConfigurable`
+- [ ] Drupal AI: ChatInput/ChatMessage tipados, getNormalized()->getText(), modelos explicitos, \Throwable
+- [ ] Key module: Booleanos con `drush ev` (no `drush cset`), .env LF no CRLF, `lando rebuild` para reload
 ```
 
 ---
 
-*Ultima actualizacion: 2026-02-20 (v3.3 — Cifrado AES-256-GCM, WebSocket Auth, Custom Schema DTOs)*
+*Ultima actualizacion: 2026-02-24 (v3.5 — Entity View Display, Drupal AI Chat API, Key Module booleans)*
