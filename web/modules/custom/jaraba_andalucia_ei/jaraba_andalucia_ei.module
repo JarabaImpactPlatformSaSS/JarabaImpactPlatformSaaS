@@ -34,6 +34,7 @@ function jaraba_andalucia_ei_theme(): array {
         'health_score' => NULL,
         'bridges' => [],
         'proactive_action' => NULL,
+        'messages' => NULL,
       ],
       'template' => 'andalucia-ei-dashboard',
     ],
@@ -54,6 +55,16 @@ function jaraba_andalucia_ei_theme(): array {
  * form validation errors and success messages are visible to the user.
  */
 function jaraba_andalucia_ei_preprocess_solicitud_ei_page(array &$variables): void {
+  $variables['messages'] = ['#type' => 'status_messages'];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for andalucia_ei_dashboard.
+ *
+ * Injects Drupal status messages into the dashboard template so that
+ * success messages (e.g., after solicitud submission) are visible.
+ */
+function jaraba_andalucia_ei_preprocess_andalucia_ei_dashboard(array &$variables): void {
   $variables['messages'] = ['#type' => 'status_messages'];
 }
 

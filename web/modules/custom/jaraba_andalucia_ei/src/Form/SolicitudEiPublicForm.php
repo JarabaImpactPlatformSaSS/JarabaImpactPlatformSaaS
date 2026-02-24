@@ -322,6 +322,17 @@ class SolicitudEiPublicForm extends FormBase
         if ($situacion === 'desempleado' && empty($tiempo)) {
             $form_state->setErrorByName('tiempo_desempleo', $this->t('Por favor, indica cuánto tiempo llevas en desempleo.'));
         }
+
+        // Control de duplicados: no permitir más de una solicitud por email.
+        $email = $form_state->getValue('email');
+        if ($email) {
+            $existing = $this->entityTypeManager
+                ->getStorage('solicitud_ei')
+                ->loadByProperties(['email' => $email]);
+            if (!empty($existing)) {
+                $form_state->setErrorByName('email', $this->t('Ya existe una solicitud registrada con este email. Si necesitas hacer cambios, contacta con nosotros.'));
+            }
+        }
     }
 
     /**
