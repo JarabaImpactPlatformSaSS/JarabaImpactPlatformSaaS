@@ -192,6 +192,11 @@ class MerchantPortalController extends ControllerBase {
           'jaraba_comercio_conecta/merchant-portal',
         ],
       ],
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['merchant_profile:' . $merchant->id(), 'product_retail_list'],
+        'max-age' => 60,
+      ],
     ];
   }
 
