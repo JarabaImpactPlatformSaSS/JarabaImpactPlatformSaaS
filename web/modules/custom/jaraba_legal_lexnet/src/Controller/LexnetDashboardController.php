@@ -21,6 +21,11 @@ class LexnetDashboardController extends ControllerBase {
     return [
       '#type' => 'markup',
       '#markup' => '',
+      '#cache' => [
+        'contexts' => ['user'],
+        'tags' => ['lexnet_notification_list', 'lexnet_submission_list'],
+        'max-age' => 60,
+      ],
     ];
   }
 

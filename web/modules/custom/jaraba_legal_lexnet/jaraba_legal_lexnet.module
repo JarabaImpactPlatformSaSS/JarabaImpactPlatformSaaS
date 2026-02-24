@@ -89,6 +89,42 @@ function jaraba_legal_lexnet_preprocess_page(array &$variables): void {
  *
  * Polling automatico de notificaciones LexNET segun intervalo configurado.
  */
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * OG meta tags for the LexNET dashboard route.
+ */
+function jaraba_legal_lexnet_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'jaraba_legal_lexnet.dashboard') {
+    return;
+  }
+
+  $og_tags = [
+    'og:title' => 'LexNET — Comunicaciones Judiciales',
+    'og:description' => 'Panel de gestión de notificaciones y presentaciones LexNET',
+    'og:type' => 'website',
+  ];
+
+  foreach ($og_tags as $property => $content) {
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'property' => $property,
+          'content' => $content,
+        ],
+      ],
+      'jaraba_legal_lexnet_' . $property,
+    ];
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Polling automatico de notificaciones LexNET segun intervalo configurado.
+ */
 function jaraba_legal_lexnet_cron(): void {
   $config = \Drupal::config('jaraba_legal_lexnet.settings');
   $pollingInterval = (int) ($config->get('polling_interval') ?? 15);
