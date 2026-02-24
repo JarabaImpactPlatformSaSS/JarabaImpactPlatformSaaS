@@ -9,6 +9,15 @@
 (function (Drupal, drupalSettings, once) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     // Estados del chat
     var STATE = {
         IDLE: 'idle',
@@ -114,17 +123,20 @@
                     if (typing) typing.classList.add('agro-copilot-chat__typing--visible');
 
                     // API call
-                    fetch('/api/v1/agro/copilot/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({
-                            message: text,
-                            conversation_id: conversationId,
-                            context: getCopilotContext()
-                        })
+                    getCsrfToken().then(function (token) {
+                        return fetch('/api/v1/agro/copilot/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-Token': token
+                            },
+                            body: JSON.stringify({
+                                message: text,
+                                conversation_id: conversationId,
+                                context: getCopilotContext()
+                            })
+                        });
                     })
                         .then(function (response) {
                             if (!response.ok) throw new Error('API error');
@@ -214,7 +226,7 @@
      * Renderizado básico de markdown.
      */
     function renderMarkdown(text) {
-        return text
+        return Drupal.checkPlain(text)
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
             .replace(/`(.*?)`/g, '<code>$1</code>')

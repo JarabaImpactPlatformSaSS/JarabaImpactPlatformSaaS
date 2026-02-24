@@ -9,6 +9,15 @@
 (function (Drupal, once) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     /**
      * Behavior: Calculadora de tarifas de envío en checkout.
      *
@@ -68,13 +77,16 @@
         }
         container.innerHTML = '';
 
-        fetch('/api/v1/agro/shipping/rates', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({ postal_code: postalCode })
+        getCsrfToken().then(function (token) {
+            return fetch('/api/v1/agro/shipping/rates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': token
+                },
+                body: JSON.stringify({ postal_code: postalCode })
+            });
         })
             .then(function (response) { return response.json(); })
             .then(function (data) {
@@ -111,7 +123,7 @@
             html += '<label class="agro-shipping-selector__option' + refrigeratedClass + selectedClass + '" data-cost="' + rate.cost + '">' +
                 '<input type="radio" name="shipping_rate" value="' + rate.id + '"' + checked + '>' +
                 '<div class="agro-shipping-selector__option-info">' +
-                '<span class="agro-shipping-selector__carrier-name">' + rate.carrier_name + ' — ' + rate.service_name + '</span>' +
+                '<span class="agro-shipping-selector__carrier-name">' + Drupal.checkPlain(rate.carrier_name) + ' — ' + Drupal.checkPlain(rate.service_name) + '</span>' +
                 '<span class="agro-shipping-selector__delivery-time">' +
                 rate.estimated_days_min + '-' + rate.estimated_days_max + ' ' + Drupal.t('días laborables') +
                 '</span>' +
@@ -198,8 +210,8 @@
                         var stateClass = idx === 0 ? 'agro-tracking__event--current' : 'agro-tracking__event--completed';
                         html += '<div class="agro-tracking__event ' + stateClass + '">' +
                             '<div class="agro-tracking__event-time">' + event.timestamp + '</div>' +
-                            '<div class="agro-tracking__event-title">' + event.description + '</div>' +
-                            (event.location ? '<div class="agro-tracking__event-location"><span class="agro-tracking__location-icon" aria-hidden="true"></span> ' + event.location + '</div>' : '') +
+                            '<div class="agro-tracking__event-title">' + Drupal.checkPlain(event.description) + '</div>' +
+                            (event.location ? '<div class="agro-tracking__event-location"><span class="agro-tracking__location-icon" aria-hidden="true"></span> ' + Drupal.checkPlain(event.location) + '</div>' : '') +
                             '</div>';
                     });
                     timeline.innerHTML = html;

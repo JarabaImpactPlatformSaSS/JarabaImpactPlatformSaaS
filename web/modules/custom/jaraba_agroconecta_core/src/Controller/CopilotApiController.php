@@ -49,12 +49,12 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
     public function chat(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), TRUE);
-        $producerId = (int) ($data['producer_id'] ?? 0);
+        $producerId = (int) $this->currentUser()->id();
         $message = $data['message'] ?? '';
         $conversationId = $data['conversation_id'] ?? NULL;
 
-        if (!$producerId || !$message) {
-            return new JsonResponse(['error' => 'producer_id y message son requeridos'], 400);
+        if (!$message) {
+            return new JsonResponse(['error' => 'message es requerido'], 400);
         }
 
         $result = $this->copilotService->chat($producerId, $message, $conversationId ? (int) $conversationId : NULL);
@@ -78,6 +78,12 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
             return new JsonResponse(['error' => 'product_id es requerido'], 400);
         }
 
+        // Verify product ownership.
+        $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($productId);
+        if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
+        }
+
         $result = $this->copilotService->generateDescription($productId);
 
         if (isset($result['error'])) {
@@ -97,6 +103,12 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
 
         if (!$productId) {
             return new JsonResponse(['error' => 'product_id es requerido'], 400);
+        }
+
+        // Verify product ownership.
+        $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($productId);
+        if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
         }
 
         $result = $this->copilotService->suggestPrice($productId);
@@ -120,6 +132,15 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
             return new JsonResponse(['error' => 'review_id es requerido'], 400);
         }
 
+        // Verify review ownership via product owner.
+        $review = \Drupal::entityTypeManager()->getStorage('review_agro')->load($reviewId);
+        if ($review) {
+            $product = \Drupal::entityTypeManager()->getStorage('product_agro')->load($review->get('target_entity_id')->value);
+            if (!$product || (int) $product->getOwnerId() !== (int) $this->currentUser()->id()) {
+                return new JsonResponse(['error' => 'Acceso denegado: no eres el propietario de este producto.'], 403);
+            }
+        }
+
         $result = $this->copilotService->respondToReview($reviewId);
 
         if (isset($result['error'])) {
@@ -134,12 +155,8 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
      */
     public function conversations(Request $request): JsonResponse
     {
-        $producerId = (int) $request->query->get('producer_id', 0);
+        $producerId = (int) $this->currentUser()->id();
         $limit = min((int) $request->query->get('limit', 20), 50);
-
-        if (!$producerId) {
-            return new JsonResponse(['error' => 'producer_id es requerido'], 400);
-        }
 
         $conversations = $this->copilotService->getConversations($producerId, $limit);
 
@@ -154,6 +171,12 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
      */
     public function messages(int $conversation_id): JsonResponse
     {
+        // Verify conversation ownership.
+        $conversation = \Drupal::entityTypeManager()->getStorage('copilot_conversation')->load($conversation_id);
+        if ($conversation && (int) ($conversation->get('producer_id')->value ?? $conversation->getOwnerId()) !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['error' => 'Acceso denegado.'], 403);
+        }
+
         $messages = $this->copilotService->getMessages($conversation_id);
 
         return new JsonResponse([
@@ -210,11 +233,7 @@ class CopilotApiController extends ControllerBase implements ContainerInjectionI
      */
     public function competitivePosition(Request $request): JsonResponse
     {
-        $producerId = (int) $request->query->get('producer_id', 0);
-
-        if (!$producerId) {
-            return new JsonResponse(['error' => 'producer_id es requerido'], 400);
-        }
+        $producerId = (int) $this->currentUser()->id();
 
         try {
             $result = $this->marketSpy->getCompetitivePosition($producerId);

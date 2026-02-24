@@ -10,6 +10,15 @@
 (function (Drupal, drupalSettings, once) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     Drupal.behaviors.agroconectaCheckout = {
         attach: function (context) {
             once('agro-checkout', '#checkout-submit', context).forEach(function (submitBtn) {
@@ -66,13 +75,16 @@
                     };
 
                     // Enviar al backend.
-                    fetch(processUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify(checkoutData),
+                    getCsrfToken().then(function (token) {
+                        return fetch(processUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-Token': token,
+                            },
+                            body: JSON.stringify(checkoutData),
+                        });
                     })
                         .then(function (response) { return response.json(); })
                         .then(function (data) {
@@ -85,12 +97,14 @@
                             // Éxito — redirigir a confirmación.
                             if (data.order_number) {
                                 // Confirmar pago.
-                                return fetch(confirmUrl, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-Requested-With': 'XMLHttpRequest',
-                                    },
+                                return getCsrfToken().then(function (confirmToken) {
+                                    return fetch(confirmUrl, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'X-CSRF-Token': confirmToken,
+                                        },
                                     body: JSON.stringify({
                                         payment_intent_id: data.client_secret?.split('_secret_')[0] || '',
                                     }),
@@ -101,10 +115,11 @@
                                             window.location.href = confirmData.redirect_url;
                                         }
                                     });
+                                });
                             }
                         })
                         .catch(function (err) {
-                            showPaymentMessage('Error de conexión. Inténtelo de nuevo.', 'error');
+                            showPaymentMessage(Drupal.t('Error de conexión. Inténtelo de nuevo.'), 'error');
                             resetSubmitButton();
                         });
                 });

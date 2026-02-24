@@ -11,6 +11,15 @@
 (function (Drupal, drupalSettings, once) {
     'use strict';
 
+    // CSRF token cache for POST/DELETE requests.
+    var _csrfToken = null;
+    function getCsrfToken() {
+        if (_csrfToken) return Promise.resolve(_csrfToken);
+        return fetch('/session/token')
+            .then(function (r) { return r.text(); })
+            .then(function (token) { _csrfToken = token; return token; });
+    }
+
     /**
      * Genera HTML de estrellas según rating.
      */
@@ -215,13 +224,16 @@
                         body: form.querySelector('[name="body"]').value,
                     };
 
-                    fetch('/api/v1/agro/reviews', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
-                        body: JSON.stringify(payload),
+                    getCsrfToken().then(function (token) {
+                        return fetch('/api/v1/agro/reviews', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-Token': token,
+                            },
+                            body: JSON.stringify(payload),
+                        });
                     })
                         .then(function (r) { return r.json(); })
                         .then(function (data) {
