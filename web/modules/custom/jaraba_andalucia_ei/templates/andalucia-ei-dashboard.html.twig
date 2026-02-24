@@ -24,6 +24,13 @@
 
 <div class="andalucia-ei-dashboard">
 
+  {# =================== STATUS MESSAGES =================== #}
+  {% if messages %}
+    <div class="aei-messages">
+      {{ messages }}
+    </div>
+  {% endif %}
+
   {# =================== HERO PREMIUM =================== #}
   <section class="aei-hero">
     <canvas id="aei-hero-particles" class="aei-hero__particles" aria-hidden="true"></canvas>

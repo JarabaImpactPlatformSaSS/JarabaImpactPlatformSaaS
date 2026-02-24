@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Drupal\jaraba_andalucia_ei\Service;
 
 use Drupal\ai\AiProviderPluginManager;
+use Drupal\ai\OperationType\Chat\ChatInput;
+use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\jaraba_andalucia_ei\Entity\SolicitudEiInterface;
 use Psr\Log\LoggerInterface;
 
@@ -53,10 +55,11 @@ class SolicitudTriageService
         foreach (self::PROVIDERS as $providerConfig) {
             try {
                 $llm = $this->aiProvider->createInstance($providerConfig['id']);
-                $response = $llm->chat([
-                    ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user', 'content' => $prompt],
-                ], $providerConfig['model']);
+                $input = new ChatInput([
+                    new ChatMessage('user', $prompt),
+                ]);
+                $input->setSystemPrompt($systemPrompt);
+                $response = $llm->chat($input, $providerConfig['model']);
 
                 $text = $response->getText();
                 $result = $this->parseResponse($text);
@@ -68,7 +71,7 @@ class SolicitudTriageService
                 ]);
 
                 return $result;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->warning('Proveedor IA @id falló para triaje: @msg', [
                     '@id' => $providerConfig['id'],
                     '@msg' => $e->getMessage(),
