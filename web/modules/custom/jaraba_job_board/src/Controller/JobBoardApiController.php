@@ -52,9 +52,27 @@ class JobBoardApiController extends ControllerBase
      */
     public function listJobs(Request $request): JsonResponse
     {
-        $jobs = $this->entityTypeManager()
-            ->getStorage('job_posting')
-            ->loadByProperties(['status' => 'published']);
+        $page = (int) $request->query->get('page', 0);
+        $limit = min((int) $request->query->get('limit', 20), 100);
+
+        $storage = $this->entityTypeManager()->getStorage('job_posting');
+
+        // Use entity query with pagination instead of loading all entities.
+        $query = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', 'published')
+            ->sort('published_at', 'DESC')
+            ->range($page * $limit, $limit);
+
+        $job_ids = $query->execute();
+        $jobs = $storage->loadMultiple($job_ids);
+
+        // Total count for pagination.
+        $total = (int) $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', 'published')
+            ->count()
+            ->execute();
 
         $result = [];
         foreach ($jobs as $job) {
@@ -67,7 +85,12 @@ class JobBoardApiController extends ControllerBase
             ];
         }
 
-        return new JsonResponse(['jobs' => $result, 'total' => count($result)]);
+        return new JsonResponse([
+            'jobs' => $result,
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
+        ]);
     }
 
     /**

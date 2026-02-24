@@ -68,6 +68,10 @@ class EmployabilityDiagnosticController extends ControllerBase {
           'jaraba_diagnostic/employability-diagnostic',
         ],
       ],
+      '#cache' => [
+        'max-age' => 3600,
+        'contexts' => ['languages'],
+      ],
     ];
   }
 

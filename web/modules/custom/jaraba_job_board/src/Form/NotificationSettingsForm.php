@@ -101,7 +101,7 @@ class NotificationSettingsForm extends ConfigFormBase
         $form['email']['from_name'] = [
             '#type' => 'textfield',
             '#title' => $this->t('From Name'),
-            '#default_value' => $config->get('email_from_name') ?: 'Jaraba Empleabilidad',
+            '#default_value' => $config->get('email_from_name') ?: 'Jaraba Impact Platform',
             '#description' => $this->t('Nombre del remitente de emails.'),
         ];
 
