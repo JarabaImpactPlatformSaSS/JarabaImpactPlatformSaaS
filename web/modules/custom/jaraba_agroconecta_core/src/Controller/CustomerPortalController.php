@@ -98,6 +98,11 @@ class CustomerPortalController extends ControllerBase implements ContainerInject
             '#attached' => [
                 'library' => ['jaraba_agroconecta_core/agroconecta.customer'],
             ],
+            '#cache' => [
+                'tags' => ['order_agro_list', 'user:' . $userId],
+                'contexts' => ['user', 'url.query_args'],
+                'max-age' => 300,
+            ],
         ];
     }
 

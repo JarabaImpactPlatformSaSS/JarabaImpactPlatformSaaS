@@ -51,3 +51,49 @@ function jaraba_agroconecta_core_schema(): array
 
     return $schema;
 }
+
+/**
+ * Add performance indexes to AgroConecta entity tables.
+ */
+function jaraba_agroconecta_core_update_10001(): void
+{
+    $schema = \Drupal::database()->schema();
+
+    $indexes = [
+        'order_agro' => [
+            'idx_customer_state' => ['customer_id', 'state'],
+            'idx_tenant_created' => ['tenant_id', 'created'],
+        ],
+        'product_agro' => [
+            'idx_uid_status' => ['uid', 'status'],
+            'idx_tenant_created' => ['tenant_id', 'created'],
+        ],
+        'producer_profile' => [
+            'idx_uid_status' => ['uid', 'status'],
+            'idx_tenant_id' => ['tenant_id'],
+        ],
+        'suborder_agro' => [
+            'idx_order_producer' => ['order_id', 'producer_id'],
+            'idx_state_created' => ['state', 'created'],
+        ],
+        'order_item_agro' => [
+            'idx_suborder_product' => ['suborder_id', 'product_id'],
+        ],
+        'analytics_daily_agro' => [
+            'idx_tenant_date' => ['tenant_id', 'date'],
+        ],
+    ];
+
+    foreach ($indexes as $table => $tableIndexes) {
+        if (!$schema->tableExists($table)) {
+            continue;
+        }
+        foreach ($tableIndexes as $name => $fields) {
+            if (!$schema->indexExists($table, $name)) {
+                $schema->addIndex($table, $name, $fields, [
+                    'fields' => array_fill_keys($fields, ['type' => 'int', 'not null' => TRUE]),
+                ]);
+            }
+        }
+    }
+}
