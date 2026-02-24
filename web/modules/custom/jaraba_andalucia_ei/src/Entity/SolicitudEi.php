@@ -29,6 +29,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *       "edit" = "Drupal\jaraba_andalucia_ei\Form\SolicitudEiAdminForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "access" = "Drupal\jaraba_andalucia_ei\SolicitudEiAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
@@ -180,6 +181,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'string_textfield',
                 'weight' => -15,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'string',
+                'weight' => -15,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -189,6 +195,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setRequired(TRUE)
             ->setDisplayOptions('form', [
                 'type' => 'email_default',
+                'weight' => -14,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'email_mailto',
                 'weight' => -14,
             ])
             ->setDisplayConfigurable('form', TRUE)
@@ -203,6 +214,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'string_textfield',
                 'weight' => -13,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'string',
+                'weight' => -13,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -215,6 +231,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'datetime_default',
                 'weight' => -12,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'datetime_default',
+                'weight' => -12,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -224,6 +245,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setSetting('max_length', 12)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
+                'weight' => -11,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'string',
                 'weight' => -11,
             ])
             ->setDisplayConfigurable('form', TRUE)
@@ -249,6 +275,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'options_select',
                 'weight' => -10,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => -10,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -259,6 +290,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setSetting('max_length', 100)
             ->setDisplayOptions('form', [
                 'type' => 'string_textfield',
+                'weight' => -9,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'string',
                 'weight' => -9,
             ])
             ->setDisplayConfigurable('form', TRUE)
@@ -280,6 +316,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'options_select',
                 'weight' => -8,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => -8,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -293,6 +334,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ])
             ->setDisplayOptions('form', [
                 'type' => 'options_select',
+                'weight' => -7,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
                 'weight' => -7,
             ])
             ->setDisplayConfigurable('form', TRUE)
@@ -316,6 +362,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'options_select',
                 'weight' => -6,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => -6,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -325,6 +376,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setDefaultValue(FALSE)
             ->setDisplayOptions('form', [
                 'type' => 'boolean_checkbox',
+                'weight' => -5,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'boolean',
                 'weight' => -5,
             ])
             ->setDisplayConfigurable('form', TRUE)
@@ -338,6 +394,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'boolean_checkbox',
                 'weight' => -4,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'boolean',
+                'weight' => -4,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -348,6 +409,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'string_textarea',
                 'weight' => -3,
                 'settings' => ['rows' => 3],
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'basic_string',
+                'weight' => -3,
             ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
@@ -360,6 +426,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'string_textarea',
                 'weight' => -2,
                 'settings' => ['rows' => 4],
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'basic_string',
+                'weight' => -2,
             ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
@@ -382,6 +453,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'options_select',
                 'weight' => 10,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 10,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -399,6 +475,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'type' => 'options_select',
                 'weight' => 11,
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 11,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -410,6 +491,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'weight' => 12,
                 'settings' => ['rows' => 3],
             ])
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'basic_string',
+                'weight' => 12,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
@@ -417,6 +503,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setLabel(t('Dirección IP'))
             ->setDescription(t('IP desde la que se envió la solicitud.'))
             ->setSetting('max_length', 45)
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'string',
+                'weight' => 13,
+            ])
             ->setDisplayConfigurable('view', TRUE);
 
         // === TENANT ISOLATION ===
@@ -426,6 +517,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setDescription(t('Tenant al que pertenece esta solicitud.'))
             ->setSetting('target_type', 'tenant')
             ->setRequired(FALSE)
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'entity_reference_label',
+                'weight' => 14,
+            ])
             ->setDisplayConfigurable('view', TRUE);
 
         // === TIMESTAMPS ===
@@ -433,11 +529,21 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Fecha de solicitud'))
             ->setDescription(t('Fecha y hora en que se envió la solicitud.'))
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'timestamp',
+                'weight' => 15,
+            ])
             ->setDisplayConfigurable('view', TRUE);
 
         $fields['changed'] = BaseFieldDefinition::create('changed')
             ->setLabel(t('Última modificación'))
             ->setDescription(t('Fecha de última actualización.'))
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'timestamp',
+                'weight' => 16,
+            ])
             ->setDisplayConfigurable('view', TRUE);
 
         // === TRIAJE IA ===
@@ -446,11 +552,21 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
             ->setLabel(t('Puntuación IA'))
             ->setDescription(t('Puntuación de idoneidad asignada por IA (0-100).'))
             ->setDefaultValue(NULL)
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'number_integer',
+                'weight' => 20,
+            ])
             ->setDisplayConfigurable('view', TRUE);
 
         $fields['ai_justificacion'] = BaseFieldDefinition::create('string_long')
             ->setLabel(t('Justificación IA'))
             ->setDescription(t('Análisis textual generado por IA sobre la solicitud.'))
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'basic_string',
+                'weight' => 21,
+            ])
             ->setDisplayConfigurable('view', TRUE);
 
         $fields['ai_recomendacion'] = BaseFieldDefinition::create('list_string')
@@ -460,6 +576,11 @@ class SolicitudEi extends ContentEntityBase implements SolicitudEiInterface
                 'admitir' => t('Admitir'),
                 'revisar' => t('Revisar manualmente'),
                 'rechazar' => t('Rechazar'),
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'list_default',
+                'weight' => 22,
             ])
             ->setDisplayConfigurable('view', TRUE);
 
