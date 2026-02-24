@@ -82,6 +82,30 @@ class OrderAgro extends ContentEntityBase implements EntityChangedInterface, Ent
     const STATE_RETURNED = 'returned';
 
     /**
+     * Returns all state labels keyed by state constant.
+     *
+     * @return array<string, \Drupal\Core\StringTranslation\TranslatableMarkup>
+     *   Associative array of state => translated label.
+     */
+    public static function getStateLabels(): array
+    {
+        return [
+            self::STATE_DRAFT => t('Carrito'),
+            self::STATE_PENDING => t('Pendiente de pago'),
+            self::STATE_PAID => t('Pagado'),
+            self::STATE_PROCESSING => t('En preparación'),
+            self::STATE_READY => t('Listo para envío'),
+            self::STATE_SHIPPED => t('Enviado'),
+            self::STATE_PICKED_UP => t('Recogido'),
+            self::STATE_DELIVERED => t('Entregado'),
+            self::STATE_COMPLETED => t('Completado'),
+            self::STATE_CANCELLED => t('Cancelado'),
+            self::STATE_RETURN_REQUESTED => t('Devolución solicitada'),
+            self::STATE_RETURNED => t('Devuelto'),
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array
@@ -406,20 +430,7 @@ class OrderAgro extends ContentEntityBase implements EntityChangedInterface, Ent
      */
     public function getStateLabel(): string
     {
-        $labels = [
-            self::STATE_DRAFT => t('Carrito'),
-            self::STATE_PENDING => t('Pendiente de pago'),
-            self::STATE_PAID => t('Pagado'),
-            self::STATE_PROCESSING => t('En preparación'),
-            self::STATE_READY => t('Listo para envío'),
-            self::STATE_SHIPPED => t('Enviado'),
-            self::STATE_PICKED_UP => t('Recogido'),
-            self::STATE_DELIVERED => t('Entregado'),
-            self::STATE_COMPLETED => t('Completado'),
-            self::STATE_CANCELLED => t('Cancelado'),
-            self::STATE_RETURN_REQUESTED => t('Devolución solicitada'),
-            self::STATE_RETURNED => t('Devuelto'),
-        ];
+        $labels = static::getStateLabels();
         return (string) ($labels[$this->get('state')->value] ?? $this->get('state')->value);
     }
 
