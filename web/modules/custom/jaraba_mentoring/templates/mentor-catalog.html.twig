@@ -9,7 +9,7 @@
  * - empty_message: Message when no mentors available.
  */
 #}
-<div class="mentor-catalog">
+<div class="mentor-catalog" role="main" aria-label="{{ 'Catálogo de mentores'|t }}">
   
   {# Header #}
   <div class="mentor-catalog__header">
@@ -18,7 +18,7 @@
   </div>
 
   {# Filters #}
-  <div class="mentor-catalog__filters">
+  <div class="mentor-catalog__filters" aria-label="{{ 'Filtros de búsqueda'|t }}">
     <div class="filter-group">
       <label for="filter-sector">{{ 'Sector'|t }}</label>
       <select id="filter-sector" class="filter-select">
@@ -52,9 +52,9 @@
 
   {# Mentor Grid #}
   {% if mentors|length > 0 %}
-    <div class="mentor-catalog__grid">
+    <div class="mentor-catalog__grid" role="list" aria-label="{{ 'Lista de mentores'|t }}">
       {% for mentor in mentors %}
-        <article class="mentor-card" data-sectors="{{ mentor.sectors|join(',') }}">
+        <article class="mentor-card" role="listitem" data-sectors="{{ mentor.sectors|join(',') }}" aria-label="{{ mentor.display_name }}">
           
           <div class="mentor-card__header">
             <div class="mentor-card__avatar">

@@ -51,3 +51,8 @@ services:
       - '@entity_type.manager'
       - '@current_user'
 
+  jaraba_business_tools.breadcrumb:
+    class: Drupal\jaraba_business_tools\Breadcrumb\BusinessToolsBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
+

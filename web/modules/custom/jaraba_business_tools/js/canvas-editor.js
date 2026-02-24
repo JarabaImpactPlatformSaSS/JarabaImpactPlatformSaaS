@@ -630,11 +630,11 @@
 
         // Professional header
         const header = document.createElement('div');
-        header.style.cssText = 'margin-bottom: 24px; padding-bottom: 16px; border-bottom: 3px solid #2E7D32;';
+        header.style.cssText = 'margin-bottom: 24px; padding-bottom: 16px; border-bottom: 3px solid #1565C0;';
         header.innerHTML =
           '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">' +
           '<div>' +
-          '<span style="display: inline-block; background: #2E7D32; color: white; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 4px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Business Model Canvas</span>' +
+          '<span style="display: inline-block; background: #1565C0; color: white; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 4px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Business Model Canvas</span>' +
           '<h1 style="margin: 0; color: #1e293b; font-size: 26px; font-weight: 700;">' + title + '</h1>' +
           '</div>' +
           '<div style="text-align: right; color: #64748b; font-size: 11px;">' +
@@ -660,7 +660,7 @@
         footer.innerHTML =
           '<div style="display: flex; justify-content: space-between; align-items: center;">' +
           '<div style="text-align: left;">' +
-          '<div style="font-weight: 600; color: #2E7D32;">Jaraba Impact Platform</div>' +
+          '<div style="font-weight: 600; color: #1565C0;">Jaraba Impact Platform</div>' +
           '<div>https://jarabaimpact.com</div>' +
           '</div>' +
           '<div style="text-align: center;">' +

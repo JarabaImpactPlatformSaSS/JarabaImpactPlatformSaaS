@@ -1,0 +1,13 @@
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: ''
+variant: default
+entity_type_id: business_model_canvas
+bundle: business_model_canvas
+settings:
+  index: true
+  priority: '0.5'
+  changefreq: weekly
+  include_images: false

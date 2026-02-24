@@ -11,7 +11,7 @@
  * - can_book: Boolean if user can book sessions
  */
 #}
-<div class="session-booking">
+<div class="session-booking" role="main" aria-label="{{ 'Reserva de sesión de mentoría'|t }}">
 
   {# Mentor Summary Header #}
   <div class="session-booking__mentor-header">
@@ -51,7 +51,7 @@
   </div>
 
   {# Step 1: Package Selection #}
-  <div class="session-booking__step active" data-step="packages">
+  <div class="session-booking__step active" data-step="packages" role="form" aria-label="{{ 'Selección de paquete'|t }}">
     <h3>{{ 'Elige tu paquete de mentoría'|t }}</h3>
     
     {% if engagement and engagement.sessions_remaining > 0 %}
@@ -141,7 +141,7 @@
   </div>
 
   {# Step 2: Calendar Selection #}
-  <div class="session-booking__step" data-step="calendar">
+  <div class="session-booking__step" data-step="calendar" role="form" aria-label="{{ 'Selección de fecha'|t }}">
     <h3>{{ 'Selecciona fecha y hora'|t }}</h3>
     
     <div class="calendar-container">
@@ -199,7 +199,7 @@
   </div>
 
   {# Step 3: Confirmation #}
-  <div class="session-booking__step" data-step="confirm">
+  <div class="session-booking__step" data-step="confirm" role="form" aria-label="{{ 'Confirmación de reserva'|t }}">
     <h3>{{ 'Confirmar reserva'|t }}</h3>
 
     <div class="confirmation-card">
@@ -225,7 +225,7 @@
         <label for="session-agenda" class="form-label">
           {{ '¿Qué temas quieres tratar? (opcional)'|t }}
         </label>
-        <textarea id="session-agenda" class="form-textarea" 
+        <textarea id="session-agenda" class="form-textarea" aria-label="{{ '¿Qué temas quieres tratar?'|t }}"
                   placeholder="{{ 'Describe brevemente tus objetivos para esta sesión...'|t }}"
                   rows="4"></textarea>
       </div>

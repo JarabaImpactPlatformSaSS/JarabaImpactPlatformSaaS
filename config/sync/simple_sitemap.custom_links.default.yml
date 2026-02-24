@@ -13,3 +13,11 @@ links:
     path: /empleabilidad/diagnostico
     priority: '0.7'
     changefreq: monthly
+  -
+    path: /entrepreneur/dashboard
+    priority: '0.7'
+    changefreq: weekly
+  -
+    path: /entrepreneur/mentors
+    priority: '0.7'
+    changefreq: weekly
