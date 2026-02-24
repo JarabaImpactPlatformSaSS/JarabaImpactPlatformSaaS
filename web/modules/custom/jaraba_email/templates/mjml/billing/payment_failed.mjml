@@ -1,18 +1,19 @@
 <mjml>
   <mj-head>
     <mj-attributes>
-      <mj-all font-family="Arial, Helvetica, sans-serif" />
-      <mj-text font-size="14px" color="#374151" line-height="1.6" />
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#333333" line-height="1.6" />
       <mj-button background-color="#dc2626" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
     <mj-style>
-      .footer-link { color: #6b7280 !important; text-decoration: underline; }
+      .footer-link { color: #666666 !important; text-decoration: underline; }
     </mj-style>
   </mj-head>
-  <mj-body background-color="#f3f4f6" width="600px">
+  <mj-body background-color="#f8f9fa" width="600px">
+    <mj-preview>No hemos podido procesar tu pago &mdash; actualiza tu m&eacute;todo</mj-preview>
     <!-- Header -->
-    <mj-section background-color="#2563eb" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }}
@@ -41,7 +42,7 @@
         <mj-button href="{{ update_payment_url }}" align="center" padding="24px 0">
           Actualizar m&eacute;todo de pago
         </mj-button>
-        <mj-text font-size="13px" color="#6b7280">
+        <mj-text font-size="13px" color="#666666">
           <p>Si crees que se trata de un error, contacta con tu entidad bancaria o con nuestro equipo de soporte.</p>
         </mj-text>
       </mj-column>
@@ -50,16 +51,19 @@
     <!-- Footer -->
     <mj-section padding="24px">
       <mj-column>
-        <mj-divider border-color="#e5e7eb" border-width="1px" />
-        <mj-text align="center" font-size="12px" color="#6b7280" padding-top="16px">
+        <mj-divider border-color="#E0E0E0" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#666666" padding-top="16px">
           &copy; {{ current_year }} {{ site_name }}. Todos los derechos reservados.
         </mj-text>
-        <mj-text align="center" font-size="12px" color="#6b7280">
+        <mj-text align="center" font-size="12px" color="#666666">
           <a href="{{ unsubscribe_url }}" class="footer-link">Cancelar suscripci&oacute;n</a> &nbsp;|&nbsp;
           <a href="{{ site_url }}/privacy" class="footer-link">Pol&iacute;tica de privacidad</a>
         </mj-text>
-        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
+        <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
           Has recibido este correo porque tienes una cuenta en {{ site_name }}.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
+          Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>

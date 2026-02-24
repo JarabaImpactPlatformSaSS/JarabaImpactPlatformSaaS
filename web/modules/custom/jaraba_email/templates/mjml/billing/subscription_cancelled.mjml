@@ -11,6 +11,7 @@
     </mj-style>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
+    <mj-preview>Tu suscripci&oacute;n ha sido cancelada</mj-preview>
     <!-- Header -->
     <mj-section background-color="#2563eb" padding="20px 0">
       <mj-column>
