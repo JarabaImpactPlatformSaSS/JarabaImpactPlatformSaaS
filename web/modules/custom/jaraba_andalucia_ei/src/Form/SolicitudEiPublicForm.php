@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Form;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Mail\MailManagerInterface;
@@ -22,6 +23,11 @@ class SolicitudEiPublicForm extends FormBase
 {
 
     /**
+     * The entity type manager.
+     */
+    protected EntityTypeManagerInterface $entityTypeManager;
+
+    /**
      * The mail manager.
      */
     protected MailManagerInterface $mailManager;
@@ -37,6 +43,7 @@ class SolicitudEiPublicForm extends FormBase
     public static function create(ContainerInterface $container): static
     {
         $instance = parent::create($container);
+        $instance->entityTypeManager = $container->get('entity_type.manager');
         $instance->mailManager = $container->get('plugin.manager.mail');
         $instance->triageService = $container->get('jaraba_andalucia_ei.solicitud_triage');
         return $instance;
@@ -70,7 +77,8 @@ class SolicitudEiPublicForm extends FormBase
         ];
 
         // === ANTI-SPAM: TIME GATE ===
-        // Registra timestamp de carga. Si envío < 3s, es bot.
+        // #value se regenera en cada rebuild, pero el timestamp original
+        // persiste en el POST (user input). validateForm() lee de getUserInput().
         $form['form_token_ts'] = [
             '#type' => 'hidden',
             '#value' => time(),
@@ -278,7 +286,8 @@ class SolicitudEiPublicForm extends FormBase
         }
 
         // === ANTI-SPAM: TIME GATE (< 3 segundos = bot) ===
-        $ts = (int) $form_state->getValue('form_token_ts');
+        $userInput = $form_state->getUserInput();
+        $ts = (int) ($userInput['form_token_ts'] ?? 0);
         if ($ts > 0 && (time() - $ts) < 3) {
             $form_state->setErrorByName('', $this->t('Por favor, espera un momento antes de enviar el formulario.'));
             return;
@@ -320,16 +329,20 @@ class SolicitudEiPublicForm extends FormBase
      */
     public function submitForm(array &$form, FormStateInterface $form_state): void
     {
-        $storage = $this->entityTypeManager()->getStorage('solicitud_ei');
+        $storage = $this->entityTypeManager->getStorage('solicitud_ei');
 
         // Resolve tenant_id from context (Regla de Oro #4: tenant_id obligatorio).
+        // Andalucía +ei es un programa de plataforma (no de tenant individual),
+        // por lo que tenant_id será NULL en el dominio principal.
+        // Si en el futuro un tenant específico gestiona su propio programa,
+        // tenant_manager resolverá por dominio.
         $tenantId = NULL;
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_manager')) {
             try {
-                $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+                $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_manager')->getCurrentTenant();
                 $tenantId = $tenant?->id();
             }
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 // Non-critical — solicitud se crea sin tenant.
             }
         }
@@ -368,7 +381,7 @@ class SolicitudEiPublicForm extends FormBase
             $solicitud->set('ai_justificacion', $triage['justificacion']);
             $solicitud->set('ai_recomendacion', $triage['recomendacion']);
             $solicitud->save();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // El triaje IA no debe bloquear la solicitud.
             \Drupal::logger('jaraba_andalucia_ei')->error('Error en triaje IA: @msg', [
                 '@msg' => $e->getMessage(),
