@@ -24,3 +24,11 @@ entity.ai_skill_usage.settings_tab:
   title: 'Settings'
   route_name: entity.ai_skill_usage.settings
   base_route: entity.ai_skill_usage.settings
+
+# Field UI settings tabs.
+
+entity.ai_skill.settings_tab:
+  title: 'Configuración'
+  route_name: entity.ai_skill.admin_form
+  base_route: entity.ai_skill.admin_form
+

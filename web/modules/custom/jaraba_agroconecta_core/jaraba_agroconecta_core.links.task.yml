@@ -293,3 +293,125 @@ entity.sales_message_agro.settings_tab:
   route_name: entity.sales_message_agro.settings
   base_route: entity.sales_message_agro.settings
 
+# Field UI settings tabs.
+
+entity.review_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.review_agro.settings
+  base_route: entity.review_agro.settings
+
+entity.order_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.order_agro.settings
+  base_route: entity.order_agro.settings
+
+entity.agro_collection.settings_tab:
+  title: 'Configuración'
+  route_name: entity.agro_collection.settings
+  base_route: entity.agro_collection.settings
+
+entity.qr_code_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.qr_code_agro.settings
+  base_route: entity.qr_code_agro.settings
+
+entity.integrity_proof_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.integrity_proof_agro.settings
+  base_route: entity.integrity_proof_agro.settings
+
+entity.agro_certification.settings_tab:
+  title: 'Configuración'
+  route_name: entity.agro_certification.settings
+  base_route: entity.agro_certification.settings
+
+entity.agro_category.settings_tab:
+  title: 'Configuración'
+  route_name: entity.agro_category.settings
+  base_route: entity.agro_category.settings
+
+entity.trace_event_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.trace_event_agro.settings
+  base_route: entity.trace_event_agro.settings
+
+entity.coupon_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.coupon_agro.settings
+  base_route: entity.coupon_agro.settings
+
+entity.shipping_method_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.shipping_method_agro.settings
+  base_route: entity.shipping_method_agro.settings
+
+entity.notification_log_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.notification_log_agro.settings
+  base_route: entity.notification_log_agro.settings
+
+entity.shipping_zone_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.shipping_zone_agro.settings
+  base_route: entity.shipping_zone_agro.settings
+
+entity.promotion_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.promotion_agro.settings
+  base_route: entity.promotion_agro.settings
+
+entity.product_document.settings_tab:
+  title: 'Configuración'
+  route_name: entity.product_document.settings
+  base_route: entity.product_document.settings
+
+entity.product_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.product_agro.settings
+  base_route: entity.product_agro.settings
+
+entity.agro_batch.settings_tab:
+  title: 'Configuración'
+  route_name: entity.agro_batch.settings
+  base_route: entity.agro_batch.settings
+
+entity.alert_rule_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.alert_rule_agro.settings
+  base_route: entity.alert_rule_agro.settings
+
+entity.producer_profile.settings_tab:
+  title: 'Configuración'
+  route_name: entity.producer_profile.settings
+  base_route: entity.producer_profile.settings
+
+entity.agro_shipment.settings_tab:
+  title: 'Configuración'
+  route_name: entity.agro_shipment.collection
+  base_route: entity.agro_shipment.collection
+
+entity.suborder_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.suborder_agro.settings
+  base_route: entity.suborder_agro.settings
+
+entity.notification_template_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.notification_template_agro.settings
+  base_route: entity.notification_template_agro.settings
+
+entity.notification_preference_agro.settings_tab:
+  title: 'Configuración'
+  route_name: entity.notification_preference_agro.settings
+  base_route: entity.notification_preference_agro.settings
+
+entity.partner_relationship.settings_tab:
+  title: 'Configuración'
+  route_name: entity.partner_relationship.settings
+  base_route: entity.partner_relationship.settings
+
+entity.qr_lead_capture.settings_tab:
+  title: 'Configuración'
+  route_name: entity.qr_lead_capture.settings
+  base_route: entity.qr_lead_capture.settings
+

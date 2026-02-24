@@ -16,3 +16,16 @@ jaraba_legal_lexnet.lexnet_submission.collection:
   route_name: entity.lexnet_submission.collection
   base_route: system.admin_content
   weight: 73
+
+# Field UI settings tabs.
+
+entity.lexnet_notification.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_lexnet.lexnet_notification.settings
+  base_route: jaraba_legal_lexnet.lexnet_notification.settings
+
+entity.lexnet_submission.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_lexnet.lexnet_submission.settings
+  base_route: jaraba_legal_lexnet.lexnet_submission.settings
+

@@ -31,3 +31,11 @@ entity.path_step.settings_tab:
   title: 'Settings'
   route_name: entity.path_step.settings
   base_route: entity.path_step.settings
+
+# Field UI settings tabs.
+
+entity.digitalization_path.settings_tab:
+  title: 'Configuración'
+  route_name: entity.digitalization_path.settings
+  base_route: entity.digitalization_path.settings
+

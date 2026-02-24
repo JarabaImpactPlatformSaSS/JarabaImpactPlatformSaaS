@@ -17,3 +17,16 @@ jaraba_addons.addon_subscription.collection:
   route_name: entity.addon_subscription.collection
   base_route: system.admin_content
   weight: 85
+
+# Field UI settings tabs.
+
+entity.addon.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_addons.addon.settings
+  base_route: jaraba_addons.addon.settings
+
+entity.addon_subscription.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_addons.addon_subscription.settings
+  base_route: jaraba_addons.addon_subscription.settings
+

@@ -25,3 +25,31 @@ entity.crm_activity.collection:
   route_name: entity.crm_activity.collection
   base_route: system.admin_content
   weight: 33
+
+# Field UI settings tabs.
+
+entity.crm_pipeline_stage.settings_tab:
+  title: 'Configuración'
+  route_name: entity.crm_pipeline_stage.settings
+  base_route: entity.crm_pipeline_stage.settings
+
+entity.crm_contact.settings_tab:
+  title: 'Configuración'
+  route_name: entity.crm_contact.settings
+  base_route: entity.crm_contact.settings
+
+entity.crm_opportunity.settings_tab:
+  title: 'Configuración'
+  route_name: entity.crm_opportunity.settings
+  base_route: entity.crm_opportunity.settings
+
+entity.crm_company.settings_tab:
+  title: 'Configuración'
+  route_name: entity.crm_company.settings
+  base_route: entity.crm_company.settings
+
+entity.crm_activity.settings_tab:
+  title: 'Configuración'
+  route_name: entity.crm_activity.settings
+  base_route: entity.crm_activity.settings
+

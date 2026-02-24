@@ -10,3 +10,26 @@ jaraba_referral.referral.collection:
   route_name: entity.referral.collection
   base_route: system.admin_content
   weight: 82
+
+# Field UI settings tabs.
+
+entity.referral_program.settings_tab:
+  title: 'Configuración'
+  route_name: entity.referral_program.settings
+  base_route: entity.referral_program.settings
+
+entity.referral.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_referral.referral.settings
+  base_route: jaraba_referral.referral.settings
+
+entity.referral_reward.settings_tab:
+  title: 'Configuración'
+  route_name: entity.referral_reward.settings
+  base_route: entity.referral_reward.settings
+
+entity.referral_code.settings_tab:
+  title: 'Configuración'
+  route_name: entity.referral_code.settings
+  base_route: entity.referral_code.settings
+

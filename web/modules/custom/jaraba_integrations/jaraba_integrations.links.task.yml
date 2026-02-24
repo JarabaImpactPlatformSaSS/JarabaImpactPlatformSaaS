@@ -41,3 +41,11 @@ entity.webhook_subscription.settings_tab:
   title: 'Settings'
   route_name: entity.webhook_subscription.settings
   base_route: entity.webhook_subscription.settings
+
+# Field UI settings tabs.
+
+entity.connector.settings_tab:
+  title: 'Configuración'
+  route_name: entity.connector.collection
+  base_route: entity.connector.collection
+

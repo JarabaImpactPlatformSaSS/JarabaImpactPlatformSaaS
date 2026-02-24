@@ -44,3 +44,36 @@ jaraba_servicios_conecta.review_servicios.collection:
   route_name: entity.review_servicios.collection
   base_route: system.admin_content
   weight: 65
+
+# Field UI settings tabs.
+
+entity.service_offering.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_servicios_conecta.service_offering.settings
+  base_route: jaraba_servicios_conecta.service_offering.settings
+
+entity.review_servicios.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_servicios_conecta.review_servicios.settings
+  base_route: jaraba_servicios_conecta.review_servicios.settings
+
+entity.booking.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_servicios_conecta.booking.settings
+  base_route: jaraba_servicios_conecta.booking.settings
+
+entity.service_package.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_servicios_conecta.service_package.settings
+  base_route: jaraba_servicios_conecta.service_package.settings
+
+entity.availability_slot.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_servicios_conecta.availability_slot.settings
+  base_route: jaraba_servicios_conecta.availability_slot.settings
+
+entity.provider_profile.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_servicios_conecta.provider_profile.settings
+  base_route: jaraba_servicios_conecta.provider_profile.settings
+

@@ -2,3 +2,36 @@ jaraba_legal.settings:
   title: 'Configuración'
   route_name: jaraba_legal.settings
   base_route: jaraba_legal.settings
+
+# Field UI settings tabs.
+
+entity.aup_violation.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.aup_violation.settings
+  base_route: jaraba_legal.aup_violation.settings
+
+entity.usage_limit_record.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.usage_limit_record.settings
+  base_route: jaraba_legal.usage_limit_record.settings
+
+entity.service_agreement.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.service_agreement.settings
+  base_route: jaraba_legal.service_agreement.settings
+
+entity.offboarding_request.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.offboarding_request.settings
+  base_route: jaraba_legal.offboarding_request.settings
+
+entity.sla_record.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.sla_record.settings
+  base_route: jaraba_legal.sla_record.settings
+
+entity.whistleblower_report.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.whistleblower_report.settings
+  base_route: jaraba_legal.whistleblower_report.settings
+

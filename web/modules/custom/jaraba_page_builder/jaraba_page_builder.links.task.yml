@@ -64,3 +64,30 @@ entity.experiment_variant.collection:
   route_name: entity.experiment_variant.collection
   base_route: system.admin_content
 
+# Field UI settings tabs.
+
+entity.stat_item.settings_tab:
+  title: 'Configuración'
+  route_name: entity.stat_item.settings
+  base_route: entity.stat_item.settings
+
+entity.page_content.settings_tab:
+  title: 'Configuración'
+  route_name: entity.page_content.collection
+  base_route: entity.page_content.collection
+
+entity.intention_card.settings_tab:
+  title: 'Configuración'
+  route_name: entity.intention_card.settings
+  base_route: entity.intention_card.settings
+
+entity.homepage_content.settings_tab:
+  title: 'Configuración'
+  route_name: entity.homepage_content.settings
+  base_route: entity.homepage_content.settings
+
+entity.feature_card.settings_tab:
+  title: 'Configuración'
+  route_name: entity.feature_card.settings
+  base_route: entity.feature_card.settings
+

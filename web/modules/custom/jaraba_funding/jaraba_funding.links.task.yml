@@ -15,3 +15,21 @@ jaraba_funding.reports:
   route_name: entity.technical_report.collection
   base_route: system.admin_content
   weight: 42
+
+# Field UI settings tabs.
+
+entity.funding_application.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_funding.funding_application.settings
+  base_route: jaraba_funding.funding_application.settings
+
+entity.technical_report.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_funding.technical_report.settings
+  base_route: jaraba_funding.technical_report.settings
+
+entity.funding_opportunity.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_funding.funding_opportunity.settings
+  base_route: jaraba_funding.funding_opportunity.settings
+

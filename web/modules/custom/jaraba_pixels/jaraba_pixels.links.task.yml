@@ -1,0 +1,17 @@
+# Task links for field UI settings tabs.
+
+entity.consent_record.settings_tab:
+  title: 'Configuración'
+  route_name: entity.consent_record.settings
+  base_route: entity.consent_record.settings
+
+entity.tracking_pixel.settings_tab:
+  title: 'Configuración'
+  route_name: entity.tracking_pixel.settings
+  base_route: entity.tracking_pixel.settings
+
+entity.tracking_event.settings_tab:
+  title: 'Configuración'
+  route_name: entity.tracking_event.settings
+  base_route: entity.tracking_event.settings
+

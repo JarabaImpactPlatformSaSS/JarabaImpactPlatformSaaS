@@ -2,3 +2,21 @@ jaraba_dr.settings:
   title: 'Configuracion'
   route_name: jaraba_dr.settings
   base_route: jaraba_dr.settings
+
+# Field UI settings tabs.
+
+entity.dr_incident.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_dr.dr_incident.settings
+  base_route: jaraba_dr.dr_incident.settings
+
+entity.dr_test_result.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_dr.dr_test_result.settings
+  base_route: jaraba_dr.dr_test_result.settings
+
+entity.backup_verification.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_dr.backup_verification.settings
+  base_route: jaraba_dr.backup_verification.settings
+

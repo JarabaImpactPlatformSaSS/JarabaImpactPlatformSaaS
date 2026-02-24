@@ -53,3 +53,16 @@ entity.solicitud_ei.delete_form:
   route_name: entity.solicitud_ei.delete_form
   base_route: entity.solicitud_ei.canonical
   weight: 20
+
+# Field UI settings tabs.
+
+entity.programa_participante_ei.settings_tab:
+  title: 'Configuración'
+  route_name: entity.programa_participante_ei.settings
+  base_route: entity.programa_participante_ei.settings
+
+entity.solicitud_ei.settings_tab:
+  title: 'Configuración'
+  route_name: entity.solicitud_ei.settings
+  base_route: entity.solicitud_ei.settings
+

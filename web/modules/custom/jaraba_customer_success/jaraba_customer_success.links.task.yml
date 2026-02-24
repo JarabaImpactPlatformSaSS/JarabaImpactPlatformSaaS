@@ -69,3 +69,11 @@ entity.seasonal_churn_prediction.settings_tab:
   title: 'Settings'
   route_name: entity.seasonal_churn_prediction.settings
   base_route: entity.seasonal_churn_prediction.settings
+
+# Field UI settings tabs.
+
+entity.vertical_retention_profile.settings_tab:
+  title: 'Configuración'
+  route_name: entity.vertical_retention_profile.collection
+  base_route: entity.vertical_retention_profile.collection
+

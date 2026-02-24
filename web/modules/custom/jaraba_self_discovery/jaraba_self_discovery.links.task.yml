@@ -23,3 +23,21 @@ entity.life_timeline.settings_tab:
   title: 'Settings'
   route_name: entity.life_timeline.settings
   base_route: entity.life_timeline.settings
+
+# Field UI settings tabs.
+
+entity.life_wheel_assessment.settings_tab:
+  title: 'Configuración'
+  route_name: entity.life_wheel_assessment.settings
+  base_route: entity.life_wheel_assessment.settings
+
+entity.strength_assessment.settings_tab:
+  title: 'Configuración'
+  route_name: entity.strength_assessment.settings
+  base_route: entity.strength_assessment.settings
+
+entity.interest_profile.settings_tab:
+  title: 'Configuración'
+  route_name: entity.interest_profile.settings
+  base_route: entity.interest_profile.settings
+

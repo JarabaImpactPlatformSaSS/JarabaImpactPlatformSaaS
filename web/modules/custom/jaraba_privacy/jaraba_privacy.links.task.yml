@@ -2,3 +2,31 @@ jaraba_privacy.settings:
   title: 'Configuración'
   route_name: jaraba_privacy.settings
   base_route: jaraba_privacy.settings
+
+# Field UI settings tabs.
+
+entity.cookie_consent.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_privacy.dpa_agreement.settings
+  base_route: jaraba_privacy.dpa_agreement.settings
+
+entity.dpa_agreement.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_privacy.dpa_agreement.settings
+  base_route: jaraba_privacy.dpa_agreement.settings
+
+entity.privacy_policy.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_privacy.privacy_policy.settings
+  base_route: jaraba_privacy.privacy_policy.settings
+
+entity.processing_activity.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_privacy.processing_activity.settings
+  base_route: jaraba_privacy.processing_activity.settings
+
+entity.data_rights_request.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_privacy.dpa_agreement.settings
+  base_route: jaraba_privacy.dpa_agreement.settings
+

@@ -48,3 +48,21 @@ entity.agent_handoff.settings_tab:
   title: 'Settings'
   route_name: entity.agent_handoff.settings
   base_route: entity.agent_handoff.settings
+
+# Field UI settings tabs.
+
+entity.agent_execution.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_agents.agent_execution.settings
+  base_route: jaraba_agents.agent_execution.settings
+
+entity.autonomous_agent.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_agents.autonomous_agent.settings
+  base_route: jaraba_agents.autonomous_agent.settings
+
+entity.agent_approval.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_agents.agent_approval.settings
+  base_route: jaraba_agents.agent_approval.settings
+

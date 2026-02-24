@@ -13,3 +13,26 @@ jaraba_ab_testing.variant.collection:
   route_name: entity.ab_variant.collection
   base_route: system.admin_content
   weight: 81
+
+# Field UI settings tabs.
+
+entity.experiment_result.settings_tab:
+  title: 'Configuración'
+  route_name: entity.experiment_result.settings
+  base_route: entity.experiment_result.settings
+
+entity.ab_variant.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_ab_testing.variant.settings
+  base_route: jaraba_ab_testing.variant.settings
+
+entity.experiment_exposure.settings_tab:
+  title: 'Configuración'
+  route_name: entity.experiment_exposure.settings
+  base_route: entity.experiment_exposure.settings
+
+entity.ab_experiment.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_ab_testing.experiment.settings
+  base_route: jaraba_ab_testing.experiment.settings
+

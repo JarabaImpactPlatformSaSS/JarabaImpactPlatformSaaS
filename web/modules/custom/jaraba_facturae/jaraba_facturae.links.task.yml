@@ -20,3 +20,21 @@ jaraba_facturae.config_tab:
   title: 'Configuration'
   base_route: jaraba_facturae.dashboard
   weight: 30
+
+# Field UI settings tabs.
+
+entity.facturae_face_log.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_facturae.facturae_face_log.settings
+  base_route: jaraba_facturae.facturae_face_log.settings
+
+entity.facturae_tenant_config.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_facturae.facturae_tenant_config.settings
+  base_route: jaraba_facturae.facturae_tenant_config.settings
+
+entity.facturae_document.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_facturae.facturae_document.settings
+  base_route: jaraba_facturae.facturae_document.settings
+

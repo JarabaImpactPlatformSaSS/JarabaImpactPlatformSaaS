@@ -20,3 +20,21 @@ entity.vies_validation.settings_tab:
   title: 'Settings'
   route_name: entity.vies_validation.settings
   base_route: entity.vies_validation.settings
+
+# Field UI settings tabs.
+
+entity.tenant_region.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_multiregion.tenant_region.settings
+  base_route: jaraba_multiregion.tenant_region.settings
+
+entity.currency_rate.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_multiregion.currency_rate.settings
+  base_route: jaraba_multiregion.currency_rate.settings
+
+entity.tax_rule.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_multiregion.tax_rule.settings
+  base_route: jaraba_multiregion.tax_rule.settings
+
