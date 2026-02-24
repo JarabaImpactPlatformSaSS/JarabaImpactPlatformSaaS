@@ -75,3 +75,12 @@ services:
       - '@database'
       - '@current_user'
       - '@logger.factory'
+
+  # ============================================================================
+  # BREADCRUMBS
+  # ============================================================================
+
+  jaraba_candidate.breadcrumb:
+    class: Drupal\jaraba_candidate\Breadcrumb\CandidateBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

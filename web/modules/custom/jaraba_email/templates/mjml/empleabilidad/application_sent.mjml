@@ -24,16 +24,16 @@
     <!-- Contenido -->
     <mj-section background-color="#ffffff" padding="32px 24px">
       <mj-column>
-        <mj-text font-size="22px" font-weight="bold" color="#16a34a" padding-bottom="8px">
+        <mj-text font-size="22px" font-weight="bold" color="#1565C0" padding-bottom="8px">
           Candidatura enviada
         </mj-text>
         <mj-text>
           <p>Hola {{ user_name }},</p>
           <p>Tu candidatura ha sido enviada correctamente. Aqu&iacute; tienes el resumen:</p>
         </mj-text>
-        <mj-section background-color="#f0fdf4" padding="16px" border-radius="6px">
+        <mj-section background-color="#e3f2fd" padding="16px" border-radius="6px">
           <mj-column>
-            <mj-text font-size="14px" color="#166534">
+            <mj-text font-size="14px" color="#0d47a1">
               <strong>Puesto:</strong> {{ job_title }}<br />
               <strong>Empresa:</strong> {{ company_name }}<br />
               <strong>Fecha de env&iacute;o:</strong> {{ application_date }}

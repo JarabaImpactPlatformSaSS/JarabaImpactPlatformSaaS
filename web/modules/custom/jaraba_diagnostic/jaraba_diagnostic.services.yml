@@ -30,3 +30,12 @@ services:
       - '@renderer'
       - '@logger.channel.default'
 
+  # ============================================================================
+  # BREADCRUMBS
+  # ============================================================================
+
+  jaraba_diagnostic.breadcrumb:
+    class: Drupal\jaraba_diagnostic\Breadcrumb\DiagnosticBreadcrumbBuilder
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }
+
