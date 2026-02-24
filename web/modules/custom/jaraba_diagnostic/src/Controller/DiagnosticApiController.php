@@ -84,8 +84,12 @@ class DiagnosticApiController extends ControllerBase
         $diagnostic = $this->loadByUuid($uuid);
 
         if (!$diagnostic) {
-            return // AUDIT-CONS-N08: Standardized JSON envelope.
-        new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
+        }
+
+        // Verify ownership: the diagnostic must belong to the current user.
+        if ((int) $diagnostic->get('user_id')->target_id !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ACCESS_DENIED', 'message' => 'Diagnostic not found']], 403);
         }
 
         return new JsonResponse([
@@ -139,6 +143,10 @@ class DiagnosticApiController extends ControllerBase
             return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
+        if ((int) $diagnostic->get('user_id')->target_id !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ACCESS_DENIED', 'message' => 'Diagnostic not found']], 403);
+        }
+
         $data = json_decode($request->getContent(), TRUE);
 
         // Actualizar campos permitidos
@@ -167,6 +175,10 @@ class DiagnosticApiController extends ControllerBase
 
         if (!$diagnostic) {
             return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
+        }
+
+        if ((int) $diagnostic->get('user_id')->target_id !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ACCESS_DENIED', 'message' => 'Diagnostic not found']], 403);
         }
 
         $data = json_decode($request->getContent(), TRUE);
@@ -204,6 +216,10 @@ class DiagnosticApiController extends ControllerBase
             return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
         }
 
+        if ((int) $diagnostic->get('user_id')->target_id !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ACCESS_DENIED', 'message' => 'Diagnostic not found']], 403);
+        }
+
         $priorityGaps = json_decode($diagnostic->get('priority_gaps')->value ?? '[]', TRUE);
 
         return new JsonResponse([
@@ -229,6 +245,10 @@ class DiagnosticApiController extends ControllerBase
 
         if (!$diagnostic) {
             return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Diagnostic not found']], 404);
+        }
+
+        if ((int) $diagnostic->get('user_id')->target_id !== (int) $this->currentUser()->id()) {
+            return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ACCESS_DENIED', 'message' => 'Diagnostic not found']], 403);
         }
 
         // Query diagnostic_result entity to extract scores_by_section from JSON field.
@@ -280,6 +300,10 @@ class DiagnosticApiController extends ControllerBase
 
         if (!$diagnostic) {
             return new Response('Diagnostic not found', 404);
+        }
+
+        if ((int) $diagnostic->get('user_id')->target_id !== (int) $this->currentUser()->id()) {
+            return new Response('Diagnostic not found', 403);
         }
 
         $reportService = \Drupal::service('jaraba_diagnostic.report');

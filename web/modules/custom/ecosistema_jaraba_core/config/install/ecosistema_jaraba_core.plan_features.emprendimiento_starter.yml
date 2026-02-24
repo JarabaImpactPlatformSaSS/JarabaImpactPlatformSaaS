@@ -4,11 +4,11 @@ vertical: emprendimiento
 tier: starter
 features: []
 limits:
-  hypotheses_active: 3
-  experiments_monthly: 2
-  copilot_sessions_daily: 3
-  mentoring_sessions_monthly: 0
-  bmc_drafts: 2
-  calculadora_uses: 5
+  hypotheses_active: 20
+  experiments_monthly: 10
+  copilot_sessions_daily: 50
+  mentoring_sessions_monthly: 2
+  bmc_drafts: -1
+  calculadora_uses: -1
 description: 'Limites del tier Starter para la vertical Emprendimiento.'
 status: true

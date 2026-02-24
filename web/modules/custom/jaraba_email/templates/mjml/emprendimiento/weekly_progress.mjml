@@ -3,16 +3,17 @@
     <mj-attributes>
       <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
       <mj-text font-size="14px" color="#374151" line-height="1.6" />
-      <mj-button background-color="#00897B" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
       <mj-section padding="0px" />
     </mj-attributes>
+    <mj-preview>Resumen semanal de tu progreso como emprendedor.</mj-preview>
     <mj-style>
       .footer-link { color: #6b7280 !important; text-decoration: underline; }
     </mj-style>
   </mj-head>
   <mj-body background-color="#f3f4f6" width="600px">
     <!-- Header -->
-    <mj-section background-color="#00897B" padding="20px 0">
+    <mj-section background-color="#1565C0" padding="20px 0">
       <mj-column>
         <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">
           {{ site_name }} Emprendimiento
@@ -31,9 +32,9 @@
           <p>{{ t('Aqui tienes un resumen de tu semana en el programa de emprendimiento.') }}</p>
         </mj-text>
 
-        <mj-section background-color="#E0F2F1" padding="16px" border-radius="6px">
+        <mj-section background-color="#E3F2FD" padding="16px" border-radius="6px">
           <mj-column>
-            <mj-text font-size="14px" color="#1A2E2B">
+            <mj-text font-size="14px" color="#0D47A1">
               <strong>{{ t('Semana del programa') }}:</strong> {{ program_week }}/12<br />
               <strong>{{ t('Fase actual') }}:</strong> {{ current_phase }}<br />
               <strong>{{ t('Puntos de impacto') }}:</strong> {{ impact_points }}<br />
@@ -43,7 +44,7 @@
           </mj-column>
         </mj-section>
 
-        <mj-text font-size="16px" font-weight="bold" color="#00897B" padding-top="16px" padding-bottom="8px">
+        <mj-text font-size="16px" font-weight="bold" color="#1565C0" padding-top="16px" padding-bottom="8px">
           {{ t('Proximo paso sugerido por el Copiloto') }}
         </mj-text>
         <mj-text>
@@ -74,6 +75,9 @@
         <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="8px">
           Has recibido este correo porque tienes un perfil activo en {{ site_name }} Emprendimiento.
           <a href="{{ unsubscribe_url }}" class="footer-link">Desactivar resumen semanal</a>
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#9ca3af" padding-top="4px">
+          Jaraba Impact Platform &mdash; Pol&iacute;gono Industrial Juncaril, C/ Abedul s/n, 18220 Albolote, Granada, Espa&ntilde;a
         </mj-text>
       </mj-column>
     </mj-section>
