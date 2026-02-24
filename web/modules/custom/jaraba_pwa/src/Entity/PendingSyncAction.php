@@ -43,6 +43,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/pending-sync-actions/{pending_sync_action}",
  *     "delete-form" = "/admin/content/pending-sync-actions/{pending_sync_action}/delete",
  *   },
+ *   field_ui_base_route = "entity.pending_sync_action.settings",
  * )
  */
 class PendingSyncAction extends ContentEntityBase {

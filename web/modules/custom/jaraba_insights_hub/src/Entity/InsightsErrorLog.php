@@ -54,6 +54,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/insights-error/{insights_error_log}",
  *     "collection" = "/admin/content/insights-errors",
  *   },
+ *   field_ui_base_route = "entity.insights_error_log.settings",
  * )
  */
 class InsightsErrorLog extends ContentEntityBase implements EntityChangedInterface {

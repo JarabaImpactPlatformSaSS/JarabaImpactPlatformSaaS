@@ -6,3 +6,28 @@ entity.digitalization_path.collection:
   route_name: entity.digitalization_path.collection
   base_route: system.admin_content
   weight: 35
+
+entity.path_enrollment.collection:
+  title: 'Path Enrollments'
+  route_name: entity.path_enrollment.collection
+  base_route: system.admin_content
+
+entity.path_enrollment.settings_tab:
+  title: 'Settings'
+  route_name: entity.path_enrollment.settings
+  base_route: entity.path_enrollment.settings
+
+entity.path_module.settings_tab:
+  title: 'Settings'
+  route_name: entity.path_module.settings
+  base_route: entity.path_module.settings
+
+entity.path_phase.settings_tab:
+  title: 'Settings'
+  route_name: entity.path_phase.settings
+  base_route: entity.path_phase.settings
+
+entity.path_step.settings_tab:
+  title: 'Settings'
+  route_name: entity.path_step.settings
+  base_route: entity.path_step.settings

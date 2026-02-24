@@ -70,6 +70,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/config/resellers/{reseller}/edit",
  *     "delete-form" = "/admin/config/resellers/{reseller}/delete",
  *   },
+ *   field_ui_base_route = "entity.reseller.settings",
  * )
  */
 class Reseller extends ContentEntityBase {

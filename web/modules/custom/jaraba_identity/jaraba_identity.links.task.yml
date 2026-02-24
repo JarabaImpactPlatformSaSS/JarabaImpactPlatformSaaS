@@ -1,0 +1,9 @@
+entity.identity_wallet.collection:
+  title: 'Identity Wallets'
+  route_name: entity.identity_wallet.collection
+  base_route: system.admin_content
+
+entity.identity_wallet.settings_tab:
+  title: 'Settings'
+  route_name: entity.identity_wallet.settings
+  base_route: entity.identity_wallet.settings

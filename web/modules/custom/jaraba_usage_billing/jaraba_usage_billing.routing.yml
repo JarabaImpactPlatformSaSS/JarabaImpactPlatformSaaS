@@ -57,3 +57,19 @@ jaraba_usage_billing.api.dashboard.get:
   requirements:
     _permission: 'view usage data'
   methods: [GET]
+
+entity.usage_aggregate.settings:
+  path: '/admin/structure/usage-aggregate/settings'
+  defaults:
+    _form: 'Drupal\jaraba_usage_billing\Form\UsageAggregateSettingsForm'
+    _title: 'Usage Aggregate settings'
+  requirements:
+    _permission: 'administer usage billing'
+
+entity.usage_event.settings:
+  path: '/admin/structure/usage-event/settings'
+  defaults:
+    _form: 'Drupal\jaraba_usage_billing\Form\UsageEventSettingsForm'
+    _title: 'Usage Event settings'
+  requirements:
+    _permission: 'administer usage billing'

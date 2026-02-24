@@ -3,3 +3,18 @@ jaraba_messaging.settings:
   title: 'Settings'
   base_route: jaraba_messaging.settings
   weight: 0
+
+entity.conversation_participant.collection:
+  title: 'Conversation Participants'
+  route_name: entity.conversation_participant.collection
+  base_route: system.admin_content
+
+entity.conversation_participant.settings_tab:
+  title: 'Settings'
+  route_name: entity.conversation_participant.settings
+  base_route: entity.conversation_participant.settings
+
+entity.secure_conversation.settings_tab:
+  title: 'Settings'
+  route_name: entity.secure_conversation.settings
+  base_route: entity.secure_conversation.settings

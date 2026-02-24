@@ -1,0 +1,31 @@
+entity.digital_twin.collection:
+  path: '/admin/content/digital-twins'
+  defaults:
+    _entity_list: 'digital_twin'
+    _title: 'Digital Twins'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.negotiation_session.collection:
+  path: '/admin/content/negotiation-sessions'
+  defaults:
+    _entity_list: 'negotiation_session'
+    _title: 'Negotiation Sessions'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.digital_twin.settings:
+  path: '/admin/structure/digital-twin/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agent_market\Form\DigitalTwinSettingsForm'
+    _title: 'Digital Twin settings'
+  requirements:
+    _permission: 'administer jaraba agent market'
+
+entity.negotiation_session.settings:
+  path: '/admin/structure/negotiation-session/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agent_market\Form\NegotiationSessionSettingsForm'
+    _title: 'Negotiation Session settings'
+  requirements:
+    _permission: 'administer site configuration'

@@ -76,6 +76,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/jaraba/email/sequences/{email_sequence}/delete",
  *     "collection" = "/admin/jaraba/email/sequences",
  *   },
+ *   field_ui_base_route = "entity.email_sequence.settings",
  * )
  */
 class EmailSequence extends ContentEntityBase implements EntityOwnerInterface

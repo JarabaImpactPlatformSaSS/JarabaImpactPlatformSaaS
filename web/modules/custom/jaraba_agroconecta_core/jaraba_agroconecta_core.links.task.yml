@@ -221,3 +221,75 @@ entity.document_download_log.collection.tab:
   base_route: system.admin_content
   weight: 68
 
+entity.order_item_agro.collection:
+  title: 'Agro Order Items'
+  route_name: entity.order_item_agro.collection
+  base_route: system.admin_content
+
+# Settings tabs for Field UI (P2 remediation)
+
+entity.agro_shipping_rate.settings_tab:
+  title: 'Settings'
+  route_name: entity.agro_shipping_rate.settings
+  base_route: entity.agro_shipping_rate.settings
+
+entity.agro_shipping_zone.settings_tab:
+  title: 'Settings'
+  route_name: entity.agro_shipping_zone.settings
+  base_route: entity.agro_shipping_zone.settings
+
+entity.analytics_daily_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.analytics_daily_agro.settings
+  base_route: entity.analytics_daily_agro.settings
+
+entity.agro_carrier_config.settings_tab:
+  title: 'Settings'
+  route_name: entity.agro_carrier_config.settings
+  base_route: entity.agro_carrier_config.settings
+
+entity.copilot_conversation_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.copilot_conversation_agro.settings
+  base_route: entity.copilot_conversation_agro.settings
+
+entity.copilot_generated_content_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.copilot_generated_content_agro.settings
+  base_route: entity.copilot_generated_content_agro.settings
+
+entity.copilot_message_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.copilot_message_agro.settings
+  base_route: entity.copilot_message_agro.settings
+
+entity.customer_preference_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.customer_preference_agro.settings
+  base_route: entity.customer_preference_agro.settings
+
+entity.document_download_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.document_download_log.settings
+  base_route: entity.document_download_log.settings
+
+entity.order_item_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.order_item_agro.settings
+  base_route: entity.order_item_agro.settings
+
+entity.qr_scan_event.settings_tab:
+  title: 'Settings'
+  route_name: entity.qr_scan_event.settings
+  base_route: entity.qr_scan_event.settings
+
+entity.sales_conversation_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.sales_conversation_agro.settings
+  base_route: entity.sales_conversation_agro.settings
+
+entity.sales_message_agro.settings_tab:
+  title: 'Settings'
+  route_name: entity.sales_message_agro.settings
+  base_route: entity.sales_message_agro.settings
+

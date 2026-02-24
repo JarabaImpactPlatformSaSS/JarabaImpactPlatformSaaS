@@ -64,6 +64,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/agent-conversations/{agent_conversation}",
  *     "delete-form" = "/admin/content/agent-conversations/{agent_conversation}/delete",
  *   },
+ *   field_ui_base_route = "entity.agent_conversation.settings",
  * )
  */
 class AgentConversation extends ContentEntityBase {

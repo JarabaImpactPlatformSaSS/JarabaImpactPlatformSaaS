@@ -54,6 +54,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/whitelabel-configs/{whitelabel_config}/edit",
  *     "delete-form" = "/admin/content/whitelabel-configs/{whitelabel_config}/delete",
  *   },
+ *   field_ui_base_route = "entity.whitelabel_config.settings",
  * )
  */
 class WhitelabelConfig extends ContentEntityBase {

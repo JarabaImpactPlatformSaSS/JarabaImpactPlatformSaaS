@@ -42,6 +42,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/agro-customer-preferences/{customer_preference_agro}",
  *     "collection" = "/admin/content/agro-customer-preferences",
  *   },
+ *   field_ui_base_route = "entity.customer_preference_agro.settings",
  * )
  */
 class CustomerPreferenceAgro extends ContentEntityBase implements EntityChangedInterface

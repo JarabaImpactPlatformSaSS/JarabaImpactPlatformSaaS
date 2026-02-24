@@ -21,6 +21,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   label = @Translation("Evento Externo (Cache)"),
  *   label_collection = @Translation("Eventos Externos (Cache)"),
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_legal_calendar\Access\CalendarConnectionAccessControlHandler",
  *   },
@@ -31,6 +32,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "uuid" = "uuid",
  *     "label" = "external_event_id",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/external-event-cache",
+ *   },
+ *   field_ui_base_route = "entity.external_event_cache.settings",
  * )
  */
 class ExternalEventCache extends ContentEntityBase {

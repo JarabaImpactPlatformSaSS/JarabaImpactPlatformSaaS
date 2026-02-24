@@ -20,6 +20,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label_collection = @Translation("Canvas Blocks"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\jaraba_business_tools\Access\CanvasBlockAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
@@ -28,6 +29,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/canvas-blocks",
+ *   },
+ *   field_ui_base_route = "entity.canvas_block.settings",
  * )
  */
 class CanvasBlock extends ContentEntityBase

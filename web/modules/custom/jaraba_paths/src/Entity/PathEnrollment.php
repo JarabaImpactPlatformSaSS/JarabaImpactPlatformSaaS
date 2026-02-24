@@ -37,6 +37,10 @@ use Drupal\user\EntityOwnerTrait;
  *     "uuid" = "uuid",
  *     "owner" = "user_id",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/path-enrollments",
+ *   },
+ *   field_ui_base_route = "entity.path_enrollment.settings",
  * )
  */
 class PathEnrollment extends ContentEntityBase implements EntityOwnerInterface

@@ -46,6 +46,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "collection" = "/admin/content/agent-flow-executions",
  *     "canonical" = "/admin/content/agent-flow-executions/{agent_flow_execution}",
  *   },
+ *   field_ui_base_route = "entity.agent_flow_execution.settings",
  * )
  */
 class AgentFlowExecution extends ContentEntityBase {

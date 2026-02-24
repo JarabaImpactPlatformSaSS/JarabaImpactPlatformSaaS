@@ -146,3 +146,23 @@ jaraba_onboarding.api.wizard.logo_colors:
   requirements:
     _permission: 'view onboarding progress'
   methods: [POST]
+
+# =============================================
+# Field UI Settings — Entity settings forms
+# =============================================
+
+entity.tenant_onboarding_progress.settings:
+  path: '/admin/structure/tenant-onboarding-progress/settings'
+  defaults:
+    _form: 'Drupal\jaraba_onboarding\Form\TenantOnboardingProgressSettingsForm'
+    _title: 'Progreso de Onboarding de Tenant settings'
+  requirements:
+    _permission: 'administer onboarding'
+
+entity.user_onboarding_progress.settings:
+  path: '/admin/structure/user-onboarding-progress/settings'
+  defaults:
+    _form: 'Drupal\jaraba_onboarding\Form\UserOnboardingProgressSettingsForm'
+    _title: 'Progreso de Onboarding settings'
+  requirements:
+    _permission: 'administer onboarding'

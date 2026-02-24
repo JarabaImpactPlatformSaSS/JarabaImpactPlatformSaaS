@@ -58,6 +58,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "canonical" = "/admin/content/expansion-signals/{expansion_signal}",
  *     "delete-form" = "/admin/content/expansion-signals/{expansion_signal}/delete",
  *   },
+ *   field_ui_base_route = "entity.expansion_signal.settings",
  * )
  */
 class ExpansionSignal extends ContentEntityBase {

@@ -1,0 +1,24 @@
+entity.ai_usage_log.collection:
+  title: 'AI Usage Logs'
+  route_name: entity.ai_usage_log.collection
+  base_route: system.admin_content
+
+entity.pending_approval.collection:
+  title: 'Pending Approvals'
+  route_name: entity.pending_approval.collection
+  base_route: system.admin_content
+
+entity.ai_usage_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.ai_usage_log.settings
+  base_route: entity.ai_usage_log.settings
+
+entity.collaboration_session.settings_tab:
+  title: 'Settings'
+  route_name: entity.collaboration_session.settings
+  base_route: entity.collaboration_session.settings
+
+entity.pending_approval.settings_tab:
+  title: 'Settings'
+  route_name: entity.pending_approval.settings
+  base_route: entity.pending_approval.settings

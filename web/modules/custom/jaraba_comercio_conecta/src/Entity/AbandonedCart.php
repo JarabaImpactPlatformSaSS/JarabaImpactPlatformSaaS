@@ -35,6 +35,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-abandoned-cart/{abandoned_cart}",
  *     "collection" = "/admin/content/comercio-abandoned-carts",
  *   },
+ *   field_ui_base_route = "entity.abandoned_cart.settings",
  * )
  */
 class AbandonedCart extends ContentEntityBase implements EntityChangedInterface {

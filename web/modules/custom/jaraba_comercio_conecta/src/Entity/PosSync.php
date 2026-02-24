@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-pos-sync/{comercio_pos_sync}",
  *     "collection" = "/admin/content/comercio-pos-syncs",
  *   },
+ *   field_ui_base_route = "entity.comercio_pos_sync.settings",
  * )
  */
 class PosSync extends ContentEntityBase {

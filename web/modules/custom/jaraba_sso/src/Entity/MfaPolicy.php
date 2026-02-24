@@ -35,6 +35,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   base_table = "mfa_policy",
  *   admin_permission = "manage mfa policies",
@@ -43,6 +44,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *     "label" = "enforcement",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/mfa-policies",
+ *   },
+ *   field_ui_base_route = "entity.mfa_policy.settings",
  * )
  */
 class MfaPolicy extends ContentEntityBase implements MfaPolicyInterface {

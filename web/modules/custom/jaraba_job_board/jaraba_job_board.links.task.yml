@@ -34,3 +34,8 @@ entity.job_application.settings_tab:
   route_name: entity.job_application.settings
   base_route: entity.job_application.settings
   weight: -10
+
+entity.employer_profile.settings_tab:
+  title: 'Settings'
+  route_name: entity.employer_profile.settings
+  base_route: entity.employer_profile.settings

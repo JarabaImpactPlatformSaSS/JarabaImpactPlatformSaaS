@@ -10,3 +10,33 @@ jaraba_insights_hub.search_console_connect:
   route_name: jaraba_insights_hub.search_console_connect
   base_route: jaraba_insights_hub.settings
   weight: 5
+
+entity.insights_error_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.insights_error_log.settings
+  base_route: entity.insights_error_log.settings
+
+entity.search_console_connection.settings_tab:
+  title: 'Settings'
+  route_name: entity.search_console_connection.settings
+  base_route: entity.search_console_connection.settings
+
+entity.search_console_data.settings_tab:
+  title: 'Settings'
+  route_name: entity.search_console_data.settings
+  base_route: entity.search_console_data.settings
+
+entity.uptime_check.settings_tab:
+  title: 'Settings'
+  route_name: entity.uptime_check.settings
+  base_route: entity.uptime_check.settings
+
+entity.uptime_incident.settings_tab:
+  title: 'Settings'
+  route_name: entity.uptime_incident.settings
+  base_route: entity.uptime_incident.settings
+
+entity.web_vitals_metric.settings_tab:
+  title: 'Settings'
+  route_name: entity.web_vitals_metric.settings
+  base_route: entity.web_vitals_metric.settings

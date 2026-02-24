@@ -1,0 +1,9 @@
+entity.social_account.settings_tab:
+  title: 'Settings'
+  route_name: entity.social_account.settings
+  base_route: entity.social_account.settings
+
+entity.social_post.settings_tab:
+  title: 'Settings'
+  route_name: entity.social_post.settings
+  base_route: entity.social_post.settings

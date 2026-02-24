@@ -952,3 +952,11 @@ entity.scheduled_publish.settings:
   requirements:
     _permission: 'administer page builder'
 
+entity.experiment_variant.collection:
+  path: '/admin/content/experiment-variants'
+  defaults:
+    _entity_list: 'experiment_variant'
+    _title: 'Experiment Variants'
+  requirements:
+    _permission: 'administer site configuration'
+

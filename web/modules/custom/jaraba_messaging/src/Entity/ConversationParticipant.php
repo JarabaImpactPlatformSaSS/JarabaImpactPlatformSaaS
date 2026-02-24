@@ -36,7 +36,12 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_messaging\Access\SecureConversationAccessControlHandler",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/conversation-participants",
+ *   },
+ *   field_ui_base_route = "entity.conversation_participant.settings",
  *   base_table = "conversation_participant",
  *   admin_permission = "administer jaraba messaging",
  *   entity_keys = {

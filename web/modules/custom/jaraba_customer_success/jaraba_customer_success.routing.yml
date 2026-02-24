@@ -316,3 +316,55 @@ jaraba_customer_success.api.retention.override_execution:
   requirements:
     _permission: 'manage playbooks'
     _csrf_request_header_token: 'TRUE'
+
+# =============================================
+# FIELD UI SETTINGS ROUTES
+# =============================================
+
+entity.churn_prediction.settings:
+  path: '/admin/structure/churn-prediction/settings'
+  defaults:
+    _form: 'Drupal\jaraba_customer_success\Form\ChurnPredictionSettingsForm'
+    _title: 'Churn Prediction settings'
+  requirements:
+    _permission: 'administer customer success'
+
+entity.cs_playbook.settings:
+  path: '/admin/structure/cs-playbook/settings'
+  defaults:
+    _form: 'Drupal\jaraba_customer_success\Form\CsPlaybookSettingsForm'
+    _title: 'CS Playbook settings'
+  requirements:
+    _permission: 'administer customer success'
+
+entity.customer_health.settings:
+  path: '/admin/structure/customer-health/settings'
+  defaults:
+    _form: 'Drupal\jaraba_customer_success\Form\CustomerHealthSettingsForm'
+    _title: 'Customer Health settings'
+  requirements:
+    _permission: 'administer customer success'
+
+entity.expansion_signal.settings:
+  path: '/admin/structure/expansion-signal/settings'
+  defaults:
+    _form: 'Drupal\jaraba_customer_success\Form\ExpansionSignalSettingsForm'
+    _title: 'Expansion Signal settings'
+  requirements:
+    _permission: 'administer customer success'
+
+entity.playbook_execution.settings:
+  path: '/admin/structure/playbook-execution/settings'
+  defaults:
+    _form: 'Drupal\jaraba_customer_success\Form\PlaybookExecutionSettingsForm'
+    _title: 'Playbook Execution settings'
+  requirements:
+    _permission: 'administer customer success'
+
+entity.seasonal_churn_prediction.settings:
+  path: '/admin/structure/seasonal-churn-prediction/settings'
+  defaults:
+    _form: 'Drupal\jaraba_customer_success\Form\SeasonalChurnPredictionSettingsForm'
+    _title: 'Seasonal Churn Prediction settings'
+  requirements:
+    _permission: 'administer customer success'

@@ -43,6 +43,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-wishlist-item/{comercio_wishlist_item}",
  *     "collection" = "/admin/content/comercio-wishlist-items",
  *   },
+ *   field_ui_base_route = "entity.comercio_wishlist_item.settings",
  * )
  */
 class WishlistItem extends ContentEntityBase {

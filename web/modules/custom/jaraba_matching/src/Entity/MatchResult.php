@@ -39,6 +39,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/match-result/{match_result}",
  *     "collection" = "/admin/content/match-results",
  *   },
+ *   field_ui_base_route = "entity.match_result.settings",
  * )
  */
 class MatchResult extends ContentEntityBase

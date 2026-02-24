@@ -153,3 +153,11 @@ jaraba_training.api.purchase:
   methods: [POST]
   requirements:
     _permission: 'access content'
+
+entity.user_certification.settings:
+  path: '/admin/structure/user-certification/settings'
+  defaults:
+    _form: 'Drupal\jaraba_training\Form\UserCertificationSettingsForm'
+    _title: 'User Certification settings'
+  requirements:
+    _permission: 'grant certifications'

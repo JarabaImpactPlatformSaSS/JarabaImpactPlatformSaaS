@@ -37,6 +37,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "collection" = "/admin/content/agro-qr-scans",
  *     "canonical" = "/admin/content/agro-qr-scans/{qr_scan_event}",
  *   },
+ *   field_ui_base_route = "entity.qr_scan_event.settings",
  * )
  */
 class QrScanEvent extends ContentEntityBase

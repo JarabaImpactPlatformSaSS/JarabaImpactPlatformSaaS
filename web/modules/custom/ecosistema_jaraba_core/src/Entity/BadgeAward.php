@@ -40,6 +40,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/config/badge-awards/{badge_award}",
  *     "delete-form" = "/admin/config/badge-awards/{badge_award}/delete",
  *   },
+ *   field_ui_base_route = "entity.badge_award.settings",
  * )
  */
 class BadgeAward extends ContentEntityBase

@@ -61,6 +61,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/jaraba/analytics/funnels/{funnel_definition}/edit",
  *     "delete-form" = "/admin/jaraba/analytics/funnels/{funnel_definition}/delete",
  *   },
+ *   field_ui_base_route = "entity.funnel_definition.settings",
  * )
  */
 class FunnelDefinition extends ContentEntityBase {

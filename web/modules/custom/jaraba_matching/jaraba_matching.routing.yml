@@ -59,3 +59,21 @@ jaraba_matching.api.reindex:
     _csrf_token: 'TRUE'
     job_id: '\d+'
   methods: [POST]
+
+# Settings Routes (Field UI)
+
+entity.match_feedback.settings:
+  path: '/admin/structure/match-feedback/settings'
+  defaults:
+    _form: 'Drupal\jaraba_matching\Form\MatchFeedbackSettingsForm'
+    _title: 'Match Feedback settings'
+  requirements:
+    _permission: 'administer matching'
+
+entity.match_result.settings:
+  path: '/admin/structure/match-result/settings'
+  defaults:
+    _form: 'Drupal\jaraba_matching\Form\MatchResultSettingsForm'
+    _title: 'Match Result settings'
+  requirements:
+    _permission: 'administer matching'

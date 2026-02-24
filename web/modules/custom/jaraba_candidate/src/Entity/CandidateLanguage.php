@@ -49,6 +49,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/content/candidate-language/{candidate_language}/delete",
  *     "collection" = "/admin/content/candidate-languages",
  *   },
+ *   field_ui_base_route = "entity.candidate_language.settings",
  * )
  */
 class CandidateLanguage extends ContentEntityBase implements CandidateLanguageInterface

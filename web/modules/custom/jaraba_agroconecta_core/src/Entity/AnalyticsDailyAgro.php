@@ -45,6 +45,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "collection" = "/admin/content/agro-analytics-daily",
  *     "canonical" = "/admin/content/agro-analytics-daily/{analytics_daily_agro}",
  *   },
+ *   field_ui_base_route = "entity.analytics_daily_agro.settings",
  * )
  */
 class AnalyticsDailyAgro extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface

@@ -597,3 +597,67 @@ jaraba_site_builder.seo.bulk_audit:
   requirements:
     _permission: 'view seo audit'
     _csrf_token: 'TRUE'
+
+entity.site_config.collection:
+  path: '/admin/content/site-configs'
+  defaults:
+    _entity_list: 'site_config'
+    _title: 'Site Configs'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.site_page_tree.collection:
+  path: '/admin/content/site-page-tree'
+  defaults:
+    _entity_list: 'site_page_tree'
+    _title: 'Site Page Trees'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.site_redirect.collection:
+  path: '/admin/content/site-redirects'
+  defaults:
+    _entity_list: 'site_redirect'
+    _title: 'Site Redirects'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.site_url_history.collection:
+  path: '/admin/content/site-url-history'
+  defaults:
+    _entity_list: 'site_url_history'
+    _title: 'Site URL History'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.site_config.settings:
+  path: '/admin/structure/site-config/settings'
+  defaults:
+    _form: 'Drupal\jaraba_site_builder\Form\SiteConfigSettingsForm'
+    _title: 'Configuracion del Sitio settings'
+  requirements:
+    _permission: 'administer site structure'
+
+entity.site_page_tree.settings:
+  path: '/admin/structure/site-page-tree/settings'
+  defaults:
+    _form: 'Drupal\jaraba_site_builder\Form\SitePageTreeSettingsForm'
+    _title: 'Nodo del Arbol de Paginas settings'
+  requirements:
+    _permission: 'administer site structure'
+
+entity.site_redirect.settings:
+  path: '/admin/structure/site-redirect/settings'
+  defaults:
+    _form: 'Drupal\jaraba_site_builder\Form\SiteRedirectSettingsForm'
+    _title: 'Redirect settings'
+  requirements:
+    _permission: 'manage site redirects'
+
+entity.site_url_history.settings:
+  path: '/admin/structure/site-url-history/settings'
+  defaults:
+    _form: 'Drupal\jaraba_site_builder\Form\SiteUrlHistorySettingsForm'
+    _title: 'Historial de URL settings'
+  requirements:
+    _permission: 'administer site structure'

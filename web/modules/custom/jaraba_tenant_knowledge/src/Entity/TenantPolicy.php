@@ -73,11 +73,13 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "revision_log_message" = "revision_log",
  *   },
  *   links = {
+ *     "collection" = "/admin/content/tenant-policies",
  *     "add-form" = "/knowledge/policies/add",
  *     "edit-form" = "/knowledge/policies/{tenant_policy}/edit",
  *     "delete-form" = "/knowledge/policies/{tenant_policy}/delete",
  *     "version-history" = "/knowledge/policies/{tenant_policy}/revisions",
  *   },
+ *   field_ui_base_route = "entity.tenant_policy.settings",
  * )
  */
 class TenantPolicy extends ContentEntityBase implements EntityChangedInterface, RevisionLogInterface

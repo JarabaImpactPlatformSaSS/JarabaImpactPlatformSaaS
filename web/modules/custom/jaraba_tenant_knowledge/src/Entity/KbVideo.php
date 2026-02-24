@@ -65,6 +65,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/kb-videos/{kb_video}/edit",
  *     "delete-form" = "/admin/content/kb-videos/{kb_video}/delete",
  *   },
+ *   field_ui_base_route = "entity.kb_video.settings",
  * )
  */
 class KbVideo extends ContentEntityBase implements EntityChangedInterface

@@ -47,6 +47,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "canonical" = "/admin/content/user-certifications/{user_certification}",
  *     "collection" = "/admin/content/user-certifications",
  *   },
+ *   field_ui_base_route = "entity.user_certification.settings",
  * )
  */
 class UserCertification extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface

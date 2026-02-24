@@ -17,6 +17,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label_collection = @Translation("Canvas Versions"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\jaraba_business_tools\Access\CanvasVersionAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
@@ -25,6 +26,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/canvas-versions",
+ *   },
+ *   field_ui_base_route = "entity.canvas_version.settings",
  * )
  */
 class CanvasVersion extends ContentEntityBase

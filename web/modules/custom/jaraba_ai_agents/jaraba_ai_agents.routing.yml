@@ -220,3 +220,43 @@ jaraba_ai_agents.api.multimodal.capabilities:
   methods: [GET]
   requirements:
     _permission: 'use ai agents'
+
+entity.ai_usage_log.collection:
+  path: '/admin/content/ai-usage-logs'
+  defaults:
+    _entity_list: 'ai_usage_log'
+    _title: 'AI Usage Logs'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.pending_approval.collection:
+  path: '/admin/content/pending-approvals'
+  defaults:
+    _entity_list: 'pending_approval'
+    _title: 'Pending Approvals'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.ai_usage_log.settings:
+  path: '/admin/structure/ai-usage-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\AIUsageLogSettingsForm'
+    _title: 'AI Usage Log settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+entity.collaboration_session.settings:
+  path: '/admin/structure/collaboration-session/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\CollaborationSessionSettingsForm'
+    _title: 'Collaboration Session settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.pending_approval.settings:
+  path: '/admin/structure/pending-approval/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\PendingApprovalSettingsForm'
+    _title: 'Pending Approval settings'
+  requirements:
+    _permission: 'administer ai agents'

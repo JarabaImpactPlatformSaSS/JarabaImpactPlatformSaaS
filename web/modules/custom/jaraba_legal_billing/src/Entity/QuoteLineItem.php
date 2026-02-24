@@ -52,6 +52,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "collection" = "/admin/content/quote-line-items",
  *     "canonical" = "/admin/content/quote-line-items/{quote_line_item}",
  *   },
+ *   field_ui_base_route = "entity.quote_line_item.settings",
  * )
  */
 class QuoteLineItem extends ContentEntityBase {

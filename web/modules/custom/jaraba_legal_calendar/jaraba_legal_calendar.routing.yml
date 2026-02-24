@@ -159,3 +159,53 @@ jaraba_legal_calendar.api.sync.refresh:
     _permission: 'manage calendar connections'
     calendarId: '\d+'
   methods: [POST]
+
+entity.calendar_connection.collection:
+  path: '/admin/content/calendar-connections'
+  defaults:
+    _entity_list: 'calendar_connection'
+    _title: 'Calendar Connections'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.external_event_cache.collection:
+  path: '/admin/content/external-event-cache'
+  defaults:
+    _entity_list: 'external_event_cache'
+    _title: 'External Event Cache'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.synced_calendar.collection:
+  path: '/admin/content/synced-calendars'
+  defaults:
+    _entity_list: 'synced_calendar'
+    _title: 'Synced Calendars'
+  requirements:
+    _permission: 'administer site configuration'
+
+# --- Field UI Settings Routes ---
+
+entity.calendar_connection.settings:
+  path: '/admin/structure/calendar-connection/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_calendar\Form\CalendarConnectionSettingsForm'
+    _title: 'Conexion de Calendario settings'
+  requirements:
+    _permission: 'manage calendar connections'
+
+entity.external_event_cache.settings:
+  path: '/admin/structure/external-event-cache/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_calendar\Form\ExternalEventCacheSettingsForm'
+    _title: 'Evento Externo (Cache) settings'
+  requirements:
+    _permission: 'manage calendar connections'
+
+entity.synced_calendar.settings:
+  path: '/admin/structure/synced-calendar/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_calendar\Form\SyncedCalendarSettingsForm'
+    _title: 'Calendario Sincronizado settings'
+  requirements:
+    _permission: 'manage calendar connections'

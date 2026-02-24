@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-pos-conflict/{comercio_pos_conflict}",
  *     "collection" = "/admin/content/comercio-pos-conflicts",
  *   },
+ *   field_ui_base_route = "entity.comercio_pos_conflict.settings",
  * )
  */
 class PosConflict extends ContentEntityBase {

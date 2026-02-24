@@ -62,6 +62,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/agent-handoffs/{agent_handoff}",
  *     "delete-form" = "/admin/content/agent-handoffs/{agent_handoff}/delete",
  *   },
+ *   field_ui_base_route = "entity.agent_handoff.settings",
  * )
  */
 class AgentHandoff extends ContentEntityBase {

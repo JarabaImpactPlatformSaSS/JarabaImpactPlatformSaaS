@@ -28,6 +28,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label_collection = @Translation("Data Lineage Events"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_governance\Entity\DataLineageEventAccessControlHandler",
  *   },
@@ -37,6 +38,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/data-lineage-events",
+ *   },
+ *   field_ui_base_route = "entity.data_lineage_event.settings",
  * )
  */
 class DataLineageEvent extends ContentEntityBase implements DataLineageEventInterface {

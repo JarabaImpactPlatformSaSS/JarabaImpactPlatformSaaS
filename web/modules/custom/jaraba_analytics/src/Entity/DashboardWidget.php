@@ -65,6 +65,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/dashboard-widgets/{dashboard_widget}/edit",
  *     "delete-form" = "/admin/content/dashboard-widgets/{dashboard_widget}/delete",
  *   },
+ *   field_ui_base_route = "entity.dashboard_widget.settings",
  * )
  */
 class DashboardWidget extends ContentEntityBase {

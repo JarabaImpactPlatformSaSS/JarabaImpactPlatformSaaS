@@ -68,6 +68,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "canonical" = "/admin/content/vies-validations/{vies_validation}",
  *     "delete-form" = "/admin/content/vies-validations/{vies_validation}/delete",
  *   },
+ *   field_ui_base_route = "entity.vies_validation.settings",
  * )
  */
 class ViesValidation extends ContentEntityBase {

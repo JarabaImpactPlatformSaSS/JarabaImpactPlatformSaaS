@@ -35,6 +35,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-payout-record/{comercio_payout_record}",
  *     "collection" = "/admin/content/comercio-payout-records",
  *   },
+ *   field_ui_base_route = "entity.comercio_payout_record.settings",
  * )
  */
 class PayoutRecord extends ContentEntityBase implements EntityChangedInterface {

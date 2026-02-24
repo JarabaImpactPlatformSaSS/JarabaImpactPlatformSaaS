@@ -54,6 +54,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "edit-form" = "/admin/content/journey-states/{journey_state}/edit",
  *     "delete-form" = "/admin/content/journey-states/{journey_state}/delete",
  *   },
+ *   field_ui_base_route = "entity.journey_state.settings",
  * )
  */
 class JourneyState extends ContentEntityBase implements JourneyStateInterface

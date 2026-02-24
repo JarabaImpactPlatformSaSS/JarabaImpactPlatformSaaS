@@ -100,3 +100,45 @@ jaraba_paths.my_progress:
     _title: 'Mi Progreso'
   requirements:
     _permission: 'view own enrollment'
+
+entity.path_enrollment.collection:
+  path: '/admin/content/path-enrollments'
+  defaults:
+    _entity_list: 'path_enrollment'
+    _title: 'Path Enrollments'
+  requirements:
+    _permission: 'administer site configuration'
+
+# === Field UI Settings — Entity settings forms ===
+
+entity.path_enrollment.settings:
+  path: '/admin/structure/path-enrollment/settings'
+  defaults:
+    _form: 'Drupal\jaraba_paths\Form\PathEnrollmentSettingsForm'
+    _title: 'Inscripcion en Itinerario settings'
+  requirements:
+    _permission: 'view any enrollment'
+
+entity.path_module.settings:
+  path: '/admin/structure/path-module/settings'
+  defaults:
+    _form: 'Drupal\jaraba_paths\Form\PathModuleSettingsForm'
+    _title: 'Modulo del Itinerario settings'
+  requirements:
+    _permission: 'administer digitalization paths'
+
+entity.path_phase.settings:
+  path: '/admin/structure/path-phase/settings'
+  defaults:
+    _form: 'Drupal\jaraba_paths\Form\PathPhaseSettingsForm'
+    _title: 'Fase del Itinerario settings'
+  requirements:
+    _permission: 'administer digitalization paths'
+
+entity.path_step.settings:
+  path: '/admin/structure/path-step/settings'
+  defaults:
+    _form: 'Drupal\jaraba_paths\Form\PathStepSettingsForm'
+    _title: 'Paso del Itinerario settings'
+  requirements:
+    _permission: 'administer digitalization paths'

@@ -1,0 +1,19 @@
+entity.cost_allocation.settings_tab:
+  title: 'Settings'
+  route_name: entity.cost_allocation.settings
+  base_route: entity.cost_allocation.settings
+
+entity.financial_transaction.settings_tab:
+  title: 'Settings'
+  route_name: entity.financial_transaction.settings
+  base_route: entity.financial_transaction.settings
+
+entity.foc_alert.settings_tab:
+  title: 'Settings'
+  route_name: entity.foc_alert.settings
+  base_route: entity.foc_alert.settings
+
+entity.foc_metric_snapshot.settings_tab:
+  title: 'Settings'
+  route_name: entity.foc_metric_snapshot.settings
+  base_route: entity.foc_metric_snapshot.settings

@@ -24,9 +24,14 @@ use Drupal\user\EntityOwnerTrait;
  *     "owner" = "uid",
  *   },
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\jaraba_identity\Access\IdentityWalletAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/identity-wallets",
+ *   },
+ *   field_ui_base_route = "entity.identity_wallet.settings",
  * )
  */
 class IdentityWallet extends ContentEntityBase {

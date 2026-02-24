@@ -39,3 +39,33 @@ jaraba_customer_success.seasonal_predictions_tab:
   route_name: entity.seasonal_churn_prediction.collection
   base_route: jaraba_customer_success.admin.dashboard
   weight: 35
+
+entity.churn_prediction.settings_tab:
+  title: 'Settings'
+  route_name: entity.churn_prediction.settings
+  base_route: entity.churn_prediction.settings
+
+entity.cs_playbook.settings_tab:
+  title: 'Settings'
+  route_name: entity.cs_playbook.settings
+  base_route: entity.cs_playbook.settings
+
+entity.customer_health.settings_tab:
+  title: 'Settings'
+  route_name: entity.customer_health.settings
+  base_route: entity.customer_health.settings
+
+entity.expansion_signal.settings_tab:
+  title: 'Settings'
+  route_name: entity.expansion_signal.settings
+  base_route: entity.expansion_signal.settings
+
+entity.playbook_execution.settings_tab:
+  title: 'Settings'
+  route_name: entity.playbook_execution.settings
+  base_route: entity.playbook_execution.settings
+
+entity.seasonal_churn_prediction.settings_tab:
+  title: 'Settings'
+  route_name: entity.seasonal_churn_prediction.settings
+  base_route: entity.seasonal_churn_prediction.settings

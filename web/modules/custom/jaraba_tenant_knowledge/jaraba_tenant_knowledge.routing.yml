@@ -480,3 +480,67 @@ jaraba_tenant_knowledge.admin.kb_videos:
   requirements:
     _permission: 'administer tenant knowledge'
 
+entity.kb_category.settings:
+  path: '/admin/structure/kb-category/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\KbCategorySettingsForm'
+    _title: 'KB Category settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.kb_video.settings:
+  path: '/admin/structure/kb-video/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\KbVideoSettingsForm'
+    _title: 'KB Video settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.tenant_ai_correction.settings:
+  path: '/admin/structure/tenant-ai-correction/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\TenantAiCorrectionSettingsForm'
+    _title: 'AI Correction settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.tenant_document.settings:
+  path: '/admin/structure/tenant-document/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\TenantDocumentSettingsForm'
+    _title: 'Tenant Document settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.tenant_faq.settings:
+  path: '/admin/structure/tenant-faq/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\TenantFaqSettingsForm'
+    _title: 'Tenant FAQ settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.tenant_knowledge_config.settings:
+  path: '/admin/structure/tenant-knowledge-config/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\TenantKnowledgeConfigSettingsForm'
+    _title: 'Knowledge Config settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.tenant_policy.settings:
+  path: '/admin/structure/tenant-policy/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\TenantPolicySettingsForm'
+    _title: 'Tenant Policy settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+
+entity.tenant_product_enrichment.settings:
+  path: '/admin/structure/tenant-product-enrichment/settings'
+  defaults:
+    _form: 'Drupal\jaraba_tenant_knowledge\Form\TenantProductEnrichmentSettingsForm'
+    _title: 'Product Enrichment settings'
+  requirements:
+    _permission: 'administer tenant knowledge'
+

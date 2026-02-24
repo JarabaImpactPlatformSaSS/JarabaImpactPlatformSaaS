@@ -6,3 +6,38 @@ entity.business_diagnostic.collection:
   route_name: entity.business_diagnostic.collection
   base_route: system.admin_content
   weight: 30
+
+entity.diagnostic_answer.collection:
+  title: 'Diagnostic Answers'
+  route_name: entity.diagnostic_answer.collection
+  base_route: system.admin_content
+
+entity.diagnostic_recommendation.collection:
+  title: 'Diagnostic Recommendations'
+  route_name: entity.diagnostic_recommendation.collection
+  base_route: system.admin_content
+
+entity.diagnostic_answer.settings_tab:
+  title: 'Settings'
+  route_name: entity.diagnostic_answer.settings
+  base_route: entity.diagnostic_answer.settings
+
+entity.diagnostic_question.settings_tab:
+  title: 'Settings'
+  route_name: entity.diagnostic_question.settings
+  base_route: entity.diagnostic_question.settings
+
+entity.diagnostic_recommendation.settings_tab:
+  title: 'Settings'
+  route_name: entity.diagnostic_recommendation.settings
+  base_route: entity.diagnostic_recommendation.settings
+
+entity.diagnostic_section.settings_tab:
+  title: 'Settings'
+  route_name: entity.diagnostic_section.settings
+  base_route: entity.diagnostic_section.settings
+
+entity.employability_diagnostic.settings_tab:
+  title: 'Settings'
+  route_name: entity.employability_diagnostic.settings
+  base_route: entity.employability_diagnostic.settings

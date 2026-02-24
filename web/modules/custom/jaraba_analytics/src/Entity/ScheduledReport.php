@@ -64,6 +64,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/scheduled-reports/{scheduled_report}/edit",
  *     "delete-form" = "/admin/content/scheduled-reports/{scheduled_report}/delete",
  *   },
+ *   field_ui_base_route = "entity.scheduled_report.settings",
  * )
  */
 class ScheduledReport extends ContentEntityBase {

@@ -73,6 +73,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/foc/cost-allocation/{cost_allocation}/edit",
  *     "delete-form" = "/admin/foc/cost-allocation/{cost_allocation}/delete",
  *   },
+ *   field_ui_base_route = "entity.cost_allocation.settings",
  * )
  */
 class CostAllocation extends ContentEntityBase

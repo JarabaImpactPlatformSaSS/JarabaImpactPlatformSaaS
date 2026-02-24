@@ -54,6 +54,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/norm-change-alerts/{norm_change_alert}",
  *     "collection" = "/admin/content/norm-change-alerts",
  *   },
+ *   field_ui_base_route = "entity.norm_change_alert.settings",
  * )
  */
 class NormChangeAlert extends ContentEntityBase implements EntityChangedInterface {

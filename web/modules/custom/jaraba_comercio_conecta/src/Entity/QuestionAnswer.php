@@ -38,6 +38,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "canonical" = "/admin/content/comercio-qa/{comercio_qa}",
  *     "collection" = "/admin/content/comercio-qas",
  *   },
+ *   field_ui_base_route = "entity.comercio_qa.settings",
  * )
  */
 class QuestionAnswer extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {

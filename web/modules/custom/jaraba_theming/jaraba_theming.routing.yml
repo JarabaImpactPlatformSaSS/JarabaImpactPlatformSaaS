@@ -43,3 +43,11 @@ jaraba_theming.preview:
     _permission: 'administer themes'
   options:
     _admin_route: TRUE
+
+entity.tenant_theme_config.settings:
+  path: '/admin/structure/tenant-theme-config/settings'
+  defaults:
+    _form: 'Drupal\jaraba_theming\Form\TenantThemeConfigSettingsForm'
+    _title: 'Tenant Theme Config settings'
+  requirements:
+    _permission: 'administer theme config'

@@ -54,6 +54,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/uptime-incident/{uptime_incident}",
  *     "collection" = "/admin/content/uptime-incidents",
  *   },
+ *   field_ui_base_route = "entity.uptime_incident.settings",
  * )
  */
 class UptimeIncident extends ContentEntityBase implements EntityChangedInterface {

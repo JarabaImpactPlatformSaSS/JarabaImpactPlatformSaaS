@@ -51,6 +51,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "collection" = "/admin/content/document-audit-log",
  *     "canonical" = "/admin/content/document-audit-log/{document_audit_log}",
  *   },
+ *   field_ui_base_route = "entity.document_audit_log.settings",
  * )
  */
 class DocumentAuditLog extends ContentEntityBase {

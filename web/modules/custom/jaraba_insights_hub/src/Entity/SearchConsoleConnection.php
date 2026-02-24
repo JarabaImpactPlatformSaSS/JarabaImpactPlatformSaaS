@@ -52,6 +52,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/search-console-connection/{search_console_connection}",
  *     "collection" = "/admin/content/search-console-connections",
  *   },
+ *   field_ui_base_route = "entity.search_console_connection.settings",
  * )
  */
 class SearchConsoleConnection extends ContentEntityBase implements EntityChangedInterface {

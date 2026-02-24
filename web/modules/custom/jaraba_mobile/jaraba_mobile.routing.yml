@@ -78,3 +78,21 @@ jaraba_mobile.settings:
     _title: 'Jaraba Mobile Settings'
   requirements:
     _permission: 'administer jaraba mobile'
+
+# Settings Routes (Field UI)
+
+entity.mobile_device.settings:
+  path: '/admin/structure/mobile-device/settings'
+  defaults:
+    _form: 'Drupal\jaraba_mobile\Form\MobileDeviceSettingsForm'
+    _title: 'Mobile Device settings'
+  requirements:
+    _permission: 'administer jaraba mobile'
+
+entity.push_notification.settings:
+  path: '/admin/structure/push-notification/settings'
+  defaults:
+    _form: 'Drupal\jaraba_mobile\Form\PushNotificationSettingsForm'
+    _title: 'Push Notification settings'
+  requirements:
+    _permission: 'administer jaraba mobile'

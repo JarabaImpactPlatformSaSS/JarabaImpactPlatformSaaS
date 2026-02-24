@@ -54,6 +54,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/structure/diagnostic-section/{diagnostic_section}/edit",
  *     "delete-form" = "/admin/structure/diagnostic-section/{diagnostic_section}/delete",
  *   },
+ *   field_ui_base_route = "entity.diagnostic_section.settings",
  * )
  */
 class DiagnosticSection extends ContentEntityBase {

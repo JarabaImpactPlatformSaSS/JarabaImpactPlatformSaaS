@@ -184,3 +184,61 @@ jaraba_diagnostic.wizard.results:
   requirements:
     _permission: 'view own business diagnostic'
     uuid: '[a-f0-9\-]+'
+
+entity.diagnostic_answer.collection:
+  path: '/admin/content/diagnostic-answers'
+  defaults:
+    _entity_list: 'diagnostic_answer'
+    _title: 'Diagnostic Answers'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.diagnostic_recommendation.collection:
+  path: '/admin/content/diagnostic-recommendations'
+  defaults:
+    _entity_list: 'diagnostic_recommendation'
+    _title: 'Diagnostic Recommendations'
+  requirements:
+    _permission: 'administer site configuration'
+
+# === Field UI: Settings routes for entities ===
+
+entity.diagnostic_answer.settings:
+  path: '/admin/structure/diagnostic-answer/settings'
+  defaults:
+    _form: 'Drupal\jaraba_diagnostic\Form\DiagnosticAnswerSettingsForm'
+    _title: 'Diagnostic Answer settings'
+  requirements:
+    _permission: 'administer business diagnostics'
+
+entity.diagnostic_question.settings:
+  path: '/admin/structure/diagnostic-question/settings'
+  defaults:
+    _form: 'Drupal\jaraba_diagnostic\Form\DiagnosticQuestionSettingsForm'
+    _title: 'Diagnostic Question settings'
+  requirements:
+    _permission: 'manage diagnostic sections'
+
+entity.diagnostic_recommendation.settings:
+  path: '/admin/structure/diagnostic-recommendation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_diagnostic\Form\DiagnosticRecommendationSettingsForm'
+    _title: 'Diagnostic Recommendation settings'
+  requirements:
+    _permission: 'administer business diagnostics'
+
+entity.diagnostic_section.settings:
+  path: '/admin/structure/diagnostic-section/settings'
+  defaults:
+    _form: 'Drupal\jaraba_diagnostic\Form\DiagnosticSectionSettingsForm'
+    _title: 'Diagnostic Section settings'
+  requirements:
+    _permission: 'manage diagnostic sections'
+
+entity.employability_diagnostic.settings:
+  path: '/admin/structure/employability-diagnostic/settings'
+  defaults:
+    _form: 'Drupal\jaraba_diagnostic\Form\EmployabilityDiagnosticSettingsForm'
+    _title: 'Employability Diagnostic settings'
+  requirements:
+    _permission: 'administer employability diagnostics'

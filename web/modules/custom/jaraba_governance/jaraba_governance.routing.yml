@@ -154,3 +154,57 @@ jaraba_governance.dashboard:
     _title: 'Data Governance Dashboard'
   requirements:
     _permission: 'administer data governance'
+
+# ============================================
+# ENTITY COLLECTION ROUTES
+# ============================================
+
+entity.data_classification.collection:
+  path: '/admin/content/data-classifications'
+  defaults:
+    _entity_list: 'data_classification'
+    _title: 'Data Classifications'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.data_lineage_event.collection:
+  path: '/admin/content/data-lineage-events'
+  defaults:
+    _entity_list: 'data_lineage_event'
+    _title: 'Data Lineage Events'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.erasure_request.collection:
+  path: '/admin/content/erasure-requests'
+  defaults:
+    _entity_list: 'erasure_request'
+    _title: 'Erasure Requests'
+  requirements:
+    _permission: 'administer site configuration'
+
+# === Field UI: Settings routes for entities ===
+
+entity.data_classification.settings:
+  path: '/admin/structure/data-classification/settings'
+  defaults:
+    _form: 'Drupal\jaraba_governance\Form\DataClassificationSettingsForm'
+    _title: 'Data Classification settings'
+  requirements:
+    _permission: 'administer data governance'
+
+entity.data_lineage_event.settings:
+  path: '/admin/structure/data-lineage-event/settings'
+  defaults:
+    _form: 'Drupal\jaraba_governance\Form\DataLineageEventSettingsForm'
+    _title: 'Data Lineage Event settings'
+  requirements:
+    _permission: 'administer data governance'
+
+entity.erasure_request.settings:
+  path: '/admin/structure/erasure-request/settings'
+  defaults:
+    _form: 'Drupal\jaraba_governance\Form\ErasureRequestSettingsForm'
+    _title: 'Erasure Request settings'
+  requirements:
+    _permission: 'administer data governance'

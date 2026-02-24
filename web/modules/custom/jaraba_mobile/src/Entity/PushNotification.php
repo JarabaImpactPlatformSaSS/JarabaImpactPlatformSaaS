@@ -44,6 +44,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/push-notifications/{push_notification}",
  *     "collection" = "/admin/content/push-notifications",
  *   },
+ *   field_ui_base_route = "entity.push_notification.settings",
  * )
  */
 class PushNotification extends ContentEntityBase implements PushNotificationInterface {

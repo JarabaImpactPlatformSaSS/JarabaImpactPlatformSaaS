@@ -1,0 +1,19 @@
+entity.mfa_policy.collection:
+  title: 'MFA Policies'
+  route_name: entity.mfa_policy.collection
+  base_route: system.admin_content
+
+entity.sso_configuration.collection:
+  title: 'SSO Configurations'
+  route_name: entity.sso_configuration.collection
+  base_route: system.admin_content
+
+entity.mfa_policy.settings_tab:
+  title: 'Settings'
+  route_name: entity.mfa_policy.settings
+  base_route: entity.mfa_policy.settings
+
+entity.sso_configuration.settings_tab:
+  title: 'Settings'
+  route_name: entity.sso_configuration.settings
+  base_route: entity.sso_configuration.settings

@@ -48,6 +48,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/config/push-subscriptions/{push_subscription}",
  *     "delete-form" = "/admin/config/push-subscriptions/{push_subscription}/delete",
  *   },
+ *   field_ui_base_route = "entity.push_subscription.settings",
  * )
  */
 class PushSubscription extends ContentEntityBase {

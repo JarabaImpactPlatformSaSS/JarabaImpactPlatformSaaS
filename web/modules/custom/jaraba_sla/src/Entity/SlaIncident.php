@@ -33,6 +33,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   label_plural = @Translation("SLA incidents"),
  *   handlers = {
  *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "access" = "Drupal\jaraba_sla\Access\SlaIncidentAccessControlHandler",
  *     "form" = {
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
@@ -45,6 +46,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "uuid" = "uuid",
  *     "label" = "title",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/sla-incidents",
+ *   },
+ *   field_ui_base_route = "entity.sla_incident.settings",
  * )
  */
 class SlaIncident extends ContentEntityBase implements SlaIncidentInterface {

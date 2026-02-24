@@ -78,6 +78,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/jaraba/email/campaigns/{email_campaign}/delete",
  *     "collection" = "/admin/jaraba/email/campaigns",
  *   },
+ *   field_ui_base_route = "entity.email_campaign.settings",
  * )
  */
 class EmailCampaign extends ContentEntityBase implements EntityOwnerInterface

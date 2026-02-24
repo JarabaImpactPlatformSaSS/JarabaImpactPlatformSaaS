@@ -58,6 +58,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/content/comercio-wishlist/{comercio_wishlist}/delete",
  *     "collection" = "/admin/content/comercio-wishlists",
  *   },
+ *   field_ui_base_route = "entity.comercio_wishlist.settings",
  * )
  */
 class Wishlist extends ContentEntityBase implements EntityChangedInterface, EntityOwnerInterface {

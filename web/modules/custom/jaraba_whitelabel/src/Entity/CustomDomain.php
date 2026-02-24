@@ -53,6 +53,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/custom-domains/{custom_domain}/edit",
  *     "delete-form" = "/admin/content/custom-domains/{custom_domain}/delete",
  *   },
+ *   field_ui_base_route = "entity.custom_domain.settings",
  * )
  */
 class CustomDomain extends ContentEntityBase {

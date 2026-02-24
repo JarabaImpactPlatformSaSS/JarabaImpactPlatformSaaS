@@ -144,3 +144,21 @@ jaraba_legal_cases.api.inquiries.assign:
   requirements:
     _permission: 'manage legal inquiries'
     uuid: '[a-f0-9\-]+'
+
+# --- Field UI Settings Routes ---
+
+entity.case_activity.settings:
+  path: '/admin/structure/case-activity/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_cases\Form\CaseActivitySettingsForm'
+    _title: 'Actividad de Expediente settings'
+  requirements:
+    _permission: 'manage legal cases'
+
+entity.inquiry_triage.settings:
+  path: '/admin/structure/inquiry-triage/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_cases\Form\InquiryTriageSettingsForm'
+    _title: 'Triaje de Consulta settings'
+  requirements:
+    _permission: 'manage legal inquiries'

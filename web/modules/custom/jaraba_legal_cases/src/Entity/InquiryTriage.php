@@ -56,6 +56,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "collection" = "/admin/content/legal-inquiry-triages",
  *     "canonical" = "/admin/content/legal-inquiry-triages/{inquiry_triage}",
  *   },
+ *   field_ui_base_route = "entity.inquiry_triage.settings",
  * )
  */
 class InquiryTriage extends ContentEntityBase implements EntityOwnerInterface {

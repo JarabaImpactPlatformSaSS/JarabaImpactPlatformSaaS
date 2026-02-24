@@ -50,6 +50,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/config/security-policies/{security_policy}/edit",
  *     "delete-form" = "/admin/config/security-policies/{security_policy}/delete",
  *   },
+ *   field_ui_base_route = "entity.security_policy.settings",
  * )
  */
 class SecurityPolicy extends ContentEntityBase {

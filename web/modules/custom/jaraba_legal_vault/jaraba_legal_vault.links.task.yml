@@ -16,3 +16,18 @@ jaraba_legal_vault.document_request.collection:
   route_name: entity.document_request.collection
   base_route: system.admin_content
   weight: 76
+
+entity.document_access.settings_tab:
+  title: 'Settings'
+  route_name: entity.document_access.settings
+  base_route: entity.document_access.settings
+
+entity.document_audit_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.document_audit_log.settings
+  base_route: entity.document_audit_log.settings
+
+entity.document_delivery.settings_tab:
+  title: 'Settings'
+  route_name: entity.document_delivery.settings
+  base_route: entity.document_delivery.settings

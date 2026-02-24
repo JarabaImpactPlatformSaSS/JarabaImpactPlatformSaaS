@@ -638,3 +638,173 @@ jaraba_comercio_conecta.copilot.proactive:
   methods: [GET, POST]
   options:
     _format: json
+
+# --- Settings Routes: Field UI base routes (Batch P2) ---
+
+entity.abandoned_cart.settings:
+  path: '/admin/structure/comercio-abandoned-carts/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\AbandonedCartSettingsForm'
+    _title: 'Carrito Abandonado settings'
+  requirements:
+    _permission: 'manage comercio orders'
+
+entity.comercio_cart.settings:
+  path: '/admin/structure/comercio-carts/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\CartSettingsForm'
+    _title: 'Carrito settings'
+  requirements:
+    _permission: 'manage comercio orders'
+
+entity.comercio_cart_item.settings:
+  path: '/admin/structure/comercio-cart-items/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\CartItemSettingsForm'
+    _title: 'Item de Carrito settings'
+  requirements:
+    _permission: 'manage comercio orders'
+
+entity.coupon_redemption.settings:
+  path: '/admin/structure/comercio-coupon-redemptions/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\CouponRedemptionSettingsForm'
+    _title: 'Canje de Cupon settings'
+  requirements:
+    _permission: 'manage comercio coupons'
+
+entity.comercio_flash_claim.settings:
+  path: '/admin/structure/comercio-flash-claims/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\FlashOfferClaimSettingsForm'
+    _title: 'Canje de Oferta Flash settings'
+  requirements:
+    _permission: 'manage comercio flash offers'
+
+entity.comercio_moderation_queue.settings:
+  path: '/admin/structure/comercio-moderation-queue/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\ModerationQueueSettingsForm'
+    _title: 'Cola de Moderacion settings'
+  requirements:
+    _permission: 'manage comercio moderation'
+
+entity.comercio_nap_entry.settings:
+  path: '/admin/structure/comercio-nap-entries/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\NapEntrySettingsForm'
+    _title: 'Entrada NAP settings'
+  requirements:
+    _permission: 'manage comercio local seo'
+
+entity.comercio_notification_log.settings:
+  path: '/admin/structure/comercio-notification-logs/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\NotificationLogSettingsForm'
+    _title: 'Log de Notificacion settings'
+  requirements:
+    _permission: 'manage comercio notifications'
+
+entity.comercio_notification_pref.settings:
+  path: '/admin/structure/comercio-notification-prefs/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\NotificationPreferenceSettingsForm'
+    _title: 'Preferencia de Notificacion settings'
+  requirements:
+    _permission: 'manage comercio notifications'
+
+entity.order_item_retail.settings:
+  path: '/admin/structure/comercio-order-items/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\OrderItemRetailSettingsForm'
+    _title: 'Linea de Pedido settings'
+  requirements:
+    _permission: 'manage comercio orders'
+
+entity.comercio_payout_record.settings:
+  path: '/admin/structure/comercio-payout-records/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\PayoutRecordSettingsForm'
+    _title: 'Registro de Pago settings'
+  requirements:
+    _permission: 'manage comercio payouts'
+
+entity.comercio_pos_conflict.settings:
+  path: '/admin/structure/comercio-pos-conflicts/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\PosConflictSettingsForm'
+    _title: 'Conflicto POS settings'
+  requirements:
+    _permission: 'manage comercio pos conflicts'
+
+entity.comercio_pos_sync.settings:
+  path: '/admin/structure/comercio-pos-syncs/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\PosSyncSettingsForm'
+    _title: 'Sincronizacion POS settings'
+  requirements:
+    _permission: 'manage comercio pos syncs'
+
+entity.comercio_push_subscription.settings:
+  path: '/admin/structure/comercio-push-subscriptions/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\PushSubscriptionSettingsForm'
+    _title: 'Suscripcion Push settings'
+  requirements:
+    _permission: 'manage comercio notifications'
+
+entity.comercio_qr_lead.settings:
+  path: '/admin/structure/comercio-qr-leads/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\QrLeadCaptureSettingsForm'
+    _title: 'Lead Capturado via QR settings'
+  requirements:
+    _permission: 'manage comercio qr codes'
+
+entity.comercio_qr_scan.settings:
+  path: '/admin/structure/comercio-qr-scans/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\QrScanEventSettingsForm'
+    _title: 'Evento de Escaneo QR settings'
+  requirements:
+    _permission: 'manage comercio qr codes'
+
+entity.comercio_qa.settings:
+  path: '/admin/structure/comercio-qas/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\QuestionAnswerSettingsForm'
+    _title: 'Pregunta y Respuesta settings'
+  requirements:
+    _permission: 'manage comercio reviews'
+
+entity.comercio_search_log.settings:
+  path: '/admin/structure/comercio-search-logs/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\SearchLogSettingsForm'
+    _title: 'Log de Busqueda settings'
+  requirements:
+    _permission: 'manage comercio search'
+
+entity.suborder_retail.settings:
+  path: '/admin/structure/comercio-suborders/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\SuborderRetailSettingsForm'
+    _title: 'Sub-pedido Retail settings'
+  requirements:
+    _permission: 'manage comercio orders'
+
+entity.comercio_wishlist.settings:
+  path: '/admin/structure/comercio-wishlists/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\WishlistSettingsForm'
+    _title: 'Lista de Deseos settings'
+  requirements:
+    _permission: 'manage comercio wishlists'
+
+entity.comercio_wishlist_item.settings:
+  path: '/admin/structure/comercio-wishlist-items/settings'
+  defaults:
+    _form: 'Drupal\jaraba_comercio_conecta\Form\WishlistItemSettingsForm'
+    _title: 'Item de Lista de Deseos settings'
+  requirements:
+    _permission: 'manage comercio wishlists'

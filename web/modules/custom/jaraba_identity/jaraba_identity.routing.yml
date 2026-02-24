@@ -1,0 +1,15 @@
+entity.identity_wallet.collection:
+  path: '/admin/content/identity-wallets'
+  defaults:
+    _entity_list: 'identity_wallet'
+    _title: 'Identity Wallets'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.identity_wallet.settings:
+  path: '/admin/structure/identity-wallet/settings'
+  defaults:
+    _form: 'Drupal\jaraba_identity\Form\IdentityWalletSettingsForm'
+    _title: 'Identity Wallet settings'
+  requirements:
+    _permission: 'administer jaraba identity'

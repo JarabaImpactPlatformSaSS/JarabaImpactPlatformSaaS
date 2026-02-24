@@ -36,6 +36,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "uuid" = "uuid",
  *     "label" = "carrier_id",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/agro-carrier-configs",
+ *   },
+ *   field_ui_base_route = "entity.agro_carrier_config.settings",
  * )
  */
 class CarrierConfig extends ContentEntityBase {

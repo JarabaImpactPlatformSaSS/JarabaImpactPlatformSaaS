@@ -42,6 +42,7 @@ use Drupal\ecosistema_jaraba_core\Trait\CopilotMessageTrait;
  *     "canonical" = "/admin/content/agro-sales-messages/{sales_message_agro}",
  *     "collection" = "/admin/content/agro-sales-messages",
  *   },
+ *   field_ui_base_route = "entity.sales_message_agro.settings",
  * )
  */
 class SalesMessageAgro extends ContentEntityBase implements CopilotMessageInterface

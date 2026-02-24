@@ -166,3 +166,39 @@ jaraba_foc.alert.resolve:
     _title: 'Resolver Alerta'
   requirements:
     _permission: 'administer foc'
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ENTITY SETTINGS (field_ui_base_route)
+# ═══════════════════════════════════════════════════════════════════════════
+
+entity.cost_allocation.settings:
+  path: '/admin/structure/cost-allocation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_foc\Form\CostAllocationSettingsForm'
+    _title: 'Cost Allocation settings'
+  requirements:
+    _permission: 'manage cost allocation'
+
+entity.financial_transaction.settings:
+  path: '/admin/structure/financial-transaction/settings'
+  defaults:
+    _form: 'Drupal\jaraba_foc\Form\FinancialTransactionSettingsForm'
+    _title: 'Financial Transaction settings'
+  requirements:
+    _permission: 'administer foc'
+
+entity.foc_alert.settings:
+  path: '/admin/structure/foc-alert/settings'
+  defaults:
+    _form: 'Drupal\jaraba_foc\Form\FocAlertSettingsForm'
+    _title: 'FOC Alert settings'
+  requirements:
+    _permission: 'administer foc'
+
+entity.foc_metric_snapshot.settings:
+  path: '/admin/structure/foc-metric-snapshot/settings'
+  defaults:
+    _form: 'Drupal\jaraba_foc\Form\FocMetricSnapshotSettingsForm'
+    _title: 'FOC Metric Snapshot settings'
+  requirements:
+    _permission: 'create metric snapshots'

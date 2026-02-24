@@ -175,3 +175,35 @@ jaraba_sso.api.mfa.set:
     _permission: 'manage mfa policies'
     _csrf_request_header_token: 'TRUE'
   methods: [POST]
+
+entity.mfa_policy.collection:
+  path: '/admin/content/mfa-policies'
+  defaults:
+    _entity_list: 'mfa_policy'
+    _title: 'MFA Policies'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.sso_configuration.collection:
+  path: '/admin/content/sso-configurations'
+  defaults:
+    _entity_list: 'sso_configuration'
+    _title: 'SSO Configurations'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.mfa_policy.settings:
+  path: '/admin/structure/mfa-policy/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sso\Form\MfaPolicySettingsForm'
+    _title: 'MFA Policy settings'
+  requirements:
+    _permission: 'manage mfa policies'
+
+entity.sso_configuration.settings:
+  path: '/admin/structure/sso-configuration/settings'
+  defaults:
+    _form: 'Drupal\jaraba_sso\Form\SsoConfigurationSettingsForm'
+    _title: 'SSO Configuration settings'
+  requirements:
+    _permission: 'administer sso'

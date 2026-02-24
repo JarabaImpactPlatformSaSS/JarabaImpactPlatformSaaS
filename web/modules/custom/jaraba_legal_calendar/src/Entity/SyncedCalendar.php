@@ -21,6 +21,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   label = @Translation("Calendario Sincronizado"),
  *   label_collection = @Translation("Calendarios Sincronizados"),
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_legal_calendar\Access\CalendarConnectionAccessControlHandler",
  *   },
@@ -31,6 +32,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "uuid" = "uuid",
  *     "label" = "calendar_name",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/synced-calendars",
+ *   },
+ *   field_ui_base_route = "entity.synced_calendar.settings",
  * )
  */
 class SyncedCalendar extends ContentEntityBase {

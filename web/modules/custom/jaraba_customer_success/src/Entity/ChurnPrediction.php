@@ -59,6 +59,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "canonical" = "/admin/content/churn-predictions/{churn_prediction}",
  *     "delete-form" = "/admin/content/churn-predictions/{churn_prediction}/delete",
  *   },
+ *   field_ui_base_route = "entity.churn_prediction.settings",
  * )
  */
 class ChurnPrediction extends ContentEntityBase {

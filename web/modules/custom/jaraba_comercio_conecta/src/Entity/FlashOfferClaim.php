@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-flash-claim/{comercio_flash_claim}",
  *     "collection" = "/admin/content/comercio-flash-claims",
  *   },
+ *   field_ui_base_route = "entity.comercio_flash_claim.settings",
  * )
  */
 class FlashOfferClaim extends ContentEntityBase {

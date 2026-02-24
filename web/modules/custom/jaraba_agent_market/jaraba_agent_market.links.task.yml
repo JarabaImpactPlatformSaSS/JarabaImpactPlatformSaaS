@@ -1,0 +1,19 @@
+entity.digital_twin.collection:
+  title: 'Digital Twins'
+  route_name: entity.digital_twin.collection
+  base_route: system.admin_content
+
+entity.negotiation_session.collection:
+  title: 'Negotiation Sessions'
+  route_name: entity.negotiation_session.collection
+  base_route: system.admin_content
+
+entity.digital_twin.settings_tab:
+  title: 'Settings'
+  route_name: entity.digital_twin.settings
+  base_route: entity.digital_twin.settings
+
+entity.negotiation_session.settings_tab:
+  title: 'Settings'
+  route_name: entity.negotiation_session.settings
+  base_route: entity.negotiation_session.settings

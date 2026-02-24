@@ -3,3 +3,23 @@ jaraba_whitelabel.settings:
   title: 'Settings'
   base_route: jaraba_whitelabel.admin
   weight: 0
+
+entity.custom_domain.settings_tab:
+  title: 'Settings'
+  route_name: entity.custom_domain.settings
+  base_route: entity.custom_domain.settings
+
+entity.whitelabel_config.settings_tab:
+  title: 'Settings'
+  route_name: entity.whitelabel_config.settings
+  base_route: entity.whitelabel_config.settings
+
+entity.whitelabel_email_template.settings_tab:
+  title: 'Settings'
+  route_name: entity.whitelabel_email_template.settings
+  base_route: entity.whitelabel_email_template.settings
+
+entity.whitelabel_reseller.settings_tab:
+  title: 'Settings'
+  route_name: entity.whitelabel_reseller.settings
+  base_route: entity.whitelabel_reseller.settings

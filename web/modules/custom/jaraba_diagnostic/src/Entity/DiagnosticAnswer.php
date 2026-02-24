@@ -21,9 +21,14 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label = @Translation("Respuesta de Diagnóstico"),
  *   label_collection = @Translation("Respuestas de Diagnóstico"),
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_diagnostic\BusinessDiagnosticAccessControlHandler",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/diagnostic-answers",
+ *   },
+ *   field_ui_base_route = "entity.diagnostic_answer.settings",
  *   base_table = "diagnostic_answer",
  *   admin_permission = "administer business diagnostics",
  *   entity_keys = {

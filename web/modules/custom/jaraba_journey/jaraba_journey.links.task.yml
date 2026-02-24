@@ -1,0 +1,4 @@
+entity.journey_state.settings_tab:
+  title: 'Settings'
+  route_name: entity.journey_state.settings
+  base_route: entity.journey_state.settings

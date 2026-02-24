@@ -7,3 +7,8 @@ entity.certification_program.collection:
   title: 'Programas'
   route_name: entity.certification_program.collection
   base_route: entity.certification_program.collection
+
+entity.user_certification.settings_tab:
+  title: 'Settings'
+  route_name: entity.user_certification.settings
+  base_route: entity.user_certification.settings

@@ -1,0 +1,14 @@
+entity.sepe_accion_formativa.settings_tab:
+  title: 'Settings'
+  route_name: entity.sepe_accion_formativa.settings
+  base_route: entity.sepe_accion_formativa.settings
+
+entity.sepe_centro.settings_tab:
+  title: 'Settings'
+  route_name: entity.sepe_centro.settings
+  base_route: entity.sepe_centro.settings
+
+entity.sepe_participante.settings_tab:
+  title: 'Settings'
+  route_name: entity.sepe_participante.settings
+  base_route: entity.sepe_participante.settings

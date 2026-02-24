@@ -39,6 +39,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/usage-aggregates/{usage_aggregate}",
  *     "collection" = "/admin/content/usage-aggregates",
  *   },
+ *   field_ui_base_route = "entity.usage_aggregate.settings",
  * )
  */
 class UsageAggregate extends ContentEntityBase {

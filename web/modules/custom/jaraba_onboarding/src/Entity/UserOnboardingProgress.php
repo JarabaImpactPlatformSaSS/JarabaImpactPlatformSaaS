@@ -46,6 +46,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "delete-form" = "/admin/content/onboarding-progress/{user_onboarding_progress}/delete",
  *     "collection" = "/admin/content/onboarding-progress",
  *   },
+ *   field_ui_base_route = "entity.user_onboarding_progress.settings",
  * )
  */
 class UserOnboardingProgress extends ContentEntityBase implements EntityChangedInterface {

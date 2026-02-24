@@ -38,3 +38,13 @@ jaraba_agents.agent_approval.settings_tab:
   route_name: jaraba_agents.agent_approval.settings
   base_route: entity.agent_approval.collection
   weight: 100
+
+entity.agent_conversation.settings_tab:
+  title: 'Settings'
+  route_name: entity.agent_conversation.settings
+  base_route: entity.agent_conversation.settings
+
+entity.agent_handoff.settings_tab:
+  title: 'Settings'
+  route_name: entity.agent_handoff.settings
+  base_route: entity.agent_handoff.settings

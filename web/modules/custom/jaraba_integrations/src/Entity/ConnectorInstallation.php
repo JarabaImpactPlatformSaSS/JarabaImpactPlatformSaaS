@@ -54,6 +54,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "canonical" = "/admin/structure/integrations/installations/{connector_installation}",
  *     "delete-form" = "/admin/structure/integrations/installations/{connector_installation}/delete",
  *   },
+ *   field_ui_base_route = "entity.connector_installation.settings",
  * )
  */
 class ConnectorInstallation extends ContentEntityBase {

@@ -53,6 +53,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "delete-form" = "/admin/content/life-timeline/{life_timeline}/delete",
  *     "collection" = "/admin/content/life-timeline",
  *   },
+ *   field_ui_base_route = "entity.life_timeline.settings",
  * )
  */
 class LifeTimeline extends ContentEntityBase implements EntityOwnerInterface

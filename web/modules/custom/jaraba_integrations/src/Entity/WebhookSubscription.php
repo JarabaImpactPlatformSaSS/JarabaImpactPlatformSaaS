@@ -62,6 +62,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "edit-form" = "/admin/structure/integrations/webhooks/{webhook_subscription}/edit",
  *     "delete-form" = "/admin/structure/integrations/webhooks/{webhook_subscription}/delete",
  *   },
+ *   field_ui_base_route = "entity.webhook_subscription.settings",
  * )
  */
 class WebhookSubscription extends ContentEntityBase {

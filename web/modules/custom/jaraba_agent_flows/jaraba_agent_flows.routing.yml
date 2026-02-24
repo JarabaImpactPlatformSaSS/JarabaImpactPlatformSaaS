@@ -112,3 +112,23 @@ jaraba_agent_flows.api.templates:
   requirements:
     _permission: 'view agent flows'
   methods: [GET]
+
+# ---------------------------------------------------------------------------
+# ENTITY SETTINGS (field_ui_base_route)
+# ---------------------------------------------------------------------------
+
+entity.agent_flow_execution.settings:
+  path: '/admin/structure/agent-flow-execution/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agent_flows\Form\AgentFlowExecutionSettingsForm'
+    _title: 'Agent Flow Execution settings'
+  requirements:
+    _permission: 'administer agent flows'
+
+entity.agent_flow_step_log.settings:
+  path: '/admin/structure/agent-flow-step-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agent_flows\Form\AgentFlowStepLogSettingsForm'
+    _title: 'Agent Flow Step Log settings'
+  requirements:
+    _permission: 'administer agent flows'

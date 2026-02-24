@@ -39,6 +39,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/usage-events/{usage_event}",
  *     "collection" = "/admin/content/usage-events",
  *   },
+ *   field_ui_base_route = "entity.usage_event.settings",
  * )
  */
 class UsageEvent extends ContentEntityBase {

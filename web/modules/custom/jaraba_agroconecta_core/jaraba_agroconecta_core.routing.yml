@@ -2433,3 +2433,119 @@ jaraba_agroconecta_core.api.portal.request_link:
 # ============================================
 
 # Nota: entity.product_document.settings ya definida arriba (línea 2081)
+
+entity.order_item_agro.collection:
+  path: '/admin/content/agro-order-items'
+  defaults:
+    _entity_list: 'order_item_agro'
+    _title: 'Agro Order Items'
+  requirements:
+    _permission: 'administer site configuration'
+
+# ============================================
+# SETTINGS ROUTES FOR FIELD UI (P2 remediation)
+# ============================================
+
+entity.agro_shipping_rate.settings:
+  path: '/admin/structure/agro-shipping-rate/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AgroShippingRateSettingsForm'
+    _title: 'Tarifa de Envío Agro settings'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.agro_shipping_zone.settings:
+  path: '/admin/structure/agro-shipping-zone/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AgroShippingZoneSettingsForm'
+    _title: 'Zona de Envío Agro settings'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.analytics_daily_agro.settings:
+  path: '/admin/structure/analytics-daily-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\AnalyticsDailyAgroSettingsForm'
+    _title: 'Métricas Diarias Agro settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.agro_carrier_config.settings:
+  path: '/admin/structure/agro-carrier-config/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\CarrierConfigSettingsForm'
+    _title: 'Configuración de Transportista settings'
+  requirements:
+    _permission: 'manage agro shipping'
+
+entity.copilot_conversation_agro.settings:
+  path: '/admin/structure/copilot-conversation-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\CopilotConversationAgroSettingsForm'
+    _title: 'Conversación Copiloto Agro settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.copilot_generated_content_agro.settings:
+  path: '/admin/structure/copilot-generated-content-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\CopilotGeneratedContentAgroSettingsForm'
+    _title: 'Contenido Generado IA settings'
+  requirements:
+    _permission: 'manage agro copilot'
+
+entity.copilot_message_agro.settings:
+  path: '/admin/structure/copilot-message-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\CopilotMessageAgroSettingsForm'
+    _title: 'Mensaje Copiloto Agro settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.customer_preference_agro.settings:
+  path: '/admin/structure/customer-preference-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\CustomerPreferenceAgroSettingsForm'
+    _title: 'Preferencia de Cliente settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.document_download_log.settings:
+  path: '/admin/structure/document-download-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\DocumentDownloadLogSettingsForm'
+    _title: 'Registro de Descarga settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.order_item_agro.settings:
+  path: '/admin/structure/order-item-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\OrderItemAgroSettingsForm'
+    _title: 'Línea de Pedido Agro settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.qr_scan_event.settings:
+  path: '/admin/structure/qr-scan-event/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\QrScanEventSettingsForm'
+    _title: 'Escaneo QR Agro settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.sales_conversation_agro.settings:
+  path: '/admin/structure/sales-conversation-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\SalesConversationAgroSettingsForm'
+    _title: 'Conversación Sales Agent settings'
+  requirements:
+    _permission: 'administer agroconecta'
+
+entity.sales_message_agro.settings:
+  path: '/admin/structure/sales-message-agro/settings'
+  defaults:
+    _form: 'Drupal\jaraba_agroconecta_core\Form\SalesMessageAgroSettingsForm'
+    _title: 'Mensaje Sales Agent settings'
+  requirements:
+    _permission: 'administer agroconecta'

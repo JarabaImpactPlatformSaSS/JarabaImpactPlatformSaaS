@@ -163,3 +163,110 @@ jaraba_comercio_conecta.payout_record.collection:
   route_name: entity.comercio_payout_record.collection
   base_route: system.admin_content
   weight: 72
+
+# --- Settings Tabs: Field UI base routes (Batch P2) ---
+
+entity.abandoned_cart.settings_tab:
+  title: 'Settings'
+  route_name: entity.abandoned_cart.settings
+  base_route: entity.abandoned_cart.settings
+
+entity.comercio_cart.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_cart.settings
+  base_route: entity.comercio_cart.settings
+
+entity.comercio_cart_item.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_cart_item.settings
+  base_route: entity.comercio_cart_item.settings
+
+entity.coupon_redemption.settings_tab:
+  title: 'Settings'
+  route_name: entity.coupon_redemption.settings
+  base_route: entity.coupon_redemption.settings
+
+entity.comercio_flash_claim.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_flash_claim.settings
+  base_route: entity.comercio_flash_claim.settings
+
+entity.comercio_moderation_queue.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_moderation_queue.settings
+  base_route: entity.comercio_moderation_queue.settings
+
+entity.comercio_nap_entry.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_nap_entry.settings
+  base_route: entity.comercio_nap_entry.settings
+
+entity.comercio_notification_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_notification_log.settings
+  base_route: entity.comercio_notification_log.settings
+
+entity.comercio_notification_pref.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_notification_pref.settings
+  base_route: entity.comercio_notification_pref.settings
+
+entity.order_item_retail.settings_tab:
+  title: 'Settings'
+  route_name: entity.order_item_retail.settings
+  base_route: entity.order_item_retail.settings
+
+entity.comercio_payout_record.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_payout_record.settings
+  base_route: entity.comercio_payout_record.settings
+
+entity.comercio_pos_conflict.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_pos_conflict.settings
+  base_route: entity.comercio_pos_conflict.settings
+
+entity.comercio_pos_sync.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_pos_sync.settings
+  base_route: entity.comercio_pos_sync.settings
+
+entity.comercio_push_subscription.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_push_subscription.settings
+  base_route: entity.comercio_push_subscription.settings
+
+entity.comercio_qr_lead.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_qr_lead.settings
+  base_route: entity.comercio_qr_lead.settings
+
+entity.comercio_qr_scan.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_qr_scan.settings
+  base_route: entity.comercio_qr_scan.settings
+
+entity.comercio_qa.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_qa.settings
+  base_route: entity.comercio_qa.settings
+
+entity.comercio_search_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_search_log.settings
+  base_route: entity.comercio_search_log.settings
+
+entity.suborder_retail.settings_tab:
+  title: 'Settings'
+  route_name: entity.suborder_retail.settings
+  base_route: entity.suborder_retail.settings
+
+entity.comercio_wishlist.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_wishlist.settings
+  base_route: entity.comercio_wishlist.settings
+
+entity.comercio_wishlist_item.settings_tab:
+  title: 'Settings'
+  route_name: entity.comercio_wishlist_item.settings
+  base_route: entity.comercio_wishlist_item.settings

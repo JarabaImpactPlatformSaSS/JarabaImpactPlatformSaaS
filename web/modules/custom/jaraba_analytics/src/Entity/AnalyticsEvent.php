@@ -26,12 +26,17 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "storage" = "Drupal\Core\Entity\Sql\SqlContentEntityStorage",
  *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   base_table = "analytics_event",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/analytics-events",
+ *   },
+ *   field_ui_base_route = "entity.analytics_event.settings",
  * )
  */
 class AnalyticsEvent extends ContentEntityBase implements ContentEntityInterface

@@ -44,6 +44,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/availability-slot/{availability_slot}",
  *     "delete-form" = "/admin/content/availability-slot/{availability_slot}/delete",
  *   },
+ *   field_ui_base_route = "entity.availability_slot.settings",
  * )
  */
 class AvailabilitySlot extends ContentEntityBase

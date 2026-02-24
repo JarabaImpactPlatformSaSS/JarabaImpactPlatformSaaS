@@ -53,6 +53,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "canonical" = "/admin/content/credit-notes/{credit_note}",
  *     "delete-form" = "/admin/content/credit-notes/{credit_note}/delete",
  *   },
+ *   field_ui_base_route = "entity.credit_note.settings",
  * )
  */
 class CreditNote extends ContentEntityBase {

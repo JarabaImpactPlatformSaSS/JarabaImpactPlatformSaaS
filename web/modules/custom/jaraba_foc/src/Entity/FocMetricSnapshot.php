@@ -56,6 +56,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "collection" = "/admin/foc/snapshots",
  *     "canonical" = "/admin/foc/snapshot/{foc_metric_snapshot}",
  *   },
+ *   field_ui_base_route = "entity.foc_metric_snapshot.settings",
  * )
  */
 class FocMetricSnapshot extends ContentEntityBase

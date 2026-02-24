@@ -1913,3 +1913,95 @@ ecosistema_jaraba_core.contact:
     _title: 'Contacto'
   requirements:
     _access: 'TRUE'
+
+entity.impersonation_audit_log.collection:
+  path: '/admin/content/impersonation-audit-log'
+  defaults:
+    _entity_list: 'impersonation_audit_log'
+    _title: 'Impersonation Audit Log'
+  requirements:
+    _permission: 'administer site configuration'
+
+# ---------------------------------------------------------------------------
+# ENTITY SETTINGS ROUTES (field_ui_base_route targets)
+# ---------------------------------------------------------------------------
+
+entity.alert_rule.settings:
+  path: '/admin/structure/alert-rule/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\AlertRuleSettingsForm'
+    _title: 'Regla de Alerta settings'
+  requirements:
+    _permission: 'administer alert rules'
+
+entity.audit_log.settings:
+  path: '/admin/structure/audit-log/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\AuditLogSettingsForm'
+    _title: 'Audit Log settings'
+  requirements:
+    _permission: 'view audit logs'
+
+entity.badge.settings:
+  path: '/admin/structure/badge/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\BadgeSettingsForm'
+    _title: 'Insignia settings'
+  requirements:
+    _permission: 'administer tenants'
+
+entity.badge_award.settings:
+  path: '/admin/structure/badge-award/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\BadgeAwardSettingsForm'
+    _title: 'Otorgamiento de Insignia settings'
+  requirements:
+    _permission: 'administer tenants'
+
+entity.compliance_assessment.settings:
+  path: '/admin/structure/compliance-assessment/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\ComplianceAssessmentSettingsForm'
+    _title: 'Evaluación de Compliance settings'
+  requirements:
+    _permission: 'administer tenants'
+
+entity.impersonation_audit_log.settings:
+  path: '/admin/structure/impersonation-audit-log/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\ImpersonationAuditLogSettingsForm'
+    _title: 'Registro de Impersonación settings'
+  requirements:
+    _permission: 'administer impersonation'
+
+entity.push_subscription.settings:
+  path: '/admin/structure/push-subscription/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\PushSubscriptionSettingsForm'
+    _title: 'Suscripción Push settings'
+  requirements:
+    _permission: 'administer tenants'
+
+entity.reseller.settings:
+  path: '/admin/structure/reseller/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\ResellerSettingsForm'
+    _title: 'Reseller settings'
+  requirements:
+    _permission: 'administer tenants'
+
+entity.scheduled_report.settings:
+  path: '/admin/structure/scheduled-report/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\ScheduledReportSettingsForm'
+    _title: 'Reporte Programado settings'
+  requirements:
+    _permission: 'administer scheduled reports'
+
+entity.security_policy.settings:
+  path: '/admin/structure/security-policy/settings'
+  defaults:
+    _form: 'Drupal\ecosistema_jaraba_core\Form\SecurityPolicySettingsForm'
+    _title: 'Política de Seguridad settings'
+  requirements:
+    _permission: 'administer tenants'

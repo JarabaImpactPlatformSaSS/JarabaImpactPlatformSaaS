@@ -31,6 +31,10 @@ use Drupal\Core\Entity\ContentEntityInterface;
  *     "id" = "id",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/ai-usage-logs",
+ *   },
+ *   field_ui_base_route = "entity.ai_usage_log.settings",
  * )
  */
 class AIUsageLog extends ContentEntityBase implements ContentEntityInterface

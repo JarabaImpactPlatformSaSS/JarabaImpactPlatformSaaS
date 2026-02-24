@@ -43,6 +43,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "delete-form" = "/admin/content/comercio-suborder/{suborder_retail}/delete",
  *     "collection" = "/admin/content/comercio-suborders",
  *   },
+ *   field_ui_base_route = "entity.suborder_retail.settings",
  * )
  */
 class SuborderRetail extends ContentEntityBase implements EntityChangedInterface {

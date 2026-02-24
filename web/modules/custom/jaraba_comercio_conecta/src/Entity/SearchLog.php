@@ -45,6 +45,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/comercio-search-logs",
  *   },
+ *   field_ui_base_route = "entity.comercio_search_log.settings",
  * )
  */
 class SearchLog extends ContentEntityBase {

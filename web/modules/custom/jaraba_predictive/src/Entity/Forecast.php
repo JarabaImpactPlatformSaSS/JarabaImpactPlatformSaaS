@@ -59,6 +59,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/forecasts/{forecast}",
  *     "delete-form" = "/admin/content/forecasts/{forecast}/delete",
  *   },
+ *   field_ui_base_route = "entity.forecast.settings",
  * )
  */
 class Forecast extends ContentEntityBase {

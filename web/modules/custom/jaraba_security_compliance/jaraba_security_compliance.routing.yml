@@ -117,3 +117,44 @@ jaraba_security_compliance.settings:
     _title: 'Configuración de Security Compliance'
   requirements:
     _permission: 'administer security compliance'
+
+# Entity settings (Field UI base routes).
+entity.compliance_assessment_v2.settings:
+  path: '/admin/structure/compliance-assessment/settings'
+  defaults:
+    _form: 'Drupal\jaraba_security_compliance\Form\ComplianceAssessmentSettingsForm'
+    _title: 'Compliance Assessment settings'
+  requirements:
+    _permission: 'administer security compliance'
+
+entity.ens_compliance.settings:
+  path: '/admin/structure/ens-compliance/settings'
+  defaults:
+    _form: 'Drupal\jaraba_security_compliance\Form\EnsComplianceSettingsForm'
+    _title: 'ENS Compliance Measure settings'
+  requirements:
+    _permission: 'administer security compliance'
+
+entity.risk_assessment.settings:
+  path: '/admin/structure/risk-assessment/settings'
+  defaults:
+    _form: 'Drupal\jaraba_security_compliance\Form\RiskAssessmentSettingsForm'
+    _title: 'Risk Assessment settings'
+  requirements:
+    _permission: 'administer security compliance'
+
+entity.security_audit_log.settings:
+  path: '/admin/structure/security-audit-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_security_compliance\Form\SecurityAuditLogSettingsForm'
+    _title: 'Security Audit Log settings'
+  requirements:
+    _permission: 'view audit log'
+
+entity.security_policy_v2.settings:
+  path: '/admin/structure/security-policy/settings'
+  defaults:
+    _form: 'Drupal\jaraba_security_compliance\Form\SecurityPolicySettingsForm'
+    _title: 'Security Policy settings'
+  requirements:
+    _permission: 'manage security policies'

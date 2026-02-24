@@ -56,6 +56,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "canonical" = "/admin/content/document-access/{document_access}",
  *     "delete-form" = "/admin/content/document-access/{document_access}/delete",
  *   },
+ *   field_ui_base_route = "entity.document_access.settings",
  * )
  */
 class DocumentAccess extends ContentEntityBase {

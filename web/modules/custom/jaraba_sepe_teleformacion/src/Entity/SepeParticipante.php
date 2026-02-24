@@ -48,6 +48,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "edit-form" = "/admin/content/sepe-participantes/{sepe_participante}/edit",
  *     "delete-form" = "/admin/content/sepe-participantes/{sepe_participante}/delete",
  *   },
+ *   field_ui_base_route = "entity.sepe_participante.settings",
  * )
  */
 class SepeParticipante extends ContentEntityBase

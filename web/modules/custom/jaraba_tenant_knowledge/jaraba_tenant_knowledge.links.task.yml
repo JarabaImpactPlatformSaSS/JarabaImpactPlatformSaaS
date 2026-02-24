@@ -1,0 +1,39 @@
+entity.kb_category.settings_tab:
+  title: 'Settings'
+  route_name: entity.kb_category.settings
+  base_route: entity.kb_category.settings
+
+entity.kb_video.settings_tab:
+  title: 'Settings'
+  route_name: entity.kb_video.settings
+  base_route: entity.kb_video.settings
+
+entity.tenant_ai_correction.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_ai_correction.settings
+  base_route: entity.tenant_ai_correction.settings
+
+entity.tenant_document.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_document.settings
+  base_route: entity.tenant_document.settings
+
+entity.tenant_faq.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_faq.settings
+  base_route: entity.tenant_faq.settings
+
+entity.tenant_knowledge_config.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_knowledge_config.settings
+  base_route: entity.tenant_knowledge_config.settings
+
+entity.tenant_policy.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_policy.settings
+  base_route: entity.tenant_policy.settings
+
+entity.tenant_product_enrichment.settings_tab:
+  title: 'Settings'
+  route_name: entity.tenant_product_enrichment.settings
+  base_route: entity.tenant_product_enrichment.settings

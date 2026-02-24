@@ -59,6 +59,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "canonical" = "/admin/content/playbook-executions/{playbook_execution}",
  *     "delete-form" = "/admin/content/playbook-executions/{playbook_execution}/delete",
  *   },
+ *   field_ui_base_route = "entity.playbook_execution.settings",
  * )
  */
 class PlaybookExecution extends ContentEntityBase {

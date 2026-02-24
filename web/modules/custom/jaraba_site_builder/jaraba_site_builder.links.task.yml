@@ -55,3 +55,43 @@ entity.seo_page_config.settings:
   title: 'Configuración'
   route_name: entity.seo_page_config.settings
   base_route: entity.seo_page_config.settings
+
+entity.site_config.collection:
+  title: 'Site Configs'
+  route_name: entity.site_config.collection
+  base_route: system.admin_content
+
+entity.site_page_tree.collection:
+  title: 'Site Page Trees'
+  route_name: entity.site_page_tree.collection
+  base_route: system.admin_content
+
+entity.site_redirect.collection:
+  title: 'Site Redirects'
+  route_name: entity.site_redirect.collection
+  base_route: system.admin_content
+
+entity.site_url_history.collection:
+  title: 'Site URL History'
+  route_name: entity.site_url_history.collection
+  base_route: system.admin_content
+
+entity.site_config.settings_tab:
+  title: 'Settings'
+  route_name: entity.site_config.settings
+  base_route: entity.site_config.settings
+
+entity.site_page_tree.settings_tab:
+  title: 'Settings'
+  route_name: entity.site_page_tree.settings
+  base_route: entity.site_page_tree.settings
+
+entity.site_redirect.settings_tab:
+  title: 'Settings'
+  route_name: entity.site_redirect.settings
+  base_route: entity.site_redirect.settings
+
+entity.site_url_history.settings_tab:
+  title: 'Settings'
+  route_name: entity.site_url_history.settings
+  base_route: entity.site_url_history.settings

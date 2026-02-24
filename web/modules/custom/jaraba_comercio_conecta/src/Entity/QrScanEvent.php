@@ -32,6 +32,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "canonical" = "/admin/content/comercio-qr-scan/{comercio_qr_scan}",
  *     "collection" = "/admin/content/comercio-qr-scans",
  *   },
+ *   field_ui_base_route = "entity.comercio_qr_scan.settings",
  * )
  */
 class QrScanEvent extends ContentEntityBase {

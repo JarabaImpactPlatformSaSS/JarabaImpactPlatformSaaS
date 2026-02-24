@@ -21,10 +21,15 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label = @Translation("Recomendación de Diagnóstico"),
  *   label_collection = @Translation("Recomendaciones"),
  *   handlers = {
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\jaraba_diagnostic\BusinessDiagnosticAccessControlHandler",
  *   },
+ *   links = {
+ *     "collection" = "/admin/content/diagnostic-recommendations",
+ *   },
+ *   field_ui_base_route = "entity.diagnostic_recommendation.settings",
  *   base_table = "diagnostic_recommendation",
  *   admin_permission = "administer business diagnostics",
  *   entity_keys = {
