@@ -1051,6 +1051,162 @@
 }
 
 // =============================================================================
+// SOLICITUD EN ESTUDIO STATE
+// =============================================================================
+
+.aei-solicitud-state {
+  padding: 3rem 2rem 4rem;
+
+  &__card {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 2.5rem 2.5rem 3rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(248, 250, 252, 0.92));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--aei-radius);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: var(--aei-shadow-card);
+  }
+
+  &__icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--aei-success, #22c55e) 15%, transparent), color-mix(in srgb, var(--aei-primary) 8%, transparent));
+    margin-bottom: 1.5rem;
+    animation: aei-float 4s ease-in-out infinite;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--aei-corporate);
+    margin: 0 0 0.75rem;
+    font-family: var(--aei-font-headings);
+  }
+
+  &__desc {
+    font-size: 0.95rem;
+    color: var(--aei-text-muted);
+    margin: 0 0 1.5rem;
+    line-height: 1.65;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+
+    &--pendiente {
+      background: color-mix(in srgb, var(--aei-primary) 12%, #fff);
+      color: var(--aei-primary);
+    }
+    &--contactado {
+      background: color-mix(in srgb, var(--aei-corporate) 12%, #fff);
+      color: var(--aei-corporate);
+    }
+    &--admitido {
+      background: color-mix(in srgb, #22c55e 12%, #fff);
+      color: #16a34a;
+    }
+    &--rechazado {
+      background: color-mix(in srgb, #ef4444 10%, #fff);
+      color: #dc2626;
+    }
+    &--lista_espera {
+      background: color-mix(in srgb, #eab308 12%, #fff);
+      color: #ca8a04;
+    }
+  }
+
+  &__date {
+    font-size: 0.82rem;
+    color: var(--aei-text-muted);
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid color-mix(in srgb, var(--aei-corporate) 10%, #fff);
+    margin: 1.5rem 0;
+  }
+
+  &__explore-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--aei-corporate);
+    margin: 0 0 0.5rem;
+    font-family: var(--aei-font-headings);
+  }
+
+  &__explore-desc {
+    font-size: 0.875rem;
+    color: var(--aei-text-muted);
+    margin: 0 0 1.5rem;
+    line-height: 1.55;
+  }
+
+  &__features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: left;
+  }
+
+  &__feature {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #fff;
+      border-color: color-mix(in srgb, var(--aei-primary) 25%, transparent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transform: translateY(-1px);
+    }
+
+    &-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+
+      strong {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--aei-corporate);
+      }
+
+      small {
+        font-size: 0.78rem;
+        color: var(--aei-text-muted);
+      }
+    }
+  }
+}
+
+// =============================================================================
 // ADMIN SECTION PREMIUM
 // =============================================================================
 
