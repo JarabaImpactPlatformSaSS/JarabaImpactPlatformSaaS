@@ -43,3 +43,21 @@ entity.service_catalog_item.settings_tab:
   title: 'Settings'
   route_name: entity.service_catalog_item.settings
   base_route: entity.service_catalog_item.settings
+
+# Field UI settings tabs.
+
+entity.time_entry.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_billing.time_entry.settings
+  base_route: jaraba_legal_billing.time_entry.settings
+
+entity.legal_invoice.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_billing.invoice.settings
+  base_route: jaraba_legal_billing.invoice.settings
+
+entity.quote.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_billing.quote.settings
+  base_route: jaraba_legal_billing.quote.settings
+

@@ -17,3 +17,21 @@ entity.blog_author.collection:
   route_name: entity.blog_author.collection
   base_route: system.admin_content
   weight: 62
+
+# Field UI settings tabs.
+
+entity.blog_category.settings_tab:
+  title: 'Configuración'
+  route_name: entity.blog_category.settings
+  base_route: entity.blog_category.settings
+
+entity.blog_author.settings_tab:
+  title: 'Configuración'
+  route_name: entity.blog_author.settings
+  base_route: entity.blog_author.settings
+
+entity.blog_post.settings_tab:
+  title: 'Configuración'
+  route_name: entity.blog_post.settings
+  base_route: entity.blog_post.settings
+

@@ -26,3 +26,26 @@ jaraba_verifactu.config_tab:
   title: 'Configuration'
   base_route: jaraba_verifactu.dashboard
   weight: 40
+
+# Field UI settings tabs.
+
+entity.verifactu_event_log.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_verifactu.verifactu_event_log.settings
+  base_route: jaraba_verifactu.verifactu_event_log.settings
+
+entity.verifactu_tenant_config.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_verifactu.verifactu_tenant_config.settings
+  base_route: jaraba_verifactu.verifactu_tenant_config.settings
+
+entity.verifactu_invoice_record.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_verifactu.verifactu_invoice_record.settings
+  base_route: jaraba_verifactu.verifactu_invoice_record.settings
+
+entity.verifactu_remision_batch.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_verifactu.verifactu_remision_batch.settings
+  base_route: jaraba_verifactu.verifactu_remision_batch.settings
+

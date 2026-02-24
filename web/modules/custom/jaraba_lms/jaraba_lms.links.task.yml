@@ -34,3 +34,11 @@ entity.lms_enrollment.settings_tab:
   route_name: entity.lms_enrollment.settings
   base_route: entity.lms_enrollment.settings
   weight: -10
+
+# Field UI settings tabs.
+
+entity.lms_lesson.settings_tab:
+  title: 'Configuración'
+  route_name: entity.lms_lesson.settings
+  base_route: entity.lms_lesson.settings
+

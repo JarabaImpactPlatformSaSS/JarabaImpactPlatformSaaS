@@ -28,3 +28,31 @@ entity.field_exit.collection:
   route_name: entity.field_exit.collection
   base_route: system.admin_content
   weight: 44
+
+# Field UI settings tabs.
+
+entity.field_exit.settings_tab:
+  title: 'Configuración'
+  route_name: entity.field_exit.settings
+  base_route: entity.field_exit.settings
+
+entity.entrepreneur_learning.settings_tab:
+  title: 'Configuración'
+  route_name: entity.entrepreneur_learning.settings
+  base_route: entity.entrepreneur_learning.settings
+
+entity.experiment.settings_tab:
+  title: 'Configuración'
+  route_name: entity.experiment.settings
+  base_route: entity.experiment.settings
+
+entity.entrepreneur_profile.settings_tab:
+  title: 'Configuración'
+  route_name: entity.entrepreneur_profile.settings
+  base_route: entity.entrepreneur_profile.settings
+
+entity.hypothesis.settings_tab:
+  title: 'Configuración'
+  route_name: entity.hypothesis.settings
+  base_route: entity.hypothesis.settings
+

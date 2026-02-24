@@ -10,3 +10,36 @@ jaraba_ads.ad_campaign.collection:
   route_name: entity.ad_campaign.collection
   base_route: system.admin_content
   weight: 83
+
+# Field UI settings tabs.
+
+entity.ads_campaign_sync.settings_tab:
+  title: 'Configuración'
+  route_name: entity.ads_campaign_sync.settings
+  base_route: entity.ads_campaign_sync.settings
+
+entity.ads_metrics_daily.settings_tab:
+  title: 'Configuración'
+  route_name: entity.ads_metrics_daily.settings
+  base_route: entity.ads_metrics_daily.settings
+
+entity.ads_account.settings_tab:
+  title: 'Configuración'
+  route_name: entity.ads_account.settings
+  base_route: entity.ads_account.settings
+
+entity.ads_audience_sync.settings_tab:
+  title: 'Configuración'
+  route_name: entity.ads_audience_sync.settings
+  base_route: entity.ads_audience_sync.settings
+
+entity.ad_campaign.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_ads.ad_campaign.settings
+  base_route: jaraba_ads.ad_campaign.settings
+
+entity.ads_conversion_event.settings_tab:
+  title: 'Configuración'
+  route_name: entity.ads_conversion_event.settings
+  base_route: entity.ads_conversion_event.settings
+

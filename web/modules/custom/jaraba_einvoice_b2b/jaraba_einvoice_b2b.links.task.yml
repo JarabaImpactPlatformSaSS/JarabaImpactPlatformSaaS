@@ -25,3 +25,26 @@ jaraba_einvoice_b2b.config:
   title: 'Configuration'
   base_route: entity.einvoice_document.collection
   weight: 30
+
+# Field UI settings tabs.
+
+entity.einvoice_payment_event.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_einvoice_b2b.einvoice_payment_event.settings
+  base_route: jaraba_einvoice_b2b.einvoice_payment_event.settings
+
+entity.einvoice_document.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_einvoice_b2b.einvoice_document.settings
+  base_route: jaraba_einvoice_b2b.einvoice_document.settings
+
+entity.einvoice_delivery_log.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_einvoice_b2b.einvoice_delivery_log.settings
+  base_route: jaraba_einvoice_b2b.einvoice_delivery_log.settings
+
+entity.einvoice_tenant_config.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_einvoice_b2b.einvoice_tenant_config.settings
+  base_route: jaraba_einvoice_b2b.einvoice_tenant_config.settings
+

@@ -37,3 +37,11 @@ entity.tenant_product_enrichment.settings_tab:
   title: 'Settings'
   route_name: entity.tenant_product_enrichment.settings
   base_route: entity.tenant_product_enrichment.settings
+
+# Field UI settings tabs.
+
+entity.kb_article.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_tenant_knowledge.admin.settings
+  base_route: jaraba_tenant_knowledge.admin.settings
+

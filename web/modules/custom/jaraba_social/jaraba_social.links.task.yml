@@ -7,3 +7,11 @@ entity.social_post.settings_tab:
   title: 'Settings'
   route_name: entity.social_post.settings
   base_route: entity.social_post.settings
+
+# Field UI settings tabs.
+
+entity.social_post_variant.settings_tab:
+  title: 'Configuración'
+  route_name: entity.social_post_variant.settings
+  base_route: entity.social_post_variant.settings
+

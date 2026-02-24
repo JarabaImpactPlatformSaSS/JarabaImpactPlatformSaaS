@@ -22,3 +22,11 @@ entity.email_template.settings_tab:
   title: 'Settings'
   route_name: entity.email_template.settings
   base_route: entity.email_template.settings
+
+# Field UI settings tabs.
+
+entity.email_sequence_step.settings_tab:
+  title: 'Configuración'
+  route_name: entity.email_sequence_step.settings
+  base_route: entity.email_sequence_step.settings
+

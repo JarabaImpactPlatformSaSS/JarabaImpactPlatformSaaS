@@ -3,3 +3,11 @@ jaraba_tenant_export.settings:
   route_name: jaraba_tenant_export.tenant_export_record.settings
   base_route: entity.tenant_export_record.collection
   weight: 100
+
+# Field UI settings tabs.
+
+entity.tenant_export_record.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_tenant_export.tenant_export_record.settings
+  base_route: jaraba_tenant_export.tenant_export_record.settings
+

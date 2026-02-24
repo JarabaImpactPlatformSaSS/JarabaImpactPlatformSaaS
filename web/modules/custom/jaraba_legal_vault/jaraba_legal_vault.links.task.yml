@@ -31,3 +31,16 @@ entity.document_delivery.settings_tab:
   title: 'Settings'
   route_name: entity.document_delivery.settings
   base_route: entity.document_delivery.settings
+
+# Field UI settings tabs.
+
+entity.secure_document.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_vault.secure_document.settings
+  base_route: jaraba_legal_vault.secure_document.settings
+
+entity.document_request.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_vault.document_request.settings
+  base_route: jaraba_legal_vault.document_request.settings
+

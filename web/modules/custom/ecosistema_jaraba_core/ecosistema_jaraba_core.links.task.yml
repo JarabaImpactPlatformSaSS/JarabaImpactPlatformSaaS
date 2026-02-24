@@ -52,3 +52,26 @@ entity.security_policy.settings_tab:
   title: 'Settings'
   route_name: entity.security_policy.settings
   base_route: entity.security_policy.settings
+
+# Field UI settings tabs.
+
+entity.pricing_rule.settings_tab:
+  title: 'Configuración'
+  route_name: entity.pricing_rule.collection
+  base_route: entity.pricing_rule.collection
+
+entity.saas_plan.settings_tab:
+  title: 'Configuración'
+  route_name: entity.saas_plan.collection
+  base_route: entity.saas_plan.collection
+
+entity.tenant.settings_tab:
+  title: 'Configuración'
+  route_name: entity.tenant.collection
+  base_route: entity.tenant.collection
+
+entity.vertical.settings_tab:
+  title: 'Configuración'
+  route_name: entity.vertical.collection
+  base_route: entity.vertical.collection
+

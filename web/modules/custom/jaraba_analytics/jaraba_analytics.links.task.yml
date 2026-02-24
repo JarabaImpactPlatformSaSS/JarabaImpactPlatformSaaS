@@ -42,3 +42,11 @@ entity.scheduled_report.settings_tab:
   title: 'Settings'
   route_name: entity.scheduled_report.settings
   base_route: entity.scheduled_report.settings
+
+# Field UI settings tabs.
+
+entity.analytics_dashboard.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_analytics.settings
+  base_route: jaraba_analytics.settings
+

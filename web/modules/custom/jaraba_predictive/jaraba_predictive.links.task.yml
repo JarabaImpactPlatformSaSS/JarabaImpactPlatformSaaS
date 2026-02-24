@@ -48,3 +48,11 @@ entity.forecast.settings_tab:
   title: 'Settings'
   route_name: entity.forecast.settings
   base_route: entity.forecast.settings
+
+# Field UI settings tabs.
+
+entity.lead_score.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_predictive.lead_score.settings
+  base_route: jaraba_predictive.lead_score.settings
+

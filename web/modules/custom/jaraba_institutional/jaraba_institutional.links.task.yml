@@ -38,3 +38,21 @@ jaraba_institutional.sto_ficha.settings_tab:
   route_name: jaraba_institutional.sto_ficha.settings
   base_route: entity.sto_ficha.collection
   weight: 49
+
+# Field UI settings tabs.
+
+entity.program_participant.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_institutional.program_participant.settings
+  base_route: jaraba_institutional.program_participant.settings
+
+entity.sto_ficha.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_institutional.sto_ficha.settings
+  base_route: jaraba_institutional.sto_ficha.settings
+
+entity.institutional_program.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_institutional.institutional_program.settings
+  base_route: jaraba_institutional.institutional_program.settings
+

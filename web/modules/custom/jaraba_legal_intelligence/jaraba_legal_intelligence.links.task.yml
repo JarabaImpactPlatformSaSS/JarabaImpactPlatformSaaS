@@ -10,3 +10,31 @@ jaraba_legal.admin_dashboard:
   route_name: jaraba_legal.admin_dashboard
   base_route: jaraba_legal_intelligence.settings
   weight: 5
+
+# Field UI settings tabs.
+
+entity.legal_source.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.source.settings
+  base_route: jaraba_legal.source.settings
+
+entity.legal_alert.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.alert.settings
+  base_route: jaraba_legal.alert.settings
+
+entity.legal_bookmark.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.bookmark.settings
+  base_route: jaraba_legal.bookmark.settings
+
+entity.legal_citation.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.citation.settings
+  base_route: jaraba_legal.citation.settings
+
+entity.legal_resolution.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal.resolution.settings
+  base_route: jaraba_legal.resolution.settings
+

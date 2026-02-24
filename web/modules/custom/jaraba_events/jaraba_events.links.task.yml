@@ -17,3 +17,21 @@ jaraba_events.event_registration.collection:
   route_name: entity.event_registration.collection
   base_route: system.admin_content
   weight: 71
+
+# Field UI settings tabs.
+
+entity.marketing_event.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_events.marketing_event.settings
+  base_route: jaraba_events.marketing_event.settings
+
+entity.event_registration.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_events.event_registration.settings
+  base_route: jaraba_events.event_registration.settings
+
+entity.event_landing_page.settings_tab:
+  title: 'Configuración'
+  route_name: entity.event_landing_page.settings
+  base_route: entity.event_landing_page.settings
+

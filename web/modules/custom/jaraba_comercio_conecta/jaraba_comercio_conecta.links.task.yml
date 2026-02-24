@@ -270,3 +270,111 @@ entity.comercio_wishlist_item.settings_tab:
   title: 'Settings'
   route_name: entity.comercio_wishlist_item.settings
   base_route: entity.comercio_wishlist_item.settings
+
+# Field UI settings tabs.
+
+entity.merchant_profile.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.merchant_profile.settings
+  base_route: jaraba_comercio_conecta.merchant_profile.settings
+
+entity.stock_location.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.stock_location.settings
+  base_route: jaraba_comercio_conecta.stock_location.settings
+
+entity.comercio_local_business.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_local_business.settings
+  base_route: jaraba_comercio_conecta.comercio_local_business.settings
+
+entity.comercio_pos_connection.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_pos_connection.settings
+  base_route: jaraba_comercio_conecta.comercio_pos_connection.settings
+
+entity.customer_profile_retail.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.customer_profile_retail.settings
+  base_route: jaraba_comercio_conecta.customer_profile_retail.settings
+
+entity.comercio_review.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.review.settings
+  base_route: jaraba_comercio_conecta.review.settings
+
+entity.product_variation_retail.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.product_variation_retail.settings
+  base_route: jaraba_comercio_conecta.product_variation_retail.settings
+
+entity.coupon_retail.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.coupon_retail.settings
+  base_route: jaraba_comercio_conecta.coupon_retail.settings
+
+entity.comercio_carrier_config.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_carrier_config.settings
+  base_route: jaraba_comercio_conecta.comercio_carrier_config.settings
+
+entity.comercio_flash_offer.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.flash_offer.settings
+  base_route: jaraba_comercio_conecta.flash_offer.settings
+
+entity.comercio_shipping_method.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_shipping_method.settings
+  base_route: jaraba_comercio_conecta.comercio_shipping_method.settings
+
+entity.comercio_notification_template.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.notification_template.settings
+  base_route: jaraba_comercio_conecta.notification_template.settings
+
+entity.comercio_incident_ticket.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_incident_ticket.settings
+  base_route: jaraba_comercio_conecta.comercio_incident_ticket.settings
+
+entity.comercio_search_index.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_search_index.settings
+  base_route: jaraba_comercio_conecta.comercio_search_index.settings
+
+entity.comercio_shipment.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_shipment.settings
+  base_route: jaraba_comercio_conecta.comercio_shipment.settings
+
+entity.comercio_qr_code.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.qr_code.settings
+  base_route: jaraba_comercio_conecta.qr_code.settings
+
+entity.product_retail.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.product_retail.settings
+  base_route: jaraba_comercio_conecta.product_retail.settings
+
+entity.comercio_shipping_zone.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_shipping_zone.settings
+  base_route: jaraba_comercio_conecta.comercio_shipping_zone.settings
+
+entity.order_retail.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.order_retail.settings
+  base_route: jaraba_comercio_conecta.order_retail.settings
+
+entity.return_request.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.return_request.settings
+  base_route: jaraba_comercio_conecta.return_request.settings
+
+entity.comercio_search_synonym.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_comercio_conecta.comercio_search_synonym.settings
+  base_route: jaraba_comercio_conecta.comercio_search_synonym.settings
+

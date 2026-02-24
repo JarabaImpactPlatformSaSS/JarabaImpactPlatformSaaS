@@ -41,3 +41,11 @@ entity.employability_diagnostic.settings_tab:
   title: 'Settings'
   route_name: entity.employability_diagnostic.settings
   base_route: entity.employability_diagnostic.settings
+
+# Field UI settings tabs.
+
+entity.business_diagnostic.settings_tab:
+  title: 'Configuración'
+  route_name: entity.business_diagnostic.settings
+  base_route: entity.business_diagnostic.settings
+

@@ -16,3 +16,16 @@ jaraba_legal_templates.generated_document.collection:
   route_name: entity.generated_document.collection
   base_route: system.admin_content
   weight: 73
+
+# Field UI settings tabs.
+
+entity.legal_template.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_templates.legal_template.settings
+  base_route: jaraba_legal_templates.legal_template.settings
+
+entity.generated_document.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_templates.generated_document.settings
+  base_route: jaraba_legal_templates.generated_document.settings
+

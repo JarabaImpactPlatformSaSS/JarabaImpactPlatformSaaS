@@ -26,3 +26,16 @@ entity.inquiry_triage.settings_tab:
   title: 'Settings'
   route_name: entity.inquiry_triage.settings
   base_route: entity.inquiry_triage.settings
+
+# Field UI settings tabs.
+
+entity.client_inquiry.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_cases.client_inquiry.settings
+  base_route: jaraba_legal_cases.client_inquiry.settings
+
+entity.client_case.settings_tab:
+  title: 'Configuración'
+  route_name: jaraba_legal_cases.client_case.settings
+  base_route: jaraba_legal_cases.client_case.settings
+

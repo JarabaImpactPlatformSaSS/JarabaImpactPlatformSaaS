@@ -12,3 +12,16 @@ entity.user_certification.settings_tab:
   title: 'Settings'
   route_name: entity.user_certification.settings
   base_route: entity.user_certification.settings
+
+# Field UI settings tabs.
+
+entity.certification_program.settings_tab:
+  title: 'Configuración'
+  route_name: entity.certification_program.settings
+  base_route: entity.certification_program.settings
+
+entity.training_product.settings_tab:
+  title: 'Configuración'
+  route_name: entity.training_product.settings
+  base_route: entity.training_product.settings
+
