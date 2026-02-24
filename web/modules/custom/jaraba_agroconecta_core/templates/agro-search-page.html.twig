@@ -15,10 +15,10 @@
  */
 #}
 
-<div class="agro-search" id="agro-search-root">
+<div class="agro-search" id="agro-search-root" role="main" aria-label="{{ 'Búsqueda de productos'|t }}">
 
   {# === Hero de búsqueda === #}
-  <section class="agro-search-hero">
+  <section class="agro-search-hero" role="search" aria-label="{{ 'Buscar productos'|t }}">
     <h1 class="agro-search-hero__title">{% trans %}Descubre productos agroalimentarios{% endtrans %}</h1>
     <p class="agro-search-hero__subtitle">{% trans %}Busca entre cientos de productos locales y artesanales{% endtrans %}</p>
 
@@ -47,7 +47,7 @@
   <div class="agro-search-layout">
 
     {# --- Sidebar de filtros --- #}
-    <aside class="agro-search-sidebar" id="agro-search-sidebar">
+    <aside class="agro-search-sidebar" id="agro-search-sidebar" aria-label="{{ 'Filtros de búsqueda'|t }}">
       <h2 class="agro-search-sidebar__title">{% trans %}Categorías{% endtrans %}</h2>
       {% if categories|length > 0 %}
         <ul class="agro-search-categories">
@@ -96,7 +96,7 @@
     </aside>
 
     {# --- Contenido principal --- #}
-    <main class="agro-search-main">
+    <main class="agro-search-main" aria-label="{{ 'Resultados de búsqueda'|t }}">
 
       {# Chips de filtros activos #}
       <div class="agro-search-active-filters" id="agro-search-active-filters"></div>

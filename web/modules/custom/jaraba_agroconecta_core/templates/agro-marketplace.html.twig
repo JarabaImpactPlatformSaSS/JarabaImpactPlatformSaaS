@@ -16,7 +16,7 @@
 #}
 
 {# === Hero del Marketplace === #}
-<section class="agro-marketplace-hero">
+<section class="agro-marketplace-hero" aria-label="{{ 'Cabecera del marketplace'|t }}">
   <h1>{% trans %}{{ marketplace_name }}{% endtrans %}</h1>
   {% if marketplace_description %}
     <p>{{ marketplace_description }}</p>
@@ -27,17 +27,17 @@
 </section>
 
 {# === Filtros (preparado para Fase 7: Search) === #}
-<div class="agro-marketplace-filters">
+<nav class="agro-marketplace-filters" aria-label="{{ 'Filtros de productos'|t }}">
   <button class="agro-filter-btn agro-filter-btn--active" data-filter="all">
     {% trans %}Todos{% endtrans %}
   </button>
-</div>
+</nav>
 
 {# === Grid de productos === #}
 {% if products|length > 0 %}
-  <div class="agro-products-grid">
+  <div class="agro-products-grid" role="list" aria-label="{{ 'Listado de productos'|t }}">
     {% for product in products %}
-      <article class="agro-product-card" data-product-id="{{ product.id() }}">
+      <article class="agro-product-card" role="listitem" data-product-id="{{ product.id() }}">
         {% if product.image.entity %}
           <img class="agro-product-card__image"
                src="{{ file_url(product.image.entity.fileuri) }}"
@@ -90,7 +90,7 @@
   {% endif %}
 
 {% else %}
-  <div class="agro-marketplace-empty">
+  <div class="agro-marketplace-empty" role="status">
     <p>{% trans %}No hay productos disponibles en este momento.{% endtrans %}</p>
   </div>
 {% endif %}

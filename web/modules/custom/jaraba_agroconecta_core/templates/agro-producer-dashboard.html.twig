@@ -12,10 +12,10 @@
  * Body class: producer-dashboard-page
  */
 #}
-<div class="producer-portal">
+<div class="producer-portal" role="main" aria-label="{{ 'Panel del productor'|t }}">
   <div class="producer-portal__header">
     <h1 class="producer-portal__title">{{ 'Mi Tienda'|t }}</h1>
-    <nav class="producer-portal__nav">
+    <nav class="producer-portal__nav" aria-label="{{ 'Navegación del portal de productor'|t }}">
       <a href="/productor" class="producer-portal__nav-link producer-portal__nav-link--active">{{ 'Dashboard'|t }}</a>
       <a href="/productor/pedidos" class="producer-portal__nav-link">{{ 'Pedidos'|t }}</a>
       <a href="/productor/productos" class="producer-portal__nav-link">{{ 'Productos'|t }}</a>
@@ -26,7 +26,7 @@
 
   {# Alertas #}
   {% if alerts is not empty %}
-    <div class="producer-portal__alerts">
+    <div class="producer-portal__alerts" role="alert" aria-label="{{ 'Alertas del productor'|t }}">
       <h3 class="producer-portal__alerts-title">{{ jaraba_icon('general', 'alert', { size: '20px' }) }} {{ 'Alertas'|t }} ({{ alerts|length }})</h3>
       {% for alert in alerts %}
         <div class="producer-portal__alert producer-portal__alert--{{ alert.severity }}">
@@ -40,7 +40,7 @@
   {% endif %}
 
   {# KPIs #}
-  <div class="producer-portal__kpis">
+  <div class="producer-portal__kpis" aria-label="{{ 'Indicadores clave de rendimiento'|t }}">
     <div class="producer-portal__kpi-card">
       <span class="producer-portal__kpi-icon">{{ jaraba_icon('commerce', 'money', { size: '20px' }) }}</span>
       <div class="producer-portal__kpi-content">
