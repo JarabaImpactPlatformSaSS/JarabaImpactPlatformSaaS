@@ -45,3 +45,7 @@ links:
     path: /servicios/buscar
     priority: '0.7'
     changefreq: weekly
+  -
+    path: /legal/lexnet
+    priority: '0.7'
+    changefreq: weekly

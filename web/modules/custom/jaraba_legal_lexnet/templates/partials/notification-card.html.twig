@@ -3,10 +3,10 @@
  #}
 {% set status = notification.status|default('pending') %}
 {% set type = notification.notification_type|default('notificacion_electronica') %}
-<article class="ej-lexnet-notification ej-lexnet-notification--{{ status }}">
+<article class="ej-lexnet-notification ej-lexnet-notification--{{ status }}" aria-label="{{ notification.subject }}">
   <div class="ej-lexnet-notification__header">
     <span class="ej-lexnet-notification__type">{{ type }}</span>
-    <span class="ej-lexnet-notification__badge ej-lexnet-notification__badge--{{ status }}">{{ status }}</span>
+    <span class="ej-lexnet-notification__badge ej-lexnet-notification__badge--{{ status }}" role="status">{{ status }}</span>
   </div>
   <h4 class="ej-lexnet-notification__subject">{{ notification.subject }}</h4>
   <div class="ej-lexnet-notification__meta">
