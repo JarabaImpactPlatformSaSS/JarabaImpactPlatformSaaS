@@ -41,6 +41,10 @@ class ProgramDashboardController extends ControllerBase
                     'jaraba_business_tools/program-dashboard',
                 ],
             ],
+            '#cache' => [
+                'tags' => ['business_diagnostic_list', 'business_model_canvas_list', 'path_enrollment_list'],
+                'max-age' => 600,
+            ],
         ];
     }
 
@@ -166,10 +170,11 @@ class ProgramDashboardController extends ControllerBase
 
             // Recent diagnostics
             $diagnosticStorage = $this->entityTypeManager()->getStorage('business_diagnostic');
+            $limit = (int) $this->config('jaraba_business_tools.settings')->get('program_dashboard_recent_activity_limit') ?: 5;
             $diagnosticIds = $diagnosticStorage->getQuery()
                 ->accessCheck(TRUE)
                 ->sort('created', 'DESC')
-                ->range(0, 5)
+                ->range(0, $limit)
                 ->execute();
 
             if (!empty($diagnosticIds)) {

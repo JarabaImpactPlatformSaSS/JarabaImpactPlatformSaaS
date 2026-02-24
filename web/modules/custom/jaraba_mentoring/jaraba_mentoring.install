@@ -55,3 +55,39 @@ function jaraba_mentoring_update_10001(): void {
     }
   }
 }
+
+/**
+ * Add database indexes for mentor_profile, mentoring_session, mentoring_engagement.
+ */
+function jaraba_mentoring_update_10002(): void {
+  $schema = \Drupal::database()->schema();
+  $indexes = [
+    'mentor_profile' => [
+      'idx_status_available' => ['status', 'is_available'],
+      'idx_average_rating' => ['average_rating'],
+    ],
+    'mentoring_session' => [
+      'idx_mentor_status' => ['mentor_id', 'status'],
+      'idx_mentee_id' => ['mentee_id'],
+      'idx_scheduled_start' => ['scheduled_start'],
+    ],
+    'mentoring_engagement' => [
+      'idx_mentor_status' => ['mentor_id', 'status'],
+      'idx_mentee_id' => ['mentee_id'],
+    ],
+  ];
+
+  foreach ($indexes as $table => $tableIndexes) {
+    if ($schema->tableExists($table)) {
+      foreach ($tableIndexes as $name => $fields) {
+        if (!$schema->indexExists($table, $name)) {
+          $spec = [];
+          foreach ($fields as $field) {
+            $spec[$field] = ['type' => 'varchar', 'length' => 255];
+          }
+          $schema->addIndex($table, $name, $fields, ['fields' => $spec]);
+        }
+      }
+    }
+  }
+}
