@@ -85,9 +85,10 @@ class ProfessionalBrandForm extends PremiumEntityFormBase {
     // drupalSettings is NOT available when form is loaded via slide-panel AJAX
     // (renderer->render() strips attached settings from HTML). Using a data
     // attribute ensures the URL is always embedded in the DOM.
-    $copilot_path = 'api/v1/copilot/employability/chat';
-    $csrf_token = \Drupal::csrfToken()->get($copilot_path);
-    $copilot_url = '/' . $copilot_path . '?_format=json&token=' . $csrf_token;
+    // Use Url::fromRoute() to include the language prefix and CSRF token.
+    $copilot_url = \Drupal\Core\Url::fromRoute('jaraba_candidate.copilot.chat', [], [
+      'query' => ['_format' => 'json'],
+    ])->toString();
     $form['#attributes']['data-copilot-url'] = $copilot_url;
     $form['#attributes']['class'][] = 'profile-section-form';
 
