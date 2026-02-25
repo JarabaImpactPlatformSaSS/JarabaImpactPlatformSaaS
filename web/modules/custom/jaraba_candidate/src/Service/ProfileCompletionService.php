@@ -20,12 +20,12 @@ class ProfileCompletionService {
   private const SECTIONS = [
     'personal_info' => ['weight' => 20, 'required' => TRUE, 'fields' => ['first_name', 'last_name', 'email', 'phone']],
     'professional_summary' => ['weight' => 15, 'required' => TRUE, 'fields' => ['summary']],
-    'experience' => ['weight' => 20, 'required' => TRUE, 'fields' => ['experience']],
-    'education' => ['weight' => 15, 'required' => TRUE, 'fields' => ['education']],
-    'skills' => ['weight' => 15, 'required' => TRUE, 'fields' => ['skills']],
+    'experience' => ['weight' => 20, 'required' => TRUE, 'entity_type' => 'candidate_experience'],
+    'education' => ['weight' => 15, 'required' => TRUE, 'entity_type' => 'candidate_education'],
+    'skills' => ['weight' => 15, 'required' => TRUE, 'entity_type' => 'candidate_skill'],
     'photo' => ['weight' => 5, 'required' => FALSE, 'fields' => ['photo']],
-    'cv_document' => ['weight' => 5, 'required' => FALSE, 'fields' => ['cv_file']],
-    'languages' => ['weight' => 5, 'required' => FALSE, 'fields' => ['languages']],
+    'cv_document' => ['weight' => 5, 'required' => FALSE, 'fields' => ['cv_file_id']],
+    'languages' => ['weight' => 5, 'required' => FALSE, 'entity_type' => 'candidate_language'],
   ];
 
   /**
@@ -67,7 +67,13 @@ class ProfileCompletionService {
 
     foreach (self::SECTIONS as $sectionKey => $config) {
       $totalWeight += $config['weight'];
-      $isFilled = $this->isSectionFilled($profile, $config['fields']);
+
+      if (isset($config['entity_type'])) {
+        $isFilled = $this->hasRelatedEntities($userId, $config['entity_type']);
+      }
+      else {
+        $isFilled = $this->isSectionFilled($profile, $config['fields']);
+      }
 
       if ($isFilled) {
         $completed[] = $sectionKey;
@@ -201,6 +207,25 @@ class ProfileCompletionService {
     }
     catch (\Exception) {
       return NULL;
+    }
+  }
+
+  /**
+   * Checks if a user has related entities of a given type.
+   */
+  protected function hasRelatedEntities(int $userId, string $entityType): bool {
+    try {
+      $count = $this->entityTypeManager
+        ->getStorage($entityType)
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('user_id', $userId)
+        ->count()
+        ->execute();
+      return $count > 0;
+    }
+    catch (\Exception) {
+      return FALSE;
     }
   }
 

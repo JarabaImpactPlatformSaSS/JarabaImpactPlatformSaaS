@@ -1,69 +1,73 @@
 {#
 /**
  * @file
- * Template for My Profile - Education management section.
+ * Template for My Profile - Experience management section.
  *
  * Supports slide-panel AJAX loading from profile completeness ring.
  *
  * Variables:
- *   - educations: Array of education records with id, institution, degree,
- *                 field_of_study, start_date, end_date.
+ *   - experiences: Array of experience records with id, job_title,
+ *                  company_name, description, location, start_date,
+ *                  end_date, is_current.
  */
 #}
 
-<div class="my-profile-education">
-  <div class="education-header">
-    <div class="education-header__text">
-      <h2>{% trans %}Formación Académica{% endtrans %}</h2>
-      <p class="education-description">
-        {% trans %}Añade tu formación académica para fortalecer tu perfil profesional y mejorar tu visibilidad ante reclutadores.{% endtrans %}
+<div class="my-profile-experience">
+  <div class="experience-header">
+    <div class="experience-header__text">
+      <h2>{% trans %}Experiencia Laboral{% endtrans %}</h2>
+      <p class="experience-description">
+        {% trans %}Añade tu experiencia profesional para fortalecer tu perfil y mejorar tu visibilidad ante reclutadores.{% endtrans %}
       </p>
     </div>
     <button type="button" class="section-add-btn"
             data-slide-panel="quick-action"
-            data-slide-panel-url="/my-profile/section/candidate_education/add"
-            data-slide-panel-title="{% trans %}Añadir formación{% endtrans %}">
+            data-slide-panel-url="/my-profile/section/candidate_experience/add"
+            data-slide-panel-title="{% trans %}Añadir experiencia{% endtrans %}">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       {% trans %}Añadir{% endtrans %}
     </button>
   </div>
 
-  {# Current Education Records #}
   <div class="current-items">
-    <h3>{% trans %}Formación registrada{% endtrans %} <span class="badge">{{ educations|length }}</span></h3>
+    <h3>{% trans %}Experiencia registrada{% endtrans %} <span class="badge">{{ experiences|length }}</span></h3>
 
-    {% if educations is not empty %}
-      <div class="education-list">
-        {% for edu in educations %}
-          <div class="education-card" data-entity-id="{{ edu.id }}">
-            <div class="education-card__icon">
+    {% if experiences is not empty %}
+      <div class="item-list">
+        {% for exp in experiences %}
+          <div class="item-card" data-entity-id="{{ exp.id }}">
+            <div class="item-card__icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
               </svg>
             </div>
-            <div class="education-card__info">
-              <span class="education-card__degree">{{ edu.degree }}</span>
-              <span class="education-card__institution">{{ edu.institution }}</span>
-              {% if edu.field_of_study %}
-                <span class="education-card__field">{{ edu.field_of_study }}</span>
+            <div class="item-card__info">
+              <span class="item-card__title">{{ exp.job_title }}</span>
+              <span class="item-card__subtitle">{{ exp.company_name }}</span>
+              {% if exp.location %}
+                <span class="item-card__meta">{{ exp.location }}</span>
               {% endif %}
-              <span class="education-card__dates">
-                {% if edu.start_date %}
-                  {{ edu.start_date|date('Y') }}
+              <span class="item-card__dates">
+                {% if exp.start_date %}
+                  {{ exp.start_date|date('m/Y') }}
                 {% endif %}
-                {% if edu.end_date %}
-                  – {{ edu.end_date|date('Y') }}
-                {% else %}
-                  – {% trans %}Actualidad{% endtrans %}
+                –
+                {% if exp.is_current %}
+                  {% trans %}Actualidad{% endtrans %}
+                {% elseif exp.end_date %}
+                  {{ exp.end_date|date('m/Y') }}
                 {% endif %}
               </span>
+              {% if exp.description %}
+                <p class="item-card__desc">{{ exp.description|length > 150 ? exp.description|slice(0, 150) ~ '…' : exp.description }}</p>
+              {% endif %}
             </div>
-            <div class="education-card__actions">
+            <div class="item-card__actions">
               <button type="button" class="item-card__edit"
                       data-slide-panel="quick-action"
-                      data-slide-panel-url="/my-profile/section/candidate_education/{{ edu.id }}/edit"
-                      data-slide-panel-title="{% trans %}Editar formación{% endtrans %}"
+                      data-slide-panel-url="/my-profile/section/candidate_experience/{{ exp.id }}/edit"
+                      data-slide-panel-title="{% trans %}Editar experiencia{% endtrans %}"
                       title="{% trans %}Editar{% endtrans %}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -71,7 +75,7 @@
                 </svg>
               </button>
               <button type="button" class="item-card__delete"
-                      data-section-delete="/my-profile/section/candidate_education/{{ edu.id }}/delete"
+                      data-section-delete="/my-profile/section/candidate_experience/{{ exp.id }}/delete"
                       title="{% trans %}Eliminar{% endtrans %}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"/>
@@ -85,24 +89,24 @@
     {% else %}
       <div class="empty-state">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-          <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+          <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
         </svg>
-        <p>{% trans %}Aún no has registrado tu formación académica.{% endtrans %}</p>
-        <p class="empty-state__hint">{% trans %}Añadir tu educación aumenta significativamente tu visibilidad ante los reclutadores.{% endtrans %}</p>
+        <p>{% trans %}Aún no has registrado experiencia laboral.{% endtrans %}</p>
+        <p class="empty-state__hint">{% trans %}Añadir tu experiencia aumenta significativamente tu visibilidad ante los reclutadores.{% endtrans %}</p>
       </div>
     {% endif %}
   </div>
 </div>
 
 <style>
-.my-profile-education {
+.my-profile-experience {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
 }
 
-.education-header {
+.experience-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -110,14 +114,14 @@
   margin-bottom: 2rem;
 }
 
-.education-header h2 {
+.experience-header h2 {
   margin: 0 0 0.5rem;
   font-size: 1.75rem;
   font-family: var(--ej-font-headings, 'Outfit', sans-serif);
   color: var(--ej-color-headings, #1a202c);
 }
 
-.education-description {
+.experience-description {
   color: var(--ej-color-muted, #64748b);
   line-height: 1.5;
   margin: 0;
@@ -153,20 +157,20 @@
 }
 
 .current-items .badge {
-  background: var(--ej-color-innovation, #00A9A5);
+  background: var(--ej-color-impulse, #FF8C42);
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 999px;
   font-size: 0.875rem;
 }
 
-.education-list {
+.item-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.education-card {
+.item-card {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -178,12 +182,12 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.education-card:hover {
+.item-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-.education-card__icon {
+.item-card__icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -191,11 +195,11 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(0, 169, 165, 0.1);
-  color: var(--ej-color-innovation, #00A9A5);
+  background: rgba(255, 140, 66, 0.1);
+  color: var(--ej-color-impulse, #FF8C42);
 }
 
-.education-card__info {
+.item-card__info {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -203,29 +207,31 @@
   flex: 1;
 }
 
-.education-card__degree {
+.item-card__title {
   font-weight: 600;
   font-size: 1rem;
   color: var(--ej-color-headings, #1a202c);
 }
 
-.education-card__institution {
+.item-card__subtitle {
   font-size: 0.9375rem;
   color: var(--ej-color-corporate, #233D63);
 }
 
-.education-card__field {
+.item-card__meta,
+.item-card__dates {
   font-size: 0.8125rem;
   color: var(--ej-color-muted, #64748b);
 }
 
-.education-card__dates {
+.item-card__desc {
   font-size: 0.8125rem;
   color: var(--ej-color-muted, #64748b);
-  margin-top: 2px;
+  line-height: 1.4;
+  margin: 4px 0 0;
 }
 
-.education-card__actions {
+.item-card__actions {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -272,7 +278,7 @@
 
 .empty-state svg {
   margin-bottom: 1rem;
-  color: var(--ej-color-innovation, #00A9A5);
+  color: var(--ej-color-impulse, #FF8C42);
 }
 
 .empty-state p {

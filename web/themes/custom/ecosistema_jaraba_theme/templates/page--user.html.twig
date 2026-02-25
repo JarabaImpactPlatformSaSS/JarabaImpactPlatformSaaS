@@ -165,7 +165,7 @@
             <div class="quick-access-section quick-access-section--{{ section.color }}" style="animation-delay: {{ loop.index0 * 0.1 + 0.3 }}s">
               <div class="quick-access-section__header">
                 <h2 class="quick-access-section__title">
-                  {{ jaraba_icon(section.icon_category|default('ui'), section.icon_name|default('info'), { size: '20px', variant: 'duotone' }) }}
+                  {{ jaraba_icon(section.icon_category|default('ui'), section.icon_name|default('info'), { size: '20px', variant: 'duotone', color: 'impulse' }) }}
                   {{ section.title }}
                 </h2>
                 {% if section.subtitle|default('') %}
@@ -197,7 +197,7 @@
                          data-slide-panel-title="{{ link.slide_panel_title|default(link.label) }}"
                        {% endif %}>
                       <div class="quick-access__card-icon">
-                        {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px', variant: 'duotone' }) }}
+                        {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px', variant: 'duotone', color: link.color|default('corporate') }) }}
                       </div>
                       <div class="quick-access__card-text">
                         <span class="quick-access__card-label">{{ link.label }}</span>

@@ -56,12 +56,26 @@ function jaraba_candidate_theme(): array {
       ],
       'template' => 'copilot-insights-dashboard',
     ],
+    // === My Profile - Experience Management ===
+    'my_profile_experience' => [
+      'variables' => [
+        'experiences' => [],
+      ],
+      'template' => 'my-profile-experience',
+    ],
     // === My Profile - Education Management ===
     'my_profile_education' => [
       'variables' => [
         'educations' => [],
       ],
       'template' => 'my-profile-education',
+    ],
+    // === My Profile - Languages Management ===
+    'my_profile_languages' => [
+      'variables' => [
+        'languages' => [],
+      ],
+      'template' => 'my-profile-languages',
     ],
     // === My Profile - Skills Management ===
     'my_profile_skills' => [

@@ -2820,7 +2820,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           'skills' => 'jaraba_candidate.my_profile.skills',
           'photo' => 'jaraba_candidate.my_profile.edit',
           'cv_document' => 'jaraba_candidate.cv_builder',
-          'languages' => 'jaraba_candidate.my_profile.edit',
+          'languages' => 'jaraba_candidate.my_profile.languages',
         ];
         $all_section_keys = array_keys($section_labels);
         $section_details = [];

@@ -124,3 +124,12 @@ services:
       - '@entity_type.manager'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
+
+  # Meta-Site Resolver: contexto compartido para meta-sitios (SiteConfig + nav).
+  # Consumido por PathProcessor (homepage), theme preprocess (header/footer), SEO hooks.
+  # Resuelve tenant por: Domain Access hostname, Tenant.domain, subdomain prefix.
+  jaraba_site_builder.meta_site_resolver:
+    class: Drupal\jaraba_site_builder\Service\MetaSiteResolverService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_site_builder'

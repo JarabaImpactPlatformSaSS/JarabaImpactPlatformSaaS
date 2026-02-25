@@ -40,6 +40,16 @@ profile_education:
   dependencies:
     - core/drupal
 
+# Profile section manager — delete actions for experience/education/languages
+profile_section_manager:
+  version: 1.x
+  js:
+    js/profile-section-manager.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - ecosistema_jaraba_theme/slide-panel
+
 # Modal CRUD actions — Plan Elevación Empleabilidad Fase 2
 modal-actions:
   version: 1.x

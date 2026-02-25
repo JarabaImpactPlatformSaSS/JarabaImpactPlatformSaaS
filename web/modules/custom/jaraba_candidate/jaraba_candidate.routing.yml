@@ -57,6 +57,14 @@ jaraba_candidate.my_profile.skills:
   requirements:
     _permission: 'edit own profile'
 
+jaraba_candidate.my_profile.languages:
+  path: '/my-profile/languages'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::languagesSection'
+    _title: 'Idiomas'
+  requirements:
+    _permission: 'edit own profile'
+
 jaraba_candidate.my_profile.privacy:
   path: '/my-profile/privacy'
   defaults:
@@ -64,6 +72,32 @@ jaraba_candidate.my_profile.privacy:
     _title: 'Configuración de privacidad'
   requirements:
     _permission: 'edit own profile'
+
+# --- CRUD genérico slide-panel para secciones de perfil ---
+jaraba_candidate.profile_section.add:
+  path: '/my-profile/section/{entity_type_id}/add'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileSectionFormController::add'
+    _title: 'Añadir'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.profile_section.edit:
+  path: '/my-profile/section/{entity_type_id}/{entity_id}/edit'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileSectionFormController::edit'
+    _title: 'Editar'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.profile_section.delete:
+  path: '/my-profile/section/{entity_type_id}/{entity_id}/delete'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileSectionFormController::delete'
+    _title: 'Eliminar'
+  requirements:
+    _permission: 'edit own profile'
+  methods: [POST]
 
 # --- Rutas de CV Builder ---
 jaraba_candidate.cv_builder:
