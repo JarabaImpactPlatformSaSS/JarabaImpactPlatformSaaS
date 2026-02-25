@@ -256,9 +256,9 @@ class CandidateApiController extends ControllerBase
      */
     public function addSkill(Request $request): JsonResponse
     {
-        // Validate CSRF token from X-CSRF-Token header.
+        // Validate CSRF token from X-CSRF-Token header (same seed as /session/token).
         $token = $request->headers->get('X-CSRF-Token', '');
-        if (!$this->csrfToken->validate($token, 'session')) {
+        if (!$this->csrfToken->validate($token, CsrfRequestHeaderAccessCheck::TOKEN_KEY)) {
             return new JsonResponse(['error' => 'Invalid CSRF token'], 403);
         }
 
