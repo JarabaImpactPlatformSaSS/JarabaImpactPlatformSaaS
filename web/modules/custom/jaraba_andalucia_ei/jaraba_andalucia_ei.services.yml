@@ -12,7 +12,7 @@ services:
     class: Drupal\jaraba_andalucia_ei\Service\StoExportService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_sepe_teleformacion.soap_service'
+      - '@?jaraba_sepe_teleformacion.soap_service'
       - '@logger.channel.jaraba_andalucia_ei'
       - '@config.factory'
 
