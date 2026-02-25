@@ -3,10 +3,11 @@
  # Category: andalucia_ei
  # Type: stats
  #
- # Header + fila de 4 stat counters (numero grande + label + icono)
- # Premium: animated counters, entrance animation, prefix/suffix support
+ # Header + fila de 4 stat counters (icono + numero grande + label)
+ # Premium: animated counters, entrance animation, icon_category support
  # - data-counter on number elements triggers count-up animation
- # - data-counter-duration controls animation speed (ms)
+ # - Accepts both 'number' and 'value' field names
+ # - Accepts both 'icon' name + 'icon_category' or legacy icon_map
  #}
 <section class="pb-section pb-section--stats pb-section--andalucia_ei jaraba-block jaraba-block--premium"
          data-block-type="andalucia_ei_stats"
@@ -17,40 +18,50 @@
   <div class="pb-section__container">
     <div class="pb-section__header">
       <div class="pb-section__header-icon" aria-hidden="true">
-        {{ jaraba_icon('finance', 'chart-bar', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+        {{ jaraba_icon('finance', 'bar-chart', { variant: 'duotone', size: '48px', color: 'impulse' }) }}
       </div>
       <span class="pb-section__eyebrow">{{ eyebrow|default('Resultados')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('El impacto de Andalucia +ei en cifras')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Datos que reflejan el compromiso del programa con la empleabilidad y el emprendimiento en Andalucia.')|t }}</p>
+      <h2 class="pb-section__title">{{ title|default('Impacto real en el ecosistema emprendedor andaluz')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Cifras que avalan la efectividad del programa Andalucía +ei.')|t }}</p>
     </div>
     <div class="pb-section__stats-row">
       {% set default_stats = [
-        { number: '+200', label: 'Participantes formados', icon: 'users' },
-        { number: '85%', label: 'Tasa de insercion laboral', icon: 'briefcase' },
-        { number: '4.8', label: 'Satisfaccion media', icon: 'star' },
-        { number: '+500h', label: 'Formacion en IA impartida', icon: 'ai-brain' }
+        { value: '+200', label: 'Participantes formados', icon: 'users', icon_category: 'ui' },
+        { value: '85%', label: 'Tasa de inserción laboral', icon: 'briefcase', icon_category: 'ui' },
+        { value: '4.8', label: 'Satisfacción media', icon: 'star', icon_category: 'ui' },
+        { value: '+500h', label: 'Formación en IA impartida', icon: 'brain', icon_category: 'ai' }
       ] %}
       {% set items = stats|default(default_stats) %}
-      {% set icon_map = {
-        'users': { category: 'user', name: 'users' },
-        'briefcase': { category: 'legal', name: 'briefcase' },
+
+      {# Legacy icon map for old-format icon keys #}
+      {% set legacy_icon_map = {
+        'users': { category: 'ui', name: 'users' },
+        'briefcase': { category: 'ui', name: 'briefcase' },
         'star': { category: 'ui', name: 'star' },
-        'ai-brain': { category: 'tech', name: 'ai-brain' }
+        'brain': { category: 'ai', name: 'brain' }
       } %}
+
       {% for stat in items %}
+        {# Accept both 'number' and 'value' field names #}
+        {% set stat_number = stat.number|default(stat.value|default('0')) %}
         <div class="pb-section__stat"
              data-effect="fade-up"
-             data-delay="{{ loop.index0 * 100 }}">
+             data-delay="{{ loop.index0 * 120 }}">
           {% if stat.icon|default('') %}
             <div class="pb-section__stat-icon" aria-hidden="true">
-              {% set icon_info = icon_map[stat.icon|default('star')]|default({ category: 'ui', name: 'star' }) %}
-              {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'naranja-ei' }) }}
+              {# Resolve icon: prefer icon_category/icon, then legacy map #}
+              {% if stat.icon_category|default('') %}
+                {{ jaraba_icon(stat.icon_category, stat.icon, { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+              {% elseif legacy_icon_map[stat.icon]|default(false) %}
+                {% set ic = legacy_icon_map[stat.icon] %}
+                {{ jaraba_icon(ic.category, ic.name, { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+              {% else %}
+                {{ jaraba_icon('ui', 'star', { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+              {% endif %}
             </div>
           {% endif %}
-          <span class="pb-section__stat-number">
-            {{ stat.prefix|default('') }}<span data-counter="{{ stat.number|default('0') }}" data-target="{{ stat.number|default('0')|replace({'+': '', '.': '', 'K': '000', 'k': '000', 'h': ''}) }}">0</span>{{ stat.suffix|default('') }}
-          </span>
-          <span class="pb-section__stat-label">{{ stat.label|default('Metrica')|t }}</span>
+          <span class="pb-section__stat-number">{{ stat_number }}</span>
+          <span class="pb-section__stat-label">{{ stat.label|default('Métrica')|t }}</span>
         </div>
       {% endfor %}
     </div>

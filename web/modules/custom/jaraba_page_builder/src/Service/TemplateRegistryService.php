@@ -133,6 +133,11 @@ class TemplateRegistryService
             'icon' => 'rocket',
             'weight' => 240,
         ],
+        'andalucia_ei' => [
+            'label' => 'Andalucía +ei',
+            'icon' => 'institution',
+            'weight' => 250,
+        ],
     ];
 
     /**

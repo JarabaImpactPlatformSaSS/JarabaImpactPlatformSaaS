@@ -26,7 +26,8 @@
         { alt: 'Presentacion de proyectos finales', caption: 'Presentacion de proyectos finales' },
         { alt: 'Jornada de insercion laboral', caption: 'Jornada de insercion laboral' }
       ] %}
-      {% set items = gallery|default(default_gallery) %}
+      {# Accept both 'images' (config) and 'gallery' (legacy) #}
+      {% set items = images|default(gallery|default(default_gallery)) %}
       {% for item in items %}
         <figure class="pb-section__gallery-item"
                 data-effect="fade-up"
@@ -38,7 +39,7 @@
             <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
           {% else %}
             <div class="pb-section__img-placeholder" aria-hidden="true">
-              {{ jaraba_icon('programas', 'rocket', { variant: 'duotone', size: '32px', color: 'naranja-ei' }) }}
+              {{ jaraba_icon('ui', 'rocket', { variant: 'duotone', size: '32px', color: 'impulse' }) }}
             </div>
           {% endif %}
           {% if item.caption|default('') %}

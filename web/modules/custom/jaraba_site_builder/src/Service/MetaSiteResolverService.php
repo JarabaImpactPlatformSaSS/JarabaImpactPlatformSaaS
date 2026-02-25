@@ -238,11 +238,11 @@ class MetaSiteResolverService {
       $siteConfig = reset($configs);
 
       // Cargar SitePageTree items publicados.
-      // Nota: el campo status almacena '1' (publicado), no la string 'published'.
+      // El campo status es list_string con valores: 'draft', 'published', 'archived'.
       $treeItems = $this->entityTypeManager->getStorage('site_page_tree')
         ->loadByProperties([
           'tenant_id' => $groupId,
-          'status' => 1,
+          'status' => 'published',
         ]);
 
       // Construir arrays de navegación y footer.

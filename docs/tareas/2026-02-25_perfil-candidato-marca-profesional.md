@@ -101,15 +101,16 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
   - `generate_headline` → 3 opciones clicables
   - `optimize_summary` → panel comparativo original vs optimizado
   - `generate_summary` → textarea relleno + enlace "Recuperar anterior"
-- [ ] CSS para componentes IA (`.ai-assist-btn`, `.ai-suggestions`, `.ai-comparison`, `.ai-spinner`, `.ai-error`) — actualmente sin estilos dedicados, usan herencia de premium-forms.
+- [x] CSS para componentes IA — `css/brand-professional.css` (commit `1d752a16`). Usa `var(--ej-*)` tokens per arquitectura theming.
 
-### PENDIENTE — Modal `/my-profile/edit`
-- [ ] Hay **4 enlaces residuales** que usan `data-dialog-type="modal"` con `/my-profile/edit`:
-  1. `candidate-profile-view.html.twig:83-85` — boton "Editar perfil" en hero del perfil
-  2. `jobseeker-dashboard.html.twig:51` — link "Edit" en card header
-  3. `jobseeker-dashboard.html.twig:96` — boton "Create Profile"
-  4. `jobseeker-dashboard.html.twig:87` — links a secciones faltantes
-- [ ] **Decidir:** Migrar estos enlaces a slide-panel o mantener como modal (el form renderiza OK, el error 403 del test fue por sesion de curl no autenticada).
+### COMPLETADO — Modal `/my-profile/edit` (commit `1d752a16`)
+- [x] 6 enlaces migrados de `data-dialog-type="modal"` y paths hardcodeados a slide-panel con `path()`:
+  1. `candidate-profile-view.html.twig:83-85` — "Editar perfil" → slide-panel
+  2. `jobseeker-dashboard.html.twig:51` — "Edit" → slide-panel
+  3. `jobseeker-dashboard.html.twig:96` — "Create Profile" → slide-panel personal
+  4. `jobseeker-dashboard.html.twig:87` — secciones faltantes → slide-panel
+  5. `cv-builder.html.twig:111` — "Complete my profile" → slide-panel personal
+  6. `jobseeker-recommendations.html.twig:65` — "Completar mi perfil" → slide-panel personal
 
 ### PENDIENTE — Icono Habilidades
 - [ ] El usuario indico "No me gusta el icono que has usado para Habilidades" — pendiente preguntar cual prefiere.

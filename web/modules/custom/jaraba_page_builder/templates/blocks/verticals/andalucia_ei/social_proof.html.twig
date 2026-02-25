@@ -1,10 +1,14 @@
 {#
- # Template: Andalucia +ei - Entidades Colaboradoras
+ # Template: Andalucia +ei — Entidades Colaboradoras
  # Category: andalucia_ei
  # Type: social_proof
  #
- # Eyebrow + grid de logos con filtro grayscale y hover color
- # Premium: staggered animations, centered layout, institutional logos
+ # World-class institutional social proof section:
+ # - Eyebrow badge + heading + subtitle
+ # - Grayscale logo grid (hover → full colour)
+ # - Big impact stat counter (500 + emprendedores formados)
+ # - Trust message footer with check-circle icon
+ # - Staggered fade-up animations
  # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
 <section class="pb-section pb-section--social-proof pb-section--andalucia_ei jaraba-block jaraba-block--premium"
@@ -12,32 +16,68 @@
          aria-label="{{ title|default('Entidades colaboradoras')|t }}"
          data-effect="fade-up">
   <div class="pb-section__container">
-    <div class="pb-section__header">
-      <span class="pb-section__eyebrow">{{ eyebrow|default('Programa respaldado por')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Entidades que hacen posible Andalucia +ei')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Un programa impulsado por instituciones comprometidas con el empleo y el emprendimiento en Andalucia.')|t }}</p>
+
+    {# ── Header ── #}
+    <div class="pb-section__header" data-effect="fade-up">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Colaboradores')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Programa respaldado por instituciones de referencia')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Entidades públicas y privadas que hacen posible Andalucía +ei.')|t }}</p>
     </div>
+
+    {# ── Logo grid ── #}
     <div class="pb-section__logos-grid pb-section__logos-grid--centered">
       {% set default_logos = [
-        { alt: 'Junta de Andalucia' },
-        { alt: 'SEPE - Servicio Publico de Empleo Estatal' },
+        { alt: 'Junta de Andalucía' },
+        { alt: 'SEPE — Servicio Público de Empleo Estatal' },
         { alt: 'Fondo Social Europeo' },
         { alt: 'Servicio Andaluz de Empleo' },
-        { alt: 'Ministerio de Trabajo y Economia Social' },
-        { alt: 'Union Europea - NextGenerationEU' }
+        { alt: 'Ministerio de Trabajo y Economía Social' },
+        { alt: 'Unión Europea — NextGenerationEU' }
       ] %}
       {% set items = logos|default(default_logos) %}
       {% for logo in items %}
         <div class="pb-section__logo pb-section__logo--grayscale"
              data-effect="fade-up"
-             data-delay="{{ loop.index0 * 100 }}">
-          {% if logo.src|default('') %}
-            <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" />
-          {% else %}
-            <div class="pb-section__logo-placeholder">{{ logo.alt|default('Logo')|t }}</div>
+             data-delay="{{ loop.index0 * 80 }}">
+          {% if logo.url|default('') %}
+            <a href="{{ logo.url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ logo.alt|default('Entidad colaboradora')|t }}">
           {% endif %}
+
+          {% if logo.src|default('') %}
+            <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo')|t }}" loading="lazy" decoding="async" />
+          {% else %}
+            <div class="pb-section__logo-placeholder">
+              {{ jaraba_icon('business', 'institution', { variant: 'duotone', size: '20px', color: 'corporate' }) }}
+              <span>{{ logo.alt|default('Logo')|t }}</span>
+            </div>
+          {% endif %}
+
+          {% if logo.url|default('') %}</a>{% endif %}
         </div>
       {% endfor %}
     </div>
+
+    {# ── Impact stat ── #}
+    <div class="pb-section__stats-row pb-section__stats-row--centered" data-effect="fade-up" data-delay="400">
+      {% set default_stats = [
+        { number: '500+', label: 'emprendedores formados' },
+        { number: '92%', label: 'satisfacción del programa' },
+        { number: '8', label: 'provincias andaluzas' }
+      ] %}
+      {% set stat_items = stats|default(default_stats) %}
+      {% for stat in stat_items %}
+        <div class="pb-section__stat" data-effect="fade-up" data-delay="{{ 400 + loop.index0 * 120 }}">
+          <span class="pb-section__stat-number">{{ stat.number }}</span>
+          <span class="pb-section__stat-label">{{ stat.label|t }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# ── Trust message ── #}
+    <div class="pb-section__trust-footer" data-effect="fade-up" data-delay="700">
+      {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '20px', color: 'impulse' }) }}
+      <span>{{ trust_message|default('Programa financiado por el Fondo Social Europeo y la Junta de Andalucía.')|t }}</span>
+    </div>
+
   </div>
 </section>
