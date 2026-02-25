@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Suelo -->
+  <line x1="3" y1="22" x2="21" y2="22" stroke="currentColor" stroke-width="2"/>
+  <!-- Tallo -->
+  <path d="M12 22v-9" stroke="currentColor" stroke-width="2"/>
+  <!-- Hoja izquierda con relleno suave -->
+  <path d="M12 16c-4.5 0-7-3-7-7 4.5 0 7 3 7 7z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2"/>
+  <!-- Hoja derecha con relleno suave -->
+  <path d="M12 11c3.5 0 5.5-2.5 5.5-5.5-3.5 0-5.5 2.5-5.5 5.5z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="2"/>
+  <!-- Flecha de impulso ascendente -->
+  <polyline points="10 4 12 2 14 4" stroke="currentColor" stroke-width="2"/>
+</svg>
