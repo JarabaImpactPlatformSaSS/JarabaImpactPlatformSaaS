@@ -47,6 +47,11 @@ class ApplicationService
     protected EventDispatcherInterface $eventDispatcher;
 
     /**
+     * The tenant context service.
+     */
+    protected ?TenantContextService $tenantContext;
+
+    /**
      * Constructor.
      */
     public function __construct(

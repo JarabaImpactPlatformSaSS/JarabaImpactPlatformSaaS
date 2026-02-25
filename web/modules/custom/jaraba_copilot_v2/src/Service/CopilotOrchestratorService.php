@@ -129,6 +129,11 @@ class CopilotOrchestratorService
     protected ?SelfDiscoveryContextService $selfDiscoveryContext = NULL;
 
     /**
+     * The tenant context service.
+     */
+    protected ?TenantContextService $tenantContext = NULL;
+
+    /**
      * Constructor.
      */
     public function __construct(
