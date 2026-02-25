@@ -235,8 +235,13 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │                                                                         │
 │   📦 jaraba_site_builder (MetaSiteResolverService)                    │
 │   ├── resolveFromPageContent(): PageContent → meta-site context       │
+│   ├── resolveFromRequest(): 3-strategy domain → tenant resolution    │
+│   │   ├── Strategy 1: Domain Access hostname match                   │
+│   │   ├── Strategy 2: Tenant.domain field match                      │
+│   │   └── Strategy 3: Subdomain prefix → Tenant.domain STARTS_WITH  │
 │   ├── buildMetaSiteContext(): SiteConfig + SitePageTree → nav/footer  │
-│   └── Fix: SitePageTree status filter 'published' → 1 (int)          │
+│   ├── Fix: SitePageTree status filter 'published' → 1 (int)          │
+│   └── Per-request static cache (evita queries repetidas)              │
 │                                                                         │
 │   📦 jaraba_geo (Schema.org tenant-aware)                             │
 │   └── Organization schema: name/description/logo from SiteConfig     │
@@ -317,19 +322,33 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   📦 jaraba_page_builder (PathProcessor)                                │
 │   ├── PathProcessorPageContent: InboundPathProcessorInterface          │
 │   │   ├── processInbound(): path_alias → /page/{id} resolution        │
-│   │   ├── Prioridad 200 (core path_alias = 100)                       │
+│   │   ├── resolveHomepage(): Root / → homepage por dominio/tenant     │
+│   │   │   (usa MetaSiteResolverService para resolver hostname)        │
+│   │   ├── Prioridad 250 (superior a PathProcessorFront=200)           │
+│   │   ├── 4to parametro: @?MetaSiteResolverService (DI opcional)     │
 │   │   ├── Sin filtro status → AccessControlHandler gestiona acceso    │
 │   │   ├── Skip list: /api/, /admin/, /user/, /media/, /session/       │
 │   │   └── Static cache por path dentro del request                     │
 │   │                                                                     │
-│   Meta-Sitio jarabaimpact.com (7 páginas):                              │
+│   Meta-Sitio jarabaimpact.com (7 paginas):                              │
 │   ├── Homepage: /jarabaimpact (Hero + plataforma SaaS)                 │
-│   ├── Plataforma: /plataforma (Triple Motor Económico)                 │
+│   ├── Plataforma: /plataforma (Triple Motor Economico)                 │
 │   ├── Verticales: /verticales (6 verticales SaaS)                      │
-│   ├── Impacto: /impacto (Estadísticas + beneficiarios)                 │
+│   ├── Impacto: /impacto (Estadisticas + beneficiarios)                 │
 │   ├── Programas: /programas (Programas institucionales)                │
 │   ├── Recursos: /recursos (Centro de recursos)                         │
 │   └── Contacto: /contacto (Formulario + datos)                         │
+│                                                                         │
+│   Meta-Sitio pepejaraba.com (9 paginas, Tenant ID=5):                  │
+│   ├── Inicio: / (Hero + pain points + metodo + ecosistema)            │
+│   ├── Manifiesto: /manifiesto                                          │
+│   ├── Metodo Jaraba: /metodo-jaraba                                    │
+│   ├── Casos de Exito: /casos-de-exito                                  │
+│   ├── Blog: /blog                                                      │
+│   ├── Contacto: /contacto-pepe                                         │
+│   ├── Aviso Legal: /aviso-legal                                        │
+│   ├── Politica Privacidad: /politica-privacidad                        │
+│   └── Politica Cookies: /politica-cookies                              │
 │                                                                         │
 │   APIs Usadas:                                                          │
 │   ├── PATCH /api/v1/pages/{id}/config (título + path_alias)            │
@@ -392,15 +411,27 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   │   ├── status/ → ui/ (check-circle, clock, alert-circle, etc.)    │
 │   │   └── tools/ → ui/ (wrench, code, terminal, etc.)                │
 │   │                                                                     │
-│   ├── SVGs: ~340 iconos (outline + duotone por cada)                  │
-│   │   ├── Outline: stroke-only, stroke-width="2"                      │
-│   │   └── Duotone: stroke + fill con opacity="0.2" para capas fondo  │
+│   ├── Categorias verticales (2):                                      │
+│   │   ├── commerce/ (store, cart, catalog, delivery-truck, etc.)     │
+│   │   └── business/ (rocket, briefcase, empleo, time-pressure,       │
+│   │       launch-idea, talent-spotlight, career-connect,              │
+│   │       seed-momentum, store-digital + duotone cada)                │
 │   │                                                                     │
-│   └── Auditoria: 305 pares unicos verificados, 0 chinchetas          │
-│       ├── 32 llamadas con convencion rota corregidas (4 modulos)      │
-│       ├── ~170 SVGs/symlinks creados para bridge categories           │
-│       ├── 2 symlinks circulares corregidos (ui/save, bookmark)        │
-│       └── 1 symlink roto reparado (general/alert-duotone)            │
+│   ├── SVGs: ~352 iconos (outline + duotone por cada)                  │
+│   │   ├── Outline: stroke-only, stroke-width="2"                      │
+│   │   ├── Duotone: stroke + fill con opacity="0.2" para capas fondo  │
+│   │   └── Canvas inline: hex explicito (#233D63), NO currentColor    │
+│   │                                                                     │
+│   ├── Auditoria Templates: 305 pares unicos verificados, 0 chinchetas│
+│   │   ├── 32 llamadas con convencion rota corregidas (4 modulos)      │
+│   │   ├── ~170 SVGs/symlinks creados para bridge categories           │
+│   │   ├── 2 symlinks circulares corregidos (ui/save, bookmark)        │
+│   │   └── 1 symlink roto reparado (general/alert-duotone)            │
+│   │                                                                     │
+│   └── Auditoria Canvas Data: 11 emojis Unicode eliminados (4 paginas)│
+│       ├── Page 57: 6 emojis → 6 SVGs inline business/ (duotone)      │
+│       ├── Pages 60-62: 5 emojis → 5 SVGs inline estandar            │
+│       └── ICON-EMOJI-001 + ICON-CANVAS-INLINE-001 nuevas             │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -452,6 +483,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **73.0.0** | **Meta-Site Icon Emoji Remediation + PathProcessor Enhancement:** Icon System: nueva categoria `business/` con 12 SVGs (6 conceptuales + 6 duotone) para meta-sitio pepejaraba.com. 11 emojis Unicode eliminados de canvas_data (4 paginas). Seccion Icon System ampliada: categorias verticales, auditoria canvas_data, reglas ICON-EMOJI-001 + ICON-CANVAS-INLINE-001. PathProcessor: prioridad actualizada a 250, nuevo `resolveHomepage()` con MetaSiteResolverService. MetaSiteResolverService: 3-strategy domain resolution (Domain Access + Tenant.domain + subdomain prefix) documentada. Meta-sitio pepejaraba.com (9 paginas) anadido junto a jarabaimpact.com. Aprendizaje #124. |
 | 2026-02-25 | **72.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** 3 ASCII boxes nuevos. Empleabilidad: CandidateProfileForm premium con 6 secciones, ProfileSectionForm generico CRUD, photo entity_reference→image, date timestamp→datetime, 5 CV PNGs, seccion idiomas, ProfileCompletionService con entity queries. Andalucia EI Plan Maestro 8 fases: P0/P1 fixes, 11 bloques PB verticales, landing conversion, portal participante, ExpedienteDocumento (19 categorias), mensajeria integration, AI automation (CopilotContextProvider + AdaptiveDifficultyEngine + 4 nudges), SEO. Meta-Site: MetaSiteResolverService, Schema.org tenant-aware, title tag override, header/footer/nav desde SiteConfig. CRM: 5 forms a PremiumEntityFormBase. 71+ ficheros. Aprendizaje #123. |
 | 2026-02-25 | **71.0.0** | **Remediacion Tenant 11 Fases:** 2 ASCII boxes nuevos: TENANT BRIDGE (TenantBridgeService con 4 metodos, consumidores, error handling, regla TENANT-BRIDGE-001) y TENANT ISOLATION (PageContentAccessControlHandler con DI + isSameTenant(), DefaultEntityAccessControlHandler rename, PathProcessor tenant-aware, TenantContextService enhanced nullable). 14 correcciones billing entity type en 6 ficheros. CI pipeline con kernel-test job (MariaDB 10.11). 5 tests nuevos. Scripts movidos a scripts/maintenance/. Reglas TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |
 | 2026-02-24 | **70.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de entidades PageContent a rutas /page/{id}. 7 páginas institucionales creadas y publicadas con contenido en español via GrapesJS. APIs: PATCH /config (títulos + aliases), POST /publish (publicación), GrapesJS store (contenido). Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |

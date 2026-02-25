@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-25
-**Version:** 26.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering)
+**Version:** 27.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering + Icon Emoji Remediation)
 
 ---
 
@@ -273,6 +273,34 @@
         - { name: path_processor_inbound, priority: 200 }
     ```
   - **Meta-Sitio workflow:** Las paginas se gestionan como entidades PageContent. Titulos y aliases via `PATCH /api/v1/pages/{id}/config`. Publicacion via `POST /api/v1/pages/{id}/publish`. Contenido visual via GrapesJS `editor.store()`.
+- **Meta-Sitio: Iconos SVG Inline en Canvas Data (ICON-EMOJI-001 + ICON-CANVAS-INLINE-001):**
+  - Las paginas de Page Builder almacenan HTML en `canvas_data` (campo `string_long` con JSON). Este HTML se renderiza directamente, sin pasar por Twig ni por el sistema de temas.
+  - **NUNCA** usar emojis Unicode como iconos visuales en canvas_data. Los emojis se renderizan diferente entre OS/navegadores, no siguen la paleta de marca y no son escalables.
+  - **Reemplazo:** Usar SVGs inline con `width`/`height` explicitos. Ejemplo:
+    ```html
+    <!-- MAL: emoji -->
+    <div class="pj-card__icon">🏪</div>
+    <!-- BIEN: SVG inline -->
+    <div class="pj-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#233D63" stroke-width="2">...</svg></div>
+    ```
+  - **Colores:** Usar hex del brand (`#233D63`, `#FF8C42`, `#00A9A5`), NUNCA `currentColor`. El canvas_data no hereda CSS del tema Twig.
+  - **Duotone en canvas inline:** `fill="#233D63" fill-opacity="0.12"` para capas de fondo, `stroke="#233D63"` para lineas.
+  - **Tamano:** Match con el CSS del contenedor. Si `.pj-card__icon { font-size: 48px }`, el SVG usa `width="48" height="48"`.
+  - **Actualizacion masiva:** Crear script PHP con `str_replace()` por cada emoji → SVG, ejecutar via `drush scr`. Actualizar tanto `html` como `rendered_html` en canvas_data.
+  - **Auditoria de emojis en BD:** Detectar emojis remanentes con:
+    ```php
+    preg_match_all('/[\x{1F000}-\x{1FFFF}]/u', $html, $matches);
+    ```
+  - **Categoria business/ para iconos conceptuales:** Cuando los iconos genericos (clock, user, cart) no comunican el concepto especifico, crear iconos custom en `business/` con nombres descriptivos (`time-pressure`, `launch-idea`, `talent-spotlight`, etc.).
+- **Meta-Sitio: PathProcessor Priority y Homepage Resolution:**
+  - El PathProcessorPageContent tiene prioridad **250** (no 200) para ejecutarse ANTES de `PathProcessorFront` de Drupal core (prioridad 200) que reescribe `/` a `/node`.
+  - El 4to parametro del constructor es `@?jaraba_site_builder.meta_site_resolver` (DI opcional con `@?`).
+  - `resolveHomepage(Request $request)`: extrae hostname del request, llama a `MetaSiteResolverService::resolveFromDomain()`, obtiene `homepage_id` de SiteConfig, y reescribe `/` a `/page/{homepage_id}`.
+  - **MetaSiteResolverService** tiene 3 estrategias de resolucion de dominio (ordenadas por prioridad):
+    1. **Domain Access hostname:** Busca tenants cuyo `domain_id` referencia un Domain Access con hostname exacto.
+    2. **Tenant.domain field:** Busca tenants cuyo campo `domain` coincide exactamente con el hostname.
+    3. **Subdomain prefix:** Extrae el primer segmento del hostname (ej. `pepejaraba` de `pepejaraba.jaraba-saas.lndo.site`) y busca tenants cuyo `domain` empieza con ese prefijo.
+  - La estrategia 3 es la que funciona en desarrollo local con Lando, donde el hostname incluye el dominio completo del proxy.
 - **TenantBridgeService — Inyeccion y Uso (TENANT-BRIDGE-001):**
   - Cuando un servicio necesita resolver entre entidades Tenant y Group, DEBE inyectar `TenantBridgeService` (`@ecosistema_jaraba_core.tenant_bridge`) y usar sus metodos: `getTenantForGroup()`, `getGroupForTenant()`, `getTenantIdForGroup()`, `getGroupIdForTenant()`.
   - NUNCA cargar `$this->entityTypeManager->getStorage('group')` con un Tenant ID ni `getStorage('tenant')` con un Group ID. Los IDs no son intercambiables.
