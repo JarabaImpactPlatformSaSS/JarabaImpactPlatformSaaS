@@ -1,35 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_page_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para IntentionCard.
  */
-class IntentionCardForm extends ContentEntityForm
-{
+class IntentionCardForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'content' => [
+        'label' => $this->t('Content'),
+        'icon' => ['category' => 'ui', 'name' => 'target'],
+        'description' => $this->t('Card title, description, icon, and URL.'),
+        'fields' => ['title', 'description', 'icon', 'url'],
+      ],
+      'display' => [
+        'label' => $this->t('Display'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Color class and display weight.'),
+        'fields' => ['color_class', 'weight'],
+      ],
+    ];
+  }
 
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->label()];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'target'];
+  }
 
-        $this->messenger()->addStatus(
-            $result === SAVED_NEW
-            ? $this->t('Tarjeta de intención %label creada.', $message_args)
-            : $this->t('Tarjeta de intención %label actualizada.', $message_args)
-        );
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

@@ -4,34 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_social\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar variantes de posts sociales.
- *
- * PROPOSITO:
- * Permite a los gestores de redes sociales crear y editar variantes
- * de contenido para testing A/B de publicaciones.
+ * Premium form for creating/editing social post variants.
  */
-class SocialPostVariantForm extends ContentEntityForm {
+class SocialPostVariantForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'content' => [
+        'label' => $this->t('Content'),
+        'icon' => ['category' => 'social', 'name' => 'share'],
+        'description' => $this->t('Variant content and media.'),
+        'fields' => ['post_id', 'variant_name', 'content', 'media_urls', 'hashtags', 'call_to_action'],
+      ],
+      'metrics' => [
+        'label' => $this->t('Metrics'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Performance metrics.'),
+        'fields' => ['impressions', 'engagements', 'clicks', 'shares', 'engagement_rate', 'is_winner'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Tenant assignment.'),
+        'fields' => ['tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'social', 'name' => 'share'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Variante de post %label creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Variante de post %label actualizada.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

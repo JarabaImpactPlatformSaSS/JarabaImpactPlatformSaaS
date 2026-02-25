@@ -4,29 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_vault\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario de creacion/edicion de Solicitudes de Documentos.
- *
- * Estructura: Extiende ContentEntityForm para aprovechar Field UI.
- * Logica: Formulario admin para solicitudes del portal de cliente (FASE B2).
+ * Premium form for creating/editing document requests.
  */
-class DocumentRequestForm extends ContentEntityForm {
+class DocumentRequestForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'request' => [
+        'label' => $this->t('Request'),
+        'icon' => ['category' => 'ui', 'name' => 'document'],
+        'description' => $this->t('Request title and instructions.'),
+        'fields' => ['title', 'document_type_tid', 'case_id', 'instructions', 'is_required', 'deadline'],
+      ],
+      'review' => [
+        'label' => $this->t('Review'),
+        'icon' => ['category' => 'ui', 'name' => 'check'],
+        'description' => $this->t('Upload and review status.'),
+        'fields' => ['uploaded_document_id', 'reviewed_by', 'rejection_reason', 'reminder_count'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Request status and tenant.'),
+        'fields' => ['status', 'tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'document'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->getEntity();
-
-    $this->messenger()->addStatus($this->t('Solicitud de documento "%title" guardada.', [
-      '%title' => $entity->get('title')->value,
-    ]));
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

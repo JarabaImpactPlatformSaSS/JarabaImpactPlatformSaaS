@@ -4,35 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_cases\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar consultas juridicas.
- *
- * Estructura: Extiende ContentEntityForm con campos agrupados.
- *
- * Logica: El inquiry_number se auto-genera en preSave().
+ * Premium form for creating/editing client inquiries.
  */
-class ClientInquiryForm extends ContentEntityForm {
+class ClientInquiryForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'inquiry' => [
+        'label' => $this->t('Inquiry'),
+        'icon' => ['category' => 'ui', 'name' => 'message'],
+        'description' => $this->t('Subject and description.'),
+        'fields' => ['subject', 'inquiry_number', 'description', 'case_type_requested', 'source'],
+      ],
+      'client' => [
+        'label' => $this->t('Client'),
+        'icon' => ['category' => 'ui', 'name' => 'user'],
+        'description' => $this->t('Client contact information.'),
+        'fields' => ['client_name', 'client_email', 'client_phone'],
+      ],
+      'management' => [
+        'label' => $this->t('Management'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Status, assignment, and conversion.'),
+        'fields' => ['status', 'priority', 'assigned_to', 'converted_to_case_id', 'tenant_id', 'notes'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'message'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-
-    $entity = $this->getEntity();
-    $message_args = ['%label' => $entity->toLink()->toString()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Consulta %label creada correctamente.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Consulta %label actualizada correctamente.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

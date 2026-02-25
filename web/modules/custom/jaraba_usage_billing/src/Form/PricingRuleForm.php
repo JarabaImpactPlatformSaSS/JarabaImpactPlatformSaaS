@@ -4,46 +4,54 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_usage_billing\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar reglas de pricing.
+ * Premium form for creating/editing pricing rules.
  */
-class PricingRuleForm extends ContentEntityForm {
+class PricingRuleForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('Identification'),
+        'icon' => ['category' => 'ui', 'name' => 'tag'],
+        'description' => $this->t('Rule name and metric.'),
+        'fields' => ['name', 'metric_name'],
+      ],
+      'pricing' => [
+        'label' => $this->t('Pricing'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Pricing model and rates.'),
+        'fields' => ['pricing_model', 'unit_price', 'tiers_config', 'currency'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Rule status and tenant.'),
+        'fields' => ['status', 'tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'fiscal', 'name' => 'coins'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->getEntity();
-
-    try {
-      $status = parent::save($form, $form_state);
-
-      if ($status === SAVED_NEW) {
-        $this->messenger()->addStatus($this->t('Regla de pricing %label creada.', [
-          '%label' => $entity->label(),
-        ]));
-      }
-      else {
-        $this->messenger()->addStatus($this->t('Regla de pricing %label actualizada.', [
-          '%label' => $entity->label(),
-        ]));
-      }
-
-      $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-      return $status;
-    }
-    catch (\Exception $e) {
-      $this->logger('jaraba_usage_billing')->error('Error guardando regla de pricing: @error', [
-        '@error' => $e->getMessage(),
-      ]);
-      $this->messenger()->addError($this->t('Error al guardar la regla de pricing. Por favor, inténtelo de nuevo.'));
-
-      return SAVED_UPDATED;
-    }
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
   }
 
 }

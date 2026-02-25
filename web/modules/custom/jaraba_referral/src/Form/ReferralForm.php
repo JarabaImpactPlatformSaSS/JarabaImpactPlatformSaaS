@@ -1,42 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_referral\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar referidos.
- *
- * ESTRUCTURA: Extiende ContentEntityForm para operaciones CRUD
- *   sobre la entidad Referral.
- *
- * LÓGICA: Al guardar, muestra mensaje de estado (creado/actualizado)
- *   y redirige al listado de referidos. No genera código automáticamente
- *   desde el formulario admin; eso lo hace ReferralManagerService.
- *
- * RELACIONES:
- * - ReferralForm -> Referral entity (gestiona)
- * - ReferralForm <- AdminHtmlRouteProvider (invocado por)
  */
-class ReferralForm extends ContentEntityForm {
+class ReferralForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'users' => [
+        'label' => $this->t('Users'),
+        'icon' => ['category' => 'users', 'name' => 'user'],
+        'description' => $this->t('Referrer and referred user assignment.'),
+        'fields' => ['referrer_uid', 'referred_uid', 'tenant_id'],
+      ],
+      'referral' => [
+        'label' => $this->t('Referral'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'description' => $this->t('Referral code and current status.'),
+        'fields' => ['referral_code', 'status'],
+      ],
+      'reward' => [
+        'label' => $this->t('Reward'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Reward type and value for this referral.'),
+        'fields' => ['reward_type', 'reward_value'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'link'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->entity;
     $result = parent::save($form, $form_state);
-    $message_args = ['%code' => $entity->get('referral_code')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Referido con código %code creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Referido con código %code actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

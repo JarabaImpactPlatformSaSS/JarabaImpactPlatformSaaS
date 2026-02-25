@@ -4,62 +4,45 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_security_compliance\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario de creación/edición de SecurityPolicy.
- *
- * PROPOSITO:
- * Permite a administradores crear y editar políticas de seguridad
- * con versionado, fechas de vigencia y contenido completo.
- *
- * LOGICA:
- * - Grupo 1: Identificación (nombre, tipo, tenant)
- * - Grupo 2: Contenido y Versión (contenido, versión, fechas)
- * - Grupo 3: Estado (estado de la política)
+ * Premium form for creating/editing security policies.
  */
-class SecurityPolicyForm extends ContentEntityForm {
+class SecurityPolicyForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    // Grupo 1: Identificación.
-    $form['identification'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Identificación'),
-      '#open' => TRUE,
-      '#weight' => -30,
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('Identification'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Policy name, type, and tenant.'),
+        'fields' => ['name', 'policy_type', 'tenant_id'],
+      ],
+      'content_version' => [
+        'label' => $this->t('Content & Version'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Policy content, version, and dates.'),
+        'fields' => ['content', 'version', 'effective_date', 'review_date'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Policy status.'),
+        'fields' => ['policy_status'],
+      ],
     ];
-    $form['name']['#group'] = 'identification';
-    $form['policy_type']['#group'] = 'identification';
-    $form['tenant_id']['#group'] = 'identification';
+  }
 
-    // Grupo 2: Contenido y Versión.
-    $form['content_version'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Contenido y Versión'),
-      '#open' => TRUE,
-      '#weight' => -20,
-    ];
-    $form['content']['#group'] = 'content_version';
-    $form['version']['#group'] = 'content_version';
-    $form['effective_date']['#group'] = 'content_version';
-    $form['review_date']['#group'] = 'content_version';
-
-    // Grupo 3: Estado.
-    $form['status_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Estado'),
-      '#open' => TRUE,
-      '#weight' => -10,
-    ];
-    $form['policy_status']['#group'] = 'status_group';
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'shield'];
   }
 
   /**
@@ -67,15 +50,7 @@ class SecurityPolicyForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-
-    $entity = $this->entity;
-    $message = $result === SAVED_NEW
-      ? $this->t('Política de seguridad %label creada.', ['%label' => $entity->label()])
-      : $this->t('Política de seguridad %label actualizada.', ['%label' => $entity->label()]);
-
-    $this->messenger()->addStatus($message);
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
-
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

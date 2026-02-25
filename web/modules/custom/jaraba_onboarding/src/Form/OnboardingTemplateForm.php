@@ -4,30 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_onboarding\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar templates de onboarding.
+ * Premium form for creating/editing onboarding templates.
  */
-class OnboardingTemplateForm extends ContentEntityForm {
+class OnboardingTemplateForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'template' => [
+        'label' => $this->t('Template'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Template name and description.'),
+        'fields' => ['name', 'vertical', 'description'],
+      ],
+      'steps' => [
+        'label' => $this->t('Steps'),
+        'icon' => ['category' => 'business', 'name' => 'roadmap'],
+        'description' => $this->t('Onboarding steps configuration.'),
+        'fields' => ['steps_config'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Publication status.'),
+        'fields' => ['status', 'tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'layout'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Template de onboarding %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Template de onboarding %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

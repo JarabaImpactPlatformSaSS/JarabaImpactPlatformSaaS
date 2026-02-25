@@ -4,60 +4,61 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_self_discovery\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Form para crear/editar evaluaciones de Rueda de la Vida.
- *
- * PROPÓSITO:
- * Formulario administrativo con sliders 1-10 para las 8 áreas.
+ * Premium form for creating/editing Life Wheel assessments.
  */
-class LifeWheelAssessmentForm extends ContentEntityForm
-{
+class LifeWheelAssessmentForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'assessment' => [
+        'label' => $this->t('Assessment'),
+        'icon' => ['category' => 'analytics', 'name' => 'gauge'],
+        'description' => $this->t('User and assessment info.'),
+        'fields' => ['user_id'],
+      ],
+      'dimensions' => [
+        'label' => $this->t('Dimensions'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Rate each life area from 1 (very dissatisfied) to 10 (very satisfied).'),
+        'fields' => ['score_career', 'score_finance', 'score_health', 'score_family', 'score_social', 'score_growth', 'score_leisure', 'score_environment'],
+      ],
+      'notes' => [
+        'label' => $this->t('Notes'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Additional observations.'),
+        'fields' => ['notes'],
+      ],
+    ];
+  }
 
-        // Añadir información de ayuda.
-        $form['help'] = [
-            '#type' => 'markup',
-            '#markup' => '<p class="form-help">' . $this->t('Evalúa cada área de tu vida del 1 (muy insatisfecho) al 10 (muy satisfecho).') . '</p>',
-            '#weight' => -100,
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'gauge'];
+  }
 
-        return $form;
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $entity = $this->getEntity();
+
+    // Auto-assign current user for new assessments.
+    if ($entity->isNew()) {
+      $entity->set('user_id', $this->currentUser()->id());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->getEntity();
-
-        // Si es nuevo, asignar usuario actual.
-        if ($entity->isNew()) {
-            $entity->set('user_id', \Drupal::currentUser()->id());
-        }
-
-        $status = parent::save($form, $form_state);
-
-        // Mensaje de confirmación traducible.
-        if ($status === SAVED_NEW) {
-            $this->messenger()->addStatus($this->t('Evaluación de Rueda de la Vida creada correctamente.'));
-        } else {
-            $this->messenger()->addStatus($this->t('Evaluación de Rueda de la Vida actualizada.'));
-        }
-
-        // Redirigir a la colección.
-        $form_state->setRedirect('entity.life_wheel_assessment.collection');
-
-        return $status;
-    }
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirect('entity.life_wheel_assessment.collection');
+    return $result;
+  }
 
 }

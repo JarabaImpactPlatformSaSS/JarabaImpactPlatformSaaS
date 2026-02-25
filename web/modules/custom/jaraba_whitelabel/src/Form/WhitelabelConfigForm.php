@@ -4,53 +4,45 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_whitelabel\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Form for creating/editing WhitelabelConfig entities.
  */
-class WhitelabelConfigForm extends ContentEntityForm {
+class WhitelabelConfigForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['identity'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Identity'),
-      '#open' => TRUE,
-      '#weight' => -20,
+  protected function getSectionDefinitions(): array {
+    return [
+      'identity' => [
+        'label' => $this->t('Identity'),
+        'icon' => ['category' => 'business', 'name' => 'building'],
+        'description' => $this->t('Core identification and tenant assignment.'),
+        'fields' => ['config_key', 'tenant_id', 'company_name'],
+      ],
+      'branding' => [
+        'label' => $this->t('Branding'),
+        'icon' => ['category' => 'ui', 'name' => 'palette'],
+        'description' => $this->t('Logo, favicon and brand colours.'),
+        'fields' => ['logo_url', 'favicon_url', 'primary_color', 'secondary_color'],
+      ],
+      'customisation' => [
+        'label' => $this->t('Customisation'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Custom CSS, footer HTML and visibility options.'),
+        'fields' => ['custom_css', 'custom_footer_html', 'hide_powered_by', 'config_status'],
+      ],
     ];
-    $form['config_key']['#group'] = 'identity';
-    $form['tenant_id']['#group'] = 'identity';
-    $form['company_name']['#group'] = 'identity';
+  }
 
-    $form['branding'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Branding'),
-      '#open' => TRUE,
-      '#weight' => -10,
-    ];
-    $form['logo_url']['#group'] = 'branding';
-    $form['favicon_url']['#group'] = 'branding';
-    $form['primary_color']['#group'] = 'branding';
-    $form['secondary_color']['#group'] = 'branding';
-
-    $form['customisation'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Customisation'),
-      '#open' => TRUE,
-      '#weight' => 0,
-    ];
-    $form['custom_css']['#group'] = 'customisation';
-    $form['custom_footer_html']['#group'] = 'customisation';
-    $form['hide_powered_by']['#group'] = 'customisation';
-    $form['config_status']['#group'] = 'customisation';
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'palette'];
   }
 
   /**
@@ -73,15 +65,7 @@ class WhitelabelConfigForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-
-    $message = $result === SAVED_NEW
-      ? $this->t('Whitelabel config %label created.', ['%label' => $entity->label()])
-      : $this->t('Whitelabel config %label updated.', ['%label' => $entity->label()]);
-
-    $this->messenger()->addStatus($message);
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
-
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

@@ -1,143 +1,85 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_page_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para HomepageContent.
  */
-class HomepageContentForm extends ContentEntityForm
-{
+class HomepageContentForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function form(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::form($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'hero' => [
+        'label' => $this->t('Hero Section'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Hero eyebrow, title, subtitle, and CTAs.'),
+        'fields' => [
+          'title',
+          'hero_eyebrow',
+          'hero_title',
+          'hero_subtitle',
+          'hero_cta_primary_text',
+          'hero_cta_primary_url',
+          'hero_cta_secondary_text',
+          'hero_cta_secondary_url',
+          'hero_scroll_text',
+        ],
+      ],
+      'features' => [
+        'label' => $this->t('Features'),
+        'icon' => ['category' => 'ui', 'name' => 'star'],
+        'description' => $this->t('Feature cards referenced by this homepage.'),
+        'fields' => ['features'],
+      ],
+      'stats' => [
+        'label' => $this->t('Statistics'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Stat items referenced by this homepage.'),
+        'fields' => ['stats'],
+      ],
+      'intentions' => [
+        'label' => $this->t('Intentions'),
+        'icon' => ['category' => 'ui', 'name' => 'target'],
+        'description' => $this->t('Intention cards referenced by this homepage.'),
+        'fields' => ['intentions'],
+      ],
+      'seo' => [
+        'label' => $this->t('SEO / Open Graph'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Meta tags for search engines and social networks.'),
+        'fields' => ['meta_title', 'meta_description', 'og_image'],
+      ],
+      'config' => [
+        'label' => $this->t('Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Tenant assignment.'),
+        'fields' => ['tenant_id'],
+      ],
+    ];
+  }
 
-        // Organizar en tabs para mejor UX.
-        $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'layout'];
+  }
 
-        // Tab: Hero.
-        $form['hero_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Sección Hero'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
-
-        // Mover campos del hero al grupo.
-        $hero_fields = [
-            'hero_eyebrow',
-            'hero_title',
-            'hero_subtitle',
-            'hero_cta_primary_text',
-            'hero_cta_primary_url',
-            'hero_cta_secondary_text',
-            'hero_cta_secondary_url',
-            'hero_scroll_text',
-        ];
-
-        foreach ($hero_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['hero_group'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
-
-        // Tab: Features.
-        $form['features_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Características'),
-            '#open' => FALSE,
-            '#weight' => 10,
-        ];
-
-        if (isset($form['features'])) {
-            $form['features_group']['features'] = $form['features'];
-            unset($form['features']);
-        }
-
-        // Tab: Stats.
-        $form['stats_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Estadísticas'),
-            '#open' => FALSE,
-            '#weight' => 20,
-        ];
-
-        if (isset($form['stats'])) {
-            $form['stats_group']['stats'] = $form['stats'];
-            unset($form['stats']);
-        }
-
-        // Tab: Intentions.
-        $form['intentions_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Intenciones'),
-            '#open' => FALSE,
-            '#weight' => 30,
-        ];
-
-        if (isset($form['intentions'])) {
-            $form['intentions_group']['intentions'] = $form['intentions'];
-            unset($form['intentions']);
-        }
-
-        // Tab: SEO.
-        $form['seo_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('🔍 SEO / Open Graph'),
-            '#description' => $this->t('Configura los meta tags para motores de búsqueda y redes sociales.'),
-            '#open' => FALSE,
-            '#weight' => 40,
-        ];
-
-        $seo_fields = ['meta_title', 'meta_description', 'og_image'];
-        foreach ($seo_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['seo_group'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
-
-        // Tab: Tenant (si existe).
-        if (isset($form['tenant_id'])) {
-            $form['tenant_group'] = [
-                '#type' => 'details',
-                '#title' => $this->t('⚙️ Configuración'),
-                '#open' => FALSE,
-                '#weight' => 50,
-            ];
-            $form['tenant_group']['tenant_id'] = $form['tenant_id'];
-            unset($form['tenant_id']);
-        }
-
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
-
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->label()];
-
-        $this->messenger()->addStatus(
-            $result === SAVED_NEW
-            ? $this->t('Contenido de homepage %label creado.', $message_args)
-            : $this->t('Contenido de homepage %label actualizado.', $message_args)
-        );
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

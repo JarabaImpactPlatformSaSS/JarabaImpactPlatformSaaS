@@ -1,51 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_addons\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar suscripciones a add-ons.
- *
- * ESTRUCTURA: Extiende ContentEntityForm para operaciones CRUD
- *   sobre la entidad AddonSubscription.
- *
- * LÓGICA: Al guardar, muestra mensaje de estado (creada/actualizada)
- *   y redirige al listado de suscripciones. Si es nueva suscripción,
- *   establece la fecha de inicio automáticamente.
- *
- * RELACIONES:
- * - AddonSubscriptionForm -> AddonSubscription entity (gestiona)
- * - AddonSubscriptionForm <- AdminHtmlRouteProvider (invocado por)
+ * Premium form for creating/editing add-on subscriptions.
  */
-class AddonSubscriptionForm extends ContentEntityForm {
+class AddonSubscriptionForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'subscription' => [
+        'label' => $this->t('Subscription'),
+        'icon' => ['category' => 'ui', 'name' => 'package'],
+        'description' => $this->t('Add-on and tenant.'),
+        'fields' => ['addon_id', 'tenant_id', 'billing_cycle', 'price_paid'],
+      ],
+      'dates' => [
+        'label' => $this->t('Dates'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'description' => $this->t('Subscription period.'),
+        'fields' => ['start_date', 'end_date'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Subscription status.'),
+        'fields' => ['status'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'package'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->entity;
+    $entity = $this->getEntity();
 
-    // Auto-establecer fecha de inicio si es nueva suscripción y no tiene.
+    // Auto-set start_date for new subscriptions.
     if ($entity->isNew() && empty($entity->get('start_date')->value)) {
       $entity->set('start_date', date('Y-m-d\TH:i:s'));
     }
 
     $result = parent::save($form, $form_state);
-
-    // Obtener nombre del add-on para el mensaje.
-    $addon = $entity->get('addon_id')->entity;
-    $addon_label = $addon ? $addon->label() : $this->t('Desconocido');
-    $message_args = ['%addon' => $addon_label];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Suscripción al add-on %addon creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Suscripción al add-on %addon actualizada.', $message_args));
-    }
-
     $form_state->setRedirectUrl($entity->toUrl('collection'));
     return $result;
   }

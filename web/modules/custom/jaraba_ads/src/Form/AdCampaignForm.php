@@ -1,25 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_ads\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar campañas publicitarias.
- *
- * ESTRUCTURA: Extiende ContentEntityForm para operaciones CRUD
- *   sobre la entidad AdCampaign.
- *
- * LÓGICA: Al guardar, muestra mensaje de estado (creada/actualizada)
- *   y redirige al listado de campañas. Recalcula métricas derivadas
- *   (CTR, CPC) antes de guardar si hay datos de rendimiento.
- *
- * RELACIONES:
- * - AdCampaignForm -> AdCampaign entity (gestiona)
- * - AdCampaignForm <- AdminHtmlRouteProvider (invocado por)
  */
-class AdCampaignForm extends ContentEntityForm {
+class AdCampaignForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('Identification'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Campaign name, platform and external identifier.'),
+        'fields' => ['label', 'platform', 'campaign_id_external', 'status'],
+      ],
+      'budget' => [
+        'label' => $this->t('Budget'),
+        'icon' => ['category' => 'commerce', 'name' => 'wallet'],
+        'description' => $this->t('Daily budget, total budget and accumulated spend.'),
+        'fields' => ['budget_daily', 'budget_total', 'spend_to_date'],
+      ],
+      'metrics' => [
+        'label' => $this->t('Performance Metrics'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Impressions, clicks, conversions and derived metrics.'),
+        'fields' => ['impressions', 'clicks', 'conversions', 'ctr', 'cpc', 'roas'],
+      ],
+      'schedule' => [
+        'label' => $this->t('Schedule'),
+        'icon' => ['category' => 'ui', 'name' => 'calendar'],
+        'description' => $this->t('Campaign start and end dates.'),
+        'fields' => ['start_date', 'end_date'],
+      ],
+      'ownership' => [
+        'label' => $this->t('Ownership'),
+        'icon' => ['category' => 'users', 'name' => 'user'],
+        'description' => $this->t('Owner and tenant assignment.'),
+        'fields' => ['uid', 'tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
+  }
 
   /**
    * {@inheritdoc}
@@ -36,16 +72,7 @@ class AdCampaignForm extends ContentEntityForm {
     }
 
     $result = parent::save($form, $form_state);
-    $message_args = ['%label' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Campaña publicitaria %label creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Campaña publicitaria %label actualizada.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

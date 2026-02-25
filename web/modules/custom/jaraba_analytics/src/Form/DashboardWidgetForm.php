@@ -4,83 +4,45 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_analytics\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario de creacion/edicion de widgets de dashboard.
- *
- * PROPOSITO:
- * Permite crear y editar widgets con tipo de visualizacion, fuente de datos,
- * configuracion de consulta, posicion y configuracion de display.
- *
- * LOGICA:
- * - Grupo 1: Informacion basica (nombre, tipo, fuente de datos, dashboard).
- * - Grupo 2: Configuracion de datos (query JSON, display JSON).
- * - Grupo 3: Layout (posicion, estado).
  */
-class DashboardWidgetForm extends ContentEntityForm {
+class DashboardWidgetForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    // Grupo: Informacion basica.
-    $form['basic_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Basic Information'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic_info' => [
+        'label' => $this->t('Basic Information'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Widget name, type, data source and parent dashboard.'),
+        'fields' => ['name', 'widget_type', 'data_source', 'dashboard_id'],
+      ],
+      'data_config' => [
+        'label' => $this->t('Data Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Query and display configuration in JSON format.'),
+        'fields' => ['query_config', 'display_config'],
+      ],
+      'layout' => [
+        'label' => $this->t('Layout'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Grid position and visibility status.'),
+        'fields' => ['position', 'widget_status'],
+      ],
     ];
+  }
 
-    if (isset($form['name'])) {
-      $form['name']['#group'] = 'basic_info';
-    }
-    if (isset($form['widget_type'])) {
-      $form['widget_type']['#group'] = 'basic_info';
-    }
-    if (isset($form['data_source'])) {
-      $form['data_source']['#group'] = 'basic_info';
-    }
-    if (isset($form['dashboard_id'])) {
-      $form['dashboard_id']['#group'] = 'basic_info';
-    }
-
-    // Grupo: Configuracion de datos.
-    $form['data_config_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Data Configuration'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-
-    if (isset($form['query_config'])) {
-      $form['query_config']['#group'] = 'data_config_group';
-      $form['query_config']['widget'][0]['value']['#description'] = $this->t('JSON query config. Example: {"metric": "page_views", "dimensions": ["date"], "filters": {}, "date_range": "last_30_days"}');
-    }
-    if (isset($form['display_config'])) {
-      $form['display_config']['#group'] = 'data_config_group';
-      $form['display_config']['widget'][0]['value']['#description'] = $this->t('JSON display config. Example: {"colors": ["#0d6efd", "#198754"], "labels": true, "format": "number"}');
-    }
-
-    // Grupo: Layout.
-    $form['layout_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Layout'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-
-    if (isset($form['position'])) {
-      $form['position']['#group'] = 'layout_group';
-    }
-    if (isset($form['widget_status'])) {
-      $form['widget_status']['#group'] = 'layout_group';
-    }
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
   }
 
   /**
@@ -129,23 +91,8 @@ class DashboardWidgetForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    /** @var \Drupal\jaraba_analytics\Entity\DashboardWidget $entity */
-    $entity = $this->getEntity();
-
     $result = parent::save($form, $form_state);
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Widget %name created.', [
-        '%name' => $entity->getName(),
-      ]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Widget %name updated.', [
-        '%name' => $entity->getName(),
-      ]));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

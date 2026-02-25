@@ -4,76 +4,71 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_events\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar landing pages de eventos.
- *
- * Estructura: Extiende ContentEntityForm con auto-generación de slug.
- *
- * Lógica: Al guardar, si el campo slug está vacío se genera
- *   automáticamente a partir del título (transliteración + lowercase).
- *   Redirige al listado tras guardar.
- *
- * Sintaxis: Drupal 11 — return types estrictos, SAVED_NEW/SAVED_UPDATED.
+ * Premium form for creating/editing event landing pages.
  */
-class EventLandingPageForm extends ContentEntityForm {
+class EventLandingPageForm extends PremiumEntityFormBase {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->entity;
-
-    // Auto-generar slug desde el título si está vacío.
-    if (empty($entity->get('slug')->value) && !empty($entity->get('title')->value)) {
-      $slug = $this->generateSlug($entity->get('title')->value);
-      $entity->set('slug', $slug);
-    }
-
-    $result = parent::save($form, $form_state);
-    $message_args = ['%title' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Landing page %title creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Landing page %title actualizada.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
-    return $result;
+  protected function getSectionDefinitions(): array {
+    return [
+      'page' => [
+        'label' => $this->t('Page'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Landing page content and layout.'),
+        'fields' => ['event_id', 'title', 'slug', 'layout', 'hero_image', 'hero_video_url', 'description'],
+      ],
+      'cta' => [
+        'label' => $this->t('Call to Action'),
+        'icon' => ['category' => 'ui', 'name' => 'target'],
+        'description' => $this->t('Call to action and display options.'),
+        'fields' => ['cta_text', 'cta_color', 'show_speakers', 'show_schedule', 'show_testimonials'],
+      ],
+      'custom' => [
+        'label' => $this->t('Custom Code'),
+        'icon' => ['category' => 'ui', 'name' => 'code'],
+        'description' => $this->t('Custom CSS and JavaScript.'),
+        'fields' => ['custom_css', 'custom_js'],
+      ],
+      'seo' => [
+        'label' => $this->t('SEO'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Search engine optimization settings.'),
+        'fields' => ['seo_title', 'seo_description', 'og_image', 'schema_json'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Publication and tenant settings.'),
+        'fields' => ['is_published', 'tenant_id'],
+      ],
+    ];
   }
 
-  /**
-   * Genera un slug URL-friendly a partir de un título.
-   *
-   * Estructura: Método protegido auxiliar del formulario.
-   *
-   * Lógica: Transliteración manual de caracteres acentuados del español,
-   *   conversión a minúsculas, eliminación de caracteres especiales
-   *   y reemplazo de espacios por guiones.
-   *
-   * Sintaxis: Expresiones regulares con soporte Unicode (flag /u).
-   *
-   * @param string $title
-   *   El título de la landing page.
-   *
-   * @return string
-   *   El slug generado.
-   */
-  protected function generateSlug(string $title): string {
-    $slug = mb_strtolower($title);
-    $slug = preg_replace('/[áàäâ]/u', 'a', $slug);
-    $slug = preg_replace('/[éèëê]/u', 'e', $slug);
-    $slug = preg_replace('/[íìïî]/u', 'i', $slug);
-    $slug = preg_replace('/[óòöô]/u', 'o', $slug);
-    $slug = preg_replace('/[úùüû]/u', 'u', $slug);
-    $slug = preg_replace('/ñ/u', 'n', $slug);
-    $slug = preg_replace('/[^a-z0-9\s-]/', '', $slug);
-    $slug = preg_replace('/[\s-]+/', '-', $slug);
-    return trim($slug, '-');
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'layout'];
+  }
+
+  public function save(array $form, FormStateInterface $form_state): int {
+    $entity = $this->getEntity();
+    if ($entity->isNew() && empty($entity->get('slug')->value)) {
+      $title = $entity->get('title')->value ?? '';
+      $slug = mb_strtolower(trim($title));
+      $slug = preg_replace('/[áàäâ]/u', 'a', $slug);
+      $slug = preg_replace('/[éèëê]/u', 'e', $slug);
+      $slug = preg_replace('/[íìïî]/u', 'i', $slug);
+      $slug = preg_replace('/[óòöô]/u', 'o', $slug);
+      $slug = preg_replace('/[úùüû]/u', 'u', $slug);
+      $slug = preg_replace('/ñ/u', 'n', $slug);
+      $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+      $slug = trim($slug, '-');
+      $entity->set('slug', $slug);
+    }
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    return $result;
   }
 
 }

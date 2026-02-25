@@ -1,23 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_ab_testing\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar variantes A/B.
- *
- * Estructura: Extiende ContentEntityForm con auto-generación de
- *   variant_key desde el label.
- *
- * Lógica: Al guardar, si el campo variant_key está vacío se genera
- *   automáticamente a partir del label (transliteración + lowercase
- *   + guiones bajos). Redirige al listado tras guardar.
- *
- * Sintaxis: Drupal 11 — return types estrictos, SAVED_NEW/SAVED_UPDATED.
  */
-class ABVariantForm extends ContentEntityForm {
+class ABVariantForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identity' => [
+        'label' => $this->t('Identity'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Variant name and technical key.'),
+        'fields' => ['label', 'variant_key'],
+      ],
+      'experiment' => [
+        'label' => $this->t('Experiment'),
+        'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'description' => $this->t('Parent experiment reference.'),
+        'fields' => ['experiment_id'],
+      ],
+      'configuration' => [
+        'label' => $this->t('Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Control flag, traffic weight and variant data.'),
+        'fields' => ['is_control', 'traffic_weight', 'variant_data'],
+      ],
+      'metrics' => [
+        'label' => $this->t('Metrics'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Visitor, conversion and revenue counters.'),
+        'fields' => ['visitors', 'conversions', 'revenue'],
+      ],
+      'tenant' => [
+        'label' => $this->t('Tenant'),
+        'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'description' => $this->t('Multi-tenant assignment.'),
+        'fields' => ['tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
+  }
 
   /**
    * {@inheritdoc}
@@ -25,36 +63,19 @@ class ABVariantForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state): int {
     $entity = $this->entity;
 
-    // Auto-generar variant_key desde el label si está vacío.
+    // Auto-generar variant_key desde el label si esta vacio.
     if (empty($entity->get('variant_key')->value) && !empty($entity->label())) {
       $variant_key = $this->generateVariantKey($entity->label());
       $entity->set('variant_key', $variant_key);
     }
 
     $result = parent::save($form, $form_state);
-    $message_args = ['%label' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Variante A/B %label creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Variante A/B %label actualizada.', $message_args));
-    }
-
     $form_state->setRedirectUrl($entity->toUrl('collection'));
     return $result;
   }
 
   /**
    * Genera un variant_key a partir de un label.
-   *
-   * Estructura: Método protegido auxiliar del formulario.
-   *
-   * Lógica: Transliteración manual de caracteres acentuados del español,
-   *   conversión a minúsculas, eliminación de caracteres especiales
-   *   y reemplazo de espacios por guiones bajos.
-   *
-   * Sintaxis: Expresiones regulares con soporte Unicode (flag /u).
    *
    * @param string $label
    *   El nombre de la variante.

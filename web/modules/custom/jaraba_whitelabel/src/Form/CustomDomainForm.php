@@ -4,41 +4,39 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_whitelabel\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Form for creating/editing CustomDomain entities.
  */
-class CustomDomainForm extends ContentEntityForm {
+class CustomDomainForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['domain_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Domain Information'),
-      '#open' => TRUE,
-      '#weight' => -20,
+  protected function getSectionDefinitions(): array {
+    return [
+      'domain_info' => [
+        'label' => $this->t('Domain Information'),
+        'icon' => ['category' => 'ui', 'name' => 'globe'],
+        'description' => $this->t('Domain name and tenant assignment.'),
+        'fields' => ['domain', 'tenant_id'],
+      ],
+      'verification' => [
+        'label' => $this->t('Verification & SSL'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('SSL status, DNS verification and domain status.'),
+        'fields' => ['ssl_status', 'dns_verified', 'dns_verification_token', 'domain_status'],
+      ],
     ];
-    $form['domain']['#group'] = 'domain_info';
-    $form['tenant_id']['#group'] = 'domain_info';
+  }
 
-    $form['verification'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Verification & SSL'),
-      '#open' => TRUE,
-      '#weight' => -10,
-    ];
-    $form['ssl_status']['#group'] = 'verification';
-    $form['dns_verified']['#group'] = 'verification';
-    $form['dns_verification_token']['#group'] = 'verification';
-    $form['domain_status']['#group'] = 'verification';
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'globe'];
   }
 
   /**
@@ -58,15 +56,7 @@ class CustomDomainForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-
-    $message = $result === SAVED_NEW
-      ? $this->t('Custom domain %label created.', ['%label' => $entity->label()])
-      : $this->t('Custom domain %label updated.', ['%label' => $entity->label()]);
-
-    $this->messenger()->addStatus($message);
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
-
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 
