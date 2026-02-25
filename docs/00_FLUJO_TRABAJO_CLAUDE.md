@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-02-24
-**Version:** 24.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
+**Ultima actualizacion:** 2026-02-25
+**Version:** 25.0.0 (Remediacion Tenant 11 Fases)
 
 ---
 
@@ -273,6 +273,31 @@
         - { name: path_processor_inbound, priority: 200 }
     ```
   - **Meta-Sitio workflow:** Las paginas se gestionan como entidades PageContent. Titulos y aliases via `PATCH /api/v1/pages/{id}/config`. Publicacion via `POST /api/v1/pages/{id}/publish`. Contenido visual via GrapesJS `editor.store()`.
+- **TenantBridgeService — Inyeccion y Uso (TENANT-BRIDGE-001):**
+  - Cuando un servicio necesita resolver entre entidades Tenant y Group, DEBE inyectar `TenantBridgeService` (`@ecosistema_jaraba_core.tenant_bridge`) y usar sus metodos: `getTenantForGroup()`, `getGroupForTenant()`, `getTenantIdForGroup()`, `getGroupIdForTenant()`.
+  - NUNCA cargar `$this->entityTypeManager->getStorage('group')` con un Tenant ID ni `getStorage('tenant')` con un Group ID. Los IDs no son intercambiables.
+  - Ejemplo (QuotaManagerService): `$tenant = $this->tenantBridge->getTenantForGroup($group);` para obtener la entidad Tenant desde un Group y consultar billing/quota.
+  - Error handling: los metodos lanzan `\InvalidArgumentException` si la entidad fuente no existe. Envolver en try/catch cuando el ID puede ser invalido.
+  - En services.yml: `arguments: ['@ecosistema_jaraba_core.tenant_bridge']` (no opcional, es dependencia P0).
+- **Tenant Isolation en Access Handlers (TENANT-ISOLATION-ACCESS-001):**
+  - Todo access handler de entidades con `tenant_id` DEBE implementar `EntityHandlerInterface` para DI (no el patron estatico).
+  - `createInstance()` inyecta `TenantContextService` desde el container.
+  - `checkAccess()` implementa politica: `view` = paginas publicadas son publicas, `update`/`delete` = `isSameTenant()` + permiso.
+  - Patron `isSameTenant()`:
+    ```php
+    private function isSameTenant(EntityInterface $entity): bool {
+      $currentTenantId = $this->tenantContext->getCurrentTenantId();
+      if ($currentTenantId === NULL) return FALSE;
+      return (int) $entity->get('tenant_id')->target_id === (int) $currentTenantId;
+    }
+    ```
+  - `TenantContextService::getCurrentTenantId()` retorna `?int` (NULL cuando el usuario no tiene grupo). El handler DEBE manejar NULL como "sin acceso".
+  - Al renombrar access handlers (ej. `DefaultAccessControlHandler` → `DefaultEntityAccessControlHandler`), actualizar la referencia `access` en la anotacion `@ContentEntityType` de la entidad.
+- **Test Mock Migration — Cambio de Entity Storage Key (CI-KERNEL-001):**
+  - Cuando se corrige el entity type key en codigo (ej. `getStorage('group')` → `getStorage('tenant')`), los tests unitarios que mockean `EntityTypeManagerInterface` DEBEN actualizar sus `->with('...')` expectations para coincidir.
+  - Patron: si el mock configura `$entityTypeManager->method('getStorage')->with('group')` y el codigo ahora llama `getStorage('tenant')`, el test falla silenciosamente con "method was not expected to be called with these arguments". Actualizar a `->with('tenant')`.
+  - Los Kernel tests que instalan esquemas de entidades DEBEN listar `group` y/o `tenant` en `$modules` segun corresponda: `$this->installEntitySchema('group')` antes de `$this->installEntitySchema('page_content')` si hay foreign key.
+  - El CI pipeline DEBE tener un job `kernel-test` separado con servicio MariaDB (mariadb:10.11) y base de datos `drupal_test`. Los Kernel tests no funcionan sin BD real.
 
 ---
 
@@ -312,6 +337,9 @@
 32. **jaraba_icon() convencion estricta y zero chinchetas:** Toda llamada a `jaraba_icon()` DEBE seguir la firma `jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' })`. Antes de crear un template nuevo, verificar que los pares category/name existen como SVGs en `ecosistema_jaraba_core/images/icons/{category}/`. Si falta un icono, crear un symlink en la bridge category correspondiente apuntando a una categoria primaria (actions, fiscal, media, micro, ui, users). Verificar con `find images/icons/ -type l ! -exec test -e {} \; -print` que no hay symlinks rotos. El objetivo es 0 chinchetas (📌) en toda la plataforma.
 33. **Auditorias horizontales periodicas:** Despues de completar auditorias verticales, ejecutar siempre una auditoria horizontal que revise flujos cross-cutting: access handlers (strict equality), plantillas de email (CAN-SPAM, colores de marca, font, preheader, postal), CSRF, permisos. Los bugs sistematicos no se descubren auditando un solo vertical — requieren vision transversal. Al scaffoldear plantillas desde un template base, usar tokens de marca desde el dia 0 para evitar deuda multiplicada.
 34. **PathProcessor para aliases custom de entidad:** Cuando una entidad ContentEntity tiene un campo `path_alias` propio, DEBE existir un `InboundPathProcessorInterface` con prioridad 200+ que resuelva el alias a la ruta canonica de la entidad. No filtrar por status en la query (el AccessControlHandler gestiona permisos). Usar skip list de prefijos de sistema y static cache. El procesador se registra en services.yml con tag `path_processor_inbound`.
+35. **TenantBridgeService para resolucion cross-entity:** Todo servicio que necesite resolver entre Tenant y Group DEBE usar `TenantBridgeService` (`@ecosistema_jaraba_core.tenant_bridge`). NUNCA cargar `getStorage('group')` con Tenant IDs ni viceversa. Los IDs de Tenant y Group NO son intercambiables. Tenant = billing ownership, Group = content isolation. Los 4 metodos del bridge (`getTenantForGroup`, `getGroupForTenant`, `getTenantIdForGroup`, `getGroupIdForTenant`) son el unico punto de cruce autorizado.
+36. **Tenant isolation en AccessControlHandlers:** Todo access handler de entidades con campo `tenant_id` DEBE implementar `EntityHandlerInterface` para DI, inyectar `TenantContextService`, y verificar `isSameTenant()` para `update`/`delete`. Las paginas publicadas (`view`) son publicas. `TenantContextService::getCurrentTenantId()` retorna `?int` (NULL = sin acceso). Al renombrar handlers, actualizar la referencia `access` en la anotacion `@ContentEntityType`.
+37. **CI pipeline con Kernel tests obligatorios:** El CI DEBE ejecutar Unit + Kernel tests. El job `kernel-test` requiere MariaDB (10.11) con BD `drupal_test`. Cuando se corrige un entity type key en codigo (ej. `getStorage('group')` → `getStorage('tenant')`), actualizar los `->with(...)` en mocks de tests. Los Kernel tests validan schemas, queries y DI real — no son opcionales.
 
 ---
 
@@ -319,6 +347,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-25 | **25.0.0** | **Remediacion Tenant 11 Fases Workflow**: 3 patrones nuevos: TenantBridgeService (inyeccion, 4 metodos, error handling, services.yml), Tenant Isolation en Access Handlers (EntityHandlerInterface + DI, isSameTenant(), TenantContextService nullable, politica view/update/delete), Test Mock Migration (entity storage key changes, mock expectations, Kernel test dependencies, CI kernel-test job). 3 reglas de oro: #35 (TenantBridgeService cross-entity), #36 (tenant isolation en handlers), #37 (CI Kernel tests obligatorios). Aprendizaje #122. |
 | 2026-02-24 | **24.0.0** | **Meta-Sitio jarabaimpact.com Workflow**: Patron PATH-ALIAS-PROCESSOR-001 — InboundPathProcessorInterface con prioridad 200 para resolver path_alias custom de entidades ContentEntity a rutas canonicas. Skip list de prefijos, sin filtro status, static cache. Registro en services.yml con tag path_processor_inbound. Meta-sitio workflow: titulos via API config, publicacion via API publish, contenido via GrapesJS store. 7 paginas institucionales. Regla de oro #34. Aprendizaje #120. |
 | 2026-02-24 | **23.0.0** | **Auditoria Horizontal Workflow**: Patron ACCESS-STRICT-001 — strict equality `(int) === (int)` obligatorio en access handlers, previene type juggling en ownership checks. Buscar con `grep "== $account->id()" \| grep -v "==="`. Los access handlers pueden estar en `src/Access/` O directamente en `src/`. Patron MJML email compliance — 5 cambios por plantilla: mj-preview, postal CAN-SPAM, font Outfit, colores universales, colores de grupo. Tabla de reemplazos de colores off-brand → brand. Preservar colores semanticos. Verificar con grep de colores off-brand → 0 resultados. Regla de oro #33. Aprendizaje #119. |
 | 2026-02-24 | **22.0.0** | **Empleabilidad Profile Premium — Fase Final Workflow**: Patron de creacion de ContentEntity completa con AdminHtmlRouteProvider + field_ui_base_route + SettingsForm + links.task.yml (collection tab + settings tab) + routing.yml (settings route) + permissions.yml + update hook para instalar schema. Refuerzo de TWIG-XSS-001 (`\|raw` → `\|safe_html` en perfil candidato). Patron de cleanup: reemplazar `#markup` con HTML hardcodeado por `#theme` que reutiliza template premium existente. Aprendizaje #118. |

@@ -3,8 +3,17 @@
 > **Documento auto-actualizable**: Este índice se mantiene sincronizado con la estructura de carpetas y documentos del proyecto.
 
 **Fecha de creación:** 2026-01-09 15:28
-**Última actualización:** 2026-02-24
-**Versión:** 93.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
+**Última actualización:** 2026-02-25
+**Versión:** 94.0.0 (Remediacion Tenant 11 Fases)
+
+> **🔧 REMEDIACION TENANT 11 FASES: TENANTBRIDGE + BILLING + ISOLATION + CI** (2026-02-25)
+> - **Contexto:** Remediacion sistematica de la confusion Tenant vs Group detectada en la auditoria profunda. 11 fases ejecutadas en 2 commits (`96dc2bb4` + `0bd84663`). Corrige 14 bugs de billing, acceso cross-tenant, y ausencia de Kernel tests en CI.
+> - **HAL-01 (TenantBridgeService):** Nuevo servicio `TenantBridgeService` (`ecosistema_jaraba_core.tenant_bridge`) con 4 metodos (`getTenantForGroup`, `getGroupForTenant`, `getTenantIdForGroup`, `getGroupIdForTenant`). Registrado en `services.yml`. Error handling con `\InvalidArgumentException`. Consumido por QuotaManagerService, BillingController, BillingService, StripeWebhookController, SaasPlan.
+> - **HAL-02 (Billing Entity Type Fix):** 14 correcciones de entity type en 6 ficheros. `QuotaManagerService` migrado de `getStorage('group')` a `TenantBridgeService` bridge pattern. `BillingController`, `BillingService`, `StripeWebhookController` y `SaasPlan` corregidos de `getStorage('group')` a `getStorage('tenant')`.
+> - **HAL-03 (Tenant Isolation):** `PageContentAccessControlHandler` refactorizado con `EntityHandlerInterface` + DI, inyecta `TenantContextService`, implementa `isSameTenant()` para update/delete. `DefaultAccessControlHandler` renombrado a `DefaultEntityAccessControlHandler`. `PathProcessorPageContent` tenant-aware con `TenantContextService` opcional. `TenantContextService` enhanced con `getCurrentTenantId()` nullable.
+> - **HAL-04 (CI + Tests + Cleanup):** Job `kernel-test` en CI con MariaDB 10.11. 5 tests nuevos: `TenantBridgeServiceTest` (Unit), `QuotaManagerServiceTest` actualizado (Unit), `PageContentAccessTest` (Kernel), `PathProcessorPageContentTest` (Kernel), `DefaultEntityAccessControlHandlerTest` (Unit rename). Scripts movidos de `web/` a `scripts/maintenance/`. `test_paths.sh` limpiado.
+> - **3 reglas nuevas:** TENANT-BRIDGE-001 (P0), TENANT-ISOLATION-ACCESS-001 (P0), CI-KERNEL-001 (P0). Reglas de oro #35, #36, #37. Aprendizaje #122.
+> - **Cross-refs:** Directrices v70.0.0, Arquitectura v71.0.0, Flujo v25.0.0, Indice v94.0.0
 
 > **🌐 META-SITIO JARABAIMPACT.COM: PATHPROCESSOR + CONTENIDO INSTITUCIONAL** (2026-02-24)
 > - **Contexto:** Construccion del meta-sitio institucional `jarabaimpact.com` usando Page Builder. Los path_alias de entidades PageContent no se registraban como rutas Drupal, devolviendo 404.
@@ -238,6 +247,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **94.0.0** | **Remediacion Tenant 11 Fases:** Bloque destacado HAL-01 a HAL-04: TenantBridgeService (4 metodos, services.yml, error handling), Billing Entity Type Fix (14 correcciones, 6 ficheros, QuotaManagerService bridge), Tenant Isolation (access handler con DI, isSameTenant, PathProcessor tenant-aware, TenantContextService enhanced), CI + Tests + Cleanup (kernel-test job MariaDB, 5 tests, rename handler, scripts maintenance). 3 reglas: TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |
 | 2026-02-24 | **93.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de PageContent a rutas /page/{id}. 7 paginas institucionales creadas. Contenido espanol en 5/7 paginas via GrapesJS API. Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |
 | 2026-02-24 | **92.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. Sprint 1: 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (previene type juggling en ownership checks). Sprint 2: 28 plantillas MJML horizontales con mj-preview, postal CAN-SPAM, font Outfit, y paleta de marca unificada (6 colores universales + 4 de grupo reemplazados, semanticos preservados). 5 reglas nuevas: ACCESS-STRICT-001, EMAIL-PREVIEW-001, EMAIL-POSTAL-001, BRAND-FONT-001, BRAND-COLOR-001. Regla de oro #33. Aprendizaje #119. |
 | 2026-02-24 | **91.0.0** | **Empleabilidad /my-profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, collection tab, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil (TWIG-XSS-001). Controller cleanup: HTML hardcodeado → `#theme => 'my_profile_empty'`. Permiso `administer candidate educations`. 3 ficheros creados, 6 modificados. Aprendizaje #118. |

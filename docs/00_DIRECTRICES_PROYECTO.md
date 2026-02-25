@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-02-24
-**Versión:** 69.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
+**Última actualización:** 2026-02-25
+**Versión:** 70.0.0 (Remediacion Tenant 11 Fases)
 
 ---
 
@@ -88,6 +88,9 @@
 | **Font Outfit en Emails** | BRAND-FONT-001 | El font-family en plantillas MJML DEBE ser `Outfit, Arial, Helvetica, sans-serif`. `Outfit` es la fuente de marca de Jaraba y DEBE ser siempre el primer font declarado. | P1 |
 | **Colores Brand en Emails MJML** | BRAND-COLOR-001 | Las plantillas MJML DEBEN usar exclusivamente colores del sistema de tokens de marca. Prohibido usar Tailwind defaults (#374151, #6b7280, #f3f4f6, #e5e7eb, #9ca3af, #111827, #2563eb). Los colores semanticos (error rojo #dc2626, exito verde #16a34a, warning amber #f59e0b) se preservan. El azul primario de marca es #1565C0. | P1 |
 | **PathProcessor para path_alias custom** | PATH-ALIAS-PROCESSOR-001 | Cuando una entidad ContentEntity usa un campo `path_alias` propio (no gestionado por el modulo `path_alias` del core), se DEBE implementar un `InboundPathProcessorInterface` registrado como servicio con prioridad superior a 100. El procesador DEBE: (1) excluir prefijos de sistema (`/api/`, `/admin/`, `/user/`) para rendimiento, (2) no filtrar por status — delegar en el AccessControlHandler, (3) usar static cache por path, (4) retornar la ruta canonica de la entidad (ej. `/page/{id}`). | P0 |
+| **TenantBridgeService Obligatorio** | TENANT-BRIDGE-001 | Todo servicio que necesite resolver entre entidades Tenant y Group DEBE usar `TenantBridgeService` (`ecosistema_jaraba_core.tenant_bridge`). NUNCA cargar `getStorage('group')` con Tenant IDs ni viceversa. Tenant entities son propietarias de billing; Group entities gestionan aislamiento de contenido. Metodos: `getTenantForGroup()`, `getGroupForTenant()`, `getTenantIdForGroup()`, `getGroupIdForTenant()`. Error handling con `\InvalidArgumentException` si la entidad no existe. | P0 |
+| **Tenant Isolation en Access Handlers** | TENANT-ISOLATION-ACCESS-001 | Todo `AccessControlHandler` de entidades con campo `tenant_id` DEBE verificar que el tenant de la entidad coincida con el tenant del usuario para operaciones `update`/`delete` usando `isSameTenant()`. Las paginas publicadas (`view`) son publicas. El patron: `(int) $entity->get('tenant_id')->target_id === (int) $this->tenantContext->getCurrentTenantId()`. Aplica a `PageContentAccessControlHandler` y cualquier handler futuro con aislamiento por tenant. | P0 |
+| **CI Pipeline con Kernel Tests** | CI-KERNEL-001 | El pipeline de CI DEBE ejecutar tanto Unit tests como Kernel tests. El job `kernel-test` requiere servicio MariaDB (mariadb:10.11) con base de datos `drupal_test`. Los Kernel tests validan integracion con BD real (schemas de entidad, queries, services DI). Todo PR que modifique servicios, entidades o access handlers DEBE pasar ambas suites antes de merge. | P0 |
 
 ---
 
@@ -95,6 +98,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **70.0.0** | **Remediacion Tenant 11 Fases:** Nuevo `TenantBridgeService` (4 metodos) para resolucion Tenant↔Group. 14 correcciones de billing entity type en 6 ficheros (`QuotaManagerService` usa bridge, `BillingController`/`BillingService`/`StripeWebhookController`/`SaasPlan` usan `getStorage('tenant')`). `PageContentAccessControlHandler` con DI + `isSameTenant()` para tenant isolation. `DefaultEntityAccessControlHandler` renombrado desde `DefaultAccessControlHandler`. `PathProcessorPageContent` tenant-aware con `TenantContextService` enhanced (nullable group). CI pipeline con job `kernel-test` (MariaDB 10.11). 5 tests nuevos (3 Unit + 2 Kernel). Scripts de mantenimiento movidos a `scripts/maintenance/`. 3 reglas nuevas: TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Reglas de oro #35, #36, #37. Aprendizaje #122. |
 | 2026-02-24 | **69.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` que resuelve `path_alias` de entidades PageContent a rutas `/page/{id}` (prioridad 200, sin filtro status, skip list de prefijos, static cache). 7 paginas institucionales creadas con GrapesJS. 1 regla nueva: PATH-ALIAS-PROCESSOR-001. Regla de oro #34 (PathProcessor para aliases custom). Aprendizaje #120. |
 | 2026-02-24 | **68.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** 5 reglas nuevas: ACCESS-STRICT-001 (strict equality `(int) === (int)` en access handlers), EMAIL-PREVIEW-001 (mj-preview obligatorio), EMAIL-POSTAL-001 (direccion postal CAN-SPAM), BRAND-FONT-001 (Outfit como primer font en emails), BRAND-COLOR-001 (solo colores de tokens de marca en MJML). Regla de oro #33 (auditorias horizontales periodicas). 52 instancias corregidas en 39 access handlers, 28 plantillas MJML con compliance completo. Aprendizaje #119. |
 | 2026-02-24 | **67.0.0** | **Empleabilidad Profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity completa con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, collection tab, update hook 10002, permiso admin). Fix XSS `\|raw` → `\|safe_html` en template de perfil (TWIG-XSS-001). Controller cleanup: HTML hardcodeado reemplazado por render array con template premium. 3 ficheros creados, 6 modificados. Aprendizaje #118. |
