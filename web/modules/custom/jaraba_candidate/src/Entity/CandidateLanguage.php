@@ -25,9 +25,9 @@ use Drupal\user\EntityOwnerTrait;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "add" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_candidate\Form\ProfileSectionForm",
+ *       "add" = "Drupal\jaraba_candidate\Form\ProfileSectionForm",
+ *       "edit" = "Drupal\jaraba_candidate\Form\ProfileSectionForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "route_provider" = {

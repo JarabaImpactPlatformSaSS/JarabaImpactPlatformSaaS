@@ -1134,6 +1134,44 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     }
   }
 
+  // =========================================================================
+  // H9 fix: Title tag tenant-aware para páginas de meta-sitio.
+  // Si la página pertenece a un meta-sitio, override <title> con el sufijo
+  // del tenant en lugar del sufijo global "| Jaraba".
+  // =========================================================================
+  $route_match = \Drupal::routeMatch();
+  $page_content = $route_match->getParameter('page_content');
+  if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+    try {
+      /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
+      $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+      $metaSite = $resolver->resolveFromPageContent($page_content);
+      if ($metaSite && $metaSite['site_config']) {
+        $titleSuffix = $metaSite['site_config']->get('meta_title_suffix')->value ?? '';
+        $pageTitle = $page_content->get('meta_title')->value ?? $page_content->get('title')->value ?? '';
+        if ($pageTitle && $titleSuffix) {
+          // Solo añadir sufijo si el título no lo incluye ya.
+          if (!str_contains($pageTitle, $titleSuffix)) {
+            $variables['head_title']['title'] = $pageTitle . ' ' . $titleSuffix;
+          }
+          else {
+            $variables['head_title']['title'] = $pageTitle;
+          }
+        }
+        elseif ($pageTitle) {
+          $variables['head_title']['title'] = $pageTitle;
+        }
+
+        // También añadir body class para meta-sitio.
+        $variables['attributes']['class'][] = 'meta-site';
+        $variables['attributes']['class'][] = 'meta-site-tenant-' . $metaSite['group_id'];
+      }
+    }
+    catch (\Exception $e) {
+      // Servicio no disponible.
+    }
+  }
+
   // F4 Doc 180 — Meta SEO tags para landing pages verticales.
   $landing_meta = [
     'ecosistema_jaraba_core.landing.agroconecta' => [
@@ -2156,6 +2194,65 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $site_config = \Drupal::config('system.site');
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: 'Impulsando el talento y la innovación';
+
+  // =========================================================================
+  // META-SITIO OVERRIDE (H4, H5) — Header/Footer/Nav tenant-aware
+  //
+  // Si la ruta actual es de un page_content que pertenece a un meta-sitio,
+  // override site_name, navigation_items, header/footer con datos de SiteConfig
+  // y SitePageTree. Esto hace que el meta-sitio muestre su propio branding.
+  // =========================================================================
+  $variables['meta_site'] = NULL;
+  try {
+    $route_match = \Drupal::routeMatch();
+    $page_content = $route_match->getParameter('page_content');
+    if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+      /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
+      $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+      $metaSite = $resolver->resolveFromPageContent($page_content);
+      if ($metaSite) {
+        $variables['meta_site'] = $metaSite;
+        $tenantConfig = $metaSite['site_config'];
+
+        // Override site_name con nombre del tenant.
+        $variables['site_name'] = $metaSite['tenant_name'];
+        $variables['site_slogan'] = $tenantConfig->getTagline() ?: '';
+
+        // Override navegación con items del SitePageTree.
+        if (!empty($metaSite['nav_items_formatted'])) {
+          $variables['theme_settings']['navigation_items'] = implode("\n", $metaSite['nav_items_formatted']);
+        }
+
+        // Override header settings con SiteConfig.
+        $variables['theme_settings']['header_layout'] = $tenantConfig->getHeaderType();
+        $variables['theme_settings']['header_sticky'] = $tenantConfig->isHeaderSticky();
+        $variables['theme_settings']['enable_header_cta'] = !empty($tenantConfig->getHeaderCtaText());
+        $variables['theme_settings']['header_cta_text'] = $tenantConfig->getHeaderCtaText() ?: '';
+        $variables['theme_settings']['header_cta_url'] = $tenantConfig->getHeaderCtaUrl() ?: '#';
+
+        // Override footer copyright con SiteConfig.
+        $footerCopyright = $tenantConfig->getFooterCopyright();
+        if ($footerCopyright) {
+          $variables['theme_settings']['footer_copyright'] = $footerCopyright;
+        }
+
+        // Override footer layout.
+        $variables['theme_settings']['footer_layout'] = $tenantConfig->getFooterType();
+        $variables['theme_settings']['footer_show_powered_by'] = FALSE;
+
+        // Logo del tenant si está configurado.
+        $logoFile = $tenantConfig->get('site_logo')->entity ?? NULL;
+        if ($logoFile) {
+          $file_url_generator = \Drupal::service('file_url_generator');
+          $variables['logo'] = $file_url_generator->generateAbsoluteString($logoFile->getFileUri());
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // MetaSiteResolver no disponible o error — usar valores por defecto.
+  }
+
   // =========================================================================
   // HOMEPAGE CONTENT - Datos dinámicos desde Page Builder
   // Inyecta datos de HomepageContent entity para partials de la homepage
@@ -3045,6 +3142,12 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     }
 
     $variables['user_quick_sections'] = $sections;
+
+    // Attach JS libraries needed by slide-panel sections.
+    // These must be on the parent page so Drupal.attachBehaviors() finds them
+    // when the slide-panel loads section HTML via AJAX.
+    $variables['#attached']['library'][] = 'jaraba_candidate/skills_manager';
+    $variables['#attached']['library'][] = 'jaraba_candidate/profile_section_manager';
 
     // Backward compatibility: aplanar todos los links.
     $flat_links = [];

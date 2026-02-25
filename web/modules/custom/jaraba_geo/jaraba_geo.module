@@ -27,14 +27,43 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 function jaraba_geo_page_attachments(array &$attachments): void {
   $base_url = \Drupal::request()->getSchemeAndHttpHost();
 
-  // Schema.org Organization para toda la plataforma.
+  // Schema.org Organization — H6 fix: tenant-aware cuando estamos en un meta-sitio.
+  $orgName = 'Jaraba Impact Platform';
+  $orgDescription = 'Plataforma SaaS AI-First para productores locales con e-commerce, trazabilidad, certificación digital y agentes de IA.';
+  $orgLogo = $base_url . '/themes/custom/ecosistema_jaraba_theme/logo.png';
+  try {
+    $route_match = \Drupal::routeMatch();
+    $page_content = $route_match->getParameter('page_content');
+    if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
+      /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
+      $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+      $metaSite = $resolver->resolveFromPageContent($page_content);
+      if ($metaSite && $metaSite['site_config']) {
+        $sc = $metaSite['site_config'];
+        $orgName = $sc->get('site_name')->value ?: $orgName;
+        $tagline = $sc->getTagline();
+        if ($tagline) {
+          $orgDescription = $tagline;
+        }
+        $logoFile = $sc->get('site_logo')->entity ?? NULL;
+        if ($logoFile) {
+          $orgLogo = \Drupal::service('file_url_generator')
+            ->generateAbsoluteString($logoFile->getFileUri());
+        }
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // Servicio no disponible, usar valores globales.
+  }
+
   $organization_schema = [
     '@context' => 'https://schema.org',
     '@type' => 'Organization',
-    'name' => 'Jaraba Impact Platform',
-    'description' => 'Plataforma SaaS AI-First para productores locales con e-commerce, trazabilidad, certificación digital y agentes de IA.',
+    'name' => $orgName,
+    'description' => $orgDescription,
     'url' => $base_url,
-    'logo' => $base_url . '/themes/custom/ecosistema_jaraba_theme/logo.png',
+    'logo' => $orgLogo,
     'sameAs' => array_filter([
       'https://www.linkedin.com/company/jaraba-impact-platform',
       \Drupal::config('jaraba_geo.settings')->get('wikidata_url') ?: NULL,

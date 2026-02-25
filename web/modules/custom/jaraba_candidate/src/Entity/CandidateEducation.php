@@ -26,9 +26,9 @@ use Drupal\user\EntityOwnerTrait;
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "add" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_candidate\Form\ProfileSectionForm",
+ *       "add" = "Drupal\jaraba_candidate\Form\ProfileSectionForm",
+ *       "edit" = "Drupal\jaraba_candidate\Form\ProfileSectionForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "route_provider" = {
@@ -113,32 +113,40 @@ class CandidateEducation extends ContentEntityBase implements CandidateEducation
             ->setLabel(t('User'))
             ->setDescription(t('The candidate who has this education record.'))
             ->setRequired(TRUE)
-            ->setSetting('target_type', 'user');
+            ->setSetting('target_type', 'user')
+            ->setDisplayOptions('form', ['type' => 'entity_reference_autocomplete', 'weight' => -10]);
 
         $fields['institution'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Institution'))
             ->setDescription(t('Name of the educational institution.'))
             ->setRequired(TRUE)
-            ->setSetting('max_length', 255);
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -9]);
 
         $fields['degree'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Degree'))
             ->setDescription(t('Degree or certification obtained.'))
             ->setRequired(TRUE)
-            ->setSetting('max_length', 255);
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -8]);
 
         $fields['field_of_study'] = BaseFieldDefinition::create('string')
             ->setLabel(t('Field of Study'))
             ->setDescription(t('Area of specialization or major.'))
-            ->setSetting('max_length', 255);
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -7]);
 
-        $fields['start_date'] = BaseFieldDefinition::create('timestamp')
+        $fields['start_date'] = BaseFieldDefinition::create('datetime')
             ->setLabel(t('Start Date'))
-            ->setRequired(TRUE);
+            ->setRequired(TRUE)
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -6]);
 
-        $fields['end_date'] = BaseFieldDefinition::create('timestamp')
+        $fields['end_date'] = BaseFieldDefinition::create('datetime')
             ->setLabel(t('End Date'))
-            ->setDescription(t('NULL if currently studying.'));
+            ->setDescription(t('Leave empty if currently studying.'))
+            ->setSetting('datetime_type', 'date')
+            ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => -5]);
 
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Created'));

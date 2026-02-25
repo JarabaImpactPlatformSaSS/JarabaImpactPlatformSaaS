@@ -56,7 +56,7 @@ class ProfileSectionFormController extends ControllerBase {
 
     $form = $this->entityFormBuilder()->getForm($entity, 'default');
 
-    if ($request->isXmlHttpRequest()) {
+    if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
       $html = (string) \Drupal::service('renderer')->render($form);
       return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
@@ -82,7 +82,7 @@ class ProfileSectionFormController extends ControllerBase {
 
     $form = $this->entityFormBuilder()->getForm($entity, 'default');
 
-    if ($request->isXmlHttpRequest()) {
+    if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
       $html = (string) \Drupal::service('renderer')->render($form);
       return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
