@@ -264,7 +264,7 @@ class ProfileController extends ControllerBase
             '#theme' => 'my_profile_experience',
             '#experiences' => $experiences,
             '#attached' => [
-                'library' => ['jaraba_candidate/profile_experience'],
+                'library' => ['jaraba_candidate/profile_section_manager'],
             ],
             '#cache' => [
                 'contexts' => ['user'],
@@ -314,7 +314,7 @@ class ProfileController extends ControllerBase
             '#theme' => 'my_profile_education',
             '#educations' => $educations,
             '#attached' => [
-                'library' => ['jaraba_candidate/profile_education'],
+                'library' => ['jaraba_candidate/profile_section_manager'],
             ],
             '#cache' => [
                 'contexts' => ['user'],
@@ -405,6 +405,54 @@ class ProfileController extends ControllerBase
             '#cache' => [
                 'contexts' => ['user'],
                 'tags' => ['user:' . $user_id, 'taxonomy_term_list:skills'],
+            ],
+        ];
+
+        if ($request->isXmlHttpRequest()) {
+            $html = (string) \Drupal::service('renderer')->render($build);
+            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        return $build;
+    }
+
+    /**
+     * Displays languages section.
+     *
+     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
+     */
+    public function languagesSection(Request $request): array|Response
+    {
+        $user_id = (int) $this->currentUser()->id();
+
+        $languages = [];
+        try {
+            $loaded = $this->entityTypeManager()
+                ->getStorage('candidate_language')
+                ->loadByProperties(['user_id' => $user_id]);
+            foreach ($loaded as $lang) {
+                $languages[] = [
+                    'id' => $lang->id(),
+                    'language_name' => $lang->get('language_name')->value ?? '',
+                    'proficiency_level' => $lang->get('proficiency_level')->value ?? 'A1',
+                    'is_native' => (bool) ($lang->get('is_native')->value ?? FALSE),
+                    'certification' => $lang->get('certification')->value ?? '',
+                ];
+            }
+        }
+        catch (\Exception) {
+            // Entity type may not be installed yet.
+        }
+
+        $build = [
+            '#theme' => 'my_profile_languages',
+            '#languages' => $languages,
+            '#attached' => [
+                'library' => ['jaraba_candidate/profile_section_manager'],
+            ],
+            '#cache' => [
+                'contexts' => ['user'],
+                'max-age' => 300,
             ],
         ];
 

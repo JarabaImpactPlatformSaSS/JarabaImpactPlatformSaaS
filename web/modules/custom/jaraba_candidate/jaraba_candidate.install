@@ -55,3 +55,11 @@ function jaraba_candidate_update_10002(): void {
   $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_education');
   \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
 }
+
+/**
+ * Install the CandidateExperience entity type schema.
+ */
+function jaraba_candidate_update_10003(): void {
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_experience');
+  \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+}
