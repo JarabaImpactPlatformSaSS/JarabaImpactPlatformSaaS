@@ -62,7 +62,10 @@
       {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'muted' }) }}
       <h3>{{ 'Aún no tenemos recomendaciones'|t }}</h3>
       <p>{{ 'Completa tu perfil profesional para recibir ofertas personalizadas basadas en tus habilidades y experiencia.'|t }}</p>
-      <a href="/my-profile/edit" class="jaraba-btn jaraba-btn--primary">
+      <a href="{{ path('jaraba_candidate.my_profile.personal') }}" class="jaraba-btn jaraba-btn--primary"
+         data-slide-panel="profile-section"
+         data-slide-panel-url="{{ path('jaraba_candidate.my_profile.personal') }}"
+         data-slide-panel-title="{% trans %}Datos Personales{% endtrans %}">
         {{ 'Completar mi perfil'|t }}
       </a>
     </div>

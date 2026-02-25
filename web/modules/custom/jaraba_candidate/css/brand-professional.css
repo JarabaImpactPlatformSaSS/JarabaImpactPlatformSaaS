@@ -1,0 +1,282 @@
+/**
+ * @file
+ * AI-assisted professional branding components.
+ *
+ * Styles for the ProfessionalBrandForm AI buttons, suggestion cards,
+ * comparison panels, spinners, errors, and undo links.
+ * Uses Jaraba design tokens (--ej-*).
+ */
+
+/* ==========================================================================
+   AI Assist Buttons
+   ========================================================================== */
+
+.ai-assist-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.ai-assist-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ej-color-impulse, #FF6B35);
+  background: transparent;
+  border: 1.5px solid var(--ej-color-impulse, #FF6B35);
+  border-radius: var(--ej-border-radius, 8px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1.3;
+}
+
+.ai-assist-btn:hover {
+  background: var(--ej-color-impulse, #FF6B35);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.ai-assist-btn:focus-visible {
+  outline: 2px solid var(--ej-color-impulse, #FF6B35);
+  outline-offset: 2px;
+}
+
+.ai-assist-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.ai-assist-btn--secondary {
+  color: var(--ej-color-corporate, #233D63);
+  border-color: var(--ej-color-corporate, #233D63);
+}
+
+.ai-assist-btn--secondary:hover {
+  background: var(--ej-color-corporate, #233D63);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(35, 61, 99, 0.3);
+}
+
+.ai-assist-btn svg,
+.ai-assist-btn img {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   AI Spinner
+   ========================================================================== */
+
+.ai-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ai-spin 0.6s linear infinite;
+}
+
+@keyframes ai-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   AI Suggestion Cards (headline options)
+   ========================================================================== */
+
+.ai-suggestions {
+  margin-top: 0.75rem;
+}
+
+.ai-suggestions__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ej-text-secondary, #6B7280);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ai-suggestion-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--ej-text-primary, #1F2937);
+  background: var(--ej-bg-surface, #fff);
+  border: 1.5px solid var(--ej-border-light, #E5E7EB);
+  border-radius: var(--ej-border-radius, 8px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ai-suggestion-card:hover {
+  border-color: var(--ej-color-impulse, #FF6B35);
+  background: rgba(255, 107, 53, 0.04);
+  transform: translateX(4px);
+}
+
+.ai-suggestion-card:active {
+  transform: translateX(2px);
+  background: rgba(255, 107, 53, 0.08);
+}
+
+/* ==========================================================================
+   AI Comparison Panel (original vs optimized)
+   ========================================================================== */
+
+.ai-comparison {
+  margin-top: 0.75rem;
+  border: 1.5px solid var(--ej-border-light, #E5E7EB);
+  border-radius: var(--ej-border-radius, 8px);
+  overflow: hidden;
+}
+
+.ai-comparison__column {
+  padding: 1rem;
+}
+
+.ai-comparison__column + .ai-comparison__column {
+  border-top: 1px solid var(--ej-border-light, #E5E7EB);
+}
+
+.ai-comparison__column--new {
+  background: rgba(255, 107, 53, 0.03);
+}
+
+.ai-comparison__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-text-secondary, #6B7280);
+  margin-bottom: 0.5rem;
+}
+
+.ai-comparison__column--new .ai-comparison__label {
+  color: var(--ej-color-impulse, #FF6B35);
+}
+
+.ai-comparison__text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ej-text-primary, #1F2937);
+  white-space: pre-wrap;
+}
+
+.ai-comparison__actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--ej-border-light, #E5E7EB);
+  background: var(--ej-bg-subtle, #F9FAFB);
+}
+
+.ai-comparison__apply {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--ej-color-impulse, #FF6B35);
+  border: none;
+  border-radius: var(--ej-border-radius, 8px);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ai-comparison__apply:hover {
+  background: var(--ej-color-impulse-dark, #E5582E);
+}
+
+.ai-comparison__discard {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ej-text-secondary, #6B7280);
+  background: transparent;
+  border: 1px solid var(--ej-border-light, #E5E7EB);
+  border-radius: var(--ej-border-radius, 8px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ai-comparison__discard:hover {
+  background: var(--ej-bg-subtle, #F9FAFB);
+  color: var(--ej-text-primary, #1F2937);
+}
+
+/* ==========================================================================
+   AI Error
+   ========================================================================== */
+
+.ai-error {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--ej-color-danger, #DC3545);
+  background: rgba(220, 53, 69, 0.06);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  border-radius: var(--ej-border-radius, 8px);
+  margin-top: 0.5rem;
+}
+
+/* ==========================================================================
+   AI Undo Link
+   ========================================================================== */
+
+.ai-undo {
+  margin-top: 0.5rem;
+}
+
+.ai-undo__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--ej-text-secondary, #6B7280);
+  background: transparent;
+  border: 1px dashed var(--ej-border-light, #E5E7EB);
+  border-radius: var(--ej-border-radius, 8px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ai-undo__link:hover {
+  color: var(--ej-color-impulse, #FF6B35);
+  border-color: var(--ej-color-impulse, #FF6B35);
+}
+
+/* ==========================================================================
+   Premium Form Tip (contextual hint under section header)
+   ========================================================================== */
+
+.premium-form__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ej-text-secondary, #6B7280);
+  background: rgba(255, 107, 53, 0.04);
+  border-left: 3px solid var(--ej-color-impulse, #FF6B35);
+  border-radius: 0 var(--ej-border-radius, 8px) var(--ej-border-radius, 8px) 0;
+  margin-bottom: 0.75rem;
+}
+
+.premium-form__tip svg,
+.premium-form__tip img {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}

@@ -60,6 +60,9 @@ modal-actions:
 # Marca Profesional con IA Nativa — botones IA inline
 brand_professional:
   version: 1.x
+  css:
+    theme:
+      css/brand-professional.css: {}
   js:
     js/brand-professional.js: {}
   dependencies:

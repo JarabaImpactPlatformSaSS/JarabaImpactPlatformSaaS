@@ -58,6 +58,19 @@
         </button>
       </div>
     </div>
+  {% elseif not profile.is_public %}
+    <div class="cv-builder__share cv-builder__share--private">
+      <div class="cv-builder__share-header">
+        {{ jaraba_icon('ui', 'lock', { variant: 'duotone', size: '24px', color: 'corporate' }) }}
+        <div>
+          <h3 class="cv-builder__share-title">{{ 'Shareable Profile'|t }}</h3>
+          <p class="cv-builder__share-desc">{{ 'Your profile is currently private. Enable public visibility to generate a shareable link that recruiters can access.'|t }}</p>
+        </div>
+      </div>
+      <a href="/my-profile/privacy" class="cv-builder__share-activate">
+        {{ 'Enable public profile'|t }}
+      </a>
+    </div>
   {% endif %}
 
   {# --- Templates Grid --- #}
@@ -95,7 +108,10 @@
     <div class="cv-builder__empty">
       {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
       <p>{{ 'Complete your professional profile to automatically generate your CV with ATS-optimized templates.'|t }}</p>
-      <a href="/my-profile/edit" class="btn btn-primary">
+      <a href="{{ path('jaraba_candidate.my_profile.personal') }}" class="btn btn-primary"
+         data-slide-panel="profile-section"
+         data-slide-panel-url="{{ path('jaraba_candidate.my_profile.personal') }}"
+         data-slide-panel-title="{% trans %}Datos Personales{% endtrans %}">
         {{ 'Complete my profile'|t }}
       </a>
     </div>
