@@ -57,3 +57,33 @@ modal-actions:
     - core/drupal.dialog.ajax
     - ecosistema_jaraba_core/modal-system
 
+# Marca Profesional con IA Nativa — botones IA inline
+brand_professional:
+  version: 1.x
+  js:
+    js/brand-professional.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - ecosistema_jaraba_core/premium-forms
+
+# CV Builder page — Premium template selector
+cv_builder:
+  version: 1.x
+  css:
+    theme:
+      css/cv-builder.css: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_core/global
+
+# CV Template styles — Preview & PDF rendering
+cv_styles:
+  version: 1.x
+  css:
+    theme:
+      css/cv-styles.css: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_core/global
+

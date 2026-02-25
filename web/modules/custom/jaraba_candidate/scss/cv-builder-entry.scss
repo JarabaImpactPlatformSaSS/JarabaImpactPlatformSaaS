@@ -1,0 +1,11 @@
+/**
+ * @file
+ * Entry point SCSS for CV Builder page.
+ *
+ * DIRECTRIZ: Federated Design Tokens — Consume solo var(--ej-*) del core.
+ *
+ * COMPILACIÓN:
+ * npx sass scss/cv-builder-entry.scss:css/cv-builder.css --style=compressed
+ */
+
+@use 'cv-builder';

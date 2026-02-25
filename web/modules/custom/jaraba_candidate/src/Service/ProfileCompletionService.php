@@ -19,7 +19,7 @@ class ProfileCompletionService {
    */
   private const SECTIONS = [
     'personal_info' => ['weight' => 20, 'required' => TRUE, 'fields' => ['first_name', 'last_name', 'email', 'phone']],
-    'professional_summary' => ['weight' => 15, 'required' => TRUE, 'fields' => ['summary']],
+    'professional_summary' => ['weight' => 15, 'required' => TRUE, 'fields' => ['headline', 'summary']],
     'experience' => ['weight' => 20, 'required' => TRUE, 'entity_type' => 'candidate_experience'],
     'education' => ['weight' => 15, 'required' => TRUE, 'entity_type' => 'candidate_education'],
     'skills' => ['weight' => 15, 'required' => TRUE, 'entity_type' => 'candidate_skill'],
@@ -260,8 +260,8 @@ class ProfileCompletionService {
    */
   protected function getSectionLabel(string $section): string {
     return match ($section) {
-      'personal_info' => 'Información Personal',
-      'professional_summary' => 'Resumen Profesional',
+      'personal_info' => 'Datos Personales',
+      'professional_summary' => 'Marca Profesional',
       'experience' => 'Experiencia Laboral',
       'education' => 'Formación Académica',
       'skills' => 'Habilidades y Competencias',
@@ -278,7 +278,7 @@ class ProfileCompletionService {
   protected function getSectionDescription(string $section): string {
     return match ($section) {
       'personal_info' => 'Completa tu nombre, email y teléfono de contacto.',
-      'professional_summary' => 'Escribe un breve resumen de tu perfil profesional.',
+      'professional_summary' => 'Define tu titular profesional y escribe un resumen con ayuda de la IA.',
       'experience' => 'Añade tu experiencia laboral relevante.',
       'education' => 'Indica tu formación académica.',
       'skills' => 'Evalúa tus habilidades técnicas y blandas.',

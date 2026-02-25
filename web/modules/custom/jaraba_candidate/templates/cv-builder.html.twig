@@ -4,7 +4,7 @@
  * CV Builder — Premium page for creating and managing CVs.
  *
  * Variables:
- * - profile: Array with profile data (full_name, completion).
+ * - profile: Array with profile data (full_name, completion, share_url).
  * - templates: Array of template objects (id, name, description, preview).
  */
 #}
@@ -17,21 +17,52 @@
       {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
       <div class="cv-builder__header-text">
         <h1>{{ 'CV Builder'|t }}</h1>
-        <p>{{ 'Crea un CV profesional optimizado para los sistemas ATS'|t }}</p>
+        <p>{{ 'Create your professional CV and download it as a PDF ready to send to any job offer.'|t }}</p>
       </div>
     </div>
 
     {% if profile %}
       <div class="cv-builder__profile-badge">
         <span class="cv-builder__profile-name">{{ profile.full_name }}</span>
-        <span class="cv-builder__profile-completion">{{ profile.completion }}% {{ 'completado'|t }}</span>
+        <span class="cv-builder__profile-completion">{{ profile.completion }}% {{ 'completed'|t }}</span>
       </div>
     {% endif %}
   </div>
 
+  {# --- Shareable Profile Section --- #}
+  {% if profile.share_url %}
+    <div class="cv-builder__share">
+      <div class="cv-builder__share-header">
+        {{ jaraba_icon('ui', 'share', { variant: 'duotone', size: '24px', color: 'innovation' }) }}
+        <div>
+          <h3 class="cv-builder__share-title">{{ 'Shareable Profile'|t }}</h3>
+          <p class="cv-builder__share-desc">{{ 'Share this link with recruiters so they can view your complete professional profile.'|t }}</p>
+        </div>
+      </div>
+      <div class="cv-builder__share-url">
+        <input
+          type="text"
+          id="cv-share-url"
+          class="cv-builder__share-input"
+          value="{{ profile.share_url }}"
+          readonly
+          aria-label="{{ 'Public profile URL'|t }}"
+        />
+        <button
+          type="button"
+          class="cv-builder__share-copy"
+          onclick="navigator.clipboard.writeText(document.getElementById('cv-share-url').value).then(function(){var b=event.target;b.textContent='{{ 'Copied!'|t }}';setTimeout(function(){b.textContent='{{ 'Copy'|t }}'},2000)})"
+          aria-label="{{ 'Copy link'|t }}"
+        >
+          {{ 'Copy'|t }}
+        </button>
+      </div>
+    </div>
+  {% endif %}
+
   {# --- Templates Grid --- #}
   {% if templates is not empty %}
-    <h2 class="cv-builder__title">{{ 'Elige una plantilla'|t }}</h2>
+    <h2 class="cv-builder__title">{{ 'Choose a template'|t }}</h2>
     <div class="cv-builder__templates">
       {% for template in templates %}
         <div class="cv-template-card">
@@ -50,10 +81,10 @@
           {% endif %}
           <div class="cv-template-card__actions">
             <a href="/my-profile/cv/preview/{{ template.id }}" class="cv-template-card__preview">
-              {{ 'Vista previa'|t }}
+              {{ 'Preview'|t }}
             </a>
             <a href="/my-profile/cv/download/pdf?template={{ template.id }}" class="cv-template-card__download">
-              {{ 'Descargar PDF'|t }}
+              {{ 'Download PDF'|t }}
             </a>
           </div>
         </div>
@@ -63,11 +94,60 @@
     {# --- Empty State --- #}
     <div class="cv-builder__empty">
       {{ jaraba_icon('business', 'diagnostic', { variant: 'duotone', size: '48px', color: 'corporate' }) }}
-      <p>{{ 'Completa tu perfil profesional para generar tu CV automáticamente con plantillas optimizadas para ATS.'|t }}</p>
+      <p>{{ 'Complete your professional profile to automatically generate your CV with ATS-optimized templates.'|t }}</p>
       <a href="/my-profile/edit" class="btn btn-primary">
-        {{ 'Completar mi perfil'|t }}
+        {{ 'Complete my profile'|t }}
       </a>
     </div>
   {% endif %}
+
+  {# --- Help Section: How to use your CV --- #}
+  <div class="cv-builder__help">
+    <details class="cv-builder__help-details">
+      <summary class="cv-builder__help-summary">
+        {{ jaraba_icon('ui', 'help', { variant: 'duotone', size: '20px', color: 'corporate' }) }}
+        {{ 'How to use your CV in job applications'|t }}
+      </summary>
+      <div class="cv-builder__help-content">
+        <div class="cv-builder__help-steps">
+
+          <div class="cv-builder__help-step">
+            <span class="cv-builder__help-step-num">1</span>
+            <div>
+              <strong>{{ 'Choose and download'|t }}</strong>
+              <p>{{ 'Select the template that best fits the position you are applying for. The Classic template is recommended for corporate sectors, Modern for tech, and Creative for design positions.'|t }}</p>
+            </div>
+          </div>
+
+          <div class="cv-builder__help-step">
+            <span class="cv-builder__help-step-num">2</span>
+            <div>
+              <strong>{{ 'Submit to job offers'|t }}</strong>
+              <p>{{ 'Upload the generated PDF to the job application forms of platforms like InfoJobs, Indeed, LinkedIn, or any company portal.'|t }}</p>
+            </div>
+          </div>
+
+          <div class="cv-builder__help-step">
+            <span class="cv-builder__help-step-num">3</span>
+            <div>
+              <strong>{{ 'Share your profile'|t }}</strong>
+              <p>{{ 'Use the shareable link above so recruiters can view your complete and updated profile directly on the platform.'|t }}</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="cv-builder__help-tips">
+          <h4>{{ 'Tips for ATS (Applicant Tracking Systems)'|t }}</h4>
+          <ul>
+            <li>{{ 'ATS systems automatically scan CVs to filter candidates. Our templates are designed to be readable by these systems.'|t }}</li>
+            <li>{{ 'The Classic template has the highest ATS compatibility (95-100%) because it uses a simple, single-column format without complex graphics.'|t }}</li>
+            <li>{{ 'Include relevant keywords from the job offer in your professional summary and experience.'|t }}</li>
+            <li>{{ 'Keep your profile updated: the CV is generated automatically from your profile data.'|t }}</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
 
 </div>

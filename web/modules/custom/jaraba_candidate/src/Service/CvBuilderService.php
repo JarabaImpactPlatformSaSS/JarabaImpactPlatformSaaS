@@ -99,7 +99,7 @@ class CvBuilderService
         try {
             /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
             $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
-            $gateResult = $featureGate->check($profile->getOwnerId(), 'cv_builder');
+            $gateResult = $featureGate->check((int) $profile->getOwnerId(), 'cv_builder');
             if (!$gateResult->isAllowed()) {
                 // Fire upgrade trigger (Plan Elevación Empleabilidad v1 — Fase 5).
                 try {
@@ -141,7 +141,7 @@ class CvBuilderService
         try {
             /** @var \Drupal\ecosistema_jaraba_core\Service\EmployabilityFeatureGateService $featureGate */
             $featureGate = \Drupal::service('ecosistema_jaraba_core.employability_feature_gate');
-            $featureGate->recordUsage($profile->getOwnerId(), 'cv_builder');
+            $featureGate->recordUsage((int) $profile->getOwnerId(), 'cv_builder');
         } catch (\Exception $e) {
             // Service not available — skip recording.
         }
@@ -169,7 +169,7 @@ class CvBuilderService
      */
     public function collectCvData(CandidateProfileInterface $profile): array
     {
-        $user_id = $profile->getOwnerId();
+        $user_id = (int) $profile->getOwnerId();
 
         // Get experience records (resilient to missing entity type).
         $experiences = [];
@@ -194,7 +194,7 @@ class CvBuilderService
         // Get skills.
         $skills = [];
         try {
-            $skills = $this->profileService->getSkills($profile->id());
+            $skills = $this->profileService->getSkills((int) $profile->id());
         } catch (\Exception $e) {
             // Skills method may fail.
         }
@@ -210,7 +210,7 @@ class CvBuilderService
         // Get languages.
         $languages = [];
         try {
-            $languages = $this->getLanguages($profile->id());
+            $languages = $this->getLanguages((int) $profile->id());
         } catch (\Exception $e) {
             // Language entity may not exist.
         }
@@ -348,27 +348,64 @@ class CvBuilderService
     }
 
     /**
-     * Wraps HTML for PDF generation with print-friendly styles.
+     * Wraps HTML for PDF generation with full CV template styles.
+     *
+     * Reads compiled cv-styles.css and embeds it inline since Dompdf
+     * cannot load external stylesheets. Resolves CSS var() to fallback
+     * values because Dompdf does not support custom properties.
      */
     protected function wrapForPdf(string $html): string
     {
-        $styles = <<<CSS
+        // Read compiled CV template CSS.
+        $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_candidate');
+        $cssFile = DRUPAL_ROOT . '/' . $module_path . '/css/cv-styles.css';
+        $cvStyles = '';
+        if (file_exists($cssFile)) {
+            $cvStyles = file_get_contents($cssFile);
+            // Dompdf does not support CSS var() — resolve to fallback values.
+            $cvStyles = preg_replace(
+                '/var\(--[a-zA-Z0-9_-]+,\s*([^)]+)\)/',
+                '$1',
+                $cvStyles
+            );
+            // Remove source map reference.
+            $cvStyles = preg_replace('/\/\*#\s*sourceMappingURL=.*?\*\//', '', $cvStyles);
+        }
+
+        $pdfOverrides = <<<CSS
 @page {
   size: A4;
-  margin: 20mm 15mm;
+  margin: 15mm 12mm;
 }
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11pt;
-  line-height: 1.4;
-  color: #333;
+  margin: 0;
+  padding: 0;
 }
-h1 { font-size: 24pt; margin-bottom: 5mm; }
-h2 { font-size: 14pt; margin-top: 8mm; border-bottom: 1px solid #ddd; }
-h3 { font-size: 12pt; }
-.section { margin-bottom: 8mm; }
-.experience-item, .education-item { margin-bottom: 5mm; }
-.skills-list { columns: 2; }
+/* Override web-only styles for print/PDF */
+.cv-template {
+  max-width: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+  border: none;
+}
+.cv-header {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+/* Dompdf does not support grid — fallback for languages */
+.cv-languages {
+  display: block;
+}
+.cv-lang-item {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+/* Dompdf does not support backdrop-filter */
+.cv-header__links a {
+  background: rgba(255, 255, 255, 0.2);
+}
 CSS;
 
         return <<<HTML
@@ -376,7 +413,8 @@ CSS;
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <style>{$styles}</style>
+  <style>{$cvStyles}</style>
+  <style>{$pdfOverrides}</style>
 </head>
 <body>
 {$html}
