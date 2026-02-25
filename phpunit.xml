@@ -15,8 +15,8 @@
     <!-- Base URL para tests funcionales (Lando internal) -->
     <env name="SIMPLETEST_BASE_URL" value="http://jarabasaas.lndo.site"/>
 
-    <!-- Conexión a la base de datos de test (SQLite para Kernel tests) -->
-    <env name="SIMPLETEST_DB" value="sqlite://localhost//tmp/test.sqlite"/>
+    <!-- Conexión a la base de datos de test (MariaDB via Docker) -->
+    <env name="SIMPLETEST_DB" value="mysql://drupal:drupal@127.0.0.1:3306/drupal_jaraba_test"/>
 
     <!-- Directorio para browser output -->
     <env name="BROWSERTEST_OUTPUT_DIRECTORY" value=""/>

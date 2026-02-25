@@ -30,7 +30,7 @@ services:
   jaraba_andalucia_ei.solicitud_triage:
     class: Drupal\jaraba_andalucia_ei\Service\SolicitudTriageService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@logger.channel.jaraba_andalucia_ei'
 
   jaraba_andalucia_ei.expediente:

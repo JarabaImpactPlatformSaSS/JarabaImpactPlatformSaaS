@@ -33,7 +33,7 @@ class SolicitudTriageService
     ];
 
     public function __construct(
-        private AiProviderPluginManager $aiProvider,
+        private ?AiProviderPluginManager $aiProvider,
         private LoggerInterface $logger,
     ) {
     }
@@ -49,6 +49,17 @@ class SolicitudTriageService
      */
     public function triageSolicitud(SolicitudEiInterface $solicitud): array
     {
+        if ($this->aiProvider === NULL) {
+            $this->logger->warning('AI provider not available for triage of @nombre', [
+                '@nombre' => $solicitud->getNombre(),
+            ]);
+            return [
+                'score' => NULL,
+                'justificacion' => 'Evaluación IA no disponible. Requiere revisión manual.',
+                'recomendacion' => 'revisar',
+            ];
+        }
+
         $prompt = $this->buildTriagePrompt($solicitud);
         $systemPrompt = $this->getSystemPrompt();
 
