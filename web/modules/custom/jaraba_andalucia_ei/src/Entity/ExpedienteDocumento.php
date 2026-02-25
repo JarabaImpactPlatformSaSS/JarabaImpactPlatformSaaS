@@ -27,9 +27,9 @@ use Drupal\user\EntityOwnerTrait;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_andalucia_ei\ExpedienteDocumentoListBuilder",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "add" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_andalucia_ei\Form\ExpedienteDocumentoForm",
+ *       "add" = "Drupal\jaraba_andalucia_ei\Form\ExpedienteDocumentoForm",
+ *       "edit" = "Drupal\jaraba_andalucia_ei\Form\ExpedienteDocumentoForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\jaraba_andalucia_ei\ExpedienteDocumentoAccessControlHandler",

@@ -1,0 +1,299 @@
+/**
+ * @file
+ * SCSS para la pagina de Guia del Participante (lead magnet).
+ *
+ * Split layout: highlights (60%) + form card (40%).
+ * Reutiliza tokens --aei-* de _dashboard.scss.
+ */
+
+// =============================================================================
+// GUIA LAYOUT
+// =============================================================================
+
+.aei-guia {
+  padding: 4rem 0;
+  background: var(--aei-bg-body);
+
+  &__container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  // Main section: split layout
+  & > .aei-guia__container {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  &__eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--aei-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    font-family: var(--aei-font-headings);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 800;
+    color: var(--aei-corporate);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: var(--aei-text-muted);
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+  }
+
+  // Highlights list
+  &__highlights {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--aei-text);
+
+    span {
+      flex: 1;
+    }
+  }
+
+  // Form card
+  &__form-wrapper {
+    position: sticky;
+    top: 2rem;
+  }
+
+  &__form-card {
+    background: var(--aei-surface);
+    border-radius: var(--aei-radius);
+    border: 1px solid var(--aei-border);
+    box-shadow: var(--aei-shadow-card);
+    padding: 2rem;
+  }
+
+  &__form-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--aei-corporate);
+    margin: 0 0 0.5rem;
+  }
+
+  &__form-desc {
+    font-size: 0.9rem;
+    color: var(--aei-text-muted);
+    margin: 0 0 1.5rem;
+  }
+
+  // Form elements
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--aei-corporate);
+  }
+
+  &__input {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--aei-border);
+    border-radius: 10px;
+    background: var(--aei-bg-body);
+    color: var(--aei-text);
+    font-size: 0.9rem;
+    font-family: var(--aei-font);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &::placeholder {
+      color: var(--aei-text-muted);
+      opacity: 0.6;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--aei-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--aei-primary) 12%, transparent);
+    }
+  }
+
+  &__checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--aei-text-muted);
+    line-height: 1.4;
+  }
+
+  &__checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--aei-primary);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    font-family: var(--aei-font);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
+    margin-top: 0.25rem;
+
+    &:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 40%, transparent);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  &__legal {
+    font-size: 0.7rem;
+    color: var(--aei-text-muted);
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  // Feedback messages
+  &__feedback {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: none;
+
+    &--success {
+      display: block;
+      background: color-mix(in srgb, #10B981 12%, transparent);
+      color: #065F46;
+      border: 1px solid color-mix(in srgb, #10B981 25%, transparent);
+    }
+
+    &--error {
+      display: block;
+      background: color-mix(in srgb, #EF4444 10%, transparent);
+      color: #991B1B;
+      border: 1px solid color-mix(in srgb, #EF4444 25%, transparent);
+    }
+  }
+
+  // CTA section (bottom)
+  &__cta {
+    padding: 3rem 0;
+    background: linear-gradient(135deg,
+      var(--aei-corporate) 0%,
+      var(--aei-azul-profundo) 100%);
+    text-align: center;
+  }
+
+  &__cta-title {
+    font-family: var(--aei-font-headings);
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 0.5rem;
+  }
+
+  &__cta-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 1.5rem;
+  }
+
+  &__cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2rem;
+    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    color: #fff;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
+
+    &:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 40%, transparent);
+    }
+  }
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: 768px) {
+  .aei-guia {
+    & > .aei-guia__container {
+      grid-template-columns: 1fr;
+    }
+
+    &__form-wrapper {
+      position: static;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .aei-guia {
+    padding: 2rem 0;
+
+    &__container {
+      padding: 0 1rem;
+    }
+
+    &__form-card {
+      padding: 1.5rem;
+    }
+  }
+}

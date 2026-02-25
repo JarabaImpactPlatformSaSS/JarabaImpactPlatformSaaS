@@ -1,0 +1,662 @@
+/**
+ * @file
+ * SCSS para la landing page de conversion Andalucia +ei.
+ *
+ * 7 secciones: Hero > Stats > Features > Content > Testimonials > FAQ > CTA
+ * Reutiliza tokens --aei-* de _dashboard.scss.
+ */
+
+// =============================================================================
+// LANDING SHARED
+// =============================================================================
+
+.aei-landing__container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.aei-landing__section-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.aei-landing__eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--aei-primary);
+  margin-bottom: 0.5rem;
+}
+
+.aei-landing__section-title {
+  font-family: var(--aei-font-headings);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--aei-corporate);
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+// =============================================================================
+// HERO — 2 columns (text + visual)
+// =============================================================================
+
+.aei-landing__hero {
+  padding: 5rem 0 4rem;
+  background: linear-gradient(135deg,
+    var(--aei-corporate) 0%,
+    var(--aei-azul-profundo) 50%,
+    color-mix(in srgb, var(--aei-corporate) 80%, black) 100%);
+
+  .aei-landing__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .aei-landing__eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.aei-landing__hero-content {
+  color: #fff;
+}
+
+.aei-landing__title {
+  font-family: var(--aei-font-headings);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.aei-landing__subtitle {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 2rem;
+  line-height: 1.6;
+}
+
+.aei-landing__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aei-landing__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  border: none;
+
+  &--primary {
+    background: linear-gradient(135deg, var(--aei-primary), #E67935);
+    color: #fff;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--aei-primary) 30%, transparent);
+
+    &:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--aei-primary) 40%, transparent);
+    }
+  }
+
+  &--secondary {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--large {
+    padding: 1rem 2.5rem;
+    font-size: 1.05rem;
+  }
+}
+
+.aei-landing__hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aei-landing__hero-placeholder {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--aei-primary) 20%, transparent),
+    color-mix(in srgb, var(--aei-secondary) 15%, transparent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: aei-float 4s ease-in-out infinite;
+}
+
+// =============================================================================
+// STATS — 4-column grid
+// =============================================================================
+
+.aei-landing__stats {
+  padding: 3rem 0;
+  background: var(--aei-surface);
+}
+
+.aei-landing__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.aei-landing__stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.90) 100%);
+  border-radius: var(--aei-radius);
+  border: 1px solid var(--aei-border);
+  text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--aei-shadow-card-hover);
+  }
+}
+
+.aei-landing__stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--aei-primary) 12%, transparent),
+    color-mix(in srgb, var(--aei-secondary) 8%, transparent));
+}
+
+.aei-landing__stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--aei-corporate);
+  font-family: var(--aei-font-headings);
+}
+
+.aei-landing__stat-label {
+  font-size: 0.8rem;
+  color: var(--aei-text-muted);
+  font-weight: 500;
+}
+
+// =============================================================================
+// FEATURES — 3-column cards
+// =============================================================================
+
+.aei-landing__features {
+  padding: 4rem 0;
+  background: var(--aei-bg-body);
+}
+
+.aei-landing__features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.aei-landing__feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  background: var(--aei-surface);
+  border-radius: var(--aei-radius);
+  border: 1px solid var(--aei-border);
+  box-shadow: var(--aei-shadow-sm);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--aei-shadow-card-hover);
+  }
+}
+
+.aei-landing__feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--aei-primary) 12%, transparent),
+    color-mix(in srgb, var(--aei-secondary) 8%, transparent));
+}
+
+.aei-landing__feature-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--aei-corporate);
+  margin: 0;
+}
+
+.aei-landing__feature-desc {
+  font-size: 0.9rem;
+  color: var(--aei-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+// =============================================================================
+// CONTENT — 2 columns (steps 60% + eligibility 40%)
+// =============================================================================
+
+.aei-landing__content {
+  padding: 4rem 0;
+  background: var(--aei-surface);
+}
+
+.aei-landing__content-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.aei-landing__content-text {
+  .aei-landing__eyebrow {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .aei-landing__section-title {
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+}
+
+.aei-landing__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.aei-landing__step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.aei-landing__step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--aei-primary), #E67935);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.aei-landing__step-content {
+  flex: 1;
+}
+
+.aei-landing__step-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--aei-corporate);
+  margin: 0 0 0.25rem;
+}
+
+.aei-landing__step-desc {
+  font-size: 0.875rem;
+  color: var(--aei-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+// Eligibility card
+.aei-landing__eligibility-card {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.90) 100%);
+  border-radius: var(--aei-radius);
+  border: 1px solid var(--aei-border);
+  box-shadow: var(--aei-shadow-card);
+  padding: 1.75rem;
+  position: sticky;
+  top: 2rem;
+}
+
+.aei-landing__eligibility-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--aei-corporate);
+  margin: 0 0 1rem;
+}
+
+.aei-landing__eligibility-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aei-landing__eligibility-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--aei-text);
+
+  span {
+    flex: 1;
+  }
+}
+
+.aei-landing__eligibility-note {
+  font-size: 0.8rem;
+  color: var(--aei-text-muted);
+  line-height: 1.5;
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--aei-border);
+}
+
+// =============================================================================
+// TESTIMONIALS — 3-column quote cards
+// =============================================================================
+
+.aei-landing__testimonials {
+  padding: 4rem 0;
+  background: var(--aei-bg-body);
+}
+
+.aei-landing__testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.aei-landing__testimonial-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.75rem;
+  background: var(--aei-surface);
+  border-radius: var(--aei-radius);
+  border: 1px solid var(--aei-border);
+  box-shadow: var(--aei-shadow-sm);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--aei-shadow-card-hover);
+  }
+}
+
+.aei-landing__testimonial-quote {
+  font-size: 0.95rem;
+  color: var(--aei-text);
+  line-height: 1.65;
+  margin: 0;
+  font-style: italic;
+  position: relative;
+  padding-left: 1rem;
+  border-left: 3px solid var(--aei-primary);
+}
+
+.aei-landing__testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.aei-landing__testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--aei-corporate), var(--aei-azul-profundo));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.aei-landing__testimonial-name {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--aei-corporate);
+}
+
+.aei-landing__testimonial-role {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--aei-text-muted);
+}
+
+// =============================================================================
+// FAQ — Accordion with <details>/<summary>
+// =============================================================================
+
+.aei-landing__faq {
+  padding: 4rem 0;
+  background: var(--aei-surface);
+}
+
+.aei-landing__faq-list {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aei-landing__faq-item {
+  background: var(--aei-bg-body);
+  border: 1px solid var(--aei-border);
+  border-radius: var(--aei-radius-sm);
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+
+  &[open] {
+    border-color: var(--aei-primary);
+  }
+}
+
+.aei-landing__faq-question {
+  padding: 1rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--aei-corporate);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  user-select: none;
+  transition: color 0.2s ease;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--aei-text-muted);
+    border-bottom: 2px solid var(--aei-text-muted);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  [open] > & {
+    color: var(--aei-primary);
+
+    &::after {
+      transform: rotate(-135deg);
+    }
+  }
+
+  &:hover {
+    color: var(--aei-primary);
+  }
+}
+
+.aei-landing__faq-answer {
+  padding: 0 1.25rem 1rem;
+  font-size: 0.9rem;
+  color: var(--aei-text-muted);
+  line-height: 1.65;
+}
+
+// =============================================================================
+// CTA FINAL — Conversion section
+// =============================================================================
+
+.aei-landing__cta-section {
+  padding: 4rem 0;
+  background: linear-gradient(135deg,
+    var(--aei-corporate) 0%,
+    var(--aei-azul-profundo) 100%);
+  text-align: center;
+}
+
+.aei-landing__cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.aei-landing__cta-title {
+  font-family: var(--aei-font-headings);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.75rem;
+}
+
+.aei-landing__cta-subtitle {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 2rem;
+}
+
+.aei-landing__cta-actions {
+  margin-bottom: 1.5rem;
+}
+
+.aei-landing__cta-footer {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: 768px) {
+  .aei-landing__hero {
+    padding: 3rem 0;
+
+    .aei-landing__container {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+
+  .aei-landing__hero-visual {
+    display: none;
+  }
+
+  .aei-landing__actions {
+    justify-content: center;
+  }
+
+  .aei-landing__stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .aei-landing__features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aei-landing__content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aei-landing__eligibility-card {
+    position: static;
+  }
+
+  .aei-landing__testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .aei-landing__container {
+    padding: 0 1rem;
+  }
+
+  .aei-landing__stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aei-landing__hero {
+    padding: 2rem 0;
+  }
+}
+
+// =============================================================================
+// REDUCED MOTION
+// =============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .aei-landing__hero-placeholder {
+    animation: none;
+  }
+
+  .aei-landing__faq-question::after {
+    transition: none;
+  }
+}
