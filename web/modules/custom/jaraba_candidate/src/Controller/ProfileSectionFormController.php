@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_candidate\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Access\CsrfRequestHeaderAccessCheck;
 use Drupal\Core\Access\CsrfTokenGenerator;
+use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,7 +99,7 @@ class ProfileSectionFormController extends ControllerBase {
 
     // Validate CSRF token.
     $token = $request->headers->get('X-CSRF-Token', '');
-    if (!$this->csrfToken->validate($token, 'session')) {
+    if (!$this->csrfToken->validate($token, CsrfRequestHeaderAccessCheck::TOKEN_KEY)) {
       throw new AccessDeniedHttpException('Invalid CSRF token.');
     }
 
