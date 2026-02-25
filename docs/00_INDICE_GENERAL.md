@@ -4,7 +4,15 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-25
-**Versión:** 94.0.0 (Remediacion Tenant 11 Fases)
+**Versión:** 95.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering)
+
+> **🚀 ELEVACION EMPLEABILIDAD + ANDALUCIA EI PLAN MAESTRO + META-SITE RENDERING** (2026-02-25)
+> - **Contexto:** Sprint de elevacion de 3 verticales y rendering multi-tenant. Perfil de candidato con formularios premium, Andalucia EI con portal completo de participante, y meta-sitios con branding tenant-aware.
+> - **HAL-01 (Empleabilidad Elevation):** `CandidateProfileForm` premium con 6 secciones y labels en espanol. `ProfileSectionForm` generico para CRUD slide-panel (education, experience, language). Campo photo migrado a image type (update_10004). Campos date migrados a datetime (update_10005). 5 CV preview PNGs. Seccion idiomas con ruta dedicada. `ProfileCompletionService` refactorizado con entity queries. `profile_section_manager.js` para delete confirmation.
+> - **HAL-02 (Andalucia EI Plan Maestro):** 8 fases implementadas: P0/P1 fixes (AiMentorshipTracker, StoExportService, tenant isolation, DI), 11 bloques Page Builder verticales con config YAMLs + templates, landing conversion `/andalucia-ei/programa` (Zero Region + OG + JSON-LD), portal participante `/andalucia-ei/mi-participacion` (health gauge, timeline, training, badges, PDF), `ExpedienteDocumento` entity (19 categorias, vault cifrado, revision IA, firmas digitales, STO compliance), mensajeria integration (CONTEXT_ANDALUCIA_EI), AI automation (CopilotContextProvider, AdaptiveDifficultyEngine, 4 nudges proactivos), SEO (sitemap, lead magnet guide). 71 ficheros, +6644 lineas.
+> - **HAL-03 (CRM Premium Forms):** 5 formularios CRM (Company, Contact, Opportunity, Activity, PipelineStage) migrados a `PremiumEntityFormBase` con glass-card UI y section navigation pills.
+> - **HAL-04 (Meta-Site Tenant-Aware):** `MetaSiteResolverService` como punto unico de resolucion meta-sitio. Schema.org Organization tenant-aware en `jaraba_geo`. Title tag con `meta_title_suffix`. Header/footer/nav override desde SiteConfig + SitePageTree. Body class `meta-site`. Fix SitePageTree status `1` (int).
+> - **Cross-refs:** Directrices v71.0.0, Arquitectura v72.0.0, Flujo v26.0.0, Indice v95.0.0. Aprendizaje #123.
 
 > **🔧 REMEDIACION TENANT 11 FASES: TENANTBRIDGE + BILLING + ISOLATION + CI** (2026-02-25)
 > - **Contexto:** Remediacion sistematica de la confusion Tenant vs Group detectada en la auditoria profunda. 11 fases ejecutadas en 2 commits (`96dc2bb4` + `0bd84663`). Corrige 14 bugs de billing, acceso cross-tenant, y ausencia de Kernel tests en CI.
@@ -247,6 +255,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **95.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** Bloque HAL-01 a HAL-04: Empleabilidad (CandidateProfileForm premium 6 secciones, ProfileSectionForm CRUD, photo→image, date→datetime, CV PNGs, idiomas, entity queries), Andalucia EI Plan Maestro (8 fases, 11 bloques PB, landing, portal, ExpedienteDocumento, mensajeria, AI, SEO — 71 ficheros), CRM (5 forms a PremiumEntityFormBase), Meta-Site (MetaSiteResolverService, Schema.org, title, header/footer, nav). Reglas de oro #38-#41. Aprendizaje #123. |
 | 2026-02-25 | **94.0.0** | **Remediacion Tenant 11 Fases:** Bloque destacado HAL-01 a HAL-04: TenantBridgeService (4 metodos, services.yml, error handling), Billing Entity Type Fix (14 correcciones, 6 ficheros, QuotaManagerService bridge), Tenant Isolation (access handler con DI, isSameTenant, PathProcessor tenant-aware, TenantContextService enhanced), CI + Tests + Cleanup (kernel-test job MariaDB, 5 tests, rename handler, scripts maintenance). 3 reglas: TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |
 | 2026-02-24 | **93.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de PageContent a rutas /page/{id}. 7 paginas institucionales creadas. Contenido espanol en 5/7 paginas via GrapesJS API. Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |
 | 2026-02-24 | **92.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. Sprint 1: 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (previene type juggling en ownership checks). Sprint 2: 28 plantillas MJML horizontales con mj-preview, postal CAN-SPAM, font Outfit, y paleta de marca unificada (6 colores universales + 4 de grupo reemplazados, semanticos preservados). 5 reglas nuevas: ACCESS-STRICT-001, EMAIL-PREVIEW-001, EMAIL-POSTAL-001, BRAND-FONT-001, BRAND-COLOR-001. Regla de oro #33. Aprendizaje #119. |

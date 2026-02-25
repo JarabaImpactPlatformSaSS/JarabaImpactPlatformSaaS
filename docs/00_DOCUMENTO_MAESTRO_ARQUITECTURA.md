@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v71.0
+## Jaraba Impact Platform SaaS v72.0
 
 **Fecha:** 2026-02-25
-**Versión:** 71.0.0 (Remediacion Tenant 11 Fases)
-**Estado:** Tenant Remediation Complete + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Versión:** 72.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering)
+**Estado:** Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Entity Admin UI 100% + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -166,6 +166,94 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      EMPLEABILIDAD: PERFIL PREMIUM ELEVADO ⭐         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_candidate (v3.0 — Profile Elevation) ⭐                   │
+│   ├── CandidateProfileForm (premium sectioned):                        │
+│   │   ├── 6 secciones: Personal, Profesional, Ubicacion, Preferencias,│
+│   │   │   Presencia Online, Privacidad                                 │
+│   │   ├── HIDDEN_FIELDS: user_id, uid, created, changed, etc.        │
+│   │   ├── FIELD_LABELS: 30+ campos con labels en espanol              │
+│   │   └── Glass-card UI con navigation pills                          │
+│   ├── ProfileSectionForm (generico):                                   │
+│   │   └── CRUD slide-panel para education, experience, language       │
+│   ├── ProfileSectionFormController: add/edit/delete por entity_type   │
+│   │   └── isSlidePanelRequest(): XHR sin _wrapper_format = slide-panel│
+│   ├── Campo photo: entity_reference → image (image_image widget)      │
+│   │   └── update_10004: backup refs, uninstall, install, restore      │
+│   ├── Campos date: timestamp → datetime (education, experience)       │
+│   │   └── update_10005: reinstall entities para cambio de tipo        │
+│   ├── CvController: slide-panel AJAX + PNG preview fallback           │
+│   │   └── 5 CV preview PNGs (classic, creative, minimal, modern, tech)│
+│   ├── Seccion idiomas: ruta + languagesSection() + template           │
+│   ├── ProfileCompletionService: entity queries para secciones         │
+│   │   └── hasRelatedEntities() para experience/education/skills/langs │
+│   └── profile_section_manager.js: delete confirmation + AJAX          │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      ANDALUCIA EI: PLAN MAESTRO 8 FASES ⭐            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_andalucia_ei (v2.0 — Plan Maestro) ⭐                    │
+│   ├── Fase 1: P0/P1 fixes (AiMentorshipTracker, StoExportService,    │
+│   │   tenant isolation, DI, SCSS)                                      │
+│   ├── Fase 2: 11 bloques Page Builder verticales (hero, features,     │
+│   │   content, gallery, faq, testimonials, social_proof, stats,        │
+│   │   pricing, cta, map) + config YAMLs + templates + update hook     │
+│   ├── Fase 3: Landing conversion /andalucia-ei/programa               │
+│   │   └── Zero Region + Open Graph + Schema.org JSON-LD               │
+│   ├── Fase 4: Portal participante /andalucia-ei/mi-participacion      │
+│   │   ├── Health score gauge, timeline expandida con sub-steps        │
+│   │   ├── Training progress, quick actions, achievements/badges       │
+│   │   └── PDF progress report generation                               │
+│   ├── Fase 5: ExpedienteDocumento entity (19 categorias documentales) │
+│   │   ├── Vault cifrado, revision IA, firmas digitales               │
+│   │   └── STO compliance tracking + CRUD + Field UI                   │
+│   ├── Fase 6: Mensajeria integration (CONTEXT_ANDALUCIA_EI,          │
+│   │   MensajeriaIntegrationService, widget)                            │
+│   ├── Fase 7: AI automation (CopilotContextProvider,                  │
+│   │   AdaptiveDifficultyEngine, 4 nudge rules proactivos)             │
+│   └── Fase 8: SEO/marketing (sitemap, lead magnet guide page)        │
+│                                                                         │
+│   Nuevas entidades: ExpedienteDocumento (ContentEntity, 19 categorias)│
+│   Nuevos servicios (7): ExpedienteService, DocumentoRevisionIaService,│
+│   InformeProgresoPdfService, MensajeriaIntegrationService,            │
+│   AdaptiveDifficultyEngine, AndaluciaEiCopilotContextProvider,        │
+│   AndaluciaEiJourneyProgressionService                                 │
+│   71 ficheros, +6644/-531 lineas                                       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      META-SITE: TENANT-AWARE RENDERING ⭐             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_site_builder (MetaSiteResolverService)                    │
+│   ├── resolveFromPageContent(): PageContent → meta-site context       │
+│   ├── buildMetaSiteContext(): SiteConfig + SitePageTree → nav/footer  │
+│   └── Fix: SitePageTree status filter 'published' → 1 (int)          │
+│                                                                         │
+│   📦 jaraba_geo (Schema.org tenant-aware)                             │
+│   └── Organization schema: name/description/logo from SiteConfig     │
+│       cuando la pagina pertenece a un meta-sitio                       │
+│                                                                         │
+│   📦 ecosistema_jaraba_theme (overrides tenant-aware)                 │
+│   ├── preprocess_html: <title> con meta_title_suffix de SiteConfig   │
+│   │   + body class meta-site meta-site-tenant-{id}                    │
+│   ├── preprocess_page: site_name, navigation, header/footer,         │
+│   │   logo, CTA, copyright desde SiteConfig + SitePageTree            │
+│   └── preprocess_page__user: attach skills_manager + section_manager │
+│                                                                         │
+│   📦 jaraba_crm (Premium Forms)                                       │
+│   └── 5 forms migrados a PremiumEntityFormBase: Company, Contact,    │
+│       Opportunity, Activity, PipelineStage (glass-card UI + pills)    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      TENANT BRIDGE: RESOLUCION TENANT↔GROUP ⭐        │
@@ -364,6 +452,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **72.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** 3 ASCII boxes nuevos. Empleabilidad: CandidateProfileForm premium con 6 secciones, ProfileSectionForm generico CRUD, photo entity_reference→image, date timestamp→datetime, 5 CV PNGs, seccion idiomas, ProfileCompletionService con entity queries. Andalucia EI Plan Maestro 8 fases: P0/P1 fixes, 11 bloques PB verticales, landing conversion, portal participante, ExpedienteDocumento (19 categorias), mensajeria integration, AI automation (CopilotContextProvider + AdaptiveDifficultyEngine + 4 nudges), SEO. Meta-Site: MetaSiteResolverService, Schema.org tenant-aware, title tag override, header/footer/nav desde SiteConfig. CRM: 5 forms a PremiumEntityFormBase. 71+ ficheros. Aprendizaje #123. |
 | 2026-02-25 | **71.0.0** | **Remediacion Tenant 11 Fases:** 2 ASCII boxes nuevos: TENANT BRIDGE (TenantBridgeService con 4 metodos, consumidores, error handling, regla TENANT-BRIDGE-001) y TENANT ISOLATION (PageContentAccessControlHandler con DI + isSameTenant(), DefaultEntityAccessControlHandler rename, PathProcessor tenant-aware, TenantContextService enhanced nullable). 14 correcciones billing entity type en 6 ficheros. CI pipeline con kernel-test job (MariaDB 10.11). 5 tests nuevos. Scripts movidos a scripts/maintenance/. Reglas TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |
 | 2026-02-24 | **70.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de entidades PageContent a rutas /page/{id}. 7 páginas institucionales creadas y publicadas con contenido en español via GrapesJS. APIs: PATCH /config (títulos + aliases), POST /publish (publicación), GrapesJS store (contenido). Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |
 | 2026-02-24 | **69.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (ACCESS-STRICT-001). 28 plantillas MJML horizontales con compliance CAN-SPAM completo: mj-preview, postal Juncaril, font Outfit, paleta de marca unificada (#1565C0 como azul primario, 6 colores universales reemplazados). Colores semanticos preservados. Secciones de arquitectura: Access Handlers + Email CAN-SPAM. 5 reglas nuevas. Aprendizaje #119. |
@@ -385,4 +474,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 71.0.0 | **Fecha:** 2026-02-25 | **Autor:** IA Asistente
+> **Versión:** 72.0.0 | **Fecha:** 2026-02-25 | **Autor:** IA Asistente
