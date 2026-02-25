@@ -140,7 +140,14 @@
                 "type:drupal-custom-theme"
             ]
         },
-        "patches": {},
+        "patches": {
+            "league/oauth2-linkedin": {
+                "Migrate to LinkedIn OpenID Connect API (deprecated v1/v2 REST endpoints)": "patches/league-oauth2-linkedin-openid-connect.patch"
+            },
+            "stevenmaguire/oauth2-microsoft": {
+                "Migrate to Microsoft Identity Platform v2.0 + Graph API (deprecated Live API)": "patches/stevenmaguire-oauth2-microsoft-identity-platform-v2.patch"
+            }
+        },
         "composer-exit-on-patch-failure": true,
         "enable-patching": true
     },

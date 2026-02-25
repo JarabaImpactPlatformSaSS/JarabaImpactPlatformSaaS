@@ -1,0 +1,266 @@
+diff --git a/src/Provider/Microsoft.php b/src/Provider/Microsoft.php
+index 1234567..abcdefg 100644
+--- a/src/Provider/Microsoft.php
++++ b/src/Provider/Microsoft.php
+@@ -1,112 +1,93 @@
+ <?php namespace Stevenmaguire\OAuth2\Client\Provider;
+
+-use GuzzleHttp\Psr7\Uri;
+ use League\OAuth2\Client\Provider\AbstractProvider;
+ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+ use League\OAuth2\Client\Token\AccessToken;
++use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
+ use Psr\Http\Message\ResponseInterface;
+
++/**
++ * Microsoft Identity Platform v2.0 provider.
++ */
+ class Microsoft extends AbstractProvider
+ {
++    use BearerAuthorizationTrait;
++
+     /**
+-     * Default scopes
++     * Default scopes - OpenID Connect.
+      *
+      * @var array
+      */
+-    public $defaultScopes = ['wl.basic', 'wl.emails'];
++    public $defaultScopes = ['openid', 'profile', 'email'];
+
+     /**
+-     * Base url for authorization.
++     * Tenant ID. Use 'common' for multi-tenant apps.
+      *
+      * @var string
+      */
+-    protected $urlAuthorize = 'https://login.live.com/oauth20_authorize.srf';
++    protected $tenant = 'common';
+
+     /**
+-     * Base url for access token.
+-     *
+-     * @var string
+-     */
+-    protected $urlAccessToken = 'https://login.live.com/oauth20_token.srf';
+-
+-    /**
+-     * Base url for resource owner.
+-     *
+-     * @var string
+-     */
+-    protected $urlResourceOwnerDetails = 'https://apis.live.net/v5.0/me';
+-
+-    /**
+-     * Get authorization url to begin OAuth flow
+-     *
+-     * @return string
++     * {@inheritdoc}
+      */
+     public function getBaseAuthorizationUrl()
+     {
+-        return $this->urlAuthorize;
++        return 'https://login.microsoftonline.com/' . $this->tenant . '/oauth2/v2.0/authorize';
+     }
+
+     /**
+-     * Get access token url to retrieve token
+-     *
+-     * @return string
++     * {@inheritdoc}
+      */
+     public function getBaseAccessTokenUrl(array $params)
+     {
+-        return $this->urlAccessToken;
++        return 'https://login.microsoftonline.com/' . $this->tenant . '/oauth2/v2.0/token';
+     }
+
+     /**
+-     * Get default scopes
+-     *
+-     * @return array
++     * {@inheritdoc}
++     */
++    public function getResourceOwnerDetailsUrl(AccessToken $token)
++    {
++        return 'https://graph.microsoft.com/v1.0/me';
++    }
++
++    /**
++     * {@inheritdoc}
+      */
+     protected function getDefaultScopes()
+     {
+         return $this->defaultScopes;
+     }
+
+     /**
+-     * Check a provider response for errors.
+-     *
+-     * @throws IdentityProviderException
+-     * @param  ResponseInterface $response
+-     * @return void
++     * {@inheritdoc}
++     */
++    protected function getScopeSeparator()
++    {
++        return ' ';
++    }
++
++    /**
++     * {@inheritdoc}
+      */
+     protected function checkResponse(ResponseInterface $response, $data)
+     {
+         if (isset($data['error'])) {
++            $message = isset($data['error']['message']) ? $data['error']['message'] : (isset($data['error_description']) ? $data['error_description'] : $response->getReasonPhrase());
+             throw new IdentityProviderException(
+-                (isset($data['error']['message']) ? $data['error']['message'] : $response->getReasonPhrase()),
++                $message,
+                 $response->getStatusCode(),
+                 $response
+             );
+         }
+     }
+
+     /**
+-     * Generate a user object from a successful user details request.
+-     *
+-     * @param array $response
+-     * @param AccessToken $token
+-     * @return MicrosoftResourceOwner
++     * {@inheritdoc}
+      */
+     protected function createResourceOwner(array $response, AccessToken $token)
+     {
+         return new MicrosoftResourceOwner($response);
+     }
+-
+-    /**
+-     * Get provider url to fetch user details
+-     *
+-     * @param  AccessToken $token
+-     *
+-     * @return string
+-     */
+-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+-    {
+-        $uri = new Uri($this->urlResourceOwnerDetails);
+-
+-        return (string) Uri::withQueryValue($uri, 'access_token', (string) $token);
+-    }
+ }
+diff --git a/src/Provider/MicrosoftResourceOwner.php b/src/Provider/MicrosoftResourceOwner.php
+index 1234567..abcdefg 100644
+--- a/src/Provider/MicrosoftResourceOwner.php
++++ b/src/Provider/MicrosoftResourceOwner.php
+@@ -1,93 +1,82 @@
+ <?php namespace Stevenmaguire\OAuth2\Client\Provider;
+
+ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+
++/**
++ * Microsoft resource owner using Graph API v1.0 /me response.
++ */
+ class MicrosoftResourceOwner implements ResourceOwnerInterface
+ {
+     /**
+-     * Raw response
+-     *
+      * @var array
+      */
+     protected $response;
+
+     /**
+      * Creates new resource owner.
+-     *
+-     * @param array  $response
+      */
+-    public function __construct(array $response = array())
++    public function __construct(array $response = [])
+     {
+         $this->response = $response;
+     }
+
+     /**
+-     * Get user id
+-     *
+-     * @return string|null
++     * Get user id.
+      */
+     public function getId()
+     {
+-        return $this->response['id'] ?: null;
++        return $this->response['id'] ?? null;
+     }
+
+     /**
+-     * Get user email
+-     *
+-     * @return string|null
++     * Get user email.
+      */
+     public function getEmail()
+     {
+-        return $this->response['emails']['preferred'] ?: null;
++        return $this->response['mail'] ?? $this->response['userPrincipalName'] ?? null;
+     }
+
+     /**
+-     * Get user firstname
+-     *
+-     * @return string|null
++     * Get user firstname.
+      */
+     public function getFirstname()
+     {
+-        return $this->response['first_name'] ?: null;
++        return $this->response['givenName'] ?? null;
+     }
+
+     /**
+-     * Get user lastname
+-     *
+-     * @return string|null
++     * Get user lastname.
+      */
+     public function getLastname()
+     {
+-        return $this->response['last_name'] ?: null;
++        return $this->response['surname'] ?? null;
+     }
+
+     /**
+-     * Get user name
+-     *
+-     * @return string|null
++     * Get user display name.
+      */
+     public function getName()
+     {
+-        return $this->response['name'] ?: null;
++        return $this->response['displayName'] ?? null;
+     }
+
+     /**
+-     * Get user urls
+-     *
+-     * @return string|null
++     * Get user urls.
+      */
+     public function getUrls()
+     {
+-        return isset($this->response['link']) ? $this->response['link'].'/cid-'.$this->getId() : null;
++        return null;
+     }
+
+     /**
+      * Return all of the owner details available as an array.
+-     *
+-     * @return array
+      */
+     public function toArray()
+     {
+         return $this->response;
+     }
+ }
