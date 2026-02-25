@@ -2764,7 +2764,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     };
 
     // Helper: construir link solo si la ruta existe.
-    $make_link = function (string $label, string $route, string $icon_cat, string $icon_name, string $color, array $params = []) use ($resolve) {
+    $make_link = function ($label, string $route, string $icon_cat, string $icon_name, string $color, array $params = []) use ($resolve) {
       $url = $resolve($route, $params);
       if ($url === NULL) {
         return NULL;
