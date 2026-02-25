@@ -107,7 +107,7 @@ class VeriFactuHashChainIntegrityTest extends KernelTestBase {
     $loadedIds = $storage->getQuery()
       ->accessCheck(FALSE)
       ->condition('tenant_id', 1)
-      ->sort('created', 'ASC')
+      ->sort('id', 'ASC')
       ->execute();
 
     $loaded = $storage->loadMultiple($loadedIds);

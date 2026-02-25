@@ -150,7 +150,7 @@ class MessageAuditService implements MessageAuditServiceInterface {
     $entries = $this->database->select('message_audit_log', 'a')
       ->fields('a')
       ->condition('conversation_id', $conversationId)
-      ->orderBy('created_at', 'DESC')
+      ->orderBy('id', 'DESC')
       ->range($offset, $limit)
       ->execute()
       ->fetchAll(\PDO::FETCH_ASSOC);
