@@ -64,7 +64,7 @@ class QuotaManagerServiceTest extends TestCase {
 
     // Set string translation to avoid errors.
     $translation = $this->createMock(TranslationInterface::class);
-    $translation->method('translateString')->willReturnCallback(fn($string) => $string);
+    $translation->method('translateString')->willReturnCallback(fn($string) => $string->getUntranslatedString());
     $this->service->setStringTranslation($translation);
   }
 

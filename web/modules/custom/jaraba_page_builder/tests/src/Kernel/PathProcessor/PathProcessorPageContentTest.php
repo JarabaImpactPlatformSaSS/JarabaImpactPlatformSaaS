@@ -44,6 +44,14 @@ class PathProcessorPageContentTest extends KernelTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
+
+    // page_content has entity_reference field targeting 'group' entity type.
+    // Skip if group entity type is unavailable (missing contrib dependencies).
+    $definitions = \Drupal::entityTypeManager()->getDefinitions();
+    if (!isset($definitions['group'])) {
+      $this->markTestSkipped('Group entity type required for page_content schema.');
+    }
+    $this->installEntitySchema('group');
     $this->installEntitySchema('page_content');
     $this->installConfig(['jaraba_page_builder']);
 

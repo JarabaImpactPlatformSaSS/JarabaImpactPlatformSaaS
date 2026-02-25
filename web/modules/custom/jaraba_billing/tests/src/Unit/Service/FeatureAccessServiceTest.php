@@ -51,7 +51,7 @@ class FeatureAccessServiceTest extends UnitTestCase {
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with(1)->willReturn($tenant);
     $this->entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $this->planValidator->method('hasFeature')->willReturn(TRUE);
@@ -74,7 +74,7 @@ class FeatureAccessServiceTest extends UnitTestCase {
 
     $this->entityTypeManager->method('getStorage')
       ->willReturnMap([
-        ['group', $groupStorage],
+        ['tenant', $groupStorage],
         ['tenant_addon', $addonStorage],
       ]);
 
@@ -96,7 +96,7 @@ class FeatureAccessServiceTest extends UnitTestCase {
 
     $this->entityTypeManager->method('getStorage')
       ->willReturnMap([
-        ['group', $groupStorage],
+        ['tenant', $groupStorage],
         ['tenant_addon', $addonStorage],
       ]);
 
@@ -112,7 +112,7 @@ class FeatureAccessServiceTest extends UnitTestCase {
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->willReturn(NULL);
     $this->entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $this->assertFalse($this->service->canAccess(999, 'some_feature'));

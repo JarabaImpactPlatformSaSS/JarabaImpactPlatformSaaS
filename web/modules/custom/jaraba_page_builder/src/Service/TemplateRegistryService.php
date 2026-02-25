@@ -161,7 +161,7 @@ class TemplateRegistryService
      *
      * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService
      */
-    protected TenantContextService $tenantContext;
+    protected ?TenantContextService $tenantContext;
 
     /**
      * El usuario actual.
@@ -198,7 +198,7 @@ class TemplateRegistryService
         CacheBackendInterface $cache,
         ConfigFactoryInterface $config_factory,
         ModuleHandlerInterface $module_handler,
-        TenantContextService $tenant_context,
+        ?TenantContextService $tenant_context,
         AccountInterface $current_user,
         LoggerChannelFactoryInterface $logger_factory,
         EntityTypeManagerInterface $entity_type_manager
@@ -536,7 +536,7 @@ class TemplateRegistryService
      */
     protected function getTenantPlan(): string
     {
-        $tenant = $this->tenantContext->getCurrentTenant();
+        $tenant = $this->tenantContext?->getCurrentTenant();
 
         if (!$tenant) {
             return 'free';

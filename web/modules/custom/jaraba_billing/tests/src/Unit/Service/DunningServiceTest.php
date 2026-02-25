@@ -178,7 +178,7 @@ class DunningServiceTest extends UnitTestCase {
     $groupStorage = $this->createMock(EntityStorageInterface::class);
     $groupStorage->method('load')->with(42)->willReturn($tenant);
     $this->entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $this->tenantSubscription->expects($this->once())
