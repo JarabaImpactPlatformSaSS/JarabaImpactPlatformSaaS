@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v70.0
+## Jaraba Impact Platform SaaS v71.0
 
-**Fecha:** 2026-02-24
-**Versión:** 70.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
-**Estado:** Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Fecha:** 2026-02-25
+**Versión:** 71.0.0 (Remediacion Tenant 11 Fases)
+**Estado:** Tenant Remediation Complete + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -168,6 +168,61 @@ Integración unificada de soberanía legal y resiliencia técnica:
 ```
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│                      TENANT BRIDGE: RESOLUCION TENANT↔GROUP ⭐        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 ecosistema_jaraba_core (TenantBridge)                             │
+│   ├── TenantBridgeService (ecosistema_jaraba_core.tenant_bridge):     │
+│   │   ├── getTenantForGroup(GroupInterface): TenantInterface          │
+│   │   ├── getGroupForTenant(TenantInterface): GroupInterface          │
+│   │   ├── getTenantIdForGroup(int $groupId): int                     │
+│   │   └── getGroupIdForTenant(int $tenantId): int                    │
+│   ├── Dependencias: entity_type.manager                               │
+│   ├── Error handling: \InvalidArgumentException si entidad no existe  │
+│   │                                                                     │
+│   Consumidores (inyeccion @ecosistema_jaraba_core.tenant_bridge):     │
+│   ├── QuotaManagerService: Group→Tenant para billing quota checks     │
+│   ├── BillingController: Tenant entity para operaciones de cobro      │
+│   ├── BillingService: Tenant entity para suscripciones Stripe        │
+│   ├── StripeWebhookController: Tenant entity para webhook processing │
+│   └── SaasPlan: Tenant entity para plan management                    │
+│                                                                         │
+│   Regla TENANT-BRIDGE-001: NUNCA cargar getStorage('group') con      │
+│   Tenant IDs ni viceversa. Tenant = billing, Group = content isolation│
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      TENANT ISOLATION: ACCESS CONTROL ⭐               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_page_builder (Access Control)                              │
+│   ├── PageContentAccessControlHandler (EntityHandlerInterface + DI):  │
+│   │   ├── createInstance(): Inyecta TenantContextService              │
+│   │   ├── checkAccess(): view=publicado, update/delete=isSameTenant() │
+│   │   ├── isSameTenant(): (int) entity.tenant_id === currentTenantId │
+│   │   └── checkCreateAccess(): authenticated + create permission      │
+│   │                                                                     │
+│   📦 ecosistema_jaraba_core (Generic Access + Path + Context)         │
+│   ├── DefaultEntityAccessControlHandler (renombrado desde             │
+│   │   DefaultAccessControlHandler): Fallback generico para entidades  │
+│   │   sin handler especifico                                           │
+│   ├── PathProcessorPageContent: Tenant-aware path resolution          │
+│   │   ├── Inyecta TenantContextService (@? opcional)                  │
+│   │   └── Filtra por tenant_id del contexto actual si disponible     │
+│   ├── TenantContextService (enhanced):                                │
+│   │   ├── getCurrentTenantId(): ?int (nullable cuando no hay grupo)  │
+│   │   └── Resiliente a usuarios sin grupo (returns NULL, no throws)  │
+│   │                                                                     │
+│   Politica de acceso (TENANT-ISOLATION-ACCESS-001):                   │
+│   ├── view: Paginas publicadas son publicas (status=1)               │
+│   ├── update: Solo si isSameTenant() + permiso                       │
+│   ├── delete: Solo si isSameTenant() + permiso                       │
+│   └── create: Solo authenticated + permiso de creacion               │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │                      PAGE BUILDER: PATHPROCESSOR + META-SITIO ⭐       │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -309,6 +364,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **71.0.0** | **Remediacion Tenant 11 Fases:** 2 ASCII boxes nuevos: TENANT BRIDGE (TenantBridgeService con 4 metodos, consumidores, error handling, regla TENANT-BRIDGE-001) y TENANT ISOLATION (PageContentAccessControlHandler con DI + isSameTenant(), DefaultEntityAccessControlHandler rename, PathProcessor tenant-aware, TenantContextService enhanced nullable). 14 correcciones billing entity type en 6 ficheros. CI pipeline con kernel-test job (MariaDB 10.11). 5 tests nuevos. Scripts movidos a scripts/maintenance/. Reglas TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |
 | 2026-02-24 | **70.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de entidades PageContent a rutas /page/{id}. 7 páginas institucionales creadas y publicadas con contenido en español via GrapesJS. APIs: PATCH /config (títulos + aliases), POST /publish (publicación), GrapesJS store (contenido). Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |
 | 2026-02-24 | **69.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (ACCESS-STRICT-001). 28 plantillas MJML horizontales con compliance CAN-SPAM completo: mj-preview, postal Juncaril, font Outfit, paleta de marca unificada (#1565C0 como azul primario, 6 colores universales reemplazados). Colores semanticos preservados. Secciones de arquitectura: Access Handlers + Email CAN-SPAM. 5 reglas nuevas. Aprendizaje #119. |
 | 2026-02-24 | **68.0.0** | **Empleabilidad Profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity completa con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil premium. Controller fallback cleanup → render array con template premium. Seccion de arquitectura Empleabilidad documentada (6 entidades, 7 secciones glassmorphism, ProfileController resiliente). 3 ficheros creados, 6 modificados. Aprendizaje #118. |
@@ -329,4 +385,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 70.0.0 | **Fecha:** 2026-02-24 | **Autor:** IA Asistente
+> **Versión:** 71.0.0 | **Fecha:** 2026-02-25 | **Autor:** IA Asistente
