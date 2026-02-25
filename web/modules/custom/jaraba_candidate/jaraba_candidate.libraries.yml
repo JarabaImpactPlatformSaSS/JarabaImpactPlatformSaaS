@@ -34,6 +34,12 @@ profile_view:
   dependencies:
     - core/drupal
 
+# Profile Education section — slide-panel compatible
+profile_education:
+  version: 1.x
+  dependencies:
+    - core/drupal
+
 # Modal CRUD actions — Plan Elevación Empleabilidad Fase 2
 modal-actions:
   version: 1.x
