@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_analytics\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario de creación/edición de Funnel Definitions.
@@ -15,54 +15,60 @@ use Drupal\Core\Form\FormStateInterface;
  * con pasos dinámicos gestionados vía AJAX.
  *
  * LÓGICA:
- * - Grupo 1: Información básica (nombre, tenant, ventana de conversión).
- * - Grupo 2: Pasos del funnel (añadir/eliminar dinámicamente con AJAX).
+ * - Sección 1: Información básica (nombre, tenant, ventana de conversión).
+ * - Sección 2: Pasos del funnel (añadir/eliminar dinámicamente con AJAX).
  *   Cada paso tiene event_type (textfield) y label (textfield).
  */
-class FunnelDefinitionForm extends ContentEntityForm {
+class FunnelDefinitionForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic_info' => [
+        'label' => $this->t('Basic Information'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Name, tenant, and conversion window settings.'),
+        'fields' => ['name', 'tenant_id', 'conversion_window_hours'],
+      ],
+      'steps' => [
+        'label' => $this->t('Funnel Steps'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Define the sequence of steps in the funnel.'),
+        'fields' => ['steps_wrapper'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
     /** @var \Drupal\jaraba_analytics\Entity\FunnelDefinition $entity */
     $entity = $this->entity;
 
-    // Grupo: Información básica.
-    $form['basic_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Basic Information'),
-      '#open' => TRUE,
-      '#weight' => 0,
-    ];
-
-    if (isset($form['name'])) {
-      $form['name']['#group'] = 'basic_info';
-    }
-    if (isset($form['tenant_id'])) {
-      $form['tenant_id']['#group'] = 'basic_info';
-    }
-    if (isset($form['conversion_window_hours'])) {
-      $form['conversion_window_hours']['#group'] = 'basic_info';
-    }
-
-    // Grupo: Pasos del funnel (AJAX).
-    $form['steps_wrapper'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Funnel Steps'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-
-    // Determine steps from form_state or entity.
+    // Custom AJAX steps widget.
     $existingSteps = $entity->getSteps();
     $numSteps = $form_state->get('num_steps');
     if ($numSteps === NULL) {
       $numSteps = count($existingSteps) > 0 ? count($existingSteps) : 1;
       $form_state->set('num_steps', $numSteps);
     }
+
+    $form['steps_wrapper'] = [
+      '#type' => 'container',
+      '#weight' => 50,
+    ];
 
     $form['steps_wrapper']['steps_container'] = [
       '#type' => 'container',
@@ -213,18 +219,6 @@ class FunnelDefinitionForm extends ContentEntityForm {
     $entity->set('steps', [$steps]);
 
     $result = parent::save($form, $form_state);
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Funnel %name created.', [
-        '%name' => $entity->label(),
-      ]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Funnel %name updated.', [
-        '%name' => $entity->label(),
-      ]));
-    }
-
     $form_state->setRedirectUrl($entity->toUrl('collection'));
     return $result;
   }
