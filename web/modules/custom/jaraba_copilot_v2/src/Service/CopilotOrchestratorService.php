@@ -81,7 +81,7 @@ class CopilotOrchestratorService
     /**
      * AI Provider Plugin Manager.
      */
-    protected AiProviderPluginManager $aiProvider;
+    protected ?AiProviderPluginManager $aiProvider;
 
     /**
      * Config factory.
@@ -132,7 +132,7 @@ class CopilotOrchestratorService
      * Constructor.
      */
     public function __construct(
-        AiProviderPluginManager $aiProvider,
+        ?AiProviderPluginManager $aiProvider,
         ConfigFactoryInterface $configFactory,
         LoggerInterface $logger,
         FeatureUnlockService $featureUnlock,
