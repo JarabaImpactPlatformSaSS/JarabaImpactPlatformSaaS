@@ -4,119 +4,91 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear y editar entidades ExperimentVariant.
+ * Premium form for creating and editing ExperimentVariant entities.
  *
- * ESPECIFICACIÓN: Doc 168 - Platform_AB_Testing_Pages_v1
+ * Spec: Doc 168 - Platform_AB_Testing_Pages_v1
  *
- * Las variantes se crean y editan desde dentro del contexto
- * de un experimento padre. El formulario organiza los campos
- * en grupos lógicos para facilitar la edición.
- *
- * @package Drupal\jaraba_page_builder\Form
+ * Variants are created/edited within the context of a parent experiment.
+ * Extends PremiumEntityFormBase for glassmorphism sections and premium UX.
  */
-class ExperimentVariantForm extends ContentEntityForm
-{
+class ExperimentVariantForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     *
-     * Configura el formulario con fieldsets para organización visual.
-     */
-    public function form(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::form($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic' => [
+        'label' => $this->t('Variant info'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Name, control flag, and traffic weight.'),
+        'fields' => ['name', 'is_control', 'traffic_weight'],
+      ],
+      'content' => [
+        'label' => $this->t('Content modifications'),
+        'icon' => ['category' => 'ui', 'name' => 'code'],
+        'description' => $this->t('Changes this variant applies relative to control.'),
+        'fields' => ['content_data'],
+      ],
+      'metrics' => [
+        'label' => $this->t('Metrics'),
+        'icon' => ['category' => 'analytics', 'name' => 'gauge'],
+        'description' => $this->t('Performance data (updated automatically).'),
+        'fields' => ['visitors', 'conversions'],
+      ],
+    ];
+  }
 
-        // Grupo de información básica.
-        $form['basic_info'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Información de la variante'),
-            '#open' => TRUE,
-            '#weight' => -10,
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'layers'];
+  }
 
-        // Mover campos básicos al grupo.
-        $basic_fields = ['name', 'is_control', 'traffic_weight'];
-        foreach ($basic_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['basic_info'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
-        // Grupo de contenido modificado.
-        $form['content_modifications'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Modificaciones de contenido'),
-            '#description' => $this->t('Define los cambios que esta variante aplicará respecto al control.'),
-            '#open' => FALSE,
-            '#weight' => 0,
-        ];
-
-        // Campo de datos de contenido en el grupo de modificaciones.
-        if (isset($form['content_data'])) {
-            $form['content_modifications']['content_data'] = $form['content_data'];
-            $form['content_modifications']['content_data']['#description'] = $this->t(
-                'JSON con modificaciones: textos, estilos, clases, visibilidad. Ejemplo: {"texts": {"#hero-title": "Nuevo título"}}'
-            );
-            unset($form['content_data']);
-        }
-
-        // Grupo de métricas (solo lectura para información).
-        $form['metrics'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Métricas'),
-            '#description' => $this->t('Datos de rendimiento (actualizados automáticamente).'),
-            '#open' => FALSE,
-            '#weight' => 10,
-        ];
-
-        // Mover campos de métricas al grupo.
-        $metric_fields = ['visitors', 'conversions'];
-        foreach ($metric_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['metrics'][$field_name] = $form[$field_name];
-                // Hacer campos de métricas de solo lectura.
-                $form['metrics'][$field_name]['#disabled'] = TRUE;
-                unset($form[$field_name]);
-            }
-        }
-
-        return $form;
+    // Add help text to content_data.
+    if (isset($form['premium_section_content']['content_data'])) {
+      $form['premium_section_content']['content_data']['#description'] = $this->t(
+        'JSON with modifications: texts, styles, classes, visibility. Example: {"texts": {"#hero-title": "New title"}}'
+      );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * Guarda la variante y muestra mensaje de confirmación.
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->entity;
-        $status = parent::save($form, $form_state);
-
-        if ($status === SAVED_NEW) {
-            $this->messenger()->addStatus($this->t('La variante %name ha sido creada.', [
-                '%name' => $entity->label(),
-            ]));
-        } else {
-            $this->messenger()->addStatus($this->t('La variante %name ha sido actualizada.', [
-                '%name' => $entity->label(),
-            ]));
-        }
-
-        // Redirigir de vuelta al experimento padre.
-        $experimentId = $entity->getExperimentId();
-        if ($experimentId) {
-            $form_state->setRedirect('entity.page_experiment.canonical', [
-                'page_experiment' => $experimentId,
-            ]);
-        }
-
-        return $status;
+    // Make metric fields read-only.
+    foreach (['visitors', 'conversions'] as $field) {
+      if (isset($form['premium_section_metrics'][$field])) {
+        $form['premium_section_metrics'][$field]['#disabled'] = TRUE;
+      }
     }
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+
+    // Redirect back to the parent experiment.
+    $entity = $this->getEntity();
+    $experimentId = $entity->getExperimentId();
+    if ($experimentId) {
+      $form_state->setRedirect('entity.page_experiment.canonical', [
+        'page_experiment' => $experimentId,
+      ]);
+    }
+
+    return $result;
+  }
 
 }
