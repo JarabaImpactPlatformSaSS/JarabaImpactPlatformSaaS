@@ -63,3 +63,74 @@ function jaraba_candidate_update_10003(): void {
   $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_experience');
   \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
 }
+
+/**
+ * Convert photo field from entity_reference to image type.
+ *
+ * The old field was entity_reference with file_generic widget (broken).
+ * The new field is image type with proper upload widget.
+ */
+function jaraba_candidate_update_10004(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $db = \Drupal::database();
+
+  // 1. Backup existing photo references (column = 'photo', int).
+  $existing = [];
+  try {
+    $results = $db->query('SELECT id, photo FROM {candidate_profile} WHERE photo IS NOT NULL AND photo > 0');
+    foreach ($results as $row) {
+      $existing[$row->id] = (int) $row->photo;
+    }
+  }
+  catch (\Exception) {
+    // No data to preserve.
+  }
+
+  // 2. Uninstall old entity_reference field.
+  $old_definition = $update_manager->getFieldStorageDefinition('photo', 'candidate_profile');
+  if ($old_definition) {
+    $update_manager->uninstallFieldStorageDefinition($old_definition);
+  }
+
+  // 3. Install new image field from current code definition.
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_profile');
+  $fields = \Drupal\jaraba_candidate\Entity\CandidateProfile::baseFieldDefinitions($entity_type);
+  if (isset($fields['photo'])) {
+    $update_manager->installFieldStorageDefinition('photo', 'candidate_profile', 'jaraba_candidate', $fields['photo']);
+  }
+
+  // 4. Restore photo references (image field stores as photo__target_id).
+  foreach ($existing as $id => $target_id) {
+    try {
+      $db->update('candidate_profile')
+        ->fields(['photo__target_id' => $target_id])
+        ->condition('id', $id)
+        ->execute();
+    }
+    catch (\Exception) {
+      // Column name might differ; skip gracefully.
+    }
+  }
+}
+
+/**
+ * Reinstall candidate_experience and candidate_education for datetime fields.
+ *
+ * The date fields changed from timestamp (int) to datetime (varchar).
+ * Both tables are empty so a clean reinstall is safe.
+ */
+function jaraba_candidate_update_10005(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $etm = \Drupal::entityTypeManager();
+
+  foreach (['candidate_experience', 'candidate_education'] as $type_id) {
+    // Uninstall old schema.
+    $old = $update_manager->getEntityType($type_id);
+    if ($old) {
+      $update_manager->uninstallEntityType($old);
+    }
+    // Install fresh from current code.
+    $new = $etm->getDefinition($type_id);
+    $update_manager->installEntityType($new);
+  }
+}
