@@ -58,7 +58,7 @@ services:
   jaraba_copilot_v2.copilot_orchestrator:
     class: Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@config.factory'
       - '@logger.channel.jaraba_copilot_v2'
       - '@jaraba_copilot_v2.feature_unlock'
@@ -98,7 +98,7 @@ services:
       - '@database'
       - '@logger.channel.jaraba_copilot_v2'
       - '@jaraba_copilot_v2.normative_knowledge'
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@jaraba_rag.qdrant_client'
 
   # v3: Value Proposition Canvas - Osterwalder methodology
