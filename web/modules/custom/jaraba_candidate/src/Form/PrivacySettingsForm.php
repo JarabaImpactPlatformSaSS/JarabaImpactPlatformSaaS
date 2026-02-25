@@ -103,7 +103,7 @@ class PrivacySettingsForm extends PremiumEntityFormBase {
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     $this->messenger()->addStatus($this->t('Configuración de privacidad actualizada correctamente.'));
-    $form_state->setRedirect('jaraba_candidate.my_profile.privacy');
+    $form_state->setRedirect('jaraba_candidate.my_profile');
     return $result;
   }
 

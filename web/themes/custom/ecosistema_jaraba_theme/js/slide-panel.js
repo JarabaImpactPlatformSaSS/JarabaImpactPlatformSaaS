@@ -263,8 +263,10 @@
 
       // Escuchar el evento submit del formulario
       form.addEventListener('submit', function (e) {
-        // El formulario puede ser AJAX o normal
-        // Para formularios normales que redirigen, necesitamos detectar el éxito
+        // En contexto slide-panel, SIEMPRE interceptamos el submit via fetch.
+        // data-drupal-form-fields es puesto por core/misc/form.js en TODOS los
+        // formularios (dirty-tracking), NO indica formulario AJAX.
+        e.preventDefault();
 
         // Añadir clase de loading al botón submit
         const submitBtn = form.querySelector('input[type="submit"], button[type="submit"]');
@@ -273,80 +275,92 @@
           submitBtn.disabled = true;
         }
 
-        // Detectar si el formulario usa AJAX de Drupal
-        const isAjaxForm = form.hasAttribute('data-drupal-form-fields');
+        const formData = new FormData(form);
 
-        if (!isAjaxForm) {
-          // Para formularios tradicionales, hacer submit via fetch
-          e.preventDefault();
+        // CRÍTICO: Añadir el submit button al FormData.
+        // Drupal requiere el triggering element para ejecutar save().
+        // FormData no incluye el botón automáticamente.
+        if (submitBtn && submitBtn.name) {
+          formData.append(submitBtn.name, submitBtn.value || 'Guardar');
+        }
 
-          const formData = new FormData(form);
+        // CRÍTICO: Detectar si form.action es un placeholder BigPipe (form_action_p_...)
+        // Estos placeholders causan 404. Usar originalUrl como fallback.
+        let submitUrl = form.action;
+        if (!submitUrl || submitUrl.includes('form_action_p_')) {
+          submitUrl = originalUrl;
+        }
 
-          // CRÍTICO: Añadir el submit button al FormData.
-          // Drupal requiere el triggering element para ejecutar save().
-          // FormData no incluye el botón automáticamente.
-          if (submitBtn && submitBtn.name) {
-            formData.append(submitBtn.name, submitBtn.value || 'Guardar');
+        fetch(submitUrl, {
+          method: 'POST',
+          body: formData,
+          redirect: 'follow',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
           }
+        })
+          .then(response => {
+            const contentType = response.headers.get('content-type') || '';
 
-          // CRÍTICO: Detectar si form.action es un placeholder BigPipe (form_action_p_...)
-          // Estos placeholders causan 404. Usar originalUrl como fallback.
-          let submitUrl = form.action;
-          if (!submitUrl || submitUrl.includes('form_action_p_')) {
-            submitUrl = originalUrl;
-          }
-
-          fetch(submitUrl, {
-            method: 'POST',
-            body: formData,
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          })
-            .then(response => {
-              const contentType = response.headers.get('content-type') || '';
-
-              // Si la respuesta es JSON, procesarla
-              if (contentType.includes('application/json')) {
-                return response.json().then(data => {
-                  if (data.success) {
-                    // Éxito - cerrar panel y refrescar
-                    self.close();
-                    self.showSuccessMessage(data.message || Drupal.t('Guardado correctamente'));
-                    self.refreshCurrentPage();
-                  } else {
-                    // Error desde el servidor
-                    self.showErrorMessage(data.message || Drupal.t('Error al guardar'));
-                    if (submitBtn) {
-                      submitBtn.classList.remove('is-loading');
-                      submitBtn.disabled = false;
-                    }
+            // Si la respuesta es JSON, procesarla
+            if (contentType.includes('application/json')) {
+              return response.json().then(data => {
+                if (data.success) {
+                  // Éxito - cerrar panel y refrescar
+                  self.close();
+                  self.showSuccessMessage(data.message || Drupal.t('Guardado correctamente'));
+                  self.refreshCurrentPage();
+                } else {
+                  // Error desde el servidor
+                  self.showErrorMessage(data.message || Drupal.t('Error al guardar'));
+                  if (submitBtn) {
+                    submitBtn.classList.remove('is-loading');
+                    submitBtn.disabled = false;
                   }
-                });
-              }
+                }
+              });
+            }
 
-              // Si es HTML...
-              if (response.ok) {
-                // Éxito - cerrar panel y refrescar página
-                self.close();
-                self.showSuccessMessage(Drupal.t('Guardado correctamente'));
-                self.refreshCurrentPage();
-              } else {
-                // Error - mostrar respuesta en el panel
-                return response.text().then(html => {
+            // Si es HTML...
+            if (response.ok) {
+              return response.text().then(html => {
+                // Verificar si el HTML contiene mensajes de error de Drupal
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const errorMessages = tempDiv.querySelector('.messages--error');
+
+                if (errorMessages) {
+                  // Errores de validación - mostrar formulario con errores
                   container.innerHTML = html;
                   Drupal.attachBehaviors(container);
                   self.attachFormSubmitHandler(container, originalUrl);
-                });
-              }
-            })
-            .catch(error => {
-              if (submitBtn) {
-                submitBtn.classList.remove('is-loading');
-                submitBtn.disabled = false;
-              }
-            });
-        }
+                  if (submitBtn) {
+                    submitBtn.classList.remove('is-loading');
+                    submitBtn.disabled = false;
+                  }
+                } else {
+                  // Éxito - cerrar panel y refrescar página
+                  self.close();
+                  self.showSuccessMessage(Drupal.t('Guardado correctamente'));
+                  self.refreshCurrentPage();
+                }
+              });
+            } else {
+              // Error HTTP - mostrar respuesta en el panel
+              return response.text().then(html => {
+                container.innerHTML = html;
+                Drupal.attachBehaviors(container);
+                self.attachFormSubmitHandler(container, originalUrl);
+              });
+            }
+          })
+          .catch(error => {
+            self.showErrorMessage(Drupal.t('Error de conexión'));
+            if (submitBtn) {
+              submitBtn.classList.remove('is-loading');
+              submitBtn.disabled = false;
+            }
+          });
       });
     },
 

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\jaraba_candidate\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Form\EnforcedResponseException;
 use Drupal\jaraba_candidate\Entity\CandidateProfileInterface;
 use Drupal\jaraba_candidate\Service\CandidateProfileService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -505,6 +507,31 @@ class ProfileController extends ControllerBase
      *   Render array or bare HTML response for slide-panel.
      */
     protected function renderFormOperation(CandidateProfileInterface $profile, string $operation, Request $request): array|Response {
+        // Slide-panel POST: catch the redirect after successful save and
+        // return a JSON response so the slide-panel JS can close + refresh.
+        if ($this->isSlidePanelRequest($request) && $request->isMethod('POST')) {
+            try {
+                $form = \Drupal::service('entity.form_builder')->getForm($profile, $operation);
+            }
+            catch (EnforcedResponseException $e) {
+                // Save succeeded — the form set a redirect which triggered
+                // this exception. Return JSON for the slide-panel JS.
+                return new JsonResponse([
+                    'success' => TRUE,
+                    'message' => (string) $this->t('Guardado correctamente.'),
+                ]);
+            }
+
+            // If we get here, the form had validation errors (no redirect).
+            // Re-render the form with errors visible.
+            $form['#action'] = $request->getRequestUri();
+            $html = (string) \Drupal::service('renderer')->renderPlain($form);
+            return new Response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+            ]);
+        }
+
+        // GET request (both full-page and slide-panel).
         $form = \Drupal::service('entity.form_builder')->getForm($profile, $operation);
 
         if ($this->isSlidePanelRequest($request)) {

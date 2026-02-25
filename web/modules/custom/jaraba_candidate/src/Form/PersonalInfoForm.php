@@ -104,7 +104,7 @@ class PersonalInfoForm extends PremiumEntityFormBase {
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
     $this->messenger()->addStatus($this->t('Datos personales actualizados correctamente.'));
-    $form_state->setRedirect('jaraba_candidate.my_profile.personal');
+    $form_state->setRedirect('jaraba_candidate.my_profile');
     return $result;
   }
 
