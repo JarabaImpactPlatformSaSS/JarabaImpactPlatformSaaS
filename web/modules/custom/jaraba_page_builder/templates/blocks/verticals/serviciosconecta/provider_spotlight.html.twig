@@ -48,7 +48,7 @@
             <img src="{{ provider_image }}" alt="{{ provider_name|default('')|striptags }}" loading="lazy" />
           {% else %}
             <div class="pb-section__spotlight-avatar-placeholder" aria-hidden="true">
-              {{ jaraba_icon('user', 'users', { variant: 'duotone', size: '64px', color: 'primary' }) }}
+              {{ jaraba_icon('users', 'users', { variant: 'duotone', size: '64px', color: 'azul-corporativo' }) }}
             </div>
           {% endif %}
         </div>
@@ -71,7 +71,7 @@
         {# Experience badge #}
         {% if years_experience|default('') %}
           <div class="pb-section__spotlight-experience">
-            {{ jaraba_icon('business', 'achievement', { variant: 'duotone', size: '18px', color: 'primary' }) }}
+            {{ jaraba_icon('achievement', 'achievement', { variant: 'duotone', size: '18px', color: 'azul-corporativo' }) }}
             <span>{{ years_experience }} {% trans %}años de experiencia{% endtrans %}</span>
           </div>
         {% endif %}

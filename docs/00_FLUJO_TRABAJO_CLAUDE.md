@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-24
-**Version:** 23.0.0 (Auditoria Horizontal — Strict Equality + CAN-SPAM MJML)
+**Version:** 24.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
 
 ---
 
@@ -257,6 +257,22 @@
   - TAB 14 "Paginas Legales" en theme settings permite editar contenido desde la UI de Drupal.
   - Cache tags: `config:ecosistema_jaraba_theme.settings` para invalidar cuando se actualiza el contenido.
   - El footer (`_footer.html.twig`) DEBE tener defaults que apunten a las URLs canonicas, no a rutas en ingles.
+- **PathProcessor para Path Aliases Custom (PATH-ALIAS-PROCESSOR-001):**
+  - Cuando una entidad ContentEntity tiene un campo `path_alias` propio (no gestionado por el modulo `path_alias` del core), implementar `InboundPathProcessorInterface`.
+  - Registrar como servicio con tag `path_processor_inbound` y prioridad 200+ (core path_alias tiene prioridad 100).
+  - El procesador busca coincidencia en la tabla de la entidad y reescribe la URL a la ruta canonica (ej. `/page/{id}`).
+  - **Skip list de prefijos:** Excluir `/api/`, `/admin/`, `/user/`, `/media/`, `/session/` para rendimiento.
+  - **Sin filtro por status:** No usar `->condition('status', 1)`. Delegar control de acceso al `AccessControlHandler` de la entidad. Permite que admins accedan a borradores via URL amigable.
+  - **Static cache:** Cachear resoluciones por path dentro del request con propiedad estatica. Evita queries duplicadas.
+  - **Patron de registro en services.yml:**
+    ```yaml
+    path_processor.page_content:
+      class: Drupal\mimodulo\PathProcessor\PathProcessorMiEntidad
+      arguments: ['@entity_type.manager', '@database']
+      tags:
+        - { name: path_processor_inbound, priority: 200 }
+    ```
+  - **Meta-Sitio workflow:** Las paginas se gestionan como entidades PageContent. Titulos y aliases via `PATCH /api/v1/pages/{id}/config`. Publicacion via `POST /api/v1/pages/{id}/publish`. Contenido visual via GrapesJS `editor.store()`.
 
 ---
 
@@ -295,6 +311,7 @@
 31. **Cross-module services opcionales con @?:** Servicios que referencian otros modulos (que pueden no estar instalados) DEBEN usar `@?` en services.yml y constructores nullable (`?Type $param = NULL`). El codigo DEBE null-guard antes de usar el servicio. Critico para testabilidad con Kernel tests que solo habilitan un modulo.
 32. **jaraba_icon() convencion estricta y zero chinchetas:** Toda llamada a `jaraba_icon()` DEBE seguir la firma `jaraba_icon('category', 'name', { variant: 'duotone', color: 'azul-corporativo', size: '24px' })`. Antes de crear un template nuevo, verificar que los pares category/name existen como SVGs en `ecosistema_jaraba_core/images/icons/{category}/`. Si falta un icono, crear un symlink en la bridge category correspondiente apuntando a una categoria primaria (actions, fiscal, media, micro, ui, users). Verificar con `find images/icons/ -type l ! -exec test -e {} \; -print` que no hay symlinks rotos. El objetivo es 0 chinchetas (📌) en toda la plataforma.
 33. **Auditorias horizontales periodicas:** Despues de completar auditorias verticales, ejecutar siempre una auditoria horizontal que revise flujos cross-cutting: access handlers (strict equality), plantillas de email (CAN-SPAM, colores de marca, font, preheader, postal), CSRF, permisos. Los bugs sistematicos no se descubren auditando un solo vertical — requieren vision transversal. Al scaffoldear plantillas desde un template base, usar tokens de marca desde el dia 0 para evitar deuda multiplicada.
+34. **PathProcessor para aliases custom de entidad:** Cuando una entidad ContentEntity tiene un campo `path_alias` propio, DEBE existir un `InboundPathProcessorInterface` con prioridad 200+ que resuelva el alias a la ruta canonica de la entidad. No filtrar por status en la query (el AccessControlHandler gestiona permisos). Usar skip list de prefijos de sistema y static cache. El procesador se registra en services.yml con tag `path_processor_inbound`.
 
 ---
 
@@ -302,6 +319,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-24 | **24.0.0** | **Meta-Sitio jarabaimpact.com Workflow**: Patron PATH-ALIAS-PROCESSOR-001 — InboundPathProcessorInterface con prioridad 200 para resolver path_alias custom de entidades ContentEntity a rutas canonicas. Skip list de prefijos, sin filtro status, static cache. Registro en services.yml con tag path_processor_inbound. Meta-sitio workflow: titulos via API config, publicacion via API publish, contenido via GrapesJS store. 7 paginas institucionales. Regla de oro #34. Aprendizaje #120. |
 | 2026-02-24 | **23.0.0** | **Auditoria Horizontal Workflow**: Patron ACCESS-STRICT-001 — strict equality `(int) === (int)` obligatorio en access handlers, previene type juggling en ownership checks. Buscar con `grep "== $account->id()" \| grep -v "==="`. Los access handlers pueden estar en `src/Access/` O directamente en `src/`. Patron MJML email compliance — 5 cambios por plantilla: mj-preview, postal CAN-SPAM, font Outfit, colores universales, colores de grupo. Tabla de reemplazos de colores off-brand → brand. Preservar colores semanticos. Verificar con grep de colores off-brand → 0 resultados. Regla de oro #33. Aprendizaje #119. |
 | 2026-02-24 | **22.0.0** | **Empleabilidad Profile Premium — Fase Final Workflow**: Patron de creacion de ContentEntity completa con AdminHtmlRouteProvider + field_ui_base_route + SettingsForm + links.task.yml (collection tab + settings tab) + routing.yml (settings route) + permissions.yml + update hook para instalar schema. Refuerzo de TWIG-XSS-001 (`\|raw` → `\|safe_html` en perfil candidato). Patron de cleanup: reemplazar `#markup` con HTML hardcodeado por `#theme` que reutiliza template premium existente. Aprendizaje #118. |
 | 2026-02-24 | **21.0.0** | **Entity Admin UI Remediation Complete Workflow**: Patrones KERNEL-TEST-DEPS-001 — dependencias de modulos explicitas en Kernel tests (datetime, text, field, taxonomy + installEntitySchema previo). Patron OPTIONAL-SERVICE-DI-001 — `@?` para servicios cross-module opcionales con constructores nullable y null-guards (7 refs en agroconecta, 1 en job_board). Patron FIELD-UI-SETTINGS-TAB-001 — default local task tab obligatorio para Field UI (175 entidades en 46 modulos). Patron de mocking: ContentEntityInterface con `get()` callback y anonymous class para `->value`/`->target_id`. Inyeccion currentUser via ReflectionProperty::setValue(). Reglas de oro #29, #30, #31. Aprendizaje #116. |

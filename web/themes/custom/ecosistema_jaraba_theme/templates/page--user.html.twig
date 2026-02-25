@@ -32,6 +32,7 @@
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 
 {{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('ecosistema_jaraba_theme/slide-panel') }}
 
 {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
   site_name: site_name,
@@ -164,9 +165,12 @@
             <div class="quick-access-section quick-access-section--{{ section.color }}" style="animation-delay: {{ loop.index0 * 0.1 + 0.3 }}s">
               <div class="quick-access-section__header">
                 <h2 class="quick-access-section__title">
-                  {{ jaraba_icon(section.icon_category|default('ui'), section.icon_name|default('info'), { size: '20px' }) }}
+                  {{ jaraba_icon(section.icon_category|default('ui'), section.icon_name|default('info'), { size: '20px', variant: 'duotone' }) }}
                   {{ section.title }}
                 </h2>
+                {% if section.subtitle|default('') %}
+                  <p class="quick-access-section__subtitle">{{ section.subtitle }}</p>
+                {% endif %}
               </div>
 
               {# Profile completeness ring (solo en sección professional_profile) #}
@@ -177,6 +181,7 @@
                     sections: section.profile_completeness.sections,
                     total_sections: section.profile_completeness.total_sections,
                     completed_sections: section.profile_completeness.completed_sections,
+                    cta_message: section.profile_completeness.cta_message|default(null),
                   } only %}
                 </div>
               {% endif %}
@@ -184,11 +189,22 @@
               {% if section.links is not empty %}
                 <div class="quick-access-section__grid">
                   {% for link in section.links %}
-                    <a href="{{ link.url }}" class="quick-access__card quick-access__card--{{ link.color }}{% if link.cross_vertical|default(false) %} quick-access__card--cross{% endif %}">
+                    <a href="{{ link.url }}"
+                       class="quick-access__card quick-access__card--{{ link.color }}{% if link.cross_vertical|default(false) %} quick-access__card--cross{% endif %}{% if link.color == 'danger' %} quick-access__card--muted{% endif %}"
+                       {% if link.slide_panel|default(false) %}
+                         data-slide-panel="quick-action"
+                         data-slide-panel-url="{{ link.url }}"
+                         data-slide-panel-title="{{ link.slide_panel_title|default(link.label) }}"
+                       {% endif %}>
                       <div class="quick-access__card-icon">
-                        {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px' }) }}
+                        {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px', variant: 'duotone' }) }}
                       </div>
-                      <span class="quick-access__card-label">{{ link.label }}</span>
+                      <div class="quick-access__card-text">
+                        <span class="quick-access__card-label">{{ link.label }}</span>
+                        {% if link.description|default('') %}
+                          <span class="quick-access__card-desc">{{ link.description }}</span>
+                        {% endif %}
+                      </div>
                       {{ jaraba_icon('ui', 'arrow-right', { size: '16px', class: 'quick-access__card-arrow' }) }}
                     </a>
                   {% endfor %}

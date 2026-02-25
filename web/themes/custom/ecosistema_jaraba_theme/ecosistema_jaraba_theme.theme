@@ -2764,8 +2764,8 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     };
 
     // Helper: construir link solo si la ruta existe.
-    $make_link = function ($label, string $route, string $icon_cat, string $icon_name, string $color, array $params = []) use ($resolve) {
-      $url = $resolve($route, $params);
+    $make_link = function ($label, string $route, string $icon_cat, string $icon_name, string $color, array $options = []) use ($resolve) {
+      $url = $resolve($route, $options['params'] ?? []);
       if ($url === NULL) {
         return NULL;
       }
@@ -2775,14 +2775,23 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
         'icon_category' => $icon_cat,
         'icon_name' => $icon_name,
         'color' => $color,
+        'description' => $options['description'] ?? '',
+        'slide_panel' => $options['slide_panel'] ?? FALSE,
+        'slide_panel_title' => $options['slide_panel_title'] ?? $label,
       ];
     };
 
     // ── Section 1: Mi Perfil Profesional (siempre visible) ──────────────
     $prof_links = array_filter([
-      $make_link(t('Ver perfil profesional'), 'jaraba_candidate.my_profile', 'ui', 'user', 'innovation'),
-      $make_link(t('Constructor CV'), 'jaraba_candidate.cv_builder', 'ui', 'file-text', 'innovation'),
-      $make_link(t('Autoconocimiento'), 'jaraba_self_discovery.dashboard', 'ui', 'compass', 'innovation'),
+      $make_link(t('Ver perfil profesional'), 'jaraba_candidate.my_profile', 'ui', 'user', 'innovation', [
+        'description' => t('Visualiza cómo te ven los reclutadores'),
+      ]),
+      $make_link(t('Constructor CV'), 'jaraba_candidate.cv_builder', 'ui', 'file-text', 'innovation', [
+        'description' => t('Crea tu CV profesional en minutos'),
+      ]),
+      $make_link(t('Autoconocimiento'), 'jaraba_self_discovery.dashboard', 'ui', 'compass', 'innovation', [
+        'description' => t('Descubre tus fortalezas y áreas de mejora'),
+      ]),
     ]);
 
     // Completitud del perfil (solo si el servicio existe).
@@ -2824,11 +2833,24 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           ];
         }
 
+        $pct = (int) round($completion['percentage'] ?? 0);
+        $cta_message = NULL;
+        if ($pct < 25) {
+          $cta_message = t('Tu perfil necesita atención — los candidatos con perfil completo reciben 3x más visibilidad');
+        }
+        elseif ($pct < 50) {
+          $cta_message = t('Buen comienzo — completa las secciones pendientes para destacar');
+        }
+        elseif ($pct < 80) {
+          $cta_message = t('Ya casi — solo faltan unos pasos para un perfil destacado');
+        }
+
         $profile_completeness = [
-          'percentage' => (int) round($completion['percentage'] ?? 0),
+          'percentage' => $pct,
           'sections' => $section_details,
           'total_sections' => $completion['total_sections'] ?? count($all_section_keys),
           'completed_sections' => $completion['completed_count'] ?? 0,
+          'cta_message' => $cta_message,
         ];
       }
       catch (\Exception $e) {
@@ -2840,6 +2862,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
       $section = [
         'id' => 'professional_profile',
         'title' => t('Mi Perfil Profesional'),
+        'subtitle' => t('Gestiona tu presencia profesional en el ecosistema'),
         'icon_category' => 'ui',
         'icon_name' => 'user',
         'links' => array_values($prof_links),
@@ -2913,6 +2936,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
       $sections[] = [
         'id' => 'my_vertical',
         'title' => $avatar_label ? t('Mi Vertical: @label', ['@label' => $avatar_label]) : t('Mi Vertical'),
+        'subtitle' => $avatar_label ? t('Accesos directos a tus herramientas de @label', ['@label' => $avatar_label]) : t('Accesos directos a tus herramientas'),
         'icon_category' => 'verticals',
         'icon_name' => 'rocket',
         'links' => $avatar_links,
@@ -2933,15 +2957,24 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
 
     if ($tenant) {
       $biz_links = array_filter([
-        $make_link(t('Dashboard Tenant'), 'ecosistema_jaraba_core.tenant.dashboard', 'ui', 'dashboard', 'corporate'),
-        $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'tag', 'corporate'),
-        $make_link(t('Centro de ayuda'), 'jaraba_tenant_knowledge.help_center', 'ui', 'help-circle', 'corporate'),
+        $make_link(t('Dashboard Tenant'), 'ecosistema_jaraba_core.tenant.dashboard', 'ui', 'dashboard', 'corporate', [
+          'description' => t('Métricas y gestión de tu negocio'),
+          'slide_panel' => TRUE,
+        ]),
+        $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'tag', 'corporate', [
+          'description' => t('Explora planes y funcionalidades'),
+          'slide_panel' => TRUE,
+        ]),
+        $make_link(t('Centro de ayuda'), 'jaraba_tenant_knowledge.help_center', 'ui', 'help-circle', 'corporate', [
+          'description' => t('Guías, tutoriales y soporte'),
+        ]),
       ]);
 
       if (!empty($biz_links)) {
         $sections[] = [
           'id' => 'my_business',
           'title' => t('Mi Negocio'),
+          'subtitle' => t('Administra tu organización y suscripción'),
           'icon_category' => 'business',
           'icon_name' => 'briefcase',
           'links' => array_values($biz_links),
@@ -2953,16 +2986,25 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     // ── Section 4: Administración (solo rol administrator) ──────────────
     if (in_array('administrator', $role_ids)) {
       $admin_links = array_filter([
-        $make_link(t('Admin Center'), 'ecosistema_jaraba_core.admin.center', 'ui', 'settings', 'corporate'),
-        $make_link(t('Gestión Tenants'), 'ecosistema_jaraba_core.admin.center.tenants', 'business', 'building', 'corporate'),
-        $make_link(t('Gestión Usuarios'), 'ecosistema_jaraba_core.admin.center.users', 'ui', 'users', 'corporate'),
-        $make_link(t('Finanzas'), 'ecosistema_jaraba_core.admin.center.finance', 'finance', 'coins', 'corporate'),
+        $make_link(t('Admin Center'), 'ecosistema_jaraba_core.admin.center', 'ui', 'settings', 'corporate', [
+          'description' => t('Panel de control del ecosistema'),
+        ]),
+        $make_link(t('Gestión Tenants'), 'ecosistema_jaraba_core.admin.center.tenants', 'business', 'building', 'corporate', [
+          'description' => t('Organizaciones y suscripciones'),
+        ]),
+        $make_link(t('Gestión Usuarios'), 'ecosistema_jaraba_core.admin.center.users', 'ui', 'users', 'corporate', [
+          'description' => t('Cuentas, roles y permisos'),
+        ]),
+        $make_link(t('Finanzas'), 'ecosistema_jaraba_core.admin.center.finance', 'finance', 'coins', 'corporate', [
+          'description' => t('Ingresos, facturación y métricas'),
+        ]),
       ]);
 
       if (!empty($admin_links)) {
         $sections[] = [
           'id' => 'administration',
           'title' => t('Administración'),
+          'subtitle' => t('Herramientas de gestión de la plataforma'),
           'icon_category' => 'ui',
           'icon_name' => 'shield',
           'links' => array_values($admin_links),
@@ -2973,13 +3015,20 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
 
     // ── Section 5: Cuenta (siempre visible, última posición) ────────────
     $account_links = array_filter([
-      $make_link(t('Editar perfil'), 'entity.user.edit_form', 'actions', 'edit', 'primary', ['user' => $uid]),
+      $make_link(t('Editar perfil'), 'entity.user.edit_form', 'actions', 'edit', 'primary', [
+        'params' => ['user' => $uid],
+        'description' => t('Nombre, email y configuración'),
+        'slide_panel' => TRUE,
+      ]),
       [
         'label' => t('Cerrar sesión'),
         'url' => '/user/logout',
         'icon_category' => 'actions',
         'icon_name' => 'log-out',
         'color' => 'danger',
+        'description' => '',
+        'slide_panel' => FALSE,
+        'slide_panel_title' => t('Cerrar sesión'),
       ],
     ]);
 
@@ -2987,6 +3036,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
       $sections[] = [
         'id' => 'account',
         'title' => t('Cuenta'),
+        'subtitle' => t('Configuración de tu cuenta'),
         'icon_category' => 'actions',
         'icon_name' => 'settings',
         'links' => array_values($account_links),

@@ -85,7 +85,7 @@
                data-effect="fade-up"
                data-delay="{{ loop.index0 * 100 }}">
             {% if badge.icon|default('') %}
-              {{ jaraba_icon('ui', badge.icon, { variant: 'duotone', size: '32px', color: 'primary' }) }}
+              {{ jaraba_icon('ui', badge.icon, { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
             {% endif %}
             {% if badge.src|default('') %}
               <img src="{{ badge.src }}" alt="{{ badge.label|default('Badge') }}" loading="lazy" decoding="async" />

@@ -28,7 +28,7 @@
       {% set icon_map = {
         'shield-check': { category: 'ui', name: 'shield-check' },
         'document': { category: 'ui', name: 'document' },
-        'chart-bar': { category: 'analytics', name: 'chart-bar' }
+        'chart-bar': { category: 'finance', name: 'chart-bar' }
       } %}
       {% for feature in items %}
         <div class="pb-section__feature-card"
@@ -36,7 +36,7 @@
              data-delay="{{ loop.index0 * 100 }}">
           <div class="pb-section__feature-icon" aria-hidden="true">
             {% set icon_info = icon_map[feature.icon|default('shield-check')]|default({ category: 'ui', name: 'shield-check' }) %}
-            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
           </div>
           <h3 class="pb-section__feature-title">{{ feature.title|default('Área legal')|t }}</h3>
           <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción del área de práctica.')|t }}</p>

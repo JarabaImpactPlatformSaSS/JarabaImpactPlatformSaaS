@@ -468,6 +468,13 @@
     }
   }
 
+  &__subtitle {
+    margin: $ej-spacing-xs 0 0;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--ej-color-muted, #64748b);
+  }
+
   // Color variants para el título.
   &--innovation &__title {
     .jaraba-icon,
@@ -622,6 +629,19 @@
       }
     }
   }
+
+  &__cta {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: $ej-spacing-md;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-radius: 8px;
+    background: rgba(255, 140, 66, 0.08);
+    font-size: 0.8125rem;
+    color: var(--ej-color-impulse, #FF8C42);
+    line-height: 1.4;
+  }
 }
 
 // =============================================================================
@@ -736,6 +756,15 @@
         opacity: 1;
       }
     }
+
+    // Muted variant (logout / destructive actions).
+    &--muted {
+      opacity: 0.65;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 
   &__card-icon {
@@ -756,13 +785,26 @@
     }
   }
 
-  &__card-label {
+  &__card-text {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__card-label {
     font-family: var(--ej-font-family, 'Outfit', sans-serif);
     font-size: 0.9375rem;
     font-weight: 600;
     color: var(--ej-color-headings, #1a202c);
+  }
+
+  &__card-desc {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ej-color-muted, #64748b);
+    line-height: 1.3;
   }
 
   &__card-arrow,

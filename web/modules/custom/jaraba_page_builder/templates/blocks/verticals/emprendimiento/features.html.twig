@@ -17,8 +17,8 @@
     <div class="pb-section__features-grid">
       {% set default_features = [
         { icon: 'lightbulb', icon_category: 'ui', title: 'Validación de ideas', desc: 'Metodologías probadas para validar tu modelo de negocio antes de invertir.' },
-        { icon: 'euro', icon_category: 'analytics', title: 'Acceso a financiación', desc: 'Conecta con inversores, fondos y programas de ayudas para emprendedores.' },
-        { icon: 'handshake', icon_category: 'business', title: 'Red de mentores', desc: 'Emprendedores experimentados te guían en cada etapa de tu proyecto.' }
+        { icon: 'euro', icon_category: 'finance', title: 'Acceso a financiación', desc: 'Conecta con inversores, fondos y programas de ayudas para emprendedores.' },
+        { icon: 'handshake', icon_category: 'achievement', title: 'Red de mentores', desc: 'Emprendedores experimentados te guían en cada etapa de tu proyecto.' }
       ] %}
       {% set items = features|default(default_features) %}
       {% for feature in items %}

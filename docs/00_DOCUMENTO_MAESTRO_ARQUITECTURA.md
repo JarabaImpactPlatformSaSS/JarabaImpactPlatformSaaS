@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v69.0
+## Jaraba Impact Platform SaaS v70.0
 
 **Fecha:** 2026-02-24
-**Versión:** 69.0.0 (Auditoria Horizontal — Strict Equality + CAN-SPAM MJML)
-**Estado:** Produccion (Horizontal Audit Complete + Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Versión:** 70.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
+**Estado:** Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Empleabilidad Premium Complete + Entity Admin UI 100% + Andalucia +ei 2a Edicion Ready + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -168,6 +168,34 @@ Integración unificada de soberanía legal y resiliencia técnica:
 ```
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│                      PAGE BUILDER: PATHPROCESSOR + META-SITIO ⭐       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_page_builder (PathProcessor)                                │
+│   ├── PathProcessorPageContent: InboundPathProcessorInterface          │
+│   │   ├── processInbound(): path_alias → /page/{id} resolution        │
+│   │   ├── Prioridad 200 (core path_alias = 100)                       │
+│   │   ├── Sin filtro status → AccessControlHandler gestiona acceso    │
+│   │   ├── Skip list: /api/, /admin/, /user/, /media/, /session/       │
+│   │   └── Static cache por path dentro del request                     │
+│   │                                                                     │
+│   Meta-Sitio jarabaimpact.com (7 páginas):                              │
+│   ├── Homepage: /jarabaimpact (Hero + plataforma SaaS)                 │
+│   ├── Plataforma: /plataforma (Triple Motor Económico)                 │
+│   ├── Verticales: /verticales (6 verticales SaaS)                      │
+│   ├── Impacto: /impacto (Estadísticas + beneficiarios)                 │
+│   ├── Programas: /programas (Programas institucionales)                │
+│   ├── Recursos: /recursos (Centro de recursos)                         │
+│   └── Contacto: /contacto (Formulario + datos)                         │
+│                                                                         │
+│   APIs Usadas:                                                          │
+│   ├── PATCH /api/v1/pages/{id}/config (título + path_alias)            │
+│   ├── POST /api/v1/pages/{id}/publish (publicación)                    │
+│   └── GrapesJS API (contenido visual del canvas)                       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │                      VERTICAL: EMPLEABILIDAD ⭐                        │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -281,6 +309,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **70.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de entidades PageContent a rutas /page/{id}. 7 páginas institucionales creadas y publicadas con contenido en español via GrapesJS. APIs: PATCH /config (títulos + aliases), POST /publish (publicación), GrapesJS store (contenido). Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |
 | 2026-02-24 | **69.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (ACCESS-STRICT-001). 28 plantillas MJML horizontales con compliance CAN-SPAM completo: mj-preview, postal Juncaril, font Outfit, paleta de marca unificada (#1565C0 como azul primario, 6 colores universales reemplazados). Colores semanticos preservados. Secciones de arquitectura: Access Handlers + Email CAN-SPAM. 5 reglas nuevas. Aprendizaje #119. |
 | 2026-02-24 | **68.0.0** | **Empleabilidad Profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity completa con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil premium. Controller fallback cleanup → render array con template premium. Seccion de arquitectura Empleabilidad documentada (6 entidades, 7 secciones glassmorphism, ProfileController resiliente). 3 ficheros creados, 6 modificados. Aprendizaje #118. |
 | 2026-02-24 | **67.0.0** | **Entity Admin UI Remediation Complete:** 286 entidades auditadas, 175 Field UI tabs, CI 100% green. |
@@ -300,4 +329,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 68.0.0 | **Fecha:** 2026-02-24 | **Autor:** IA Asistente
+> **Versión:** 70.0.0 | **Fecha:** 2026-02-24 | **Autor:** IA Asistente

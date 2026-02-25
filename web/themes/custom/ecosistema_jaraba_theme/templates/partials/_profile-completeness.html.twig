@@ -64,9 +64,9 @@
         {% for section in sections %}
           <li class="ej-profile-completeness__item{% if section.completed %} ej-profile-completeness__item--done{% endif %}">
             {% if section.completed %}
-              {{ jaraba_icon('ui', 'check', { size: '14px', color: 'success' }) }}
+              {{ jaraba_icon('ui', 'check', { size: '14px', variant: 'duotone', color: 'verde-innovacion' }) }}
             {% else %}
-              {{ jaraba_icon('ui', 'circle', { size: '14px' }) }}
+              {{ jaraba_icon('ui', 'circle', { size: '14px', variant: 'duotone' }) }}
             {% endif %}
             {% if section.url and not section.completed %}
               <a href="{{ section.url }}"
@@ -81,6 +81,13 @@
           </li>
         {% endfor %}
       </ul>
+
+      {% if cta_message is defined and cta_message %}
+        <p class="ej-profile-completeness__cta">
+          {{ jaraba_icon('ui', 'lightbulb', { size: '16px', variant: 'duotone', color: 'naranja-impulso' }) }}
+          {{ cta_message }}
+        </p>
+      {% endif %}
     </div>
   {% endif %}
 </div>
