@@ -1,12 +1,9 @@
-diff --git a/src/Provider/LinkedIn.php b/src/Provider/LinkedIn.php
-index 1234567..abcdefg 100644
---- a/src/Provider/LinkedIn.php
-+++ b/src/Provider/LinkedIn.php
-@@ -1,112 +1,98 @@
- <?php
-
+--- a/src/Provider/LinkedIn.php	2026-02-25 13:29:58.335377657 +0100
++++ b/src/Provider/LinkedIn.php	2026-02-25 13:30:24.931170145 +0100
+@@ -2,68 +2,29 @@
+ 
  namespace League\OAuth2\Client\Provider;
-
+ 
 -use Exception;
 -use InvalidArgumentException;
  use League\OAuth2\Client\Grant\AbstractGrant;
@@ -16,15 +13,14 @@ index 1234567..abcdefg 100644
  use League\OAuth2\Client\Token\LinkedInAccessToken;
  use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
  use Psr\Http\Message\ResponseInterface;
-
--class LinkedIn extends AbstractProvider
+ 
 +/**
 + * LinkedIn OAuth 2.0 provider using OpenID Connect.
 + */
-+class LinkedIn extends AbstractProvider
+ class LinkedIn extends AbstractProvider
  {
      use BearerAuthorizationTrait;
-
+ 
      /**
 -     * Default scopes
 +     * Default scopes - OpenID Connect.
@@ -32,8 +28,9 @@ index 1234567..abcdefg 100644
       * @var array
       */
 -    public $defaultScopes = ['r_liteprofile', 'r_emailaddress'];
--
--    /**
++    public $defaultScopes = ['openid', 'profile', 'email'];
+ 
+     /**
 -     * Requested fields in scope, seeded with default values
 -     *
 -     * @var array
@@ -43,9 +40,8 @@ index 1234567..abcdefg 100644
 -        'id', 'firstName', 'lastName', 'localizedFirstName', 'localizedLastName',
 -        'profilePicture(displayImage~:playableStreams)',
 -    ];
-+    public $defaultScopes = ['openid', 'profile', 'email'];
-
-     /**
+-
+-    /**
 -     * Constructs an OAuth 2.0 service provider.
 -     *
 -     * @param array $options An array of options to set on this provider.
@@ -79,9 +75,9 @@ index 1234567..abcdefg 100644
       */
      protected function createAccessToken(array $response, AbstractGrant $grant)
      {
-         return new LinkedInAccessToken($response);
+@@ -71,9 +32,7 @@
      }
-
+ 
      /**
 -     * Get the string used to separate scopes.
 -     *
@@ -90,9 +86,9 @@ index 1234567..abcdefg 100644
       */
      protected function getScopeSeparator()
      {
-         return ' ';
+@@ -81,9 +40,7 @@
      }
-
+ 
      /**
 -     * Get authorization url to begin OAuth flow
 -     *
@@ -101,9 +97,9 @@ index 1234567..abcdefg 100644
       */
      public function getBaseAuthorizationUrl()
      {
-         return 'https://www.linkedin.com/oauth/v2/authorization';
+@@ -91,9 +48,7 @@
      }
-
+ 
      /**
 -     * Get access token url to retrieve token
 -     *
@@ -112,9 +108,9 @@ index 1234567..abcdefg 100644
       */
      public function getBaseAccessTokenUrl(array $params)
      {
-         return 'https://www.linkedin.com/oauth/v2/accessToken';
+@@ -101,45 +56,15 @@
      }
-
+ 
      /**
 -     * Get provider url to fetch user details
 -     *
@@ -132,7 +128,7 @@ index 1234567..abcdefg 100644
 -        return 'https://api.linkedin.com/v2/me?' . urldecode($query);
 +        return 'https://api.linkedin.com/v2/userinfo';
      }
-
+ 
      /**
 -     * Get provider url to fetch user details
 -     *
@@ -161,9 +157,9 @@ index 1234567..abcdefg 100644
       */
      protected function getDefaultScopes()
      {
-         return $this->defaultScopes;
+@@ -147,18 +72,10 @@
      }
-
+ 
      /**
 -     * Check a provider response for errors.
 -     *
@@ -181,9 +177,9 @@ index 1234567..abcdefg 100644
          if ($response->getStatusCode() >= 400) {
              throw new IdentityProviderException(
                  isset($data['message']) ? $data['message'] : $response->getReasonPhrase(),
-@@ -117,76 +103,21 @@
+@@ -169,108 +86,18 @@
      }
-
+ 
      /**
 -     * Check a provider response for unauthorized errors.
 -     *
@@ -226,7 +222,7 @@ index 1234567..abcdefg 100644
 -        $response['email'] = $email;
          return new LinkedInResourceOwner($response);
      }
-
+ 
      /**
 -     * Returns the requested fields in scope.
 -     *
@@ -294,35 +290,44 @@ index 1234567..abcdefg 100644
 +        return $this->state;
      }
  }
-diff --git a/src/Provider/LinkedInResourceOwner.php b/src/Provider/LinkedInResourceOwner.php
-index 1234567..abcdefg 100644
---- a/src/Provider/LinkedInResourceOwner.php
-+++ b/src/Provider/LinkedInResourceOwner.php
-@@ -1,207 +1,96 @@
+--- a/src/Provider/LinkedInResourceOwner.php	2026-02-25 13:30:08.111983363 +0100
++++ b/src/Provider/LinkedInResourceOwner.php	2026-02-25 13:30:24.931170145 +0100
+@@ -1,50 +1,42 @@
 -<?php namespace League\OAuth2\Client\Provider;
 +<?php
 +
 +namespace League\OAuth2\Client\Provider;
-
+ 
  use League\OAuth2\Client\Tool\ArrayAccessorTrait;
-
+ 
  /**
 - * @property array $response
 - * @property string $uid
 + * LinkedIn resource owner using OpenID Connect userinfo response.
++ *
++ * Response format from /v2/userinfo:
++ * {
++ *   "sub": "...",
++ *   "name": "First Last",
++ *   "given_name": "First",
++ *   "family_name": "Last",
++ *   "picture": "https://...",
++ *   "email": "user@example.com",
++ *   "email_verified": true
++ * }
   */
  class LinkedInResourceOwner extends GenericResourceOwner
  {
 -
      use ArrayAccessorTrait;
-
+ 
      /**
 -     * Raw response
 -     *
       * @var array
       */
      protected $response = [];
-
+ 
      /**
 -     * Sorted profile pictures
 -     *
@@ -346,7 +351,7 @@ index 1234567..abcdefg 100644
          $this->response = $response;
 -        $this->setSortedProfilePictures();
      }
-
+ 
      /**
 -     * Gets resource owner attribute by key. The key supports dot notation.
 -     *
@@ -355,9 +360,9 @@ index 1234567..abcdefg 100644
       */
      public function getAttribute($key)
      {
-         return $this->getValueByKey($this->response, (string) $key);
+@@ -52,153 +44,55 @@
      }
-
+ 
      /**
 -     * Get user first name
 -     *
@@ -369,7 +374,7 @@ index 1234567..abcdefg 100644
 -        return $this->getAttribute('localizedFirstName');
 +        return $this->getAttribute('given_name');
      }
-
+ 
      /**
 -     * Get user user id
 -     *
@@ -379,9 +384,10 @@ index 1234567..abcdefg 100644
      public function getId()
      {
 -        return $this->getAttribute('id');
--    }
--
--    /**
++        return $this->getAttribute('sub');
+     }
+ 
+     /**
 -     * Get specific image by size
 -     *
 -     * @param integer $size
@@ -406,10 +412,9 @@ index 1234567..abcdefg 100644
 -        return array_map(function ($picture) {
 -            return $this->getValueByKey($picture, 'width');
 -        }, $this->sortedProfilePictures);
-+        return $this->getAttribute('sub');
-     }
-
-     /**
+-    }
+-
+-    /**
 -     * Get user image url
 -     *
 -     * @return string|null
@@ -423,7 +428,7 @@ index 1234567..abcdefg 100644
 -        return $picture ? $this->getValueByKey($picture, 'url') : null;
 +        return $this->getAttribute('picture');
      }
-
+ 
      /**
 -     * Get user last name
 -     *
@@ -435,46 +440,44 @@ index 1234567..abcdefg 100644
 -        return $this->getAttribute('localizedLastName');
 +        return $this->getAttribute('family_name');
      }
-
+ 
      /**
 -     * Returns the sorted collection of profile pictures.
 -     *
 -     * @return array
--     */
--    public function getSortedProfilePictures()
--    {
--        return $this->sortedProfilePictures;
--    }
--
--    /**
--     * Get user url
--     *
--     * @return string|null
 +     * Get user email.
       */
--    public function getUrl()
+-    public function getSortedProfilePictures()
 +    public function getEmail()
      {
--        $vanityName = $this->getAttribute('vanityName');
--
--        return $vanityName ? sprintf('https://www.linkedin.com/in/%s', $vanityName) : null;
+-        return $this->sortedProfilePictures;
 +        return $this->getAttribute('email');
      }
-
+ 
      /**
--     * Get user email, if available
+-     * Get user url
 -     *
 -     * @return string|null
 +     * Get user url (not available via OpenID Connect).
       */
--    public function getEmail()
-+    public function getUrl()
+     public function getUrl()
      {
+-        $vanityName = $this->getAttribute('vanityName');
+-
+-        return $vanityName ? sprintf('https://www.linkedin.com/in/%s', $vanityName) : null;
+-    }
+-
+-    /**
+-     * Get user email, if available
+-     *
+-     * @return string|null
+-     */
+-    public function getEmail()
+-    {
 -        return $this->getAttribute('email');
-+        return null;
-     }
-
-     /**
+-    }
+-
+-    /**
 -     * Attempts to sort the collection of profile pictures included in the profile
 -     * before caching them in the resource owner instance.
 -     *
@@ -514,15 +517,13 @@ index 1234567..abcdefg 100644
 -        }
 -
 -        $this->sortedProfilePictures = $pictures;
--    }
--
--    /**
++        return null;
+     }
+ 
+     /**
       * Return all of the owner details available as an array.
 -     *
 -     * @return array
       */
      public function toArray()
      {
-         return $this->response;
-     }
- }
