@@ -4,129 +4,102 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar perfiles de comerciante.
- *
- * Estructura: Extiende ContentEntityForm. Los campos se agrupan en
- *   fieldsets temáticos para facilitar la edición en el admin.
- *
- * Lógica: El formulario se usa tanto para creación como edición.
- *   Los fieldsets agrupan campos por función: datos del negocio,
- *   contacto, dirección, configuración, media y estado.
+ * Premium form for creating/editing merchant profiles.
  */
-class MerchantProfileForm extends ContentEntityForm {
+class MerchantProfileForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['datos_negocio'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Datos del Negocio'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'datos_negocio' => [
+        'label' => $this->t('Datos del Negocio'),
+        'icon' => ['category' => 'commerce', 'name' => 'store'],
+        'description' => $this->t('Informacion principal del comercio.'),
+        'fields' => ['business_name', 'slug', 'business_type', 'description'],
+      ],
+      'contacto' => [
+        'label' => $this->t('Contacto'),
+        'icon' => ['category' => 'ui', 'name' => 'phone'],
+        'description' => $this->t('Datos de contacto del comercio.'),
+        'fields' => ['tax_id', 'phone', 'email', 'website'],
+      ],
+      'direccion' => [
+        'label' => $this->t('Direccion'),
+        'icon' => ['category' => 'ui', 'name' => 'pin'],
+        'description' => $this->t('Direccion fisica del comercio.'),
+        'fields' => ['address_street', 'address_city', 'address_postal_code', 'address_province', 'address_country'],
+      ],
+      'geolocalizacion' => [
+        'label' => $this->t('Geolocalizacion'),
+        'icon' => ['category' => 'ui', 'name' => 'map'],
+        'description' => $this->t('Coordenadas para el mapa.'),
+        'fields' => ['latitude', 'longitude'],
+      ],
+      'configuracion' => [
+        'label' => $this->t('Configuracion'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Horarios, reparto y comisiones.'),
+        'fields' => ['opening_hours', 'accepts_click_collect', 'delivery_radius_km', 'commission_rate'],
+      ],
+      'stripe' => [
+        'label' => $this->t('Stripe Connect'),
+        'icon' => ['category' => 'commerce', 'name' => 'wallet'],
+        'description' => $this->t('Configuracion de pagos con Stripe.'),
+        'fields' => ['stripe_account_id', 'stripe_onboarding_complete'],
+      ],
+      'estado' => [
+        'label' => $this->t('Estado'),
+        'icon' => ['category' => 'ui', 'name' => 'check'],
+        'description' => $this->t('Verificacion y activacion del comercio.'),
+        'fields' => ['verification_status', 'is_active'],
+      ],
+      'media' => [
+        'label' => $this->t('Imagenes'),
+        'icon' => ['category' => 'media', 'name' => 'image'],
+        'description' => $this->t('Logo, portada y galeria del comercio.'),
+        'fields' => ['logo', 'cover_image', 'gallery'],
+      ],
+      'estadisticas' => [
+        'label' => $this->t('Estadisticas'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Metricas calculadas automaticamente.'),
+        'fields' => ['average_rating', 'total_reviews'],
+      ],
     ];
-    foreach (['business_name', 'slug', 'business_type', 'description'] as $field) {
-      if (isset($form[$field])) {
-        $form['datos_negocio'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'commerce', 'name' => 'store'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    // Computed fields: average_rating and total_reviews are read-only.
+    if (isset($form['premium_section_estadisticas']['average_rating'])) {
+      $form['premium_section_estadisticas']['average_rating']['#disabled'] = TRUE;
+    }
+    elseif (isset($form['average_rating'])) {
+      $form['average_rating']['#disabled'] = TRUE;
     }
 
-    $form['contacto'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Contacto'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['tax_id', 'phone', 'email', 'website'] as $field) {
-      if (isset($form[$field])) {
-        $form['contacto'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+    if (isset($form['premium_section_estadisticas']['total_reviews'])) {
+      $form['premium_section_estadisticas']['total_reviews']['#disabled'] = TRUE;
     }
-
-    $form['direccion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Dirección'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-    foreach (['address_street', 'address_city', 'address_postal_code', 'address_province', 'address_country'] as $field) {
-      if (isset($form[$field])) {
-        $form['direccion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['geolocalizacion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Geolocalización'),
-      '#open' => FALSE,
-      '#weight' => 30,
-    ];
-    foreach (['latitude', 'longitude'] as $field) {
-      if (isset($form[$field])) {
-        $form['geolocalizacion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['configuracion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Configuración'),
-      '#open' => FALSE,
-      '#weight' => 40,
-    ];
-    foreach (['opening_hours', 'accepts_click_collect', 'delivery_radius_km', 'commission_rate'] as $field) {
-      if (isset($form[$field])) {
-        $form['configuracion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['stripe'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Stripe Connect'),
-      '#open' => FALSE,
-      '#weight' => 50,
-    ];
-    foreach (['stripe_account_id', 'stripe_onboarding_complete'] as $field) {
-      if (isset($form[$field])) {
-        $form['stripe'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['estado'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Estado'),
-      '#open' => TRUE,
-      '#weight' => 60,
-    ];
-    foreach (['verification_status', 'is_active'] as $field) {
-      if (isset($form[$field])) {
-        $form['estado'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['media'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Imágenes'),
-      '#open' => FALSE,
-      '#weight' => 70,
-    ];
-    foreach (['logo', 'cover_image', 'gallery'] as $field) {
-      if (isset($form[$field])) {
-        $form['media'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+    elseif (isset($form['total_reviews'])) {
+      $form['total_reviews']['#disabled'] = TRUE;
     }
 
     return $form;
@@ -137,17 +110,7 @@ class MerchantProfileForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->toLink()->toString()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Comerciante %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Comerciante %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

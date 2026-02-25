@@ -4,63 +4,44 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Formulario de creación/edición de PricingRule.
- *
- * PROPÓSITO:
- * Permite a administradores crear y editar reglas de precios
- * personalizadas por plan y métrica.
- *
- * LÓGICA:
- * - Organiza campos en 3 grupos: identificación, configuración de precio, estado
- * - Valida que tiers JSON sea válido cuando el modelo no es flat
- * - Valida unicidad de combinación plan+métrica
+ * Premium form for creating/editing PricingRule entities.
  */
-class PricingRuleForm extends ContentEntityForm {
+class PricingRuleForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    // Grupo 1: Identificación.
-    $form['identification'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Identificación'),
-      '#open' => TRUE,
-      '#weight' => -20,
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('Identificación'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Nombre, plan y métrica.'),
+        'fields' => ['name', 'plan_id', 'metric_type'],
+      ],
+      'pricing' => [
+        'label' => $this->t('Configuración de Precio'),
+        'icon' => ['category' => 'fiscal', 'name' => 'receipt'],
+        'description' => $this->t('Modelo, cantidades y escalones.'),
+        'fields' => ['pricing_model', 'included_quantity', 'unit_price', 'tiers', 'currency'],
+      ],
+      'status' => [
+        'label' => $this->t('Estado'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Activación de la regla.'),
+        'fields' => ['is_active'],
+      ],
     ];
-    $form['name']['#group'] = 'identification';
-    $form['plan_id']['#group'] = 'identification';
-    $form['metric_type']['#group'] = 'identification';
+  }
 
-    // Grupo 2: Configuración de precio.
-    $form['pricing_config'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Configuración de Precio'),
-      '#open' => TRUE,
-      '#weight' => -10,
-    ];
-    $form['pricing_model']['#group'] = 'pricing_config';
-    $form['included_quantity']['#group'] = 'pricing_config';
-    $form['unit_price']['#group'] = 'pricing_config';
-    $form['tiers']['#group'] = 'pricing_config';
-    $form['currency']['#group'] = 'pricing_config';
-
-    // Grupo 3: Estado.
-    $form['status_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Estado'),
-      '#open' => TRUE,
-      '#weight' => 0,
-    ];
-    $form['is_active']['#group'] = 'status_group';
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'fiscal', 'name' => 'coins'];
   }
 
   /**
@@ -71,7 +52,7 @@ class PricingRuleForm extends ContentEntityForm {
 
     $model = $form_state->getValue('pricing_model')[0]['value'] ?? 'flat';
 
-    // Validar JSON de tiers si el modelo no es flat.
+    // Validate tiers JSON when model is not flat.
     if ($model !== 'flat') {
       $tiersRaw = $form_state->getValue('tiers')[0]['value'] ?? '';
       if (!empty($tiersRaw)) {
@@ -99,15 +80,7 @@ class PricingRuleForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-
-    $entity = $this->entity;
-    $message = $result === SAVED_NEW
-      ? $this->t('Regla de precios %label creada.', ['%label' => $entity->label()])
-      : $this->t('Regla de precios %label actualizada.', ['%label' => $entity->label()]);
-
-    $this->messenger()->addStatus($message);
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
-
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

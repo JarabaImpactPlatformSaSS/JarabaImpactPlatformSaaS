@@ -4,31 +4,56 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agroconecta_core\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar ProductAgro.
  */
-class ProductAgroForm extends ContentEntityForm
-{
+class ProductAgroForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic' => [
+        'label' => $this->t('Información básica'),
+        'icon' => ['category' => 'verticals', 'name' => 'agro'],
+        'fields' => ['name', 'sku', 'description_short', 'description', 'image'],
+      ],
+      'catalog' => [
+        'label' => $this->t('Catálogo'),
+        'icon' => ['category' => 'commerce', 'name' => 'tag'],
+        'fields' => ['category', 'origin', 'unit', 'producer_id'],
+      ],
+      'pricing' => [
+        'label' => $this->t('Precio y stock'),
+        'icon' => ['category' => 'commerce', 'name' => 'cart'],
+        'fields' => ['price', 'currency_code', 'stock'],
+      ],
+      'config' => [
+        'label' => $this->t('Configuración'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'fields' => ['tenant_id', 'status'],
+      ],
+    ];
+  }
 
-        $messageArgs = ['%label' => $this->entity->label()];
-        $message = $result === SAVED_NEW
-            ? $this->t('Producto agro %label creado.', $messageArgs)
-            : $this->t('Producto agro %label actualizado.', $messageArgs);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'verticals', 'name' => 'agro'];
+  }
 
-        $this->messenger()->addStatus($message);
-        $form_state->setRedirectUrl($this->entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

@@ -4,69 +4,70 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class CouponRetailForm extends ContentEntityForm {
+/**
+ * Premium form for creating/editing retail coupons.
+ */
+class CouponRetailForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['info_cupon'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Informacion del Cupon'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'info_cupon' => [
+        'label' => $this->t('Informacion del Cupon'),
+        'icon' => ['category' => 'commerce', 'name' => 'tag'],
+        'description' => $this->t('Datos principales del cupon de descuento.'),
+        'fields' => ['code', 'description', 'discount_type', 'discount_value', 'min_order_amount', 'merchant_id'],
+      ],
+      'limites' => [
+        'label' => $this->t('Limites de Uso'),
+        'icon' => ['category' => 'ui', 'name' => 'lock'],
+        'description' => $this->t('Control de usos del cupon.'),
+        'fields' => ['max_uses', 'max_uses_per_user', 'current_uses'],
+      ],
+      'vigencia' => [
+        'label' => $this->t('Vigencia'),
+        'icon' => ['category' => 'ui', 'name' => 'calendar'],
+        'description' => $this->t('Periodo de validez del cupon.'),
+        'fields' => ['valid_from', 'valid_until', 'status'],
+      ],
     ];
-    foreach (['code', 'description', 'discount_type', 'discount_value', 'min_order_amount', 'merchant_id'] as $field) {
-      if (isset($form[$field])) {
-        $form['info_cupon'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'commerce', 'name' => 'tag'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    // Computed field: current_uses is read-only.
+    if (isset($form['premium_section_limites']['current_uses'])) {
+      $form['premium_section_limites']['current_uses']['#disabled'] = TRUE;
     }
-
-    $form['limites'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Limites de Uso'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['max_uses', 'max_uses_per_user', 'current_uses'] as $field) {
-      if (isset($form[$field])) {
-        $form['limites'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['vigencia'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Vigencia'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-    foreach (['valid_from', 'valid_until', 'status'] as $field) {
-      if (isset($form[$field])) {
-        $form['vigencia'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+    elseif (isset($form['current_uses'])) {
+      $form['current_uses']['#disabled'] = TRUE;
     }
 
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('code')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Cupon %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Cupon %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

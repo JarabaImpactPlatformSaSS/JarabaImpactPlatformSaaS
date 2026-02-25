@@ -4,189 +4,155 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_tenant_knowledge\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * FORMULARIO CORRECCIÓN DE IA.
+ * Premium form for AI Correction entities.
  *
- * Permite al tenant registrar cuando el copiloto da una respuesta incorrecta.
- * Genera automáticamente una regla para mejorar futuras respuestas.
+ * Allows tenants to register when the copilot gives an incorrect response.
+ * Generates rules to improve future responses.
  */
-class TenantAiCorrectionForm extends ContentEntityForm
-{
+class TenantAiCorrectionForm extends PremiumEntityFormBase {
 
+  /**
+   * Tenant context service.
+   */
+  protected ?TenantContextService $tenantContext = NULL;
 
-    /**
-     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
-     */
-    protected ?TenantContextService $tenantContext = NULL;
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
+    return $instance;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container) {
-        $instance = parent::create($container);
-        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
-            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
-        }
-        return $instance;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ai', 'name' => 'brain'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormSubtitle() {
+    return $this->t('Register a correction so the copilot learns from mistakes.');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('What happened?'),
+        'icon' => ['category' => 'ui', 'name' => 'search'],
+        'description' => $this->t('Identify the type and context of the error.'),
+        'fields' => ['title', 'correction_type', 'related_topic', 'priority'],
+      ],
+      'context' => [
+        'label' => $this->t('Conversation context'),
+        'icon' => ['category' => 'ai', 'name' => 'brain'],
+        'description' => $this->t('The original query and the incorrect vs correct responses.'),
+        'fields' => ['original_query', 'incorrect_response', 'correct_response'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    // Assign tenant automatically for new entities.
+    $entity = $this->getEntity();
+    if ($entity->isNew()) {
+      $tenantId = $this->getCurrentTenantId();
+      if ($tenantId) {
+        $entity->set('tenant_id', $tenantId);
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+    $form = parent::buildForm($form, $form_state);
 
-        $form['#attributes']['class'][] = 'jaraba-premium-form';
-        $form['#attributes']['class'][] = 'slide-panel__form';
-        $form['#attributes']['class'][] = 'ai-correction-form';
-
-        $entity = $this->getEntity();
-
-        // Asignar tenant automáticamente.
-        if ($entity->isNew()) {
-            $tenantId = $this->getCurrentTenantId();
-            if ($tenantId) {
-                $entity->set('tenant_id', $tenantId);
-            }
-        }
-
-        // Información de ayuda.
-        $form['help'] = [
-            '#type' => 'markup',
-            '#markup' => '<div class="ai-correction-form__help">' .
-                '<p>' . $this->t('¿El copiloto dio una respuesta incorrecta? Registra la corrección para que aprenda y no repita el error.') . '</p>' .
-                '</div>',
-            '#weight' => -20,
-        ];
-
-        // Grupo: Identificación.
-        $form['identification'] = [
-            '#type' => 'details',
-            '#title' => $this->t('¿Qué pasó?'),
-            '#open' => TRUE,
-            '#weight' => -10,
-        ];
-
-        foreach (['title', 'correction_type', 'related_topic', 'priority'] as $field) {
-            if (isset($form[$field])) {
-                $form['identification'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Grupo: Contexto.
-        $form['context'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Contexto de la conversación'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
-
-        foreach (['original_query', 'incorrect_response', 'correct_response'] as $field) {
-            if (isset($form[$field])) {
-                $form['context'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Mostrar regla generada si existe (solo en edición).
-        if (!$entity->isNew() && $entity->isApplied()) {
-            $form['generated_rule_display'] = [
-                '#type' => 'details',
-                '#title' => $this->t('Regla Generada'),
-                '#open' => TRUE,
-                '#weight' => 5,
-            ];
-
-            $form['generated_rule_display']['rule'] = [
-                '#type' => 'markup',
-                '#markup' => '<pre>' . htmlspecialchars($entity->getGeneratedRule()) . '</pre>',
-            ];
-        }
-
-        // Botón para aplicar corrección.
-        if (!$entity->isNew() && !$entity->isApplied()) {
-            $form['actions']['apply'] = [
-                '#type' => 'submit',
-                '#value' => $this->t('Aplicar Corrección'),
-                '#submit' => ['::applyCorrection'],
-                '#weight' => 5,
-                '#button_type' => 'primary',
-            ];
-        }
-
-        // Ocultar campos de sistema.
-        $hiddenFields = ['tenant_id', 'status', 'applied_at', 'hit_count', 'generated_rule'];
-        foreach ($hiddenFields as $field) {
-            if (isset($form[$field])) {
-                $form[$field]['#access'] = FALSE;
-            }
-        }
-
-        return $form;
+    // Show generated rule if it exists (edit mode only).
+    if (!$entity->isNew() && $entity->isApplied()) {
+      $form['generated_rule_display'] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['premium-form__section', 'glass-card'],
+        ],
+        '#weight' => 50,
+      ];
+      $form['generated_rule_display']['rule'] = [
+        '#type' => 'markup',
+        '#markup' => '<h3>' . $this->t('Generated Rule') . '</h3><pre>' . htmlspecialchars($entity->getGeneratedRule()) . '</pre>',
+      ];
     }
 
-    /**
-     * Submit handler para aplicar la corrección.
-     */
-    public function applyCorrection(array &$form, FormStateInterface $form_state): void
-    {
-        /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantAiCorrection $entity */
-        $entity = $this->getEntity();
-
-        // Guardar primero los cambios del formulario.
-        $this->copyFormValuesToEntity($entity, $form, $form_state);
-        $entity->save();
-
-        // Aplicar la corrección (genera la regla).
-        $entity->apply();
-
-        \Drupal::messenger()->addStatus($this->t('Corrección aplicada. El copiloto ha aprendido de este error.'));
-        $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.corrections'));
+    // Add "Apply Correction" button if not yet applied.
+    if (!$entity->isNew() && !$entity->isApplied()) {
+      $form['actions']['apply'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Apply Correction'),
+        '#submit' => ['::applyCorrection'],
+        '#weight' => 5,
+        '#button_type' => 'primary',
+      ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->getEntity();
-
-        $status = parent::save($form, $form_state);
-
-        if ($entity->isNew()) {
-            \Drupal::messenger()->addStatus($this->t('Corrección "@title" registrada. Haz clic en "Aplicar" para que el copiloto aprenda.', [
-                '@title' => $entity->getTitle(),
-            ]));
-        } else {
-            \Drupal::messenger()->addStatus($this->t('Corrección "@title" actualizada.', [
-                '@title' => $entity->getTitle(),
-            ]));
-        }
-
-        $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.corrections'));
-
-        return $status;
+    // Hide system fields.
+    foreach (['tenant_id', 'status', 'applied_at', 'hit_count', 'generated_rule'] as $field) {
+      if (isset($form[$field])) {
+        $form[$field]['#access'] = FALSE;
+      }
     }
 
-    /**
-     * Obtiene el tenant ID actual.
-     */
-    protected function getCurrentTenantId(): ?int
-    {
-        if ($this->tenantContext !== NULL) {
-            $tenantContext = $this->tenantContext;
-            $tenant = $tenantContext->getCurrentTenant();
-            return $tenant ? (int) $tenant->id() : NULL;
-        }
-        return NULL;
+    return $form;
+  }
+
+  /**
+   * Submit handler to apply the correction.
+   */
+  public function applyCorrection(array &$form, FormStateInterface $form_state): void {
+    /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantAiCorrection $entity */
+    $entity = $this->getEntity();
+
+    // Save form changes first.
+    $this->copyFormValuesToEntity($entity, $form, $form_state);
+    $entity->save();
+
+    // Apply the correction (generates the rule).
+    $entity->apply();
+
+    $this->messenger()->addStatus($this->t('Correction applied. The copilot has learned from this error.'));
+    $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.corrections'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.corrections'));
+    return $result;
+  }
+
+  /**
+   * Gets the current tenant ID.
+   */
+  protected function getCurrentTenantId(): ?int {
+    if ($this->tenantContext !== NULL) {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
     }
+    return NULL;
+  }
 
 }

@@ -4,35 +4,54 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_email\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Form handler for Email Template entities.
  */
-class EmailTemplateForm extends ContentEntityForm
-{
+class EmailTemplateForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $status = parent::save($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'general' => [
+        'label' => $this->t('General'),
+        'icon' => ['category' => 'ui', 'name' => 'mail'],
+        'description' => $this->t('Template name, category and vertical.'),
+        'fields' => ['name', 'category', 'vertical'],
+      ],
+      'content' => [
+        'label' => $this->t('Content'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Subject line, preview text and MJML content.'),
+        'fields' => ['subject_line', 'preview_text', 'mjml_content', 'text_version'],
+      ],
+      'settings' => [
+        'label' => $this->t('Settings'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Template activation and system settings.'),
+        'fields' => ['is_active'],
+      ],
+    ];
+  }
 
-        $entity = $this->entity;
-        if ($status === SAVED_NEW) {
-            $this->messenger()->addStatus($this->t('Created template %name.', [
-                '%name' => $entity->label(),
-            ]));
-        } else {
-            $this->messenger()->addStatus($this->t('Updated template %name.', [
-                '%name' => $entity->label(),
-            ]));
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'mail'];
+  }
 
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-        return $status;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

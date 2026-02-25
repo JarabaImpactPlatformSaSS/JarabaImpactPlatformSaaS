@@ -4,54 +4,47 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class ReturnRequestForm extends ContentEntityForm {
+/**
+ * Premium form for return requests.
+ */
+class ReturnRequestForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['info_devolucion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Informacion de la Devolucion'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'devolucion' => [
+        'label' => $this->t('Informacion de la Devolucion'),
+        'icon' => ['category' => 'ui', 'name' => 'document'],
+        'description' => $this->t('Datos del pedido y motivo de la devolucion.'),
+        'fields' => ['order_id', 'suborder_id', 'reason', 'description'],
+      ],
+      'resolucion' => [
+        'label' => $this->t('Resolucion'),
+        'icon' => ['category' => 'commerce', 'name' => 'tag'],
+        'description' => $this->t('Estado y reembolso de la solicitud.'),
+        'fields' => ['status', 'refund_amount'],
+      ],
     ];
-    foreach (['order_id', 'suborder_id', 'reason', 'description'] as $field) {
-      if (isset($form[$field])) {
-        $form['info_devolucion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['resolucion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Resolucion'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['status', 'refund_amount'] as $field) {
-      if (isset($form[$field])) {
-        $form['resolucion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'document'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Solicitud de devolucion creada.'));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Solicitud de devolucion actualizada.'));
-    }
-
-    $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 
