@@ -33,6 +33,22 @@ jaraba_candidate.my_profile.edit:
   requirements:
     _permission: 'edit own profile'
 
+jaraba_candidate.my_profile.personal:
+  path: '/my-profile/personal'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::personalInfoSection'
+    _title: 'Datos Personales'
+  requirements:
+    _permission: 'edit own profile'
+
+jaraba_candidate.my_profile.brand:
+  path: '/my-profile/brand'
+  defaults:
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::professionalBrandSection'
+    _title: 'Marca Profesional'
+  requirements:
+    _permission: 'edit own profile'
+
 jaraba_candidate.my_profile.experience:
   path: '/my-profile/experience'
   defaults:

@@ -1,0 +1,11 @@
+/**
+ * @file
+ * Entry point SCSS for CV template styles (preview & PDF).
+ *
+ * DIRECTRIZ: Federated Design Tokens — Consume solo var(--ej-*) del core.
+ *
+ * COMPILACIÓN:
+ * npx sass scss/cv-styles-entry.scss:css/cv-styles.css --style=compressed
+ */
+
+@use 'cv-templates';

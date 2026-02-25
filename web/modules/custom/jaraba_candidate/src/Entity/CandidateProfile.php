@@ -29,6 +29,8 @@ use Drupal\user\EntityOwnerTrait;
  *       "add" = "Drupal\jaraba_candidate\Form\CandidateProfileForm",
  *       "edit" = "Drupal\jaraba_candidate\Form\CandidateProfileForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
+ *       "personal_info" = "Drupal\jaraba_candidate\Form\PersonalInfoForm",
+ *       "professional_brand" = "Drupal\jaraba_candidate\Form\ProfessionalBrandForm",
  *     },
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",

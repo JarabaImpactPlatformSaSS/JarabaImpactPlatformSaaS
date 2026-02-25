@@ -94,27 +94,26 @@ function jaraba_candidate_theme(): array {
       'template' => 'cv-builder',
     ],
     // === CV Templates (for preview/download rendering) ===
-    // All CV variants intentionally use the same base template (cv-template-modern).
-    // Visual differentiation is driven by the cv_data['template'] key at render time.
+    // Each variant has its own template with a distinct CSS modifier class.
     'cv_template_modern' => [
       'variables' => ['cv_data' => []],
       'template' => 'cv-template-modern',
     ],
     'cv_template_classic' => [
       'variables' => ['cv_data' => []],
-      'template' => 'cv-template-modern',
+      'template' => 'cv-template-classic',
     ],
     'cv_template_creative' => [
       'variables' => ['cv_data' => []],
-      'template' => 'cv-template-modern',
+      'template' => 'cv-template-creative',
     ],
     'cv_template_minimal' => [
       'variables' => ['cv_data' => []],
-      'template' => 'cv-template-modern',
+      'template' => 'cv-template-minimal',
     ],
     'cv_template_tech' => [
       'variables' => ['cv_data' => []],
-      'template' => 'cv-template-modern',
+      'template' => 'cv-template-tech',
     ],
     // === JobSeeker Dashboard ===
     'jobseeker_dashboard' => [

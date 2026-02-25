@@ -48,15 +48,37 @@ class CvController extends ControllerBase
     }
 
     /**
-     * Template descriptions for each CV style.
+     * Returns translatable template metadata (name + description).
+     *
+     * Cannot use const because $this->t() requires runtime context.
+     *
+     * @return array<string, array{name: string, description: string}>
      */
-    protected const TEMPLATE_DESCRIPTIONS = [
-        'modern' => 'Diseño limpio y contemporáneo ideal para perfiles tech y creativos.',
-        'classic' => 'Formato tradicional optimizado para sectores corporativos.',
-        'creative' => 'Layout atrevido con elementos visuales para perfiles creativos.',
-        'minimal' => 'Estilo minimalista que destaca el contenido esencial.',
-        'tech' => 'Enfocado en skills técnicos con secciones para proyectos y código.',
-    ];
+    protected function getTemplateMetadata(): array
+    {
+        return [
+            'modern' => [
+                'name' => $this->t('Modern Style'),
+                'description' => $this->t('Clean, contemporary design ideal for tech and creative profiles.'),
+            ],
+            'classic' => [
+                'name' => $this->t('Classic Style'),
+                'description' => $this->t('Traditional format optimized for corporate sectors.'),
+            ],
+            'creative' => [
+                'name' => $this->t('Creative Style'),
+                'description' => $this->t('Bold layout with visual elements for creative profiles.'),
+            ],
+            'minimal' => [
+                'name' => $this->t('Minimal Style'),
+                'description' => $this->t('Minimalist style that highlights essential content.'),
+            ],
+            'tech' => [
+                'name' => $this->t('Tech Professional'),
+                'description' => $this->t('Focused on technical skills with sections for projects and code.'),
+            ],
+        ];
+    }
 
     /**
      * Displays the CV Builder page.
@@ -81,6 +103,7 @@ class CvController extends ControllerBase
 
         // Build structured template data for the Twig template.
         $rawTemplates = $this->cvBuilder->getTemplates();
+        $metadata = $this->getTemplateMetadata();
         $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_candidate');
         $templates = [];
         foreach ($rawTemplates as $id => $name) {
@@ -96,17 +119,22 @@ class CvController extends ControllerBase
             }
             $templates[] = [
                 'id' => $id,
-                'name' => $name,
-                'description' => self::TEMPLATE_DESCRIPTIONS[$id] ?? '',
+                'name' => $metadata[$id]['name'] ?? $name,
+                'description' => $metadata[$id]['description'] ?? '',
                 'preview' => $preview,
             ];
         }
+
+        // Build shareable public profile URL.
+        $base_url = \Drupal::request()->getSchemeAndHttpHost();
+        $profile_url = $base_url . '/profile/' . $profile->id();
 
         $build = [
             '#theme' => 'cv_builder',
             '#profile' => [
                 'full_name' => $profile->getFullName(),
                 'completion' => $profile->getCompletionPercent(),
+                'share_url' => $profile_url,
             ],
             '#templates' => $templates,
             '#attached' => [

@@ -1,0 +1,120 @@
+{#
+/**
+ * @file
+ * CV Template — Minimal Style.
+ *
+ * Ultra-clean, whitespace-driven, monochrome — for those who value simplicity.
+ * All texts use |t for translatable strings.
+ */
+#}
+
+<div class="cv-template cv-template--minimal">
+
+  {# --- Header / Personal --- #}
+  <header class="cv-header">
+    <div class="cv-header__info">
+      <h1 class="cv-header__name">{{ cv_data.personal.full_name }}</h1>
+      {% if cv_data.professional.headline %}
+        <p class="cv-header__headline">{{ cv_data.professional.headline }}</p>
+      {% endif %}
+      <div class="cv-header__contact">
+        {% if cv_data.personal.city %}
+          <span>{{ cv_data.personal.city }}</span>
+        {% endif %}
+        {% if cv_data.personal.email %}
+          <span>{{ cv_data.personal.email }}</span>
+        {% endif %}
+        {% if cv_data.personal.phone %}
+          <span>{{ cv_data.personal.phone }}</span>
+        {% endif %}
+      </div>
+      <div class="cv-header__links">
+        {% if cv_data.personal.linkedin %}
+          <a href="{{ cv_data.personal.linkedin }}">LinkedIn</a>
+        {% endif %}
+        {% if cv_data.personal.portfolio %}
+          <a href="{{ cv_data.personal.portfolio }}">Portfolio</a>
+        {% endif %}
+        {% if cv_data.personal.website %}
+          <a href="{{ cv_data.personal.website }}">Web</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {# --- Professional Summary --- #}
+  {% if cv_data.professional.summary %}
+    <section class="cv-section">
+      <h2 class="cv-section__title">{{ 'Resumen'|t }}</h2>
+      <p class="cv-section__text">{{ cv_data.professional.summary }}</p>
+    </section>
+  {% endif %}
+
+  {# --- Experience --- #}
+  {% if cv_data.experiences is not empty %}
+    <section class="cv-section">
+      <h2 class="cv-section__title">{{ 'Experiencia'|t }}</h2>
+      {% for exp in cv_data.experiences %}
+        <div class="cv-item">
+          <div class="cv-item__header">
+            <h3 class="cv-item__title">{{ exp.title }}</h3>
+            <span class="cv-item__date">{{ exp.start_date }} — {{ exp.end_date }}</span>
+          </div>
+          <p class="cv-item__subtitle">{{ exp.company }}{% if exp.location %} · {{ exp.location }}{% endif %}</p>
+          {% if exp.description %}
+            <p class="cv-item__description">{{ exp.description }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  {# --- Education --- #}
+  {% if cv_data.educations is not empty %}
+    <section class="cv-section">
+      <h2 class="cv-section__title">{{ 'Educación'|t }}</h2>
+      {% for edu in cv_data.educations %}
+        <div class="cv-item">
+          <div class="cv-item__header">
+            <h3 class="cv-item__title">{{ edu.degree }}{% if edu.field %} — {{ edu.field }}{% endif %}</h3>
+            <span class="cv-item__date">{{ edu.start_date }} — {{ edu.end_date }}</span>
+          </div>
+          <p class="cv-item__subtitle">{{ edu.institution }}</p>
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+
+  {# --- Skills --- #}
+  {% if cv_data.skills is not empty %}
+    <section class="cv-section">
+      <h2 class="cv-section__title">{{ 'Habilidades'|t }}</h2>
+      <div class="cv-skills">
+        {% for skill in cv_data.skills %}
+          <span class="cv-skill-tag">{{ skill.name }}</span>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# --- Languages --- #}
+  {% if cv_data.languages is not empty %}
+    <section class="cv-section">
+      <h2 class="cv-section__title">{{ 'Idiomas'|t }}</h2>
+      <div class="cv-languages">
+        {% for lang in cv_data.languages %}
+          <div class="cv-lang-item">
+            <span class="cv-lang-item__name">{{ lang.language }}</span>
+            <span class="cv-lang-item__level">{{ lang.level }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# --- Footer --- #}
+  <footer class="cv-footer">
+    <p>{{ 'Generado el'|t }} {{ cv_data.generated_at }}</p>
+  </footer>
+
+</div>

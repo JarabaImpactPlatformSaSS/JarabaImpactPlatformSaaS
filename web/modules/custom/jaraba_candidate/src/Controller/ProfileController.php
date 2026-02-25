@@ -475,35 +475,38 @@ class ProfileController extends ControllerBase
     }
 
     /**
-     * Edit profile form for current user.
+     * Load or create the current user's profile.
      *
-     * Supports slide-panel AJAX: if the request is XMLHttpRequest,
-     * returns only the rendered form HTML (no page chrome).
+     * @return \Drupal\jaraba_candidate\Entity\CandidateProfileInterface|null
+     *   The profile entity, or NULL if creation failed.
      */
-    public function editProfile(Request $request): array|Response
-    {
+    protected function loadOrCreateProfile(): ?CandidateProfileInterface {
         $user_id = (int) $this->currentUser()->id();
         $profile = $this->profileService->getProfileByUserId($user_id);
 
         if (!$profile) {
-            // Create a new profile for this user
             $profile = $this->profileService->createProfile($user_id);
-            if (!$profile) {
-                // Fallback: show premium empty state template.
-                return [
-                    '#theme' => 'my_profile_empty',
-                    '#attached' => [
-                        'library' => ['jaraba_candidate/profile_view'],
-                    ],
-                ];
-            }
         }
 
-        // Get the entity form and render it
-        $form = \Drupal::service('entity.form_builder')->getForm($profile, 'default');
+        return $profile;
+    }
 
-        // Slide-panel AJAX → return only the form HTML.
-        // Drupal modal (_wrapper_format) → let Drupal's dialog renderer handle it.
+    /**
+     * Renders an entity form operation as a page or slide-panel response.
+     *
+     * @param \Drupal\jaraba_candidate\Entity\CandidateProfileInterface $profile
+     *   The profile entity.
+     * @param string $operation
+     *   The form operation name (e.g. 'default', 'personal_info').
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The current request.
+     *
+     * @return array|\Symfony\Component\HttpFoundation\Response
+     *   Render array or bare HTML response for slide-panel.
+     */
+    protected function renderFormOperation(CandidateProfileInterface $profile, string $operation, Request $request): array|Response {
+        $form = \Drupal::service('entity.form_builder')->getForm($profile, $operation);
+
         if ($this->isSlidePanelRequest($request)) {
             $html = (string) \Drupal::service('renderer')->render($form);
             return new Response($html, 200, [
@@ -512,6 +515,70 @@ class ProfileController extends ControllerBase
         }
 
         return $form;
+    }
+
+    /**
+     * Edit profile form for current user (backward compatibility).
+     *
+     * Supports slide-panel AJAX: if the request is XMLHttpRequest,
+     * returns only the rendered form HTML (no page chrome).
+     */
+    public function editProfile(Request $request): array|Response
+    {
+        $profile = $this->loadOrCreateProfile();
+
+        if (!$profile) {
+            return [
+                '#theme' => 'my_profile_empty',
+                '#attached' => [
+                    'library' => ['jaraba_candidate/profile_view'],
+                ],
+            ];
+        }
+
+        return $this->renderFormOperation($profile, 'default', $request);
+    }
+
+    /**
+     * Personal info section form (Datos Personales).
+     *
+     * Focused form: name, email, phone, photo.
+     */
+    public function personalInfoSection(Request $request): array|Response
+    {
+        $profile = $this->loadOrCreateProfile();
+
+        if (!$profile) {
+            return [
+                '#theme' => 'my_profile_empty',
+                '#attached' => [
+                    'library' => ['jaraba_candidate/profile_view'],
+                ],
+            ];
+        }
+
+        return $this->renderFormOperation($profile, 'personal_info', $request);
+    }
+
+    /**
+     * Professional brand section form (Marca Profesional).
+     *
+     * Star form with AI-assisted headline and summary.
+     */
+    public function professionalBrandSection(Request $request): array|Response
+    {
+        $profile = $this->loadOrCreateProfile();
+
+        if (!$profile) {
+            return [
+                '#theme' => 'my_profile_empty',
+                '#attached' => [
+                    'library' => ['jaraba_candidate/profile_view'],
+                ],
+            ];
+        }
+
+        return $this->renderFormOperation($profile, 'professional_brand', $request);
     }
 
 }
