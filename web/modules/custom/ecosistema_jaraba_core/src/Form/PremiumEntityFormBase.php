@@ -59,7 +59,8 @@ abstract class PremiumEntityFormBase extends ContentEntityForm {
         '@type' => $entity->getEntityType()->getSingularLabel(),
       ]);
     }
-    return $this->t('Edit: @label', ['@label' => $entity->label()]);
+    $label = $entity->label() ?? $entity->getEntityType()->getSingularLabel() ?? (string) $entity->id();
+    return $this->t('Edit: @label', ['@label' => $label]);
   }
 
   /**
@@ -274,8 +275,9 @@ abstract class PremiumEntityFormBase extends ContentEntityForm {
     $entity = $this->getEntity();
     $type_label = $entity->getEntityType()->getSingularLabel();
 
+    $label = $entity->label() ?? $entity->getEntityType()->getSingularLabel() ?? (string) $entity->id();
     $message_args = [
-      '%label' => $entity->toLink()?->toString() ?? $entity->label(),
+      '%label' => $label,
       '@type' => $type_label,
     ];
 
