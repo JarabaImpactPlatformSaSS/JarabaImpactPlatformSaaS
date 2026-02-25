@@ -3,8 +3,9 @@
  # Category: andalucia_ei
  # Type: content
  #
- # Grid 2 columnas: texto descripcion izquierda + checklist elegibilidad derecha
+ # Grid 2 columnas: texto + checklist izquierda, media derecha
  # Premium: animations, jaraba_icon system, checklist con check-circle
+ # - Accepts both 'description'/'criteria' and 'body'/'eligibility_items' field names
  # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
 <section class="pb-section pb-section--content pb-section--andalucia_ei jaraba-block jaraba-block--premium"
@@ -14,42 +15,63 @@
   <div class="pb-section__container">
     <div class="pb-section__text">
       <span class="pb-section__eyebrow">{{ eyebrow|default('El programa')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Impulsamos tu futuro profesional con inteligencia artificial')|t }}</h2>
-      {% if description %}
-        <div class="pb-section__description">{{ description|safe_html }}</div>
+      <h2 class="pb-section__title">{{ title|default('Andalucía Emprende e Innova con IA')|t }}</h2>
+
+      {# Accept both 'description' and 'body' field names #}
+      {% set desc_html = description|default(body|default('')) %}
+      {% if desc_html %}
+        <div class="pb-section__description">{{ desc_html|raw }}</div>
       {% else %}
         <div class="pb-section__description">
-          <p>{{ 'Andalucia +ei es un programa integral de emprendimiento e insercion laboral que utiliza herramientas de inteligencia artificial para potenciar las capacidades de las personas desempleadas en Andalucia.'|t }}</p>
-          <p>{{ 'A traves de mentoria personalizada, formacion certificada y un itinerario adaptado a cada participante, el programa facilita la transicion al mercado laboral o el lanzamiento de proyectos emprendedores con base tecnologica.'|t }}</p>
+          <p>{{ 'El programa Andalucía +ei combina formación en competencias digitales y emprendimiento con mentoría potenciada por inteligencia artificial. Durante 6 meses, los participantes desarrollan su proyecto empresarial con herramientas de última generación.'|t }}</p>
+          <p>{{ 'Financiado por el Fondo Social Europeo y la Junta de Andalucía, el programa es completamente gratuito para los participantes seleccionados y ofrece certificación oficial en competencias digitales y emprendimiento.'|t }}</p>
         </div>
       {% endif %}
-      {% if cta_text and cta_url %}
-        <div class="pb-section__actions">
-          <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">{{ cta_text }}</a>
-        </div>
-      {% endif %}
-    </div>
-    <div class="pb-section__eligibility">
-      <h3 class="pb-section__eligibility-title">{{ eligibility_title|default('Requisitos de participacion')|t }}</h3>
+
+      {# Eligibility checklist #}
       {% set default_criteria = [
-        'Estar en situacion de desempleo en Andalucia',
-        'Ser mayor de 16 anios',
-        'Estar inscrito/a como demandante de empleo en el SAE',
-        'Tener motivacion para el emprendimiento o la mejora profesional'
+        { text: 'Residencia en cualquier provincia de Andalucía', icon: 'map-pin' },
+        { text: 'Mayores de 18 años en situación de desempleo o mejora profesional', icon: 'users' },
+        { text: 'Idea de negocio o proyecto emprendedor en fase inicial', icon: 'rocket' },
+        { text: 'Compromiso de participación mínima del 80% de las sesiones', icon: 'check-circle' }
       ] %}
-      {% set criteria_items = criteria|default(default_criteria) %}
+      {% set items = eligibility_items|default(criteria|default(default_criteria)) %}
       <ul class="pb-section__checklist">
-        {% for item in criteria_items %}
+        {% for item in items %}
           <li class="pb-section__checklist-item"
               data-effect="fade-up"
-              data-delay="{{ loop.index0 * 100 }}">
+              data-delay="{{ 200 + loop.index0 * 100 }}">
             <span class="pb-section__checklist-icon" aria-hidden="true">
-              {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', size: '24px', color: 'success' }) }}
+              {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '24px', color: 'success' }) }}
             </span>
-            <span class="pb-section__checklist-text">{{ item|t }}</span>
+            <span class="pb-section__checklist-text">
+              {% if item.text is defined %}
+                {{ item.text|t }}
+              {% else %}
+                {{ item|t }}
+              {% endif %}
+            </span>
           </li>
         {% endfor %}
       </ul>
+
+      {% if cta_text|default('') and cta_url|default('') %}
+        <div class="pb-section__actions">
+          <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">{{ cta_text|t }}</a>
+        </div>
+      {% endif %}
+    </div>
+
+    {# Media column — matching the premium PNG thumbnail #}
+    <div class="pb-section__media" data-effect="fade-up" data-delay="200">
+      {% if image|default('') %}
+        <img src="{{ image }}" alt="{{ title|default('Programa Andalucía +ei')|striptags }}" loading="lazy" decoding="async" />
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('ai', 'copilot', { variant: 'duotone', size: '48px', color: 'impulse' }) }}
+          <span>{{ 'Imagen del programa'|t }}</span>
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>

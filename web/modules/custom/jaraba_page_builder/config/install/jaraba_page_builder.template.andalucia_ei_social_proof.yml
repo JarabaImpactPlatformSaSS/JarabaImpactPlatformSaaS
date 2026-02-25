@@ -38,7 +38,7 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: '/modules/custom/jaraba_page_builder/images/previews/andalucia_ei-social-proof.png'
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/andalucia_ei-social_proof.png'
 weight: 46
 preview_data:
   eyebrow: Colaboradores

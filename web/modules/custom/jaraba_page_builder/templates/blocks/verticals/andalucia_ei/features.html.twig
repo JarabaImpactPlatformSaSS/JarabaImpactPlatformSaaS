@@ -5,6 +5,7 @@
  #
  # Header centrado + grid de 3 feature cards (icono + titulo + descripcion)
  # Premium: staggered animations, jaraba_icon system, configurable columns
+ # - Icon resolved from icon_category/icon fields OR icon_map fallback
  # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
  #}
 <section class="pb-section pb-section--features pb-section--andalucia_ei jaraba-block jaraba-block--premium"
@@ -14,32 +15,39 @@
          {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
   <div class="pb-section__container">
     <div class="pb-section__header">
-      <span class="pb-section__eyebrow">{{ eyebrow|default('Que ofrecemos')|t }}</span>
-      <h2 class="pb-section__title">{{ title|default('Tres pilares para tu desarrollo profesional')|t }}</h2>
-      <p class="pb-section__subtitle">{{ subtitle|default('Un programa integral que combina inteligencia artificial, formacion certificada y acompanamiento hacia el empleo.')|t }}</p>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Qué ofrecemos')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Un programa diseñado para transformar tu futuro profesional')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Tres ejes fundamentales que combinan tecnología, formación y oportunidades reales.')|t }}</p>
     </div>
     <div class="pb-section__features-grid pb-section__features-grid--{{ columns|default(3) }}-cols">
       {% set default_features = [
-        { icon: 'ai-brain', title: 'Mentoria con IA', desc: 'Accede a sesiones de mentoria potenciadas por inteligencia artificial que analizan tu perfil, identifican tus fortalezas y disenian un itinerario personalizado de desarrollo profesional.' },
-        { icon: 'graduation', title: 'Formacion Certificada', desc: 'Completa modulos formativos en competencias digitales, emprendimiento e inteligencia artificial con certificacion oficial reconocida en toda Andalucia.' },
-        { icon: 'briefcase', title: 'Insercion Laboral', desc: 'Conecta con empresas colaboradoras del programa y accede a ofertas de empleo exclusivas con acompanamiento personalizado durante todo el proceso de seleccion.' }
+        { icon: 'copilot', icon_category: 'ai', title: 'Mentoría IA', desc: 'Acompañamiento personalizado con inteligencia artificial que analiza tu perfil, identifica oportunidades y genera planes de acción adaptados a tu sector.' },
+        { icon: 'graduation-cap', icon_category: 'education', title: 'Formación Certificada', desc: 'Módulos formativos avalados por la Junta de Andalucía en competencias digitales, emprendimiento y herramientas de IA aplicadas al negocio.' },
+        { icon: 'briefcase', icon_category: 'business', title: 'Inserción Laboral', desc: 'Red de empresas colaboradoras y bolsa de empleo exclusiva con más de 200 ofertas activas en sectores estratégicos de Andalucía.' }
       ] %}
       {% set items = features|default(default_features) %}
-      {% set icon_map = {
-        'ai-brain': { category: 'tech', name: 'ai-brain' },
-        'graduation': { category: 'education', name: 'graduation' },
-        'briefcase': { category: 'legal', name: 'briefcase' }
+      {# Fallback icon map for legacy icon keys #}
+      {% set legacy_icon_map = {
+        'ai-brain': { category: 'ai', name: 'brain' },
+        'graduation': { category: 'education', name: 'graduation-cap' }
       } %}
       {% for feature in items %}
         <div class="pb-section__feature-card"
              data-effect="fade-up"
-             data-delay="{{ loop.index0 * 100 }}">
+             data-delay="{{ loop.index0 * 120 }}">
           <div class="pb-section__feature-icon" aria-hidden="true">
-            {% set icon_info = icon_map[feature.icon|default('ai-brain')]|default({ category: 'tech', name: 'ai-brain' }) %}
-            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'naranja-ei' }) }}
+            {# Resolve icon: prefer icon_category/icon from config, then legacy map, then default #}
+            {% if feature.icon_category|default('') and feature.icon|default('') %}
+              {{ jaraba_icon(feature.icon_category, feature.icon, { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+            {% elseif legacy_icon_map[feature.icon|default('')]|default(false) %}
+              {% set ic = legacy_icon_map[feature.icon] %}
+              {{ jaraba_icon(ic.category, ic.name, { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+            {% else %}
+              {{ jaraba_icon('ui', 'rocket', { variant: 'duotone', size: '32px', color: 'impulse' }) }}
+            {% endif %}
           </div>
-          <h3 class="pb-section__feature-title">{{ feature.title|default('Caracteristica')|t }}</h3>
-          <p class="pb-section__feature-desc">{{ feature.desc|default('Descripcion de la caracteristica.')|t }}</p>
+          <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
+          <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>
         </div>
       {% endfor %}
     </div>

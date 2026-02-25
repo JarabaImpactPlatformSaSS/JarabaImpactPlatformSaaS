@@ -165,8 +165,25 @@ class PathProcessorPageContent implements InboundPathProcessorInterface {
       return $path;
     }
 
-    // 4. Resolve tenant ID for cache key isolation.
-    $tenantId = $this->tenantContext?->getCurrentTenantId();
+    // 4. Resolve tenant ID (as Group ID) for cache key isolation.
+    // PRIORITY: Domain-based resolution via MetaSiteResolverService takes
+    // precedence over user-based TenantContextService. This is critical for
+    // multi-tenant admins who own multiple tenants — the domain they are
+    // visiting determines which tenant's content to serve.
+    $tenantId = NULL;
+    if ($this->metaSiteResolver) {
+      $metaSite = $this->metaSiteResolver->resolveFromRequest($request);
+      if ($metaSite) {
+        $tenantId = $metaSite['group_id'];
+      }
+    }
+    // Fallback to user-based tenant context if no domain match.
+    if ($tenantId === NULL && $this->tenantContext) {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      if ($tenant && $tenant->hasField('group_id')) {
+        $tenantId = (int) ($tenant->get('group_id')->target_id ?? 0) ?: NULL;
+      }
+    }
     $cacheKey = $path . ':' . ($tenantId ?? 'global');
 
     // 5. Buscar en caché estática (mismo request).

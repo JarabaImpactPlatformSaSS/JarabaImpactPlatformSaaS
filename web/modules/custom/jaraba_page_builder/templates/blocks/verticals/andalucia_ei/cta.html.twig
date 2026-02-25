@@ -14,7 +14,7 @@
          data-effect="fade-up">
   <div class="pb-section__container">
     <div class="pb-section__cta-icon" aria-hidden="true">
-      {{ jaraba_icon('programas', 'rocket', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+      {{ jaraba_icon('ui', 'rocket', { variant: 'duotone', size: '48px', color: 'impulse' }) }}
     </div>
     <h2 class="pb-section__title">{{ title|default('Solicita tu plaza ahora')|t }}</h2>
     <p class="pb-section__subtitle">{{ subtitle|default('Unete al programa de emprendimiento aumentado con inteligencia artificial y transforma tu futuro profesional.')|t }}</p>
@@ -23,9 +23,12 @@
       <a href="{{ cta_url|default('#solicitar') }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">
         {{ cta_text|default('Solicitar plaza ahora')|t }}
       </a>
-      {% if cta_secondary_text is defined %}
-        <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
-          {{ cta_secondary_text }}
+      {# Accept both 'secondary_text' (config) and 'cta_secondary_text' (legacy) #}
+      {% set sec_text = secondary_text|default(cta_secondary_text|default('')) %}
+      {% set sec_url = secondary_url|default(cta_secondary_url|default('#')) %}
+      {% if sec_text %}
+        <a href="{{ sec_url }}" class="pb-section__cta pb-section__cta--secondary">
+          {{ sec_text|t }}
         </a>
       {% else %}
         <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Descargar programa'|t }}</a>

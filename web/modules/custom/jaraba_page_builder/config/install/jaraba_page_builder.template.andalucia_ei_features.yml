@@ -61,7 +61,7 @@ preview_data:
   columns: 3
   features:
     -
-      icon: brain
+      icon: copilot
       icon_category: ai
       title: Mentoría IA
       desc: Acompañamiento personalizado con inteligencia artificial que analiza tu perfil, identifica oportunidades y genera planes de acción adaptados a tu sector.

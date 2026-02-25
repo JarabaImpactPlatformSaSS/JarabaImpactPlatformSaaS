@@ -199,8 +199,8 @@
   display: flex;
   align-items: center;
   background: linear-gradient(135deg,
-    color-mix(in srgb, var(--ej-pb-accent) 8%, white) 0%,
-    color-mix(in srgb, var(--ej-pb-accent) 3%, white) 100%);
+      color-mix(in srgb, var(--ej-pb-accent) 8%, white) 0%,
+      color-mix(in srgb, var(--ej-pb-accent) 3%, white) 100%);
 
   .pb-section__container {
     display: grid;
@@ -309,7 +309,7 @@
   &.pb-section--reversed .pb-section__container {
     direction: rtl;
 
-    > * {
+    >* {
       direction: ltr;
     }
   }
@@ -402,8 +402,8 @@
 // ============================================================================
 .pb-section--stats {
   background: linear-gradient(135deg,
-    color-mix(in srgb, var(--ej-pb-accent) 6%, white) 0%,
-    color-mix(in srgb, var(--ej-pb-accent) 2%, white) 100%);
+      color-mix(in srgb, var(--ej-pb-accent) 6%, white) 0%,
+      color-mix(in srgb, var(--ej-pb-accent) 2%, white) 100%);
 
   .pb-section__stats-row {
     display: grid;
@@ -713,8 +713,8 @@
 // ============================================================================
 .pb-section--cta {
   background: linear-gradient(135deg,
-    var(--ej-pb-accent) 0%,
-    color-mix(in srgb, var(--ej-pb-accent) 75%, black) 100%);
+      var(--ej-pb-accent) 0%,
+      color-mix(in srgb, var(--ej-pb-accent) 75%, black) 100%);
   color: white;
   text-align: center;
   padding: var(--ej-spacing-2xl, 5rem) var(--ej-spacing-lg, 2rem);
@@ -983,10 +983,209 @@
 }
 
 // ============================================================================
+// SOCIAL-PROOF ENHANCEMENTS: Trust footer + centered stats + icon placeholders
+// ============================================================================
+.pb-section--social-proof {
+  .pb-section__stats-row--centered {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ej-spacing-xl, 3rem);
+    margin-top: var(--ej-spacing-xl, 3rem);
+    padding-top: var(--ej-spacing-lg, 2rem);
+    border-top: 1px solid var(--ej-border-color, #e2e8f0);
+  }
+
+  .pb-section__trust-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    margin-top: var(--ej-spacing-xl, 3rem);
+    padding: var(--ej-spacing-md, 1rem) var(--ej-spacing-lg, 2rem);
+    background: color-mix(in srgb, var(--ej-pb-accent, #FF8C42) 6%, white);
+    border-radius: var(--ej-pb-radius-sm, 8px);
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, #64748b);
+    font-weight: 500;
+  }
+
+  .pb-section__logo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    width: 130px;
+    height: 56px;
+    padding: 0.375rem 0.5rem;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+  }
+}
+
+// ============================================================================
+// VERTICAL: ANDALUCIA +ei
+// Orange accent, institutional feel, CTA orange variant
+// ============================================================================
+.pb-section--andalucia_ei {
+  --ej-pb-accent: #FF8C42;
+  --ej-pb-accent-light: rgba(255, 140, 66, 0.08);
+
+  .pb-section__cta--orange {
+    background: linear-gradient(135deg, #FF8C42 0%, #E67332 100%);
+    color: white;
+    border: none;
+
+    &:hover {
+      background: linear-gradient(135deg, #E67332 0%, #D06228 100%);
+      box-shadow: 0 8px 24px rgba(255, 140, 66, 0.3);
+      transform: translateY(-2px);
+    }
+  }
+
+  .pb-section__eyebrow {
+    color: #FF8C42;
+    border-color: rgba(255, 140, 66, 0.3);
+  }
+
+  .pb-section__urgency {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #E67332;
+    margin-bottom: var(--ej-spacing-md, 1rem);
+  }
+
+  // CTA icon above the title
+  .pb-section__cta-icon {
+    margin-bottom: var(--ej-spacing-md, 1.25rem);
+  }
+
+  // Header icon (FAQ, Stats)
+  .pb-section__header-icon {
+    margin-bottom: var(--ej-spacing-sm, 0.75rem);
+  }
+
+  // Province list in map
+  .pb-section__provinces {
+    margin-top: var(--ej-spacing-lg, 2rem);
+  }
+
+  .pb-section__provinces-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ej-text-primary, #1e293b);
+    margin-bottom: var(--ej-spacing-sm, 0.75rem);
+  }
+
+  .pb-section__provinces-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem;
+  }
+
+  .pb-section__province {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--ej-text-secondary, #475569);
+  }
+
+  .pb-section__province-icon {
+    flex-shrink: 0;
+  }
+
+  // Map placeholder
+  .pb-section__map-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ej-spacing-sm, 0.75rem);
+    min-height: 280px;
+    background: var(--ej-bg-secondary, #f1f5f9);
+    border-radius: var(--ej-pb-radius, 12px);
+    color: var(--ej-text-secondary, #94a3b8);
+    font-size: 0.875rem;
+    text-align: center;
+    padding: var(--ej-spacing-lg, 2rem);
+  }
+
+  // Eligibility panel (content template)
+  .pb-section__eligibility {
+    background: var(--ej-bg-secondary, #f8fafc);
+    border-radius: var(--ej-pb-radius, 12px);
+    padding: var(--ej-spacing-lg, 2rem);
+    border: 1px solid var(--ej-border-color, #e2e8f0);
+  }
+
+  .pb-section__eligibility-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ej-text-primary, #1e293b);
+    margin: 0 0 var(--ej-spacing-md, 1.25rem);
+  }
+
+  .pb-section__checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pb-section__checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+    color: var(--ej-text-secondary, #475569);
+  }
+
+  .pb-section__checklist-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  // Star rating in testimonials
+  .pb-section__testimonial-rating {
+    display: flex;
+    gap: 0.125rem;
+    margin-bottom: var(--ej-spacing-sm, 0.75rem);
+  }
+
+  .pb-section__testimonial-quote-icon {
+    margin-bottom: var(--ej-spacing-xs, 0.5rem);
+    opacity: 0.5;
+  }
+
+  // Stat icon
+  .pb-section__stat-icon {
+    margin-bottom: var(--ej-spacing-xs, 0.5rem);
+  }
+
+  // Pricing check icon alignment
+  .pb-section__pricing-check {
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================================
 // REDUCED MOTION
 // ============================================================================
 @media (prefers-reduced-motion: reduce) {
   .pb-section {
+
     &__cta--primary:hover,
     &__cta--secondary:hover {
       transform: none;

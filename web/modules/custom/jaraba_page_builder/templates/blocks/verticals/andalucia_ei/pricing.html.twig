@@ -67,7 +67,8 @@
           ]
         }
       ] %}
-      {% set items = plans|default(default_plans) %}
+      {# Accept both 'tracks' (config) and 'plans' (legacy) #}
+      {% set items = tracks|default(plans|default(default_plans)) %}
       {% for plan in items %}
         <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}"
              data-effect="fade-up"
@@ -87,7 +88,7 @@
             {% endfor %}
           </ul>
           <a href="{{ plan.url|default('#solicitar') }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">
-            {{ plan.cta|default('Solicitar plaza')|t }}
+            {{ plan.cta_text|default(plan.cta|default('Solicitar plaza'))|t }}
           </a>
         </div>
       {% endfor %}
