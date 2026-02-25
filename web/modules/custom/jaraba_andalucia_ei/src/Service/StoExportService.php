@@ -23,8 +23,8 @@ class StoExportService {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity type manager.
-   * @param \Drupal\jaraba_sepe_teleformacion\Service\SepeSoapService $sepeSoapService
-   *   Servicio SOAP de SEPE reutilizado.
+   * @param \Drupal\jaraba_sepe_teleformacion\Service\SepeSoapService|null $sepeSoapService
+   *   Servicio SOAP de SEPE reutilizado (optional).
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger del módulo.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
@@ -32,7 +32,7 @@ class StoExportService {
    */
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected SepeSoapService $sepeSoapService,
+    protected ?SepeSoapService $sepeSoapService,
     protected LoggerInterface $logger,
     protected ConfigFactoryInterface $configFactory,
   ) {
