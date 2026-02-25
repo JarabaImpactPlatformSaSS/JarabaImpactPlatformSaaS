@@ -2908,6 +2908,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           'photo' => t('Foto de Perfil'),
           'cv_document' => t('Documento CV'),
           'languages' => t('Idiomas'),
+          'privacy' => t('Privacidad'),
         ];
         $section_routes = [
           'personal_info' => 'jaraba_candidate.my_profile.personal',
@@ -2918,13 +2919,16 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           'photo' => 'jaraba_candidate.my_profile.personal',
           'cv_document' => 'jaraba_candidate.cv_builder',
           'languages' => 'jaraba_candidate.my_profile.languages',
+          'privacy' => 'jaraba_candidate.my_profile.privacy',
         ];
         $all_section_keys = array_keys($section_labels);
+        // Sections with defaults that are always "completed" (settings, not content).
+        $always_completed = ['privacy'];
         $section_details = [];
         foreach ($all_section_keys as $key) {
           $section_details[] = [
             'name' => $section_labels[$key],
-            'completed' => in_array($key, $completion['completed_sections'] ?? []),
+            'completed' => in_array($key, $always_completed) || in_array($key, $completion['completed_sections'] ?? []),
             'url' => $resolve($section_routes[$key] ?? 'jaraba_candidate.my_profile.edit') ?: '',
             'slide_panel_title' => $section_labels[$key],
           ];
