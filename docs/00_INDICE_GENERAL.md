@@ -4,7 +4,16 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-25
-**Versión:** 95.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering)
+**Versión:** 96.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering + Icon Emoji Remediation)
+
+> **🎨 META-SITIO PEPEJARABA: EMOJI→SVG ICON REMEDIATION + CONTRAST FIX** (2026-02-25)
+> - **Contexto:** Verificacion visual post-remediacion del meta-sitio pepejaraba.com detecto 11 emojis Unicode usados como iconos y falta de contraste en hero/CTA de la homepage. Las directrices del SaaS prohiben emojis en produccion (ICON-CONVENTION-001).
+> - **HAL-01 (Auditoria Emoji):** Scan completo de canvas_data en 9 paginas (IDs 57-65). 11 emojis detectados en 4 paginas: 6 en homepage (57), 1 en Casos de Exito (60), 1 en Blog (61), 3 en Contacto (62). Metodo: `preg_match_all` + `class="*icon*"` content extraction via PHP script.
+> - **HAL-02 (Iconos SVG Custom):** 12 ficheros SVG creados en `business/` (6 regular + 6 duotone): `time-pressure` (reloj alarma urgencia), `launch-idea` (bombilla con chispas), `talent-spotlight` (persona con rayos visibilidad), `career-connect` (maletin con check matching), `seed-momentum` (plantula con flecha ascendente), `store-digital` (tienda con WiFi). Convenciones: `viewBox 0 0 24`, `stroke-width: 2`, colores hex `#233D63` (no `currentColor` para canvas_data).
+> - **HAL-03 (Reemplazo Canvas Data):** Script PHP ejecutado via `drush scr` reemplazo 22 instancias de emoji por SVGs inline en `html` + `rendered_html` de canvas_data. Pages 60-62 usan iconos estandar inlined (clipboard, edit, mail, smartphone, map-pin).
+> - **HAL-04 (Contrast Fix):** Hero `.pj-hero` y CTA `.pj-final-cta` con gradiente azul oscuro `linear-gradient(135deg, #233D63, #1a3050, #162740)`. Overlay opacidad 0.15→0.25. WCAG 2.1 AA cumplido.
+> - **2 reglas nuevas:** ICON-EMOJI-001 (P0, prohibicion emojis en canvas_data), ICON-CANVAS-INLINE-001 (P0, hex explicito en SVGs inline). Regla de oro #38. Aprendizaje #124.
+> - **Cross-refs:** Directrices v72.0.0, Arquitectura v73.0.0, Flujo v27.0.0, Indice v96.0.0.
 
 > **🚀 ELEVACION EMPLEABILIDAD + ANDALUCIA EI PLAN MAESTRO + META-SITE RENDERING** (2026-02-25)
 > - **Contexto:** Sprint de elevacion de 3 verticales y rendering multi-tenant. Perfil de candidato con formularios premium, Andalucia EI con portal completo de participante, y meta-sitios con branding tenant-aware.
