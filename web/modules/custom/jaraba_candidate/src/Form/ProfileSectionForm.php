@@ -136,9 +136,6 @@ class ProfileSectionForm extends PremiumEntityFormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
 
-    // Enable form caching so slide-panel POST can retrieve the form.
-    $form_state->setCached(TRUE);
-
     // Hide user_id field — set automatically in save().
     if (isset($form['premium_section_other']['user_id'])) {
       $form['premium_section_other']['user_id']['#access'] = FALSE;
