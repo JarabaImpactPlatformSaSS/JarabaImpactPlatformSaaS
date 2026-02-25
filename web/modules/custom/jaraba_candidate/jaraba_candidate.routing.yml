@@ -84,7 +84,7 @@ jaraba_candidate.my_profile.languages:
 jaraba_candidate.my_profile.privacy:
   path: '/my-profile/privacy'
   defaults:
-    _form: '\Drupal\jaraba_candidate\Form\PrivacySettingsForm'
+    _controller: '\Drupal\jaraba_candidate\Controller\ProfileController::privacySection'
     _title: 'Configuración de privacidad'
   requirements:
     _permission: 'edit own profile'

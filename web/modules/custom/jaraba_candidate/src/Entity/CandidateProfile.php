@@ -31,6 +31,7 @@ use Drupal\user\EntityOwnerTrait;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *       "personal_info" = "Drupal\jaraba_candidate\Form\PersonalInfoForm",
  *       "professional_brand" = "Drupal\jaraba_candidate\Form\ProfessionalBrandForm",
+ *       "privacy" = "Drupal\jaraba_candidate\Form\PrivacySettingsForm",
  *     },
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",

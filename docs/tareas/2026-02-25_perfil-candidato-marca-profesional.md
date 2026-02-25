@@ -3,18 +3,19 @@
 **Fecha:** 2026-02-25
 **Estado:** EN PROGRESO
 **Rama:** main
-**Ultimo commit:** `9ea8b424` (fix copilot URL language prefix)
+**Ultimo commit:** `a491c4e3` (andalucia_ei vertical + public profile gating)
 
 ---
 
 ## 1. Contexto y Objetivo
 
-Dividir el formulario monolitico `CandidateProfileForm` (6 secciones glass-card) en **2 formularios especializados** que se cargan via slide-panel desde el checklist de completitud del perfil:
+Dividir el formulario monolitico `CandidateProfileForm` (6 secciones glass-card) en **formularios especializados** que se cargan via slide-panel desde el checklist de completitud del perfil:
 
 | Seccion checklist | Ruta nueva | Form class | Estado |
 |---|---|---|---|
 | Datos Personales | `/my-profile/personal` | `PersonalInfoForm` | FUNCIONAL |
 | Marca Profesional | `/my-profile/brand` | `ProfessionalBrandForm` | FUNCIONAL (IA pendiente config) |
+| Privacidad | `/my-profile/privacy` | `PrivacySettingsForm` | FUNCIONAL |
 
 La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formulario monolitico `CandidateProfileForm`.
 
@@ -27,16 +28,17 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
 | `jaraba_candidate/src/Form/PersonalInfoForm.php` | 5 campos: first_name, last_name, email, phone, photo. Extiende PremiumEntityFormBase. |
 | `jaraba_candidate/src/Form/ProfessionalBrandForm.php` | 3 glass-cards (headline, summary, nivel). Botones IA inline. Extiende PremiumEntityFormBase. |
 | `jaraba_candidate/src/Form/ProfileSectionForm.php` | Form generico para experience/education/language. Extiende PremiumEntityFormBase. |
+| `jaraba_candidate/src/Form/PrivacySettingsForm.php` | 3 campos: is_public, show_photo, show_contact. Extiende PremiumEntityFormBase. |
 | `jaraba_candidate/js/brand-professional.js` | JS para 3 flujos IA: generate_headline, optimize_summary, generate_summary. Comunica con copilot via fetch POST. |
 
 ## 3. Archivos Modificados
 
 | Archivo | Cambio |
 |---|---|
-| `jaraba_candidate/src/Entity/CandidateProfile.php` | Anadidas form operations: `personal_info`, `professional_brand` |
-| `jaraba_candidate/jaraba_candidate.routing.yml` | 2 rutas nuevas: `my_profile.personal`, `my_profile.brand` |
+| `jaraba_candidate/src/Entity/CandidateProfile.php` | Anadidas form operations: `personal_info`, `professional_brand`, `privacy` |
+| `jaraba_candidate/jaraba_candidate.routing.yml` | 3 rutas nuevas: `my_profile.personal`, `my_profile.brand`, `my_profile.privacy` (ruta privacy cambiada de `_form` a `_controller`). |
 | `jaraba_candidate/jaraba_candidate.libraries.yml` | Libreria `brand_professional` (JS + deps) |
-| `jaraba_candidate/src/Controller/ProfileController.php` | `renderFormOperation()` con `renderPlain()` + `$form['#action']` explicito. Metodos `personalInfoSection()`, `professionalBrandSection()`, helper `loadOrCreateProfile()`. |
+| `jaraba_candidate/src/Controller/ProfileController.php` | `renderFormOperation()` con `renderPlain()` + `$form['#action']` explicito. Metodos `personalInfoSection()`, `professionalBrandSection()`, `privacySection()`, helper `loadOrCreateProfile()`. |
 | `jaraba_candidate/src/Controller/ProfileSectionFormController.php` | `renderPlain()` + `$form['#action']` explicito en `add()` y `edit()`. |
 | `jaraba_candidate/src/Service/ProfileCompletionService.php` | `headline` anadido a campos de `professional_summary`. Label actualizado a "Marca Profesional". |
 | `jaraba_candidate/jaraba_candidate.install` | `update_10006()` para instalar tabla `candidate_language`. |
@@ -44,7 +46,7 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
 | `jaraba_candidate/templates/candidate-profile-view.html.twig` | Boton "Completar perfil" cambiado de modal a slide-panel apuntando a `/my-profile/personal`. |
 | `jaraba_candidate/templates/my-profile-skills.html.twig` | CSS `.btn-add-skill--added`. |
 | `ecosistema_jaraba_core/src/Form/PremiumEntityFormBase.php` | `getFormTitle()` y `save()` con fallback null-safe para entidades sin label key. Afecta 20 entidades. |
-| `ecosistema_jaraba_theme/ecosistema_jaraba_theme.theme` | `section_routes` y `section_labels` actualizados. Libreria `brand_professional` adjuntada en `preprocess_page__user()` (L3151). |
+| `ecosistema_jaraba_theme/ecosistema_jaraba_theme.theme` | `section_routes` y `section_labels` actualizados con 9 secciones (incl. privacy). Libreria `brand_professional` adjuntada en `preprocess_page__user()` (L3151). Array `$always_completed` para secciones con defaults. |
 | `ecosistema_jaraba_theme/templates/partials/_profile-completeness.html.twig` | Secciones completadas siguen siendo clicables (eliminado gate `not section.completed`). |
 
 ---
@@ -89,11 +91,13 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
 ### FUNCIONAL
 - [x] Ruta `/my-profile/personal` carga PersonalInfoForm en slide-panel
 - [x] Ruta `/my-profile/brand` carga ProfessionalBrandForm en slide-panel
+- [x] Ruta `/my-profile/privacy` carga PrivacySettingsForm en slide-panel
 - [x] Ruta `/my-profile/edit` mantiene formulario monolitico (backward compat)
 - [x] ProfileSectionForm graba experience, education, language sin crash
-- [x] Checklist con labels y rutas nuevas ("Datos Personales", "Marca Profesional")
+- [x] Checklist con labels y rutas nuevas (9 secciones incl. Privacidad)
 - [x] Skills: DOM update inline sin reload
 - [x] PremiumEntityFormBase null-safe para 20 entidades
+- [x] 6 enlaces migrados de modal a slide-panel (commit `1d752a16`)
 
 ### PENDIENTE — IA Copilot
 - [ ] **API key de OpenAI no configurada** en el entorno local. Config: `ai_provider_openai.settings` → `api_key` tiene placeholder de 10 chars (necesita key real `sk-...`). Ruta admin: `/admin/config/ai/settings` o `/admin/config/ai/providers/openai`.
@@ -103,24 +107,17 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
   - `generate_summary` → textarea relleno + enlace "Recuperar anterior"
 - [x] CSS para componentes IA — `css/brand-professional.css` (commit `1d752a16`). Usa `var(--ej-*)` tokens per arquitectura theming.
 
-### COMPLETADO — Modal `/my-profile/edit` (commit `1d752a16`)
-- [x] 6 enlaces migrados de `data-dialog-type="modal"` y paths hardcodeados a slide-panel con `path()`:
-  1. `candidate-profile-view.html.twig:83-85` — "Editar perfil" → slide-panel
-  2. `jobseeker-dashboard.html.twig:51` — "Edit" → slide-panel
-  3. `jobseeker-dashboard.html.twig:96` — "Create Profile" → slide-panel personal
-  4. `jobseeker-dashboard.html.twig:87` — secciones faltantes → slide-panel
-  5. `cv-builder.html.twig:111` — "Complete my profile" → slide-panel personal
-  6. `jobseeker-recommendations.html.twig:65` — "Completar mi perfil" → slide-panel personal
-
 ### PENDIENTE — Icono Habilidades
 - [ ] El usuario indico "No me gusta el icono que has usado para Habilidades" — pendiente preguntar cual prefiere.
 
-### PENDIENTE — Formularios no graban via slide-panel (VERIFICAR)
-- [ ] Tras eliminar `setCached(TRUE)`, los formularios se reconstruyen en POST sin cache. **Debe verificarse en navegador** que:
-  - PersonalInfoForm graba correctamente
-  - ProfessionalBrandForm graba correctamente
-  - ProfileSectionForm (experience/education/language) graba correctamente
-- [ ] Si algun formulario no graba, la alternativa es forzar cache solo en POST: `if (\Drupal::request()->isMethod('POST')) { $form_state->setCached(TRUE); }`
+### VERIFICACION — Formularios via slide-panel POST
+Analisis tecnico (sin cache, post-commit `03b80268`):
+- **Formularios texto/select/checkbox**: Funcionan sin cache. `FormData` envia todos los valores, entity form se reconstruye en POST desde la entidad, `save()` ejecuta correctamente.
+- **ProfessionalBrandForm**: Solo campos texto y select — funciona.
+- **PrivacySettingsForm**: Solo checkboxes — funciona.
+- **ProfileSectionForm**: Solo campos texto/date/boolean — funciona.
+- **PersonalInfoForm** (photo field): El widget `managed_file` usa AJAX para preview. En contexto slide-panel, el AJAX de preview puede no funcionar, pero el upload via `FormData` en submit si deberia funcionar. **Verificar en navegador**.
+- Fallback si falla: `if ($this->getRequest()->isMethod('POST')) { $form_state->setCached(TRUE); }` en `buildForm()`.
 
 ---
 
@@ -159,6 +156,7 @@ EntityForm (Drupal core)
               ├── CandidateProfileForm (monolitico, 6 secciones)
               ├── PersonalInfoForm (5 campos contacto)
               ├── ProfessionalBrandForm (3 cards + IA)
+              ├── PrivacySettingsForm (3 campos visibilidad)
               └── ProfileSectionForm (experience/education/language)
 ```
 
@@ -171,6 +169,13 @@ PremiumEntityFormBase provee:
 
 ---
 
+### 4.7 PrivacySettingsForm no existia (CRITICO)
+- **Sintoma:** Ruta `/my-profile/privacy` causaba error fatal (clase no encontrada).
+- **Causa:** `jaraba_candidate.routing.yml` referenciaba `PrivacySettingsForm` con `_form:` pero la clase no existia. Ademas, usar `_form:` no es compatible con el patron entity form + slide-panel.
+- **Fix:** Creada `PrivacySettingsForm.php` extendiendo `PremiumEntityFormBase` con 3 campos (is_public, show_photo, show_contact). Ruta cambiada de `_form:` a `_controller:` con nuevo metodo `ProfileController::privacySection()`. Form operation `privacy` registrada en `CandidateProfile.php`. Seccion anadida al checklist del theme con `$always_completed` array para secciones con defaults.
+
+---
+
 ## 8. Commits de esta sesion (en orden)
 
 1. `f1810b2d` — feat: update_10006 + skills UX + brand-professional.js + completeness fix
@@ -178,3 +183,6 @@ PremiumEntityFormBase provee:
 3. `03b80268` — fix: remove setCached(TRUE) that crashes on GET
 4. `c72a1a28` — fix: null-safe label in PremiumEntityFormBase (20 entidades)
 5. `9ea8b424` — fix: Url::fromRoute for copilot URL with language prefix
+6. `1d752a16` — feat: migrate modal links to slide-panel + AI component CSS
+7. `a491c4e3` — feat: andalucia_ei vertical + domain-based tenant resolution + public profile gating
+8. *(pendiente commit)* — fix: crear PrivacySettingsForm + privacy en checklist

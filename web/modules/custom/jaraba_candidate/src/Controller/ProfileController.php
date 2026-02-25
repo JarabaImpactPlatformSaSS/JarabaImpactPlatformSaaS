@@ -584,5 +584,26 @@ class ProfileController extends ControllerBase
         return $this->renderFormOperation($profile, 'professional_brand', $request);
     }
 
+    /**
+     * Privacy settings section form (Privacidad).
+     *
+     * Controls profile visibility: public/private, show photo, show contact.
+     */
+    public function privacySection(Request $request): array|Response
+    {
+        $profile = $this->loadOrCreateProfile();
+
+        if (!$profile) {
+            return [
+                '#theme' => 'my_profile_empty',
+                '#attached' => [
+                    'library' => ['jaraba_candidate/profile_view'],
+                ],
+            ];
+        }
+
+        return $this->renderFormOperation($profile, 'privacy', $request);
+    }
+
 }
 
