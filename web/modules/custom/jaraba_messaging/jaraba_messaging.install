@@ -58,19 +58,17 @@ function jaraba_messaging_schema(): array {
       ],
       'body_encrypted' => [
         'type' => 'blob',
-        'size' => 'medium',
+        'size' => 'big',
         'not null' => TRUE,
-        'description' => 'Cuerpo cifrado AES-256-GCM (MEDIUMBLOB).',
+        'description' => 'Cuerpo cifrado AES-256-GCM (LONGBLOB).',
       ],
       'encryption_iv' => [
         'type' => 'blob',
-        'size' => 'normal',
         'not null' => TRUE,
         'description' => 'Initialization vector (12 bytes).',
       ],
       'encryption_tag' => [
         'type' => 'blob',
-        'size' => 'normal',
         'not null' => TRUE,
         'description' => 'GCM authentication tag (16 bytes).',
       ],
@@ -184,13 +182,11 @@ function jaraba_messaging_schema(): array {
       ],
       'previous_hash' => [
         'type' => 'blob',
-        'size' => 'tiny',
         'not null' => TRUE,
         'description' => 'Hash SHA-256 binario (32 bytes) del registro anterior en la cadena.',
       ],
       'current_hash' => [
         'type' => 'blob',
-        'size' => 'tiny',
         'not null' => TRUE,
         'description' => 'Hash SHA-256 binario (32 bytes) de este registro.',
       ],
@@ -294,7 +290,6 @@ function jaraba_messaging_update_10001(): void {
   // Step 1: Add temporary binary columns.
   $blob_spec = [
     'type' => 'blob',
-    'size' => 'tiny',
     'not null' => FALSE,
     'description' => 'Temporary binary hash column.',
   ];
@@ -339,7 +334,6 @@ function jaraba_messaging_update_10001(): void {
   // Step 4: Rename binary columns to original names.
   $final_spec = [
     'type' => 'blob',
-    'size' => 'tiny',
     'not null' => TRUE,
   ];
 
