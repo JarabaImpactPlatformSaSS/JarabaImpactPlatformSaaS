@@ -431,10 +431,26 @@
 }
 
 // =============================================================================
-// QUICK ACCESS GRID
+// QUICK ACCESS SECTIONS
 // =============================================================================
-.quick-access {
-  animation: fadeInUp 0.6s ease 0.3s both;
+.quick-access-sections {
+  display: flex;
+  flex-direction: column;
+  gap: $ej-spacing-xl;
+}
+
+.quick-access-section {
+  animation: fadeInUp 0.6s ease both;
+
+  // Separador entre secciones.
+  & + & {
+    padding-top: $ej-spacing-xl;
+    border-top: 1px solid var(--ej-border-color, #{$ej-border-color});
+  }
+
+  &__header {
+    margin-bottom: $ej-spacing-lg;
+  }
 
   &__title {
     display: flex;
@@ -444,11 +460,40 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--ej-color-headings, #1a202c);
-    margin: 0 0 $ej-spacing-lg;
+    margin: 0;
 
     .jaraba-icon,
     img {
       opacity: 0.7;
+    }
+  }
+
+  // Color variants para el título.
+  &--innovation &__title {
+    .jaraba-icon,
+    img {
+      color: var(--ej-color-innovation, #00A9A5);
+    }
+  }
+
+  &--impulse &__title {
+    .jaraba-icon,
+    img {
+      color: var(--ej-color-impulse, #FF8C42);
+    }
+  }
+
+  &--corporate &__title {
+    .jaraba-icon,
+    img {
+      color: var(--ej-color-corporate, #233D63);
+    }
+  }
+
+  &--neutral &__title {
+    .jaraba-icon,
+    img {
+      color: var(--ej-color-muted, #64748b);
     }
   }
 
@@ -466,6 +511,25 @@
     }
   }
 
+  &__completeness {
+    margin-bottom: $ej-spacing-lg;
+    padding: $ej-spacing-lg;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+}
+
+// =============================================================================
+// QUICK ACCESS CARDS (reutilizadas por las secciones)
+// =============================================================================
+.quick-access {
   &__card {
     display: flex;
     align-items: center;
@@ -562,6 +626,16 @@
         box-shadow:
           0 12px 32px rgba(239, 68, 68, 0.12),
           0 4px 12px rgba(239, 68, 68, 0.08);
+      }
+    }
+
+    // Cross-vertical suggestion indicator.
+    &--cross {
+      border-style: dashed;
+      opacity: 0.85;
+
+      &:hover {
+        opacity: 1;
       }
     }
   }

@@ -2748,76 +2748,261 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     $initials = mb_strtoupper(mb_substr($name, 0, 2));
     $variables['user_initials'] = $initials;
 
-    // -- Quick Access Links ---------------------------------------------------
-    // Links contextuales según los roles del usuario.
+    // -- Quick Access Sections ------------------------------------------------
+    // Secciones agrupadas contextuales según avatar, tenant y roles.
     $uid = $user->id();
-    $quick_links = [];
+    $sections = [];
 
-    // Siempre disponibles.
-    $quick_links[] = [
-      'label' => t('Editar perfil'),
-      'url'   => \Drupal\Core\Url::fromRoute('entity.user.edit_form', ['user' => $uid])->toString(),
-      'icon'  => 'edit',
-      'icon_category' => 'actions',
-      'icon_name' => 'edit',
-      'color' => 'primary',
-    ];
+    // Helper: resolver ruta con try/catch — devuelve URL string o NULL.
+    $resolve = function (string $route, array $params = []) {
+      try {
+        return \Drupal\Core\Url::fromRoute($route, $params)->toString();
+      }
+      catch (\Exception $e) {
+        return NULL;
+      }
+    };
 
-    // Candidato / Empleabilidad.
-    if (in_array('candidate', $role_ids) || in_array('jobseeker', $role_ids)) {
-      $quick_links[] = [
-        'label' => t('Dashboard Empleabilidad'),
-        'url'   => '/dashboard/career',
-        'icon'  => 'career',
-        'icon_category' => 'ui',
-        'icon_name' => 'check-circle',
-        'color' => 'innovation',
+    // Helper: construir link solo si la ruta existe.
+    $make_link = function (string $label, string $route, string $icon_cat, string $icon_name, string $color, array $params = []) use ($resolve) {
+      $url = $resolve($route, $params);
+      if ($url === NULL) {
+        return NULL;
+      }
+      return [
+        'label' => $label,
+        'url' => $url,
+        'icon_category' => $icon_cat,
+        'icon_name' => $icon_name,
+        'color' => $color,
       ];
-      $quick_links[] = [
-        'label' => t('Buscar ofertas'),
-        'url'   => '/ofertas',
-        'icon'  => 'search',
-        'icon_category' => 'ui',
-        'icon_name' => 'search',
-        'color' => 'innovation',
-      ];
+    };
+
+    // ── Section 1: Mi Perfil Profesional (siempre visible) ──────────────
+    $prof_links = array_filter([
+      $make_link(t('Ver perfil profesional'), 'jaraba_candidate.my_profile', 'ui', 'user', 'innovation'),
+      $make_link(t('Constructor CV'), 'jaraba_candidate.cv_builder', 'actions', 'file-text', 'innovation'),
+      $make_link(t('Autoconocimiento'), 'jaraba_self_discovery.dashboard', 'ui', 'compass', 'innovation'),
+    ]);
+
+    // Completitud del perfil (solo si el servicio existe).
+    $profile_completeness = NULL;
+    if (\Drupal::hasService('jaraba_candidate.profile_completion')) {
+      try {
+        $completion_service = \Drupal::service('jaraba_candidate.profile_completion');
+        $completion = $completion_service->calculateCompletion((int) $uid);
+
+        // Mapping de secciones para el parcial _profile-completeness.html.twig.
+        $section_labels = [
+          'personal_info' => t('Información Personal'),
+          'professional_summary' => t('Resumen Profesional'),
+          'experience' => t('Experiencia Laboral'),
+          'education' => t('Formación Académica'),
+          'skills' => t('Habilidades y Competencias'),
+          'photo' => t('Foto de Perfil'),
+          'cv_document' => t('Documento CV'),
+          'languages' => t('Idiomas'),
+        ];
+        $section_routes = [
+          'personal_info' => 'jaraba_candidate.my_profile.edit',
+          'professional_summary' => 'jaraba_candidate.my_profile.edit',
+          'experience' => 'jaraba_candidate.my_profile.experience',
+          'education' => 'jaraba_candidate.my_profile.education',
+          'skills' => 'jaraba_candidate.my_profile.skills',
+          'photo' => 'jaraba_candidate.my_profile.edit',
+          'cv_document' => 'jaraba_candidate.cv_builder',
+          'languages' => 'jaraba_candidate.my_profile.edit',
+        ];
+        $all_section_keys = array_keys($section_labels);
+        $section_details = [];
+        foreach ($all_section_keys as $key) {
+          $section_details[] = [
+            'name' => $section_labels[$key],
+            'completed' => in_array($key, $completion['completed_sections'] ?? []),
+            'url' => $resolve($section_routes[$key] ?? 'jaraba_candidate.my_profile.edit') ?: '',
+          ];
+        }
+
+        $profile_completeness = [
+          'percentage' => (int) round($completion['percentage'] ?? 0),
+          'sections' => $section_details,
+          'total_sections' => $completion['total_sections'] ?? count($all_section_keys),
+          'completed_sections' => $completion['completed_count'] ?? 0,
+        ];
+      }
+      catch (\Exception $e) {
+        // Servicio no disponible — no mostrar completitud.
+      }
     }
 
-    // Emprendimiento.
-    if (in_array('entrepreneur', $role_ids)) {
-      $quick_links[] = [
-        'label' => t('Dashboard Emprendimiento'),
-        'url'   => '/emprendimiento',
-        'icon'  => 'rocket',
+    if (!empty($prof_links) || $profile_completeness) {
+      $section = [
+        'id' => 'professional_profile',
+        'title' => t('Mi Perfil Profesional'),
+        'icon_category' => 'ui',
+        'icon_name' => 'user',
+        'links' => array_values($prof_links),
+        'color' => 'innovation',
+      ];
+      if ($profile_completeness) {
+        $section['profile_completeness'] = $profile_completeness;
+      }
+      $sections[] = $section;
+    }
+
+    // ── Section 2: Mi Vertical (dinámica por avatar) ────────────────────
+    $avatar_links = [];
+    $avatar_label = NULL;
+    $avatar_color = 'primary';
+    try {
+      if (\Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+        $avatar_result = \Drupal::service('ecosistema_jaraba_core.avatar_detection')->detect();
+        $avatar_type = $avatar_result->avatarType;
+
+        // Labels legibles por avatar.
+        $avatar_labels = [
+          'jobseeker' => t('Candidato'),
+          'recruiter' => t('Reclutador'),
+          'entrepreneur' => t('Emprendedor'),
+          'producer' => t('Productor'),
+          'buyer' => t('Comprador'),
+          'merchant' => t('Comerciante'),
+          'service_provider' => t('Proveedor de Servicios'),
+          'profesional' => t('Profesional'),
+          'student' => t('Estudiante'),
+          'mentor' => t('Mentor'),
+          'legal_professional' => t('Profesional Legal'),
+          'tenant_admin' => t('Admin Tenant'),
+        ];
+        // Colores por vertical.
+        $vertical_colors = [
+          'empleabilidad' => 'innovation',
+          'emprendimiento' => 'impulse',
+          'agroconecta' => 'innovation',
+          'comercioconecta' => 'impulse',
+          'serviciosconecta' => 'corporate',
+          'jarabalex' => 'corporate',
+        ];
+
+        if ($avatar_type !== 'general' && isset($avatar_labels[$avatar_type])) {
+          $avatar_label = $avatar_labels[$avatar_type];
+          $avatar_color = $vertical_colors[$avatar_result->vertical ?? ''] ?? 'primary';
+
+          if (\Drupal::hasService('ecosistema_jaraba_core.avatar_navigation')) {
+            $nav_items = \Drupal::service('ecosistema_jaraba_core.avatar_navigation')->getNavigationItems();
+            foreach ($nav_items as $item) {
+              $avatar_links[] = [
+                'label' => $item['label'],
+                'url' => $item['url'],
+                'icon_category' => $item['icon_category'] ?? 'ui',
+                'icon_name' => $item['icon_name'] ?? 'arrow-right',
+                'color' => $avatar_color,
+                'cross_vertical' => !empty($item['cross_vertical']),
+              ];
+            }
+          }
+        }
+      }
+    }
+    catch (\Exception $e) {
+      // Servicios de avatar no disponibles.
+    }
+
+    if (!empty($avatar_links)) {
+      $sections[] = [
+        'id' => 'my_vertical',
+        'title' => $avatar_label ? t('Mi Vertical: @label', ['@label' => $avatar_label]) : t('Mi Vertical'),
         'icon_category' => 'verticals',
         'icon_name' => 'rocket',
-        'color' => 'impulse',
+        'links' => $avatar_links,
+        'color' => $avatar_color,
       ];
     }
 
-    // Admin.
-    if (in_array('administrator', $role_ids) || in_array('tenant_admin', $role_ids)) {
-      $quick_links[] = [
-        'label' => t('Admin Center'),
-        'url'   => '/admin-center',
-        'icon'  => 'admin',
-        'icon_category' => 'ui',
+    // ── Section 3: Mi Negocio (solo si tiene tenant) ────────────────────
+    $tenant = NULL;
+    try {
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+        $tenant = \Drupal::service('ecosistema_jaraba_core.tenant_context')->getCurrentTenant();
+      }
+    }
+    catch (\Exception $e) {
+      // Servicio de tenant no disponible.
+    }
+
+    if ($tenant) {
+      $biz_links = array_filter([
+        $make_link(t('Dashboard Tenant'), 'ecosistema_jaraba_core.tenant.dashboard', 'ui', 'dashboard', 'corporate'),
+        $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'credit-card', 'corporate'),
+        $make_link(t('Centro de ayuda'), 'jaraba_tenant_knowledge.help_center', 'ui', 'help-circle', 'corporate'),
+      ]);
+
+      if (!empty($biz_links)) {
+        $sections[] = [
+          'id' => 'my_business',
+          'title' => t('Mi Negocio'),
+          'icon_category' => 'business',
+          'icon_name' => 'briefcase',
+          'links' => array_values($biz_links),
+          'color' => 'corporate',
+        ];
+      }
+    }
+
+    // ── Section 4: Administración (solo rol administrator) ──────────────
+    if (in_array('administrator', $role_ids)) {
+      $admin_links = array_filter([
+        $make_link(t('Admin Center'), 'ecosistema_jaraba_core.admin.center', 'ui', 'settings', 'corporate'),
+        $make_link(t('Gestión Tenants'), 'ecosistema_jaraba_core.admin.center.tenants', 'business', 'building', 'corporate'),
+        $make_link(t('Gestión Usuarios'), 'ecosistema_jaraba_core.admin.center.users', 'ui', 'users', 'corporate'),
+        $make_link(t('Finanzas'), 'ecosistema_jaraba_core.admin.center.finance', 'commerce', 'dollar-sign', 'corporate'),
+      ]);
+
+      if (!empty($admin_links)) {
+        $sections[] = [
+          'id' => 'administration',
+          'title' => t('Administración'),
+          'icon_category' => 'ui',
+          'icon_name' => 'shield',
+          'links' => array_values($admin_links),
+          'color' => 'corporate',
+        ];
+      }
+    }
+
+    // ── Section 5: Cuenta (siempre visible, última posición) ────────────
+    $account_links = array_filter([
+      $make_link(t('Editar perfil'), 'entity.user.edit_form', 'actions', 'edit', 'primary', ['user' => $uid]),
+      [
+        'label' => t('Cerrar sesión'),
+        'url' => '/user/logout',
+        'icon_category' => 'actions',
+        'icon_name' => 'log-out',
+        'color' => 'danger',
+      ],
+    ]);
+
+    if (!empty($account_links)) {
+      $sections[] = [
+        'id' => 'account',
+        'title' => t('Cuenta'),
+        'icon_category' => 'actions',
         'icon_name' => 'settings',
-        'color' => 'corporate',
+        'links' => array_values($account_links),
+        'color' => 'neutral',
       ];
     }
 
-    // Siempre al final.
-    $quick_links[] = [
-      'label' => t('Cerrar sesión'),
-      'url'   => '/user/logout',
-      'icon'  => 'logout',
-      'icon_category' => 'actions',
-      'icon_name' => 'log-out',
-      'color' => 'danger',
-    ];
+    $variables['user_quick_sections'] = $sections;
 
-    $variables['user_quick_links'] = $quick_links;
+    // Backward compatibility: aplanar todos los links.
+    $flat_links = [];
+    foreach ($sections as $section) {
+      foreach ($section['links'] as $link) {
+        $flat_links[] = $link;
+      }
+    }
+    $variables['user_quick_links'] = $flat_links;
   }
   
   // =========================================================================

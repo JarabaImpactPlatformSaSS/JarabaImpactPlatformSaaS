@@ -157,25 +157,45 @@
         </div>
       </div>
 
-      {# ── Quick Access Grid ────────────────────────────────────────── #}
-      {% if user_quick_links is not empty %}
-        <div class="quick-access">
-          <h2 class="quick-access__title">
-            {{ jaraba_icon('ui', 'bolt', { size: '20px' }) }}
-            {% trans %}Accesos rápidos{% endtrans %}
-          </h2>
+      {# ── Quick Access Sections ────────────────────────────────────── #}
+      {% if user_quick_sections is not empty %}
+        <div class="quick-access-sections">
+          {% for section in user_quick_sections %}
+            <div class="quick-access-section quick-access-section--{{ section.color }}" style="animation-delay: {{ loop.index0 * 0.1 + 0.3 }}s">
+              <div class="quick-access-section__header">
+                <h2 class="quick-access-section__title">
+                  {{ jaraba_icon(section.icon_category|default('ui'), section.icon_name|default('info'), { size: '20px' }) }}
+                  {{ section.title }}
+                </h2>
+              </div>
 
-          <div class="quick-access__grid">
-            {% for link in user_quick_links %}
-              <a href="{{ link.url }}" class="quick-access__card quick-access__card--{{ link.color }}">
-                <div class="quick-access__card-icon">
-                  {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px' }) }}
+              {# Profile completeness ring (solo en sección professional_profile) #}
+              {% if section.id == 'professional_profile' and section.profile_completeness is defined %}
+                <div class="quick-access-section__completeness">
+                  {% include '@ecosistema_jaraba_theme/partials/_profile-completeness.html.twig' with {
+                    percentage: section.profile_completeness.percentage,
+                    sections: section.profile_completeness.sections,
+                    total_sections: section.profile_completeness.total_sections,
+                    completed_sections: section.profile_completeness.completed_sections,
+                  } only %}
                 </div>
-                <span class="quick-access__card-label">{{ link.label }}</span>
-                {{ jaraba_icon('ui', 'arrow-right', { size: '16px', class: 'quick-access__card-arrow' }) }}
-              </a>
-            {% endfor %}
-          </div>
+              {% endif %}
+
+              {% if section.links is not empty %}
+                <div class="quick-access-section__grid">
+                  {% for link in section.links %}
+                    <a href="{{ link.url }}" class="quick-access__card quick-access__card--{{ link.color }}{% if link.cross_vertical|default(false) %} quick-access__card--cross{% endif %}">
+                      <div class="quick-access__card-icon">
+                        {{ jaraba_icon(link.icon_category|default('ui'), link.icon_name|default('info'), { size: '24px' }) }}
+                      </div>
+                      <span class="quick-access__card-label">{{ link.label }}</span>
+                      {{ jaraba_icon('ui', 'arrow-right', { size: '16px', class: 'quick-access__card-arrow' }) }}
+                    </a>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
         </div>
       {% endif %}
     </div>
