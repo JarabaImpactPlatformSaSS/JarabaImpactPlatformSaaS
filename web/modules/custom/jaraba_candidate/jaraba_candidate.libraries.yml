@@ -64,7 +64,6 @@ brand_professional:
     js/brand-professional.js: {}
   dependencies:
     - core/drupal
-    - core/drupalSettings
     - ecosistema_jaraba_core/premium-forms
 
 # CV Builder page — Premium template selector

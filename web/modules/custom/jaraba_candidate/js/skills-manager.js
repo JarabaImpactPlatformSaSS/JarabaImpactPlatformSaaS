@@ -66,10 +66,47 @@
                     })
                         .then(function (response) {
                             if (response.ok) {
-                                // Reload page to show new skill
-                                window.location.reload();
-                            } else {
-                                throw new Error(Drupal.t('Failed to add skill'));
+                                return response.json();
+                            }
+                            throw new Error(Drupal.t('Failed to add skill'));
+                        })
+                        .then(function (data) {
+                            // Mark add button as added (no page reload).
+                            btn.textContent = Drupal.t('Añadido');
+                            btn.classList.add('btn-add-skill--added');
+
+                            // Insert new skill card into the grid.
+                            var grid = document.querySelector('.skills-grid');
+                            if (!grid) {
+                                // Create grid if empty state was showing.
+                                var emptyState = document.querySelector('.current-skills .empty-state');
+                                if (emptyState) {
+                                    grid = document.createElement('div');
+                                    grid.className = 'skills-grid';
+                                    emptyState.parentNode.replaceChild(grid, emptyState);
+                                }
+                            }
+                            if (grid) {
+                                var card = document.createElement('div');
+                                card.className = 'skill-card';
+                                card.setAttribute('data-skill-id', data.id || '');
+                                card.innerHTML = '<div class="skill-info">'
+                                    + '<span class="skill-name">' + Drupal.checkPlain(skillName) + '</span>'
+                                    + '<span class="skill-level skill-level--intermediate">' + Drupal.checkPlain(Drupal.t('Intermedio')) + '</span>'
+                                    + '</div>'
+                                    + '<button type="button" class="btn-remove-skill" data-candidate-skill-id="' + Drupal.checkPlain(String(data.id || '')) + '" title="' + Drupal.checkPlain(Drupal.t('Eliminar')) + '">'
+                                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'
+                                    + '</button>';
+                                grid.appendChild(card);
+                                // Attach behaviors on the new card so remove button works.
+                                Drupal.attachBehaviors(card);
+                            }
+
+                            // Update badge count.
+                            var badge = document.querySelector('.current-skills .badge');
+                            if (badge) {
+                                var count = parseInt(badge.textContent, 10) + 1;
+                                badge.textContent = count;
                             }
                         })
                         .catch(function (error) {

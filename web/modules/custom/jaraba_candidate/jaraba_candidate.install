@@ -134,3 +134,11 @@ function jaraba_candidate_update_10005(): void {
     $update_manager->installEntityType($new);
   }
 }
+
+/**
+ * Install the CandidateLanguage entity type schema.
+ */
+function jaraba_candidate_update_10006(): void {
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_language');
+  \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+}
