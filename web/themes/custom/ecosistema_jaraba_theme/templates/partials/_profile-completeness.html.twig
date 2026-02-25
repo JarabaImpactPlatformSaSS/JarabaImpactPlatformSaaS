@@ -8,7 +8,7 @@
  *
  * Variables:
  *   - percentage: Porcentaje de completitud (0-100).
- *   - sections: Array de secciones con: name, completed (bool), url.
+ *   - sections: Array de secciones con: name, completed (bool), url, slide_panel_title (opcional).
  *   - total_sections: Numero total de secciones.
  *   - completed_sections: Numero de secciones completadas.
  *
@@ -69,7 +69,12 @@
               {{ jaraba_icon('ui', 'circle', { size: '14px' }) }}
             {% endif %}
             {% if section.url and not section.completed %}
-              <a href="{{ section.url }}">{{ section.name }}</a>
+              <a href="{{ section.url }}"
+                 data-slide-panel="profile-section"
+                 data-slide-panel-url="{{ section.url }}"
+                 data-slide-panel-title="{{ section.slide_panel_title|default(section.name) }}">
+                {{ section.name }}
+              </a>
             {% else %}
               <span>{{ section.name }}</span>
             {% endif %}

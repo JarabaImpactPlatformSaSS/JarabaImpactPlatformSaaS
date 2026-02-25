@@ -228,8 +228,10 @@ class ProfileController extends ControllerBase
 
     /**
      * Displays experience section.
+     *
+     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
      */
-    public function experienceSection(): array
+    public function experienceSection(Request $request): array|Response
     {
         $user_id = (int) $this->currentUser()->id();
 
@@ -258,7 +260,7 @@ class ProfileController extends ControllerBase
             // Entity type may not be installed yet.
         }
 
-        return [
+        $build = [
             '#theme' => 'my_profile_experience',
             '#experiences' => $experiences,
             '#attached' => [
@@ -269,12 +271,21 @@ class ProfileController extends ControllerBase
                 'max-age' => 300,
             ],
         ];
+
+        if ($request->isXmlHttpRequest()) {
+            $html = (string) \Drupal::service('renderer')->render($build);
+            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        return $build;
     }
 
     /**
      * Displays education section.
+     *
+     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
      */
-    public function educationSection(): array
+    public function educationSection(Request $request): array|Response
     {
         $user_id = (int) $this->currentUser()->id();
 
@@ -299,7 +310,7 @@ class ProfileController extends ControllerBase
             // Entity type may not be installed yet.
         }
 
-        return [
+        $build = [
             '#theme' => 'my_profile_education',
             '#educations' => $educations,
             '#attached' => [
@@ -310,12 +321,21 @@ class ProfileController extends ControllerBase
                 'max-age' => 300,
             ],
         ];
+
+        if ($request->isXmlHttpRequest()) {
+            $html = (string) \Drupal::service('renderer')->render($build);
+            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        return $build;
     }
 
     /**
      * Displays and manages user's skills section.
+     *
+     * Supports slide-panel AJAX: returns bare HTML if XMLHttpRequest.
      */
-    public function skillsSection(): array
+    public function skillsSection(Request $request): array|Response
     {
         $user_id = (int) $this->currentUser()->id();
 
@@ -375,7 +395,7 @@ class ProfileController extends ControllerBase
             }
         }
 
-        return [
+        $build = [
             '#theme' => 'my_profile_skills',
             '#user_skills' => $user_skills,
             '#categories' => array_values($categories),
@@ -387,6 +407,13 @@ class ProfileController extends ControllerBase
                 'tags' => ['user:' . $user_id, 'taxonomy_term_list:skills'],
             ],
         ];
+
+        if ($request->isXmlHttpRequest()) {
+            $html = (string) \Drupal::service('renderer')->render($build);
+            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        return $build;
     }
 
     /**
