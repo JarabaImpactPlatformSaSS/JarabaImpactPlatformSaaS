@@ -41,6 +41,16 @@ class ProfileController extends ControllerBase
     }
 
     /**
+     * Check if request is a slide-panel AJAX (not a Drupal modal dialog).
+     *
+     * Drupal modal/dialog sends XHR with _wrapper_format query parameter.
+     * Slide-panel sends XHR without it. Only return bare HTML for slide-panel.
+     */
+    protected function isSlidePanelRequest(Request $request): bool {
+        return $request->isXmlHttpRequest() && !$request->query->has('_wrapper_format');
+    }
+
+    /**
      * Displays a public candidate profile.
      */
     public function view(CandidateProfileInterface $candidate_profile): array
@@ -272,7 +282,7 @@ class ProfileController extends ControllerBase
             ],
         ];
 
-        if ($request->isXmlHttpRequest()) {
+        if ($this->isSlidePanelRequest($request)) {
             $html = (string) \Drupal::service('renderer')->render($build);
             return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         }
@@ -322,7 +332,7 @@ class ProfileController extends ControllerBase
             ],
         ];
 
-        if ($request->isXmlHttpRequest()) {
+        if ($this->isSlidePanelRequest($request)) {
             $html = (string) \Drupal::service('renderer')->render($build);
             return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         }
@@ -408,7 +418,7 @@ class ProfileController extends ControllerBase
             ],
         ];
 
-        if ($request->isXmlHttpRequest()) {
+        if ($this->isSlidePanelRequest($request)) {
             $html = (string) \Drupal::service('renderer')->render($build);
             return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         }
@@ -456,7 +466,7 @@ class ProfileController extends ControllerBase
             ],
         ];
 
-        if ($request->isXmlHttpRequest()) {
+        if ($this->isSlidePanelRequest($request)) {
             $html = (string) \Drupal::service('renderer')->render($build);
             return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         }
@@ -492,8 +502,9 @@ class ProfileController extends ControllerBase
         // Get the entity form and render it
         $form = \Drupal::service('entity.form_builder')->getForm($profile, 'default');
 
-        // Slide-panel / AJAX → return only the form HTML
-        if ($request->isXmlHttpRequest()) {
+        // Slide-panel AJAX → return only the form HTML.
+        // Drupal modal (_wrapper_format) → let Drupal's dialog renderer handle it.
+        if ($this->isSlidePanelRequest($request)) {
             $html = (string) \Drupal::service('renderer')->render($form);
             return new Response($html, 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',

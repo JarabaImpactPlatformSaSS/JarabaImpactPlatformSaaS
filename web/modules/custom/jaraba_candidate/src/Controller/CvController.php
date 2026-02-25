@@ -61,17 +61,22 @@ class CvController extends ControllerBase
     /**
      * Displays the CV Builder page.
      */
-    public function builder(): array
+    public function builder(Request $request): array|Response
     {
         $user_id = (int) $this->currentUser()->id();
         $profile = $this->profileService->getProfileByUserId($user_id);
 
         if (!$profile) {
-            return [
+            $build = [
                 '#markup' => $this->t('Please <a href="@url">complete your profile</a> before building your CV.', [
                     '@url' => '/my-profile/edit',
                 ]),
             ];
+            if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
+                $html = (string) \Drupal::service('renderer')->render($build);
+                return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+            }
+            return $build;
         }
 
         // Build structured template data for the Twig template.
@@ -79,16 +84,25 @@ class CvController extends ControllerBase
         $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_candidate');
         $templates = [];
         foreach ($rawTemplates as $id => $name) {
+            $png_file = $module_path . '/images/cv-preview-' . $id . '.png';
             $svg_file = $module_path . '/images/cv-preview-' . $id . '.svg';
+            // Prefer PNG (premium previews) over SVG (legacy wireframes).
+            if (file_exists(DRUPAL_ROOT . '/' . $png_file)) {
+                $preview = '/' . $png_file;
+            } elseif (file_exists(DRUPAL_ROOT . '/' . $svg_file)) {
+                $preview = '/' . $svg_file;
+            } else {
+                $preview = NULL;
+            }
             $templates[] = [
                 'id' => $id,
                 'name' => $name,
                 'description' => self::TEMPLATE_DESCRIPTIONS[$id] ?? '',
-                'preview' => file_exists(DRUPAL_ROOT . '/' . $svg_file) ? '/' . $svg_file : NULL,
+                'preview' => $preview,
             ];
         }
 
-        return [
+        $build = [
             '#theme' => 'cv_builder',
             '#profile' => [
                 'full_name' => $profile->getFullName(),
@@ -99,6 +113,13 @@ class CvController extends ControllerBase
                 'library' => ['jaraba_candidate/cv_builder'],
             ],
         ];
+
+        if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
+            $html = (string) \Drupal::service('renderer')->render($build);
+            return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        return $build;
     }
 
     /**
