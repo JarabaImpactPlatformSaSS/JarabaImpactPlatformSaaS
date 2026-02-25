@@ -2948,12 +2948,26 @@ function ecosistema_jaraba_core_theme_suggestions_page_alter(array &$suggestions
  * su contraseña tras hacer clic en el enlace de uso único.
  */
 function ecosistema_jaraba_core_form_user_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id): void {
-  // Solo actuar si el usuario viene del flujo de reset/one-time login.
-  // Drupal almacena 'pass_reset_{uid}' en la sesión hasta que se guarda el form.
+  // USR-004: Redirect to user profile after saving account settings.
+  // Drupal core ProfileForm::save() does NOT set a redirect,
+  // so without this the form reloads on the same edit page.
+  $form['actions']['submit']['#submit'][] = '_ecosistema_jaraba_core_user_profile_redirect';
+
+  // Override redirect for password-reset flow → dashboard.
   $account = $form_state->getFormObject()->getEntity();
   $session = \Drupal::request()->getSession();
   if ($session && $account && $session->get('pass_reset_' . $account->id())) {
     $form['actions']['submit']['#submit'][] = '_ecosistema_jaraba_core_password_set_redirect';
+  }
+}
+
+/**
+ * Submit handler: redirects to user profile after saving account settings.
+ */
+function _ecosistema_jaraba_core_user_profile_redirect(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+  $account = $form_state->getFormObject()->getEntity();
+  if ($account && $account->id()) {
+    $form_state->setRedirectUrl($account->toUrl('canonical'));
   }
 }
 
