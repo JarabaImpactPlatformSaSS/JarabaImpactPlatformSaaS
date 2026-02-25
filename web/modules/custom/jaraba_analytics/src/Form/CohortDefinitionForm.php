@@ -4,72 +4,59 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_analytics\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario de creación/edición de definiciones de cohorte.
  *
  * PROPÓSITO:
  * Permite crear y editar definiciones de cohortes para análisis de retención.
- * Organiza campos en grupos lógicos: información básica, rango temporal y filtros.
- *
- * LÓGICA:
- * - Grupo 1: Información básica (nombre, tenant, tipo de cohorte).
- * - Grupo 2: Rango temporal (fecha inicio, fecha fin).
- * - Grupo 3: Filtros avanzados (JSON con criterios adicionales).
+ * Organiza campos en secciones: información básica, rango temporal y filtros.
  */
-class CohortDefinitionForm extends ContentEntityForm {
+class CohortDefinitionForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic_info' => [
+        'label' => $this->t('Basic Information'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Name, tenant, and cohort type.'),
+        'fields' => ['name', 'tenant_id', 'cohort_type'],
+      ],
+      'date_range' => [
+        'label' => $this->t('Date Range'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'description' => $this->t('Start and end dates for the cohort analysis period.'),
+        'fields' => ['date_range_start', 'date_range_end'],
+      ],
+      'filters' => [
+        'label' => $this->t('Advanced Filters'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Additional JSON filter criteria for cohort member selection.'),
+        'fields' => ['filters_json'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
     /** @var \Drupal\jaraba_analytics\Entity\CohortDefinition $entity */
     $entity = $this->entity;
-
-    // Grupo: Información básica.
-    $form['basic_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Basic Information'),
-      '#open' => TRUE,
-      '#weight' => 0,
-    ];
-
-    if (isset($form['name'])) {
-      $form['name']['#group'] = 'basic_info';
-    }
-    if (isset($form['tenant_id'])) {
-      $form['tenant_id']['#group'] = 'basic_info';
-    }
-    if (isset($form['cohort_type'])) {
-      $form['cohort_type']['#group'] = 'basic_info';
-    }
-
-    // Grupo: Rango temporal.
-    $form['date_range_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Date Range'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-
-    if (isset($form['date_range_start'])) {
-      $form['date_range_start']['#group'] = 'date_range_group';
-    }
-    if (isset($form['date_range_end'])) {
-      $form['date_range_end']['#group'] = 'date_range_group';
-    }
-
-    // Grupo: Filtros avanzados.
-    $form['filters_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Advanced Filters'),
-      '#open' => FALSE,
-      '#weight' => 20,
-    ];
 
     // Filters field: override the map widget with a textarea for JSON input.
     $currentFilters = $entity->getFilters();
@@ -84,7 +71,6 @@ class CohortDefinitionForm extends ContentEntityForm {
       '#description' => $this->t('Optional JSON object with additional filter criteria. Example: {"vertical": "empleabilidad", "plan": "profesional"}'),
       '#default_value' => $filtersJson,
       '#rows' => 5,
-      '#group' => 'filters_group',
       '#weight' => 25,
     ];
 
@@ -137,18 +123,6 @@ class CohortDefinitionForm extends ContentEntityForm {
     }
 
     $result = parent::save($form, $form_state);
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Cohort %name created.', [
-        '%name' => $entity->getName(),
-      ]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Cohort %name updated.', [
-        '%name' => $entity->getName(),
-      ]));
-    }
-
     $form_state->setRedirectUrl($entity->toUrl('collection'));
     return $result;
   }
