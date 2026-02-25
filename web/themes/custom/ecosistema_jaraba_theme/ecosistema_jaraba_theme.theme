@@ -2781,7 +2781,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     // ── Section 1: Mi Perfil Profesional (siempre visible) ──────────────
     $prof_links = array_filter([
       $make_link(t('Ver perfil profesional'), 'jaraba_candidate.my_profile', 'ui', 'user', 'innovation'),
-      $make_link(t('Constructor CV'), 'jaraba_candidate.cv_builder', 'actions', 'file-text', 'innovation'),
+      $make_link(t('Constructor CV'), 'jaraba_candidate.cv_builder', 'ui', 'file-text', 'innovation'),
       $make_link(t('Autoconocimiento'), 'jaraba_self_discovery.dashboard', 'ui', 'compass', 'innovation'),
     ]);
 
@@ -2820,6 +2820,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
             'name' => $section_labels[$key],
             'completed' => in_array($key, $completion['completed_sections'] ?? []),
             'url' => $resolve($section_routes[$key] ?? 'jaraba_candidate.my_profile.edit') ?: '',
+            'slide_panel_title' => $section_labels[$key],
           ];
         }
 
@@ -2933,7 +2934,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     if ($tenant) {
       $biz_links = array_filter([
         $make_link(t('Dashboard Tenant'), 'ecosistema_jaraba_core.tenant.dashboard', 'ui', 'dashboard', 'corporate'),
-        $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'credit-card', 'corporate'),
+        $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'tag', 'corporate'),
         $make_link(t('Centro de ayuda'), 'jaraba_tenant_knowledge.help_center', 'ui', 'help-circle', 'corporate'),
       ]);
 
@@ -2955,7 +2956,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
         $make_link(t('Admin Center'), 'ecosistema_jaraba_core.admin.center', 'ui', 'settings', 'corporate'),
         $make_link(t('Gestión Tenants'), 'ecosistema_jaraba_core.admin.center.tenants', 'business', 'building', 'corporate'),
         $make_link(t('Gestión Usuarios'), 'ecosistema_jaraba_core.admin.center.users', 'ui', 'users', 'corporate'),
-        $make_link(t('Finanzas'), 'ecosistema_jaraba_core.admin.center.finance', 'commerce', 'dollar-sign', 'corporate'),
+        $make_link(t('Finanzas'), 'ecosistema_jaraba_core.admin.center.finance', 'finance', 'coins', 'corporate'),
       ]);
 
       if (!empty($admin_links)) {
