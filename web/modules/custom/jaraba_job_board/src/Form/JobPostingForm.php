@@ -4,108 +4,72 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_job_board\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Form handler for JobPosting entity.
+ * Premium form for creating/editing job postings.
  */
-class JobPostingForm extends ContentEntityForm
-{
+class JobPostingForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function form(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::form($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'job_details' => [
+        'label' => $this->t('Job Details'),
+        'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'description' => $this->t('Position title and description.'),
+        'fields' => ['title', 'reference_code', 'slug', 'description', 'requirements', 'responsibilities', 'employer_id', 'category_id'],
+      ],
+      'location' => [
+        'label' => $this->t('Location'),
+        'icon' => ['category' => 'ui', 'name' => 'map-pin'],
+        'description' => $this->t('Work location and remote options.'),
+        'fields' => ['location_city', 'location_province', 'location_country', 'location_lat', 'location_lng', 'remote_type', 'job_type'],
+      ],
+      'requirements' => [
+        'label' => $this->t('Requirements'),
+        'icon' => ['category' => 'ui', 'name' => 'check'],
+        'description' => $this->t('Experience, education, skills, and languages.'),
+        'fields' => ['experience_level', 'education_level', 'skills_required', 'skills_preferred', 'languages'],
+      ],
+      'compensation' => [
+        'label' => $this->t('Compensation'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Salary range and benefits.'),
+        'fields' => ['salary_min', 'salary_max', 'salary_currency', 'salary_period', 'salary_visible', 'benefits'],
+      ],
+      'application' => [
+        'label' => $this->t('Application'),
+        'icon' => ['category' => 'ui', 'name' => 'send'],
+        'description' => $this->t('How candidates can apply.'),
+        'fields' => ['application_method', 'external_url', 'application_email', 'vacancies'],
+      ],
+      'publishing' => [
+        'label' => $this->t('Publishing'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Publication status and dates.'),
+        'fields' => ['status', 'visibility', 'is_featured', 'featured_until', 'published_at', 'expires_at', 'closed_at', 'tenant_id'],
+      ],
+    ];
+  }
 
-        // Job Details
-        $form['job_details'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Job Details'),
-            '#open' => TRUE,
-            '#weight' => -10,
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'business', 'name' => 'briefcase'];
+  }
 
-        $fields_for_details = ['title', 'description', 'requirements', 'responsibilities'];
-        foreach ($fields_for_details as $field) {
-            if (isset($form[$field])) {
-                $form['job_details'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Location & Work Type
-        $form['location'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Location & Work Type'),
-            '#open' => TRUE,
-            '#weight' => -5,
-        ];
-
-        $location_fields = ['location_city', 'location_country', 'remote_type', 'job_type'];
-        foreach ($location_fields as $field) {
-            if (isset($form[$field])) {
-                $form['location'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Compensation
-        $form['compensation'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Compensation'),
-            '#open' => FALSE,
-            '#weight' => 0,
-        ];
-
-        $comp_fields = ['salary_min', 'salary_max', 'salary_currency', 'benefits'];
-        foreach ($comp_fields as $field) {
-            if (isset($form[$field])) {
-                $form['compensation'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Publishing
-        $form['publishing'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Publishing Options'),
-            '#open' => FALSE,
-            '#weight' => 5,
-        ];
-
-        $pub_fields = ['status', 'publish_at', 'expires_at', 'is_featured'];
-        foreach ($pub_fields as $field) {
-            if (isset($form[$field])) {
-                $form['publishing'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
-
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->label()];
-
-        if ($result === SAVED_NEW) {
-            $this->messenger()->addStatus($this->t('Job posting %label has been created.', $message_args));
-        } else {
-            $this->messenger()->addStatus($this->t('Job posting %label has been updated.', $message_args));
-        }
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

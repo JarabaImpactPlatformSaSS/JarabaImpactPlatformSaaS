@@ -4,30 +4,38 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_pixels\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar registros de consentimiento.
+ * Premium form for creating/editing consent records.
  */
-class ConsentRecordForm extends ContentEntityForm {
+class ConsentRecordForm extends PremiumEntityFormBase {
 
-  /**
-   * {@inheritdoc}
-   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'consent' => [
+        'label' => $this->t('Consent'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Consent details and version.'),
+        'fields' => ['visitor_id', 'consent_type', 'status', 'consent_version'],
+      ],
+      'context' => [
+        'label' => $this->t('Context'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Technical context of the consent record.'),
+        'fields' => ['ip_address', 'user_agent', 'revoked_at', 'tenant_id'],
+      ],
+    ];
+  }
+
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'shield'];
+  }
+
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Registro de consentimiento %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Registro de consentimiento %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

@@ -4,33 +4,55 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_dr\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para DrTestResult.
- *
- * Los resultados de test DR se generan normalmente via DrTestRunnerService.
- * Este formulario permite la creacion y edicion manual desde admin.
+ * Premium form for DR Test Result entities.
  */
-class DrTestResultForm extends ContentEntityForm {
+class DrTestResultForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'test' => [
+        'label' => $this->t('Test'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'fields' => ['test_name', 'test_type', 'description', 'executed_by'],
+      ],
+      'execution' => [
+        'label' => $this->t('Execution'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'fields' => ['started_at', 'completed_at', 'duration_seconds'],
+      ],
+      'results' => [
+        'label' => $this->t('Results'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'fields' => ['rto_achieved', 'rpo_achieved', 'results_data'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'fields' => ['status'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'shield'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('test_name')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Test DR %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Test DR %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

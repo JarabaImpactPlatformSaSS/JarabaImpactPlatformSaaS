@@ -1,42 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_addons\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar add-ons.
- *
- * ESTRUCTURA: Extiende ContentEntityForm para operaciones CRUD
- *   sobre la entidad Addon.
- *
- * LÓGICA: Al guardar, muestra mensaje de estado (creado/actualizado)
- *   y redirige al listado de add-ons. Valida que machine_name solo
- *   contenga caracteres alfanuméricos y guiones bajos.
- *
- * RELACIONES:
- * - AddonForm -> Addon entity (gestiona)
- * - AddonForm <- AdminHtmlRouteProvider (invocado por)
+ * Premium form for creating/editing add-ons.
  */
-class AddonForm extends ContentEntityForm {
+class AddonForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'addon' => [
+        'label' => $this->t('Add-on'),
+        'icon' => ['category' => 'ui', 'name' => 'package'],
+        'description' => $this->t('Name, type, and description.'),
+        'fields' => ['label', 'machine_name', 'description', 'addon_type'],
+      ],
+      'pricing' => [
+        'label' => $this->t('Pricing'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Monthly and yearly pricing.'),
+        'fields' => ['price_monthly', 'price_yearly'],
+      ],
+      'features' => [
+        'label' => $this->t('Features'),
+        'icon' => ['category' => 'ui', 'name' => 'list'],
+        'description' => $this->t('Included features and limits.'),
+        'fields' => ['features_included', 'limits'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Activation and tenant.'),
+        'fields' => ['is_active', 'tenant_id'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'package'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->entity;
     $result = parent::save($form, $form_state);
-    $message_args = ['%label' => $entity->label()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Add-on %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Add-on %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

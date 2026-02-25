@@ -4,72 +4,57 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_customer_success\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Form handler for Vertical Retention Profile add/edit.
+ * Premium form for creating/editing vertical retention profiles.
  */
-class VerticalRetentionProfileForm extends ContentEntityForm {
+class VerticalRetentionProfileForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['basic_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Basic Information'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic_info' => [
+        'label' => $this->t('Basic Information'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Vertical identification and status.'),
+        'fields' => ['vertical_id', 'label', 'status', 'max_inactivity_days'],
+      ],
+      'scoring' => [
+        'label' => $this->t('Health Score Weights'),
+        'icon' => ['category' => 'analytics', 'name' => 'gauge'],
+        'description' => $this->t('JSON weights that must sum to 100.'),
+        'fields' => ['health_score_weights'],
+      ],
+      'seasonality' => [
+        'label' => $this->t('Seasonality'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'description' => $this->t('Calendar, usage patterns, and seasonal offers.'),
+        'fields' => ['seasonality_calendar', 'expected_usage_pattern', 'seasonal_offers'],
+      ],
+      'churn_config' => [
+        'label' => $this->t('Churn Detection'),
+        'icon' => ['category' => 'ui', 'name' => 'alert'],
+        'description' => $this->t('Churn signals and critical features.'),
+        'fields' => ['churn_risk_signals', 'critical_features'],
+      ],
+      'engagement' => [
+        'label' => $this->t('Re-engagement'),
+        'icon' => ['category' => 'ui', 'name' => 'refresh'],
+        'description' => $this->t('Triggers, upsell signals, and playbook overrides.'),
+        'fields' => ['reengagement_triggers', 'upsell_signals', 'playbook_overrides'],
+      ],
     ];
-    $form['vertical_id']['#group'] = 'basic_info';
-    $form['label']['#group'] = 'basic_info';
-    $form['status']['#group'] = 'basic_info';
-    $form['max_inactivity_days']['#group'] = 'basic_info';
+  }
 
-    $form['scoring'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Health Score Weights'),
-      '#description' => $this->t('JSON object with keys: engagement, adoption, satisfaction, support, growth. Values must sum to 100. Example: {"engagement": 25, "adoption": 35, "satisfaction": 15, "support": 10, "growth": 15}'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    $form['health_score_weights']['#group'] = 'scoring';
-
-    $form['seasonality'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Seasonality Configuration'),
-      '#description' => $this->t('JSON arrays for calendar, usage patterns, and seasonal offers.'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-    $form['seasonality_calendar']['#group'] = 'seasonality';
-    $form['expected_usage_pattern']['#group'] = 'seasonality';
-    $form['seasonal_offers']['#group'] = 'seasonality';
-
-    $form['churn_config'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Churn Detection'),
-      '#description' => $this->t('Vertical-specific churn signals and features.'),
-      '#open' => TRUE,
-      '#weight' => 30,
-    ];
-    $form['churn_risk_signals']['#group'] = 'churn_config';
-    $form['critical_features']['#group'] = 'churn_config';
-
-    $form['engagement'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Re-engagement & Expansion'),
-      '#open' => FALSE,
-      '#weight' => 40,
-    ];
-    $form['reengagement_triggers']['#group'] = 'engagement';
-    $form['upsell_signals']['#group'] = 'engagement';
-    $form['playbook_overrides']['#group'] = 'engagement';
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
   }
 
   /**
@@ -92,7 +77,7 @@ class VerticalRetentionProfileForm extends ContentEntityForm {
       }
     }
 
-    // Validate seasonality_calendar is valid JSON array with 12 entries.
+    // Validate seasonality_calendar has 12 entries.
     $calendarRaw = $form_state->getValue(['seasonality_calendar', 0, 'value']);
     if ($calendarRaw) {
       $calendar = json_decode($calendarRaw, TRUE);
@@ -119,18 +104,7 @@ class VerticalRetentionProfileForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-
-    $label = $this->entity->label();
-    $messageArgs = ['%label' => $label];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Vertical Retention Profile %label has been created.', $messageArgs));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Vertical Retention Profile %label has been updated.', $messageArgs));
-    }
-
-    $form_state->setRedirectUrl($this->entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

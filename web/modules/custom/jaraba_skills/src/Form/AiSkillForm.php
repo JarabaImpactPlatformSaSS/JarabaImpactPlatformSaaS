@@ -4,72 +4,73 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_skills\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar habilidades IA.
- *
- * Implementa el patrón slide-panel con:
- * - Clases CSS premium para estilos dentro del panel.
- * - Redirect a la misma ruta AJAX para mantener compatibilidad
- *   con el flujo AJAX del slide-panel.js.
- *
- * @see .agent/workflows/slide-panel-modales.md
+ * Premium form for creating/editing AI skills.
  */
-class AiSkillForm extends ContentEntityForm
-{
+class AiSkillForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('Identification'),
+        'icon' => ['category' => 'ai', 'name' => 'brain'],
+        'description' => $this->t('Skill name and type.'),
+        'fields' => ['name', 'skill_type', 'vertical_id', 'agent_type'],
+      ],
+      'config' => [
+        'label' => $this->t('Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Prompt content and priority.'),
+        'fields' => ['content', 'priority'],
+      ],
+      'experiment' => [
+        'label' => $this->t('Experiment'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('A/B testing configuration.'),
+        'fields' => ['experiment_id', 'experiment_variant'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Activation and tenant.'),
+        'fields' => ['is_active', 'tenant_id'],
+      ],
+    ];
+  }
 
-        // Añadir clases para slide-panel styling premium.
-        $form['#attributes']['class'][] = 'jaraba-premium-form';
-        $form['#attributes']['class'][] = 'slide-panel__form';
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ai', 'name' => 'brain'];
+  }
 
-        // Añadir Monaco Editor para el campo content.
-        // El behavior skill-prompt-editor.js transforma el textarea
-        // en un editor con syntax highlighting y autocompletado.
-        $form['#attached']['library'][] = 'jaraba_skills/skill.prompt-editor';
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
-        // NOTA: NO cambiar el form action.
-        // Drupal usará las rutas nativas entity.ai_skill.add_form/edit_form.
-        // El slide-panel.js intercepta el submit y maneja la respuesta.
+    // Attach Monaco Editor for the content field.
+    $form['#attached']['library'][] = 'jaraba_skills/skill.prompt-editor';
 
-        return $form;
-    }
+    return $form;
+  }
 
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->getEntity();
-        $status = parent::save($form, $form_state);
-
-        // Mensaje de confirmación.
-        $messenger = \Drupal::messenger();
-        if ($status === SAVED_NEW) {
-            $messenger->addStatus($this->t('Habilidad "@title" creada correctamente.', [
-                '@title' => $entity->label(),
-            ]));
-        } else {
-            $messenger->addStatus($this->t('Habilidad "@title" actualizada correctamente.', [
-                '@title' => $entity->label(),
-            ]));
-        }
-
-        // Redirect al dashboard frontend (no a collection admin).
-        // El slide-panel.js detectará este redirect y cerrará el panel.
-        $form_state->setRedirectUrl(Url::fromRoute('jaraba_skills.dashboard'));
-
-        return $status;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl(Url::fromRoute('jaraba_skills.dashboard'));
+    return $result;
+  }
 
 }

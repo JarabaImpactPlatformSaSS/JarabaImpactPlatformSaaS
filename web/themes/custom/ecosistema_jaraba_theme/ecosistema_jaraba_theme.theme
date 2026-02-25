@@ -2900,8 +2900,8 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
 
         // Mapping de secciones para el parcial _profile-completeness.html.twig.
         $section_labels = [
-          'personal_info' => t('Información Personal'),
-          'professional_summary' => t('Resumen Profesional'),
+          'personal_info' => t('Datos Personales'),
+          'professional_summary' => t('Marca Profesional'),
           'experience' => t('Experiencia Laboral'),
           'education' => t('Formación Académica'),
           'skills' => t('Habilidades y Competencias'),
@@ -2910,12 +2910,12 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           'languages' => t('Idiomas'),
         ];
         $section_routes = [
-          'personal_info' => 'jaraba_candidate.my_profile.edit',
-          'professional_summary' => 'jaraba_candidate.my_profile.edit',
+          'personal_info' => 'jaraba_candidate.my_profile.personal',
+          'professional_summary' => 'jaraba_candidate.my_profile.brand',
           'experience' => 'jaraba_candidate.my_profile.experience',
           'education' => 'jaraba_candidate.my_profile.education',
           'skills' => 'jaraba_candidate.my_profile.skills',
-          'photo' => 'jaraba_candidate.my_profile.edit',
+          'photo' => 'jaraba_candidate.my_profile.personal',
           'cv_document' => 'jaraba_candidate.cv_builder',
           'languages' => 'jaraba_candidate.my_profile.languages',
         ];
@@ -3148,6 +3148,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
     // when the slide-panel loads section HTML via AJAX.
     $variables['#attached']['library'][] = 'jaraba_candidate/skills_manager';
     $variables['#attached']['library'][] = 'jaraba_candidate/profile_section_manager';
+    $variables['#attached']['library'][] = 'jaraba_candidate/brand_professional';
 
     // Backward compatibility: aplanar todos los links.
     $flat_links = [];

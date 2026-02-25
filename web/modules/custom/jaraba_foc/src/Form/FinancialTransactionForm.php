@@ -4,140 +4,83 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_foc\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear transacciones financieras.
+ * Premium form for creating financial transactions.
  *
- * PROPÓSITO:
- * Permite la creación manual de transacciones para:
- * - Importación de datos históricos
- * - Registro de ingresos no automatizados
- * - Ajustes contables (asientos compensatorios)
- *
- * NOTA IMPORTANTE:
- * Este formulario SOLO permite crear transacciones.
- * La edición y eliminación están bloqueadas por el AccessHandler
- * para garantizar la inmutabilidad del libro mayor.
+ * Transactions are immutable once created. Editing and deletion are blocked
+ * by the AccessHandler to preserve ledger integrity.
  */
-class FinancialTransactionForm extends ContentEntityForm
-{
+class FinancialTransactionForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'monetary' => [
+        'label' => $this->t('Monetary Data'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Amount and currency.'),
+        'fields' => ['amount', 'currency', 'description'],
+      ],
+      'classification' => [
+        'label' => $this->t('Classification'),
+        'icon' => ['category' => 'ui', 'name' => 'tag'],
+        'description' => $this->t('Transaction type and recurrence.'),
+        'fields' => ['transaction_type', 'is_recurring'],
+      ],
+      'relations' => [
+        'label' => $this->t('Relations'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'description' => $this->t('Related tenant, vertical, and campaign.'),
+        'fields' => ['related_tenant', 'related_vertical', 'related_campaign'],
+      ],
+      'traceability' => [
+        'label' => $this->t('Traceability'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Source system and external references.'),
+        'fields' => ['source_system', 'external_id', 'metadata'],
+      ],
+    ];
+  }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // MENSAJE INFORMATIVO SOBRE INMUTABILIDAD
-        // ═══════════════════════════════════════════════════════════════════════
-        $form['immutability_notice'] = [
-            '#type' => 'markup',
-            '#markup' => '<div class="messages messages--warning">' .
-                '<strong>' . $this->t('Aviso de Inmutabilidad') . ':</strong> ' .
-                $this->t('Las transacciones financieras son inmutables. Una vez creada, no podrá ser editada ni eliminada. Para correcciones, registre un asiento compensatorio.') .
-                '</div>',
-            '#weight' => -100,
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'fiscal', 'name' => 'coins'];
+  }
 
-        // Agrupar campos monetarios
-        $form['monetary'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Datos Monetarios'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
-        if (isset($form['amount'])) {
-            $form['monetary']['amount'] = $form['amount'];
-            unset($form['amount']);
-        }
+    // Immutability notice.
+    $form['immutability_notice'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['messages', 'messages--warning']],
+      '#weight' => -1001,
+      'message' => [
+        '#markup' => '<strong>' . $this->t('Immutability Notice') . ':</strong> '
+          . $this->t('Financial transactions are immutable. Once created, they cannot be edited or deleted. For corrections, register a compensating entry.'),
+      ],
+    ];
 
-        if (isset($form['currency'])) {
-            $form['monetary']['currency'] = $form['currency'];
-            unset($form['currency']);
-        }
+    return $form;
+  }
 
-        // Agrupar campos de clasificación
-        $form['classification'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Clasificación'),
-            '#open' => TRUE,
-            '#weight' => 1,
-        ];
-
-        if (isset($form['transaction_type'])) {
-            $form['classification']['transaction_type'] = $form['transaction_type'];
-            unset($form['transaction_type']);
-        }
-
-        if (isset($form['is_recurring'])) {
-            $form['classification']['is_recurring'] = $form['is_recurring'];
-            unset($form['is_recurring']);
-        }
-
-        // Agrupar campos de relaciones
-        $form['relations'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Relaciones'),
-            '#open' => TRUE,
-            '#weight' => 2,
-        ];
-
-        if (isset($form['related_tenant'])) {
-            $form['relations']['related_tenant'] = $form['related_tenant'];
-            unset($form['related_tenant']);
-        }
-
-        if (isset($form['related_vertical'])) {
-            $form['relations']['related_vertical'] = $form['related_vertical'];
-            unset($form['related_vertical']);
-        }
-
-        if (isset($form['related_campaign'])) {
-            $form['relations']['related_campaign'] = $form['related_campaign'];
-            unset($form['related_campaign']);
-        }
-
-        // Agrupar campos de trazabilidad
-        $form['traceability'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Trazabilidad'),
-            '#open' => FALSE,
-            '#weight' => 3,
-        ];
-
-        if (isset($form['source_system'])) {
-            $form['traceability']['source_system'] = $form['source_system'];
-            unset($form['source_system']);
-        }
-
-        if (isset($form['external_id'])) {
-            $form['traceability']['external_id'] = $form['external_id'];
-            unset($form['external_id']);
-        }
-
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->entity;
-        $status = parent::save($form, $form_state);
-
-        $this->messenger()->addStatus($this->t('Transacción financiera @id registrada correctamente.', [
-            '@id' => $entity->id(),
-        ]));
-
-        $form_state->setRedirect('jaraba_foc.transactions');
-
-        return $status;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirect('jaraba_foc.transactions');
+    return $result;
+  }
 
 }

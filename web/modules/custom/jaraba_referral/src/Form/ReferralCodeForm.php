@@ -4,40 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_referral\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar códigos de referido.
- *
- * ESTRUCTURA: Extiende ContentEntityForm para operaciones CRUD
- *   sobre la entidad ReferralCode.
- *
- * LÓGICA: Al guardar, muestra mensaje de estado (creado/actualizado)
- *   y redirige al listado de códigos de referido.
- *
- * RELACIONES:
- * - ReferralCodeForm -> ReferralCode entity (gestiona)
- * - ReferralCodeForm <- AdminHtmlRouteProvider (invocado por)
+ * Formulario para crear/editar codigos de referido.
  */
-class ReferralCodeForm extends ContentEntityForm {
+class ReferralCodeForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identity' => [
+        'label' => $this->t('Identity'),
+        'icon' => ['category' => 'ui', 'name' => 'tag'],
+        'description' => $this->t('Code, owner and program assignment.'),
+        'fields' => ['tenant_id', 'program_id', 'user_id', 'code', 'custom_url'],
+      ],
+      'tracking' => [
+        'label' => $this->t('Tracking'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Click, signup and conversion counters.'),
+        'fields' => ['total_clicks', 'total_signups', 'total_conversions', 'total_revenue'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Activation state and expiration.'),
+        'fields' => ['is_active', 'expires_at'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'tag'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->entity;
     $result = parent::save($form, $form_state);
-    $message_args = ['%code' => $entity->get('code')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Código de referido %code creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Código de referido %code actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

@@ -4,72 +4,87 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_business_tools\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Form controller for Business Model Canvas edit forms.
+ * Premium form for Business Model Canvas entities.
  */
-class BusinessModelCanvasForm extends ContentEntityForm
-{
+class BusinessModelCanvasForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'canvas' => [
+        'label' => $this->t('Canvas'),
+        'icon' => ['category' => 'business', 'name' => 'chart'],
+        'fields' => ['title', 'description', 'sector', 'business_stage', 'version'],
+      ],
+      'references' => [
+        'label' => $this->t('References'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'fields' => ['business_diagnostic_id', 'template_source_id'],
+      ],
+      'analysis' => [
+        'label' => $this->t('Analysis'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'fields' => ['completeness_score', 'coherence_score', 'last_ai_analysis'],
+      ],
+      'sharing' => [
+        'label' => $this->t('Sharing'),
+        'icon' => ['category' => 'users', 'name' => 'group'],
+        'fields' => ['shared_with', 'is_template'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'fields' => ['status', 'tenant_id'],
+      ],
+    ];
+  }
 
-        $currentUser = \Drupal::currentUser();
-        $canCreateTemplates = $currentUser->hasPermission('create business model canvas template')
-            || $currentUser->hasPermission('administer business model canvas');
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'business', 'name' => 'chart'];
+  }
 
-        // Hide template fields from users without permission
-        if (!$canCreateTemplates) {
-            if (isset($form['is_template'])) {
-                $form['is_template']['#access'] = FALSE;
-            }
-            if (isset($form['tenant_id'])) {
-                $form['tenant_id']['#access'] = FALSE;
-            }
-        } else {
-            // Show template fields with better labels for mentors
-            if (isset($form['is_template'])) {
-                $form['is_template']['widget']['value']['#title'] = $this->t('Guardar como plantilla reutilizable');
-                $form['is_template']['widget']['value']['#description'] = $this->t('Las plantillas pueden ser usadas por emprendedores para crear sus propios canvas.');
-            }
-            if (isset($form['tenant_id'])) {
-                $form['tenant_id']['widget']['#title'] = $this->t('Programa asociado (opcional)');
-                $form['tenant_id']['widget']['#description'] = $this->t('Si se selecciona, la plantilla solo será visible para emprendedores de este programa.');
-            }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    $canCreate = $this->currentUser()->hasPermission('create business model canvas template')
+        || $this->currentUser()->hasPermission('administer business model canvas');
+
+    if (!$canCreate) {
+      foreach (['is_template', 'tenant_id'] as $field) {
+        if (isset($form['premium_section_sharing'][$field])) {
+          $form['premium_section_sharing'][$field]['#access'] = FALSE;
         }
-
-        return $form;
+        elseif (isset($form['premium_section_status'][$field])) {
+          $form['premium_section_status'][$field]['#access'] = FALSE;
+        }
+        elseif (isset($form['premium_section_other'][$field])) {
+          $form['premium_section_other'][$field]['#access'] = FALSE;
+        }
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
+    return $form;
+  }
 
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->toLink()->toString()];
-
-        switch ($result) {
-            case SAVED_NEW:
-                $this->messenger()->addStatus($this->t('Canvas %label creado.', $message_args));
-                break;
-
-            case SAVED_UPDATED:
-                $this->messenger()->addStatus($this->t('Canvas %label actualizado.', $message_args));
-                break;
-        }
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }
-

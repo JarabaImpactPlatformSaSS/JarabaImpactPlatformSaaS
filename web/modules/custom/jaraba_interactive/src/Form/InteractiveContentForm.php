@@ -4,51 +4,54 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_interactive\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar contenido interactivo.
+ * Premium form for creating/editing interactive content.
  */
-class InteractiveContentForm extends ContentEntityForm
-{
+class InteractiveContentForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'content' => [
+        'label' => $this->t('Content'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Title and content type.'),
+        'fields' => ['title', 'content_type', 'difficulty', 'duration_minutes'],
+      ],
+      'config' => [
+        'label' => $this->t('Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Content data and interaction settings.'),
+        'fields' => ['content_data', 'settings'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Publication status.'),
+        'fields' => ['status', 'tenant_id'],
+      ],
+    ];
+  }
 
-        // Añadir clase para slide-panel styling.
-        $form['#attributes']['class'][] = 'jaraba-premium-form';
-        $form['#attributes']['class'][] = 'slide-panel__form';
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'edit'];
+  }
 
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->getEntity();
-        $status = parent::save($form, $form_state);
-
-        $messenger = \Drupal::messenger();
-        if ($status === SAVED_NEW) {
-            $messenger->addStatus($this->t('Se ha creado el contenido interactivo %title.', [
-                '%title' => $entity->label(),
-            ]));
-        } else {
-            $messenger->addStatus($this->t('Se ha actualizado el contenido interactivo %title.', [
-                '%title' => $entity->label(),
-            ]));
-        }
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $status;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

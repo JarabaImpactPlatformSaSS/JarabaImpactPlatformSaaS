@@ -4,35 +4,48 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_groups\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Form controller for Group Discussion forms.
  */
-class GroupDiscussionForm extends ContentEntityForm
-{
+class GroupDiscussionForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
-        $entity = $this->getEntity();
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'content' => [
+        'label' => $this->t('Content'),
+        'icon' => ['category' => 'ui', 'name' => 'message'],
+        'description' => $this->t('Discussion title, body, and category.'),
+        'fields' => ['group_id', 'title', 'body', 'category'],
+      ],
+      'moderation' => [
+        'label' => $this->t('Moderation'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Pinned, locked, and status settings.'),
+        'fields' => ['is_pinned', 'is_locked', 'status'],
+      ],
+    ];
+  }
 
-        switch ($result) {
-            case SAVED_NEW:
-                $this->messenger()->addStatus($this->t('Discusión "@title" creada.', ['@title' => $entity->label()]));
-                break;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'message'];
+  }
 
-            case SAVED_UPDATED:
-                $this->messenger()->addStatus($this->t('Discusión actualizada.'));
-                break;
-        }
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

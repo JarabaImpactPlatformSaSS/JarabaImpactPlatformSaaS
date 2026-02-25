@@ -1,35 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_page_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para FeatureCard.
  */
-class FeatureCardForm extends ContentEntityForm
-{
+class FeatureCardForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'content' => [
+        'label' => $this->t('Content'),
+        'icon' => ['category' => 'ui', 'name' => 'star'],
+        'description' => $this->t('Card title, description, badge, and icon.'),
+        'fields' => ['title', 'description', 'badge', 'icon'],
+      ],
+      'display' => [
+        'label' => $this->t('Display'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Display weight for ordering.'),
+        'fields' => ['weight'],
+      ],
+    ];
+  }
 
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->label()];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'star'];
+  }
 
-        $this->messenger()->addStatus(
-            $result === SAVED_NEW
-            ? $this->t('Tarjeta de característica %label creada.', $message_args)
-            : $this->t('Tarjeta de característica %label actualizada.', $message_args)
-        );
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

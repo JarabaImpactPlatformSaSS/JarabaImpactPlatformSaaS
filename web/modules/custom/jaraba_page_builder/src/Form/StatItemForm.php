@@ -1,35 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\jaraba_page_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para StatItem.
  */
-class StatItemForm extends ContentEntityForm
-{
+class StatItemForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'stat' => [
+        'label' => $this->t('Statistic'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Numeric value, suffix, and label.'),
+        'fields' => ['value', 'suffix', 'label'],
+      ],
+      'display' => [
+        'label' => $this->t('Display'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Display weight for ordering.'),
+        'fields' => ['weight'],
+      ],
+    ];
+  }
 
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->label()];
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
+  }
 
-        $this->messenger()->addStatus(
-            $result === SAVED_NEW
-            ? $this->t('Estadística %label creada.', $message_args)
-            : $this->t('Estadística %label actualizada.', $message_args)
-        );
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_page_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario de creacion/edicion de publicaciones programadas.
@@ -13,36 +13,45 @@ use Drupal\Core\Form\FormStateInterface;
  * P1-05: Permite al usuario programar la publicacion o despublicacion
  * de una pagina del Page Builder en una fecha y hora especifica.
  */
-class ScheduledPublishForm extends ContentEntityForm {
+class ScheduledPublishForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['scheduling'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Programacion'),
-      '#open' => TRUE,
-      '#weight' => -5,
+  protected function getSectionDefinitions(): array {
+    return [
+      'scheduling' => [
+        'label' => $this->t('Scheduling'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'description' => $this->t('Page, action, and scheduled date.'),
+        'fields' => ['label', 'page_content_id', 'action', 'scheduled_at'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Schedule status and notes.'),
+        'fields' => ['schedule_status', 'notes'],
+      ],
     ];
+  }
 
-    // Mover campos relevantes al grupo de programacion.
-    if (isset($form['page_content_id'])) {
-      $form['page_content_id']['#group'] = 'scheduling';
-    }
-    if (isset($form['action'])) {
-      $form['action']['#group'] = 'scheduling';
-    }
-    if (isset($form['scheduled_at'])) {
-      $form['scheduled_at']['#group'] = 'scheduling';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'actions', 'name' => 'calendar'];
+  }
 
-    // Solo mostrar estado a administradores.
-    if (isset($form['schedule_status'])) {
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    // Only show status to administrators.
+    if (isset($form['premium_section_status']['schedule_status'])) {
       if (!$this->currentUser()->hasPermission('administer page builder')) {
-        $form['schedule_status']['#access'] = FALSE;
+        $form['premium_section_status']['schedule_status']['#access'] = FALSE;
       }
     }
 
@@ -55,7 +64,7 @@ class ScheduledPublishForm extends ContentEntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state): void {
     parent::validateForm($form, $form_state);
 
-    // Validar que la fecha programada sea en el futuro.
+    // Validate that the scheduled date is in the future.
     $scheduledAt = $form_state->getValue('scheduled_at');
     if (!empty($scheduledAt[0]['value'])) {
       $scheduledTimestamp = strtotime($scheduledAt[0]['value']);
@@ -75,7 +84,7 @@ class ScheduledPublishForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state): int {
     $entity = $this->entity;
 
-    // Asignar tenant del usuario actual si no esta definido.
+    // Assign tenant from current user if not defined.
     if ($entity->get('tenant_id')->isEmpty()) {
       if (\Drupal::hasService('jaraba_page_builder.tenant_resolver')) {
         $tenantResolver = \Drupal::service('jaraba_page_builder.tenant_resolver');
@@ -86,23 +95,9 @@ class ScheduledPublishForm extends ContentEntityForm {
       }
     }
 
-    $status = parent::save($form, $form_state);
-
-    if ($status === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t(
-        'Publicacion programada "%label" creada correctamente.',
-        ['%label' => $entity->label()]
-      ));
-    }
-    else {
-      $this->messenger()->addStatus($this->t(
-        'Publicacion programada "%label" actualizada.',
-        ['%label' => $entity->label()]
-      ));
-    }
-
+    $result = parent::save($form, $form_state);
     $form_state->setRedirectUrl($entity->toUrl('collection'));
-    return $status;
+    return $result;
   }
 
 }

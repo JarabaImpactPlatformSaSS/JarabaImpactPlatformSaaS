@@ -4,33 +4,56 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_privacy\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para DpaAgreement.
  *
- * En producción, los DPA se generan y firman vía DpaManagerService.
- * Este formulario permite la creación y edición manual desde admin.
+ * En produccion, los DPA se generan y firman via DpaManagerService.
+ * Este formulario permite la creacion y edicion manual desde admin.
  */
-class DpaAgreementForm extends ContentEntityForm {
+class DpaAgreementForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identity' => [
+        'label' => $this->t('Identity'),
+        'icon' => ['category' => 'ui', 'name' => 'document'],
+        'description' => $this->t('Tenant and DPA version.'),
+        'fields' => ['tenant_id', 'version'],
+      ],
+      'signature' => [
+        'label' => $this->t('Signature'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Signer details and signature reference.'),
+        'fields' => ['signed_by', 'signer_name', 'signer_role'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('DPA status.'),
+        'fields' => ['status'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'document'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('version')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('DPA versión %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('DPA versión %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

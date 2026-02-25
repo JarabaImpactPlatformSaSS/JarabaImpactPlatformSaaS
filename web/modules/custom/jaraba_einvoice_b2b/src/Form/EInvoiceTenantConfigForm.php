@@ -4,40 +4,71 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_einvoice_b2b\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Form handler for EInvoice Tenant Config entities.
- *
- * Manages per-tenant B2B e-invoicing configuration: SPFE credentials,
- * Peppol participant ID, inbound reception settings, payment terms,
- * and certificate configuration.
- *
- * Spec: Doc 181, Section 2.2.
+ * Premium form for e-invoice B2B tenant configuration.
  */
-class EInvoiceTenantConfigForm extends ContentEntityForm {
+class EInvoiceTenantConfigForm extends PremiumEntityFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'fiscal' => [
+        'label' => $this->t('Fiscal Data'),
+        'icon' => ['category' => 'business', 'name' => 'building'],
+        'description' => $this->t('NIF, name, and address.'),
+        'fields' => ['tenant_id', 'nif_emisor', 'nombre_razon', 'address_json', 'preferred_format'],
+      ],
+      'spfe' => [
+        'label' => $this->t('SPFE'),
+        'icon' => ['category' => 'ui', 'name' => 'send'],
+        'description' => $this->t('SPFE integration settings.'),
+        'fields' => ['spfe_enabled', 'spfe_environment', 'spfe_credentials_json'],
+      ],
+      'peppol' => [
+        'label' => $this->t('Peppol'),
+        'icon' => ['category' => 'ui', 'name' => 'globe'],
+        'description' => $this->t('Peppol network configuration.'),
+        'fields' => ['peppol_enabled', 'peppol_participant_id'],
+      ],
+      'inbound' => [
+        'label' => $this->t('Inbound'),
+        'icon' => ['category' => 'ui', 'name' => 'download'],
+        'description' => $this->t('Inbound invoice reception.'),
+        'fields' => ['inbound_email', 'inbound_webhook_url', 'auto_send_on_paid', 'payment_status_tracking', 'default_payment_terms_days'],
+      ],
+      'certificate' => [
+        'label' => $this->t('Certificate'),
+        'icon' => ['category' => 'ui', 'name' => 'lock'],
+        'description' => $this->t('Digital certificate.'),
+        'fields' => ['certificate_file_id', 'certificate_password_encrypted'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Configuration activation.'),
+        'fields' => ['active'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'settings'];
+  }
 
   /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $label = $entity->get('nombre_razon')->value ?? '';
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('E-Invoice B2B configuration for %label created.', [
-        '%label' => $label,
-      ]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('E-Invoice B2B configuration for %label updated.', [
-        '%label' => $label,
-      ]));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

@@ -4,111 +4,44 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_integrations\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar conectores del marketplace.
- *
- * PROPÓSITO:
- * Formulario administrativo para gestionar conectores.
- * Organizado en grupos lógicos: información básica, autenticación,
- * configuración técnica y publicación.
- *
- * DIRECTRICES:
- * - i18n: todos los labels con $this->t().
- * - Grupos verticales para organización visual.
+ * Premium form for creating/editing marketplace connectors.
  */
-class ConnectorForm extends ContentEntityForm {
+class ConnectorForm extends PremiumEntityFormBase {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    // Grupo: Información Básica.
-    $form['basic_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Información Básica'),
-      '#open' => TRUE,
-      '#weight' => -10,
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic_info' => [
+        'label' => $this->t('Basic Information'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'description' => $this->t('Connector identity and metadata.'),
+        'fields' => ['name', 'machine_name', 'description', 'category', 'icon', 'logo_url', 'provider', 'version'],
+      ],
+      'api' => [
+        'label' => $this->t('API & Auth'),
+        'icon' => ['category' => 'ui', 'name' => 'lock'],
+        'description' => $this->t('Authentication and API configuration.'),
+        'fields' => ['auth_type', 'api_base_url', 'config_schema', 'docs_url'],
+      ],
+      'publishing' => [
+        'label' => $this->t('Publishing'),
+        'icon' => ['category' => 'ui', 'name' => 'toggle'],
+        'description' => $this->t('Publication status and plan requirements.'),
+        'fields' => ['publish_status', 'required_plans', 'supported_events', 'install_count'],
+      ],
     ];
-
-    // Mover campos al grupo.
-    $basic_fields = ['name', 'machine_name', 'description', 'category', 'icon', 'logo_url', 'provider', 'version'];
-    foreach ($basic_fields as $field_name) {
-      if (isset($form[$field_name])) {
-        $form['basic_info'][$field_name] = $form[$field_name];
-        unset($form[$field_name]);
-      }
-    }
-
-    // Grupo: Autenticación y API.
-    $form['auth_settings'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Autenticación y API'),
-      '#open' => TRUE,
-      '#weight' => 0,
-    ];
-
-    $auth_fields = ['auth_type', 'api_base_url', 'docs_url'];
-    foreach ($auth_fields as $field_name) {
-      if (isset($form[$field_name])) {
-        $form['auth_settings'][$field_name] = $form[$field_name];
-        unset($form[$field_name]);
-      }
-    }
-
-    // Grupo: Configuración Técnica.
-    $form['technical'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Configuración Técnica'),
-      '#open' => FALSE,
-      '#weight' => 5,
-    ];
-
-    $tech_fields = ['config_schema', 'supported_events', 'required_plans'];
-    foreach ($tech_fields as $field_name) {
-      if (isset($form[$field_name])) {
-        $form['technical'][$field_name] = $form[$field_name];
-        unset($form[$field_name]);
-      }
-    }
-
-    // Grupo: Publicación.
-    $form['publishing'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Publicación'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-
-    if (isset($form['publish_status'])) {
-      $form['publishing']['publish_status'] = $form['publish_status'];
-      unset($form['publish_status']);
-    }
-
-    return $form;
   }
 
-  /**
-   * {@inheritdoc}
-   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'link'];
+  }
+
   public function save(array $form, FormStateInterface $form_state): int {
-    $entity = $this->getEntity();
-    $is_new = $entity->isNew();
     $result = parent::save($form, $form_state);
-
-    $label = $entity->label();
-    if ($is_new) {
-      $this->messenger()->addStatus($this->t('Conector %label creado.', ['%label' => $label]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Conector %label actualizado.', ['%label' => $label]));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 
