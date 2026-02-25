@@ -1,17 +1,15 @@
-diff --git a/src/Provider/Microsoft.php b/src/Provider/Microsoft.php
-index 1234567..abcdefg 100644
---- a/src/Provider/Microsoft.php
-+++ b/src/Provider/Microsoft.php
-@@ -1,112 +1,93 @@
+--- a/src/Provider/Microsoft.php	2026-02-25 13:30:13.752339083 +0100
++++ b/src/Provider/Microsoft.php	2026-02-25 13:30:24.931170145 +0100
+@@ -1,83 +1,81 @@
  <?php namespace Stevenmaguire\OAuth2\Client\Provider;
-
+ 
 -use GuzzleHttp\Psr7\Uri;
  use League\OAuth2\Client\Provider\AbstractProvider;
  use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
  use League\OAuth2\Client\Token\AccessToken;
 +use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
  use Psr\Http\Message\ResponseInterface;
-
+ 
 +/**
 + * Microsoft Identity Platform v2.0 provider.
 + */
@@ -27,7 +25,7 @@ index 1234567..abcdefg 100644
       */
 -    public $defaultScopes = ['wl.basic', 'wl.emails'];
 +    public $defaultScopes = ['openid', 'profile', 'email'];
-
+ 
      /**
 -     * Base url for authorization.
 +     * Tenant ID. Use 'common' for multi-tenant apps.
@@ -36,78 +34,76 @@ index 1234567..abcdefg 100644
       */
 -    protected $urlAuthorize = 'https://login.live.com/oauth20_authorize.srf';
 +    protected $tenant = 'common';
-
+ 
      /**
 -     * Base url for access token.
 -     *
 -     * @var string
--     */
++     * {@inheritdoc}
+      */
 -    protected $urlAccessToken = 'https://login.live.com/oauth20_token.srf';
--
--    /**
++    public function getBaseAuthorizationUrl()
++    {
++        return 'https://login.microsoftonline.com/' . $this->tenant . '/oauth2/v2.0/authorize';
++    }
+ 
+     /**
 -     * Base url for resource owner.
 -     *
 -     * @var string
--     */
++     * {@inheritdoc}
+      */
 -    protected $urlResourceOwnerDetails = 'https://apis.live.net/v5.0/me';
--
--    /**
++    public function getBaseAccessTokenUrl(array $params)
++    {
++        return 'https://login.microsoftonline.com/' . $this->tenant . '/oauth2/v2.0/token';
++    }
+ 
+     /**
 -     * Get authorization url to begin OAuth flow
 -     *
 -     * @return string
 +     * {@inheritdoc}
       */
-     public function getBaseAuthorizationUrl()
+-    public function getBaseAuthorizationUrl()
++    public function getResourceOwnerDetailsUrl(AccessToken $token)
      {
 -        return $this->urlAuthorize;
-+        return 'https://login.microsoftonline.com/' . $this->tenant . '/oauth2/v2.0/authorize';
++        return 'https://graph.microsoft.com/v1.0/me';
      }
-
+ 
      /**
 -     * Get access token url to retrieve token
 -     *
 -     * @return string
 +     * {@inheritdoc}
       */
-     public function getBaseAccessTokenUrl(array $params)
+-    public function getBaseAccessTokenUrl(array $params)
++    protected function getDefaultScopes()
      {
 -        return $this->urlAccessToken;
-+        return 'https://login.microsoftonline.com/' . $this->tenant . '/oauth2/v2.0/token';
++        return $this->defaultScopes;
      }
-
+ 
      /**
 -     * Get default scopes
 -     *
 -     * @return array
 +     * {@inheritdoc}
-+     */
-+    public function getResourceOwnerDetailsUrl(AccessToken $token)
-+    {
-+        return 'https://graph.microsoft.com/v1.0/me';
-+    }
-+
-+    /**
-+     * {@inheritdoc}
       */
-     protected function getDefaultScopes()
+-    protected function getDefaultScopes()
++    protected function getScopeSeparator()
      {
-         return $this->defaultScopes;
+-        return $this->defaultScopes;
++        return ' ';
      }
-
+ 
      /**
 -     * Check a provider response for errors.
 -     *
 -     * @throws IdentityProviderException
 -     * @param  ResponseInterface $response
 -     * @return void
-+     * {@inheritdoc}
-+     */
-+    protected function getScopeSeparator()
-+    {
-+        return ' ';
-+    }
-+
-+    /**
 +     * {@inheritdoc}
       */
      protected function checkResponse(ResponseInterface $response, $data)
@@ -120,9 +116,9 @@ index 1234567..abcdefg 100644
                  $response->getStatusCode(),
                  $response
              );
-         }
+@@ -85,28 +83,10 @@
      }
-
+ 
      /**
 -     * Generate a user object from a successful user details request.
 -     *
@@ -150,17 +146,24 @@ index 1234567..abcdefg 100644
 -        return (string) Uri::withQueryValue($uri, 'access_token', (string) $token);
 -    }
  }
-diff --git a/src/Provider/MicrosoftResourceOwner.php b/src/Provider/MicrosoftResourceOwner.php
-index 1234567..abcdefg 100644
---- a/src/Provider/MicrosoftResourceOwner.php
-+++ b/src/Provider/MicrosoftResourceOwner.php
-@@ -1,93 +1,82 @@
- <?php namespace Stevenmaguire\OAuth2\Client\Provider;
-
+--- a/src/Provider/MicrosoftResourceOwner.php	2026-02-25 13:30:18.996669462 +0100
++++ b/src/Provider/MicrosoftResourceOwner.php	2026-02-25 13:30:24.935170391 +0100
+@@ -2,89 +2,84 @@
+ 
  use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-
+ 
 +/**
 + * Microsoft resource owner using Graph API v1.0 /me response.
++ *
++ * Response format from /v1.0/me:
++ * {
++ *   "id": "...",
++ *   "displayName": "First Last",
++ *   "givenName": "First",
++ *   "surname": "Last",
++ *   "mail": "user@example.com",
++ *   "userPrincipalName": "user@example.com"
++ * }
 + */
  class MicrosoftResourceOwner implements ResourceOwnerInterface
  {
@@ -170,7 +173,7 @@ index 1234567..abcdefg 100644
       * @var array
       */
      protected $response;
-
+ 
      /**
       * Creates new resource owner.
 -     *
@@ -181,7 +184,7 @@ index 1234567..abcdefg 100644
      {
          $this->response = $response;
      }
-
+ 
      /**
 -     * Get user id
 -     *
@@ -193,7 +196,7 @@ index 1234567..abcdefg 100644
 -        return $this->response['id'] ?: null;
 +        return $this->response['id'] ?? null;
      }
-
+ 
      /**
 -     * Get user email
 -     *
@@ -205,7 +208,7 @@ index 1234567..abcdefg 100644
 -        return $this->response['emails']['preferred'] ?: null;
 +        return $this->response['mail'] ?? $this->response['userPrincipalName'] ?? null;
      }
-
+ 
      /**
 -     * Get user firstname
 -     *
@@ -217,7 +220,7 @@ index 1234567..abcdefg 100644
 -        return $this->response['first_name'] ?: null;
 +        return $this->response['givenName'] ?? null;
      }
-
+ 
      /**
 -     * Get user lastname
 -     *
@@ -229,7 +232,7 @@ index 1234567..abcdefg 100644
 -        return $this->response['last_name'] ?: null;
 +        return $this->response['surname'] ?? null;
      }
-
+ 
      /**
 -     * Get user name
 -     *
@@ -241,7 +244,7 @@ index 1234567..abcdefg 100644
 -        return $this->response['name'] ?: null;
 +        return $this->response['displayName'] ?? null;
      }
-
+ 
      /**
 -     * Get user urls
 -     *
@@ -253,7 +256,7 @@ index 1234567..abcdefg 100644
 -        return isset($this->response['link']) ? $this->response['link'].'/cid-'.$this->getId() : null;
 +        return null;
      }
-
+ 
      /**
       * Return all of the owner details available as an array.
 -     *
@@ -261,6 +264,3 @@ index 1234567..abcdefg 100644
       */
      public function toArray()
      {
-         return $this->response;
-     }
- }
