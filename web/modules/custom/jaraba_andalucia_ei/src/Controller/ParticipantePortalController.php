@@ -98,7 +98,7 @@ class ParticipantePortalController extends ControllerBase {
       '#formacion' => $formacion,
       '#attached' => [
         'library' => [
-          'jaraba_andalucia_ei/dashboard',
+          'jaraba_andalucia_ei/participante-portal',
         ],
       ],
       '#cache' => [

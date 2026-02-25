@@ -165,6 +165,15 @@ jaraba_andalucia_ei.guia_participante:
   requirements:
     _permission: 'access content'
 
+# === API: GUÍA DOWNLOAD (POST) ===
+jaraba_andalucia_ei.guia_download_api:
+  path: '/api/v1/andalucia-ei/guia-download'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\GuiaParticipanteController::handleGuiaDownload'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
 # === LANDING PAGE DE CONVERSIÓN ===
 jaraba_andalucia_ei.landing:
   path: '/andalucia-ei/programa'

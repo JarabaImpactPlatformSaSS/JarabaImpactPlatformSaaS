@@ -19,3 +19,21 @@ solicitud-form:
   dependencies:
     - core/drupal
     - core/once
+
+participante-portal:
+  version: 1.x
+  js:
+    js/participante-portal.js: {}
+  dependencies:
+    - jaraba_andalucia_ei/dashboard
+    - core/drupal
+    - core/once
+
+guia:
+  version: 1.x
+  js:
+    js/guia-form.js: {}
+  dependencies:
+    - jaraba_andalucia_ei/dashboard
+    - core/drupal
+    - core/once
