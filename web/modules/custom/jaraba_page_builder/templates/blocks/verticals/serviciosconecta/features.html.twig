@@ -36,7 +36,7 @@
              data-delay="{{ loop.index0 * 100 }}">
           <div class="pb-section__feature-icon" aria-hidden="true">
             {% set icon_info = icon_map[feature.icon|default('star')]|default({ category: 'ui', name: 'star' }) %}
-            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'primary' }) }}
+            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
           </div>
           <h3 class="pb-section__feature-title">{{ feature.title|default('Característica')|t }}</h3>
           <p class="pb-section__feature-desc">{{ feature.desc|default('Descripción de la característica.')|t }}</p>

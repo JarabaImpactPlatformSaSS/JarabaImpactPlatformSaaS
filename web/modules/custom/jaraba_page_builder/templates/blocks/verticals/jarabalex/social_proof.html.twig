@@ -33,7 +33,7 @@
             {% if item.logo %}
               <img src="{{ item.logo }}" alt="{{ item.title|default('') }}" loading="lazy" />
             {% else %}
-              {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '32px', color: 'primary' }) }}
+              {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '32px', color: 'azul-corporativo' }) }}
             {% endif %}
           </div>
           <h3 class="pb-section__social-proof-title">{{ item.title|default('Reconocimiento')|t }}</h3>

@@ -4,7 +4,15 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-24
-**Versión:** 92.0.0 (Auditoria Horizontal — Strict Equality + CAN-SPAM MJML)
+**Versión:** 93.0.0 (Meta-Sitio jarabaimpact.com — PathProcessor + Content)
+
+> **🌐 META-SITIO JARABAIMPACT.COM: PATHPROCESSOR + CONTENIDO INSTITUCIONAL** (2026-02-24)
+> - **Contexto:** Construccion del meta-sitio institucional `jarabaimpact.com` usando Page Builder. Los path_alias de entidades PageContent no se registraban como rutas Drupal, devolviendo 404.
+> - **HAL-01 (PathProcessor):** Nuevo `PathProcessorPageContent` (`InboundPathProcessorInterface`, prioridad 200). Resuelve path_alias → `/page/{id}`. Skip list de prefijos de sistema (/api/, /admin/, /user/). Static cache. Sin filtro status (delega en AccessControlHandler).
+> - **HAL-02 (Titulos/Publicacion):** 7 paginas con titulos institucionales actualizados via `PATCH /api/v1/pages/{id}/config` y publicadas via `POST /api/v1/pages/{id}/publish`.
+> - **HAL-03 (Contenido):** 5/7 paginas con contenido en espanol completo (Homepage, Plataforma, Verticales, Impacto, Contacto). Programas y Recursos con contenido parcial.
+> - **2 archivos creados/modificados.** Regla nueva: PATH-ALIAS-PROCESSOR-001. Regla de oro #34. Aprendizaje #120.
+> - **Directrices v69.0.0, Arquitectura v70.0.0, Flujo v24.0.0, Indice v93.0.0**
 
 > **🔒 AUDITORIA HORIZONTAL: SEGURIDAD ACCESS HANDLERS + CAN-SPAM EMAILS** (2026-02-24)
 > - **Contexto:** Primera auditoria cross-cutting del SaaS tras 6 auditorias verticales. Revisa flujos horizontales que cruzan los 21 modulos: strict equality en access handlers (seguridad) y compliance CAN-SPAM en plantillas MJML transaccionales.
@@ -230,6 +238,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-24 | **93.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` (InboundPathProcessorInterface, prioridad 200) para resolver path_alias de PageContent a rutas /page/{id}. 7 paginas institucionales creadas. Contenido espanol en 5/7 paginas via GrapesJS API. Regla PATH-ALIAS-PROCESSOR-001. Aprendizaje #120. |
 | 2026-02-24 | **92.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** Primera auditoria cross-cutting del SaaS. Sprint 1: 52 instancias de `==` reemplazadas por `(int) === (int)` en 39 access handlers de 21 modulos (previene type juggling en ownership checks). Sprint 2: 28 plantillas MJML horizontales con mj-preview, postal CAN-SPAM, font Outfit, y paleta de marca unificada (6 colores universales + 4 de grupo reemplazados, semanticos preservados). 5 reglas nuevas: ACCESS-STRICT-001, EMAIL-PREVIEW-001, EMAIL-POSTAL-001, BRAND-FONT-001, BRAND-COLOR-001. Regla de oro #33. Aprendizaje #119. |
 | 2026-02-24 | **91.0.0** | **Empleabilidad /my-profile Premium — Fase Final:** Nueva entidad `CandidateEducation` (ContentEntity con AdminHtmlRouteProvider, field_ui_base_route, 6 rutas admin, SettingsForm, collection tab, update hook 10002). Fix XSS `\|raw` → `\|safe_html` en template de perfil (TWIG-XSS-001). Controller cleanup: HTML hardcodeado → `#theme => 'my_profile_empty'`. Permiso `administer candidate educations`. 3 ficheros creados, 6 modificados. Aprendizaje #118. |
 | 2026-02-24 | **90.0.0** | **Icon System — Zero Chinchetas:** 305 pares `jaraba_icon()` auditados en todo el codebase. 0 chinchetas restantes. ~170 SVGs/symlinks nuevos en 8 bridge categories. 32 llamadas con convencion rota corregidas en 4 modulos. 177 templates Page Builder verificados. 3 symlinks reparados (2 circulares, 1 roto). Reglas ICON-CONVENTION-001, ICON-DUOTONE-001, ICON-COLOR-001. Regla de oro #32. Aprendizaje #117. |

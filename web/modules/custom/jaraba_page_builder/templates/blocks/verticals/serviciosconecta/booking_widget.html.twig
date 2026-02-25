@@ -45,7 +45,7 @@
       <div class="pb-section__booking-provider" data-effect="fade-up" data-delay="100">
         <div class="pb-section__booking-provider-header">
           <div class="pb-section__booking-provider-icon" aria-hidden="true">
-            {{ jaraba_icon('user', 'users', { variant: 'duotone', size: '40px', color: 'primary' }) }}
+            {{ jaraba_icon('users', 'users', { variant: 'duotone', size: '40px', color: 'azul-corporativo' }) }}
           </div>
           <div>
             <h3 class="pb-section__booking-provider-name">{{ provider_name|default('Tu Profesional')|t }}</h3>
@@ -58,13 +58,13 @@
           <div class="pb-section__booking-contact">
             {% if phone|default('') %}
               <div class="pb-section__booking-contact-item">
-                <span aria-hidden="true">{{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '16px', color: 'primary' }) }}</span>
+                <span aria-hidden="true">{{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}</span>
                 <a href="tel:{{ phone }}">{{ phone }}</a>
               </div>
             {% endif %}
             {% if email|default('') %}
               <div class="pb-section__booking-contact-item">
-                <span aria-hidden="true">{{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '16px', color: 'primary' }) }}</span>
+                <span aria-hidden="true">{{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '16px', color: 'azul-corporativo' }) }}</span>
                 <a href="mailto:{{ email }}">{{ email }}</a>
               </div>
             {% endif %}
@@ -75,7 +75,7 @@
       {# Calendar preview #}
       <div class="pb-section__booking-calendar" data-effect="fade-up" data-delay="200">
         <div class="pb-section__booking-calendar-header">
-          <span aria-hidden="true">{{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '24px', color: 'primary' }) }}</span>
+          <span aria-hidden="true">{{ jaraba_icon('ui', 'calendar', { variant: 'duotone', size: '24px', color: 'azul-corporativo' }) }}</span>
           <h3>{% trans %}Selecciona fecha{% endtrans %}</h3>
         </div>
         <div class="pb-section__booking-calendar-grid" aria-label="{% trans %}Vista previa de calendario{% endtrans %}">
@@ -96,7 +96,7 @@
       {# Services list #}
       <div class="pb-section__booking-services" data-effect="fade-up" data-delay="300">
         <div class="pb-section__booking-services-header">
-          <span aria-hidden="true">{{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '24px', color: 'primary' }) }}</span>
+          <span aria-hidden="true">{{ jaraba_icon('ui', 'document', { variant: 'duotone', size: '24px', color: 'azul-corporativo' }) }}</span>
           <h3>{% trans %}Servicios disponibles{% endtrans %}</h3>
         </div>
         {% set default_services = [

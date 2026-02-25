@@ -15,7 +15,7 @@
   <div class="pb-section__container">
     <div class="pb-section__header">
       <div class="pb-section__header-icon" aria-hidden="true">
-        {{ jaraba_icon('actions', 'lock', { variant: 'duotone', size: '48px', color: 'primary' }) }}
+        {{ jaraba_icon('actions', 'lock', { variant: 'duotone', size: '48px', color: 'azul-corporativo' }) }}
       </div>
       <span class="pb-section__eyebrow">{{ eyebrow|default('Confianza')|t }}</span>
       <h2 class="pb-section__title">{{ title|default('Garantías que nos avalan')|t }}</h2>
@@ -32,7 +32,7 @@
       {% set items = badges|default(default_badges) %}
       {% set badge_icon_map = {
         'verified': { category: 'actions', name: 'check' },
-        'certified': { category: 'business', name: 'achievement' },
+        'certified': { category: 'achievement', name: 'achievement' },
         'insured': { category: 'actions', name: 'lock' },
         'digital': { category: 'ui', name: 'document' }
       } %}
@@ -42,7 +42,7 @@
              data-delay="{{ loop.index0 * 100 }}">
           <div class="pb-section__trust-badge-icon" aria-hidden="true">
             {% set badge_icon = badge_icon_map[badge.icon|default('verified')]|default({ category: 'actions', name: 'check' }) %}
-            {{ jaraba_icon(badge_icon.category, badge_icon.name, { variant: 'duotone', size: '40px', color: 'primary' }) }}
+            {{ jaraba_icon(badge_icon.category, badge_icon.name, { variant: 'duotone', size: '40px', color: 'azul-corporativo' }) }}
           </div>
           <h3 class="pb-section__trust-badge-title">{{ badge.title|default('Sello de Confianza')|t }}</h3>
           <p class="pb-section__trust-badge-desc">{{ badge.description|default('Descripción del sello de confianza.')|t }}</p>
@@ -61,7 +61,7 @@
         <span>{% trans %}Contratos legales{% endtrans %}</span>
       </div>
       <div class="pb-section__trust-summary-item">
-        {{ jaraba_icon('user', 'users', { variant: 'duotone', size: '20px', color: 'success' }) }}
+        {{ jaraba_icon('users', 'users', { variant: 'duotone', size: '20px', color: 'success' }) }}
         <span>{% trans %}Soporte dedicado{% endtrans %}</span>
       </div>
       <div class="pb-section__trust-summary-item">
