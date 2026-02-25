@@ -343,7 +343,7 @@ class StripeWebhookHandlerTest extends UnitTestCase {
 
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     // Inject entity type manager via reflection (ControllerBase dependency).
@@ -393,7 +393,7 @@ class StripeWebhookHandlerTest extends UnitTestCase {
 
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $reflection = new \ReflectionClass($this->controller);
@@ -438,7 +438,7 @@ class StripeWebhookHandlerTest extends UnitTestCase {
 
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $reflection = new \ReflectionClass($this->controller);
@@ -555,7 +555,7 @@ class StripeWebhookHandlerTest extends UnitTestCase {
 
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $reflection = new \ReflectionClass($this->controller);
@@ -607,7 +607,7 @@ class StripeWebhookHandlerTest extends UnitTestCase {
 
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
     $entityTypeManager->method('getStorage')
-      ->with('group')
+      ->with('tenant')
       ->willReturn($groupStorage);
 
     $reflection = new \ReflectionClass($this->controller);

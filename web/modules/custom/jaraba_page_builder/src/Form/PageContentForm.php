@@ -304,7 +304,7 @@ class PageContentForm extends PremiumEntityFormBase {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): int {
     /** @var \Drupal\jaraba_page_builder\PageContentInterface $page */
     $page = $this->entity;
 

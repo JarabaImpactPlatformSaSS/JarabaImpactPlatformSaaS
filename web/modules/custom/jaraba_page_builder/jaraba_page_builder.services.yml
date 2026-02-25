@@ -82,7 +82,7 @@ services:
       - '@cache.default'
       - '@config.factory'
       - '@module_handler'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@current_user'
       - '@logger.factory'
       - '@entity_type.manager'
