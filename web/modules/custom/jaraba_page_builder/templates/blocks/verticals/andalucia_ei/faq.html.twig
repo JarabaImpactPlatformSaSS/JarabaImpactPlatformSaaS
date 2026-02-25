@@ -1,0 +1,45 @@
+{#
+ # Template: Andalucia +ei - Preguntas Frecuentes
+ # Category: andalucia_ei
+ # Type: faq
+ #
+ # Header + accordion con <details>/<summary>
+ # Premium: animations, jaraba_icon system
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--faq pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_faq"
+         aria-label="{{ title|default('Preguntas frecuentes')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <div class="pb-section__header-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'help', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+      </div>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('FAQ')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Preguntas frecuentes sobre Andalucia +ei')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre el programa de emprendimiento aumentado con inteligencia artificial.')|t }}</p>
+    </div>
+    <div class="pb-section__faq-list">
+      {% set default_faqs = [
+        { question: 'Quien puede participar en Andalucia +ei?', answer: 'El programa esta dirigido a personas en situacion de desempleo residentes en cualquiera de las ocho provincias de Andalucia, mayores de 16 anios e inscritas como demandantes de empleo en el Servicio Andaluz de Empleo (SAE).' },
+        { question: 'Tiene algun coste el programa?', answer: 'No, Andalucia +ei es un programa 100% gratuito para los participantes. Esta financiado por la Junta de Andalucia con cofinanciacion del Fondo Social Europeo.' },
+        { question: 'Como funciona la mentoria con inteligencia artificial?', answer: 'La mentoria con IA utiliza algoritmos avanzados para analizar tu perfil profesional, identificar tus competencias clave y disenar un itinerario formativo personalizado. Ademas, recibes acompanamiento de mentores humanos especializados.' },
+        { question: 'Cual es la duracion del programa?', answer: 'El programa tiene una duracion de entre 3 y 6 meses dependiendo del itinerario seleccionado. Incluye modulos formativos, sesiones de mentoria semanales y un periodo de practicas o acompanamiento a la insercion laboral.' },
+        { question: 'Que certificaciones se obtienen al finalizar?', answer: 'Los participantes obtienen certificaciones en competencias digitales, emprendimiento e inteligencia artificial aplicada, reconocidas por la Junta de Andalucia y alineadas con el Marco Europeo de Competencias Digitales (DigComp).' },
+        { question: 'Como puedo solicitar mi plaza?', answer: 'Puedes solicitar tu plaza a traves del formulario de inscripcion en esta pagina o acudiendo a tu oficina del SAE mas cercana. Las plazas son limitadas y se asignan por orden de solicitud, priorizando criterios de vulnerabilidad social.' }
+      ] %}
+      {% set items = faqs|default(default_faqs) %}
+      {% for faq in items %}
+        <details class="pb-section__faq-item"
+                 data-effect="fade-up"
+                 data-delay="{{ loop.index0 * 100 }}">
+          <summary>{{ faq.question|default('Pregunta')|t }}</summary>
+          <div class="pb-section__faq-answer">
+            {{ faq.answer|default('Respuesta.')|t }}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>

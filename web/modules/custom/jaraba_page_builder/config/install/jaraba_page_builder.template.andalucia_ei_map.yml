@@ -1,0 +1,92 @@
+langcode: es
+status: true
+dependencies: {}
+id: andalucia_ei_map
+label: 'Andalucia +ei: Sedes Provinciales'
+description: 'Sección mapa de sedes provinciales del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/map.html.twig'
+fields_schema:
+  type: object
+  title: 'Sedes Provinciales'
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      maxLength: 150
+    provinces:
+      type: array
+      title: 'Provincias'
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: 'Nombre'
+          address:
+            type: string
+            title: 'Dirección'
+          active:
+            type: boolean
+            title: 'Activa'
+    contact_phone:
+      type: string
+      title: 'Teléfono de contacto'
+      maxLength: 20
+    contact_email:
+      type: string
+      title: 'Email de contacto'
+      format: email
+    contact_whatsapp:
+      type: string
+      title: 'WhatsApp de contacto'
+      maxLength: 20
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/andalucia_ei-map.png'
+weight: 50
+preview_data:
+  eyebrow: Cobertura
+  title: Presente en las 8 provincias andaluzas
+  subtitle: Formación presencial y online en toda la comunidad autónoma.
+  provinces:
+    -
+      name: Sevilla
+      address: Centro de Emprendimiento, Av. de la Innovación 2
+      active: true
+    -
+      name: Málaga
+      address: Polo Digital, C/ Marie Curie 12
+      active: true
+    -
+      name: Granada
+      address: Espacio Emprendedor, C/ Gran Vía de Colón 48
+      active: true
+    -
+      name: Córdoba
+      address: Hub Emprende, C/ Escritora Gloria Fuertes 5
+      active: true
+    -
+      name: Cádiz
+      address: Centro de Innovación, Av. de la Universidad 15
+      active: true
+    -
+      name: Almería
+      address: Vivero de Empresas, C/ Javier Sanz 3
+      active: true
+    -
+      name: Jaén
+      address: Centro de Desarrollo, Paseo de la Estación 29
+      active: true
+    -
+      name: Huelva
+      address: Espacio Coworking, Av. Andalucía 7
+      active: true
+  contact_phone: '+34 955 000 123'
+  contact_email: info@andalucia-ei.es
+  contact_whatsapp: '+34 600 123 456'

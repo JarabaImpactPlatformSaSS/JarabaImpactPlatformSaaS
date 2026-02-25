@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * Grid de acciones rápidas del participante.
+ *
+ * Variables:
+ * - participante: ProgramaParticipanteEiInterface entity
+ */
+#}
+
+<section class="aei-acciones" data-effect="fade-up" aria-label="{{ 'Acciones rápidas'|t }}">
+  <h3 class="aei-acciones__title">
+    {{ jaraba_icon('ui', 'grid', { variant: 'duotone', size: '24px' }) }}
+    {{ 'Acciones rápidas'|t }}
+  </h3>
+
+  <div class="aei-acciones__grid">
+    {# Copilot IA #}
+    <a href="{{ path('jaraba_andalucia_ei.dashboard') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="0">
+      <div class="aei-acciones__card-icon" aria-hidden="true">
+        {{ jaraba_icon('ai', 'sparkle', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <span class="aei-acciones__card-label">{{ 'Copilot IA'|t }}</span>
+    </a>
+
+    {# Mentor #}
+    <a href="#" class="aei-acciones__card" data-slide-panel="solicitar-mentor" data-effect="fade-up" data-delay="80">
+      <div class="aei-acciones__card-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'users', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <span class="aei-acciones__card-label">{{ 'Mi mentor'|t }}</span>
+    </a>
+
+    {# Formación / LMS #}
+    <a href="{{ path('jaraba_andalucia_ei.dashboard') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="160">
+      <div class="aei-acciones__card-icon" aria-hidden="true">
+        {{ jaraba_icon('education', 'graduation', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <span class="aei-acciones__card-label">{{ 'Formación'|t }}</span>
+    </a>
+
+    {# Documentos #}
+    <a href="#" class="aei-acciones__card" data-slide-panel="subir-documento" data-participante-id="{{ participante.id() }}" data-effect="fade-up" data-delay="240">
+      <div class="aei-acciones__card-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'folder', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <span class="aei-acciones__card-label">{{ 'Documentos'|t }}</span>
+    </a>
+
+    {# Descargar informe #}
+    <a href="{{ path('jaraba_andalucia_ei.informe_progreso_pdf') }}" class="aei-acciones__card" data-effect="fade-up" data-delay="320">
+      <div class="aei-acciones__card-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'download', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <span class="aei-acciones__card-label">{{ 'Informe PDF'|t }}</span>
+    </a>
+
+    {# Editar perfil #}
+    <a href="#" class="aei-acciones__card" data-slide-panel="editar-perfil" data-effect="fade-up" data-delay="400">
+      <div class="aei-acciones__card-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'edit', { variant: 'duotone', size: '28px' }) }}
+      </div>
+      <span class="aei-acciones__card-label">{{ 'Mi perfil'|t }}</span>
+    </a>
+  </div>
+</section>

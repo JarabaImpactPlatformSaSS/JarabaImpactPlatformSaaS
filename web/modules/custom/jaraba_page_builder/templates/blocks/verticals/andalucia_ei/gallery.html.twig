@@ -1,0 +1,51 @@
+{#
+ # Template: Andalucia +ei - Galeria de Actividades
+ # Category: andalucia_ei
+ # Type: gallery
+ #
+ # Header + grid responsive 3 columnas con overlay text y lightbox
+ # Premium: staggered animations, jaraba_icon system, lightbox data attributes
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--gallery pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_gallery"
+         aria-label="{{ title|default('Galeria de Actividades')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Nuestras actividades')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Conoce el programa en accion')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Talleres, sesiones de mentoria y formacion digital con participantes de toda Andalucia.')|t }}</p>
+    </div>
+    <div class="pb-section__gallery-grid">
+      {% set default_gallery = [
+        { alt: 'Taller de emprendimiento digital', caption: 'Taller de emprendimiento digital' },
+        { alt: 'Sesion de mentoria con IA', caption: 'Sesion de mentoria con IA' },
+        { alt: 'Formacion en competencias digitales', caption: 'Formacion en competencias digitales' },
+        { alt: 'Networking entre participantes', caption: 'Networking entre participantes' },
+        { alt: 'Presentacion de proyectos finales', caption: 'Presentacion de proyectos finales' },
+        { alt: 'Jornada de insercion laboral', caption: 'Jornada de insercion laboral' }
+      ] %}
+      {% set items = gallery|default(default_gallery) %}
+      {% for item in items %}
+        <figure class="pb-section__gallery-item"
+                data-effect="fade-up"
+                data-delay="{{ loop.index0 * 100 }}"
+                data-lightbox="andalucia-ei-gallery"
+                data-lightbox-src="{{ item.src|default('') }}"
+                data-lightbox-caption="{{ item.caption|default('')|t }}">
+          {% if item.src|default('') %}
+            <img src="{{ item.src }}" alt="{{ item.alt|default('Imagen') }}" loading="lazy" />
+          {% else %}
+            <div class="pb-section__img-placeholder" aria-hidden="true">
+              {{ jaraba_icon('programas', 'rocket', { variant: 'duotone', size: '32px', color: 'naranja-ei' }) }}
+            </div>
+          {% endif %}
+          {% if item.caption|default('') %}
+            <figcaption class="pb-section__gallery-overlay">{{ item.caption|t }}</figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>

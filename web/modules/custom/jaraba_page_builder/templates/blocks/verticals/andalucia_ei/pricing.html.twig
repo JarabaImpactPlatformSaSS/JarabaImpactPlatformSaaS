@@ -1,0 +1,96 @@
+{#
+ # Template: Andalucia +ei - Itinerarios Formativos
+ # Category: andalucia_ei
+ # Type: pricing
+ #
+ # Header + 3 pricing cards (todos gratuitos, subvencionados)
+ # Premium: staggered animations, jaraba_icon checkmarks, featured card highlight
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--pricing pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_pricing"
+         aria-label="{{ title|default('Itinerarios Formativos')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Itinerarios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Elige el itinerario que mejor se adapte a tu perfil')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Tres itinerarios disenados para cubrir diferentes necesidades y niveles de experiencia. Todos 100% gratuitos.')|t }}</p>
+    </div>
+    <div class="pb-section__pricing-grid">
+      {% set default_plans = [
+        {
+          name: 'Impulso Digital',
+          price: 'Gratuito',
+          period: '3 meses',
+          featured: false,
+          badge: '100% Subvencionado',
+          cta: 'Solicitar plaza',
+          features: [
+            'Formacion basica en competencias digitales',
+            'Introduccion a la inteligencia artificial',
+            'Taller de emprendimiento digital',
+            'Mentoria grupal con IA',
+            'Certificado de aprovechamiento'
+          ]
+        },
+        {
+          name: 'Acelera Pro',
+          price: 'Gratuito',
+          period: '5 meses',
+          featured: true,
+          badge: 'Recomendado',
+          cta: 'Solicitar plaza',
+          features: [
+            'Todo en Impulso Digital',
+            'Mentoria individual con IA avanzada',
+            'Especializacion en herramientas IA',
+            'Practicas en empresas colaboradoras',
+            'Acompanamiento a la insercion laboral',
+            'Certificacion DigComp avanzada'
+          ]
+        },
+        {
+          name: 'Hibrido',
+          price: 'Gratuito',
+          period: '6 meses',
+          featured: false,
+          badge: '100% Subvencionado',
+          cta: 'Solicitar plaza',
+          features: [
+            'Todo en Acelera Pro',
+            'Modulos presenciales y online',
+            'Plan de negocio asistido por IA',
+            'Acceso a financiacion para emprendimiento',
+            'Red de contactos profesionales',
+            'Seguimiento post-programa 6 meses'
+          ]
+        }
+      ] %}
+      {% set items = plans|default(default_plans) %}
+      {% for plan in items %}
+        <div class="pb-section__pricing-card{{ plan.featured|default(false) ? ' pb-section__pricing-card--featured' : '' }}"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          {% if plan.badge|default('') %}
+            <span class="pb-section__pricing-badge">{{ plan.badge|t }}</span>
+          {% endif %}
+          <h3 class="pb-section__pricing-name">{{ plan.name|default('Itinerario')|t }}</h3>
+          <div class="pb-section__pricing-price">{{ plan.price|default('Gratuito')|t }}</div>
+          <div class="pb-section__pricing-period">{{ plan.period|default('3 meses')|t }}</div>
+          <ul class="pb-section__pricing-features">
+            {% for feature in plan.features|default([]) %}
+              <li>
+                <span class="pb-section__pricing-check" aria-hidden="true">{{ jaraba_icon('actions', 'check', { variant: 'duotone', size: '16px', color: 'success' }) }}</span>
+                {{ feature|t }}
+              </li>
+            {% endfor %}
+          </ul>
+          <a href="{{ plan.url|default('#solicitar') }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">
+            {{ plan.cta|default('Solicitar plaza')|t }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

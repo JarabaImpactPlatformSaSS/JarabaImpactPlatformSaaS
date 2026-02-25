@@ -1,0 +1,91 @@
+{#
+ # Template: Andalucia +ei - Cobertura Provincial y Contacto
+ # Category: andalucia_ei
+ # Type: map
+ #
+ # Grid 2 cols: mapa placeholder con provincias + info de contacto lateral
+ # Premium: animations, jaraba_icon system, province list
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--map pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_map"
+         aria-label="{{ title|default('Cobertura y Contacto')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__map-embed">
+      {% if map_embed|default('') %}
+        {{ map_embed|striptags('<iframe>')|raw }}
+      {% else %}
+        <div class="pb-section__map-placeholder" aria-label="{{ 'Mapa de Andalucia'|t }}">
+          <div class="pb-section__map-placeholder-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'pin', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+          </div>
+          <span>{{ 'Mapa de Andalucia - Cobertura en las 8 provincias'|t }}</span>
+        </div>
+      {% endif %}
+      <div class="pb-section__provinces">
+        <h3 class="pb-section__provinces-title">{{ provinces_title|default('Provincias participantes')|t }}</h3>
+        {% set default_provinces = [
+          'Almeria',
+          'Cadiz',
+          'Cordoba',
+          'Granada',
+          'Huelva',
+          'Jaen',
+          'Malaga',
+          'Sevilla'
+        ] %}
+        {% set province_items = provinces|default(default_provinces) %}
+        <ul class="pb-section__provinces-list">
+          {% for province in province_items %}
+            <li class="pb-section__province"
+                data-effect="fade-up"
+                data-delay="{{ loop.index0 * 50 }}">
+              <span class="pb-section__province-icon" aria-hidden="true">
+                {{ jaraba_icon('ui', 'pin', { variant: 'duotone', size: '16px', color: 'naranja-ei' }) }}
+              </span>
+              {{ province|t }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="pb-section__contact-info">
+      <h2 class="pb-section__title">{{ title|default('Contacta con nosotros')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Resolvemos tus dudas sobre el programa Andalucia +ei.')|t }}</p>
+      <div class="pb-section__contact-item" data-effect="fade-up" data-delay="100">
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'phone', { variant: 'duotone', size: '24px', color: 'naranja-ei' }) }}
+        </div>
+        <div>
+          <div class="pb-section__contact-label">{{ 'Telefono'|t }}</div>
+          <div class="pb-section__contact-value">
+            <a href="tel:{{ phone|default('+34 955 000 000') }}">{{ phone|default('+34 955 000 000') }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="pb-section__contact-item" data-effect="fade-up" data-delay="200">
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('ui', 'mail', { variant: 'duotone', size: '24px', color: 'naranja-ei' }) }}
+        </div>
+        <div>
+          <div class="pb-section__contact-label">{{ 'Email'|t }}</div>
+          <div class="pb-section__contact-value">
+            <a href="mailto:{{ email|default('info@andalucia-ei.es') }}">{{ email|default('info@andalucia-ei.es') }}</a>
+          </div>
+        </div>
+      </div>
+      <div class="pb-section__contact-item" data-effect="fade-up" data-delay="300">
+        <div class="pb-section__contact-icon" aria-hidden="true">
+          {{ jaraba_icon('social', 'whatsapp', { variant: 'duotone', size: '24px', color: 'naranja-ei' }) }}
+        </div>
+        <div>
+          <div class="pb-section__contact-label">{{ 'WhatsApp'|t }}</div>
+          <div class="pb-section__contact-value">
+            <a href="https://wa.me/{{ whatsapp|default('34955000000') }}" target="_blank" rel="noopener noreferrer">{{ whatsapp_display|default('+34 955 000 000') }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

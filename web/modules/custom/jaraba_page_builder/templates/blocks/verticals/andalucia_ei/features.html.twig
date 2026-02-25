@@ -1,0 +1,47 @@
+{#
+ # Template: Andalucia +ei - Pilares del Programa
+ # Category: andalucia_ei
+ # Type: features
+ #
+ # Header centrado + grid de 3 feature cards (icono + titulo + descripcion)
+ # Premium: staggered animations, jaraba_icon system, configurable columns
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--features pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_features"
+         aria-label="{{ title|default('Pilares del Programa')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Que ofrecemos')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Tres pilares para tu desarrollo profesional')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Un programa integral que combina inteligencia artificial, formacion certificada y acompanamiento hacia el empleo.')|t }}</p>
+    </div>
+    <div class="pb-section__features-grid pb-section__features-grid--{{ columns|default(3) }}-cols">
+      {% set default_features = [
+        { icon: 'ai-brain', title: 'Mentoria con IA', desc: 'Accede a sesiones de mentoria potenciadas por inteligencia artificial que analizan tu perfil, identifican tus fortalezas y disenian un itinerario personalizado de desarrollo profesional.' },
+        { icon: 'graduation', title: 'Formacion Certificada', desc: 'Completa modulos formativos en competencias digitales, emprendimiento e inteligencia artificial con certificacion oficial reconocida en toda Andalucia.' },
+        { icon: 'briefcase', title: 'Insercion Laboral', desc: 'Conecta con empresas colaboradoras del programa y accede a ofertas de empleo exclusivas con acompanamiento personalizado durante todo el proceso de seleccion.' }
+      ] %}
+      {% set items = features|default(default_features) %}
+      {% set icon_map = {
+        'ai-brain': { category: 'tech', name: 'ai-brain' },
+        'graduation': { category: 'education', name: 'graduation' },
+        'briefcase': { category: 'legal', name: 'briefcase' }
+      } %}
+      {% for feature in items %}
+        <div class="pb-section__feature-card"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__feature-icon" aria-hidden="true">
+            {% set icon_info = icon_map[feature.icon|default('ai-brain')]|default({ category: 'tech', name: 'ai-brain' }) %}
+            {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'naranja-ei' }) }}
+          </div>
+          <h3 class="pb-section__feature-title">{{ feature.title|default('Caracteristica')|t }}</h3>
+          <p class="pb-section__feature-desc">{{ feature.desc|default('Descripcion de la caracteristica.')|t }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

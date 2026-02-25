@@ -1,0 +1,91 @@
+{#
+/**
+ * @file
+ * Hero personalizado del portal de participante.
+ *
+ * Variables:
+ * - participante: ProgramaParticipanteEiInterface entity
+ * - health_score: { score, label } or null
+ */
+#}
+
+{% set fase = participante.getFaseActual() %}
+{% set fase_labels = {
+  'atencion': 'Fase Atención'|t,
+  'insercion': 'Fase Inserción'|t,
+  'baja': 'Baja'|t,
+} %}
+
+<section class="aei-hero" data-effect="fade-up" aria-label="{{ 'Panel de participante'|t }}">
+  <div class="aei-hero__container">
+    <div class="aei-hero__greeting">
+      <span class="aei-hero__eyebrow">{{ 'Andalucía +ei'|t }}</span>
+      <h1 class="aei-hero__title">{{ 'Hola, bienvenido/a a tu portal'|t }}</h1>
+      <div class="aei-hero__fase-badge aei-hero__fase-badge--{{ fase }}">
+        {{ jaraba_icon('ui', 'flag', { variant: 'duotone', size: '16px' }) }}
+        {{ fase_labels[fase]|default(fase) }}
+      </div>
+    </div>
+
+    {# Health score gauge #}
+    {% if health_score %}
+      <div class="aei-hero__health" aria-label="{{ 'Health Score'|t }}">
+        <svg class="aei-hero__gauge" viewBox="0 0 120 120" width="120" height="120">
+          <circle class="aei-hero__gauge-bg" cx="60" cy="60" r="50" fill="none" stroke-width="8" />
+          {% set circumference = 314.159 %}
+          {% set offset = circumference - (circumference * health_score.score / 100) %}
+          <circle class="aei-hero__gauge-fill aei-hero__gauge-fill--{{ health_score.score >= 80 ? 'good' : (health_score.score >= 50 ? 'medium' : 'low') }}"
+            cx="60" cy="60" r="50" fill="none" stroke-width="8"
+            stroke-dasharray="{{ circumference }}"
+            stroke-dashoffset="{{ offset }}"
+            transform="rotate(-90 60 60)" />
+          <text class="aei-hero__gauge-value" x="60" y="56" text-anchor="middle" dominant-baseline="middle">
+            {{ health_score.score }}
+          </text>
+          <text class="aei-hero__gauge-label" x="60" y="72" text-anchor="middle" dominant-baseline="middle">
+            {{ health_score.label|default('Health'|t) }}
+          </text>
+        </svg>
+      </div>
+    {% endif %}
+
+    {# Hours summary metrics #}
+    <div class="aei-hero__metrics">
+      {% set metrics = [
+        {
+          value: participante.getTotalHorasOrientacion()|number_format(1) ~ 'h',
+          label: 'Orientación'|t,
+          icon: 'users',
+          icon_cat: 'ui',
+          target: '10h',
+        },
+        {
+          value: (participante.get('horas_formacion').value ?? 0)|number_format(1) ~ 'h',
+          label: 'Formación'|t,
+          icon: 'graduation',
+          icon_cat: 'education',
+          target: '50h',
+        },
+        {
+          value: participante.getHorasMentoriaIa()|number_format(1) ~ 'h',
+          label: 'Mentoría IA'|t,
+          icon: 'cpu',
+          icon_cat: 'ui',
+          target: null,
+        },
+      ] %}
+      {% for metric in metrics %}
+        <div class="aei-hero__metric" data-effect="fade-up" data-delay="{{ loop.index0 * 80 }}">
+          <div class="aei-hero__metric-icon" aria-hidden="true">
+            {{ jaraba_icon(metric.icon_cat, metric.icon, { variant: 'duotone', size: '20px' }) }}
+          </div>
+          <span class="aei-hero__metric-value" data-counter="{{ metric.value }}">{{ metric.value }}</span>
+          <span class="aei-hero__metric-label">{{ metric.label }}</span>
+          {% if metric.target %}
+            <span class="aei-hero__metric-target">/ {{ metric.target }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

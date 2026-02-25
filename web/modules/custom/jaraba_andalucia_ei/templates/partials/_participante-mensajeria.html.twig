@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Widget de mensajería del participante Andalucía +ei.
+ *
+ * Variables:
+ * - conversaciones: Array of conversation data (max 3 recientes)
+ * - unread_total: Total unread message count
+ * - participante_uuid: UUID del participante (for deep linking)
+ * - mentor_online: Boolean if mentor is currently online
+ */
+#}
+
+<section class="aei-mensajeria" data-effect="fade-up" aria-label="{{ 'Mensajería'|t }}">
+  <div class="aei-mensajeria__header">
+    <h3 class="aei-mensajeria__title">
+      {{ jaraba_icon('ui', 'message-square', { variant: 'duotone', size: '24px' }) }}
+      {{ 'Mensajes'|t }}
+    </h3>
+    {% if unread_total > 0 %}
+      <span class="aei-mensajeria__unread-badge" aria-label="{{ 'mensajes sin leer'|t }}">
+        {{ unread_total }}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if conversaciones is not empty %}
+    <div class="aei-mensajeria__list">
+      {% for conv in conversaciones %}
+        <a href="/messaging?context=andalucia_ei&context_id={{ participante_uuid }}" class="aei-mensajeria__conversation {{ conv.unread_count > 0 ? 'aei-mensajeria__conversation--unread' : '' }}">
+          <div class="aei-mensajeria__avatar" aria-hidden="true">
+            {% if conv.avatar_url %}
+              <img src="{{ conv.avatar_url }}" alt="" loading="lazy" />
+            {% else %}
+              {{ conv.title|first|upper }}
+            {% endif %}
+          </div>
+          <div class="aei-mensajeria__content">
+            <span class="aei-mensajeria__conv-title">{{ conv.title }}</span>
+            {% if conv.preview %}
+              <span class="aei-mensajeria__preview">{{ conv.preview|length > 60 ? conv.preview|slice(0, 60) ~ '...' : conv.preview }}</span>
+            {% endif %}
+          </div>
+          {% if conv.unread_count > 0 %}
+            <span class="aei-mensajeria__conv-badge">{{ conv.unread_count }}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="aei-mensajeria__empty">
+      {{ 'No tienes conversaciones activas.'|t }}
+    </p>
+  {% endif %}
+
+  {# Mentor presence indicator #}
+  {% if mentor_online is defined %}
+    <div class="aei-mensajeria__presence">
+      <span class="aei-mensajeria__presence-dot {{ mentor_online ? 'aei-mensajeria__presence-dot--online' : 'aei-mensajeria__presence-dot--offline' }}" aria-hidden="true"></span>
+      <span class="aei-mensajeria__presence-text">
+        {{ mentor_online ? 'Tu mentor está disponible'|t : 'Tu mentor no está conectado'|t }}
+      </span>
+    </div>
+  {% endif %}
+
+  {# Action buttons #}
+  <div class="aei-mensajeria__actions">
+    <a href="/messaging?context=andalucia_ei&context_id={{ participante_uuid }}" class="aei-mensajeria__link">
+      {{ 'Ver todos los mensajes'|t }}
+    </a>
+    <button type="button" class="aei-mensajeria__new-msg" data-slide-panel="nuevo-mensaje-mentor">
+      {{ jaraba_icon('ui', 'send', { variant: 'duotone', size: '16px' }) }}
+      {{ 'Mensaje al mentor'|t }}
+    </button>
+  </div>
+</section>

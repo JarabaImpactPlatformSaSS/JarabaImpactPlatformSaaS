@@ -8,6 +8,7 @@ use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_site_builder\Service\MetaSiteResolverService;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -56,6 +57,13 @@ class PathProcessorPageContent implements InboundPathProcessorInterface {
    * @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService|null
    */
   protected ?TenantContextService $tenantContext;
+
+  /**
+   * Meta-site resolver service (optional).
+   *
+   * @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService|null
+   */
+  protected ?MetaSiteResolverService $metaSiteResolver;
 
   /**
    * Static cache de aliases resueltos en este request.
@@ -107,15 +115,19 @@ class PathProcessorPageContent implements InboundPathProcessorInterface {
    *   The language manager.
    * @param \Drupal\ecosistema_jaraba_core\Service\TenantContextService|null $tenant_context
    *   The tenant context service (optional).
+   * @param \Drupal\jaraba_site_builder\Service\MetaSiteResolverService|null $meta_site_resolver
+   *   The meta-site resolver service (optional).
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     LanguageManagerInterface $language_manager,
     ?TenantContextService $tenant_context = NULL,
+    ?MetaSiteResolverService $meta_site_resolver = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->languageManager = $language_manager;
     $this->tenantContext = $tenant_context;
+    $this->metaSiteResolver = $meta_site_resolver;
   }
 
   /**
@@ -129,9 +141,15 @@ class PathProcessorPageContent implements InboundPathProcessorInterface {
    *   /plataforma → /page/66
    */
   public function processInbound($path, Request $request) {
-    // 1. No procesar paths vacíos o la raíz.
-    if (empty($path) || $path === '/') {
+    // 1. No procesar paths vacíos.
+    if (empty($path)) {
       return $path;
+    }
+
+    // 1b. HOMEPAGE POR DOMINIO (H1): Si el path es la raíz "/", intentar
+    // resolver la homepage del meta-sitio del tenant via hostname del request.
+    if ($path === '/') {
+      return $this->resolveHomepage($request) ?? $path;
     }
 
     // 2. Saltar rutas del sistema conocidas (rendimiento).
@@ -206,6 +224,54 @@ class PathProcessorPageContent implements InboundPathProcessorInterface {
     // 7. No match: devolver el path original sin modificar.
     self::$resolvedAliases[$cacheKey] = $path;
     return $path;
+  }
+
+  /**
+   * Resuelve la homepage de un meta-sitio a partir del hostname del request.
+   *
+   * Usa MetaSiteResolverService para buscar SiteConfig del tenant → homepage_id.
+   * Retorna /page/{id} si hay homepage configurada, NULL si no hay meta-sitio.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   El request HTTP actual.
+   *
+   * @return string|null
+   *   Ruta canónica /page/{id} o NULL si no aplica.
+   */
+  protected function resolveHomepage(Request $request): ?string {
+    if (!$this->metaSiteResolver) {
+      return NULL;
+    }
+
+    $hostname = $request->getHost();
+    $cacheKey = 'homepage:' . $hostname;
+
+    if (isset(self::$resolvedAliases[$cacheKey])) {
+      $cached = self::$resolvedAliases[$cacheKey];
+      return $cached === '/' ? NULL : $cached;
+    }
+
+    try {
+      $metaSite = $this->metaSiteResolver->resolveFromRequest($request);
+      if ($metaSite && $metaSite['site_config']) {
+        $homepageId = $metaSite['site_config']->get('homepage_id')->target_id ?? NULL;
+        if ($homepageId) {
+          $resolvedPath = '/page/' . $homepageId;
+          self::$resolvedAliases[$cacheKey] = $resolvedPath;
+          return $resolvedPath;
+        }
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_page_builder')->warning(
+        'PathProcessor: Error resolviendo homepage para @host: @error',
+        ['@host' => $hostname, '@error' => $e->getMessage()]
+      );
+    }
+
+    // No hay meta-sitio: cachear y devolver NULL.
+    self::$resolvedAliases[$cacheKey] = '/';
+    return NULL;
   }
 
 }

@@ -115,6 +115,47 @@ class AndaluciaEiJourneyProgressionService {
       'mode' => 'expansion_advisor',
       'priority' => 25,
     ],
+    // Phase 7 expanded nudges.
+    'docs_sto_missing' => [
+      'fase' => 'atencion',
+      'condition' => 'sto_docs_incomplete',
+      'message' => 'Tienes documentos STO pendientes. Subirlos ahora agiliza tu paso a insercion.',
+      'cta_label' => 'Subir documentos',
+      'cta_url' => '/andalucia-ei/mi-participacion',
+      'channel' => 'fab_dot',
+      'mode' => 'tutor_ei',
+      'priority' => 12,
+    ],
+    'doc_pending_review' => [
+      'fase' => 'atencion',
+      'condition' => 'doc_pending_review',
+      'message' => 'Tienes un documento subido pendiente de revision. Tu mentor lo revisara pronto.',
+      'cta_label' => 'Ver expediente',
+      'cta_url' => '/andalucia-ei/mi-participacion',
+      'channel' => 'fab_dot',
+      'mode' => 'tutor_ei',
+      'priority' => 18,
+    ],
+    'mentor_no_response_48h' => [
+      'fase' => 'atencion',
+      'condition' => 'mentor_no_response_48h',
+      'message' => 'Tu mentor no ha respondido recientemente. Mientras tanto, tu tutor IA puede ayudarte.',
+      'cta_label' => 'Hablar con Tutor IA',
+      'cta_url' => '/copilot',
+      'channel' => 'fab_dot',
+      'mode' => 'tutor_ei',
+      'priority' => 22,
+    ],
+    'training_task_overdue' => [
+      'fase' => 'atencion',
+      'condition' => 'training_task_overdue',
+      'message' => 'Tienes entregables de formacion pendientes. Completarlos te acerca a tu objetivo.',
+      'cta_label' => 'Ver tareas',
+      'cta_url' => '/lms',
+      'channel' => 'fab_dot',
+      'mode' => 'training_advisor',
+      'priority' => 16,
+    ],
   ];
 
   /**
@@ -259,6 +300,10 @@ class AndaluciaEiJourneyProgressionService {
       'no_tipo_insercion' => $this->checkNoTipoInsercion($participant),
       'no_activity_30_days' => $this->checkNoActivity($participant, 30),
       'recently_inserted' => $this->checkRecentlyInserted($participant, 30),
+      'sto_docs_incomplete' => $this->checkStoDocsIncomplete($participant),
+      'doc_pending_review' => $this->checkDocPendingReview($participant),
+      'mentor_no_response_48h' => $this->checkMentorNoResponse($participant, 2),
+      'training_task_overdue' => $this->checkTrainingTaskOverdue($participant),
       default => FALSE,
     };
   }
@@ -409,6 +454,106 @@ class AndaluciaEiJourneyProgressionService {
    */
   protected function getDismissedRules(int $userId): array {
     return $this->state->get("andalucia_ei_proactive_dismissed_{$userId}", []);
+  }
+
+  /**
+   * Checks if participant has incomplete STO documents.
+   */
+  protected function checkStoDocsIncomplete($participant): bool {
+    try {
+      $expedienteService = \Drupal::hasService('jaraba_andalucia_ei.expediente')
+        ? \Drupal::service('jaraba_andalucia_ei.expediente')
+        : NULL;
+      if (!$expedienteService) {
+        return FALSE;
+      }
+      return !$expedienteService->verificarDocumentosCompletos((int) $participant->id());
+    }
+    catch (\Exception $e) {
+      return FALSE;
+    }
+  }
+
+  /**
+   * Checks if participant has documents pending review.
+   */
+  protected function checkDocPendingReview($participant): bool {
+    try {
+      $storage = $this->entityTypeManager->getStorage('expediente_documento');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('participante_id', $participant->id())
+        ->condition('estado_revision', ['pendiente', 'en_revision'], 'IN')
+        ->condition('status', 1)
+        ->range(0, 1)
+        ->execute();
+      return !empty($ids);
+    }
+    catch (\Exception $e) {
+      return FALSE;
+    }
+  }
+
+  /**
+   * Checks if mentor has not responded in N days.
+   *
+   * Uses conversation last_message_at as proxy.
+   */
+  protected function checkMentorNoResponse($participant, int $days): bool {
+    try {
+      $storage = $this->entityTypeManager->getStorage('secure_conversation');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('context_type', 'andalucia_ei')
+        ->condition('context_id', (string) $participant->id())
+        ->condition('conversation_type', 'direct')
+        ->condition('status', 'active')
+        ->range(0, 1)
+        ->execute();
+
+      if (empty($ids)) {
+        return FALSE;
+      }
+
+      $conversation = $storage->load(reset($ids));
+      if (!$conversation) {
+        return FALSE;
+      }
+
+      $lastMessage = (int) ($conversation->get('last_message_at')->value ?? 0);
+      if (!$lastMessage) {
+        return FALSE;
+      }
+
+      $elapsed = $this->time->getRequestTime() - $lastMessage;
+      return $elapsed > ($days * 86400);
+    }
+    catch (\Exception $e) {
+      return FALSE;
+    }
+  }
+
+  /**
+   * Checks if participant has overdue training tasks (entregables pending > 7 days).
+   */
+  protected function checkTrainingTaskOverdue($participant): bool {
+    try {
+      $storage = $this->entityTypeManager->getStorage('expediente_documento');
+      $cutoff = $this->time->getRequestTime() - (7 * 86400);
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('participante_id', $participant->id())
+        ->condition('categoria', 'tarea_', 'STARTS_WITH')
+        ->condition('estado_revision', 'pendiente')
+        ->condition('created', $cutoff, '<')
+        ->condition('status', 1)
+        ->range(0, 1)
+        ->execute();
+      return !empty($ids);
+    }
+    catch (\Exception $e) {
+      return FALSE;
+    }
   }
 
 }

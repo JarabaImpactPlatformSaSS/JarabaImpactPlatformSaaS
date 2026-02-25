@@ -185,6 +185,10 @@
   --ej-pb-accent: #8B5CF6;
 }
 
+.pb-section--andalucia_ei {
+  --ej-pb-accent: var(--ej-color-andalucia-ei, #FF8C42);
+}
+
 // ============================================================================
 // TYPE: HERO
 // Split layout con gradient de fondo, texto grande, CTA prominente

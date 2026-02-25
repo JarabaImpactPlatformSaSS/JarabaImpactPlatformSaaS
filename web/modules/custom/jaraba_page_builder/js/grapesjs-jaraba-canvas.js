@@ -948,43 +948,71 @@
                         return { length: 0 };
                     };
 
-                    // Función para inyectar con verificación
+                    // Función para inyectar con verificación (H3 fix: más intentos y delay)
                     const injectTemplate = (attempt = 1) => {
-                        const maxAttempts = 5;
-                        const delay = 100; // 100ms entre intentos
+                        const maxAttempts = 8;
+                        const delay = 300; // 300ms entre intentos (era 100ms)
 
                         // Verificar que el canvas sigue vacío
                         if (getCanvasComponents().length === 0) {
-                            console.log(`[Jaraba Canvas] Intento ${attempt}: Inyectando HTML del template...`);
-                            self.editor.setComponents(data.html);
+                            console.log(`[Jaraba Canvas] Intento ${attempt}/${maxAttempts}: Inyectando HTML del template...`);
+                            try {
+                                self.editor.setComponents(data.html);
 
-                            // También cargar CSS si existe
-                            if (data.css) {
-                                self.editor.setStyle(data.css);
+                                // También cargar CSS si existe
+                                if (data.css) {
+                                    self.editor.setStyle(data.css);
+                                }
+                            } catch (injectError) {
+                                console.warn(`[Jaraba Canvas] Error en setComponents (intento ${attempt}):`, injectError.message);
                             }
 
                             // Verificar que la inyección funcionó
                             setTimeout(() => {
                                 const count = getCanvasComponents().length;
                                 if (count > 0) {
-                                    console.log(`Template pre-cargado correctamente (${count} componentes).`);
+                                    console.log(`[Jaraba Canvas] Template pre-cargado correctamente (${count} componentes).`);
                                     // Re-inyectar estilos después de cargar el template
                                     self.injectCanvasStyles();
                                 } else if (attempt < maxAttempts) {
-                                    // Si falló, reintentar
-                                    console.log(`Inyección no persistió, reintentando...`);
+                                    // Si falló, reintentar con delay progresivo
+                                    console.log(`[Jaraba Canvas] Inyección no persistió, reintentando en ${delay}ms...`);
                                     setTimeout(() => injectTemplate(attempt + 1), delay);
                                 } else {
-                                    console.warn('No se pudo inyectar el template después de múltiples intentos.');
+                                    console.warn('[Jaraba Canvas] No se pudo inyectar el template después de ' + maxAttempts + ' intentos.');
                                 }
-                            }, 50);
+                            }, 100);
                         } else {
-                            console.log('El canvas ya tiene contenido, omitiendo inyección.');
+                            console.log('[Jaraba Canvas] El canvas ya tiene contenido, omitiendo inyección.');
                         }
                     };
 
-                    // Iniciar inyección después de un breve delay
-                    setTimeout(injectTemplate, 100);
+                    // H3 fix: Esperar a que el canvas frame esté listo antes de inyectar.
+                    // El iframe del canvas puede no estar completamente cargado cuando
+                    // loadContent() se ejecuta, causando que setComponents() falle silenciosamente.
+                    const canvasFrame = self.editor.Canvas?.getFrameEl();
+                    if (canvasFrame && canvasFrame.contentDocument?.readyState === 'complete') {
+                        // Frame ya cargado, inyectar con delay para estabilidad.
+                        setTimeout(injectTemplate, 200);
+                    } else {
+                        // Esperar al evento canvas:frame:load antes de inyectar.
+                        let frameLoaded = false;
+                        self.editor.on('canvas:frame:load', () => {
+                            if (!frameLoaded) {
+                                frameLoaded = true;
+                                console.log('[Jaraba Canvas] Canvas frame cargado, inyectando HTML...');
+                                setTimeout(injectTemplate, 200);
+                            }
+                        });
+                        // Fallback timeout si el evento no se dispara (ya ocurrió antes).
+                        setTimeout(() => {
+                            if (!frameLoaded && getCanvasComponents().length === 0) {
+                                console.log('[Jaraba Canvas] Fallback: inyectando sin evento frame:load');
+                                frameLoaded = true;
+                                injectTemplate();
+                            }
+                        }, 2000);
+                    }
                 }
             } catch (error) {
                 console.error('Error cargando contenido:', error);

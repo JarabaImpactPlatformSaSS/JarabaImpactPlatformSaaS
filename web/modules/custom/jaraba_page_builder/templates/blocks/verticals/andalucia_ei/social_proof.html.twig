@@ -1,0 +1,43 @@
+{#
+ # Template: Andalucia +ei - Entidades Colaboradoras
+ # Category: andalucia_ei
+ # Type: social_proof
+ #
+ # Eyebrow + grid de logos con filtro grayscale y hover color
+ # Premium: staggered animations, centered layout, institutional logos
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--social-proof pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_social_proof"
+         aria-label="{{ title|default('Entidades colaboradoras')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Programa respaldado por')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Entidades que hacen posible Andalucia +ei')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Un programa impulsado por instituciones comprometidas con el empleo y el emprendimiento en Andalucia.')|t }}</p>
+    </div>
+    <div class="pb-section__logos-grid pb-section__logos-grid--centered">
+      {% set default_logos = [
+        { alt: 'Junta de Andalucia' },
+        { alt: 'SEPE - Servicio Publico de Empleo Estatal' },
+        { alt: 'Fondo Social Europeo' },
+        { alt: 'Servicio Andaluz de Empleo' },
+        { alt: 'Ministerio de Trabajo y Economia Social' },
+        { alt: 'Union Europea - NextGenerationEU' }
+      ] %}
+      {% set items = logos|default(default_logos) %}
+      {% for logo in items %}
+        <div class="pb-section__logo pb-section__logo--grayscale"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          {% if logo.src|default('') %}
+            <img src="{{ logo.src }}" alt="{{ logo.alt|default('Logo') }}" loading="lazy" />
+          {% else %}
+            <div class="pb-section__logo-placeholder">{{ logo.alt|default('Logo')|t }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+{#
+/**
+ * @file
+ * Timeline expandida de fases con sub-pasos.
+ *
+ * Variables:
+ * - timeline: { atencion: { label, active, completed, steps }, insercion: { ... } }
+ * - fase_actual: Current phase string
+ */
+#}
+
+<section class="aei-timeline" data-effect="fade-up" aria-label="{{ 'Progreso en el programa'|t }}">
+  <h3 class="aei-timeline__title">
+    {{ jaraba_icon('ui', 'timeline', { variant: 'duotone', size: '24px' }) }}
+    {{ 'Tu progreso'|t }}
+  </h3>
+
+  <div class="aei-timeline__phases">
+    {% for phase_key, phase in timeline %}
+      <div class="aei-timeline__phase aei-timeline__phase--{{ phase_key }} {{ phase.active ? 'aei-timeline__phase--active' : '' }} {{ phase.completed ? 'aei-timeline__phase--completed' : '' }}">
+
+        <div class="aei-timeline__phase-header">
+          <div class="aei-timeline__phase-indicator">
+            {% if phase.completed %}
+              {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '24px' }) }}
+            {% elseif phase.active %}
+              {{ jaraba_icon('status', 'play-circle', { variant: 'duotone', size: '24px' }) }}
+            {% else %}
+              {{ jaraba_icon('status', 'circle', { variant: 'duotone', size: '24px' }) }}
+            {% endif %}
+          </div>
+          <h4 class="aei-timeline__phase-label">{{ phase.label }}</h4>
+        </div>
+
+        {% if phase.active or phase.completed %}
+          <div class="aei-timeline__steps">
+            {% for step in phase.steps %}
+              <div class="aei-timeline__step {{ step.completed ? 'aei-timeline__step--done' : 'aei-timeline__step--pending' }}" data-effect="fade-up" data-delay="{{ loop.index0 * 60 }}">
+                <div class="aei-timeline__step-check" aria-hidden="true">
+                  {% if step.completed %}
+                    {{ jaraba_icon('status', 'check', { variant: 'duotone', size: '16px' }) }}
+                  {% else %}
+                    {{ jaraba_icon('status', 'circle', { variant: 'duotone', size: '16px' }) }}
+                  {% endif %}
+                </div>
+                <span class="aei-timeline__step-label">{{ step.label }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </div>
+
+      {# Connector between phases #}
+      {% if not loop.last %}
+        <div class="aei-timeline__connector {{ phase.completed ? 'aei-timeline__connector--filled' : '' }}" aria-hidden="true"></div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>

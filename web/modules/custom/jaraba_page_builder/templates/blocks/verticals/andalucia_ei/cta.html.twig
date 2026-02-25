@@ -1,0 +1,35 @@
+{#
+ # Template: Andalucia +ei - Llamada a la Accion
+ # Category: andalucia_ei
+ # Type: cta
+ #
+ # Banner centrado con gradient, titulo, subtitle, urgencia y 2 CTAs
+ # Premium: animations, jaraba_icon system
+ # - CTA primary orange, secondary text link
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--cta pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_cta"
+         aria-label="{{ title|default('Solicita tu plaza')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__cta-icon" aria-hidden="true">
+      {{ jaraba_icon('programas', 'rocket', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+    </div>
+    <h2 class="pb-section__title">{{ title|default('Solicita tu plaza ahora')|t }}</h2>
+    <p class="pb-section__subtitle">{{ subtitle|default('Unete al programa de emprendimiento aumentado con inteligencia artificial y transforma tu futuro profesional.')|t }}</p>
+    <p class="pb-section__urgency">{{ urgency_text|default('Plazas limitadas - Convocatoria abierta')|t }}</p>
+    <div class="pb-section__actions">
+      <a href="{{ cta_url|default('#solicitar') }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">
+        {{ cta_text|default('Solicitar plaza ahora')|t }}
+      </a>
+      {% if cta_secondary_text is defined %}
+        <a href="{{ cta_secondary_url|default('#') }}" class="pb-section__cta pb-section__cta--secondary">
+          {{ cta_secondary_text }}
+        </a>
+      {% else %}
+        <a href="#" class="pb-section__cta pb-section__cta--secondary">{{ 'Descargar programa'|t }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>

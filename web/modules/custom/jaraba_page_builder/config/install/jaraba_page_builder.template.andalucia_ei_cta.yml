@@ -1,0 +1,55 @@
+langcode: es
+status: true
+dependencies: {}
+id: andalucia_ei_cta
+label: 'Andalucia +ei: Solicitar Plaza'
+description: 'Sección de conversión del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/cta.html.twig'
+fields_schema:
+  type: object
+  title: 'Solicitar Plaza'
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+      maxLength: 300
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/andalucia_ei-cta.png'
+weight: 49
+preview_data:
+  eyebrow: Plazas limitadas
+  title: Solicita tu plaza ahora
+  subtitle: Las plazas son limitadas y se asignan por orden de solicitud. No dejes pasar esta oportunidad de transformar tu futuro profesional con el apoyo de la IA.
+  cta_text: Solicitar plaza
+  cta_url: /solicitar-plaza
+  secondary_text: Descargar programa
+  secondary_url: /descargar-programa.pdf
+  countdown_date: ''
+  background_image: ''

@@ -1,0 +1,63 @@
+langcode: es
+status: true
+dependencies: {}
+id: andalucia_ei_content
+label: 'Andalucia +ei: Descripción del Programa'
+description: 'Sección narrativa del programa Andalucía Emprende e Innova con criterios de elegibilidad.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/content.html.twig'
+fields_schema:
+  type: object
+  title: 'Descripción del Programa'
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+      maxLength: 300
+    body:
+      type: string
+      title: 'Contenido'
+      format: html
+    eligibility_items:
+      type: array
+      title: 'Criterios de elegibilidad'
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+            title: 'Criterio'
+          icon:
+            type: string
+            title: 'Icono'
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/andalucia_ei-content.png'
+weight: 42
+preview_data:
+  eyebrow: Programa
+  title: Andalucía Emprende e Innova con IA
+  subtitle: Un itinerario integral para emprendedores que quieren dar el salto con el apoyo de la inteligencia artificial
+  body: '<p>El programa Andalucía +ei combina formación en competencias digitales y emprendimiento con mentoría potenciada por inteligencia artificial. Durante 6 meses, los participantes desarrollan su proyecto empresarial con herramientas de última generación, accediendo a una red de mentores, inversores y empresas colaboradoras en toda Andalucía.</p><p>Financiado por el Fondo Social Europeo y la Junta de Andalucía, el programa es completamente gratuito para los participantes seleccionados y ofrece certificación oficial en competencias digitales y emprendimiento.</p>'
+  eligibility_items:
+    -
+      text: Residencia en cualquier provincia de Andalucía
+      icon: map-pin
+    -
+      text: Mayores de 18 años en situación de desempleo o mejora profesional
+      icon: user-check
+    -
+      text: Idea de negocio o proyecto emprendedor en fase inicial
+      icon: lightbulb
+    -
+      text: Compromiso de participación mínima del 80% de las sesiones
+      icon: calendar-check

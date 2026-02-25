@@ -468,6 +468,24 @@ function _jaraba_page_builder_inject_seo_meta(array &$attachments, $page): void 
     $request = \Drupal::request();
     $baseUrl = $request->getSchemeAndHttpHost();
     $siteName = \Drupal::config('system.site')->get('name') ?? 'Jaraba';
+    $titleSuffix = '';
+
+    // H8 + H9 fix: Si la página pertenece a un meta-sitio, usar datos del tenant.
+    try {
+      /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
+      $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+      $metaSite = $resolver->resolveFromPageContent($page);
+      if ($metaSite && $metaSite['site_config']) {
+        $tenantSiteName = $metaSite['site_config']->get('site_name')->value ?? '';
+        if ($tenantSiteName) {
+          $siteName = $tenantSiteName;
+        }
+        $titleSuffix = $metaSite['site_config']->get('meta_title_suffix')->value ?? '';
+      }
+    }
+    catch (\Exception $e) {
+      // Fallback a valores globales.
+    }
 
     $title = $page->get('meta_title')->value ?? $page->get('title')->value ?? '';
     $description = $page->get('meta_description')->value ?? '';
@@ -596,8 +614,32 @@ function _jaraba_page_builder_inject_schema_org(array &$attachments, $page, stri
     ];
   }
 
-  // Schema especifico por tipo de template.
+  // H6 fix: Schema.org tenant-aware — usar datos de SiteConfig si disponibles.
   $tenantData = ['name' => \Drupal::config('system.site')->get('name') ?? 'Jaraba'];
+  try {
+    /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
+    $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
+    $metaSite = $resolver->resolveFromPageContent($page);
+    if ($metaSite && $metaSite['site_config']) {
+      $sc = $metaSite['site_config'];
+      $tenantData['name'] = $sc->get('site_name')->value ?: $tenantData['name'];
+      $email = $sc->get('contact_email')->value ?? '';
+      if ($email) {
+        $tenantData['email'] = $email;
+      }
+      $phone = $sc->get('contact_phone')->value ?? '';
+      if ($phone) {
+        $tenantData['telephone'] = $phone;
+      }
+      $address = $sc->get('contact_address')->value ?? '';
+      if ($address) {
+        $tenantData['address'] = $address;
+      }
+    }
+  }
+  catch (\Exception $e) {
+    // Fallback a datos globales.
+  }
   $specificJson = NULL;
 
   if (str_contains($templateId, 'job')) {
