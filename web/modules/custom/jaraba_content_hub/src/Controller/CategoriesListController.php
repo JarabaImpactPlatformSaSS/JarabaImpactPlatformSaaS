@@ -7,6 +7,7 @@ namespace Drupal\jaraba_content_hub\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Controller\PremiumFormAjaxTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CategoriesListController extends ControllerBase
 {
+
+  use PremiumFormAjaxTrait;
 
   /**
    * The renderer service.
@@ -108,31 +111,19 @@ class CategoriesListController extends ControllerBase
 
     $form = $this->entityFormBuilder()->getForm($category, 'add');
 
-    // If AJAX request, return only the form HTML
-    if ($request->isXmlHttpRequest()) {
-      try {
-        $html = (string) $this->renderer->render($form);
-        return new Response($html, 200, [
-          'Content-Type' => 'text/html; charset=UTF-8',
-        ]);
-      } catch (\Exception $e) {
-        \Drupal::logger('jaraba_content_hub')->error('Form render error: @message', [
-          '@message' => $e->getMessage(),
-        ]);
-        return new Response(
-          '<div class="slide-panel__error"><p>' . $this->t('Error loading form. Please try again.') . '</p></div>',
-          500,
-          ['Content-Type' => 'text/html; charset=UTF-8']
-        );
-      }
+    // AJAX → return only the form HTML for slide-panel.
+    if ($ajax = $this->renderFormForAjax($form, $request)) {
+      return $ajax;
     }
 
-    // Regular request - return full page with theme
+    // Regular request → full page with premium wrapper.
     return [
-      '#theme' => 'content_hub_category_form',
+      '#theme' => 'premium_form_wrapper',
       '#form' => $form,
       '#title' => $this->t('New Category'),
       '#back_url' => Url::fromRoute('jaraba_content_hub.categories.frontend')->toString(),
+      '#back_label' => $this->t('Back to Categories'),
+      '#entity_type_label' => $this->t('Category'),
       '#attached' => [
         'library' => ['ecosistema_jaraba_theme/content-hub'],
       ],
