@@ -673,6 +673,19 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'info-page-contact',
       'path' => $path . '/templates',
     ],
+
+    // Premium Form Wrapper — full-page (non-AJAX) entity form with back nav.
+    'premium_form_wrapper' => [
+      'variables' => [
+        'form' => NULL,
+        'title' => '',
+        'back_url' => '',
+        'back_label' => '',
+        'entity_type_label' => '',
+      ],
+      'template' => 'premium-form-wrapper',
+      'path' => $path . '/templates',
+    ],
   ];
 
 

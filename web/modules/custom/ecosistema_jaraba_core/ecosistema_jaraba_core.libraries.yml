@@ -624,6 +624,24 @@ compliance-panel:
 # reutilizables (_certificate-status, _fiscal-status-badge, _fiscal-tenant-selector).
 # Incluye variables CSS fiscales (--ej-fiscal-*).
 
+# ---------------------------------------------------------------------------
+# PREMIUM ENTITY FORMS (PremiumEntityFormBase)
+# ---------------------------------------------------------------------------
+# World-class form UX: glassmorphism sections, pill nav, char counters,
+# dirty-state tracking, progress bar, validation shake.
+
+premium-forms:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/premium-forms.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 fiscal-styles:
   version: 1.x
   css:

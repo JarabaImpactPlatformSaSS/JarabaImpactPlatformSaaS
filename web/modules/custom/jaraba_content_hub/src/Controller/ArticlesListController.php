@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Pager\PagerManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Controller\PremiumFormAjaxTrait;
 use Drupal\jaraba_content_hub\Entity\ContentArticle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ArticlesListController extends ControllerBase
 {
+
+    use PremiumFormAjaxTrait;
 
     /**
      * Items per page for pagination.
@@ -167,33 +170,19 @@ class ArticlesListController extends ControllerBase
 
         $form = $this->entityFormBuilder()->getForm($article, 'add');
 
-        // If AJAX request, return only the form HTML
-        if ($request->isXmlHttpRequest()) {
-            try {
-                // Use render() instead of renderRoot() for proper context handling
-                $html = (string) $this->renderer->render($form);
-                return new Response($html, 200, [
-                    'Content-Type' => 'text/html; charset=UTF-8',
-                ]);
-            } catch (\Exception $e) {
-                // Log error and return user-friendly message
-                \Drupal::logger('jaraba_content_hub')->error('Form render error: @message', [
-                    '@message' => $e->getMessage(),
-                ]);
-                return new Response(
-                    '<div class="slide-panel__error"><p>' . $this->t('Error loading form. Please try again.') . '</p></div>',
-                    500,
-                    ['Content-Type' => 'text/html; charset=UTF-8']
-                );
-            }
+        // AJAX → return only the form HTML for slide-panel.
+        if ($ajax = $this->renderFormForAjax($form, $request)) {
+            return $ajax;
         }
 
-        // Regular request - return full page with theme
+        // Regular request → full page with premium wrapper.
         return [
-            '#theme' => 'content_hub_article_form',
+            '#theme' => 'premium_form_wrapper',
             '#form' => $form,
             '#title' => $this->t('New Article'),
             '#back_url' => Url::fromRoute('jaraba_content_hub.articles.frontend')->toString(),
+            '#back_label' => $this->t('Back to Articles'),
+            '#entity_type_label' => $this->t('Article'),
             '#attached' => [
                 'library' => ['ecosistema_jaraba_theme/content-hub'],
             ],
@@ -203,21 +192,33 @@ class ArticlesListController extends ControllerBase
     /**
      * Edit article form (frontend wrapper).
      *
+     * Detects AJAX requests and returns only the form HTML for slide-panel.
+     *
      * @param \Drupal\jaraba_content_hub\Entity\ContentArticle $content_article
      *   The article to edit.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The current request.
      *
-     * @return array
-     *   Render array with entity form.
+     * @return array|\Symfony\Component\HttpFoundation\Response
+     *   Render array or Response for AJAX requests.
      */
-    public function edit(ContentArticle $content_article): array
+    public function edit(ContentArticle $content_article, Request $request): array|Response
     {
         $form = $this->entityFormBuilder()->getForm($content_article, 'edit');
 
+        // AJAX → return only the form HTML for slide-panel.
+        if ($ajax = $this->renderFormForAjax($form, $request)) {
+            return $ajax;
+        }
+
+        // Regular request → full page with premium wrapper.
         return [
-            '#theme' => 'content_hub_article_form',
+            '#theme' => 'premium_form_wrapper',
             '#form' => $form,
             '#title' => $this->t('Edit: @title', ['@title' => $content_article->label()]),
             '#back_url' => Url::fromRoute('jaraba_content_hub.articles.frontend')->toString(),
+            '#back_label' => $this->t('Back to Articles'),
+            '#entity_type_label' => $this->t('Article'),
             '#attached' => [
                 'library' => ['ecosistema_jaraba_theme/content-hub'],
             ],

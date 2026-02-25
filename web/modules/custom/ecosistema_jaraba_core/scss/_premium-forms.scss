@@ -1,0 +1,654 @@
+// =============================================================================
+// PREMIUM ENTITY FORMS — World-Class UX/UI
+// =============================================================================
+// Glassmorphism glass cards, section pill navigation, focus glow, sticky
+// action bar, character counters, dirty-state indicator, progress bar,
+// toggle switches, and responsive mobile-first layout.
+//
+// Tokens: uses var(--ej-*) CSS custom properties with SCSS fallbacks.
+// =============================================================================
+
+@use 'variables' as *;
+@use 'sass:color';
+
+// ---------------------------------------------------------------------------
+// KEYFRAMES
+// ---------------------------------------------------------------------------
+
+@keyframes premiumFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes premiumShake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+@keyframes premiumShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes premiumShineSweep {
+  0%   { left: -75%; }
+  100% { left: 125%; }
+}
+
+// ---------------------------------------------------------------------------
+// ROOT — Form Container
+// ---------------------------------------------------------------------------
+
+.premium-entity-form {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, #{$ej-spacing-lg}) var(--ej-spacing-md, #{$ej-spacing-md});
+  font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+
+  // Remove Drupal default form wrappers we don't need
+  .vertical-tabs,
+  .vertical-tabs-panes {
+    display: none !important;
+  }
+
+  // Hide Drupal internal filter/tips wrappers
+  .filter-wrapper,
+  .filter-help,
+  .tips {
+    display: none !important;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// HEADER — Icon + Title + Subtitle
+// ---------------------------------------------------------------------------
+
+.premium-form__header {
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-md, #{$ej-spacing-md});
+  padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+  margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+  background: linear-gradient(
+    135deg,
+    color.adjust($ej-color-impulse-fallback, $alpha: -0.92),
+    color.adjust($ej-color-corporate-fallback, $alpha: -0.95)
+  );
+  border-radius: var(--ej-border-radius-lg, #{$ej-border-radius-lg});
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.premium-form__header-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--ej-border-radius-md, #{$ej-border-radius-md});
+  background: var(--ej-color-primary-light, color.adjust($ej-color-impulse-fallback, $alpha: -0.85));
+}
+
+.premium-form__title {
+  margin: 0;
+  font-size: var(--ej-font-size-2xl, #{$ej-font-size-2xl});
+  font-weight: $ej-font-weight-bold;
+  color: var(--ej-color-text, #{$ej-color-text-fallback});
+  line-height: 1.2;
+}
+
+.premium-form__subtitle {
+  margin: 4px 0 0;
+  font-size: var(--ej-font-size-sm, #{$ej-font-size-sm});
+  color: var(--ej-color-text-muted, #{$ej-color-text-muted-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// NAV — Scrollable Section Pills
+// ---------------------------------------------------------------------------
+
+.premium-form__nav {
+  display: flex;
+  gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+  padding: var(--ej-spacing-sm, #{$ej-spacing-sm}) 0;
+  margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.premium-form__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  white-space: nowrap;
+  font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+  font-size: $ej-font-size-sm;
+  font-weight: $ej-font-weight-medium;
+  color: var(--ej-color-text-muted, #{$ej-color-text-muted-fallback});
+  background: var(--ej-color-surface-elevated, #{$ej-color-surface-elevated-fallback});
+  border: 1.5px solid var(--ej-border-color, #{$ej-border-color-fallback});
+  border-radius: $ej-border-radius-full;
+  cursor: pointer;
+  transition: all $ej-transition-duration-fast $ej-transition-easing;
+
+  &:hover {
+    color: var(--ej-color-text, #{$ej-color-text-fallback});
+    border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    background: color.adjust($ej-color-impulse-fallback, $alpha: -0.92);
+  }
+
+  &.is-active {
+    color: #fff;
+    background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    box-shadow: 0 2px 8px color.adjust($ej-color-impulse-fallback, $alpha: -0.6);
+  }
+}
+
+.premium-form__pill-icon {
+  display: flex;
+  line-height: 1;
+}
+
+.premium-form__pill-label {
+  line-height: 1;
+}
+
+// ---------------------------------------------------------------------------
+// SECTION — Glass Card
+// ---------------------------------------------------------------------------
+
+.premium-form__section {
+  position: relative;
+  overflow: hidden;
+  padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+  margin-bottom: var(--ej-spacing-lg, #{$ej-spacing-lg});
+  background: var(--ej-glass-bg, #{$ej-glass-bg-fallback});
+  backdrop-filter: blur(var(--ej-glass-blur, #{$ej-glass-blur-fallback}));
+  -webkit-backdrop-filter: blur(var(--ej-glass-blur, #{$ej-glass-blur-fallback}));
+  border: var(--ej-glass-border, #{$ej-glass-border-fallback});
+  border-radius: var(--ej-border-radius-lg, #{$ej-border-radius-lg});
+  box-shadow: var(--ej-shadow-sm, #{$ej-shadow-sm});
+
+  // Staggered reveal
+  animation: premiumFadeIn 0.4s $ej-transition-easing both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i + 2}) {
+      animation-delay: #{$i * 0.06}s;
+    }
+  }
+
+  // Shine sweep on hover
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    pointer-events: none;
+    transition: none;
+  }
+
+  &:hover::after {
+    animation: premiumShineSweep 0.6s ease forwards;
+  }
+}
+
+.glass-card {
+  background: var(--ej-color-surface-elevated, #{$ej-color-surface-elevated-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// SECTION HEADER
+// ---------------------------------------------------------------------------
+
+.premium-form__section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+  padding-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+  margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+  border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+}
+
+.premium-form__section-icon {
+  flex-shrink: 0;
+  display: flex;
+  margin-top: 2px;
+}
+
+.premium-form__section-title {
+  margin: 0;
+  font-size: $ej-font-size-lg;
+  font-weight: $ej-font-weight-semibold;
+  color: var(--ej-color-text, #{$ej-color-text-fallback});
+}
+
+.premium-form__section-desc {
+  margin: 2px 0 0;
+  font-size: $ej-font-size-sm;
+  color: var(--ej-color-text-muted, #{$ej-color-text-muted-fallback});
+}
+
+// ---------------------------------------------------------------------------
+// INPUTS — Focus Glow, Borders
+// ---------------------------------------------------------------------------
+
+.premium-entity-form {
+  input[type="text"],
+  input[type="email"],
+  input[type="url"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+    font-size: $ej-font-size-md;
+    color: var(--ej-color-text, #{$ej-color-text-fallback});
+    background-color: var(--ej-color-surface-elevated, #{$ej-color-surface-elevated-fallback});
+    border: 2px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: var(--ej-border-radius-sm, #{$ej-border-radius-sm});
+    transition: border-color $ej-transition-duration-fast $ej-transition-easing,
+                box-shadow $ej-transition-duration-fast $ej-transition-easing;
+
+    &:hover {
+      border-color: var(--ej-gray-400, #{$ej-gray-400});
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+      box-shadow: 0 0 0 4px color.adjust($ej-color-impulse-fallback, $alpha: -0.75);
+    }
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  // Label styling
+  .form-item label,
+  .form-item .label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: $ej-font-size-sm;
+    font-weight: $ej-font-weight-semibold;
+    color: var(--ej-color-text, #{$ej-color-text-fallback});
+  }
+
+  .form-item {
+    margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+  }
+
+  // Description / help text
+  .form-item .description {
+    margin-top: 4px;
+    font-size: $ej-font-size-xs;
+    color: var(--ej-color-text-muted, #{$ej-color-text-muted-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TOGGLE SWITCH — Checkbox Custom
+// ---------------------------------------------------------------------------
+
+.premium-entity-form {
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 44px;
+    height: 24px;
+    background: var(--ej-gray-300, #{$ej-gray-300});
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background $ej-transition-duration-fast $ej-transition-easing;
+    vertical-align: middle;
+    flex-shrink: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      transition: transform $ej-transition-duration-fast $ej-transition-easing-bounce;
+    }
+
+    &:checked {
+      background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+
+      &::before {
+        transform: translateX(20px);
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px color.adjust($ej-color-impulse-fallback, $alpha: -0.75);
+    }
+  }
+
+  // Align checkbox with label
+  .form-type-checkbox,
+  .form-type-boolean {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-spacing-sm, #{$ej-spacing-sm});
+
+    label {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// FILE UPLOAD — Dropzone
+// ---------------------------------------------------------------------------
+
+.premium-entity-form {
+  .form-managed-file,
+  .form-type-managed-file {
+    .file-upload-js-wrapper,
+    .js-form-managed-file {
+      padding: var(--ej-spacing-lg, #{$ej-spacing-lg});
+      border: 2px dashed var(--ej-border-color, #{$ej-border-color-fallback});
+      border-radius: var(--ej-border-radius-md, #{$ej-border-radius-md});
+      text-align: center;
+      transition: border-color $ej-transition-duration-fast $ej-transition-easing,
+                  background $ej-transition-duration-fast $ej-transition-easing;
+
+      &:hover {
+        border-color: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+        background: color.adjust($ej-color-innovation-fallback, $alpha: -0.95);
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// COLOR PICKER
+// ---------------------------------------------------------------------------
+
+.premium-entity-form {
+  input[type="color"] {
+    width: 56px;
+    height: 56px;
+    padding: 4px;
+    border: 2px solid var(--ej-border-color, #{$ej-border-color-fallback});
+    border-radius: var(--ej-border-radius-md, #{$ej-border-radius-md});
+    cursor: pointer;
+    background: none;
+
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: var(--ej-border-radius-sm, #{$ej-border-radius-sm});
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CKEDITOR — Focus Glow
+// ---------------------------------------------------------------------------
+
+.premium-entity-form {
+  .ck.ck-editor {
+    border-radius: var(--ej-border-radius-sm, #{$ej-border-radius-sm});
+    overflow: hidden;
+  }
+
+  .ck.ck-editor__main {
+    border-radius: 0 0 var(--ej-border-radius-sm, #{$ej-border-radius-sm}) var(--ej-border-radius-sm, #{$ej-border-radius-sm});
+  }
+
+  .ck-focused {
+    box-shadow: 0 0 0 4px color.adjust($ej-color-impulse-fallback, $alpha: -0.75) !important;
+    border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback}) !important;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ACTIONS — Sticky Bottom Bar
+// ---------------------------------------------------------------------------
+
+.premium-form__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: $ej-z-index-sticky;
+  display: flex;
+  align-items: center;
+  gap: var(--ej-spacing-md, #{$ej-spacing-md});
+  padding: var(--ej-spacing-md, #{$ej-spacing-md}) var(--ej-spacing-lg, #{$ej-spacing-lg});
+  margin-top: var(--ej-spacing-lg, #{$ej-spacing-lg});
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--ej-border-color, #{$ej-border-color-fallback});
+  border-radius: var(--ej-border-radius-md, #{$ej-border-radius-md});
+
+  // Primary submit button — shimmer effect
+  .button--primary,
+  input[type="submit"].form-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 32px;
+    font-family: var(--ej-font-family, #{$ej-font-family-fallback});
+    font-size: $ej-font-size-md;
+    font-weight: $ej-font-weight-semibold;
+    color: #fff;
+    background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    border: none;
+    border-radius: var(--ej-border-radius-sm, #{$ej-border-radius-sm});
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform $ej-transition-duration-fast $ej-transition-easing,
+                box-shadow $ej-transition-duration-fast $ej-transition-easing;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      animation: premiumShimmer 3s ease-in-out infinite;
+      background-size: 200% 100%;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px color.adjust($ej-color-impulse-fallback, $alpha: -0.55);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// CHARACTER COUNTER
+// ---------------------------------------------------------------------------
+
+.premium-form__char-counter {
+  display: block;
+  margin-top: 4px;
+  text-align: right;
+  font-size: $ej-font-size-xs;
+  font-variant-numeric: tabular-nums;
+  color: var(--ej-color-text-muted, #{$ej-color-text-muted-fallback});
+  transition: color $ej-transition-duration-fast $ej-transition-easing;
+
+  &--warning {
+    color: var(--ej-color-warning, #{$ej-color-warning-fallback});
+    font-weight: $ej-font-weight-medium;
+  }
+
+  &--danger {
+    color: var(--ej-color-error, #{$ej-color-error-fallback});
+    font-weight: $ej-font-weight-semibold;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DIRTY-STATE INDICATOR
+// ---------------------------------------------------------------------------
+
+.premium-form__dirty-indicator {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-size: $ej-font-size-sm;
+  font-weight: $ej-font-weight-medium;
+  color: var(--ej-color-warning, #{$ej-color-warning-fallback});
+
+  &.is-visible {
+    display: flex;
+  }
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ej-color-warning, #{$ej-color-warning-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PROGRESS BAR
+// ---------------------------------------------------------------------------
+
+.premium-form__progress {
+  width: 100%;
+  height: 4px;
+  margin-bottom: var(--ej-spacing-md, #{$ej-spacing-md});
+  background: var(--ej-gray-200, #{$ej-gray-200});
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.premium-form__progress-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--ej-color-impulse, #{$ej-color-impulse-fallback}),
+    var(--ej-color-success, #{$ej-color-success-fallback})
+  );
+  transition: width $ej-transition-duration-normal $ej-transition-easing;
+}
+
+// ---------------------------------------------------------------------------
+// VALIDATION — Error Shake
+// ---------------------------------------------------------------------------
+
+.premium-form__field--error {
+  animation: premiumShake 0.5s ease;
+
+  input,
+  textarea,
+  select {
+    border-color: var(--ej-color-error, #{$ej-color-error-fallback}) !important;
+    box-shadow: 0 0 0 4px color.adjust($ej-color-error-fallback, $alpha: -0.85) !important;
+  }
+}
+
+// Drupal error markers
+.premium-entity-form {
+  .form-item--error input,
+  .form-item--error textarea,
+  .form-item--error select,
+  .error {
+    border-color: var(--ej-color-error, #{$ej-color-error-fallback});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// MOBILE RESPONSIVE
+// ---------------------------------------------------------------------------
+
+@media (max-width: #{$ej-breakpoint-md - 1px}) {
+  .premium-entity-form {
+    padding: var(--ej-spacing-md, #{$ej-spacing-md}) var(--ej-spacing-sm, #{$ej-spacing-sm});
+  }
+
+  .premium-form__header {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--ej-spacing-md, #{$ej-spacing-md});
+  }
+
+  .premium-form__nav {
+    flex-wrap: nowrap;
+    padding-bottom: var(--ej-spacing-sm, #{$ej-spacing-sm});
+  }
+
+  .premium-form__section {
+    padding: var(--ej-spacing-md, #{$ej-spacing-md});
+  }
+
+  .premium-form__actions {
+    flex-wrap: wrap;
+    padding: var(--ej-spacing-sm, #{$ej-spacing-sm});
+
+    .button--primary,
+    input[type="submit"].form-submit {
+      width: 100%;
+    }
+  }
+
+  .premium-form__dirty-indicator {
+    width: 100%;
+    justify-content: center;
+    margin-right: 0;
+    margin-bottom: var(--ej-spacing-sm, #{$ej-spacing-sm});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// SLIDE PANEL CONTEXT — Narrower form inside panel
+// ---------------------------------------------------------------------------
+
+.slide-panel__body .premium-entity-form {
+  max-width: 100%;
+  padding: var(--ej-spacing-md, #{$ej-spacing-md}) 0;
+}
