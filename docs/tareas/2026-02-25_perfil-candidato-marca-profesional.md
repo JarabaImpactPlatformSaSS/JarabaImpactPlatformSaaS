@@ -99,9 +99,9 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
 - [x] PremiumEntityFormBase null-safe para 20 entidades
 - [x] 6 enlaces migrados de modal a slide-panel (commit `1d752a16`)
 
-### PENDIENTE — IA Copilot
-- [ ] **API key de OpenAI no configurada** en el entorno local. Config: `ai_provider_openai.settings` → `api_key` tiene placeholder de 10 chars (necesita key real `sk-...`). Ruta admin: `/admin/config/ai/settings` o `/admin/config/ai/providers/openai`.
-- [ ] Una vez configurada la key, verificar los 3 flujos IA:
+### PENDIENTE — IA Copilot (verificar en navegador)
+- [x] **API key de OpenAI configurada** en `.env` (`OPENAI_API_KEY=sk-proj-...`). Cadena: `.env` → Key module (`key.key.openai_api`, provider: env) → AI Provider (`ai_provider_openai.settings`, api_key: openai_api). Moderacion activa.
+- [ ] Verificar los 3 flujos IA con Lando arrancado:
   - `generate_headline` → 3 opciones clicables
   - `optimize_summary` → panel comparativo original vs optimizado
   - `generate_summary` → textarea relleno + enlace "Recuperar anterior"
