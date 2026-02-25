@@ -41,3 +41,21 @@ edit solicitud ei:
 delete solicitud ei:
   title: 'Eliminar solicitudes Andalucía +ei'
   description: 'Permite eliminar solicitudes de participación.'
+
+# === EXPEDIENTE DOCUMENTAL ===
+view expediente documento:
+  title: 'Ver documentos de expediente'
+  description: 'Permite ver documentos del expediente de participantes.'
+
+create expediente documento:
+  title: 'Crear documentos de expediente'
+  description: 'Permite subir documentos al expediente de participantes.'
+
+edit expediente documento:
+  title: 'Editar documentos de expediente'
+  description: 'Permite modificar/revisar documentos del expediente.'
+
+delete expediente documento:
+  title: 'Eliminar documentos de expediente'
+  description: 'Permite eliminar documentos del expediente.'
+  restrict access: true

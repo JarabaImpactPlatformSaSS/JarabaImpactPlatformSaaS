@@ -27,6 +27,7 @@ interface SecureConversationInterface extends ContentEntityInterface, EntityChan
   public const CONTEXT_EMPLOYMENT = 'employment';
   public const CONTEXT_MENTORING = 'mentoring';
   public const CONTEXT_COMMERCE = 'commerce';
+  public const CONTEXT_ANDALUCIA_EI = 'andalucia_ei';
 
   /**
    * Gets the conversation title.

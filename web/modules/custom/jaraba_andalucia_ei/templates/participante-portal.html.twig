@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * Portal de participación premium — Andalucía +ei.
+ *
+ * Variables:
+ * - participante: ProgramaParticipanteEiInterface entity
+ * - health_score: { score, label } or null
+ * - completitud: { total_requeridos, completados, porcentaje, por_categoria }
+ * - documentos_por_categoria: Documents grouped by prefix
+ * - bridges: Cross-vertical bridge data
+ * - proactive_action: Proactive nudge data or null
+ * - timeline: { atencion: { steps }, insercion: { steps } }
+ * - formacion: { horas, meta, porcentaje, milestones }
+ */
+#}
+
+{{ attach_library('jaraba_andalucia_ei/dashboard') }}
+{{ attach_library('ecosistema_jaraba_theme/slide-panel') }}
+
+<div class="aei-portal" data-participante-id="{{ participante.id() }}">
+
+  {# === HERO PERSONALIZADO === #}
+  {% include '@jaraba_andalucia_ei/partials/_participante-hero.html.twig' with {
+    participante: participante,
+    health_score: health_score,
+  } only %}
+
+  <div class="aei-portal__grid">
+
+    <div class="aei-portal__main">
+
+      {# === TIMELINE DE FASES === #}
+      {% include '@jaraba_andalucia_ei/partials/_participante-timeline.html.twig' with {
+        timeline: timeline,
+        fase_actual: participante.getFaseActual(),
+      } only %}
+
+      {# === PROGRESO FORMATIVO === #}
+      {% include '@jaraba_andalucia_ei/partials/_participante-formacion.html.twig' with {
+        formacion: formacion,
+        participante: participante,
+      } only %}
+
+      {# === CARPETA DOCUMENTAL === #}
+      {% include '@jaraba_andalucia_ei/partials/_participante-expediente.html.twig' with {
+        completitud: completitud,
+        documentos_por_categoria: documentos_por_categoria,
+        participante_id: participante.id(),
+      } only %}
+
+      {# === LOGROS Y BADGES === #}
+      {% include '@jaraba_andalucia_ei/partials/_participante-logros.html.twig' with {
+        participante: participante,
+        formacion: formacion,
+        timeline: timeline,
+      } only %}
+
+    </div>
+
+    <div class="aei-portal__sidebar">
+
+      {# === ACCIONES RÁPIDAS === #}
+      {% include '@jaraba_andalucia_ei/partials/_participante-acciones.html.twig' with {
+        participante: participante,
+      } only %}
+
+      {# === PUENTES CROSS-VERTICAL === #}
+      {% if bridges is not empty %}
+        <section class="aei-portal__bridges" data-effect="fade-up" aria-label="{{ 'Descubre el ecosistema'|t }}">
+          <h3 class="aei-portal__section-title">
+            {{ jaraba_icon('verticals', 'ecosystem', { variant: 'duotone', size: '24px' }) }}
+            {{ 'Descubre el ecosistema'|t }}
+          </h3>
+          <div class="aei-portal__bridges-list">
+            {% for bridge in bridges %}
+              <a href="{{ bridge.url }}" class="aei-portal__bridge-card" data-effect="fade-up" data-delay="{{ loop.index0 * 80 }}">
+                {% set icon_parts = bridge.icon|default('verticals:star')|split(':') %}
+                {{ jaraba_icon(icon_parts[0], icon_parts[1], { variant: 'duotone', size: '24px' }) }}
+                <div>
+                  <span class="aei-portal__bridge-title">{{ bridge.label }}</span>
+                  <span class="aei-portal__bridge-desc">{{ bridge.description }}</span>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  {# === FAB PROACTIVO IA === #}
+  {% if proactive_action %}
+    <div class="aei-portal__fab" data-proactive='{{ proactive_action|json_encode }}' aria-label="{{ 'Sugerencia del programa'|t }}">
+      <button type="button" class="aei-portal__fab-trigger" aria-expanded="false">
+        {{ jaraba_icon('ai', 'sparkle', { variant: 'duotone', size: '24px' }) }}
+      </button>
+      <div class="aei-portal__fab-content" hidden>
+        <p class="aei-portal__fab-message">{{ proactive_action.message }}</p>
+        {% if proactive_action.cta_url %}
+          <a href="{{ proactive_action.cta_url }}" class="aei-portal__fab-cta">
+            {{ proactive_action.cta_label|default('Ver más'|t) }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>

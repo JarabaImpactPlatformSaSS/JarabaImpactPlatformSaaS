@@ -1,0 +1,55 @@
+{#
+ # Template: Andalucia +ei - Descripcion del Programa y Requisitos
+ # Category: andalucia_ei
+ # Type: content
+ #
+ # Grid 2 columnas: texto descripcion izquierda + checklist elegibilidad derecha
+ # Premium: animations, jaraba_icon system, checklist con check-circle
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--content pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_content"
+         aria-label="{{ title|default('Sobre el Programa')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__text">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('El programa')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Impulsamos tu futuro profesional con inteligencia artificial')|t }}</h2>
+      {% if description %}
+        <div class="pb-section__description">{{ description|safe_html }}</div>
+      {% else %}
+        <div class="pb-section__description">
+          <p>{{ 'Andalucia +ei es un programa integral de emprendimiento e insercion laboral que utiliza herramientas de inteligencia artificial para potenciar las capacidades de las personas desempleadas en Andalucia.'|t }}</p>
+          <p>{{ 'A traves de mentoria personalizada, formacion certificada y un itinerario adaptado a cada participante, el programa facilita la transicion al mercado laboral o el lanzamiento de proyectos emprendedores con base tecnologica.'|t }}</p>
+        </div>
+      {% endif %}
+      {% if cta_text and cta_url %}
+        <div class="pb-section__actions">
+          <a href="{{ cta_url }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">{{ cta_text }}</a>
+        </div>
+      {% endif %}
+    </div>
+    <div class="pb-section__eligibility">
+      <h3 class="pb-section__eligibility-title">{{ eligibility_title|default('Requisitos de participacion')|t }}</h3>
+      {% set default_criteria = [
+        'Estar en situacion de desempleo en Andalucia',
+        'Ser mayor de 16 anios',
+        'Estar inscrito/a como demandante de empleo en el SAE',
+        'Tener motivacion para el emprendimiento o la mejora profesional'
+      ] %}
+      {% set criteria_items = criteria|default(default_criteria) %}
+      <ul class="pb-section__checklist">
+        {% for item in criteria_items %}
+          <li class="pb-section__checklist-item"
+              data-effect="fade-up"
+              data-delay="{{ loop.index0 * 100 }}">
+            <span class="pb-section__checklist-icon" aria-hidden="true">
+              {{ jaraba_icon('actions', 'check-circle', { variant: 'duotone', size: '24px', color: 'success' }) }}
+            </span>
+            <span class="pb-section__checklist-text">{{ item|t }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>

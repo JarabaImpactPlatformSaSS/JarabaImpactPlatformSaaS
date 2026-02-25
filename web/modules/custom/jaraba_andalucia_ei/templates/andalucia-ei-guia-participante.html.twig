@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Lead magnet — Guía del Participante Andalucía +ei.
+ *
+ * Variables:
+ * - solicitar_url: URL to application form
+ */
+#}
+
+<section class="aei-guia" data-effect="fade-up" aria-label="{{ 'Guía del Participante'|t }}">
+  <div class="aei-guia__container">
+    <div class="aei-guia__content">
+      <span class="aei-guia__eyebrow">{{ 'Recurso gratuito'|t }}</span>
+      <h1 class="aei-guia__title">{{ 'Guía del Participante Andalucía +ei'|t }}</h1>
+      <p class="aei-guia__subtitle">
+        {{ 'Descarga nuestra guía completa con todo lo que necesitas saber sobre el programa: requisitos, fases, recursos disponibles y consejos para aprovechar al máximo tu participación.'|t }}
+      </p>
+
+      <ul class="aei-guia__highlights">
+        {% set highlights = [
+          'Requisitos y proceso de inscripción'|t,
+          'Las 2 fases del programa explicadas'|t,
+          'Cómo funciona la mentoría con IA'|t,
+          'Guía de documentación STO necesaria'|t,
+          'Recursos de formación disponibles'|t,
+          'Preguntas frecuentes resueltas'|t,
+        ] %}
+        {% for item in highlights %}
+          <li class="aei-guia__highlight">
+            {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '20px' }) }}
+            <span>{{ item }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="aei-guia__form-wrapper">
+      <div class="aei-guia__form-card">
+        <h2 class="aei-guia__form-title">{{ 'Descarga la guía gratis'|t }}</h2>
+        <p class="aei-guia__form-desc">{{ 'Introduce tu email y te enviaremos la guía en PDF.'|t }}</p>
+
+        <form class="aei-guia__form" data-guia-form>
+          <div class="aei-guia__field">
+            <label for="guia-nombre" class="aei-guia__label">{{ 'Nombre'|t }}</label>
+            <input type="text" id="guia-nombre" name="nombre" required class="aei-guia__input" placeholder="{{ 'Tu nombre'|t }}" />
+          </div>
+          <div class="aei-guia__field">
+            <label for="guia-email" class="aei-guia__label">{{ 'Email'|t }}</label>
+            <input type="email" id="guia-email" name="email" required class="aei-guia__input" placeholder="{{ 'tu@email.com'|t }}" />
+          </div>
+          <div class="aei-guia__field">
+            <label class="aei-guia__checkbox-label">
+              <input type="checkbox" name="consentimiento" required class="aei-guia__checkbox" />
+              <span>{{ 'Acepto recibir información sobre el programa Andalucía +ei'|t }}</span>
+            </label>
+          </div>
+          <button type="submit" class="aei-guia__submit">
+            {{ jaraba_icon('ui', 'download', { variant: 'duotone', size: '20px' }) }}
+            {{ 'Descargar guía'|t }}
+          </button>
+          <p class="aei-guia__legal">
+            {{ 'Tus datos serán tratados conforme a nuestra política de privacidad. Puedes darte de baja en cualquier momento.'|t }}
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# CTA to apply #}
+<section class="aei-guia__cta" data-effect="fade-up" aria-label="{{ 'Solicitar plaza'|t }}">
+  <div class="aei-guia__container">
+    <h2 class="aei-guia__cta-title">{{ '¿Listo para empezar?'|t }}</h2>
+    <p class="aei-guia__cta-subtitle">{{ 'El programa es 100% gratuito. Solicita tu plaza ahora.'|t }}</p>
+    <a href="{{ solicitar_url }}" class="aei-guia__cta-btn">
+      {{ 'Solicitar plaza'|t }}
+    </a>
+  </div>
+</section>

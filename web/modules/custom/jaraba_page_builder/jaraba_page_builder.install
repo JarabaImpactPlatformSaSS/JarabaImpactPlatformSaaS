@@ -434,3 +434,56 @@ function jaraba_page_builder_update_9006(&$sandbox) {
     '@total' => count($files),
   ]);
 }
+
+/**
+ * Import 11 Andalucia +ei vertical template configs.
+ *
+ * Adds the andalucia_ei vertical (6th vertical) to the Page Builder
+ * with 11 block types: hero, features, content, gallery, faq,
+ * testimonials, social_proof, stats, pricing, cta, map.
+ */
+function jaraba_page_builder_update_9007(&$sandbox) {
+  $module_path = \Drupal::service('extension.list.module')->getPath('jaraba_page_builder');
+  $config_path = $module_path . '/config/install';
+  $pattern = $config_path . '/jaraba_page_builder.template.andalucia_ei_*.yml';
+  $files = glob($pattern);
+
+  $imported = 0;
+  $updated = 0;
+
+  foreach ($files as $file) {
+    $yaml_content = file_get_contents($file);
+    if (!$yaml_content) {
+      continue;
+    }
+
+    $data = \Symfony\Component\Yaml\Yaml::parse($yaml_content);
+    if (empty($data['id'])) {
+      continue;
+    }
+
+    // Guarantee Drupal config headers.
+    $data += [
+      'langcode' => 'es',
+      'status' => TRUE,
+      'dependencies' => [],
+    ];
+
+    $config_name = 'jaraba_page_builder.template.' . $data['id'];
+    $config = \Drupal::configFactory()->getEditable($config_name);
+
+    if ($config->isNew()) {
+      $imported++;
+    }
+    else {
+      $updated++;
+    }
+
+    $config->setData($data)->save();
+  }
+
+  return t('Andalucia +ei vertical templates — new: @imported, updated: @updated.', [
+    '@imported' => $imported,
+    '@updated' => $updated,
+  ]);
+}

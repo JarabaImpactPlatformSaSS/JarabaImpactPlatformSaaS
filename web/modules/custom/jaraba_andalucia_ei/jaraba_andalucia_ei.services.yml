@@ -5,6 +5,8 @@ services:
       - '@entity_type.manager'
       - '@database'
       - '@logger.channel.jaraba_andalucia_ei'
+      - '@config.factory'
+      - '@datetime.time'
 
   jaraba_andalucia_ei.sto_export:
     class: Drupal\jaraba_andalucia_ei\Service\StoExportService
@@ -12,6 +14,7 @@ services:
       - '@entity_type.manager'
       - '@jaraba_sepe_teleformacion.soap_service'
       - '@logger.channel.jaraba_andalucia_ei'
+      - '@config.factory'
 
   jaraba_andalucia_ei.fase_transition_manager:
     class: Drupal\jaraba_andalucia_ei\Service\FaseTransitionManager
@@ -29,3 +32,56 @@ services:
     arguments:
       - '@ai.provider'
       - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.expediente:
+    class: Drupal\jaraba_andalucia_ei\Service\ExpedienteService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@?jaraba_legal_vault.document_vault'
+      - '@?ecosistema_jaraba_core.firma_digital'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.documento_revision_ia:
+    class: Drupal\jaraba_andalucia_ei\Service\DocumentoRevisionIaService
+    arguments:
+      - '@entity_type.manager'
+      - '@?ai.provider'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.informe_progreso_pdf:
+    class: Drupal\jaraba_andalucia_ei\Service\InformeProgresoPdfService
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.branded_pdf'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.copilot_context_provider:
+    class: Drupal\jaraba_andalucia_ei\Service\AndaluciaEiCopilotContextProvider
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@jaraba_andalucia_ei.expediente'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.adaptive_difficulty:
+    class: Drupal\jaraba_andalucia_ei\Service\AdaptiveDifficultyEngine
+    arguments:
+      - '@entity_type.manager'
+      - '@datetime.time'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.mensajeria_integration:
+    class: Drupal\jaraba_andalucia_ei\Service\MensajeriaIntegrationService
+    arguments:
+      - '@entity_type.manager'
+      - '@?jaraba_messaging.messaging'
+      - '@logger.channel.jaraba_andalucia_ei'
+
+  jaraba_andalucia_ei.participante_access_check:
+    class: Drupal\jaraba_andalucia_ei\Access\ParticipanteAccessCheck
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: access_check, applies_to: _participante_access }

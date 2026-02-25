@@ -1,0 +1,149 @@
+{#
+/**
+ * @file
+ * Carpeta documental del participante Andalucía +ei.
+ *
+ * Variables:
+ * - completitud: { total_requeridos, completados, porcentaje, por_categoria }
+ * - documentos_por_categoria: Documentos agrupados por tipo de categoría
+ * - participante_id: ID del participante
+ *
+ * Estados visuales:
+ * - pendiente: gris con clock
+ * - en_revision: azul con eye
+ * - aprobado: verde con check-circle
+ * - rechazado: rojo con x-circle
+ * - requiere_cambios: naranja con alert
+ */
+#}
+
+<section class="aei-expediente" data-effect="fade-up" aria-label="{{ 'Carpeta documental'|t }}">
+
+  {# === BARRA DE COMPLETITUD DOCUMENTAL === #}
+  <div class="aei-expediente__completitud">
+    <div class="aei-expediente__completitud-header">
+      <h3 class="aei-expediente__completitud-title">
+        {{ jaraba_icon('ui', 'folder', { variant: 'duotone', size: '24px' }) }}
+        {{ 'Carpeta documental'|t }}
+      </h3>
+      <span class="aei-expediente__completitud-badge aei-expediente__completitud-badge--{{ completitud.porcentaje == 100 ? 'complete' : 'incomplete' }}">
+        {{ completitud.porcentaje }}%
+      </span>
+    </div>
+    <div class="aei-expediente__progress-bar" role="progressbar" aria-valuenow="{{ completitud.porcentaje }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="aei-expediente__progress-fill" style="width: {{ completitud.porcentaje }}%"></div>
+    </div>
+    <p class="aei-expediente__completitud-text">
+      {{ '{{ completados }} de {{ total }} documentos STO requeridos completados'|t({ '{{ completados }}': completitud.completados, '{{ total }}': completitud.total_requeridos }) }}
+    </p>
+  </div>
+
+  {# === GRID POR CATEGORÍA === #}
+  {% set categoria_groups = {
+    'sto': { label: 'Documentos STO'|t, icon: 'briefcase', icon_cat: 'legal' },
+    'programa': { label: 'Documentos del programa'|t, icon: 'file-text', icon_cat: 'ui' },
+    'tarea': { label: 'Tareas y entregables'|t, icon: 'clipboard', icon_cat: 'ui' },
+    'cert': { label: 'Certificaciones'|t, icon: 'award', icon_cat: 'education' },
+  } %}
+
+  <div class="aei-expediente__categories">
+    {% for prefix, group in categoria_groups %}
+      <div class="aei-expediente__category" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
+        <div class="aei-expediente__category-header">
+          {{ jaraba_icon(group.icon_cat, group.icon, { variant: 'duotone', size: '24px' }) }}
+          <h4 class="aei-expediente__category-title">{{ group.label }}</h4>
+        </div>
+
+        <div class="aei-expediente__docs-grid">
+          {% if documentos_por_categoria[prefix] is defined %}
+            {% for doc in documentos_por_categoria[prefix] %}
+              {% set estado = doc.estado_revision|default('pendiente') %}
+              {% set estado_config = {
+                'pendiente': { class: 'pending', icon: 'clock', icon_cat: 'status', label: 'Pendiente'|t },
+                'en_revision': { class: 'reviewing', icon: 'eye', icon_cat: 'status', label: 'En revisión'|t },
+                'aprobado': { class: 'approved', icon: 'check-circle', icon_cat: 'status', label: 'Aprobado'|t },
+                'rechazado': { class: 'rejected', icon: 'x-circle', icon_cat: 'status', label: 'Rechazado'|t },
+                'requiere_cambios': { class: 'changes', icon: 'alert', icon_cat: 'status', label: 'Requiere cambios'|t },
+              } %}
+              {% set config = estado_config[estado]|default(estado_config['pendiente']) %}
+
+              <div class="aei-expediente__doc-card aei-expediente__doc-card--{{ config.class }}">
+                <div class="aei-expediente__doc-icon" aria-hidden="true">
+                  {% if doc.archivo_mime starts with 'application/pdf' %}
+                    {{ jaraba_icon('files', 'pdf', { variant: 'duotone', size: '32px' }) }}
+                  {% elseif doc.archivo_mime starts with 'image/' %}
+                    {{ jaraba_icon('files', 'image', { variant: 'duotone', size: '32px' }) }}
+                  {% else %}
+                    {{ jaraba_icon('files', 'document', { variant: 'duotone', size: '32px' }) }}
+                  {% endif %}
+                </div>
+                <div class="aei-expediente__doc-info">
+                  <span class="aei-expediente__doc-name">{{ doc.titulo }}</span>
+                  <span class="aei-expediente__doc-meta">{{ doc.archivo_nombre }}</span>
+                </div>
+                <div class="aei-expediente__doc-status">
+                  {{ jaraba_icon(config.icon_cat, config.icon, { variant: 'duotone', size: '20px' }) }}
+                  <span class="aei-expediente__doc-status-label">{{ config.label }}</span>
+                </div>
+                <div class="aei-expediente__doc-actions">
+                  {% if doc.archivo_vault_id %}
+                    <button type="button" class="aei-expediente__action" data-slide-panel="ver-documento" data-documento-id="{{ doc.id }}" title="{{ 'Ver documento'|t }}">
+                      {{ jaraba_icon('ui', 'eye', { variant: 'duotone', size: '16px' }) }}
+                    </button>
+                  {% endif %}
+                  {% if doc.revision_ia_score is not null %}
+                    <button type="button" class="aei-expediente__action" data-slide-panel="feedback-ia" data-documento-id="{{ doc.id }}" title="{{ 'Ver feedback IA'|t }}">
+                      {{ jaraba_icon('ui', 'cpu', { variant: 'duotone', size: '16px' }) }}
+                      <span class="aei-expediente__ia-score">{{ doc.revision_ia_score|number_format(0) }}</span>
+                    </button>
+                  {% endif %}
+                  {% if doc.estado_revision == 'aprobado' and not doc.firmado %}
+                    <button type="button" class="aei-expediente__action" data-slide-panel="firmar-documento" data-documento-id="{{ doc.id }}" title="{{ 'Firmar documento'|t }}">
+                      {{ jaraba_icon('legal', 'signature', { variant: 'duotone', size: '16px' }) }}
+                    </button>
+                  {% endif %}
+                  {% if doc.firmado %}
+                    <span class="aei-expediente__signed-badge" title="{{ 'Firmado digitalmente'|t }}">
+                      {{ jaraba_icon('status', 'shield-check', { variant: 'duotone', size: '16px' }) }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="aei-expediente__empty">{{ 'No hay documentos en esta categoría.'|t }}</p>
+          {% endif %}
+        </div>
+
+        {# Upload button for this category #}
+        <button type="button" class="aei-expediente__upload-btn" data-slide-panel="subir-documento" data-categoria-prefix="{{ prefix }}" data-participante-id="{{ participante_id }}">
+          {{ jaraba_icon('ui', 'upload', { variant: 'duotone', size: '16px' }) }}
+          {{ 'Subir documento'|t }}
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# === CHECKLIST STO === #}
+  {% if completitud.por_categoria is not empty %}
+    <div class="aei-expediente__sto-checklist" data-effect="fade-up">
+      <h4 class="aei-expediente__sto-title">
+        {{ jaraba_icon('status', 'clipboard-check', { variant: 'duotone', size: '24px' }) }}
+        {{ 'Checklist STO'|t }}
+      </h4>
+      <ul class="aei-expediente__sto-list">
+        {% for key, item in completitud.por_categoria %}
+          <li class="aei-expediente__sto-item aei-expediente__sto-item--{{ item.completo ? 'done' : 'pending' }}">
+            {% if item.completo %}
+              {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '20px' }) }}
+            {% else %}
+              {{ jaraba_icon('status', 'circle', { variant: 'duotone', size: '20px' }) }}
+            {% endif %}
+            <span>{{ item.label }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+</section>

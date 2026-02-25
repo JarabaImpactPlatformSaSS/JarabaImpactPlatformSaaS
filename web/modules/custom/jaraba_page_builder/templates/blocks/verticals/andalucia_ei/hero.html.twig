@@ -1,0 +1,44 @@
+{#
+ # Template: Andalucia +ei - Emprendimiento Aumentado con IA
+ # Category: andalucia_ei
+ # Type: hero
+ #
+ # Split layout: hero content (eyebrow + h1 + subtitle + CTAs) + media with parallax
+ # Premium: animations, parallax media, background image, jaraba_icon system
+ # - CTA primary orange (#FF8C42), secondary outlined
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--hero pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_hero"
+         aria-label="{{ title|default('Emprendimiento Aumentado con IA')|t }}"
+         data-effect="fade-up"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__hero-content">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Andalucia +ei')|t }}</span>
+      <h1 class="pb-section__title">{{ title|default('Emprendimiento Aumentado con IA')|t }}</h1>
+      <p class="pb-section__subtitle">{{ subtitle|default('Programa gratuito de formacion, mentoria con inteligencia artificial e insercion laboral para personas desempleadas en Andalucia.')|t }}</p>
+      <div class="pb-section__actions">
+        <a href="{{ cta_url|default('#solicitar') }}" class="pb-section__cta pb-section__cta--primary pb-section__cta--orange">
+          {{ cta_text|default('Solicitar plaza')|t }}
+        </a>
+        {% if cta_secondary_text is defined %}
+          <a href="{{ cta_secondary_url|default('#programa') }}" class="pb-section__cta pb-section__cta--secondary">
+            {{ cta_secondary_text }}
+          </a>
+        {% else %}
+          <a href="#programa" class="pb-section__cta pb-section__cta--secondary">{{ 'Conocer programa'|t }}</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="pb-section__media" data-parallax="0.3">
+      {% if image %}
+        <img src="{{ image }}" alt="{{ title|default('')|striptags }}" loading="lazy" />
+      {% else %}
+        <div class="pb-section__img-placeholder" aria-hidden="true">
+          {{ jaraba_icon('programas', 'rocket', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

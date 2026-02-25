@@ -1,0 +1,119 @@
+{#
+/**
+ * @file
+ * Logros y badges del participante.
+ *
+ * Variables:
+ * - participante: ProgramaParticipanteEiInterface entity
+ * - formacion: { horas, meta, porcentaje, milestones }
+ * - timeline: { atencion: { steps }, insercion: { steps } }
+ */
+#}
+
+{% set fase = participante.getFaseActual() %}
+{% set horas_ia = participante.getHorasMentoriaIa() %}
+{% set horas_orientacion = participante.getTotalHorasOrientacion() %}
+{% set horas_formacion = formacion.horas %}
+
+{# Build achievements list based on real progress #}
+{% set logros = [] %}
+
+{# Inscripción completada — always true for active participants #}
+{% set logros = logros|merge([{
+  id: 'inscripcion',
+  icon: 'flag',
+  icon_cat: 'ui',
+  label: 'Inscrito/a en el programa'|t,
+  earned: true,
+}]) %}
+
+{# First AI session #}
+{% set logros = logros|merge([{
+  id: 'primera_ia',
+  icon: 'cpu',
+  icon_cat: 'ui',
+  label: 'Primera sesión con Tutor IA'|t,
+  earned: horas_ia > 0,
+}]) %}
+
+{# 5h orientation #}
+{% set logros = logros|merge([{
+  id: 'orientacion_5h',
+  icon: 'users',
+  icon_cat: 'ui',
+  label: '5 horas de orientación'|t,
+  earned: horas_orientacion >= 5,
+}]) %}
+
+{# 10h orientation — milestone #}
+{% set logros = logros|merge([{
+  id: 'orientacion_10h',
+  icon: 'star',
+  icon_cat: 'ui',
+  label: '10 horas de orientación'|t,
+  earned: horas_orientacion >= 10,
+}]) %}
+
+{# 25h training #}
+{% set logros = logros|merge([{
+  id: 'formacion_25h',
+  icon: 'book-open',
+  icon_cat: 'ui',
+  label: '25 horas de formación'|t,
+  earned: horas_formacion >= 25,
+}]) %}
+
+{# 50h training — major milestone #}
+{% set logros = logros|merge([{
+  id: 'formacion_50h',
+  icon: 'graduation',
+  icon_cat: 'education',
+  label: '50 horas de formación'|t,
+  earned: horas_formacion >= 50,
+}]) %}
+
+{# Transit to insertion #}
+{% set logros = logros|merge([{
+  id: 'insercion',
+  icon: 'trending-up',
+  icon_cat: 'ui',
+  label: 'Transición a Inserción'|t,
+  earned: fase == 'insercion',
+}]) %}
+
+{# Incentive received #}
+{% set logros = logros|merge([{
+  id: 'incentivo',
+  icon: 'wallet',
+  icon_cat: 'business',
+  label: 'Incentivo económico recibido'|t,
+  earned: participante.hasReceivedIncentivo(),
+}]) %}
+
+{% set earned_count = logros|filter(l => l.earned)|length %}
+
+<section class="aei-logros" data-effect="fade-up" aria-label="{{ 'Logros'|t }}">
+  <div class="aei-logros__header">
+    <h3 class="aei-logros__title">
+      {{ jaraba_icon('ui', 'award', { variant: 'duotone', size: '24px' }) }}
+      {{ 'Logros'|t }}
+    </h3>
+    <span class="aei-logros__count">{{ earned_count }} / {{ logros|length }}</span>
+  </div>
+
+  <div class="aei-logros__grid">
+    {% for logro in logros %}
+      <div class="aei-logros__badge {{ logro.earned ? 'aei-logros__badge--earned' : 'aei-logros__badge--locked' }}" data-effect="fade-up" data-delay="{{ loop.index0 * 60 }}">
+        <div class="aei-logros__badge-icon" aria-hidden="true">
+          {{ jaraba_icon(logro.icon_cat, logro.icon, { variant: 'duotone', size: '28px' }) }}
+        </div>
+        <span class="aei-logros__badge-label">{{ logro.label }}</span>
+        {% if logro.earned %}
+          <span class="aei-logros__badge-check" aria-label="{{ 'Conseguido'|t }}">
+            {{ jaraba_icon('status', 'check', { variant: 'duotone', size: '14px' }) }}
+          </span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>

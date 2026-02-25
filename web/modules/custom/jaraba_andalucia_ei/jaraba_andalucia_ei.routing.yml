@@ -127,6 +127,53 @@ jaraba_andalucia_ei.api.participant.delete:
     _format: 'json'
     id: '\d+'
 
+# === PORTAL DE PARTICIPANTE ===
+jaraba_andalucia_ei.participante_portal:
+  path: '/andalucia-ei/mi-participacion'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ParticipantePortalController::portal'
+    _title: 'Mi Participación'
+  requirements:
+    _permission: 'access content'
+    _participante_access: 'TRUE'
+
+jaraba_andalucia_ei.participante_portal_api:
+  path: '/api/v1/andalucia-ei/mi-participacion'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ParticipantePortalController::portalData'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _participante_access: 'TRUE'
+    _format: 'json'
+
+jaraba_andalucia_ei.informe_progreso_pdf:
+  path: '/andalucia-ei/informe-progreso'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\ParticipantePortalController::descargarInforme'
+    _title: 'Informe de Progreso'
+  requirements:
+    _permission: 'access content'
+    _participante_access: 'TRUE'
+
+# === LEAD MAGNET: GUÍA DEL PARTICIPANTE ===
+jaraba_andalucia_ei.guia_participante:
+  path: '/andalucia-ei/guia-participante'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\GuiaParticipanteController::guia'
+    _title: 'Guía del Participante - Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
+# === LANDING PAGE DE CONVERSIÓN ===
+jaraba_andalucia_ei.landing:
+  path: '/andalucia-ei/programa'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiLandingController::landing'
+    _title: 'Programa Andalucía +ei'
+  requirements:
+    _permission: 'access content'
+
 # === FORMULARIO DE SOLICITUD (PÚBLICO) ===
 jaraba_andalucia_ei.solicitar:
   path: '/andalucia-ei/solicitar'
@@ -184,5 +231,56 @@ entity.solicitud_ei.settings:
   defaults:
     _form: 'Drupal\jaraba_andalucia_ei\Form\SolicitudEiSettingsForm'
     _title: 'Configuración Solicitud Andalucía +ei'
+  requirements:
+    _permission: 'administer andalucia ei'
+
+# === EXPEDIENTE DOCUMENTAL: COLECCIÓN ADMIN ===
+entity.expediente_documento.collection:
+  path: '/admin/content/expediente-documentos'
+  defaults:
+    _entity_list: 'expediente_documento'
+    _title: 'Documentos de Expediente'
+  requirements:
+    _permission: 'view expediente documento'
+
+# === EXPEDIENTE DOCUMENTAL: CRUD ===
+entity.expediente_documento.canonical:
+  path: '/admin/content/expediente-documentos/{expediente_documento}'
+  defaults:
+    _entity_view: 'expediente_documento'
+    _title: 'Ver Documento'
+  requirements:
+    _permission: 'view expediente documento'
+
+entity.expediente_documento.add_form:
+  path: '/admin/content/expediente-documentos/add'
+  defaults:
+    _entity_form: 'expediente_documento.add'
+    _title: 'Añadir Documento'
+  requirements:
+    _permission: 'create expediente documento'
+
+entity.expediente_documento.edit_form:
+  path: '/admin/content/expediente-documentos/{expediente_documento}/edit'
+  defaults:
+    _entity_form: 'expediente_documento.edit'
+    _title: 'Editar Documento'
+  requirements:
+    _permission: 'edit expediente documento'
+
+entity.expediente_documento.delete_form:
+  path: '/admin/content/expediente-documentos/{expediente_documento}/delete'
+  defaults:
+    _entity_form: 'expediente_documento.delete'
+    _title: 'Eliminar Documento'
+  requirements:
+    _permission: 'delete expediente documento'
+
+# === EXPEDIENTE DOCUMENTAL: SETTINGS (Field UI) ===
+entity.expediente_documento.settings:
+  path: '/admin/structure/expediente-documento'
+  defaults:
+    _form: 'Drupal\jaraba_andalucia_ei\Form\ExpedienteDocumentoSettingsForm'
+    _title: 'Configuración Documento de Expediente'
   requirements:
     _permission: 'administer andalucia ei'

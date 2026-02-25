@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Landing page template para Andalucia +ei programa.
+ *
+ * Zero Region Policy: No renderiza page.content ni sidebars.
+ * Solo header + contenido directo + footer.
+ * Mobile-first, layout full-width.
+ */
+#}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+
+{% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+  is_front: false,
+} only %}
+
+<main id="main-content" class="aei-landing" role="main">
+  {{ page.content }}
+</main>
+
+{% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {} only %}

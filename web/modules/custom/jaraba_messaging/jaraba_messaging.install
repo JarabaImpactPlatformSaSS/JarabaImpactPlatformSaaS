@@ -350,3 +350,14 @@ function jaraba_messaging_update_10001(): void {
     'description' => 'Hash SHA-256 binario (32 bytes) de este registro.',
   ]);
 }
+
+/**
+ * Add 'andalucia_ei' context_type to secure_conversation.
+ *
+ * Clears entity field definitions cache so Drupal recognizes the new
+ * allowed_value added in SecureConversation::baseFieldDefinitions().
+ */
+function jaraba_messaging_update_10002(): void {
+  \Drupal::service('entity_field.manager')->clearCachedFieldDefinitions();
+  \Drupal::messenger()->addStatus(t('Nuevo context_type "andalucia_ei" registrado en SecureConversation.'));
+}

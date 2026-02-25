@@ -93,6 +93,42 @@ function jaraba_andalucia_ei_update_10001(): void {
 }
 
 /**
+ * Install tenant_id field on programa_participante_ei entity.
+ *
+ * TENANT-ISOLATION-ACCESS-001: Required for cross-tenant isolation checks
+ * in ProgramaParticipanteEiAccessControlHandler.
+ */
+function jaraba_andalucia_ei_update_10003(): void {
+  $fieldDefinition = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Tenant'))
+    ->setDescription(t('Tenant al que pertenece este participante.'))
+    ->setSetting('target_type', 'group')
+    ->setRequired(FALSE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('tenant_id', 'programa_participante_ei', 'jaraba_andalucia_ei', $fieldDefinition);
+}
+
+/**
+ * Install the expediente_documento entity type.
+ *
+ * Creates the base table and all field storage definitions for the
+ * ExpedienteDocumento content entity.
+ */
+function jaraba_andalucia_ei_update_10004(): void {
+  $entityDefinitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  // Install the entity type if not already installed.
+  $entityType = $entityTypeManager->getDefinition('expediente_documento', FALSE);
+  if ($entityType && !$entityDefinitionUpdateManager->getEntityType('expediente_documento')) {
+    $entityDefinitionUpdateManager->installEntityType($entityType);
+    \Drupal::messenger()->addStatus(t('Entidad ExpedienteDocumento instalada correctamente.'));
+  }
+}
+
+/**
  * Migrate user_id data to uid and uninstall redundant user_id field.
  *
  * ProgramaParticipanteEi used both user_id (manual) and uid (EntityOwnerTrait).

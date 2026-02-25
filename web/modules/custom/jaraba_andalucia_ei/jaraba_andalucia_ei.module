@@ -46,6 +46,83 @@ function jaraba_andalucia_ei_theme(): array {
       ],
       'template' => 'solicitud-ei-page',
     ],
+    'andalucia_ei_landing' => [
+      'variables' => [
+        'solicitar_url' => NULL,
+      ],
+      'template' => 'andalucia-ei-landing',
+    ],
+    'participante_expediente' => [
+      'variables' => [
+        'completitud' => [],
+        'documentos_por_categoria' => [],
+        'participante_id' => NULL,
+      ],
+      'template' => 'partials/_participante-expediente',
+    ],
+    'participante_portal' => [
+      'variables' => [
+        'participante' => NULL,
+        'health_score' => NULL,
+        'completitud' => [],
+        'documentos_por_categoria' => [],
+        'bridges' => [],
+        'proactive_action' => NULL,
+        'timeline' => [],
+        'formacion' => [],
+      ],
+      'template' => 'participante-portal',
+    ],
+    'participante_hero' => [
+      'variables' => [
+        'participante' => NULL,
+        'health_score' => NULL,
+      ],
+      'template' => 'partials/_participante-hero',
+    ],
+    'participante_timeline' => [
+      'variables' => [
+        'timeline' => [],
+        'fase_actual' => NULL,
+      ],
+      'template' => 'partials/_participante-timeline',
+    ],
+    'participante_formacion' => [
+      'variables' => [
+        'formacion' => [],
+        'participante' => NULL,
+      ],
+      'template' => 'partials/_participante-formacion',
+    ],
+    'participante_acciones' => [
+      'variables' => [
+        'participante' => NULL,
+      ],
+      'template' => 'partials/_participante-acciones',
+    ],
+    'participante_logros' => [
+      'variables' => [
+        'participante' => NULL,
+        'formacion' => [],
+        'timeline' => [],
+      ],
+      'template' => 'partials/_participante-logros',
+    ],
+    'participante_mensajeria' => [
+      'variables' => [
+        'conversaciones' => [],
+        'unread_total' => 0,
+        'participante_uuid' => NULL,
+        'mentor_online' => NULL,
+      ],
+      'template' => 'partials/_participante-mensajeria',
+    ],
+    'andalucia_ei_guia_participante' => [
+      'variables' => [
+        'solicitar_url' => NULL,
+      ],
+      'template' => 'andalucia-ei-guia-participante',
+    ],
   ];
 }
 
@@ -122,7 +199,7 @@ function _jaraba_andalucia_ei_track_ia_hours(\Drupal\Core\Entity\EntityInterface
 
     // Aplicar límite diario según configuración (default: 2h/día).
     $config = \Drupal::config('jaraba_andalucia_ei.settings');
-    $limiteDiario = (float) ($config->get('ai_mentorship_daily_limit') ?? 2);
+    $limiteDiario = (float) ($config->get('maximo_horas_ia_dia') ?? 4);
 
     // Verificar horas ya registradas hoy.
     $tracker = \Drupal::service('jaraba_andalucia_ei.ai_mentorship_tracker');
@@ -860,4 +937,147 @@ function _jaraba_andalucia_ei_check_reengagement(): void {
       ['@message' => $e->getMessage()]
     );
   }
+}
+
+// =============================================================================
+// LANDING PAGE: OG TAGS, SCHEMA.ORG, BODY CLASSES
+// =============================================================================
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Adds Open Graph and Schema.org structured data for the landing page.
+ */
+function jaraba_andalucia_ei_page_attachments(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if ($route !== 'jaraba_andalucia_ei.landing') {
+    return;
+  }
+
+  $request = \Drupal::request();
+  $currentUrl = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+
+  $title = t('Programa Andalucia +ei — Emprendimiento Aumentado con IA');
+  $description = t('Programa gratuito de emprendimiento, formacion certificada y mentoria con inteligencia artificial para personas desempleadas en Andalucia.');
+
+  // Open Graph meta tags.
+  $og_tags = [
+    'og:title' => (string) $title,
+    'og:description' => (string) $description,
+    'og:url' => $currentUrl,
+    'og:type' => 'website',
+    'og:site_name' => 'Jaraba Impact Platform',
+    'twitter:card' => 'summary_large_image',
+    'twitter:title' => (string) $title,
+    'twitter:description' => (string) $description,
+  ];
+
+  foreach ($og_tags as $property => $content) {
+    $tag_name = str_starts_with($property, 'twitter:') ? 'name' : 'property';
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          $tag_name => $property,
+          'content' => $content,
+        ],
+      ],
+      'andalucia_ei_' . str_replace([':', '/'], '_', $property),
+    ];
+  }
+
+  // Schema.org JSON-LD (Course + EducationalOrganization).
+  $schema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Course',
+    'name' => (string) $title,
+    'description' => (string) $description,
+    'url' => $currentUrl,
+    'provider' => [
+      '@type' => 'EducationalOrganization',
+      'name' => 'Jaraba Impact Platform',
+      'url' => $request->getSchemeAndHttpHost(),
+    ],
+    'isAccessibleForFree' => TRUE,
+    'coursePrerequisites' => (string) t('Residencia en Andalucia y situacion de desempleo'),
+    'educationalLevel' => 'beginner',
+    'inLanguage' => 'es',
+    'offers' => [
+      '@type' => 'Offer',
+      'price' => '0',
+      'priceCurrency' => 'EUR',
+      'availability' => 'https://schema.org/LimitedAvailability',
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#attributes' => ['type' => 'application/ld+json'],
+      '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ],
+    'andalucia_ei_schema_org',
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds body classes for Andalucia +ei pages.
+ */
+function jaraba_andalucia_ei_preprocess_html(array &$variables): void {
+  $route = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (str_starts_with($route, 'jaraba_andalucia_ei.')) {
+    $variables['attributes']['class'][] = 'page-andalucia-ei';
+
+    if ($route === 'jaraba_andalucia_ei.landing') {
+      $variables['attributes']['class'][] = 'page-andalucia-ei--landing';
+    }
+    elseif ($route === 'jaraba_andalucia_ei.solicitar') {
+      $variables['attributes']['class'][] = 'page-andalucia-ei--solicitar';
+    }
+    elseif ($route === 'jaraba_andalucia_ei.dashboard') {
+      $variables['attributes']['class'][] = 'page-andalucia-ei--dashboard';
+    }
+    elseif ($route === 'jaraba_andalucia_ei.participante_portal') {
+      $variables['attributes']['class'][] = 'page-andalucia-ei--portal';
+    }
+  }
+}
+
+// =============================================================================
+// FASE 8: SEO — SITEMAP ENTRIES
+// =============================================================================
+
+/**
+ * Implements hook_simple_sitemap_links_alter().
+ *
+ * Adds Andalucía +ei public pages to the sitemap.
+ */
+function jaraba_andalucia_ei_simple_sitemap_links_alter(array &$links, $sitemap_variant): void {
+  // Landing page — high priority.
+  $links[] = [
+    'url' => '/andalucia-ei/programa',
+    'priority' => 0.9,
+    'changefreq' => 'weekly',
+    'lastmod' => date('Y-m-d'),
+  ];
+
+  // Application form.
+  $links[] = [
+    'url' => '/andalucia-ei/solicitar',
+    'priority' => 0.8,
+    'changefreq' => 'monthly',
+    'lastmod' => date('Y-m-d'),
+  ];
+
+  // Lead magnet / guide.
+  $links[] = [
+    'url' => '/andalucia-ei/guia-participante',
+    'priority' => 0.6,
+    'changefreq' => 'monthly',
+    'lastmod' => date('Y-m-d'),
+  ];
 }

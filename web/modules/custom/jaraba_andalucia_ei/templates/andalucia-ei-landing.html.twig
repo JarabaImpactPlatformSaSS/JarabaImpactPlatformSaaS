@@ -1,0 +1,232 @@
+{#
+/**
+ * @file
+ * Landing page de conversion para Andalucia +ei.
+ *
+ * Zero Region Policy: No usa page.content ni bloques.
+ * Orden optimizado para conversion:
+ * Hero > Stats > Features > Content > Testimonials > FAQ > CTA
+ */
+#}
+
+{# === HERO: Gancho emocional + CTA primario === #}
+<section class="aei-landing__hero" data-effect="fade-up" aria-label="{{ 'Programa Andalucia +ei'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__hero-content">
+      <span class="aei-landing__eyebrow">{{ 'Andalucia +ei'|t }}</span>
+      <h1 class="aei-landing__title">{{ 'Emprendimiento e Insercion Laboral Aumentado con IA'|t }}</h1>
+      <p class="aei-landing__subtitle">{{ 'Programa gratuito de emprendimiento, formacion certificada y mentoria con inteligencia artificial para personas desempleadas en Andalucia.'|t }}</p>
+      <div class="aei-landing__actions">
+        <a href="{{ solicitar_url }}" class="aei-landing__cta aei-landing__cta--primary">
+          {{ 'Solicitar plaza'|t }}
+        </a>
+        <a href="#como-funciona" class="aei-landing__cta aei-landing__cta--secondary">
+          {{ 'Conocer programa'|t }}
+        </a>
+      </div>
+    </div>
+    <div class="aei-landing__hero-visual" aria-hidden="true">
+      <div class="aei-landing__hero-placeholder">
+        {{ jaraba_icon('programas', 'rocket', { variant: 'duotone', size: '64px' }) }}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === STATS: Credibilidad con numeros === #}
+<section class="aei-landing__stats" data-effect="fade-up" aria-label="{{ 'Resultados del programa'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__stats-grid">
+      {% set stats = [
+        { value: '+200', label: 'Participantes'|t, icon: 'users' },
+        { value: '85%', label: 'Tasa de insercion'|t, icon: 'trending-up' },
+        { value: '4.8', label: 'Satisfaccion media'|t, icon: 'star' },
+        { value: '+500h', label: 'Mentoria IA acumulada'|t, icon: 'cpu' },
+      ] %}
+      {% for stat in stats %}
+        <div class="aei-landing__stat-card" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
+          <div class="aei-landing__stat-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', stat.icon, { variant: 'duotone', size: '32px' }) }}
+          </div>
+          <span class="aei-landing__stat-value" data-counter="{{ stat.value }}">{{ stat.value }}</span>
+          <span class="aei-landing__stat-label">{{ stat.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === FEATURES: Beneficios — 3 tracks === #}
+<section class="aei-landing__features" data-effect="fade-up" aria-label="{{ 'Beneficios del programa'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__section-header">
+      <span class="aei-landing__eyebrow">{{ 'Que incluye'|t }}</span>
+      <h2 class="aei-landing__section-title">{{ 'Todo lo que necesitas para tu insercion laboral'|t }}</h2>
+    </div>
+    <div class="aei-landing__features-grid">
+      {% set features = [
+        {
+          icon: 'cpu',
+          icon_category: 'ui',
+          title: 'Mentoria con Inteligencia Artificial'|t,
+          desc: 'Acceso ilimitado a un tutor IA personalizado que te guia en tu busqueda de empleo, mejora tu CV y prepara tus entrevistas.'|t,
+        },
+        {
+          icon: 'graduation',
+          icon_category: 'education',
+          title: 'Formacion Certificada'|t,
+          desc: 'Mas de 50 horas de formacion en competencias digitales, emprendimiento y habilidades profesionales con certificado oficial.'|t,
+        },
+        {
+          icon: 'briefcase',
+          icon_category: 'legal',
+          title: 'Insercion Laboral Real'|t,
+          desc: 'Plan personalizado de insercion con orientacion individual, acceso a ofertas exclusivas y acompanamiento hasta tu contratacion.'|t,
+        },
+      ] %}
+      {% for feature in features %}
+        <div class="aei-landing__feature-card" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
+          <div class="aei-landing__feature-icon" aria-hidden="true">
+            {{ jaraba_icon(feature.icon_category, feature.icon, { variant: 'duotone', size: '32px' }) }}
+          </div>
+          <h3 class="aei-landing__feature-title">{{ feature.title }}</h3>
+          <p class="aei-landing__feature-desc">{{ feature.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === CONTENT: Como funciona — paso a paso === #}
+<section id="como-funciona" class="aei-landing__content" data-effect="fade-up" aria-label="{{ 'Como funciona'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__content-grid">
+      <div class="aei-landing__content-text">
+        <span class="aei-landing__eyebrow">{{ 'Como funciona'|t }}</span>
+        <h2 class="aei-landing__section-title">{{ 'Tu camino hacia el empleo en 4 pasos'|t }}</h2>
+        <div class="aei-landing__steps">
+          {% set steps = [
+            { num: '1', title: 'Solicita tu plaza'|t, desc: 'Rellena el formulario en 2 minutos. Evaluaremos tu perfil con IA para asignarte el itinerario mas adecuado.'|t },
+            { num: '2', title: 'Diagnostico inicial'|t, desc: 'Primera sesion con tu mentor IA para detectar fortalezas, areas de mejora y objetivos profesionales.'|t },
+            { num: '3', title: 'Formacion + Orientacion'|t, desc: 'Combina formacion certificada con sesiones de orientacion individual y grupal. Minimo 50h formacion + 10h orientacion.'|t },
+            { num: '4', title: 'Insercion laboral'|t, desc: 'Plan personalizado de busqueda activa o lanzamiento de tu proyecto emprendedor con acompanamiento continuo.'|t },
+          ] %}
+          {% for step in steps %}
+            <div class="aei-landing__step" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
+              <span class="aei-landing__step-num">{{ step.num }}</span>
+              <div class="aei-landing__step-content">
+                <h3 class="aei-landing__step-title">{{ step.title }}</h3>
+                <p class="aei-landing__step-desc">{{ step.desc }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="aei-landing__content-sidebar">
+        <div class="aei-landing__eligibility-card">
+          <h3 class="aei-landing__eligibility-title">{{ 'Requisitos de elegibilidad'|t }}</h3>
+          <ul class="aei-landing__eligibility-list">
+            {% set criteria = [
+              'Residir en Andalucia'|t,
+              'Estar en situacion de desempleo'|t,
+              'Mayor de 16 anos'|t,
+              'Inscrito/a como demandante de empleo'|t,
+              'Motivacion y compromiso con el programa'|t,
+            ] %}
+            {% for criterion in criteria %}
+              <li class="aei-landing__eligibility-item">
+                {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '20px' }) }}
+                <span>{{ criterion }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+          <p class="aei-landing__eligibility-note">{{ 'Colectivos prioritarios: jovenes 18-29, mayores de 45, desempleados de larga duracion y migrantes.'|t }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === TESTIMONIALS: Prueba social === #}
+<section class="aei-landing__testimonials" data-effect="fade-up" aria-label="{{ 'Testimonios de participantes'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__section-header">
+      <span class="aei-landing__eyebrow">{{ 'Testimonios'|t }}</span>
+      <h2 class="aei-landing__section-title">{{ 'Lo que dicen nuestros participantes'|t }}</h2>
+    </div>
+    <div class="aei-landing__testimonials-grid">
+      {% set testimonials = [
+        {
+          quote: 'Gracias al programa encontre trabajo en 3 meses. La mentoria con IA me ayudo a preparar entrevistas de una forma que nunca habia imaginado.'|t,
+          name: 'Maria G.',
+          role: 'Impulso Digital — Sevilla'|t,
+        },
+        {
+          quote: 'La formacion en competencias digitales me abrio puertas que llevaba anos tocando. El equipo de orientacion es excepcional.'|t,
+          name: 'Ahmed K.',
+          role: 'Acelera Pro — Malaga'|t,
+        },
+        {
+          quote: 'Monte mi propio negocio online con el apoyo del programa. El tutor IA esta disponible 24/7 y eso marca la diferencia.'|t,
+          name: 'Carmen R.',
+          role: 'Hibrido — Granada'|t,
+        },
+      ] %}
+      {% for testimonial in testimonials %}
+        <div class="aei-landing__testimonial-card" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
+          <blockquote class="aei-landing__testimonial-quote">{{ testimonial.quote }}</blockquote>
+          <div class="aei-landing__testimonial-author">
+            <div class="aei-landing__testimonial-avatar" aria-hidden="true">{{ testimonial.name|first }}</div>
+            <div>
+              <span class="aei-landing__testimonial-name">{{ testimonial.name }}</span>
+              <span class="aei-landing__testimonial-role">{{ testimonial.role }}</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === FAQ: Manejo de objeciones === #}
+<section class="aei-landing__faq" data-effect="fade-up" aria-label="{{ 'Preguntas frecuentes'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__section-header">
+      {{ jaraba_icon('ui', 'help', { variant: 'duotone', size: '48px' }) }}
+      <span class="aei-landing__eyebrow">{{ 'FAQ'|t }}</span>
+      <h2 class="aei-landing__section-title">{{ 'Preguntas frecuentes'|t }}</h2>
+    </div>
+    <div class="aei-landing__faq-list">
+      {% set faqs = [
+        { q: 'Es realmente gratuito?'|t, a: 'Si, el programa esta 100% subvencionado por la Junta de Andalucia y el Fondo Social Europeo. No tiene ningun coste para los participantes.'|t },
+        { q: 'Que es la mentoria con IA?'|t, a: 'Tendras acceso a un tutor virtual basado en inteligencia artificial que te ayuda con tu CV, preparacion de entrevistas, plan de negocio y orientacion profesional personalizada.'|t },
+        { q: 'Cuanto dura el programa?'|t, a: 'La fase de Atencion incluye un minimo de 50 horas de formacion y 10 horas de orientacion. La duracion total depende de tu ritmo y objetivos.'|t },
+        { q: 'Puedo participar si soy autonomo?'|t, a: 'El programa esta dirigido a personas desempleadas inscritas como demandantes de empleo. Si eres autonomo pero no estas facturando, consulta tu caso concreto.'|t },
+        { q: 'Obtengo algun certificado?'|t, a: 'Si, al completar la formacion recibes un certificado oficial de competencias. Ademas, el programa queda registrado en tu historial del STO.'|t },
+        { q: 'Que pasa si encuentro trabajo durante el programa?'|t, a: 'Transitas a la Fase de Insercion y el equipo te acompana en la incorporacion laboral. Es el objetivo del programa.'|t },
+      ] %}
+      {% for faq in faqs %}
+        <details class="aei-landing__faq-item" data-effect="fade-up" data-delay="{{ loop.index0 * 80 }}">
+          <summary class="aei-landing__faq-question">{{ faq.q }}</summary>
+          <div class="aei-landing__faq-answer">{{ faq.a }}</div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# === CTA FINAL: Conversion === #}
+<section class="aei-landing__cta-section" data-effect="fade-up" aria-label="{{ 'Solicitar plaza'|t }}">
+  <div class="aei-landing__container">
+    <div class="aei-landing__cta-content">
+      <h2 class="aei-landing__cta-title">{{ 'Solicita tu plaza ahora'|t }}</h2>
+      <p class="aei-landing__cta-subtitle">{{ 'Plazas limitadas. Programa 100% gratuito y subvencionado.'|t }}</p>
+      <div class="aei-landing__cta-actions">
+        <a href="{{ solicitar_url }}" class="aei-landing__cta aei-landing__cta--primary aei-landing__cta--large">
+          {{ 'Solicitar plaza'|t }}
+        </a>
+      </div>
+      <p class="aei-landing__cta-footer">{{ 'Financiado por la Junta de Andalucia y el Fondo Social Europeo.'|t }}</p>
+    </div>
+  </div>
+</section>

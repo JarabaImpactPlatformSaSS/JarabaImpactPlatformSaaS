@@ -7,11 +7,11 @@ namespace Drupal\jaraba_andalucia_ei\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Controlador API para operaciones AJAX del slide-panel de Andalucia +ei.
@@ -37,10 +37,13 @@ class AndaluciaEiApiController extends ControllerBase
      *   El gestor de tipos de entidad.
      * @param \Drupal\Core\Render\RendererInterface $renderer
      *   El servicio de renderizado.
+     * @param \Psr\Log\LoggerInterface $logger
+     *   Logger del módulo.
      */
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
         protected readonly RendererInterface $renderer,
+        protected readonly LoggerInterface $logger,
     ) {
         $this->entityTypeManager = $entityTypeManager;
     }
@@ -53,6 +56,7 @@ class AndaluciaEiApiController extends ControllerBase
         return new static(
             $container->get('entity_type.manager'),
             $container->get('renderer'),
+            $container->get('logger.channel.jaraba_andalucia_ei'),
         );
     }
 
@@ -230,7 +234,7 @@ class AndaluciaEiApiController extends ControllerBase
         $dniNie = $entity->getDniNie();
         $entity->delete();
 
-        \Drupal::logger('jaraba_andalucia_ei')->info('Participante @dni eliminado.', [
+        $this->logger->info('Participante @dni eliminado.', [
             '@dni' => $dniNie,
         ]);
 

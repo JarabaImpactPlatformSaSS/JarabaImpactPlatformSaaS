@@ -1,0 +1,59 @@
+{#
+ # Template: Andalucia +ei - Testimonios de Participantes
+ # Category: andalucia_ei
+ # Type: testimonials
+ #
+ # Header + grid de 3 quote cards con comilla decorativa, avatar, nombre/cargo y rating
+ # Premium: staggered animations, jaraba_icon system, star rating SVG
+ # - Usa jaraba_icon(category, name, { variant, size, color }) para iconos
+ #}
+<section class="pb-section pb-section--testimonials pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_testimonials"
+         aria-label="{{ title|default('Testimonios de Participantes')|t }}"
+         data-effect="fade-up">
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Testimonios')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('Lo que dicen nuestros participantes')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Personas que han transformado su futuro profesional con Andalucia +ei.')|t }}</p>
+    </div>
+    <div class="pb-section__testimonials-grid">
+      {% set default_testimonials = [
+        { quote: 'La mentoria con IA me ayudo a descubrir competencias que no sabia que tenia. En tres meses pase de estar desempleada a lanzar mi propio negocio digital.', name: 'Ana Garcia', role: 'Emprendedora digital, Sevilla', initials: 'AG', rating: 5 },
+        { quote: 'El programa me dio las herramientas y la confianza para reinventarme profesionalmente. La formacion en inteligencia artificial fue clave para mi nueva carrera.', name: 'Carlos Ruiz', role: 'Tecnico en IA, Malaga', initials: 'CR', rating: 5 },
+        { quote: 'Gracias a Andalucia +ei consegui mi primer empleo en el sector tecnologico. El acompanamiento durante la insercion laboral fue excepcional.', name: 'Maria Lopez', role: 'Desarrolladora web, Granada', initials: 'ML', rating: 4 }
+      ] %}
+      {% set items = testimonials|default(default_testimonials) %}
+      {% for testimonial in items %}
+        <div class="pb-section__testimonial"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          <div class="pb-section__testimonial-quote-icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'chat', { variant: 'duotone', size: '24px', color: 'naranja-ei' }) }}
+          </div>
+          <p class="pb-section__testimonial-quote">{{ testimonial.quote|default('Gran experiencia.')|t }}</p>
+          <div class="pb-section__testimonial-rating" aria-label="{{ 'Valoracion: %stars% de 5 estrellas'|t|replace({'%stars%': testimonial.rating|default(5)}) }}">
+            {% for i in 1..5 %}
+              <svg class="pb-section__star{{ i <= testimonial.rating|default(5) ? ' pb-section__star--filled' : '' }}" width="16" height="16" viewBox="0 0 24 24" fill="{{ i <= testimonial.rating|default(5) ? '#FF8C42' : 'none' }}" stroke="#FF8C42" stroke-width="2" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            {% endfor %}
+          </div>
+          <div class="pb-section__testimonial-author">
+            <div class="pb-section__testimonial-avatar">
+              {% if testimonial.avatar|default('') %}
+                <img src="{{ testimonial.avatar }}" alt="{{ testimonial.name|default('') }}" loading="lazy" />
+              {% else %}
+                {{ testimonial.initials|default('??') }}
+              {% endif %}
+            </div>
+            <div>
+              <div class="pb-section__testimonial-name">{{ testimonial.name|default('Participante')|t }}</div>
+              <div class="pb-section__testimonial-role">{{ testimonial.role|default('Participante del programa')|t }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

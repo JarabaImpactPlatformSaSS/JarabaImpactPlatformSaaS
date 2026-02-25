@@ -129,6 +129,7 @@ class SecureConversation extends ContentEntityBase implements SecureConversation
         SecureConversationInterface::CONTEXT_EMPLOYMENT => t('Employment'),
         SecureConversationInterface::CONTEXT_MENTORING => t('Mentoring'),
         SecureConversationInterface::CONTEXT_COMMERCE => t('Commerce'),
+        SecureConversationInterface::CONTEXT_ANDALUCIA_EI => t('Andalucía +ei'),
       ])
       ->setDefaultValue(SecureConversationInterface::CONTEXT_GENERAL);
 

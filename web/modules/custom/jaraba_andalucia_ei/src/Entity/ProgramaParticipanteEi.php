@@ -171,6 +171,13 @@ class ProgramaParticipanteEi extends ContentEntityBase implements ProgramaPartic
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('Tenant al que pertenece este participante.'))
+            ->setSetting('target_type', 'group')
+            ->setRequired(FALSE)
+            ->setDisplayConfigurable('view', TRUE);
+
         $fields['group_id'] = BaseFieldDefinition::create('entity_reference')
             ->setLabel(t('Grupo Andalucía +ei'))
             ->setDescription(t('Grupo del programa al que pertenece.'))

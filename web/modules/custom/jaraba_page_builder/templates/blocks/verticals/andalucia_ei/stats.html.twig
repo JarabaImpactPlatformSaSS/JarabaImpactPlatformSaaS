@@ -1,0 +1,58 @@
+{#
+ # Template: Andalucia +ei - Cifras del Programa
+ # Category: andalucia_ei
+ # Type: stats
+ #
+ # Header + fila de 4 stat counters (numero grande + label + icono)
+ # Premium: animated counters, entrance animation, prefix/suffix support
+ # - data-counter on number elements triggers count-up animation
+ # - data-counter-duration controls animation speed (ms)
+ #}
+<section class="pb-section pb-section--stats pb-section--andalucia_ei jaraba-block jaraba-block--premium"
+         data-block-type="andalucia_ei_stats"
+         aria-label="{{ title|default('Cifras del Programa')|t }}"
+         data-effect="fade-up"
+         data-counter-duration="2000"
+         {% if background_image %}style="background-image: url('{{ background_image }}')"{% endif %}>
+  <div class="pb-section__container">
+    <div class="pb-section__header">
+      <div class="pb-section__header-icon" aria-hidden="true">
+        {{ jaraba_icon('finance', 'chart-bar', { variant: 'duotone', size: '48px', color: 'naranja-ei' }) }}
+      </div>
+      <span class="pb-section__eyebrow">{{ eyebrow|default('Resultados')|t }}</span>
+      <h2 class="pb-section__title">{{ title|default('El impacto de Andalucia +ei en cifras')|t }}</h2>
+      <p class="pb-section__subtitle">{{ subtitle|default('Datos que reflejan el compromiso del programa con la empleabilidad y el emprendimiento en Andalucia.')|t }}</p>
+    </div>
+    <div class="pb-section__stats-row">
+      {% set default_stats = [
+        { number: '+200', label: 'Participantes formados', icon: 'users' },
+        { number: '85%', label: 'Tasa de insercion laboral', icon: 'briefcase' },
+        { number: '4.8', label: 'Satisfaccion media', icon: 'star' },
+        { number: '+500h', label: 'Formacion en IA impartida', icon: 'ai-brain' }
+      ] %}
+      {% set items = stats|default(default_stats) %}
+      {% set icon_map = {
+        'users': { category: 'user', name: 'users' },
+        'briefcase': { category: 'legal', name: 'briefcase' },
+        'star': { category: 'ui', name: 'star' },
+        'ai-brain': { category: 'tech', name: 'ai-brain' }
+      } %}
+      {% for stat in items %}
+        <div class="pb-section__stat"
+             data-effect="fade-up"
+             data-delay="{{ loop.index0 * 100 }}">
+          {% if stat.icon|default('') %}
+            <div class="pb-section__stat-icon" aria-hidden="true">
+              {% set icon_info = icon_map[stat.icon|default('star')]|default({ category: 'ui', name: 'star' }) %}
+              {{ jaraba_icon(icon_info.category, icon_info.name, { variant: 'duotone', size: '32px', color: 'naranja-ei' }) }}
+            </div>
+          {% endif %}
+          <span class="pb-section__stat-number">
+            {{ stat.prefix|default('') }}<span data-counter="{{ stat.number|default('0') }}" data-target="{{ stat.number|default('0')|replace({'+': '', '.': '', 'K': '000', 'k': '000', 'h': ''}) }}">0</span>{{ stat.suffix|default('') }}
+          </span>
+          <span class="pb-section__stat-label">{{ stat.label|default('Metrica')|t }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

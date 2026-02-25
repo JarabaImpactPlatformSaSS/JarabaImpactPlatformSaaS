@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * Progreso formativo del participante.
+ *
+ * Variables:
+ * - formacion: { horas, meta, porcentaje, milestones }
+ * - participante: ProgramaParticipanteEiInterface entity
+ */
+#}
+
+<section class="aei-formacion" data-effect="fade-up" aria-label="{{ 'Progreso formativo'|t }}">
+  <h3 class="aei-formacion__title">
+    {{ jaraba_icon('education', 'graduation', { variant: 'duotone', size: '24px' }) }}
+    {{ 'Formación'|t }}
+  </h3>
+
+  {# Progress bar with milestones #}
+  <div class="aei-formacion__progress">
+    <div class="aei-formacion__bar" role="progressbar" aria-valuenow="{{ formacion.porcentaje }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="aei-formacion__bar-fill" style="width: {{ formacion.porcentaje }}%">
+        <span class="aei-formacion__bar-text">{{ formacion.horas|number_format(1) }}h / {{ formacion.meta|number_format(0) }}h</span>
+      </div>
+    </div>
+    <div class="aei-formacion__milestones">
+      {% for milestone in formacion.milestones %}
+        {% set position = (milestone.horas / formacion.meta * 100)|round %}
+        <div class="aei-formacion__milestone {{ milestone.alcanzado ? 'aei-formacion__milestone--done' : '' }}" style="left: {{ position }}%">
+          {% if milestone.alcanzado %}
+            {{ jaraba_icon('status', 'check-circle', { variant: 'duotone', size: '16px' }) }}
+          {% else %}
+            {{ jaraba_icon('status', 'circle', { variant: 'duotone', size: '16px' }) }}
+          {% endif %}
+          <span class="aei-formacion__milestone-label">{{ milestone.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# Hours breakdown #}
+  <div class="aei-formacion__breakdown">
+    {% set breakdown = [
+      {
+        label: 'Orientación individual'|t,
+        value: (participante.get('horas_orientacion_ind').value ?? 0)|number_format(1) ~ 'h',
+        icon: 'user',
+        icon_cat: 'ui',
+      },
+      {
+        label: 'Orientación grupal'|t,
+        value: (participante.get('horas_orientacion_grup').value ?? 0)|number_format(1) ~ 'h',
+        icon: 'users',
+        icon_cat: 'ui',
+      },
+      {
+        label: 'Mentoría IA'|t,
+        value: participante.getHorasMentoriaIa()|number_format(1) ~ 'h',
+        icon: 'cpu',
+        icon_cat: 'ui',
+      },
+      {
+        label: 'Mentoría humana'|t,
+        value: participante.getHorasMentoriaHumana()|number_format(1) ~ 'h',
+        icon: 'handshake',
+        icon_cat: 'ui',
+      },
+    ] %}
+    {% for item in breakdown %}
+      <div class="aei-formacion__item" data-effect="fade-up" data-delay="{{ loop.index0 * 60 }}">
+        <div class="aei-formacion__item-icon" aria-hidden="true">
+          {{ jaraba_icon(item.icon_cat, item.icon, { variant: 'duotone', size: '20px' }) }}
+        </div>
+        <span class="aei-formacion__item-label">{{ item.label }}</span>
+        <span class="aei-formacion__item-value">{{ item.value }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>

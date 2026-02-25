@@ -1,0 +1,62 @@
+langcode: es
+status: true
+dependencies: {}
+id: andalucia_ei_gallery
+label: 'Andalucia +ei: Galería del Programa'
+description: 'Sección galería visual del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/gallery.html.twig'
+fields_schema:
+  type: object
+  title: 'Galería del Programa'
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      maxLength: 150
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+      maxLength: 300
+    images:
+      type: array
+      title: 'Imágenes'
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            title: 'Imagen'
+            format: image
+          alt:
+            type: string
+            title: 'Texto alternativo'
+          caption:
+            type: string
+            title: 'Pie de foto'
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/andalucia_ei-gallery.png'
+weight: 43
+preview_data:
+  eyebrow: Galería
+  title: Así se vive el programa
+  subtitle: Imágenes de las sesiones, talleres y eventos del programa Andalucía +ei.
+  images:
+    -
+      src: ''
+      alt: Taller de herramientas IA para emprendedores
+      caption: Talleres prácticos de inteligencia artificial aplicada al negocio
+    -
+      src: ''
+      alt: Sesión de mentoring grupal en Sevilla
+      caption: Sesiones de mentoría con expertos del ecosistema emprendedor andaluz
+    -
+      src: ''
+      alt: Formación en competencias digitales
+      caption: Módulos formativos certificados en competencias digitales y emprendimiento
