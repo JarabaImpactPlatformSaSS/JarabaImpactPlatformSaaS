@@ -1,0 +1,193 @@
+{#
+/**
+ * @file
+ * Template for My Profile - Education management section.
+ *
+ * Supports slide-panel AJAX loading from profile completeness ring.
+ *
+ * Variables:
+ *   - educations: Array of education records with id, institution, degree,
+ *                 field_of_study, start_date, end_date.
+ */
+#}
+
+<div class="my-profile-education">
+  <div class="education-header">
+    <h2>{% trans %}Formación Académica{% endtrans %}</h2>
+    <p class="education-description">
+      {% trans %}Añade tu formación académica para fortalecer tu perfil profesional y mejorar tu visibilidad ante reclutadores.{% endtrans %}
+    </p>
+  </div>
+
+  {# Current Education Records #}
+  <div class="current-education">
+    <h3>{% trans %}Formación registrada{% endtrans %} <span class="badge">{{ educations|length }}</span></h3>
+
+    {% if educations is not empty %}
+      <div class="education-list">
+        {% for edu in educations %}
+          <div class="education-card" data-education-id="{{ edu.id }}">
+            <div class="education-card__icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+              </svg>
+            </div>
+            <div class="education-card__info">
+              <span class="education-card__degree">{{ edu.degree }}</span>
+              <span class="education-card__institution">{{ edu.institution }}</span>
+              {% if edu.field_of_study %}
+                <span class="education-card__field">{{ edu.field_of_study }}</span>
+              {% endif %}
+              <span class="education-card__dates">
+                {% if edu.start_date %}
+                  {{ edu.start_date|date('Y') }}
+                {% endif %}
+                {% if edu.end_date %}
+                  – {{ edu.end_date|date('Y') }}
+                {% else %}
+                  – {% trans %}Actualidad{% endtrans %}
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.35">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/>
+        </svg>
+        <p>{% trans %}Aún no has registrado tu formación académica.{% endtrans %}</p>
+        <p class="empty-state__hint">{% trans %}Añadir tu educación aumenta significativamente tu visibilidad ante los reclutadores.{% endtrans %}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.my-profile-education {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.education-header h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+  color: var(--ej-color-headings, #1a202c);
+}
+
+.education-description {
+  color: var(--ej-color-muted, #64748b);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.current-education h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+}
+
+.current-education .badge {
+  background: var(--ej-color-innovation, #00A9A5);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.education-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.education-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.education-card__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 169, 165, 0.1);
+  color: var(--ej-color-innovation, #00A9A5);
+}
+
+.education-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.education-card__degree {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ej-color-headings, #1a202c);
+}
+
+.education-card__institution {
+  font-size: 0.9375rem;
+  color: var(--ej-color-corporate, #233D63);
+}
+
+.education-card__field {
+  font-size: 0.8125rem;
+  color: var(--ej-color-muted, #64748b);
+}
+
+.education-card__dates {
+  font-size: 0.8125rem;
+  color: var(--ej-color-muted, #64748b);
+  margin-top: 2px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+  border: 1px dashed var(--ej-border-color, #e2e8f0);
+  border-radius: 12px;
+}
+
+.empty-state svg {
+  margin-bottom: 1rem;
+  color: var(--ej-color-innovation, #00A9A5);
+}
+
+.empty-state p {
+  margin: 0 0 0.5rem;
+  color: var(--ej-color-headings, #1a202c);
+  font-weight: 500;
+}
+
+.empty-state__hint {
+  color: var(--ej-color-muted, #64748b) !important;
+  font-weight: 400 !important;
+  font-size: 0.875rem;
+}
+</style>
