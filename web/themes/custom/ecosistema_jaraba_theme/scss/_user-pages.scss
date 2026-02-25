@@ -527,6 +527,104 @@
 }
 
 // =============================================================================
+// PROFILE COMPLETENESS RING (parcial _profile-completeness.html.twig)
+// =============================================================================
+.ej-profile-completeness {
+  display: flex;
+  align-items: flex-start;
+  gap: $ej-spacing-xl;
+
+  @include respond-to(sm) {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__ring-container {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+  }
+
+  &__ring {
+    width: 100%;
+    height: 100%;
+  }
+
+  &__pct-value {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    fill: var(--ej-color-headings, #1a202c);
+  }
+
+  &__pct-label {
+    font-family: var(--ej-font-family, 'Outfit', sans-serif);
+    font-size: 0.625rem;
+    font-weight: 500;
+    fill: var(--ej-color-muted, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__sections {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, #1a202c);
+    margin: 0 0 $ej-spacing-sm;
+
+    span {
+      font-weight: 400;
+      color: var(--ej-color-muted, #64748b);
+    }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+
+    @include respond-to(xs) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--ej-color-muted, #64748b);
+
+    a {
+      color: var(--ej-color-innovation, #00A9A5);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &--done {
+      color: var(--ej-color-headings, #1a202c);
+
+      span {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// =============================================================================
 // QUICK ACCESS CARDS (reutilizadas por las secciones)
 // =============================================================================
 .quick-access {
