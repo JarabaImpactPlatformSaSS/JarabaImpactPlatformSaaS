@@ -240,10 +240,11 @@
         <h3 class="cp-cta__title">{% trans %}Completa tu perfil para destacar{% endtrans %}</h3>
         <p class="cp-cta__text">{% trans %}Un perfil completo aumenta tus posibilidades de encontrar oportunidades y recibir recomendaciones personalizadas.{% endtrans %}</p>
       </div>
-      <a href="{{ path('jaraba_candidate.my_profile.edit') }}"
+      <a href="{{ path('jaraba_candidate.my_profile.personal') }}"
          class="cp-btn cp-btn--secondary"
-         data-dialog-type="modal"
-         data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>
+         data-slide-panel="profile-section"
+         data-slide-panel-url="{{ path('jaraba_candidate.my_profile.personal') }}"
+         data-slide-panel-title="{% trans %}Datos Personales{% endtrans %}">
         {{ jaraba_icon('actions', 'edit', { variant: 'duotone', size: '16px' }) }}
         {% trans %}Completar perfil{% endtrans %}
       </a>

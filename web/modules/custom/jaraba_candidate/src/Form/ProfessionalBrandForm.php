@@ -79,6 +79,9 @@ class ProfessionalBrandForm extends PremiumEntityFormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
 
+    // Enable form caching so slide-panel POST can retrieve the form.
+    $form_state->setCached(TRUE);
+
     $form['#attached']['library'][] = 'jaraba_candidate/brand_professional';
 
     // Pass copilot URL as data attribute on the form element.

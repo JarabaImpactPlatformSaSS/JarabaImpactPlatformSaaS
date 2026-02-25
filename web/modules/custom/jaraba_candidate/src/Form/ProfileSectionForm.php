@@ -136,6 +136,9 @@ class ProfileSectionForm extends PremiumEntityFormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
 
+    // Enable form caching so slide-panel POST can retrieve the form.
+    $form_state->setCached(TRUE);
+
     // Hide user_id field — set automatically in save().
     if (isset($form['premium_section_other']['user_id'])) {
       $form['premium_section_other']['user_id']['#access'] = FALSE;
@@ -176,7 +179,10 @@ class ProfileSectionForm extends PremiumEntityFormBase {
       $entity->set('user_id', $this->currentUser()->id());
     }
     $result = parent::save($form, $form_state);
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    // Redirect to profile view. Do NOT use $entity->toUrl('collection')
+    // because admin collection routes may not exist for section entities.
+    // The slide-panel handles post-save UX (close + refresh) independently.
+    $form_state->setRedirect('jaraba_candidate.my_profile');
     return $result;
   }
 

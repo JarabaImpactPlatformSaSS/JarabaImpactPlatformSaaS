@@ -67,6 +67,9 @@ class PersonalInfoForm extends PremiumEntityFormBase {
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildForm($form, $form_state);
 
+    // Enable form caching so slide-panel POST can retrieve the form.
+    $form_state->setCached(TRUE);
+
     $form['#attributes']['class'][] = 'profile-section-form';
 
     // Hide "Other" section — this form only shows specific fields.

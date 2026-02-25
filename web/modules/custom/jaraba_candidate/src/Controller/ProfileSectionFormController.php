@@ -58,7 +58,10 @@ class ProfileSectionFormController extends ControllerBase {
     $form = $this->entityFormBuilder()->getForm($entity, 'default');
 
     if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
-      $html = (string) \Drupal::service('renderer')->render($form);
+      // Set form action explicitly — BigPipe placeholders are not
+      // resolved when rendering outside the main page pipeline.
+      $form['#action'] = $request->getRequestUri();
+      $html = (string) \Drupal::service('renderer')->renderPlain($form);
       return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
@@ -84,7 +87,8 @@ class ProfileSectionFormController extends ControllerBase {
     $form = $this->entityFormBuilder()->getForm($entity, 'default');
 
     if ($request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')) {
-      $html = (string) \Drupal::service('renderer')->render($form);
+      $form['#action'] = $request->getRequestUri();
+      $html = (string) \Drupal::service('renderer')->renderPlain($form);
       return new Response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
