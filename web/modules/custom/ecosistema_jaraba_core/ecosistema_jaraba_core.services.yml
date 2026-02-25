@@ -102,6 +102,15 @@ services:
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # TENANT-BRIDGE-001: Bridge entre Tenant entities (billing) y Group entities
+  # (content isolation). Todo servicio que necesite resolver entre ambos DEBE
+  # usar este servicio. NUNCA cargar getStorage('group') con IDs de Tenant.
+  ecosistema_jaraba_core.tenant_bridge:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
 
   # ===========================================
   # SERVICIOS DE TRAZABILIDAD Y FIRMA DIGITAL

@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Drupal\jaraba_billing\Service\DunningService;
 use Drupal\jaraba_billing\Service\StripeInvoiceService;
@@ -152,9 +153,12 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       }
 
       try {
-        $tenantStorage = $this->entityTypeManager()->getStorage('group');
+        $tenantStorage = $this->entityTypeManager()->getStorage('tenant');
         $tenant = $tenantStorage->load($tenantId);
-        if ($tenant) {
+        if (!$tenant instanceof TenantInterface) {
+          $this->billingLogger->error('Tenant @id not found or invalid type in payment_failed webhook', ['@id' => $tenantId]);
+        }
+        elseif ($tenant) {
           $this->tenantSubscription->markPastDue($tenant);
         }
       }
@@ -211,8 +215,12 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       }
 
       try {
-        $tenantStorage = $this->entityTypeManager()->getStorage('group');
+        $tenantStorage = $this->entityTypeManager()->getStorage('tenant');
         $tenant = $tenantStorage->load($tenantId);
+        if (!$tenant instanceof TenantInterface) {
+          $this->billingLogger->error('Tenant @id not found or invalid type in subscription_updated webhook', ['@id' => $tenantId]);
+          $tenant = NULL;
+        }
         if ($tenant) {
           switch ($status) {
             case 'active':
@@ -291,9 +299,12 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       }
 
       try {
-        $tenantStorage = $this->entityTypeManager()->getStorage('group');
+        $tenantStorage = $this->entityTypeManager()->getStorage('tenant');
         $tenant = $tenantStorage->load($tenantId);
-        if ($tenant) {
+        if (!$tenant instanceof TenantInterface) {
+          $this->billingLogger->error('Tenant @id not found or invalid type in subscription_deleted webhook', ['@id' => $tenantId]);
+        }
+        elseif ($tenant) {
           $this->tenantSubscription->cancelSubscription($tenant, TRUE);
         }
       }
@@ -326,8 +337,12 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
     if ($tenantId) {
       try {
-        $tenantStorage = $this->entityTypeManager()->getStorage('group');
+        $tenantStorage = $this->entityTypeManager()->getStorage('tenant');
         $tenant = $tenantStorage->load($tenantId);
+        if (!$tenant instanceof TenantInterface) {
+          $this->billingLogger->error('Tenant @id not found or invalid type in trial_will_end webhook', ['@id' => $tenantId]);
+          $tenant = NULL;
+        }
 
         if ($tenant && $this->mailManager) {
           // Look up billing email for the tenant.

@@ -85,6 +85,20 @@ sync_rendered_html.php
 verify_page45.php
 verify_render.php
 
+# ----- DEBUG SCRIPTS (web/) — defense in depth -----
+web/debug_*.php
+web/install_*.php
+web/fix_*.php
+web/setup_*.php
+web/verify_*.php
+web/sync_*.php
+web/populate_*.php
+web/build_*.php
+web/expand_*.php
+web/publish_*.php
+web/entity_updates.php
+web/check_tenant_domain.php
+
 # ----- BACKUPS -----
 *.sql
 *.sql.gz

@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
+use Drupal\ecosistema_jaraba_core\Service\TenantBridgeService;
 use Drupal\jaraba_billing\Service\PlanValidator;
 
 /**
@@ -61,6 +62,16 @@ class QuotaManagerService
     protected ?PlanResolverService $planResolver;
 
     /**
+     * Bridge entre Tenant (billing) y Group (content isolation).
+     *
+     * TENANT-BRIDGE-001: Resuelve el mismatch entre TenantResolverService
+     * (que retorna GroupInterface) y PlanValidator (que necesita TenantInterface).
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\TenantBridgeService|null
+     */
+    protected ?TenantBridgeService $tenantBridge;
+
+    /**
      * Constructor.
      *
      * @param \Drupal\jaraba_page_builder\Service\TenantResolverService $tenant_resolver
@@ -71,17 +82,21 @@ class QuotaManagerService
      *   Validador de planes (opcional, inyectado si jaraba_billing esta activo).
      * @param \Drupal\ecosistema_jaraba_core\Service\PlanResolverService|null $plan_resolver
      *   Resolver de planes (opcional, inyectado si ecosistema_jaraba_core esta activo).
+     * @param \Drupal\ecosistema_jaraba_core\Service\TenantBridgeService|null $tenant_bridge
+     *   Bridge Tenant/Group (opcional).
      */
     public function __construct(
         TenantResolverService $tenant_resolver,
         ConfigFactoryInterface $config_factory,
         ?PlanValidator $plan_validator = NULL,
         ?PlanResolverService $plan_resolver = NULL,
+        ?TenantBridgeService $tenant_bridge = NULL,
     ) {
         $this->tenantResolver = $tenant_resolver;
         $this->configFactory = $config_factory;
         $this->planValidator = $plan_validator;
         $this->planResolver = $plan_resolver;
+        $this->tenantBridge = $tenant_bridge;
     }
 
     /**
@@ -103,8 +118,14 @@ class QuotaManagerService
         $current_count = $this->tenantResolver->getCurrentTenantPageCount();
 
         // Delegacion a PlanValidator centralizado (P1-01).
+        // TENANT-BRIDGE-001: TenantResolverService retorna GroupInterface,
+        // pero PlanValidator necesita TenantInterface. Usamos TenantBridgeService.
         if ($this->planValidator) {
-            $tenant = $this->tenantResolver->getCurrentTenant();
+            $group = $this->tenantResolver->getCurrentTenant();
+            $tenant = NULL;
+            if ($group && $this->tenantBridge) {
+                $tenant = $this->tenantBridge->getTenantForGroup($group);
+            }
             if ($tenant instanceof TenantInterface) {
                 $result = $this->planValidator->enforceLimit($tenant, 'create_page', [
                     'current' => $current_count,
@@ -172,7 +193,11 @@ class QuotaManagerService
         if ($this->planResolver) {
             $tier = $this->planResolver->normalize($plan);
             $vertical = '_default';
-            $tenant = $this->tenantResolver->getCurrentTenant();
+            $group = $this->tenantResolver->getCurrentTenant();
+            $tenant = NULL;
+            if ($group && $this->tenantBridge) {
+                $tenant = $this->tenantBridge->getTenantForGroup($group);
+            }
             if ($tenant instanceof TenantInterface) {
                 $verticalEntity = $tenant->getVertical();
                 $vertical = $verticalEntity ? ($verticalEntity->id() ?? '_default') : '_default';
@@ -289,8 +314,13 @@ class QuotaManagerService
     public function hasFeature(string $feature): bool
     {
         // Delegacion a PlanValidator para verificacion plan + add-ons (P1-01).
+        // TENANT-BRIDGE-001: Bridge Group→Tenant para PlanValidator.
         if ($this->planValidator) {
-            $tenant = $this->tenantResolver->getCurrentTenant();
+            $group = $this->tenantResolver->getCurrentTenant();
+            $tenant = NULL;
+            if ($group && $this->tenantBridge) {
+                $tenant = $this->tenantBridge->getTenantForGroup($group);
+            }
             if ($tenant instanceof TenantInterface) {
                 return $this->planValidator->hasFeature($tenant, $feature);
             }

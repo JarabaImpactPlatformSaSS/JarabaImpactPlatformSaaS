@@ -75,7 +75,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
 
     try {
-      $tenant = $this->entityTypeManager()->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
       if (!$tenant) {
         return new JsonResponse(['success' => FALSE, 'error' => 'Tenant not found'], 404);
       }
@@ -114,7 +114,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
 
     try {
-      $tenant = $this->entityTypeManager()->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
       if (!$tenant) {
         return new JsonResponse(['success' => FALSE, 'error' => 'Tenant not found'], 404);
       }
@@ -206,7 +206,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     try {
       $result = $this->stripeSubscription->cancelSubscription($subscriptionId, $immediately);
 
-      $tenant = $this->entityTypeManager()->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
       if ($tenant) {
         $this->tenantSubscription->cancelSubscription($tenant, $immediately);
       }
@@ -241,7 +241,7 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     try {
       $result = $this->stripeSubscription->resumeSubscription($subscriptionId);
 
-      $tenant = $this->entityTypeManager()->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
       if ($tenant) {
         $this->tenantSubscription->activateSubscription($tenant);
       }

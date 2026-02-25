@@ -121,13 +121,14 @@ class TenantContextService
             }
 
             // =========================================================
-            // MÉTODO 2: Buscar por membresía en Group (futuro)
-            // Descomentar cuando se implemente la resolución por Group
+            // MÉTODO 2: Buscar por membresía en Group
+            // Si el usuario es miembro de un Group que pertenece a un Tenant,
+            // resuelve el tenant via esa membresía.
             // =========================================================
-            // $this->cachedTenant = $this->findTenantByGroupMembership($uid);
-            // if ($this->cachedTenant) {
-            //     return $this->cachedTenant;
-            // }
+            $this->cachedTenant = $this->findTenantByGroupMembership((int) $uid);
+            if ($this->cachedTenant) {
+                return $this->cachedTenant;
+            }
 
             $this->cachedTenant = NULL;
             return NULL;
@@ -143,6 +144,69 @@ class TenantContextService
             $this->cachedTenant = NULL;
             return NULL;
         }
+    }
+
+    /**
+     * Finds a Tenant by user's Group membership.
+     *
+     * Looks up group_relationship entities where the user is a member,
+     * then finds the Tenant that owns that Group via the group_id field.
+     *
+     * @param int $uid
+     *   The user ID.
+     *
+     * @return \Drupal\ecosistema_jaraba_core\Entity\TenantInterface|null
+     *   The tenant or NULL if not found.
+     */
+    protected function findTenantByGroupMembership(int $uid): ?TenantInterface {
+        // Guard: group_relationship entity type must exist.
+        if (!$this->entityTypeManager->hasDefinition('group_relationship')) {
+            return NULL;
+        }
+
+        try {
+            $relationshipStorage = $this->entityTypeManager->getStorage('group_relationship');
+            $relationships = $relationshipStorage->loadByProperties([
+                'plugin_id' => 'group_membership',
+                'entity_id' => $uid,
+            ]);
+
+            if (empty($relationships)) {
+                return NULL;
+            }
+
+            $tenantStorage = $this->entityTypeManager->getStorage('tenant');
+
+            foreach ($relationships as $relationship) {
+                $group = $relationship->getGroup();
+                if (!$group) {
+                    continue;
+                }
+
+                // Find Tenant with matching group_id.
+                $tenants = $tenantStorage->loadByProperties([
+                    'group_id' => $group->id(),
+                ]);
+
+                if (!empty($tenants)) {
+                    $tenant = reset($tenants);
+                    if ($tenant instanceof TenantInterface) {
+                        return $tenant;
+                    }
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->error(
+                'Error resolving tenant by group membership for user @uid: @error',
+                [
+                    '@uid' => $uid,
+                    '@error' => $e->getMessage(),
+                ]
+            );
+        }
+
+        return NULL;
     }
 
     /**
