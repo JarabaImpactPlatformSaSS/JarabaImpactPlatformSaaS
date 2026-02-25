@@ -125,9 +125,13 @@ class CvController extends ControllerBase
             ];
         }
 
-        // Build shareable public profile URL.
-        $base_url = \Drupal::request()->getSchemeAndHttpHost();
-        $profile_url = $base_url . '/profile/' . $profile->id();
+        // Build shareable public profile URL using Drupal's URL generator
+        // so it includes the correct language prefix (e.g. /es/profile/5).
+        $profile_url = \Drupal\Core\Url::fromRoute(
+            'jaraba_candidate.profile_view',
+            ['candidate_profile' => $profile->id()],
+            ['absolute' => TRUE]
+        )->toString();
 
         $build = [
             '#theme' => 'cv_builder',

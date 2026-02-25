@@ -10,18 +10,8 @@
  * Communicates with POST /api/v1/copilot/employability/chat
  * using CSRF token pattern (CSRF-JS-CACHE-001).
  */
-(function (Drupal) {
+(function (Drupal, drupalSettings) {
   'use strict';
-
-  // ── CSRF token cache (CSRF-JS-CACHE-001) ────────────────────────
-  var _csrfTokenPromise = null;
-  function getCsrfToken() {
-    if (!_csrfTokenPromise) {
-      _csrfTokenPromise = fetch('/session/token')
-        .then(function (r) { return r.text(); });
-    }
-    return _csrfTokenPromise;
-  }
 
   // ── Previous summary backup for "undo" ──────────────────────────
   var _previousSummary = '';
@@ -29,25 +19,32 @@
   /**
    * Send a message to the copilot in profile_coach mode.
    *
+   * Uses the copilot URL from drupalSettings which already includes
+   * the route CSRF token (the route requires _csrf_token: TRUE).
+   *
    * @param {string} message
    *   The prompt to send.
    * @return {Promise<object>}
    *   Resolves with {success, response, mode}.
    */
   function chatWithCopilot(message) {
-    return getCsrfToken().then(function (token) {
-      return fetch('/api/v1/copilot/employability/chat?_format=json', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-Token': token,
-        },
-        body: JSON.stringify({
-          message: message,
-          mode: 'profile_coach',
-        }),
-      });
+    var settings = drupalSettings.brandProfessional || {};
+    var url = settings.copilotUrl;
+
+    if (!url) {
+      return Promise.reject(new Error('Copilot URL not configured'));
+    }
+
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({
+        message: message,
+        mode: 'profile_coach',
+      }),
     }).then(function (r) {
       if (!r.ok) {
         throw new Error('HTTP ' + r.status);
@@ -404,4 +401,4 @@
     },
   };
 
-})(Drupal);
+})(Drupal, drupalSettings);
