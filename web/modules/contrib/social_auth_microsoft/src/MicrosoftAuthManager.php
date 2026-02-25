@@ -74,11 +74,13 @@ class MicrosoftAuthManager extends OAuth2Manager {
    * {@inheritdoc}
    */
   public function getAuthorizationUrl(): string {
-    $scopes = ['wl.basic', 'wl.emails'];
-
     $extra_scopes = $this->getScopes();
     if ($extra_scopes) {
-      $scopes = array_merge($scopes, explode(',', $extra_scopes));
+      $scopes = explode(',', $extra_scopes);
+    }
+    else {
+      // Default to OpenID Connect scopes (Microsoft Identity Platform v2.0).
+      $scopes = ['openid', 'profile', 'email', 'User.Read'];
     }
 
     // Returns the URL where user will be redirected.
