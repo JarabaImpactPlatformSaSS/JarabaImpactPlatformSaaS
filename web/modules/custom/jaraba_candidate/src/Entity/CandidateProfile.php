@@ -228,10 +228,23 @@ class CandidateProfile extends ContentEntityBase implements CandidateProfileInte
             ->setSetting('max_length', 20)
             ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => -7]);
 
-        $fields['photo'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Photo'))
-            ->setSetting('target_type', 'file')
-            ->setDisplayOptions('form', ['type' => 'file_generic', 'weight' => -6]);
+        $fields['photo'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Foto de perfil'))
+            ->setDescription(t('Sube una foto profesional (JPG, PNG, max 5 MB).'))
+            ->setSetting('file_extensions', 'jpg jpeg png webp')
+            ->setSetting('file_directory', 'candidate/photos')
+            ->setSetting('uri_scheme', 'public')
+            ->setSetting('max_filesize', '5 MB')
+            ->setSetting('alt_field', FALSE)
+            ->setSetting('title_field', FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => -6,
+                'settings' => [
+                    'preview_image_style' => 'thumbnail',
+                    'progress_indicator' => 'throbber',
+                ],
+            ]);
 
         $fields['date_of_birth'] = BaseFieldDefinition::create('datetime')
             ->setLabel(t('Date of Birth'))
