@@ -82,8 +82,9 @@
       <div class="cp-hero__actions">
         <a href="{{ path('jaraba_candidate.my_profile.edit') }}"
            class="cp-btn cp-btn--primary"
-           data-dialog-type="modal"
-           data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>
+           data-slide-panel="profile-edit"
+           data-slide-panel-url="{{ path('jaraba_candidate.my_profile.edit') }}"
+           data-slide-panel-title="{% trans %}Editar perfil{% endtrans %}">
           {{ jaraba_icon('actions', 'edit', { variant: 'duotone', size: '16px' }) }}
           {{ 'Editar perfil'|t }}
         </a>

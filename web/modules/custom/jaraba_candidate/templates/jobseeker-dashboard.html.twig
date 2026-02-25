@@ -48,7 +48,10 @@
     <section class="dashboard-card dashboard-card--profile" aria-label="{{ 'Profile summary'|t }}">
       <div class="card-header">
         <h2>{{ 'Your Profile'|t }}</h2>
-        <a href="/my-profile/edit" class="card-action" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>{{ 'Edit'|t }}</a>
+        <a href="{{ path('jaraba_candidate.my_profile.edit') }}" class="card-action"
+           data-slide-panel="profile-edit"
+           data-slide-panel-url="{{ path('jaraba_candidate.my_profile.edit') }}"
+           data-slide-panel-title="{% trans %}Editar perfil{% endtrans %}">{{ 'Edit'|t }}</a>
       </div>
       
       {% if profile %}
@@ -84,7 +87,10 @@
             <ul>
               {% for section in profile.missing_sections|slice(0, 3) %}
                 <li>
-                  <a href="/my-profile/edit#{{ section.section }}">{{ section.label }}</a>
+                  <a href="{{ path('jaraba_candidate.my_profile.edit') }}"
+                     data-slide-panel="profile-edit"
+                     data-slide-panel-url="{{ path('jaraba_candidate.my_profile.edit') }}"
+                     data-slide-panel-title="{{ section.label }}">{{ section.label }}</a>
                 </li>
               {% endfor %}
             </ul>
@@ -93,7 +99,10 @@
       {% else %}
         <div class="empty-state">
           <p>{{ 'Create your professional profile to start applying for jobs.'|t }}</p>
-          <a href="/my-profile/edit" class="btn btn--primary" data-dialog-type="modal" data-dialog-options='{"width":"900","dialogClass":"ej-modal"}'>{{ 'Create Profile'|t }}</a>
+          <a href="{{ path('jaraba_candidate.my_profile.personal') }}" class="btn btn--primary"
+             data-slide-panel="profile-section"
+             data-slide-panel-url="{{ path('jaraba_candidate.my_profile.personal') }}"
+             data-slide-panel-title="{% trans %}Datos Personales{% endtrans %}">{{ 'Create Profile'|t }}</a>
         </div>
       {% endif %}
     </section>
