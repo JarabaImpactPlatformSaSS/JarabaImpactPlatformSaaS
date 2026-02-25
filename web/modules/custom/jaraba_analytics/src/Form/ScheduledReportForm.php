@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_analytics\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario de creacion/edicion de informes programados.
@@ -13,85 +13,46 @@ use Drupal\Core\Form\FormStateInterface;
  * PROPOSITO:
  * Permite crear y editar informes programados con configuracion de query,
  * programacion temporal y lista de destinatarios.
- *
- * LOGICA:
- * - Grupo 1: Informacion basica (nombre, tenant, propietario, estado).
- * - Grupo 2: Configuracion del informe (query JSON, formato).
- * - Grupo 3: Programacion (tipo, configuracion de schedule).
- * - Grupo 4: Destinatarios (lista JSON de emails).
  */
-class ScheduledReportForm extends ContentEntityForm {
+class ScheduledReportForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    // Grupo: Informacion basica.
-    $form['basic_info'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Basic Information'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic_info' => [
+        'label' => $this->t('Basic Information'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Report name, owner, tenant, and status.'),
+        'fields' => ['name', 'owner_id', 'tenant_id', 'report_status'],
+      ],
+      'report_config' => [
+        'label' => $this->t('Report Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('JSON query and format configuration for the report.'),
+        'fields' => ['report_config'],
+      ],
+      'schedule' => [
+        'label' => $this->t('Schedule'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'description' => $this->t('Schedule type and timing configuration.'),
+        'fields' => ['schedule_type', 'schedule_config'],
+      ],
+      'recipients' => [
+        'label' => $this->t('Recipients'),
+        'icon' => ['category' => 'users', 'name' => 'users'],
+        'description' => $this->t('List of email recipients for the scheduled report.'),
+        'fields' => ['recipients'],
+      ],
     ];
+  }
 
-    if (isset($form['name'])) {
-      $form['name']['#group'] = 'basic_info';
-    }
-    if (isset($form['owner_id'])) {
-      $form['owner_id']['#group'] = 'basic_info';
-    }
-    if (isset($form['tenant_id'])) {
-      $form['tenant_id']['#group'] = 'basic_info';
-    }
-    if (isset($form['report_status'])) {
-      $form['report_status']['#group'] = 'basic_info';
-    }
-
-    // Grupo: Configuracion del informe.
-    $form['report_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Report Configuration'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-
-    if (isset($form['report_config'])) {
-      $form['report_config']['#group'] = 'report_group';
-      $form['report_config']['widget'][0]['value']['#description'] = $this->t('JSON report query. Example: {"metric": "page_views", "filters": {"date_range": "last_30_days"}, "format": "csv"}');
-    }
-
-    // Grupo: Programacion.
-    $form['schedule_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Schedule'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-
-    if (isset($form['schedule_type'])) {
-      $form['schedule_type']['#group'] = 'schedule_group';
-    }
-    if (isset($form['schedule_config'])) {
-      $form['schedule_config']['#group'] = 'schedule_group';
-      $form['schedule_config']['widget'][0]['value']['#description'] = $this->t('JSON schedule details. Example: {"day_of_week": "monday", "time": "08:00", "timezone": "Europe/Madrid"}');
-    }
-
-    // Grupo: Destinatarios.
-    $form['recipients_group'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Recipients'),
-      '#open' => TRUE,
-      '#weight' => 30,
-    ];
-
-    if (isset($form['recipients'])) {
-      $form['recipients']['#group'] = 'recipients_group';
-      $form['recipients']['widget'][0]['value']['#description'] = $this->t('JSON array of email addresses. Example: ["admin@example.com", "team@example.com"]');
-    }
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'chart'];
   }
 
   /**
@@ -135,23 +96,8 @@ class ScheduledReportForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
-    /** @var \Drupal\jaraba_analytics\Entity\ScheduledReport $entity */
-    $entity = $this->getEntity();
-
     $result = parent::save($form, $form_state);
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Scheduled report %name created.', [
-        '%name' => $entity->getName(),
-      ]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Scheduled report %name updated.', [
-        '%name' => $entity->getName(),
-      ]));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

@@ -4,35 +4,48 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_email\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Form handler for Email List entities.
  */
-class EmailListForm extends ContentEntityForm
-{
+class EmailListForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $status = parent::save($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'general' => [
+        'label' => $this->t('General'),
+        'icon' => ['category' => 'ui', 'name' => 'mail'],
+        'description' => $this->t('List name, description and type.'),
+        'fields' => ['name', 'description', 'type'],
+      ],
+      'settings' => [
+        'label' => $this->t('Settings'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Opt-in configuration and welcome sequence.'),
+        'fields' => ['double_optin', 'welcome_sequence_id', 'is_active'],
+      ],
+    ];
+  }
 
-        $entity = $this->entity;
-        if ($status === SAVED_NEW) {
-            $this->messenger()->addStatus($this->t('Created email list %name.', [
-                '%name' => $entity->label(),
-            ]));
-        } else {
-            $this->messenger()->addStatus($this->t('Updated email list %name.', [
-                '%name' => $entity->label(),
-            ]));
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'mail'];
+  }
 
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-        return $status;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

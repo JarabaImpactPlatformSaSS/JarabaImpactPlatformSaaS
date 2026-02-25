@@ -4,82 +4,73 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class LocalBusinessProfileForm extends ContentEntityForm {
+/**
+ * Premium form for local business profiles.
+ */
+class LocalBusinessProfileForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['datos_negocio'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Datos del Negocio'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'negocio' => [
+        'label' => $this->t('Datos del Negocio'),
+        'icon' => ['category' => 'commerce', 'name' => 'store'],
+        'description' => $this->t('Informacion principal del negocio para directorios y SEO local.'),
+        'fields' => ['business_name', 'merchant_id', 'description_seo', 'phone', 'email', 'website_url'],
+      ],
+      'direccion' => [
+        'label' => $this->t('Direccion'),
+        'icon' => ['category' => 'ui', 'name' => 'map'],
+        'description' => $this->t('Direccion fisica del negocio.'),
+        'fields' => ['address_street', 'address_city', 'address_postal_code', 'address_province', 'address_country'],
+      ],
+      'geolocalizacion' => [
+        'label' => $this->t('Geolocalizacion'),
+        'icon' => ['category' => 'ui', 'name' => 'location'],
+        'description' => $this->t('Coordenadas para busquedas "cerca de mi".'),
+        'fields' => ['latitude', 'longitude'],
+      ],
+      'seo' => [
+        'label' => $this->t('SEO Local'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Configuracion de Google Business y Schema.org.'),
+        'fields' => ['google_place_id', 'google_business_url', 'schema_type', 'opening_hours', 'nap_consistency_score'],
+      ],
     ];
-    foreach (['business_name', 'description_seo', 'phone', 'email', 'website_url'] as $field) {
-      if (isset($form[$field])) {
-        $form['datos_negocio'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
+  }
 
-    $form['direccion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Direccion'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['address_street', 'city', 'postal_code', 'province', 'country'] as $field) {
-      if (isset($form[$field])) {
-        $form['direccion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'commerce', 'name' => 'store'];
+  }
 
-    $form['geolocalizacion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Geolocalizacion'),
-      '#open' => FALSE,
-      '#weight' => 20,
-    ];
-    foreach (['latitude', 'longitude'] as $field) {
-      if (isset($form[$field])) {
-        $form['geolocalizacion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
-    $form['seo'] = [
-      '#type' => 'details',
-      '#title' => $this->t('SEO Local'),
-      '#open' => FALSE,
-      '#weight' => 30,
-    ];
-    foreach (['google_place_id', 'google_business_url', 'schema_type', 'opening_hours'] as $field) {
-      if (isset($form[$field])) {
-        $form['seo'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+    // nap_consistency_score is computed — read-only.
+    if (isset($form['premium_section_seo']['nap_consistency_score'])) {
+      $form['premium_section_seo']['nap_consistency_score']['#disabled'] = TRUE;
     }
 
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('business_name')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Perfil de negocio %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Perfil de negocio %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

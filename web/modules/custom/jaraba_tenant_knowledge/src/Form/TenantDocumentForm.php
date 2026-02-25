@@ -4,232 +4,196 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_tenant_knowledge\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * FORMULARIO DOCUMENTO EN SLIDE-PANEL
+ * Premium form for Tenant Document entities.
  *
- * PROPÓSITO:
- * Formulario para subir documentos del tenant.
- * Al guardar, encola el procesamiento en background.
- *
- * PATRÓN:
- * Sigue el patrón slide-panel del proyecto.
+ * On save, enqueues document processing in the background.
  */
-class TenantDocumentForm extends ContentEntityForm
-{
+class TenantDocumentForm extends PremiumEntityFormBase {
 
+  /**
+   * Tenant context service.
+   */
+  protected ?TenantContextService $tenantContext = NULL;
 
-    /**
-     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
-     */
-    protected ?TenantContextService $tenantContext = NULL;
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
+    return $instance;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container) {
-        $instance = parent::create($container);
-        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
-            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
-        }
-        return $instance;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'document'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormSubtitle() {
+    return $this->t('Supported formats: PDF, DOC, DOCX, TXT, MD. Max size: 10 MB.');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'content' => [
+        'label' => $this->t('Document'),
+        'icon' => ['category' => 'ui', 'name' => 'document'],
+        'description' => $this->t('Upload a file and provide descriptive metadata.'),
+        'fields' => ['file', 'title', 'description', 'category'],
+      ],
+      'settings' => [
+        'label' => $this->t('Settings'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Publishing and visibility options.'),
+        'fields' => ['is_published'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    // Assign tenant automatically for new entities.
+    $entity = $this->getEntity();
+    if ($entity->isNew()) {
+      $tenantId = $this->getCurrentTenantId();
+      if ($tenantId) {
+        $entity->set('tenant_id', $tenantId);
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+    $form = parent::buildForm($form, $form_state);
 
-        $form['#attributes']['class'][] = 'jaraba-premium-form';
-        $form['#attributes']['class'][] = 'slide-panel__form';
-        $form['#attributes']['class'][] = 'document-form';
+    // Show processing status for existing documents.
+    if (!$entity->isNew()) {
+      /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantDocument $entity */
+      $status = $entity->getProcessingStatus();
+      $statusLabels = [
+        'pending' => $this->t('Pending processing'),
+        'processing' => $this->t('Processing...'),
+        'completed' => $this->t('Processed (@chunks chunks)', ['@chunks' => $entity->getChunkCount()]),
+        'failed' => $this->t('Error: @error', ['@error' => $entity->get('error_message')->value ?? $this->t('Unknown')]),
+      ];
 
-        $entity = $this->getEntity();
+      $form['status_info'] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['premium-form__section', 'glass-card'],
+        ],
+        '#weight' => 50,
+      ];
+      $form['status_info']['markup'] = [
+        '#type' => 'markup',
+        '#markup' => '<strong>' . $this->t('Status:') . '</strong> ' . ($statusLabels[$status] ?? $status),
+      ];
 
-        // Asignar tenant automáticamente si es nueva entidad.
-        if ($entity->isNew()) {
-            $tenantId = $this->getCurrentTenantId();
-            if ($tenantId) {
-                $entity->set('tenant_id', $tenantId);
-            }
-        }
-
-        // Contenedor principal.
-        $form['content_wrapper'] = [
-            '#type' => 'container',
-            '#attributes' => ['class' => ['document-form__content']],
+      // Reprocess button if processing failed.
+      if ($entity->hasFailed()) {
+        $form['actions']['reprocess'] = [
+          '#type' => 'submit',
+          '#value' => $this->t('Retry Processing'),
+          '#submit' => ['::reprocessDocument'],
+          '#weight' => 5,
         ];
-
-        // Mover campos al wrapper.
-        foreach (['file', 'title', 'description', 'category'] as $field) {
-            if (isset($form[$field])) {
-                $form['content_wrapper'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Información de ayuda.
-        $form['content_wrapper']['help'] = [
-            '#type' => 'markup',
-            '#markup' => '<div class="document-form__help">' .
-                '<p>' . $this->t('Formatos soportados: PDF, DOC, DOCX, TXT, MD') . '</p>' .
-                '<p>' . $this->t('Tamaño máximo: 10 MB') . '</p>' .
-                '<p>' . $this->t('El documento se procesará automáticamente para extraer el texto.') . '</p>' .
-                '</div>',
-            '#weight' => -5,
-        ];
-
-        // Fieldset de configuración.
-        $form['settings_wrapper'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Configuración'),
-            '#open' => FALSE,
-        ];
-
-        if (isset($form['is_published'])) {
-            $form['settings_wrapper']['is_published'] = $form['is_published'];
-            unset($form['is_published']);
-        }
-
-        // Mostrar estado si no es nuevo.
-        if (!$entity->isNew()) {
-            /** @var \Drupal\jaraba_tenant_knowledge\Entity\TenantDocument $entity */
-            $status = $entity->getProcessingStatus();
-            $statusLabels = [
-                'pending' => $this->t('Pendiente de procesar'),
-                'processing' => $this->t('Procesando...'),
-                'completed' => $this->t('Procesado (@chunks chunks)', ['@chunks' => $entity->getChunkCount()]),
-                'failed' => $this->t('Error: @error', ['@error' => $entity->get('error_message')->value ?? 'Desconocido']),
-            ];
-
-            $form['content_wrapper']['status_info'] = [
-                '#type' => 'markup',
-                '#markup' => '<div class="document-form__status"><strong>' .
-                    $this->t('Estado:') . '</strong> ' . ($statusLabels[$status] ?? $status) .
-                    '</div>',
-                '#weight' => 10,
-            ];
-
-            // Botón de reprocesar si falló.
-            if ($entity->hasFailed()) {
-                $form['actions']['reprocess'] = [
-                    '#type' => 'submit',
-                    '#value' => $this->t('Reintentar Procesamiento'),
-                    '#submit' => ['::reprocessDocument'],
-                    '#weight' => 5,
-                ];
-            }
-        }
-
-        // Ocultar campos de sistema.
-        $hiddenFields = [
-            'tenant_id',
-            'processing_status',
-            'extracted_text',
-            'chunk_count',
-            'error_message',
-            'processed_at',
-            'content_hash',
-        ];
-        foreach ($hiddenFields as $field) {
-            if (isset($form[$field])) {
-                $form[$field]['#access'] = FALSE;
-            }
-        }
-
-        return $form;
+      }
     }
 
-    /**
-     * Submit handler para reprocesar documento.
-     */
-    public function reprocessDocument(array &$form, FormStateInterface $form_state): void
-    {
-        $entity = $this->getEntity();
-
-        // Resetear estado.
-        $entity->set('processing_status', 'pending');
-        $entity->set('error_message', NULL);
-        $entity->save();
-
-        // Encolar procesamiento.
-        $this->enqueueProcessing($entity);
-
-        \Drupal::messenger()->addStatus($this->t('Documento encolado para reprocesamiento.'));
-        $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.documents'));
+    // Hide system fields.
+    foreach (['tenant_id', 'processing_status', 'extracted_text', 'chunk_count', 'error_message', 'processed_at', 'content_hash'] as $field) {
+      if (isset($form[$field])) {
+        $form[$field]['#access'] = FALSE;
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->getEntity();
-        $isNew = $entity->isNew();
+    return $form;
+  }
 
-        $status = parent::save($form, $form_state);
+  /**
+   * Submit handler to reprocess a document.
+   */
+  public function reprocessDocument(array &$form, FormStateInterface $form_state): void {
+    $entity = $this->getEntity();
 
-        // Si es nuevo, encolar procesamiento.
-        if ($isNew) {
-            $this->enqueueProcessing($entity);
-            \Drupal::messenger()->addStatus($this->t('Documento "@title" subido. El procesamiento se iniciará en breve.', [
-                '@title' => $entity->getTitle(),
-            ]));
-        } else {
-            \Drupal::messenger()->addStatus($this->t('Documento "@title" actualizado.', [
-                '@title' => $entity->getTitle(),
-            ]));
+    // Reset status.
+    $entity->set('processing_status', 'pending');
+    $entity->set('error_message', NULL);
+    $entity->save();
+
+    // Enqueue processing.
+    $this->enqueueProcessing($entity);
+
+    $this->messenger()->addStatus($this->t('Document enqueued for reprocessing.'));
+    $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.documents'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $entity = $this->getEntity();
+    $isNew = $entity->isNew();
+
+    $result = parent::save($form, $form_state);
+
+    // Enqueue processing for new documents.
+    if ($isNew) {
+      $this->enqueueProcessing($entity);
+    }
+
+    $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.documents'));
+
+    return $result;
+  }
+
+  /**
+   * Enqueues the document for background processing.
+   *
+   * @param \Drupal\jaraba_tenant_knowledge\Entity\TenantDocument $document
+   *   The document to process.
+   */
+  protected function enqueueProcessing($document): void {
+    drupal_register_shutdown_function(function () use ($document) {
+      if (\Drupal::hasService('jaraba_tenant_knowledge.document_processor')) {
+        try {
+          $processor = \Drupal::service('jaraba_tenant_knowledge.document_processor');
+          $processor->processDocument($document);
         }
-
-        $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.documents'));
-
-        return $status;
-    }
-
-    /**
-     * Encola el documento para procesamiento.
-     *
-     * @param \Drupal\jaraba_tenant_knowledge\Entity\TenantDocument $document
-     *   El documento a procesar.
-     */
-    protected function enqueueProcessing($document): void
-    {
-        // En un entorno real, usaríamos colas de Drupal.
-        // Por ahora, procesamos en shutdown function.
-        drupal_register_shutdown_function(function () use ($document) {
-            if (\Drupal::hasService('jaraba_tenant_knowledge.document_processor')) {
-                try {
-                    $processor = \Drupal::service('jaraba_tenant_knowledge.document_processor');
-                    $processor->processDocument($document);
-                } catch (\Exception $e) {
-                    \Drupal::logger('jaraba_tenant_knowledge')
-                        ->error('Error procesando documento @id: @error', [
-                            '@id' => $document->id(),
-                            '@error' => $e->getMessage(),
-                        ]);
-                }
-            }
-        });
-    }
-
-    /**
-     * Obtiene el tenant ID actual.
-     */
-    protected function getCurrentTenantId(): ?int
-    {
-        if ($this->tenantContext !== NULL) {
-            $tenantContext = $this->tenantContext;
-            $tenant = $tenantContext->getCurrentTenant();
-            return $tenant ? (int) $tenant->id() : NULL;
+        catch (\Exception $e) {
+          \Drupal::logger('jaraba_tenant_knowledge')
+            ->error('Error processing document @id: @error', [
+              '@id' => $document->id(),
+              '@error' => $e->getMessage(),
+            ]);
         }
-        return NULL;
+      }
+    });
+  }
+
+  /**
+   * Gets the current tenant ID.
+   */
+  protected function getCurrentTenantId(): ?int {
+    if ($this->tenantContext !== NULL) {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
     }
+    return NULL;
+  }
 
 }

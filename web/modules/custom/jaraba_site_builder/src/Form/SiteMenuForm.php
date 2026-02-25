@@ -4,32 +4,33 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_site_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear y editar menús del sitio.
+ * Premium form for site menus.
  */
-class SiteMenuForm extends ContentEntityForm {
+class SiteMenuForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['basic'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Información del Menú'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'basic' => [
+        'label' => $this->t('Menu Information'),
+        'icon' => ['category' => 'ui', 'name' => 'menu'],
+        'description' => $this->t('Name, machine name and description.'),
+        'fields' => ['label', 'machine_name', 'description'],
+      ],
     ];
-    $form['basic']['label'] = $form['label'];
-    $form['basic']['machine_name'] = $form['machine_name'];
-    $form['basic']['description'] = $form['description'];
-    unset($form['label'], $form['machine_name'], $form['description']);
+  }
 
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'menu'];
   }
 
   /**
@@ -40,7 +41,7 @@ class SiteMenuForm extends ContentEntityForm {
 
     $machineName = $form_state->getValue(['machine_name', 0, 'value']) ?? '';
     if (!empty($machineName) && !preg_match('/^[a-z0-9_]+$/', $machineName)) {
-      $form_state->setErrorByName('machine_name', $this->t('El nombre máquina solo puede contener letras minúsculas, números y guiones bajos.'));
+      $form_state->setErrorByName('machine_name', $this->t('The machine name can only contain lowercase letters, numbers and underscores.'));
     }
   }
 
@@ -49,12 +50,7 @@ class SiteMenuForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-
-    $this->messenger()->addStatus($this->t('Menú "%label" guardado.', [
-      '%label' => $this->entity->label(),
-    ]));
-
-    $form_state->setRedirect('entity.site_menu.collection');
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

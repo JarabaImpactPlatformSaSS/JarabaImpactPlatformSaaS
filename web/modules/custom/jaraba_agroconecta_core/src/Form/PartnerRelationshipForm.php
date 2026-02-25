@@ -4,36 +4,59 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agroconecta_core\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para la entidad PartnerRelationship.
- *
- * Genera token de acceso automáticamente al crear una nueva relación.
  */
-class PartnerRelationshipForm extends ContentEntityForm
-{
+class PartnerRelationshipForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        /** @var \Drupal\jaraba_agroconecta_core\Entity\PartnerRelationship $entity */
-        $entity = $this->getEntity();
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'partner' => [
+        'label' => $this->t('Partner'),
+        'icon' => ['category' => 'business', 'name' => 'building'],
+        'fields' => ['partner_name', 'partner_email', 'partner_type', 'producer_id'],
+      ],
+      'access' => [
+        'label' => $this->t('Acceso'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'fields' => ['access_level', 'allowed_products', 'allowed_categories'],
+      ],
+      'config' => [
+        'label' => $this->t('Configuración'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'fields' => ['status', 'notes', 'tenant_id'],
+      ],
+    ];
+  }
 
-        // Generar access_token securizado si es nueva relación.
-        if ($entity->isNew() && empty($entity->get('access_token')->value)) {
-            $entity->set('access_token', bin2hex(random_bytes(32)));
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'business', 'name' => 'building'];
+  }
 
-        $status = parent::save($form, $form_state);
-        $this->messenger()->addStatus($status === SAVED_NEW
-            ? $this->t('Relación con "%label" creada.', ['%label' => $entity->label()])
-            : $this->t('Relación con "%label" actualizada.', ['%label' => $entity->label()]));
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-        return $status;
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    /** @var \Drupal\jaraba_agroconecta_core\Entity\PartnerRelationship $entity */
+    $entity = $this->getEntity();
+
+    // Generar access_token securizado si es nueva relación.
+    if ($entity->isNew() && empty($entity->get('access_token')->value)) {
+      $entity->set('access_token', bin2hex(random_bytes(32)));
     }
+
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    return $result;
+  }
 
 }

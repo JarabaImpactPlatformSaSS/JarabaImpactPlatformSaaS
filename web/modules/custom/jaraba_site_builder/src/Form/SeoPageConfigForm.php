@@ -4,126 +4,84 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_site_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para la entidad SeoPageConfig.
- *
- * Organiza los campos SEO en fieldsets lógicos para
- * facilitar la edición en slide-panel o página completa.
+ * Premium form for SEO page configuration.
  */
-class SeoPageConfigForm extends ContentEntityForm
-{
+class SeoPageConfigForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function form(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::form($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'meta_tags' => [
+        'label' => $this->t('Meta Tags'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Title, description, canonical URL, robots and keywords.'),
+        'fields' => ['meta_title', 'meta_description', 'canonical_url', 'robots', 'keywords'],
+      ],
+      'open_graph' => [
+        'label' => $this->t('Open Graph'),
+        'icon' => ['category' => 'social', 'name' => 'share'],
+        'description' => $this->t('Open Graph title, description, image and Twitter card.'),
+        'fields' => ['og_title', 'og_description', 'og_image', 'twitter_card'],
+      ],
+      'schema' => [
+        'label' => $this->t('Schema.org / JSON-LD'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Structured data type and custom JSON-LD.'),
+        'fields' => ['schema_type', 'schema_custom_json'],
+      ],
+      'hreflang' => [
+        'label' => $this->t('Hreflang / Multi-language'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Hreflang configuration for multi-language pages.'),
+        'fields' => ['hreflang_config'],
+      ],
+      'geo' => [
+        'label' => $this->t('Geo-Targeting'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Geographic region and position targeting.'),
+        'fields' => ['geo_region', 'geo_position'],
+      ],
+      'audit' => [
+        'label' => $this->t('SEO Audit'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Last audit score and date.'),
+        'fields' => ['last_audit_score', 'last_audit_date'],
+      ],
+    ];
+  }
 
-        // --- Meta Tags Básicos ---
-        $form['meta_tags'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Meta Tags'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
-        foreach (['meta_title', 'meta_description', 'canonical_url', 'robots', 'keywords'] as $field) {
-            if (isset($form[$field])) {
-                $form['meta_tags'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'search'];
+  }
 
-        // --- Open Graph ---
-        $form['open_graph'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Open Graph'),
-            '#open' => FALSE,
-            '#weight' => 10,
-        ];
-        foreach (['og_title', 'og_description', 'og_image', 'twitter_card'] as $field) {
-            if (isset($form[$field])) {
-                $form['open_graph'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCharacterLimits(): array {
+    return [
+      'meta_title' => 70,
+      'meta_description' => 160,
+      'og_title' => 100,
+      'og_description' => 200,
+    ];
+  }
 
-        // --- Schema.org ---
-        $form['schema'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Schema.org / JSON-LD'),
-            '#open' => FALSE,
-            '#weight' => 20,
-        ];
-        foreach (['schema_type', 'schema_custom_json'] as $field) {
-            if (isset($form[$field])) {
-                $form['schema'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // --- Hreflang ---
-        $form['hreflang'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Hreflang / Multi-idioma'),
-            '#open' => FALSE,
-            '#weight' => 25,
-        ];
-        if (isset($form['hreflang_config'])) {
-            $form['hreflang']['hreflang_config'] = $form['hreflang_config'];
-            unset($form['hreflang_config']);
-        }
-
-        // --- Geo-Targeting ---
-        $form['geo'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Geo-Targeting'),
-            '#open' => FALSE,
-            '#weight' => 30,
-        ];
-        foreach (['geo_region', 'geo_position'] as $field) {
-            if (isset($form[$field])) {
-                $form['geo'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // --- Auditoría (solo lectura) ---
-        $form['audit_info'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Auditoría SEO'),
-            '#open' => FALSE,
-            '#weight' => 40,
-        ];
-        foreach (['last_audit_score', 'last_audit_date'] as $field) {
-            if (isset($form[$field])) {
-                $form['audit_info'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
-
-        $entity = $this->getEntity();
-        $message = $result === SAVED_NEW
-            ? $this->t('Configuración SEO creada para la página @id.', ['@id' => $entity->getPageId()])
-            : $this->t('Configuración SEO actualizada para la página @id.', ['@id' => $entity->getPageId()]);
-
-        $this->messenger()->addStatus($message);
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

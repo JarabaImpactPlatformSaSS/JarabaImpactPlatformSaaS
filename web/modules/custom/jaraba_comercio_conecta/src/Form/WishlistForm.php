@@ -4,27 +4,33 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para crear/editar listas de deseos.
- *
- * Estructura: Extiende ContentEntityForm con campos
- *   de nombre y visibilidad.
- *
- * Lógica: Formulario simple con nombre de la lista y campo
- *   de visibilidad (pública/privada).
+ * Premium form for wishlists.
  */
-class WishlistForm extends ContentEntityForm {
+class WishlistForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
+  protected function getSectionDefinitions(): array {
+    return [
+      'lista' => [
+        'label' => $this->t('Lista de Deseos'),
+        'icon' => ['category' => 'ui', 'name' => 'star'],
+        'description' => $this->t('Nombre y visibilidad de la lista.'),
+        'fields' => ['name', 'is_default', 'visibility'],
+      ],
+    ];
+  }
 
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'star'];
   }
 
   /**
@@ -32,11 +38,7 @@ class WishlistForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-
-    $this->messenger()->addStatus($this->t('Lista guardada correctamente.'));
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

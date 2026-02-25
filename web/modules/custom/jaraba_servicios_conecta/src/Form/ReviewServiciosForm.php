@@ -4,33 +4,65 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_servicios_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar resenas de servicio.
  *
- * Estructura: Extiende ContentEntityForm con fieldsets tematicos.
+ * Estructura: Extiende PremiumEntityFormBase con secciones premium.
  *
  * Logica: Agrupa campos por: datos de la resena (valoracion, titulo,
- *   comentario) y estado/respuesta del profesional.
+ *   comentario), referencias, moderacion y respuesta del profesional.
  */
-class ReviewServiciosForm extends ContentEntityForm {
+class ReviewServiciosForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['resena'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Datos de la Resena'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'review' => [
+        'label' => $this->t('Review Data'),
+        'icon' => ['category' => 'ui', 'name' => 'star'],
+        'description' => $this->t('Rating, title, and comment.'),
+        'fields' => ['rating', 'title', 'comment'],
+      ],
+      'references' => [
+        'label' => $this->t('References'),
+        'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'description' => $this->t('Provider, offering, booking, and reviewer references.'),
+        'fields' => ['provider_id', 'offering_id', 'booking_id', 'reviewer_uid'],
+      ],
+      'moderation' => [
+        'label' => $this->t('Moderation'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Review moderation status.'),
+        'fields' => ['status'],
+      ],
+      'response' => [
+        'label' => $this->t('Provider Response'),
+        'icon' => ['category' => 'social', 'name' => 'social'],
+        'description' => $this->t('Response from the provider and response date.'),
+        'fields' => ['provider_response', 'response_date'],
+      ],
     ];
+  }
 
-    // Reemplazar el campo rating por un select 1-5.
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'star'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    // Replace the rating field with a select 1-5.
     if (isset($form['rating'])) {
       $form['rating']['widget'][0]['value']['#type'] = 'select';
       $form['rating']['widget'][0]['value']['#options'] = [
@@ -44,49 +76,20 @@ class ReviewServiciosForm extends ContentEntityForm {
       unset($form['rating']['widget'][0]['value']['#max']);
     }
 
-    foreach (['rating', 'title', 'comment'] as $field) {
-      if (isset($form[$field])) {
-        $form['resena'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['referencias'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Referencias'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['provider_id', 'offering_id', 'booking_id', 'reviewer_uid'] as $field) {
-      if (isset($form[$field])) {
-        $form['referencias'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['moderacion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Moderacion'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-    foreach (['status'] as $field) {
-      if (isset($form[$field])) {
-        $form['moderacion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['respuesta'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Respuesta del Profesional'),
-      '#open' => FALSE,
-      '#weight' => 30,
-    ];
-    foreach (['provider_response', 'response_date'] as $field) {
-      if (isset($form[$field])) {
-        $form['respuesta'][$field] = $form[$field];
-        unset($form[$field]);
+    // The rating field may have been moved to a section already.
+    // Check inside premium sections too.
+    foreach ($form as $key => $element) {
+      if (str_starts_with($key, 'premium_section_') && isset($element['rating'])) {
+        $form[$key]['rating']['widget'][0]['value']['#type'] = 'select';
+        $form[$key]['rating']['widget'][0]['value']['#options'] = [
+          1 => $this->t('1 - Muy malo'),
+          2 => $this->t('2 - Malo'),
+          3 => $this->t('3 - Regular'),
+          4 => $this->t('4 - Bueno'),
+          5 => $this->t('5 - Excelente'),
+        ];
+        unset($form[$key]['rating']['widget'][0]['value']['#min']);
+        unset($form[$key]['rating']['widget'][0]['value']['#max']);
       }
     }
 
@@ -98,16 +101,7 @@ class ReviewServiciosForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Resena #@id creada.', ['@id' => $entity->id()]));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Resena #@id actualizada.', ['@id' => $entity->id()]));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

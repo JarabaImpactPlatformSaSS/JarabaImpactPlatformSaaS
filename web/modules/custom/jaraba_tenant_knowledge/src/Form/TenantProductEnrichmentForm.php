@@ -4,166 +4,118 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_tenant_knowledge\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * FORMULARIO ENRIQUECIMIENTO DE PRODUCTO.
- *
- * Slide-panel con campos para descripción extendida, especificaciones,
- * beneficios y FAQs específicas del producto.
+ * Premium form for Tenant Product Enrichment entities.
  */
-class TenantProductEnrichmentForm extends ContentEntityForm
-{
+class TenantProductEnrichmentForm extends PremiumEntityFormBase {
 
+  /**
+   * Tenant context service.
+   */
+  protected ?TenantContextService $tenantContext = NULL;
 
-    /**
-     * Tenant context service. // AUDIT-CONS-N10: Proper DI for tenant context.
-     */
-    protected ?TenantContextService $tenantContext = NULL;
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context');
+    return $instance;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function create(ContainerInterface $container) {
-        $instance = parent::create($container);
-        if ($container->has('ecosistema_jaraba_core.tenant_context')) {
-            $instance->tenantContext = $container->get('ecosistema_jaraba_core.tenant_context'); // AUDIT-CONS-N10: Proper DI for tenant context.
-        }
-        return $instance;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'commerce', 'name' => 'tag'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'identification' => [
+        'label' => $this->t('Identification'),
+        'icon' => ['category' => 'commerce', 'name' => 'tag'],
+        'description' => $this->t('Product SKU, name, and category.'),
+        'fields' => ['product_sku', 'product_name', 'category'],
+      ],
+      'description' => [
+        'label' => $this->t('Description & Specifications'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Detailed product information for the copilot.'),
+        'fields' => ['description', 'specifications', 'benefits', 'use_cases'],
+      ],
+      'details' => [
+        'label' => $this->t('Pricing & FAQs'),
+        'icon' => ['category' => 'commerce', 'name' => 'tag'],
+        'description' => $this->t('Pricing information and product-specific FAQs.'),
+        'fields' => ['price_info', 'product_faqs'],
+      ],
+      'settings' => [
+        'label' => $this->t('Settings'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Publishing options.'),
+        'fields' => ['is_published'],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    // Assign tenant automatically for new entities.
+    $entity = $this->getEntity();
+    if ($entity->isNew()) {
+      $tenantId = $this->getCurrentTenantId();
+      if ($tenantId) {
+        $entity->set('tenant_id', $tenantId);
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::buildForm($form, $form_state);
+    $form = parent::buildForm($form, $form_state);
 
-        $form['#attributes']['class'][] = 'jaraba-premium-form';
-        $form['#attributes']['class'][] = 'slide-panel__form';
-        $form['#attributes']['class'][] = 'product-enrichment-form';
-
-        $entity = $this->getEntity();
-
-        // Asignar tenant automáticamente.
-        if ($entity->isNew()) {
-            $tenantId = $this->getCurrentTenantId();
-            if ($tenantId) {
-                $entity->set('tenant_id', $tenantId);
-            }
-        }
-
-        // Grupo: Identificación.
-        $form['identification'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Identificación'),
-            '#open' => TRUE,
-            '#weight' => -10,
-        ];
-
-        foreach (['product_sku', 'product_name', 'category'] as $field) {
-            if (isset($form[$field])) {
-                $form['identification'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Grupo: Descripción.
-        $form['description_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Descripción y Especificaciones'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
-
-        foreach (['description', 'specifications', 'benefits', 'use_cases'] as $field) {
-            if (isset($form[$field])) {
-                $form['description_group'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Grupo: Pricing y FAQs.
-        $form['details_group'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Precios y FAQs'),
-            '#open' => FALSE,
-            '#weight' => 5,
-        ];
-
-        foreach (['price_info', 'product_faqs'] as $field) {
-            if (isset($form[$field])) {
-                $form['details_group'][$field] = $form[$field];
-                unset($form[$field]);
-            }
-        }
-
-        // Grupo: Configuración.
-        $form['settings'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Configuración'),
-            '#open' => FALSE,
-            '#weight' => 10,
-        ];
-
-        if (isset($form['is_published'])) {
-            $form['settings']['is_published'] = $form['is_published'];
-            unset($form['is_published']);
-        }
-
-        // Ocultar campos de sistema.
-        $hiddenFields = ['tenant_id', 'content_hash', 'qdrant_point_id'];
-        foreach ($hiddenFields as $field) {
-            if (isset($form[$field])) {
-                $form[$field]['#access'] = FALSE;
-            }
-        }
-
-        return $form;
+    // Hide system fields.
+    foreach (['tenant_id', 'content_hash', 'qdrant_point_id'] as $field) {
+      if (isset($form[$field])) {
+        $form[$field]['#access'] = FALSE;
+      }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->getEntity();
+    return $form;
+  }
 
-        // Actualizar hash antes de guardar.
-        $entity->updateContentHash();
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $entity = $this->getEntity();
 
-        $status = parent::save($form, $form_state);
+    // Update content hash before saving.
+    $entity->updateContentHash();
 
-        if ($entity->isNew()) {
-            \Drupal::messenger()->addStatus($this->t('Producto "@name" creado.', [
-                '@name' => $entity->getProductName(),
-            ]));
-        } else {
-            \Drupal::messenger()->addStatus($this->t('Producto "@name" actualizado.', [
-                '@name' => $entity->getProductName(),
-            ]));
-        }
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.products'));
+    return $result;
+  }
 
-        $form_state->setRedirectUrl(Url::fromRoute('jaraba_tenant_knowledge.products'));
-
-        return $status;
+  /**
+   * Gets the current tenant ID.
+   */
+  protected function getCurrentTenantId(): ?int {
+    if ($this->tenantContext !== NULL) {
+      $tenant = $this->tenantContext->getCurrentTenant();
+      return $tenant ? (int) $tenant->id() : NULL;
     }
-
-    /**
-     * Obtiene el tenant ID actual.
-     */
-    protected function getCurrentTenantId(): ?int
-    {
-        if ($this->tenantContext !== NULL) {
-            $tenantContext = $this->tenantContext;
-            $tenant = $tenantContext->getCurrentTenant();
-            return $tenant ? (int) $tenant->id() : NULL;
-        }
-        return NULL;
-    }
+    return NULL;
+  }
 
 }

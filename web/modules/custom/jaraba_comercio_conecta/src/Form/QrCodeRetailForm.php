@@ -4,82 +4,88 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class QrCodeRetailForm extends ContentEntityForm {
+/**
+ * Premium form for creating/editing QR codes.
+ */
+class QrCodeRetailForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['info_qr'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Informacion del Codigo QR'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'info_qr' => [
+        'label' => $this->t('Informacion del Codigo QR'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'description' => $this->t('Datos principales del codigo QR.'),
+        'fields' => ['name', 'merchant_id', 'qr_type', 'short_code'],
+      ],
+      'destino' => [
+        'label' => $this->t('Destino'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'description' => $this->t('URL y entidad de destino del QR.'),
+        'fields' => ['target_url', 'target_entity_type', 'target_entity_id'],
+      ],
+      'ab_testing' => [
+        'label' => $this->t('Test A/B'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Configuracion de tests A/B.'),
+        'fields' => ['ab_variant', 'ab_target_url'],
+      ],
+      'diseno' => [
+        'label' => $this->t('Diseno'),
+        'icon' => ['category' => 'media', 'name' => 'image'],
+        'description' => $this->t('Configuracion visual del codigo QR.'),
+        'fields' => ['design_config'],
+      ],
+      'estadisticas' => [
+        'label' => $this->t('Estadisticas'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Metricas calculadas automaticamente.'),
+        'fields' => ['scan_count'],
+      ],
+      'estado' => [
+        'label' => $this->t('Estado'),
+        'icon' => ['category' => 'ui', 'name' => 'check'],
+        'description' => $this->t('Activacion del codigo QR.'),
+        'fields' => ['is_active'],
+      ],
     ];
-    foreach (['name', 'merchant_id', 'qr_type', 'short_code'] as $field) {
-      if (isset($form[$field])) {
-        $form['info_qr'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'link'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    // Computed field: scan_count is read-only.
+    if (isset($form['premium_section_estadisticas']['scan_count'])) {
+      $form['premium_section_estadisticas']['scan_count']['#disabled'] = TRUE;
     }
-
-    $form['destino'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Destino'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['target_url', 'target_entity_type', 'target_entity_id'] as $field) {
-      if (isset($form[$field])) {
-        $form['destino'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['ab_testing'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Test A/B'),
-      '#open' => FALSE,
-      '#weight' => 20,
-    ];
-    foreach (['ab_variant', 'ab_target_url'] as $field) {
-      if (isset($form[$field])) {
-        $form['ab_testing'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['diseno'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Diseno'),
-      '#open' => FALSE,
-      '#weight' => 30,
-    ];
-    foreach (['design_config'] as $field) {
-      if (isset($form[$field])) {
-        $form['diseno'][$field] = $form[$field];
-        unset($form[$field]);
-      }
+    elseif (isset($form['scan_count'])) {
+      $form['scan_count']['#disabled'] = TRUE;
     }
 
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('name')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Codigo QR %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Codigo QR %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

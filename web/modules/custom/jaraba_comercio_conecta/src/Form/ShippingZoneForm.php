@@ -4,43 +4,41 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class ShippingZoneForm extends ContentEntityForm {
+/**
+ * Premium form for shipping zones.
+ */
+class ShippingZoneForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['zona'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Zona de Envio'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'zona' => [
+        'label' => $this->t('Zona de Envio'),
+        'icon' => ['category' => 'commerce', 'name' => 'tag'],
+        'description' => $this->t('Definicion de la zona geografica y su recargo.'),
+        'fields' => ['name', 'postal_codes', 'provinces', 'surcharge', 'is_active'],
+      ],
     ];
-    foreach (['name', 'postal_codes', 'provinces', 'surcharge', 'is_active'] as $field) {
-      if (isset($form[$field])) {
-        $form['zona'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'commerce', 'name' => 'tag'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('name')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Zona de envio %label creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Zona de envio %label actualizada.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

@@ -4,145 +4,86 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_servicios_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar perfiles de profesional.
  *
- * Estructura: Extiende ContentEntityForm. Los campos se agrupan en
- *   fieldsets temáticos para facilitar la edición en el admin.
+ * Estructura: Extiende PremiumEntityFormBase con secciones premium.
  *
- * Lógica: El formulario se usa tanto para creación como edición.
- *   Los fieldsets agrupan campos por función: identidad, credenciales,
- *   contacto, dirección, configuración, pagos, estado y media.
+ * Lógica: Las secciones agrupan campos por función: identidad, credenciales,
+ *   contacto, dirección, geolocalización, configuración, pagos, estado y media.
  */
-class ProviderProfileForm extends ContentEntityForm {
+class ProviderProfileForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['identidad'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Identidad Profesional'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'identity' => [
+        'label' => $this->t('Professional Identity'),
+        'icon' => ['category' => 'users', 'name' => 'users'],
+        'description' => $this->t('Display name, title, category, specialties, and description.'),
+        'fields' => ['display_name', 'slug', 'professional_title', 'service_category', 'specialties', 'description'],
+      ],
+      'credentials' => [
+        'label' => $this->t('Credentials'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('License, tax ID, insurance, and experience.'),
+        'fields' => ['license_number', 'tax_id', 'insurance_policy', 'years_experience'],
+      ],
+      'contact' => [
+        'label' => $this->t('Contact'),
+        'icon' => ['category' => 'social', 'name' => 'social'],
+        'description' => $this->t('Phone, email, and website.'),
+        'fields' => ['phone', 'email', 'website'],
+      ],
+      'address' => [
+        'label' => $this->t('Address'),
+        'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'description' => $this->t('Street address, city, postal code, province, and country.'),
+        'fields' => ['address_street', 'address_city', 'address_postal_code', 'address_province', 'address_country'],
+      ],
+      'geolocation' => [
+        'label' => $this->t('Geolocation'),
+        'icon' => ['category' => 'verticals', 'name' => 'verticals'],
+        'description' => $this->t('Latitude and longitude coordinates.'),
+        'fields' => ['latitude', 'longitude'],
+      ],
+      'service_config' => [
+        'label' => $this->t('Service Configuration'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Radius, session duration, buffer time, booking, cancellation, and modality settings.'),
+        'fields' => ['service_radius_km', 'default_session_duration', 'buffer_time', 'advance_booking_days', 'cancellation_hours', 'requires_prepayment', 'accepts_online'],
+      ],
+      'stripe' => [
+        'label' => $this->t('Stripe Connect'),
+        'icon' => ['category' => 'commerce', 'name' => 'commerce'],
+        'description' => $this->t('Stripe account ID and onboarding status.'),
+        'fields' => ['stripe_account_id', 'stripe_onboarding_complete'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'actions', 'name' => 'calendar'],
+        'description' => $this->t('Verification status and active flag.'),
+        'fields' => ['verification_status', 'is_active'],
+      ],
+      'media' => [
+        'label' => $this->t('Images'),
+        'icon' => ['category' => 'media', 'name' => 'media'],
+        'description' => $this->t('Profile photo and cover image.'),
+        'fields' => ['photo', 'cover_image'],
+      ],
     ];
-    foreach (['display_name', 'slug', 'professional_title', 'service_category', 'specialties', 'description'] as $field) {
-      if (isset($form[$field])) {
-        $form['identidad'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
+  }
 
-    $form['credenciales'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Credenciales'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['license_number', 'tax_id', 'insurance_policy', 'years_experience'] as $field) {
-      if (isset($form[$field])) {
-        $form['credenciales'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['contacto'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Contacto'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-    foreach (['phone', 'email', 'website'] as $field) {
-      if (isset($form[$field])) {
-        $form['contacto'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['direccion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Dirección'),
-      '#open' => TRUE,
-      '#weight' => 30,
-    ];
-    foreach (['address_street', 'address_city', 'address_postal_code', 'address_province', 'address_country'] as $field) {
-      if (isset($form[$field])) {
-        $form['direccion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['geolocalizacion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Geolocalización'),
-      '#open' => FALSE,
-      '#weight' => 40,
-    ];
-    foreach (['latitude', 'longitude'] as $field) {
-      if (isset($form[$field])) {
-        $form['geolocalizacion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['configuracion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Configuración del Servicio'),
-      '#open' => FALSE,
-      '#weight' => 50,
-    ];
-    foreach (['service_radius_km', 'default_session_duration', 'buffer_time', 'advance_booking_days', 'cancellation_hours', 'requires_prepayment', 'accepts_online'] as $field) {
-      if (isset($form[$field])) {
-        $form['configuracion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['stripe'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Stripe Connect'),
-      '#open' => FALSE,
-      '#weight' => 60,
-    ];
-    foreach (['stripe_account_id', 'stripe_onboarding_complete'] as $field) {
-      if (isset($form[$field])) {
-        $form['stripe'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['estado'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Estado'),
-      '#open' => TRUE,
-      '#weight' => 70,
-    ];
-    foreach (['verification_status', 'is_active'] as $field) {
-      if (isset($form[$field])) {
-        $form['estado'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['media'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Imágenes'),
-      '#open' => FALSE,
-      '#weight' => 80,
-    ];
-    foreach (['photo', 'cover_image'] as $field) {
-      if (isset($form[$field])) {
-        $form['media'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'business', 'name' => 'briefcase'];
   }
 
   /**
@@ -150,17 +91,7 @@ class ProviderProfileForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->toLink()->toString()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Profesional %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Profesional %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

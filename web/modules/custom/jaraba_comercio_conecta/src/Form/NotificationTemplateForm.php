@@ -4,43 +4,41 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class NotificationTemplateForm extends ContentEntityForm {
+/**
+ * Premium form for creating/editing notification templates.
+ */
+class NotificationTemplateForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['plantilla'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Plantilla de Notificacion'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'plantilla' => [
+        'label' => $this->t('Plantilla de Notificacion'),
+        'icon' => ['category' => 'ui', 'name' => 'bell'],
+        'description' => $this->t('Configuracion de la plantilla de notificacion.'),
+        'fields' => ['name', 'machine_name', 'channel', 'subject_template', 'body_template', 'is_active'],
+      ],
     ];
-    foreach (['name', 'machine_name', 'channel', 'subject_template', 'body_template', 'is_active'] as $field) {
-      if (isset($form[$field])) {
-        $form['plantilla'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'bell'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('name')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Plantilla %label creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Plantilla %label actualizada.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

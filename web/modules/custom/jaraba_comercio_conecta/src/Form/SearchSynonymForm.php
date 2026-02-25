@@ -4,32 +4,41 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class SearchSynonymForm extends ContentEntityForm {
+/**
+ * Premium form for search synonyms.
+ */
+class SearchSynonymForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    // Simple form — term and synonyms fields are rendered at the top level.
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'sinonimos' => [
+        'label' => $this->t('Sinonimos de Busqueda'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Define el termino original y sus sinonimos para expandir busquedas.'),
+        'fields' => ['term', 'synonyms', 'is_active'],
+      ],
+    ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'search'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('term')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Sinonimo %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Sinonimo %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

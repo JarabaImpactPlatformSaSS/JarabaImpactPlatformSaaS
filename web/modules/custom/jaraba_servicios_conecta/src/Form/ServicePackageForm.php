@@ -4,60 +4,45 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_servicios_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Formulario para crear/editar paquetes de servicios.
  */
-class ServicePackageForm extends ContentEntityForm {
+class ServicePackageForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['paquete'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Datos del Paquete'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  protected function getSectionDefinitions(): array {
+    return [
+      'package_data' => [
+        'label' => $this->t('Package Data'),
+        'icon' => ['category' => 'business', 'name' => 'briefcase'],
+        'description' => $this->t('Title, provider, offering, and description.'),
+        'fields' => ['title', 'provider_id', 'offering_id', 'description'],
+      ],
+      'pricing_sessions' => [
+        'label' => $this->t('Pricing & Sessions'),
+        'icon' => ['category' => 'commerce', 'name' => 'commerce'],
+        'description' => $this->t('Number of sessions, price, discount, and validity period.'),
+        'fields' => ['total_sessions', 'price', 'discount_percent', 'validity_days'],
+      ],
+      'status' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Publication status of the package.'),
+        'fields' => ['is_published'],
+      ],
     ];
-    foreach (['title', 'provider_id', 'offering_id', 'description'] as $field) {
-      if (isset($form[$field])) {
-        $form['paquete'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
+  }
 
-    $form['precio'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Precio y Sesiones'),
-      '#open' => TRUE,
-      '#weight' => 10,
-    ];
-    foreach (['total_sessions', 'price', 'discount_percent', 'validity_days'] as $field) {
-      if (isset($form[$field])) {
-        $form['precio'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['estado'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Estado'),
-      '#open' => TRUE,
-      '#weight' => 20,
-    ];
-    foreach (['is_published'] as $field) {
-      if (isset($form[$field])) {
-        $form['estado'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    return $form;
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'business', 'name' => 'briefcase'];
   }
 
   /**
@@ -65,17 +50,7 @@ class ServicePackageForm extends ContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->toLink()->toString()];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Paquete %label creado.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Paquete %label actualizado.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 

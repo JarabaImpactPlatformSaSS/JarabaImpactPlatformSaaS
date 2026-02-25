@@ -4,25 +4,71 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_andalucia_ei\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Form handler for ExpedienteDocumento add/edit forms.
+ * Premium form for ExpedienteDocumento add/edit.
  *
  * Adds a managed_file widget for document upload with validators
  * (pdf/doc/docx/jpg/png, 10MB max, private://expediente_documentos/).
  * On save, extracts file metadata and inherits tenant_id from participante.
  */
-class ExpedienteDocumentoForm extends ContentEntityForm {
+class ExpedienteDocumentoForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
+  protected function getSectionDefinitions(): array {
+    return [
+      'document' => [
+        'label' => $this->t('Documento'),
+        'icon' => ['category' => 'ui', 'name' => 'document'],
+        'description' => $this->t('Título, categoría y archivo.'),
+        'fields' => ['titulo', 'categoria', 'participante_id'],
+      ],
+      'file_metadata' => [
+        'label' => $this->t('Metadatos del Archivo'),
+        'icon' => ['category' => 'ui', 'name' => 'document'],
+        'description' => $this->t('Información del archivo subido.'),
+        'fields' => ['archivo_vault_id', 'archivo_nombre', 'archivo_mime', 'archivo_tamano'],
+      ],
+      'review' => [
+        'label' => $this->t('Revisión'),
+        'icon' => ['category' => 'ui', 'name' => 'shield'],
+        'description' => $this->t('Estado de revisión humana e IA.'),
+        'fields' => ['estado_revision', 'revision_ia_score', 'revision_ia_feedback', 'revision_humana_notas', 'revisor_id'],
+      ],
+      'signature' => [
+        'label' => $this->t('Firma Digital'),
+        'icon' => ['category' => 'ui', 'name' => 'lock'],
+        'description' => $this->t('Firma digital y certificado.'),
+        'fields' => ['firmado', 'firma_fecha', 'firma_certificado_info'],
+      ],
+      'config' => [
+        'label' => $this->t('Configuración'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('STO, vencimiento y estado.'),
+        'fields' => ['requerido_sto', 'sto_sincronizado', 'fecha_vencimiento', 'status', 'tenant_id'],
+      ],
+    ];
+  }
 
-    $form['archivo_upload'] = [
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'document'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
+
+    // Add managed_file upload widget in the document section.
+    $form['premium_section_document']['archivo_upload'] = [
       '#type' => 'managed_file',
       '#title' => $this->t('Archivo del documento'),
       '#description' => $this->t('Formatos permitidos: PDF, DOC, DOCX, JPG, PNG. Máximo 10 MB.'),
@@ -31,7 +77,7 @@ class ExpedienteDocumentoForm extends ContentEntityForm {
         'file_validate_extensions' => ['pdf doc docx jpg png'],
         'file_validate_size' => [10 * 1024 * 1024],
       ],
-      '#weight' => -6,
+      '#weight' => 100,
     ];
 
     return $form;
@@ -54,7 +100,6 @@ class ExpedienteDocumentoForm extends ContentEntityForm {
           $entity->set('archivo_nombre', $file->getFilename());
           $entity->set('archivo_mime', $file->getMimeType());
           $entity->set('archivo_tamano', (int) $file->getSize());
-          // Mark file as permanent.
           $file->setPermanent();
           $file->save();
         }
@@ -75,13 +120,7 @@ class ExpedienteDocumentoForm extends ContentEntityForm {
     }
 
     $result = parent::save($form, $form_state);
-
-    $this->messenger()->addStatus($this->t('El documento %title ha sido guardado.', [
-      '%title' => $entity->getTitulo(),
-    ]));
-
     $form_state->setRedirectUrl($entity->toUrl('collection'));
-
     return $result;
   }
 

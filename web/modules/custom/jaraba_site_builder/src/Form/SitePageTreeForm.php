@@ -4,98 +4,77 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_site_builder\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
- * Formulario para editar un nodo del árbol de páginas.
+ * Premium form for page tree nodes.
  */
-class SitePageTreeForm extends ContentEntityForm
-{
+class SitePageTreeForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function form(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::form($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'hierarchy' => [
+        'label' => $this->t('Tree Position'),
+        'icon' => ['category' => 'ui', 'name' => 'layout'],
+        'description' => $this->t('Page, parent node and ordering.'),
+        'fields' => ['page_id', 'parent_id', 'weight'],
+      ],
+      'visibility' => [
+        'label' => $this->t('Visibility'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('Where this page appears in the site.'),
+        'fields' => ['show_in_navigation', 'show_in_sitemap', 'show_in_footer', 'show_in_breadcrumbs'],
+      ],
+      'nav_override' => [
+        'label' => $this->t('Menu Customization'),
+        'icon' => ['category' => 'ui', 'name' => 'menu'],
+        'description' => $this->t('Navigation title, icon and external URL overrides.'),
+        'fields' => ['nav_title', 'nav_icon', 'nav_highlight', 'nav_external_url'],
+      ],
+      'publishing' => [
+        'label' => $this->t('Status'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Publication status and date.'),
+        'fields' => ['status', 'published_at'],
+      ],
+    ];
+  }
 
-        // Configuración de jerarquía.
-        $form['hierarchy'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Posición en el Árbol'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
-        $form['hierarchy']['page_id'] = $form['page_id'];
-        $form['hierarchy']['parent_id'] = $form['parent_id'];
-        $form['hierarchy']['weight'] = $form['weight'];
-        unset($form['page_id'], $form['parent_id'], $form['weight']);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'layout'];
+  }
 
-        // Visibilidad.
-        $form['visibility'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Visibilidad'),
-            '#open' => TRUE,
-            '#weight' => 10,
-        ];
-        $form['visibility']['show_in_navigation'] = $form['show_in_navigation'];
-        $form['visibility']['show_in_sitemap'] = $form['show_in_sitemap'];
-        $form['visibility']['show_in_footer'] = $form['show_in_footer'];
-        $form['visibility']['show_in_breadcrumbs'] = $form['show_in_breadcrumbs'];
-        unset($form['show_in_navigation'], $form['show_in_sitemap'], $form['show_in_footer'], $form['show_in_breadcrumbs']);
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form = parent::buildForm($form, $form_state);
 
-        // Override de navegación.
-        $form['nav_override'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Personalización del Menú'),
-            '#open' => FALSE,
-            '#weight' => 20,
-        ];
-        $form['nav_override']['nav_title'] = $form['nav_title'];
-        $form['nav_override']['nav_icon'] = $form['nav_icon'];
-        $form['nav_override']['nav_highlight'] = $form['nav_highlight'];
-        $form['nav_override']['nav_external_url'] = $form['nav_external_url'];
-        unset($form['nav_title'], $form['nav_icon'], $form['nav_highlight'], $form['nav_external_url']);
-
-        // Estado de publicación.
-        $form['publishing'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Estado'),
-            '#open' => FALSE,
-            '#weight' => 30,
-        ];
-        $form['publishing']['status'] = $form['status'];
-        $form['publishing']['published_at'] = $form['published_at'];
-        unset($form['status'], $form['published_at']);
-
-        // Ocultar campos técnicos.
-        if (isset($form['depth'])) {
-            $form['depth']['#access'] = FALSE;
-        }
-        if (isset($form['path'])) {
-            $form['path']['#access'] = FALSE;
-        }
-
-        return $form;
+    // Hide technical fields.
+    if (isset($form['premium_section_other']['depth'])) {
+      $form['premium_section_other']['depth']['#access'] = FALSE;
+    }
+    if (isset($form['premium_section_other']['path'])) {
+      $form['premium_section_other']['path']['#access'] = FALSE;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $entity = $this->entity;
-        $result = parent::save($form, $form_state);
+    return $form;
+  }
 
-        $pageTitle = $entity->getNavTitle();
-        $this->messenger()->addStatus($this->t('Página "%title" guardada en el árbol.', [
-            '%title' => $pageTitle,
-        ]));
-
-        $form_state->setRedirect('jaraba_site_builder.tree');
-
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirect('jaraba_site_builder.tree');
+    return $result;
+  }
 
 }

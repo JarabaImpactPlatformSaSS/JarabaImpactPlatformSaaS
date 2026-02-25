@@ -4,69 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_comercio_conecta\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
-class SearchIndexForm extends ContentEntityForm {
+/**
+ * Premium form for search index entries.
+ */
+class SearchIndexForm extends PremiumEntityFormBase {
 
-  public function form(array $form, FormStateInterface $form_state): array {
-    $form = parent::form($form, $form_state);
-
-    $form['datos_indice'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Datos del Indice'),
-      '#open' => TRUE,
-      '#weight' => 0,
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'indice' => [
+        'label' => $this->t('Datos del Indice'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Entidad indexada y contenido de busqueda.'),
+        'fields' => ['title', 'entity_type_ref', 'entity_id_ref', 'search_text', 'keywords', 'category_ids'],
+      ],
+      'ubicacion' => [
+        'label' => $this->t('Ubicacion'),
+        'icon' => ['category' => 'ui', 'name' => 'location'],
+        'description' => $this->t('Coordenadas para busqueda por proximidad.'),
+        'fields' => ['location_lat', 'location_lng'],
+      ],
+      'ranking' => [
+        'label' => $this->t('Ranking'),
+        'icon' => ['category' => 'analytics', 'name' => 'chart'],
+        'description' => $this->t('Peso y factor de boost para relevancia en resultados.'),
+        'fields' => ['weight', 'boost_factor', 'is_active'],
+      ],
     ];
-    foreach (['title', 'entity_type_ref', 'entity_id_ref', 'search_text', 'keywords'] as $field) {
-      if (isset($form[$field])) {
-        $form['datos_indice'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['ubicacion'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Ubicacion'),
-      '#open' => FALSE,
-      '#weight' => 10,
-    ];
-    foreach (['location_lat', 'location_lng'] as $field) {
-      if (isset($form[$field])) {
-        $form['ubicacion'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    $form['ranking'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Ranking'),
-      '#open' => FALSE,
-      '#weight' => 20,
-    ];
-    foreach (['weight', 'boost_factor', 'is_active'] as $field) {
-      if (isset($form[$field])) {
-        $form['ranking'][$field] = $form[$field];
-        unset($form[$field]);
-      }
-    }
-
-    return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'analytics', 'name' => 'search'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state): int {
     $result = parent::save($form, $form_state);
-    $entity = $this->entity;
-    $message_args = ['%label' => $entity->get('title')->value];
-
-    if ($result === SAVED_NEW) {
-      $this->messenger()->addStatus($this->t('Entrada de indice %label creada.', $message_args));
-    }
-    else {
-      $this->messenger()->addStatus($this->t('Entrada de indice %label actualizada.', $message_args));
-    }
-
-    $form_state->setRedirectUrl($entity->toUrl('collection'));
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
     return $result;
   }
 
