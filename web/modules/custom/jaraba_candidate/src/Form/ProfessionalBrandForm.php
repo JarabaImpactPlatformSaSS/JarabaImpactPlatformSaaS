@@ -80,6 +80,15 @@ class ProfessionalBrandForm extends PremiumEntityFormBase {
     $form = parent::buildForm($form, $form_state);
 
     $form['#attached']['library'][] = 'jaraba_candidate/brand_professional';
+    // Pass copilot URL with CSRF token to JS.
+    // Route has _csrf_token: TRUE → token must be in URL query, generated
+    // with csrfToken->get(path). We generate it directly to avoid BigPipe
+    // placeholder issues (Url::fromRoute uses lazy_builder in HTML context).
+    $copilot_path = 'api/v1/copilot/employability/chat';
+    $csrf_token = \Drupal::csrfToken()->get($copilot_path);
+    $form['#attached']['drupalSettings']['brandProfessional'] = [
+      'copilotUrl' => '/' . $copilot_path . '?_format=json&token=' . $csrf_token,
+    ];
     $form['#attributes']['class'][] = 'profile-section-form';
 
     // Hide "Other" section — this form only shows branding fields.
