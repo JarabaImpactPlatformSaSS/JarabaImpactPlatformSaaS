@@ -10,10 +10,14 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
- * Generic tenant-aware access control handler.
+ * Generic default access control handler for entities without explicit handler.
  *
  * AUDIT-CONS-001: Applied automatically to all Content Entities that lack
  * an explicit "access" handler via hook_entity_type_alter().
+ *
+ * NOTE: This is NOT the access handler for the Tenant entity itself.
+ * It is a fallback handler for all custom entities that don't define one.
+ * Renamed from TenantAccessControlHandler to avoid confusion.
  *
  * Access logic:
  * - view: Allowed if user has admin_permission, or 'access content'.
@@ -24,7 +28,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @see ecosistema_jaraba_core_entity_type_alter()
  */
-class TenantAccessControlHandler extends EntityAccessControlHandler {
+class DefaultEntityAccessControlHandler extends EntityAccessControlHandler {
 
   /**
    * {@inheritdoc}

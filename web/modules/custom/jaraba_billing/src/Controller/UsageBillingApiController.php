@@ -209,7 +209,7 @@ class UsageBillingApiController extends ControllerBase implements ContainerInjec
     }
 
     try {
-      $tenant = $this->entityTypeManager()->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
       if (!$tenant) {
         return new JsonResponse(['success' => FALSE, 'error' => 'Tenant not found'], 404);
       }

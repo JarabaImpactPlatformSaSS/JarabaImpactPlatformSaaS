@@ -94,7 +94,7 @@ class FeatureAccessService {
    */
   public function canAccess(int $tenantId, string $feature): bool {
     try {
-      $tenant = $this->entityTypeManager->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
       if (!$tenant) {
         return FALSE;
       }

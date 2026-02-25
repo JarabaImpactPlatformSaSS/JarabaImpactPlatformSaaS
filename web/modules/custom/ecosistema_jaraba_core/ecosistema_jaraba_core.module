@@ -2852,7 +2852,7 @@ function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterfac
  */
 function ecosistema_jaraba_core_entity_type_alter(array &$entity_types): void {
   $storageSchemaClass = 'Drupal\ecosistema_jaraba_core\Storage\TenantEntityStorageSchema';
-  $accessHandlerClass = 'Drupal\ecosistema_jaraba_core\Access\TenantAccessControlHandler';
+  $accessHandlerClass = 'Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler';
 
   // Our custom modules all live under this namespace prefix.
   $customNamespaces = [

@@ -121,7 +121,7 @@ class DunningService {
 
     // Restore tenant to active status.
     try {
-      $tenant = $this->entityTypeManager->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
       if ($tenant) {
         $this->tenantSubscription->activateSubscription($tenant);
       }
@@ -188,7 +188,7 @@ class DunningService {
     $config = $this->dunningSequence[$step];
 
     try {
-      $tenant = $this->entityTypeManager->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
       if (!$tenant) {
         $this->logger->error('Tenant @id no encontrado para dunning step @step', [
           '@id' => $tenantId,
@@ -228,7 +228,7 @@ class DunningService {
    */
   protected function sendDunningEmail(int $tenantId, string $action, int $step): void {
     try {
-      $tenant = $this->entityTypeManager->getStorage('group')->load($tenantId);
+      $tenant = $this->entityTypeManager->getStorage('tenant')->load($tenantId);
       if (!$tenant) {
         return;
       }

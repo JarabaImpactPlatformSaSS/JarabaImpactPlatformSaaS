@@ -156,6 +156,51 @@ jobs:
           fi
 
   # ===========================================
+  # JOB 2B: KERNEL TESTS
+  # ===========================================
+  kernel-test:
+    name: 🔬 Kernel Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      mysql:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: drupal_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Copy test environment config
+        run: cp .env.ci .env || true
+
+      - name: Run Kernel Tests
+        run: ./vendor/bin/phpunit --configuration phpunit.xml --testsuite Kernel --no-coverage
+        env:
+          SIMPLETEST_DB: mysql://root:root@127.0.0.1:3306/drupal_test
+
+  # ===========================================
   # JOB 3: ANÁLISIS DE SEGURIDAD
   # ===========================================
   security:
@@ -195,7 +240,7 @@ jobs:
   build:
     name: 🏗️ Build Check
     runs-on: ubuntu-latest
-    needs: [lint, test, security]
+    needs: [lint, test, kernel-test, security]
     
     steps:
       - name: Checkout código
