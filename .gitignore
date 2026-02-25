@@ -69,6 +69,7 @@ web/themes/custom/ecosistema_jaraba_theme/js/dist/
 
 # ----- TESTING -----
 web/sites/simpletest
+web/test_paths.sh
 phpunit.xml
 phpunit_error.txt
 phpunit_full.txt
@@ -117,3 +118,6 @@ __pycache__
 
 # ----- SASS NODE MODULES (installed by npx sass) -----
 web/modules/custom/ecosistema_jaraba_core/node_modules
+
+# ----- LOCAL SITES DIRECTORY (Twig cache, generated files) -----
+sites/
