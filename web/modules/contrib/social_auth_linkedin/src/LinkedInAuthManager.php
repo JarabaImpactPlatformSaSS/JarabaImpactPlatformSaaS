@@ -75,11 +75,13 @@ class LinkedInAuthManager extends OAuth2Manager {
    * {@inheritdoc}
    */
   public function getAuthorizationUrl(): string {
-    $scopes = ['r_liteprofile', 'r_emailaddress'];
-
     $extra_scopes = $this->getScopes();
     if ($extra_scopes) {
-      $scopes = array_merge($scopes, explode(',', $extra_scopes));
+      $scopes = explode(',', $extra_scopes);
+    }
+    else {
+      // Default to OpenID Connect scopes (LinkedIn v2 API).
+      $scopes = ['openid', 'profile', 'email'];
     }
 
     // Returns the URL where user will be redirected.
