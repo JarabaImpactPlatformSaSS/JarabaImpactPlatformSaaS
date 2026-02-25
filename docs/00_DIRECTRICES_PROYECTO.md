@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-25
-**Versión:** 70.0.0 (Remediacion Tenant 11 Fases)
+**Versión:** 71.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering)
 
 ---
 
@@ -98,6 +98,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **71.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** Elevacion del perfil de candidato: `CandidateProfileForm` premium con secciones (personal, profesional, ubicacion, preferencias, online, privacidad), `ProfileSectionForm` generico para CRUD slide-panel, campo `photo` migrado de entity_reference a image, campos date migrados a datetime, 5 CV preview PNGs, seccion idiomas. Andalucia EI Plan Maestro 8 fases: P0/P1 fixes, 11 bloques Page Builder verticales, landing de conversion `/andalucia-ei/programa`, portal participante `/andalucia-ei/mi-participacion`, entidad `ExpedienteDocumento` (19 categorias, vault cifrado, revision IA), integracion mensajeria, AI automation (CopilotContextProvider, AdaptiveDifficultyEngine, 4 nudges proactivos), SEO (sitemap, lead magnet). CRM: 5 formularios migrados a `PremiumEntityFormBase`. Meta-Site: Schema.org tenant-aware via MetaSiteResolverService, title tag con meta_title_suffix, header/footer/nav override desde SiteConfig. Aprendizaje #123. |
 | 2026-02-25 | **70.0.0** | **Remediacion Tenant 11 Fases:** Nuevo `TenantBridgeService` (4 metodos) para resolucion Tenant↔Group. 14 correcciones de billing entity type en 6 ficheros (`QuotaManagerService` usa bridge, `BillingController`/`BillingService`/`StripeWebhookController`/`SaasPlan` usan `getStorage('tenant')`). `PageContentAccessControlHandler` con DI + `isSameTenant()` para tenant isolation. `DefaultEntityAccessControlHandler` renombrado desde `DefaultAccessControlHandler`. `PathProcessorPageContent` tenant-aware con `TenantContextService` enhanced (nullable group). CI pipeline con job `kernel-test` (MariaDB 10.11). 5 tests nuevos (3 Unit + 2 Kernel). Scripts de mantenimiento movidos a `scripts/maintenance/`. 3 reglas nuevas: TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Reglas de oro #35, #36, #37. Aprendizaje #122. |
 | 2026-02-24 | **69.0.0** | **Meta-Sitio jarabaimpact.com — PathProcessor + Content:** Nuevo `PathProcessorPageContent` que resuelve `path_alias` de entidades PageContent a rutas `/page/{id}` (prioridad 200, sin filtro status, skip list de prefijos, static cache). 7 paginas institucionales creadas con GrapesJS. 1 regla nueva: PATH-ALIAS-PROCESSOR-001. Regla de oro #34 (PathProcessor para aliases custom). Aprendizaje #120. |
 | 2026-02-24 | **68.0.0** | **Auditoria Horizontal — Strict Equality + CAN-SPAM MJML:** 5 reglas nuevas: ACCESS-STRICT-001 (strict equality `(int) === (int)` en access handlers), EMAIL-PREVIEW-001 (mj-preview obligatorio), EMAIL-POSTAL-001 (direccion postal CAN-SPAM), BRAND-FONT-001 (Outfit como primer font en emails), BRAND-COLOR-001 (solo colores de tokens de marca en MJML). Regla de oro #33 (auditorias horizontales periodicas). 52 instancias corregidas en 39 access handlers, 28 plantillas MJML con compliance completo. Aprendizaje #119. |

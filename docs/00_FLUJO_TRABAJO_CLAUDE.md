@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-25
-**Version:** 25.0.0 (Remediacion Tenant 11 Fases)
+**Version:** 26.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering)
 
 ---
 
@@ -298,6 +298,26 @@
   - Patron: si el mock configura `$entityTypeManager->method('getStorage')->with('group')` y el codigo ahora llama `getStorage('tenant')`, el test falla silenciosamente con "method was not expected to be called with these arguments". Actualizar a `->with('tenant')`.
   - Los Kernel tests que instalan esquemas de entidades DEBEN listar `group` y/o `tenant` en `$modules` segun corresponda: `$this->installEntitySchema('group')` antes de `$this->installEntitySchema('page_content')` si hay foreign key.
   - El CI pipeline DEBE tener un job `kernel-test` separado con servicio MariaDB (mariadb:10.11) y base de datos `drupal_test`. Los Kernel tests no funcionan sin BD real.
+- **Premium Entity Forms con Secciones (PREMIUM-FORM-001):**
+  - Para formularios de entidad con muchos campos, crear una subclase de `ContentEntityForm` con constantes `SECTIONS` (agrupaciones con label, icon, fields, open) y `HIDDEN_FIELDS` (campos internos ocultos).
+  - Patron: `CandidateProfileForm` agrupa 30+ campos en 6 secciones con labels en espanol, glass-card UI y navigation pills.
+  - Los campos computados (ej. `engagement_score`, `bant_score`) se marcan como `#disabled = TRUE` en el form.
+  - Para reutilizar en multiples entity types: crear `PremiumEntityFormBase` abstract con logica de secciones + pills.
+  - Los entity annotations `form.default` y `form.add`/`form.edit` DEBEN apuntar al form class premium (no a `ContentEntityForm` generico).
+- **Slide-Panel AJAX vs Drupal Modal (SLIDE-PANEL-001):**
+  - Drupal modal/dialog envia XHR con query param `_wrapper_format`. Slide-panel custom envia XHR sin el.
+  - Patron: `isSlidePanelRequest()` = `$request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')`.
+  - Solo devolver bare HTML (via `renderer->render()`) para slide-panel. Para Drupal modal, dejar que el dialog renderer gestione.
+  - Aplicar en todos los controllers que soporten ambos modos (ProfileController, CvController, ProfileSectionFormController).
+- **Meta-Site Tenant-Aware Rendering (META-SITE-RENDER-001):**
+  - Cuando una pagina pertenece a un meta-sitio (tiene tenant_id con SiteConfig), el rendering DEBE override: `<title>` (meta_title_suffix), Schema.org Organization (name/description/logo), header (layout, sticky, CTA), footer (copyright, layout), navegacion (SitePageTree items), logo, body class (`meta-site meta-site-tenant-{id}`).
+  - `MetaSiteResolverService::resolveFromPageContent()` es el punto unico de resolucion. Consume SiteConfig + SitePageTree.
+  - Los hooks de preprocess (`preprocess_html`, `preprocess_page`) detectan `page_content` en route_match y llaman al resolver.
+  - `SitePageTree` status filter: usar `1` (int), no `'published'` (string). Los campos boolean de entidad almacenan `0`/`1`.
+- **Migracion de Field Types con Update Hooks:**
+  - Para cambiar el tipo de un campo (ej. `entity_reference` → `image`, `timestamp` → `datetime`): (1) backup datos existentes, (2) uninstall old field definition, (3) install new field from current `baseFieldDefinitions()`, (4) restore datos.
+  - Para reinstalar entidades completas (cuando las tablas estan vacias): `uninstallEntityType()` + `installEntityType()` en el update hook.
+  - Siempre verificar con `getFieldStorageDefinition()` antes de uninstall. Siempre try/catch en la restauracion de datos.
 
 ---
 
@@ -340,6 +360,10 @@
 35. **TenantBridgeService para resolucion cross-entity:** Todo servicio que necesite resolver entre Tenant y Group DEBE usar `TenantBridgeService` (`@ecosistema_jaraba_core.tenant_bridge`). NUNCA cargar `getStorage('group')` con Tenant IDs ni viceversa. Los IDs de Tenant y Group NO son intercambiables. Tenant = billing ownership, Group = content isolation. Los 4 metodos del bridge (`getTenantForGroup`, `getGroupForTenant`, `getTenantIdForGroup`, `getGroupIdForTenant`) son el unico punto de cruce autorizado.
 36. **Tenant isolation en AccessControlHandlers:** Todo access handler de entidades con campo `tenant_id` DEBE implementar `EntityHandlerInterface` para DI, inyectar `TenantContextService`, y verificar `isSameTenant()` para `update`/`delete`. Las paginas publicadas (`view`) son publicas. `TenantContextService::getCurrentTenantId()` retorna `?int` (NULL = sin acceso). Al renombrar handlers, actualizar la referencia `access` en la anotacion `@ContentEntityType`.
 37. **CI pipeline con Kernel tests obligatorios:** El CI DEBE ejecutar Unit + Kernel tests. El job `kernel-test` requiere MariaDB (10.11) con BD `drupal_test`. Cuando se corrige un entity type key en codigo (ej. `getStorage('group')` → `getStorage('tenant')`), actualizar los `->with(...)` en mocks de tests. Los Kernel tests validan schemas, queries y DI real — no son opcionales.
+38. **Premium entity forms con secciones:** Formularios de entidad con muchos campos DEBEN agruparse en secciones (constante `SECTIONS` con label, icon, fields, open). Campos internos en `HIDDEN_FIELDS`. Para multiples entity types, crear `PremiumEntityFormBase` abstract. Los entity annotations `form.default`/`add`/`edit` DEBEN apuntar al form class premium.
+39. **Slide-panel vs Drupal modal:** Distinguir XHR de slide-panel (sin `_wrapper_format`) de Drupal dialog (con `_wrapper_format`). Solo retornar bare HTML para slide-panel. Patron: `isSlidePanelRequest() = isXmlHttpRequest() && !has('_wrapper_format')`.
+40. **Meta-site rendering tenant-aware:** Cuando una pagina pertenece a un meta-sitio, override title, Schema.org, header/footer/nav, logo desde SiteConfig via `MetaSiteResolverService::resolveFromPageContent()`. SitePageTree status = `1` (int), no `'published'` (string).
+41. **Migracion de field types con update hooks:** Para cambiar tipo de campo: backup datos → uninstall old field → install new desde `baseFieldDefinitions()` → restore datos. Para reinstalar entidades vacias: `uninstallEntityType()` + `installEntityType()`. Siempre try/catch en restauracion.
 
 ---
 
@@ -347,6 +371,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-25 | **26.0.0** | **Elevacion Empleabilidad + Andalucia EI + Meta-Site Workflow**: 4 patrones nuevos: Premium Entity Forms con secciones (PREMIUM-FORM-001), Slide-Panel vs Drupal Modal (SLIDE-PANEL-001), Meta-Site Tenant-Aware Rendering (META-SITE-RENDER-001), Migracion de Field Types con Update Hooks. 4 reglas de oro: #38 (premium forms secciones), #39 (slide-panel vs modal), #40 (meta-site rendering), #41 (field type migration). Aprendizaje #123. |
 | 2026-02-25 | **25.0.0** | **Remediacion Tenant 11 Fases Workflow**: 3 patrones nuevos: TenantBridgeService (inyeccion, 4 metodos, error handling, services.yml), Tenant Isolation en Access Handlers (EntityHandlerInterface + DI, isSameTenant(), TenantContextService nullable, politica view/update/delete), Test Mock Migration (entity storage key changes, mock expectations, Kernel test dependencies, CI kernel-test job). 3 reglas de oro: #35 (TenantBridgeService cross-entity), #36 (tenant isolation en handlers), #37 (CI Kernel tests obligatorios). Aprendizaje #122. |
 | 2026-02-24 | **24.0.0** | **Meta-Sitio jarabaimpact.com Workflow**: Patron PATH-ALIAS-PROCESSOR-001 — InboundPathProcessorInterface con prioridad 200 para resolver path_alias custom de entidades ContentEntity a rutas canonicas. Skip list de prefijos, sin filtro status, static cache. Registro en services.yml con tag path_processor_inbound. Meta-sitio workflow: titulos via API config, publicacion via API publish, contenido via GrapesJS store. 7 paginas institucionales. Regla de oro #34. Aprendizaje #120. |
 | 2026-02-24 | **23.0.0** | **Auditoria Horizontal Workflow**: Patron ACCESS-STRICT-001 — strict equality `(int) === (int)` obligatorio en access handlers, previene type juggling en ownership checks. Buscar con `grep "== $account->id()" \| grep -v "==="`. Los access handlers pueden estar en `src/Access/` O directamente en `src/`. Patron MJML email compliance — 5 cambios por plantilla: mj-preview, postal CAN-SPAM, font Outfit, colores universales, colores de grupo. Tabla de reemplazos de colores off-brand → brand. Preservar colores semanticos. Verificar con grep de colores off-brand → 0 resultados. Regla de oro #33. Aprendizaje #119. |
