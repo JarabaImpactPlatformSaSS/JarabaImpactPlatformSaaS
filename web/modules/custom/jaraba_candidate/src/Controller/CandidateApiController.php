@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_candidate\Controller;
 
+use Drupal\Core\Access\CsrfRequestHeaderAccessCheck;
+use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\jaraba_candidate\Service\CandidateProfileService;
 use Drupal\jaraba_candidate\Service\CvBuilderService;
@@ -28,12 +30,18 @@ class CandidateApiController extends ControllerBase
     protected CvBuilderService $cvBuilder;
 
     /**
+     * The CSRF token generator.
+     */
+    protected CsrfTokenGenerator $csrfToken;
+
+    /**
      * Constructor.
      */
-    public function __construct(CandidateProfileService $profile_service, CvBuilderService $cv_builder)
+    public function __construct(CandidateProfileService $profile_service, CvBuilderService $cv_builder, CsrfTokenGenerator $csrf_token)
     {
         $this->profileService = $profile_service;
         $this->cvBuilder = $cv_builder;
+        $this->csrfToken = $csrf_token;
     }
 
     /**
@@ -43,7 +51,8 @@ class CandidateApiController extends ControllerBase
     {
         return new static(
             $container->get('jaraba_candidate.profile'),
-            $container->get('jaraba_candidate.cv_builder')
+            $container->get('jaraba_candidate.cv_builder'),
+            $container->get('csrf_token')
         );
     }
 
@@ -237,13 +246,8 @@ class CandidateApiController extends ControllerBase
     public function getSkills(): JsonResponse
     {
         $user_id = (int) $this->currentUser()->id();
-        $profile = $this->profileService->getProfileByUserId($user_id);
 
-        if (!$profile) {
-            return new JsonResponse(['error' => 'Profile not found'], 404);
-        }
-
-        $skills = $this->profileService->getSkills((int) $profile->id());
+        $skills = $this->profileService->getSkills($user_id);
         return new JsonResponse(['skills' => $skills]);
     }
 
@@ -252,6 +256,12 @@ class CandidateApiController extends ControllerBase
      */
     public function addSkill(Request $request): JsonResponse
     {
+        // Validate CSRF token from X-CSRF-Token header.
+        $token = $request->headers->get('X-CSRF-Token', '');
+        if (!$this->csrfToken->validate($token, 'session')) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], 403);
+        }
+
         $user_id = (int) $this->currentUser()->id();
 
         $data = json_decode($request->getContent(), TRUE);
@@ -297,13 +307,13 @@ class CandidateApiController extends ControllerBase
     /**
      * Deletes a skill from the current user's profile.
      */
-    public function deleteSkill(int $skill_entity_id): JsonResponse
+    public function deleteSkill(string $skill_entity_id): JsonResponse
     {
         $user_id = (int) $this->currentUser()->id();
 
         $skill_entity = $this->entityTypeManager()
             ->getStorage('candidate_skill')
-            ->load($skill_entity_id);
+            ->load((int) $skill_entity_id);
 
         if (!$skill_entity) {
             return new JsonResponse(['error' => 'Skill not found'], 404);
