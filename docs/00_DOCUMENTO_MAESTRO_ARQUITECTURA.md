@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v72.0
 
 **Fecha:** 2026-02-25
-**Versión:** 73.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering + Icon Emoji Remediation)
+**Versión:** 74.0.0 (Premium Forms Migration 237 + USR-004 User Edit Redirect)
 **Estado:** Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Icon Emoji Remediation + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Entity Admin UI 100% + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -477,12 +477,54 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      PREMIUM ENTITY FORMS: 237 FORMULARIOS ⭐          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 ecosistema_jaraba_core (PremiumEntityFormBase)                    │
+│   ├── Clase abstracta: PremiumEntityFormBase                           │
+│   │   ├── Extiende ContentEntityForm con glass-card UI               │
+│   │   ├── getSectionDefinitions(): Secciones con label, icon, fields │
+│   │   ├── getFormIcon(): Icono principal del formulario               │
+│   │   ├── Navigation pills + sticky action bar                       │
+│   │   ├── SCSS: _premium-forms.scss (glassmorphism, responsive)      │
+│   │   └── JS: premium-form-navigation.js (scroll sync, pills)       │
+│   │                                                                     │
+│   Migracion completa: 237 formularios en 50 modulos, 8 fases          │
+│   ├── Patron A (Simple): Formularios sin DI ni campos computados     │
+│   │   └── Solo requiere getSectionDefinitions() + getFormIcon()      │
+│   ├── Patron B (Computed Fields): Campos auto-calculados              │
+│   │   └── Usar #disabled = TRUE para campos no editables             │
+│   ├── Patron C (DI): Formularios con inyeccion de dependencias       │
+│   │   └── Patron parent::create() para preservar DI de la base      │
+│   ├── Patron D (Custom Logic): Formularios con logica especial       │
+│   │   └── Override de buildForm()/save() manteniendo secciones       │
+│   │                                                                     │
+│   Distribucion por vertical:                                            │
+│   ├── ecosistema_jaraba_core: ~30 forms (entidades base)             │
+│   ├── jaraba_billing: ~15 forms (facturacion, suscripciones)         │
+│   ├── jaraba_candidate: ~10 forms (perfil, educacion, experiencia)   │
+│   ├── jaraba_crm: 5 forms (Company, Contact, Opportunity, etc.)     │
+│   ├── jaraba_andalucia_ei: ~12 forms (expedientes, solicitudes)      │
+│   ├── jaraba_page_builder: ~8 forms (paginas, templates)             │
+│   ├── jaraba_customer_success: ~10 forms (health, churn, playbooks) │
+│   └── +43 modulos restantes con 1-8 forms cada uno                   │
+│                                                                         │
+│   Regla: PREMIUM-FORMS-PATTERN-001 (P1)                               │
+│   ├── Extiende PremiumEntityFormBase (NUNCA ContentEntityForm)        │
+│   ├── Fieldsets/details groups PROHIBIDOS (usar secciones)            │
+│   ├── Iconos por categoria (ui, actions, fiscal, users, etc.)        │
+│   └── 0 ContentEntityForm restantes en modulos custom                 │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
 ---
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-25 | **74.0.0** | **Premium Forms Migration 237 + USR-004 User Edit Redirect:** Nuevo ASCII box PREMIUM ENTITY FORMS. `PremiumEntityFormBase` como clase abstracta estandar para todos los formularios de entidad (237 forms en 50 modulos). 4 patrones de migracion (A: Simple, B: Computed, C: DI, D: Custom Logic). Glass-card UI con navigation pills y sticky action bar. SCSS `_premium-forms.scss`. 0 `ContentEntityForm` restantes en modulos custom. Fix USR-004: redirect de `/user/{id}/edit` a perfil canonico tras save. Regla PREMIUM-FORMS-PATTERN-001 (P1). Aprendizaje #125. |
 | 2026-02-25 | **73.0.0** | **Meta-Site Icon Emoji Remediation + PathProcessor Enhancement:** Icon System: nueva categoria `business/` con 12 SVGs (6 conceptuales + 6 duotone) para meta-sitio pepejaraba.com. 11 emojis Unicode eliminados de canvas_data (4 paginas). Seccion Icon System ampliada: categorias verticales, auditoria canvas_data, reglas ICON-EMOJI-001 + ICON-CANVAS-INLINE-001. PathProcessor: prioridad actualizada a 250, nuevo `resolveHomepage()` con MetaSiteResolverService. MetaSiteResolverService: 3-strategy domain resolution (Domain Access + Tenant.domain + subdomain prefix) documentada. Meta-sitio pepejaraba.com (9 paginas) anadido junto a jarabaimpact.com. Aprendizaje #124. |
 | 2026-02-25 | **72.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** 3 ASCII boxes nuevos. Empleabilidad: CandidateProfileForm premium con 6 secciones, ProfileSectionForm generico CRUD, photo entity_reference→image, date timestamp→datetime, 5 CV PNGs, seccion idiomas, ProfileCompletionService con entity queries. Andalucia EI Plan Maestro 8 fases: P0/P1 fixes, 11 bloques PB verticales, landing conversion, portal participante, ExpedienteDocumento (19 categorias), mensajeria integration, AI automation (CopilotContextProvider + AdaptiveDifficultyEngine + 4 nudges), SEO. Meta-Site: MetaSiteResolverService, Schema.org tenant-aware, title tag override, header/footer/nav desde SiteConfig. CRM: 5 forms a PremiumEntityFormBase. 71+ ficheros. Aprendizaje #123. |
 | 2026-02-25 | **71.0.0** | **Remediacion Tenant 11 Fases:** 2 ASCII boxes nuevos: TENANT BRIDGE (TenantBridgeService con 4 metodos, consumidores, error handling, regla TENANT-BRIDGE-001) y TENANT ISOLATION (PageContentAccessControlHandler con DI + isSameTenant(), DefaultEntityAccessControlHandler rename, PathProcessor tenant-aware, TenantContextService enhanced nullable). 14 correcciones billing entity type en 6 ficheros. CI pipeline con kernel-test job (MariaDB 10.11). 5 tests nuevos. Scripts movidos a scripts/maintenance/. Reglas TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |

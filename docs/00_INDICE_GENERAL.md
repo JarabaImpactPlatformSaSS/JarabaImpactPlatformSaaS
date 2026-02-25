@@ -4,7 +4,14 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-25
-**Versión:** 96.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering + Icon Emoji Remediation)
+**Versión:** 97.0.0 (Premium Forms Migration 237 + USR-004 User Edit Redirect)
+
+> **🏗️ PREMIUM FORMS MIGRATION: 237 FORMULARIOS EN 50 MODULOS + USR-004 FIX** (2026-02-25)
+> - **Contexto:** Migracion global de todos los formularios de entidad ContentEntity a `PremiumEntityFormBase`. Correccion de bug de redirect en user edit form.
+> - **HAL-05 (Premium Forms Global Migration):** 237 formularios migrados a `PremiumEntityFormBase` en 8 fases, 50 modulos. 4 patrones de migracion: A (Simple — solo secciones e icono), B (Computed Fields — #disabled = TRUE), C (DI — patron parent::create()), D (Custom Logic — override buildForm/save manteniendo secciones). Glass-card UI con navigation pills, sticky action bar, SCSS `_premium-forms.scss`. 0 `ContentEntityForm` restantes en modulos custom. Verificado con grep + PHPUnit (2899 tests passing).
+> - **HAL-06 (USR-004 User Edit Redirect):** Fix de redirect en `/user/{id}/edit`: Drupal core `ProfileForm::save()` no establece redirect, causando que el formulario se recargue en la misma pagina. Nuevo submit handler `_ecosistema_jaraba_core_user_profile_redirect` que redirige a `entity.user.canonical`. El handler de password reset (`_ecosistema_jaraba_core_password_set_redirect`) se ejecuta despues y tiene prioridad, redirigiendo a `/empleabilidad`.
+> - **1 regla nueva:** PREMIUM-FORMS-PATTERN-001 (P1, todo formulario de entidad DEBE extender PremiumEntityFormBase). Regla de oro #42. Aprendizaje #125.
+> - **Cross-refs:** Directrices v73.0.0, Arquitectura v74.0.0, Flujo v28.0.0, Indice v97.0.0.
 
 > **🎨 META-SITIO PEPEJARABA: EMOJI→SVG ICON REMEDIATION + CONTRAST FIX** (2026-02-25)
 > - **Contexto:** Verificacion visual post-remediacion del meta-sitio pepejaraba.com detecto 11 emojis Unicode usados como iconos y falta de contraste en hero/CTA de la homepage. Las directrices del SaaS prohiben emojis en produccion (ICON-CONVENTION-001).

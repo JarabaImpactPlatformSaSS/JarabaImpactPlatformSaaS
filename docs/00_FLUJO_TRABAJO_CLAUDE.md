@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-25
-**Version:** 27.0.0 (Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering + Icon Emoji Remediation)
+**Version:** 28.0.0 (Premium Forms Migration 237 + USR-004 User Edit Redirect)
 
 ---
 
@@ -326,12 +326,20 @@
   - Patron: si el mock configura `$entityTypeManager->method('getStorage')->with('group')` y el codigo ahora llama `getStorage('tenant')`, el test falla silenciosamente con "method was not expected to be called with these arguments". Actualizar a `->with('tenant')`.
   - Los Kernel tests que instalan esquemas de entidades DEBEN listar `group` y/o `tenant` en `$modules` segun corresponda: `$this->installEntitySchema('group')` antes de `$this->installEntitySchema('page_content')` si hay foreign key.
   - El CI pipeline DEBE tener un job `kernel-test` separado con servicio MariaDB (mariadb:10.11) y base de datos `drupal_test`. Los Kernel tests no funcionan sin BD real.
-- **Premium Entity Forms con Secciones (PREMIUM-FORM-001):**
-  - Para formularios de entidad con muchos campos, crear una subclase de `ContentEntityForm` con constantes `SECTIONS` (agrupaciones con label, icon, fields, open) y `HIDDEN_FIELDS` (campos internos ocultos).
-  - Patron: `CandidateProfileForm` agrupa 30+ campos en 6 secciones con labels en espanol, glass-card UI y navigation pills.
-  - Los campos computados (ej. `engagement_score`, `bant_score`) se marcan como `#disabled = TRUE` en el form.
-  - Para reutilizar en multiples entity types: crear `PremiumEntityFormBase` abstract con logica de secciones + pills.
-  - Los entity annotations `form.default` y `form.add`/`form.edit` DEBEN apuntar al form class premium (no a `ContentEntityForm` generico).
+- **Premium Entity Forms con Secciones (PREMIUM-FORMS-PATTERN-001):**
+  - **Migracion completa:** 237 formularios en 50 modulos migrados a `PremiumEntityFormBase`. 0 `ContentEntityForm` restantes.
+  - Clase abstracta: `ecosistema_jaraba_core/src/Form/PremiumEntityFormBase.php`. Extiende `ContentEntityForm` con glass-card UI.
+  - Todo form DEBE implementar `getSectionDefinitions()` (array de secciones con label, icon, fields) y `getFormIcon()`.
+  - **4 patrones de migracion:**
+    - **Patron A (Simple):** Solo requiere `getSectionDefinitions()` + `getFormIcon()`. Sin DI extra ni logica custom.
+    - **Patron B (Computed Fields):** Campos auto-calculados con `#disabled = TRUE` (nunca `#access = FALSE`).
+    - **Patron C (DI):** Usar `parent::create($container)` para preservar DI de la base, luego anadir dependencias propias.
+    - **Patron D (Custom Logic):** Override de `buildForm()`/`save()` llamando a `parent::` para mantener secciones y glass-card UI.
+  - **Iconos de seccion:** Usar categorias del icon system (`ui`, `actions`, `fiscal`, `users`, etc.) con variante duotone.
+  - **PROHIBIDO:** Fieldsets (`#type => 'fieldset'`), details groups (`#type => 'details'`) — rompen navigation pills.
+  - **Campos internos:** uid, created, changed, status van en `HIDDEN_FIELDS` (no en secciones).
+  - **Redirect post-save:** `parent::save()` redirige a la ruta `collection` de la entidad.
+  - **Verificacion:** `grep -rl "extends ContentEntityForm" web/modules/custom/*/src/Form/ | grep -v PremiumEntityFormBase | grep -v SettingsForm` → 0 resultados.
 - **Slide-Panel AJAX vs Drupal Modal (SLIDE-PANEL-001):**
   - Drupal modal/dialog envia XHR con query param `_wrapper_format`. Slide-panel custom envia XHR sin el.
   - Patron: `isSlidePanelRequest()` = `$request->isXmlHttpRequest() && !$request->query->has('_wrapper_format')`.
@@ -388,10 +396,11 @@
 35. **TenantBridgeService para resolucion cross-entity:** Todo servicio que necesite resolver entre Tenant y Group DEBE usar `TenantBridgeService` (`@ecosistema_jaraba_core.tenant_bridge`). NUNCA cargar `getStorage('group')` con Tenant IDs ni viceversa. Los IDs de Tenant y Group NO son intercambiables. Tenant = billing ownership, Group = content isolation. Los 4 metodos del bridge (`getTenantForGroup`, `getGroupForTenant`, `getTenantIdForGroup`, `getGroupIdForTenant`) son el unico punto de cruce autorizado.
 36. **Tenant isolation en AccessControlHandlers:** Todo access handler de entidades con campo `tenant_id` DEBE implementar `EntityHandlerInterface` para DI, inyectar `TenantContextService`, y verificar `isSameTenant()` para `update`/`delete`. Las paginas publicadas (`view`) son publicas. `TenantContextService::getCurrentTenantId()` retorna `?int` (NULL = sin acceso). Al renombrar handlers, actualizar la referencia `access` en la anotacion `@ContentEntityType`.
 37. **CI pipeline con Kernel tests obligatorios:** El CI DEBE ejecutar Unit + Kernel tests. El job `kernel-test` requiere MariaDB (10.11) con BD `drupal_test`. Cuando se corrige un entity type key en codigo (ej. `getStorage('group')` → `getStorage('tenant')`), actualizar los `->with(...)` en mocks de tests. Los Kernel tests validan schemas, queries y DI real — no son opcionales.
-38. **Premium entity forms con secciones:** Formularios de entidad con muchos campos DEBEN agruparse en secciones (constante `SECTIONS` con label, icon, fields, open). Campos internos en `HIDDEN_FIELDS`. Para multiples entity types, crear `PremiumEntityFormBase` abstract. Los entity annotations `form.default`/`add`/`edit` DEBEN apuntar al form class premium.
+38. **Premium entity forms con secciones:** Formularios de entidad con muchos campos DEBEN agruparse en secciones (constante `SECTIONS` con label, icon, fields, open). Campos internos en `HIDDEN_FIELDS`. Para multiples entity types, crear `PremiumEntityFormBase` abstract. Los entity annotations `form.default`/`add`/`edit` DEBEN apuntar al form class premium. **4 patrones de migracion:** (A) Simple — solo `getSectionDefinitions()` + `getFormIcon()`, sin DI extra. (B) Computed Fields — campos auto-calculados con `#disabled = TRUE`, nunca `#access = FALSE` (el admin debe verlos). (C) DI — usar `parent::create($container)` para preservar las dependencias de la base, luego anadir las propias. (D) Custom Logic — override de `buildForm()`/`save()` llamando a `parent::` para mantener secciones y glass-card UI. **Checklist de migracion:** (1) Cambiar `extends ContentEntityForm` a `extends PremiumEntityFormBase`, (2) implementar `getSectionDefinitions()` con categorias de icono, (3) implementar `getFormIcon()`, (4) mover fieldsets/details a secciones, (5) marcar campos computados con `#disabled`, (6) verificar `parent::save()` con redirect a collection, (7) `grep -rl "extends ContentEntityForm" | grep -v PremiumEntityFormBase` → 0 resultados. **Pitfalls:** fieldsets rompen navigation pills; DI sin `parent::create()` pierde entity_type.manager; `#access = FALSE` oculta completamente el campo (usar `#disabled`); olvidar HIDDEN_FIELDS expone campos internos (uid, created, changed).
 39. **Slide-panel vs Drupal modal:** Distinguir XHR de slide-panel (sin `_wrapper_format`) de Drupal dialog (con `_wrapper_format`). Solo retornar bare HTML para slide-panel. Patron: `isSlidePanelRequest() = isXmlHttpRequest() && !has('_wrapper_format')`.
 40. **Meta-site rendering tenant-aware:** Cuando una pagina pertenece a un meta-sitio, override title, Schema.org, header/footer/nav, logo desde SiteConfig via `MetaSiteResolverService::resolveFromPageContent()`. SitePageTree status = `1` (int), no `'published'` (string).
 41. **Migracion de field types con update hooks:** Para cambiar tipo de campo: backup datos → uninstall old field → install new desde `baseFieldDefinitions()` → restore datos. Para reinstalar entidades vacias: `uninstallEntityType()` + `installEntityType()`. Siempre try/catch en restauracion.
+42. **Migracion global a PremiumEntityFormBase:** 237 formularios migrados en 8 fases (50 modulos). Verificar migracion completa con `grep -rl "extends ContentEntityForm" web/modules/custom/*/src/Form/ | grep -v PremiumEntityFormBase | grep -v SettingsForm` → 0 resultados. Iconos de seccion usan categorias del icon system (`ui`, `actions`, `fiscal`, `users`, etc.) con variante duotone. Redirect post-save DEBE ser a la ruta `collection` de la entidad (no a canonical ni al form de edicion). El handler USR-004 de redirect de user edit form es un caso especial que redirige a `entity.user.canonical` (la entidad User no usa PremiumEntityFormBase).
 
 ---
 
@@ -399,6 +408,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-25 | **28.0.0** | **Premium Forms Migration 237 + USR-004 Workflow**: Seccion PREMIUM-FORMS-PATTERN-001 expandida con 4 patrones de migracion (A/B/C/D), checklist de migracion, pitfalls comunes. Regla de oro #42 (migracion global verificable con grep). Fix USR-004: redirect handler para user edit form (`_ecosistema_jaraba_core_user_profile_redirect`). Aprendizaje #125. |
 | 2026-02-25 | **26.0.0** | **Elevacion Empleabilidad + Andalucia EI + Meta-Site Workflow**: 4 patrones nuevos: Premium Entity Forms con secciones (PREMIUM-FORM-001), Slide-Panel vs Drupal Modal (SLIDE-PANEL-001), Meta-Site Tenant-Aware Rendering (META-SITE-RENDER-001), Migracion de Field Types con Update Hooks. 4 reglas de oro: #38 (premium forms secciones), #39 (slide-panel vs modal), #40 (meta-site rendering), #41 (field type migration). Aprendizaje #123. |
 | 2026-02-25 | **25.0.0** | **Remediacion Tenant 11 Fases Workflow**: 3 patrones nuevos: TenantBridgeService (inyeccion, 4 metodos, error handling, services.yml), Tenant Isolation en Access Handlers (EntityHandlerInterface + DI, isSameTenant(), TenantContextService nullable, politica view/update/delete), Test Mock Migration (entity storage key changes, mock expectations, Kernel test dependencies, CI kernel-test job). 3 reglas de oro: #35 (TenantBridgeService cross-entity), #36 (tenant isolation en handlers), #37 (CI Kernel tests obligatorios). Aprendizaje #122. |
 | 2026-02-24 | **24.0.0** | **Meta-Sitio jarabaimpact.com Workflow**: Patron PATH-ALIAS-PROCESSOR-001 — InboundPathProcessorInterface con prioridad 200 para resolver path_alias custom de entidades ContentEntity a rutas canonicas. Skip list de prefijos, sin filtro status, static cache. Registro en services.yml con tag path_processor_inbound. Meta-sitio workflow: titulos via API config, publicacion via API publish, contenido via GrapesJS store. 7 paginas institucionales. Regla de oro #34. Aprendizaje #120. |
