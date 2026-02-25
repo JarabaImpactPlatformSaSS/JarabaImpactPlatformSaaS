@@ -7,10 +7,12 @@
  * - optimize_summary: Improves existing summary text
  * - generate_summary: Creates a new summary from scratch
  *
- * Communicates with POST /api/v1/copilot/employability/chat
- * using CSRF token pattern (CSRF-JS-CACHE-001).
+ * Communicates with POST /api/v1/copilot/employability/chat.
+ * The copilot URL (with CSRF token) is embedded as data-copilot-url
+ * attribute on the <form> element to ensure availability in both
+ * full-page and slide-panel AJAX contexts.
  */
-(function (Drupal, drupalSettings) {
+(function (Drupal) {
   'use strict';
 
   // ── Previous summary backup for "undo" ──────────────────────────
@@ -19,17 +21,18 @@
   /**
    * Send a message to the copilot in profile_coach mode.
    *
-   * Uses the copilot URL from drupalSettings which already includes
-   * the route CSRF token (the route requires _csrf_token: TRUE).
+   * Reads the copilot URL from the form's data-copilot-url attribute.
+   * This attribute includes the CSRF token as a query parameter.
    *
+   * @param {HTMLElement} form
+   *   The form element containing data-copilot-url.
    * @param {string} message
    *   The prompt to send.
    * @return {Promise<object>}
    *   Resolves with {success, response, mode}.
    */
-  function chatWithCopilot(message) {
-    var settings = drupalSettings.brandProfessional || {};
-    var url = settings.copilotUrl;
+  function chatWithCopilot(form, message) {
+    var url = form.getAttribute('data-copilot-url');
 
     if (!url) {
       return Promise.reject(new Error('Copilot URL not configured'));
@@ -178,7 +181,7 @@
     showSpinner(btn);
     suggestionsContainer.hidden = true;
 
-    chatWithCopilot(prompt).then(function (data) {
+    chatWithCopilot(form, prompt).then(function (data) {
       hideSpinner(btn);
 
       if (!data.success || !data.response) {
@@ -253,7 +256,7 @@
     comparisonContainer.hidden = true;
     _previousSummary = ctx.summary;
 
-    chatWithCopilot(prompt).then(function (data) {
+    chatWithCopilot(form, prompt).then(function (data) {
       hideSpinner(btn);
 
       if (!data.success || !data.response) {
@@ -335,7 +338,7 @@
     showSpinner(btn);
     comparisonContainer.hidden = true;
 
-    chatWithCopilot(prompt).then(function (data) {
+    chatWithCopilot(form, prompt).then(function (data) {
       hideSpinner(btn);
 
       if (!data.success || !data.response) {
@@ -401,4 +404,4 @@
     },
   };
 
-})(Drupal, drupalSettings);
+})(Drupal);
