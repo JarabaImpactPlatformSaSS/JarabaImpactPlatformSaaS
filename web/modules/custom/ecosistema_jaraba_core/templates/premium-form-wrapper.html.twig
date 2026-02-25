@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Premium form wrapper for full-page (non-AJAX) rendering.
+ *
+ * Provides a back-navigation button and renders the entity form.
+ *
+ * Available variables:
+ * - form: The rendered entity form.
+ * - title: Page title (string).
+ * - back_url: URL for the back navigation link.
+ * - back_label: Label for the back button (defaults to "Back").
+ * - entity_type_label: Human-readable entity type name.
+ */
+#}
+<div class="premium-form-wrapper">
+  {% if back_url %}
+    <div class="premium-form-wrapper__back">
+      <a href="{{ back_url }}" class="premium-form-wrapper__back-link">
+        {{ jaraba_icon('actions', 'arrow-left', { variant: 'outline', size: '16px' }) }}
+        <span>{{ back_label|default('Back'|t) }}</span>
+      </a>
+    </div>
+  {% endif %}
+
+  {{ form }}
+</div>
