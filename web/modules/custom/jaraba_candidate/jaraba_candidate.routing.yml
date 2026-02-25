@@ -224,7 +224,6 @@ jaraba_candidate.api.skills.add:
     _controller: '\Drupal\jaraba_candidate\Controller\CandidateApiController::addSkill'
   requirements:
     _permission: 'edit own profile'
-    _csrf_token: 'TRUE'
   methods: [POST]
 
 jaraba_candidate.api.skills.delete:

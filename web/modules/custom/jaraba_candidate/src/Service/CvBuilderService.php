@@ -194,7 +194,7 @@ class CvBuilderService
         // Get skills.
         $skills = [];
         try {
-            $skills = $this->profileService->getSkills((int) $profile->id());
+            $skills = $this->profileService->getSkills($user_id);
         } catch (\Exception $e) {
             // Skills method may fail.
         }
@@ -210,7 +210,7 @@ class CvBuilderService
         // Get languages.
         $languages = [];
         try {
-            $languages = $this->getLanguages((int) $profile->id());
+            $languages = $this->getLanguages($user_id);
         } catch (\Exception $e) {
             // Language entity may not exist.
         }
