@@ -2,8 +2,8 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-26
-**Versión:** 78.0.0 (Meta-Sitios Analytics Stack — GTM/GA4 + A/B Testing + i18n Hreflang + Heatmap)
-**Estado:** Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 25 Gaps Planificados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
+**Versión:** 79.0.0 (Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo)
+**Estado:** Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 25 Gaps Implementados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -614,6 +614,46 @@ Integración unificada de soberanía legal y resiliencia técnica:
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│            GESTIÓN DE SECRETOS: SECRET-MGMT-001 🔒                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   Arquitectura de 3 capas para secretos:                                │
+│                                                                         │
+│   Capa 1: config/sync/ (Git — valores vacíos)                          │
+│   ├── social_auth_google.settings.yml: client_id='', client_secret='' │
+│   ├── social_auth_linkedin.settings.yml: client_secret=''             │
+│   ├── social_auth_microsoft.settings.yml: client_secret=''            │
+│   ├── symfony_mailer.mailer_transport.smtp_ionos.yml: user/pass/host=''│
+│   └── recaptcha_v3.settings.yml: site_key='', secret_key=''          │
+│                                                                         │
+│   Capa 2: config/deploy/settings.secrets.php (Runtime overrides)       │
+│   ├── 14 $config overrides desde getenv()                              │
+│   ├── OAuth: Google (2), LinkedIn (2), Microsoft (2)                   │
+│   ├── SMTP IONOS: user, pass, host                                    │
+│   ├── reCAPTCHA v3: site_key, secret_key                              │
+│   ├── Stripe: secret_key, webhook_secret, publishable_key             │
+│   └── Incluido en settings.php ANTES de settings.local.php            │
+│                                                                         │
+│   Capa 3: Variables de entorno                                          │
+│   ├── Local: .env (gitignored) + Lando env_file injection             │
+│   ├── Producción: panel hosting (IONOS, etc.)                          │
+│   └── .env.example: 12 variables documentadas                          │
+│                                                                         │
+│   Flujo config:import / config:export:                                  │
+│   ├── import: YAML vacíos → BD vacía → $config override en runtime    │
+│   ├── export: BD vacía → YAML vacíos (overrides NO se exportan)       │
+│   └── Resultado: secretos NUNCA tocan git ni la BD                    │
+│                                                                         │
+│   Limpieza historial git:                                               │
+│   ├── git-filter-repo --blob-callback (Python, no shell)              │
+│   ├── 10 secretos eliminados de 459 commits                           │
+│   └── Force push + verificación 0 matches                              │
+│                                                                         │
+│   Regla: SECRET-MGMT-001 (P0)                                          │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │            AUDITORIA IA CLASE MUNDIAL: 25 GAPS (7+16+2) 🔍            │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -717,11 +757,13 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-26 | **79.0.0** | **Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo:** Nuevo ASCII box GESTIÓN DE SECRETOS. Arquitectura de 3 capas: (1) config/sync/ con YAML sanitizados (valores vacíos para campos sensibles), (2) config/deploy/settings.secrets.php con 14 $config overrides desde getenv() (OAuth Google/LinkedIn/Microsoft, SMTP IONOS, reCAPTCHA v3, Stripe), (3) variables de entorno (.env local gitignored + Lando env_file injection, panel hosting producción). Flujo config:import/export seguro: YAML vacíos → BD → $config override runtime-only → export nunca expone secretos. Limpieza historial git con git-filter-repo --blob-callback (10 secretos eliminados de 459 commits, force push). 1 regla nueva: SECRET-MGMT-001 (P0). Aprendizaje #138. |
 | 2026-02-26 | **78.0.0** | **Meta-Sitios Analytics Stack — GTM/GA4 + A/B Testing + i18n Hreflang + Heatmap:** Nuevo bloque arquitectonico "META-SITES ANALYTICS STACK (4 CAPAS)": (1) Conversion Tracking con 6 behaviors dataLayer, (2) A/B Testing frontend con cookies y DOM manipulation, (3) Heatmap con jaraba_heatmap/tracker, (4) GTM/GA4 con Consent Mode v2 GDPR. SEO internacional con hreflang ES/EN/x-default. PWA preexistente verificada. 4 librerias condicionadas con meta_site. 5 reglas nuevas en Directrices v83.0.0. |
 | 2026-02-26 | **77.0.0** | **Auditoria IA Clase Mundial — 25 Gaps hacia Paridad con Lideres del Mercado:** Nuevo ASCII box AUDITORIA IA CLASE MUNDIAL. 25 gaps auditados contra Salesforce Agentforce, HubSpot Breeze, Shopify Sidekick, Intercom Fin. 7 refinamiento (Onboarding AI, Pricing Metering, Demo Playground, Dashboard GEO, llms.txt MCP, Schema.org GEO, Dark Mode AI) + 16 nuevos (Command Bar Cmd+K con CommandRegistryService tagged services, Inline AI con SmartBaseAgent fast tier + sparkle buttons, Proactive Intelligence ContentEntity + QueueWorker cron, Voice AI Web Speech API client-side, A2A Protocol extending MCP JSON-RPC 2.0 con Agent Card /.well-known/agent.json, Vision/Multimodal MultiModalBridgeService implementacion, 40+ unit + 15+ kernel + 7 prompt regression tests, Blog slugs ParamConverter + ContentArticle tenant_id, 5 vertical AI: SkillInferenceService + AdaptiveLearningService AI activation + DemandForecastingService + GrapesJS AI Writer + ServiceMatchingService Qdrant wiring, Design System ComponentDocumentationController) + 2 infraestructura (Cost Attribution AIObservability→TenantMetering, Horizontal Scaling Redis worker pool). 4 sprints, 320-440h. Plan: `docs/implementacion/2026-02-26_Plan_Implementacion_Auditoria_IA_Clase_Mundial_v1.md`. Aprendizaje #134. |
 | 2026-02-26 | **76.0.0** | **AI Elevation 10 GAPs — Streaming Real + MCP Server + Native Tools:** Nuevo ASCII box AI ELEVATION 10 GAPs. GAP-01: StreamingOrchestratorService extiende CopilotOrchestratorService, ChatInput::setStreamedOutput(TRUE) para streaming real, PHP Generator con eventos chunk/cached/done/error, buffer 80 chars + PII masking incremental. GAP-09: ToolRegistry::generateNativeToolsInput() convierte a ToolsInput/ToolsFunctionInput/ToolsPropertyInput, SmartBaseAgent::callAiApiWithNativeTools() con ChatInput::setChatTools(), fallback a text-based. GAP-08: McpServerController POST /api/v1/mcp JSON-RPC 2.0 con initialize/tools-list/tools-call/ping, MCP 2025-11-25. GAP-02: TraceContextService trace_id UUID + span_id. GAP-03/10: Buffer PII masking cross-chunk. GAP-07: AgentLongTermMemoryService Qdrant + BD. 3 ficheros nuevos + 4 modificados. 7 reglas nuevas. Aprendizaje #133. |
 | 2026-02-26 | **75.0.0** | **AI Remediation Plan — 28 Fixes, 3 Phases:** Nuevo ASCII box AI REMEDIATION STACK. Fase 1 (P0): AIIdentityRule clase estatica centralizada, brand voice fallback, guardrails pipeline ALLOW/MODIFY/BLOCK/FLAG, SmartBaseAgent contrato restaurado (routing+observability+guardrails), CopilotOrchestratorService 8 modos reales, streaming SSE con MIME correcto y eventos tipados, AgentOrchestrator simplificado, feedback loop con threshold. Fase 2 (P1): RAG prompt injection filter, embedding cache, A/B testing framework, tenant brand voice YAML, content approval workflow entity, campaign calendar entity, performance dashboard, Qdrant graceful fallback, auto-disable por error rate, vertical context normalizado. Fase 3 (P2): ModelRouterService con regex bilingue EN+ES (FIX-019), model pricing a YAML config con schema (FIX-020), observability conectada en BrandVoiceTrainer+WorkflowExecutor (FIX-021), AIOpsService con metricas reales /proc+BD (FIX-022), feedback widget JS↔PHP alineado (FIX-023), streaming semantico por parrafos (FIX-024), Gen 0/1 agents documentados (FIX-025), @? UnifiedPromptBuilder optional DI (FIX-026), canonical verticals 10 nombres (FIX-027), PII espanol DNI/NIE/IBAN/NIF/+34 (FIX-028). 55 ficheros, +3678/-236 lineas. 5 reglas nuevas. Regla de oro #45. Aprendizaje #127. |
 | 2026-02-25 | **74.0.0** | **Premium Forms Migration 237 + USR-004 User Edit Redirect:** Nuevo ASCII box PREMIUM ENTITY FORMS. `PremiumEntityFormBase` como clase abstracta estandar para todos los formularios de entidad (237 forms en 50 modulos). 4 patrones de migracion (A: Simple, B: Computed, C: DI, D: Custom Logic). Glass-card UI con navigation pills y sticky action bar. SCSS `_premium-forms.scss`. 0 `ContentEntityForm` restantes en modulos custom. Fix USR-004: redirect de `/user/{id}/edit` a perfil canonico tras save. Regla PREMIUM-FORMS-PATTERN-001 (P1). Aprendizaje #125. |
+| 2026-02-26 | **79.0.0** | **Meta-Sitios Multilingüe — i18n EN+PT-BR + Language Switcher:** Nuevo soporte multilingüe completo para los 3 meta-sitios. PageContent entity ya es `translatable = TRUE` — modulo `jaraba_i18n` con `AITranslationService` (translateBatch/translateEntity con brand voice) y `TranslationManagerService` (createTranslation, stats, dashboard) como infraestructura existente. Script `translate-metasite-pages.php` crea traducciones batch: 46 traducciones generadas (EN para pepejaraba+jarabaimpact+PED, PT-BR para jarabaimpact). Manejo especial de canvas_data (GrapesJS JSON → extraer components[].content + attributes, traducir, re-ensamblar), content_data (JSON recursivo con skip patterns para IDs/URLs/colores), rendered_html (regex text nodes → batch translate → replace). Hreflang dinamico: `_hreflang-meta.html.twig` itera `available_languages` (inyectado desde preprocess_html via `getTranslationLanguages()`). Language Switcher: `_language-switcher.html.twig` dropdown glassmorphism con banderas emoji, `language-switcher.js` (toggle/ESC/arrow keys), SCSS con dark variant + responsive. Preprocess hook inyecta `available_languages` + `current_langcode` en PageContent meta-site context. PT-BR: `drush language:add pt-br` → 12.038 traducciones Drupal importadas. 2 reglas nuevas en Directrices v87.0.0. Aprendizaje #139. |
 | 2026-02-25 | **73.0.0** | **Meta-Site Icon Emoji Remediation + PathProcessor Enhancement:** Icon System: nueva categoria `business/` con 12 SVGs (6 conceptuales + 6 duotone) para meta-sitio pepejaraba.com. 11 emojis Unicode eliminados de canvas_data (4 paginas). Seccion Icon System ampliada: categorias verticales, auditoria canvas_data, reglas ICON-EMOJI-001 + ICON-CANVAS-INLINE-001. PathProcessor: prioridad actualizada a 250, nuevo `resolveHomepage()` con MetaSiteResolverService. MetaSiteResolverService: 3-strategy domain resolution (Domain Access + Tenant.domain + subdomain prefix) documentada. Meta-sitio pepejaraba.com (9 paginas) anadido junto a jarabaimpact.com. Aprendizaje #124. |
 | 2026-02-25 | **72.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** 3 ASCII boxes nuevos. Empleabilidad: CandidateProfileForm premium con 6 secciones, ProfileSectionForm generico CRUD, photo entity_reference→image, date timestamp→datetime, 5 CV PNGs, seccion idiomas, ProfileCompletionService con entity queries. Andalucia EI Plan Maestro 8 fases: P0/P1 fixes, 11 bloques PB verticales, landing conversion, portal participante, ExpedienteDocumento (19 categorias), mensajeria integration, AI automation (CopilotContextProvider + AdaptiveDifficultyEngine + 4 nudges), SEO. Meta-Site: MetaSiteResolverService, Schema.org tenant-aware, title tag override, header/footer/nav desde SiteConfig. CRM: 5 forms a PremiumEntityFormBase. 71+ ficheros. Aprendizaje #123. |
 | 2026-02-25 | **71.0.0** | **Remediacion Tenant 11 Fases:** 2 ASCII boxes nuevos: TENANT BRIDGE (TenantBridgeService con 4 metodos, consumidores, error handling, regla TENANT-BRIDGE-001) y TENANT ISOLATION (PageContentAccessControlHandler con DI + isSameTenant(), DefaultEntityAccessControlHandler rename, PathProcessor tenant-aware, TenantContextService enhanced nullable). 14 correcciones billing entity type en 6 ficheros. CI pipeline con kernel-test job (MariaDB 10.11). 5 tests nuevos. Scripts movidos a scripts/maintenance/. Reglas TENANT-BRIDGE-001, TENANT-ISOLATION-ACCESS-001, CI-KERNEL-001. Aprendizaje #122. |
@@ -745,4 +787,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 78.0.0 | **Fecha:** 2026-02-26 | **Autor:** IA Asistente
+> **Versión:** 79.0.0 | **Fecha:** 2026-02-26 | **Autor:** IA Asistente
