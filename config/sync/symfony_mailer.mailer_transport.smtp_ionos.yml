@@ -6,9 +6,9 @@ id: smtp_ionos
 label: 'SMTP IONOS'
 plugin: smtp
 configuration:
-  user: ***REDACTED_SMTP_USER***
-  pass: '***REDACTED_SMTP_PASS***'
-  host: ***REDACTED_SMTP_HOST***
+  user: ''
+  pass: ''
+  host: ''
   port: 587
   query:
     verify_peer: true

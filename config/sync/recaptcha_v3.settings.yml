@@ -1,8 +1,8 @@
 _core:
   default_config_hash: 6xvuojdlZ8-8Q7yJyRldPaE0UK_YijOlDo6HvURmW_E
 langcode: es
-site_key: ***REDACTED_RECAPTCHA_SITE_KEY***
-secret_key: ***REDACTED_RECAPTCHA_SECRET_KEY***
+site_key: ''
+secret_key: ''
 hide_badge: false
 verify_hostname: false
 default_challenge: captcha/Math
