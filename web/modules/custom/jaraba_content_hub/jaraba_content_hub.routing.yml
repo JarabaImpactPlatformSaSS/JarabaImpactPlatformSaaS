@@ -388,3 +388,14 @@ entity.content_category.settings:
   requirements:
     _permission: 'administer content categories'
 
+# === Newsletter Subscribe API ===
+
+jaraba_content_hub.api.newsletter.subscribe:
+  path: '/api/v1/content-hub/newsletter/subscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\NewsletterController::subscribe'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+

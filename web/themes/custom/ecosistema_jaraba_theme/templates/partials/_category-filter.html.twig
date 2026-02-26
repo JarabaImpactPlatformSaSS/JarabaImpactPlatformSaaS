@@ -17,7 +17,7 @@
  */
 #}
 {% set show_all_link = show_all_link|default(true) %}
-{% set all_url = all_url|default('/blog') %}
+{% set all_url = all_url|default(path('jaraba_content_hub.blog')) %}
 
 <nav class="category-filter" aria-label="{% trans %}Filter by category{% endtrans %}">
   <ul class="category-filter__list">

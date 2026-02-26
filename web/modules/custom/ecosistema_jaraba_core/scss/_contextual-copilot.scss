@@ -356,6 +356,65 @@
 }
 
 // ==========================================================================
+// SUGGESTION BUTTONS
+// ==========================================================================
+
+.chat-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ej-spacing-xs, 6px);
+    margin-top: var(--ej-spacing-xs, 8px);
+}
+
+.suggestion-btn {
+    background: transparent;
+    border: 1px solid var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+    color: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+        background: var(--ej-color-innovation, #{$ej-color-innovation-fallback});
+        color: #ffffff;
+    }
+
+    // Variante enlace directo — fondo sólido, destaca como CTA.
+    &--link {
+        background: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+        color: #ffffff;
+        border-color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+        font-weight: 600;
+
+        svg {
+            flex-shrink: 0;
+        }
+
+        &:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+    }
+}
+
+// Inline links in message text
+.copilot-link {
+    color: var(--ej-color-impulse, #{$ej-color-impulse-fallback});
+    text-decoration: underline;
+    font-weight: 500;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+// ==========================================================================
 // RATING
 // ==========================================================================
 

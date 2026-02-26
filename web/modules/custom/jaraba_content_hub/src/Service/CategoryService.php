@@ -106,6 +106,33 @@ class CategoryService
     }
 
     /**
+     * Obtiene el conteo de artículos por categoría en una sola consulta.
+     *
+     * Resuelve el problema N+1 de llamar getArticleCount() por cada categoría.
+     * Ejecuta un solo GROUP BY en vez de N queries individuales.
+     *
+     * @return array
+     *   Array asociativo [category_id => count].
+     */
+    public function getArticleCountsByCategory(): array
+    {
+        $connection = \Drupal::database();
+        $result = $connection->query(
+            "SELECT ca.category, COUNT(*) as cnt
+             FROM {content_article_field_data} ca
+             WHERE ca.status = :status AND ca.category IS NOT NULL
+             GROUP BY ca.category",
+            [':status' => 'published']
+        );
+
+        $counts = [];
+        foreach ($result as $row) {
+            $counts[(int) $row->category] = (int) $row->cnt;
+        }
+        return $counts;
+    }
+
+    /**
      * Obtiene el conteo de artículos publicados en una categoría.
      *
      * Solo cuenta artículos con status 'published'.

@@ -1,8 +1,8 @@
 # Flujo de Trabajo del Asistente IA (Claude)
 
 **Fecha de creacion:** 2026-02-18
-**Ultima actualizacion:** 2026-02-25
-**Version:** 28.0.0 (Premium Forms Migration 237 + USR-004 User Edit Redirect)
+**Ultima actualizacion:** 2026-02-26
+**Version:** 31.0.0 (Meta-Site Nav Fix + Copilot Link Buttons)
 
 ---
 
@@ -354,6 +354,140 @@
   - Para cambiar el tipo de un campo (ej. `entity_reference` → `image`, `timestamp` → `datetime`): (1) backup datos existentes, (2) uninstall old field definition, (3) install new field from current `baseFieldDefinitions()`, (4) restore datos.
   - Para reinstalar entidades completas (cuando las tablas estan vacias): `uninstallEntityType()` + `installEntityType()` en el update hook.
   - Siempre verificar con `getFieldStorageDefinition()` antes de uninstall. Siempre try/catch en la restauracion de datos.
+- **Preprocess Obligatorio para Custom Entities (ENTITY-PREPROCESS-001):**
+  - Toda ContentEntity custom que se renderice en view mode DEBE tener `template_preprocess_{entity_type}()` en el `.module`.
+  - La entidad esta en `$variables['elements']['#{entity_type}']`. El preprocess extrae datos primitivos, resuelve entidades referenciadas (category, owner/author) y genera URLs de imagenes responsive con `ImageStyle::load()->buildUrl()`.
+  - Sin este preprocess, los templates Twig NO pueden acceder a los datos de la entidad — las variables simplemente no existen.
+  - Patron:
+    ```php
+    function template_preprocess_content_article(array &$variables): void {
+      $entity = $variables['elements']['#content_article'] ?? NULL;
+      if (!$entity) { return; }
+      $variables['article'] = [
+        'title' => $entity->getTitle(),
+        'body' => $entity->get('body')->value ?? '',
+        // ... resolver category, author, responsive images ...
+      ];
+    }
+    ```
+  - Para imagenes responsive: `ImageStyle::load('article_card')->buildUrl($uri)` genera derivados por Image Style. Construir `srcset` con multiples tamaños: `$card_url . ' 600w, ' . $featured_url . ' 1200w'`.
+  - Para author data: cargar User entity desde `$entity->getOwner()`, extraer display_name, user_picture, y field_bio si existen.
+- **Resiliencia en Presave Hooks (PRESAVE-RESILIENCE-001):**
+  - Los hooks `hook_{entity_type}_presave()` que invoquen servicios opcionales DEBEN envolver cada invocacion con:
+    ```php
+    if (\Drupal::hasService('service_id')) {
+      try {
+        \Drupal::service('service_id')->doSomething($entity);
+      } catch (\Throwable $e) {
+        \Drupal::logger('module')->warning('Service failed: @msg', ['@msg' => $e->getMessage()]);
+      }
+    }
+    ```
+  - Aplicado en `jaraba_content_hub`: sentiment_engine, reputation_monitor, pathauto. El save de la entidad NUNCA debe fallar por un servicio opcional.
+- **Paginacion Server-Side con Sliding Window (Blog Pattern):**
+  - Leer pagina actual desde query string: `$request->query->get('page', 1)`.
+  - Calcular offset: `$offset = ($current_page - 1) * $limit`.
+  - Contar total: `$this->articleService->countPublishedArticles()`.
+  - Construir pager con ventana deslizante ±2 paginas: `$start = max(1, $current_page - 2)`, `$end = min($total_pages, $current_page + 2)`.
+  - Generar URLs con `Url::fromRoute('route.name', [], ['query' => ['page' => $i]])->toString()`.
+  - Cache context OBLIGATORIO: `'url.query_args:page'`.
+  - Declarar variable `pager` en `hook_theme()`.
+  - Template usa `<nav class="blog-pagination" aria-label="{% trans %}...{% endtrans %}">` con `<ol>` de paginas.
+- **N+1 Query Fix con GROUP BY:**
+  - Problema: BlogController llamaba `getArticleCount($categoryId)` por cada categoria en un loop → N queries.
+  - Solucion: `CategoryService::getArticleCountsByCategory()` usa una sola query SQL:
+    ```sql
+    SELECT ca.category, COUNT(*) as cnt FROM {content_article_field_data} ca
+    WHERE ca.status = :status AND ca.category IS NOT NULL GROUP BY ca.category
+    ```
+  - Retorna `[category_id => count]`. El controller usa `$article_counts[(int) $category->id()] ?? 0`.
+  - Patron aplicable a cualquier conteo por grupo: reemplazar N queries individuales por un solo GROUP BY.
+- **Share Buttons sin JS SDKs (Clipboard API + URL Schemes):**
+  - Share buttons DEBEN usar URL-scheme links nativos:
+    - Facebook: `https://www.facebook.com/sharer/sharer.php?u={url}`
+    - Twitter: `https://twitter.com/intent/tweet?url={url}&text={title}`
+    - LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url={url}`
+  - Copy-to-clipboard: `navigator.clipboard.writeText(url)` con fallback `document.execCommand('copy')` para Safari.
+  - Feedback visual: toggle clase CSS `copied` durante 2 segundos via `setTimeout`.
+  - NUNCA cargar SDKs de terceros (Facebook SDK, Twitter widget, etc.) — viola privacidad, bloqueado por ad-blockers, y anade peso innecesario.
+- **Reading Progress Bar (requestAnimationFrame + Reduced Motion):**
+  - Scroll-driven progress bar: calcular `scrollTop / (scrollHeight - clientHeight) * 100` y asignar a `width`.
+  - Throttle con `requestAnimationFrame` — NUNCA usar `scroll` event directamente sin throttle.
+  - CSS: `position: fixed; top: 0; width: 0; height: 3px; background: linear-gradient(...); will-change: width; z-index: 1000`.
+  - Respetar `prefers-reduced-motion`: `@media (prefers-reduced-motion: reduce) { .reading-progress__bar { transition: none; } }`.
+  - Libreria Drupal behaviors: `Drupal.behaviors.jarabaReadingProgress` con `once()` para evitar duplicacion.
+- **Prose Column 720px para Articulos:**
+  - El contenido de articulos usa `max-width: 720px` (~65 caracteres por linea a 1.125rem). Anchura optima para legibilidad.
+  - Author bio, share buttons y related content pueden ser mas anchos (max-width: 800px o 100%).
+  - SCSS: `.content-article--full { max-width: 720px; margin-inline: auto; }`.
+- **AIIdentityRule Centralizada (FIX-001):**
+  - La regla de identidad IA DEBE estar en una clase estatica: `ecosistema_jaraba_core/src/AI/AIIdentityRule.php`.
+  - Metodo: `public static function apply(string $prompt): string` — antepone la regla de identidad al prompt si no esta presente.
+  - NUNCA duplicar la regla en cada agente/copiloto. Todos DEBEN llamar `AIIdentityRule::apply($systemPrompt)`.
+  - Consumidores: BaseAgent, SmartBaseAgent, CopilotOrchestratorService, PublicCopilotController, FaqBotService, CoachIaService, etc.
+- **Guardrails Pipeline con PII Espanol (FIX-003 + FIX-028):**
+  - `AIGuardrailsService::checkPII()` DEBE detectar tanto formatos US (SSN, US phone) como espanoles (DNI, NIE, IBAN ES, NIF/CIF, +34).
+  - Acciones del pipeline: ALLOW (sin cambios), MODIFY (limpia prompt), BLOCK (rechaza), FLAG (permite con warning).
+  - La integracion va en `SmartBaseAgent.execute()` — antes de llamar al proveedor IA.
+  - Cada nuevo mercado geografico requiere anadir patrones PII al guardrail.
+- **Model Routing con Config YAML (FIX-019 + FIX-020):**
+  - `ModelRouterService.assessComplexity()` usa regex bilingues EN+ES con flags `/iu` para Unicode.
+  - Los tiers y pricing se definen en `jaraba_ai_agents.model_routing.yml` con schema en `jaraba_ai_agents.schema.yml`.
+  - El servicio carga config en constructor con deep-merge: `array_merge($defaults[$tier], $configOverride[$tier])`.
+  - Al cambiar de proveedor o modelo, solo se actualiza el YAML — no requiere code deploy.
+- **Observabilidad Conectada (FIX-021):**
+  - Todo servicio IA DEBE llamar `$this->observability->log([...])` tras cada ejecucion LLM/embedding.
+  - Campos minimos: agent_id, action, tier, model_id, provider_id, tenant_id, vertical, input_tokens, output_tokens, duration_ms, success.
+  - Estimacion de tokens: `ceil(mb_strlen($text) / 4)` cuando el proveedor no devuelve conteo real.
+  - Loguear TANTO exitos como fallos (en executeWorkflow: success path Y abort path).
+- **AIOpsService con Metricas Reales (FIX-022):**
+  - NUNCA usar `rand()` para metricas operativas. Las metricas deben venir de fuentes reales:
+    - CPU: `/proc/stat` (user+nice+system / total).
+    - Memoria: `/proc/meminfo` (MemTotal - MemAvailable) / MemTotal.
+    - Disco: `disk_free_space()` / `disk_total_space()`.
+    - BD: `SHOW GLOBAL STATUS LIKE 'Threads_connected'`.
+    - Latencia: `AVG(duration_ms)` y P95 desde `ai_telemetry` table.
+    - Costos: `SUM(cost_estimated)` desde `ai_telemetry` con filtro de mes.
+  - Envolver TODO en try/catch con defaults sensibles (50% CPU, 60% RAM, etc.) para entornos sin /proc.
+- **Streaming SSE Semantico (FIX-006 + FIX-024):**
+  - MIME: `text/event-stream` obligatorio (no `text/plain`).
+  - Eventos tipados: `mode`, `thinking`, `chunk`, `done`, `error`.
+  - Chunking: dividir por parrafos (`splitIntoParagraphs()` con `preg_split('/\n{2,}/')`) — no por 80 caracteres arbitrarios.
+  - NUNCA usar `usleep()` para simular streaming. Emitir chunks tan pronto como esten disponibles.
+  - Campo `streaming_mode: 'buffered'` en el evento `done` si no es streaming real del proveedor.
+- **Canonical Verticals (FIX-027):**
+  - 10 nombres canonicos: empleabilidad, emprendimiento, comercioconecta, agroconecta, jarabalex, serviciosconecta, andalucia_ei, jaraba_content_hub, formacion, demo.
+  - Fuente de verdad: constante `BaseAgent::VERTICALS`.
+  - Aliases legacy: `comercio_conecta`→`comercioconecta`, `servicios_conecta`→`serviciosconecta`, `content_hub`→`jaraba_content_hub`.
+  - Todo servicio que use nombres de vertical DEBE normalizar aliases en `getVerticalContext()` o metodo equivalente.
+  - Default: `'general'` cuando el vertical no se reconoce.
+- **Agent Generations y Documentacion (FIX-025):**
+  - Gen 0 (deprecated): Agentes con `@deprecated` apuntando al reemplazo Gen 2 (ej. `MarketingAgent` → `SmartMarketingAgent`).
+  - Gen 1 (active): Agentes con `@note Gen 1 agent` describiendo su estado y roadmap de migracion.
+  - Gen 2 (current): Subclasses de SmartBaseAgent con model routing + guardrails + observabilidad.
+  - Al crear nuevos agentes, SIEMPRE extender SmartBaseAgent (Gen 2), nunca BaseAgent directamente.
+- **@? Optional DI para Cross-Module Services (FIX-026):**
+  - Cuando un servicio IA referencia `UnifiedPromptBuilder` u otros servicios de modulos que pueden no estar instalados, usar `@?` en services.yml.
+  - Ejemplo: `@?ecosistema_jaraba_core.unified_prompt_builder` en lugar de `@ecosistema_jaraba_core.unified_prompt_builder`.
+  - Constructor: `?UnifiedPromptBuilder $promptBuilder = NULL`. Null-guard antes de usar: `$this->promptBuilder?->build(...)`.
+  - Critico para evitar `ServiceNotFoundException` en Kernel tests que solo habilitan un modulo.
+- **Meta-Site Nav Chain Debugging (META-SITE-NAV-001):**
+  - Cuando la navegacion de un meta-sitio no aparece, la cadena de diagnostico es:
+    1. Verificar que `page--page-builder.html.twig` incluye `_header.html.twig` cuando `meta_site` es truthy (no el header inline hardcodeado).
+    2. Verificar `header_type` en SiteConfig: `SELECT header_type FROM site_config WHERE id = N` — DEBE ser `classic` (no `minimal`).
+    3. Verificar que `theme_preprocess_page()` establece `$variables['theme_settings']['navigation_items']` via `MetaSiteResolverService::resolveFromPageContent()`.
+    4. Verificar que `_header.html.twig` parsea correctamente el formato `"Texto|URL\n"` a array de `{text, url}`.
+  - Root cause comun: el page template tenia un header inline que ignoraba `theme_settings`. Fix: condicional `{% if meta_site %}` para incluir el partial compartido.
+  - Segundo root cause: `header_type = 'minimal'` no renderiza `<nav>` horizontal. Fix: `UPDATE site_config SET header_type = 'classic'`.
+- **Copilot Suggestion URL Format (COPILOT-LINK-001):**
+  - Las sugerencias del copilot soportan 2 formatos: strings planos y objetos `{label, url}`.
+  - JS normalization: `var item = typeof s === 'string' ? { label: s } : s; if (item.url) { /* render as <a> */ }`.
+  - CSS: clase `.suggestion-btn--link` / `.copilot-chat__suggestion-btn--link` con fondo naranja `--ej-color-impulse`, color blanco, font-weight 600.
+  - Backend: `CopilotOrchestratorService::getContextualActionButtons(string $mode)` retorna `[{label, url}]` segun modo y auth state.
+  - Anonimo: siempre incluye `['label' => 'Crear cuenta gratis', 'url' => '/user/register']`.
+  - Autenticado: acciones por modo (coach→Mi perfil, consultor→Mi dashboard, cfo→Panel financiero, landing_copilot→Explorar plataforma).
+  - `formatResponse()` hace merge de sugerencias de texto + action buttons contextuales.
+  - Ambas implementaciones (v1 `contextual-copilot.js` y v2 `copilot-chat-widget.js`) DEBEN soportar el formato dual.
 
 ---
 
@@ -401,6 +535,11 @@
 40. **Meta-site rendering tenant-aware:** Cuando una pagina pertenece a un meta-sitio, override title, Schema.org, header/footer/nav, logo desde SiteConfig via `MetaSiteResolverService::resolveFromPageContent()`. SitePageTree status = `1` (int), no `'published'` (string).
 41. **Migracion de field types con update hooks:** Para cambiar tipo de campo: backup datos → uninstall old field → install new desde `baseFieldDefinitions()` → restore datos. Para reinstalar entidades vacias: `uninstallEntityType()` + `installEntityType()`. Siempre try/catch en restauracion.
 42. **Migracion global a PremiumEntityFormBase:** 237 formularios migrados en 8 fases (50 modulos). Verificar migracion completa con `grep -rl "extends ContentEntityForm" web/modules/custom/*/src/Form/ | grep -v PremiumEntityFormBase | grep -v SettingsForm` → 0 resultados. Iconos de seccion usan categorias del icon system (`ui`, `actions`, `fiscal`, `users`, etc.) con variante duotone. Redirect post-save DEBE ser a la ruta `collection` de la entidad (no a canonical ni al form de edicion). El handler USR-004 de redirect de user edit form es un caso especial que redirige a `entity.user.canonical` (la entidad User no usa PremiumEntityFormBase).
+43. **Preprocess obligatorio para custom entities:** Toda ContentEntity que se renderice en view mode DEBE tener `template_preprocess_{entity_type}()` que extraiga datos en array estructurado para Twig. Sin este preprocess, los templates no acceden a datos de la entidad. Extraer: valores primitivos, entidades referenciadas (category, author), imagenes responsive con ImageStyle + srcset. Ejemplo canonico: `template_preprocess_content_article()` en `jaraba_content_hub.module`.
+44. **Resiliencia en presave hooks:** Los hooks presave que invoquen servicios opcionales (sentiment, reputation, pathauto) DEBEN usar `\Drupal::hasService()` + try-catch. El save de la entidad NUNCA debe fallar por un servicio opcional. Patron: check → try → catch(\Throwable) → log warning → continue. Aplicado en `jaraba_content_hub_content_article_presave()`.
+45. **Remediacion IA integral con plan estructurado:** Cuando se detectan multiples problemas en el stack IA (identidad, guardrails, routing, observabilidad, streaming), crear un plan de remediacion con FIX-IDs priorizados (P0/P1/P2) y ejecutarlos en fases. Cada FIX DEBE: (1) centralizar logica duplicada en clases/servicios reutilizables (ej. `AIIdentityRule::apply()`), (2) mover configuracion hardcodeada a YAML config (ej. model pricing), (3) conectar observabilidad en todos los puntos de ejecucion IA (input/output tokens, duration, success), (4) usar regex bilingues EN+ES para plataformas hispanohablantes, (5) documentar generaciones de agentes (@deprecated para Gen 0, @note para Gen 1), (6) validar con `php -l` + `yaml.safe_load()` antes de commit. Patron de PII: cada mercado geografico DEBE anadir sus patrones al guardrail (DNI/NIE/IBAN para Espana).
+46. **Meta-site nav requiere header partial + classic layout:** Cuando la navegacion de un meta-sitio no aparece, verificar 2 cosas: (1) El page template (`page--page-builder.html.twig`) DEBE incluir `_header.html.twig` cuando `meta_site` es truthy — el header inline hardcodeado solo muestra logo+acciones sin nav. (2) El SiteConfig `header_type` DEBE ser `classic` (no `minimal`) — el layout minimal solo muestra hamburguesa sin nav horizontal. La cadena completa es: `theme_preprocess_page()` → `resolveFromPageContent()` → override `navigation_items` → `_header.html.twig` → parse → `_header-classic.html.twig` renderiza `<nav>`. Debug: verificar `$variables['theme_settings']['navigation_items']` en preprocess y `header_type` en BD (`SELECT header_type FROM site_config`).
+47. **Copilot sugerencias con URL action buttons:** Las sugerencias del copilot soportan formato dual: strings planos (se envian como mensaje) y objetos `{label, url}` (se renderizan como `<a>` links con estilo CTA). El backend `CopilotOrchestratorService::getContextualActionButtons()` genera CTAs contextuales por rol/modo. El JS normaliza ambos formatos: `typeof s === 'string' ? { label: s } : s`. Los links con URL llevan clase `--link` (fondo naranja, font-weight 600). Links externos detectados por `item.url.indexOf('http') === 0 && item.url.indexOf(window.location.hostname) === -1` llevan `target="_blank"`. Ambas implementaciones (v1 contextual-copilot.js, v2 copilot-chat-widget.js) DEBEN soportar el formato.
 
 ---
 
@@ -408,6 +547,9 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-26 | **31.0.0** | **Meta-Site Nav Fix + Copilot Link Buttons Workflow**: 2 patrones nuevos: Meta-site nav chain debugging (page template → header partial → header_type → sub-partial, verificar `meta_site` variable y `header_type` en BD), copilot suggestion URL format (dual string/`{label, url}`, `getContextualActionButtons()` por rol, JS normalization, `--link` CSS variant, external link detection). Reglas de oro #46 (meta-site nav requiere header partial + classic layout), #47 (copilot sugerencias con URL action buttons). Aprendizaje #128. |
+| 2026-02-26 | **30.0.0** | **AI Remediation Plan — 28 Fixes Workflow**: 10 patrones nuevos: AIIdentityRule centralizada (clase estatica con `apply()`), guardrails pipeline con PII espanol (DNI/NIE/IBAN/NIF/+34), model routing con config YAML + regex bilingue EN+ES, observabilidad conectada (log en todos los puntos de ejecucion IA), AIOpsService con metricas reales (/proc + BD + watchdog), streaming SSE semantico (parrafos, no chunks arbitrarios, sin usleep), canonical verticals (10 nombres con alias normalization), agent generations (Gen 0 @deprecated, Gen 1 @note, Gen 2 SmartBaseAgent), @? optional DI para cross-module services, feedback widget alineado JS↔PHP. Regla de oro #45 (remediacion IA integral con plan estructurado). Aprendizaje #127. |
+| 2026-02-26 | **29.0.0** | **Blog Clase Mundial — Content Hub Elevation Workflow**: 8 patrones nuevos: template_preprocess para custom entities (ENTITY-PREPROCESS-001), presave resilience con hasService()+try-catch (PRESAVE-RESILIENCE-001), paginacion server-side con sliding window y cache context url.query_args:page, N+1 query fix con GROUP BY, share buttons via URL schemes + Clipboard API (sin JS SDKs), reading progress bar con requestAnimationFrame + prefers-reduced-motion, prose column 720px, responsive images con ImageStyle srcset. Reglas de oro #43 (preprocess para custom entities), #44 (resiliencia en presave hooks). Aprendizaje #126. |
 | 2026-02-25 | **28.0.0** | **Premium Forms Migration 237 + USR-004 Workflow**: Seccion PREMIUM-FORMS-PATTERN-001 expandida con 4 patrones de migracion (A/B/C/D), checklist de migracion, pitfalls comunes. Regla de oro #42 (migracion global verificable con grep). Fix USR-004: redirect handler para user edit form (`_ecosistema_jaraba_core_user_profile_redirect`). Aprendizaje #125. |
 | 2026-02-25 | **26.0.0** | **Elevacion Empleabilidad + Andalucia EI + Meta-Site Workflow**: 4 patrones nuevos: Premium Entity Forms con secciones (PREMIUM-FORM-001), Slide-Panel vs Drupal Modal (SLIDE-PANEL-001), Meta-Site Tenant-Aware Rendering (META-SITE-RENDER-001), Migracion de Field Types con Update Hooks. 4 reglas de oro: #38 (premium forms secciones), #39 (slide-panel vs modal), #40 (meta-site rendering), #41 (field type migration). Aprendizaje #123. |
 | 2026-02-25 | **25.0.0** | **Remediacion Tenant 11 Fases Workflow**: 3 patrones nuevos: TenantBridgeService (inyeccion, 4 metodos, error handling, services.yml), Tenant Isolation en Access Handlers (EntityHandlerInterface + DI, isSameTenant(), TenantContextService nullable, politica view/update/delete), Test Mock Migration (entity storage key changes, mock expectations, Kernel test dependencies, CI kernel-test job). 3 reglas de oro: #35 (TenantBridgeService cross-entity), #36 (tenant isolation en handlers), #37 (CI Kernel tests obligatorios). Aprendizaje #122. |

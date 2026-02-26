@@ -442,3 +442,73 @@ rm -rf ~/.nvm
     **Compilación:** `npx sass scss/page-builder-blocks.scss css/jaraba-page-builder.css --style=compressed`
     **Resultado:** 47KB, 257 reglas `.pb-section`, 0 `Inter`
 
+## Lecciones Aprendidas (2026-02-26)
+
+26. **Content Hub Blog — Patrones SCSS para UX de Lectura Premium**:
+    El archivo `_content-hub.scss` del tema centraliza todos los estilos del blog y Content Hub. Patrones clave añadidos:
+
+    **Reading Progress Bar** — Fixed top, gradient animado, `will-change: width`:
+    ```scss
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      z-index: 1000;
+      &__bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--ej-color-innovation), var(--ej-color-primary));
+        will-change: width;
+        transition: width 0.1s ease-out;
+      }
+    }
+    ```
+
+    **Author Bio** — Flex layout con avatar circular:
+    ```scss
+    .author-bio {
+      display: flex;
+      gap: 1rem;
+      &__avatar { width: 48px; height: 48px; border-radius: 50%; }
+      &__name { font-weight: 600; color: var(--ej-text-primary); }
+    }
+    ```
+
+    **Blog Pagination** — Sliding window con current/hover states:
+    ```scss
+    .blog-pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      &__link--current { background: var(--ej-color-primary); color: white; }
+      &__link:focus-visible { outline: 2px solid var(--ej-color-primary); outline-offset: 2px; }
+    }
+    ```
+
+    **Share Buttons** — URL-scheme links con estados hover y copy feedback:
+    ```scss
+    .content-article__share-link {
+      &--copied { color: var(--ej-color-success); }
+      &:focus-visible { outline: 2px solid var(--ej-color-primary); outline-offset: 2px; }
+    }
+    ```
+
+    **Prose Column** — 720px para legibilidad optima (~65 chars/linea):
+    ```scss
+    .content-article--full { max-width: 720px; margin-inline: auto; }
+    ```
+
+    **Accessibility** — `prefers-reduced-motion` y `@media print`:
+    ```scss
+    @media (prefers-reduced-motion: reduce) {
+      .reading-progress__bar { transition: none; }
+    }
+    @media print {
+      .reading-progress, .content-article__share, .blog-pagination { display: none; }
+    }
+    ```
+
+    > **IMPORTANTE**: Los estilos del Content Hub estan en `_content-hub.scss` del TEMA (`ecosistema_jaraba_theme/scss/`), NO en el modulo `jaraba_content_hub`. El modulo no tiene SCSS propio — usa el CSS compilado del tema via library dependency.
+

@@ -1,0 +1,14 @@
+newsletter-form:
+  version: 1.0
+  js:
+    js/newsletter-form.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+
+reading-progress:
+  version: 1.0
+  js:
+    js/reading-progress.js: {}
+  dependencies:
+    - core/drupal
