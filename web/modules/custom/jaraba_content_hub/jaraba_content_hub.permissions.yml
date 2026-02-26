@@ -41,6 +41,11 @@
   title: 'Administer categories'
   description: 'Create, edit, and delete content categories.'
 
+# Canvas Editor permissions
+'use article canvas editor':
+  title: 'Use Article Canvas Editor'
+  description: 'Access the visual Canvas Editor (GrapesJS) for composing articles.'
+
 # AI Writing Assistant permissions
 'use content ai assistant':
   title: 'Use AI Writing Assistant'

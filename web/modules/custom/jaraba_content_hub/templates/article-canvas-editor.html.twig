@@ -1,0 +1,342 @@
+{#
+/**
+ * @file
+ * Article Canvas Editor — Editor visual GrapesJS para artículos del Content Hub.
+ *
+ * Versión simplificada del canvas-editor.html.twig del Page Builder:
+ * - SIN sidebar de secciones arrastrables
+ * - SIN selectores de Header/Footer variants
+ * - CON panel lateral de metadatos del artículo
+ *
+ * VARIABLES:
+ * - article: Entidad ContentArticle que se está editando
+ * - preview_url: URL canónica del artículo para preview
+ * - tenant_logo: URL del logo del tenant (puede ser NULL)
+ * - tenant_name: Nombre del tenant (puede ser NULL)
+ * - article_meta: Array de metadatos (title, slug, excerpt, status, etc.)
+ *
+ * DIRECTRICES:
+ * - i18n: Todos los textos con {% trans %}
+ * - ICON-CONVENTION-001: jaraba_icon() para todos los iconos
+ * - ICON-DUOTONE-001: variant: 'duotone' en contextos premium
+ * - INNERHTML-XSS-001: Sin raw en datos de usuario
+ * - CSS-STICKY-001: Header sticky
+ */
+#}
+
+<div class="article-canvas-editor" data-article-id="{{ article.id() }}">
+
+  {# ═══════════════════════════════════════════════════════
+     Header SaaS — Barra compacta de branding (40px)
+     ═══════════════════════════════════════════════════════ #}
+  <div class="article-canvas-editor__saas-header" role="banner">
+    <div class="article-canvas-editor__saas-branding">
+      {% if tenant_logo %}
+        <a href="{{ path('jaraba_content_hub.articles.frontend') }}"
+           class="article-canvas-editor__saas-logo-link"
+           title="{% trans %}Volver a artículos{% endtrans %}">
+          <img src="{{ tenant_logo }}"
+               alt="{{ tenant_name|default('') }}"
+               class="article-canvas-editor__saas-logo" />
+        </a>
+      {% endif %}
+      {% if tenant_name %}
+        <span class="article-canvas-editor__saas-name">{{ tenant_name }}</span>
+      {% endif %}
+    </div>
+    <div class="article-canvas-editor__saas-context">
+      <span class="article-canvas-editor__saas-badge">
+        {{ jaraba_icon('ui', 'edit', { size: '14px' }) }}
+        <span>{% trans %}Article Canvas Editor{% endtrans %}</span>
+      </span>
+    </div>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════
+     Toolbar Superior
+     ═══════════════════════════════════════════════════════ #}
+  <header class="article-canvas-editor__toolbar">
+    <div class="article-canvas-editor__toolbar-left">
+      <a href="{{ path('jaraba_content_hub.articles.frontend') }}"
+         class="article-canvas-editor__back">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '20px' }) }}
+        <span>{% trans %}Volver{% endtrans %}</span>
+      </a>
+      <h1 class="article-canvas-editor__title" title="{{ article.getTitle() }}">
+        {{ article.getTitle() }}
+      </h1>
+
+      {# Status badge #}
+      <span class="article-canvas-editor__status-badge article-canvas-editor__status-badge--{{ article_meta.status }}">
+        {{ article_meta.status }}
+      </span>
+    </div>
+
+    <div class="article-canvas-editor__toolbar-center">
+      {# Viewport Dropdown #}
+      <div class="article-canvas-editor__viewport-dropdown" role="group"
+           aria-label="{% trans %}Cambiar viewport{% endtrans %}">
+        <button type="button" class="article-canvas-editor__viewport-trigger"
+                id="viewport-dropdown-trigger"
+                title="{% trans %}Cambiar resolución{% endtrans %}"
+                aria-expanded="false" aria-haspopup="true">
+          <span class="article-canvas-editor__viewport-trigger-icon" id="viewport-trigger-icon">
+            {{ jaraba_icon('ui', 'monitor', { size: '18px' }) }}
+          </span>
+          <span class="article-canvas-editor__viewport-trigger-label" id="viewport-trigger-label">1920px</span>
+          <svg class="article-canvas-editor__viewport-trigger-chevron" width="12" height="12"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        {# Panel desplegable de viewports #}
+        <div class="article-canvas-editor__viewport-panel" id="viewport-dropdown-panel" aria-hidden="true">
+          <div class="article-canvas-editor__viewport-panel-group">
+            <span class="article-canvas-editor__viewport-panel-label">{% trans %}Escritorio{% endtrans %}</span>
+            <div class="article-canvas-editor__viewport-panel-buttons">
+              <button type="button" class="article-canvas-editor__viewport-btn is-active"
+                      data-viewport="desktop-xl" title="{% trans %}Escritorio XL{% endtrans %} (1920px)">
+                {{ jaraba_icon('ui', 'monitor', { size: '16px' }) }}
+                <span>XL</span>
+              </button>
+              <button type="button" class="article-canvas-editor__viewport-btn"
+                      data-viewport="desktop" title="{% trans %}Escritorio{% endtrans %} (1280px)">
+                {{ jaraba_icon('ui', 'monitor', { size: '16px' }) }}
+                <span>1280</span>
+              </button>
+            </div>
+          </div>
+          <div class="article-canvas-editor__viewport-panel-group">
+            <span class="article-canvas-editor__viewport-panel-label">{% trans %}Tablet{% endtrans %}</span>
+            <div class="article-canvas-editor__viewport-panel-buttons">
+              <button type="button" class="article-canvas-editor__viewport-btn"
+                      data-viewport="tablet" title="{% trans %}Tablet{% endtrans %} (768px)">
+                {{ jaraba_icon('ui', 'tablet', { size: '16px' }) }}
+                <span>768</span>
+              </button>
+            </div>
+          </div>
+          <div class="article-canvas-editor__viewport-panel-group">
+            <span class="article-canvas-editor__viewport-panel-label">{% trans %}Móvil{% endtrans %}</span>
+            <div class="article-canvas-editor__viewport-panel-buttons">
+              <button type="button" class="article-canvas-editor__viewport-btn"
+                      data-viewport="mobile" title="{% trans %}Móvil{% endtrans %} (375px)">
+                {{ jaraba_icon('ui', 'smartphone', { size: '16px' }) }}
+                <span>375</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Undo/Redo Controls #}
+      <div class="article-canvas-editor__history-controls" role="group"
+           aria-label="{% trans %}Historial de cambios{% endtrans %}">
+        <button type="button"
+                class="article-canvas-editor__history-btn"
+                id="canvas-undo-btn"
+                title="{% trans %}Deshacer{% endtrans %} (Ctrl+Z)"
+                disabled
+                aria-label="{% trans %}Deshacer último cambio{% endtrans %}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+        </button>
+        <button type="button"
+                class="article-canvas-editor__history-btn"
+                id="canvas-redo-btn"
+                title="{% trans %}Rehacer{% endtrans %} (Ctrl+Shift+Z)"
+                disabled
+                aria-label="{% trans %}Rehacer último cambio{% endtrans %}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="article-canvas-editor__toolbar-right">
+      {# Botón: Metadatos del artículo (slide-panel) #}
+      <button type="button"
+              class="article-canvas-editor__btn article-canvas-editor__btn--secondary"
+              id="article-meta-toggle-btn"
+              title="{% trans %}Metadatos del artículo{% endtrans %}"
+              aria-label="{% trans %}Metadatos del artículo{% endtrans %}">
+        {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', size: '18px' }) }}
+        <span>{% trans %}Artículo{% endtrans %}</span>
+      </button>
+
+      <button type="button"
+              class="article-canvas-editor__btn article-canvas-editor__btn--secondary"
+              id="canvas-preview-btn"
+              title="{% trans %}Vista previa{% endtrans %}"
+              aria-label="{% trans %}Vista previa{% endtrans %}">
+        {{ jaraba_icon('ui', 'eye', { size: '18px' }) }}
+        <span>{% trans %}Vista previa{% endtrans %}</span>
+      </button>
+
+      <div class="article-canvas-editor__toolbar-separator"></div>
+
+      <button type="button"
+              class="article-canvas-editor__btn article-canvas-editor__btn--primary"
+              id="canvas-save-btn">
+        {{ jaraba_icon('ui', 'save', { size: '18px' }) }}
+        <span>{% trans %}Guardar{% endtrans %}</span>
+      </button>
+      <button type="button"
+              class="article-canvas-editor__btn article-canvas-editor__btn--success"
+              id="canvas-publish-btn">
+        {{ jaraba_icon('ui', 'rocket', { size: '18px' }) }}
+        <span>{% trans %}Publicar{% endtrans %}</span>
+      </button>
+    </div>
+  </header>
+
+  {# ═══════════════════════════════════════════════════════
+     Layout principal: Canvas GrapesJS + Panel derecho
+     ═══════════════════════════════════════════════════════ #}
+  <div class="article-canvas-editor__layout">
+    <main class="article-canvas-editor__canvas">
+      <div class="jaraba-grapesjs-layout jaraba-grapesjs-layout--article">
+
+        {# Panel izquierdo: Bloques disponibles #}
+        <div class="jaraba-grapesjs-panel jaraba-grapesjs-panel--left" id="gjs-blocks-panel">
+          <div class="jaraba-grapesjs-panel__header">
+            <h3>{% trans %}Bloques{% endtrans %}</h3>
+          </div>
+          <div class="jaraba-grapesjs-panel__search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" class="jaraba-grapesjs-panel__search-icon" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search"
+                   id="gjs-blocks-search"
+                   class="jaraba-grapesjs-panel__search-input"
+                   placeholder="{% trans %}Buscar bloques...{% endtrans %}"
+                   autocomplete="off" />
+          </div>
+          <div id="gjs-blocks-container" class="jaraba-grapesjs-panel__content"></div>
+        </div>
+
+        {# Canvas central: Área de edición GrapesJS #}
+        <div class="jaraba-grapesjs-canvas-wrapper">
+          {# Loading skeleton — se oculta cuando GrapesJS dispara 'load' #}
+          <div id="gjs-loading-skeleton" class="jaraba-grapesjs-loading">
+            <div class="jaraba-grapesjs-loading__spinner"></div>
+            <p class="jaraba-grapesjs-loading__text" id="gjs-loading-step">
+              {% trans %}Inicializando editor de artículo...{% endtrans %}
+            </p>
+          </div>
+          <div id="gjs-editor" class="jaraba-grapesjs-container"
+               data-jaraba-canvas-container>
+            {# GrapesJS se inicializa aquí vía JS #}
+          </div>
+        </div>
+
+        {# Panel derecho: Estilos, Propiedades, Capas #}
+        <div class="jaraba-grapesjs-panel jaraba-grapesjs-panel--right" id="gjs-styles-panel">
+          <div class="jaraba-grapesjs-panel__tabs">
+            <button type="button" class="jaraba-grapesjs-tab is-active" data-panel="styles">
+              {{ jaraba_icon('ui', 'tools', { variant: 'duotone', size: '16px' }) }}
+              {% trans %}Estilos{% endtrans %}
+            </button>
+            <button type="button" class="jaraba-grapesjs-tab" data-panel="traits">
+              {{ jaraba_icon('ui', 'settings', { variant: 'duotone', size: '16px' }) }}
+              {% trans %}Propiedades{% endtrans %}
+            </button>
+            <button type="button" class="jaraba-grapesjs-tab" data-panel="layers">
+              {{ jaraba_icon('ui', 'layout-grid', { variant: 'duotone', size: '16px' }) }}
+              {% trans %}Capas{% endtrans %}
+            </button>
+          </div>
+          <div id="gjs-styles-container" class="jaraba-grapesjs-panel__content"></div>
+          <div id="gjs-traits-container" class="jaraba-grapesjs-panel__content" hidden></div>
+          <div id="gjs-layers-container" class="jaraba-grapesjs-panel__content" hidden></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════
+     Slide-Panel: Metadatos del artículo
+     ═══════════════════════════════════════════════════════ #}
+  <div class="article-canvas-editor__meta-panel slide-panel" id="article-meta-panel"
+       data-slide-panel="article-meta" aria-hidden="true">
+    <div class="slide-panel__header">
+      <h3 class="slide-panel__title">
+        {{ jaraba_icon('ui', 'file-text', { variant: 'duotone', size: '20px' }) }}
+        {% trans %}Metadatos del artículo{% endtrans %}
+      </h3>
+      <button type="button" class="slide-panel__close" data-slide-panel-close
+              aria-label="{% trans %}Cerrar panel{% endtrans %}">
+        {{ jaraba_icon('ui', 'x', { size: '20px' }) }}
+      </button>
+    </div>
+    <div class="slide-panel__body">
+      <div class="article-canvas-editor__meta-group">
+        <label class="article-canvas-editor__meta-label">{% trans %}Estado{% endtrans %}</label>
+        <span class="article-canvas-editor__meta-value article-canvas-editor__status-badge--{{ article_meta.status }}">
+          {{ article_meta.status }}
+        </span>
+      </div>
+      {% if article_meta.category_name %}
+        <div class="article-canvas-editor__meta-group">
+          <label class="article-canvas-editor__meta-label">{% trans %}Categoría{% endtrans %}</label>
+          <span class="article-canvas-editor__meta-value">{{ article_meta.category_name }}</span>
+        </div>
+      {% endif %}
+      <div class="article-canvas-editor__meta-group">
+        <label class="article-canvas-editor__meta-label">{% trans %}Extracto{% endtrans %}</label>
+        <p class="article-canvas-editor__meta-value article-canvas-editor__meta-value--excerpt">
+          {{ article_meta.excerpt|default('-'|trans) }}
+        </p>
+      </div>
+      <div class="article-canvas-editor__meta-group">
+        <label class="article-canvas-editor__meta-label">{% trans %}SEO Title{% endtrans %}</label>
+        <span class="article-canvas-editor__meta-value">{{ article_meta.seo_title|default('-'|trans) }}</span>
+      </div>
+      <div class="article-canvas-editor__meta-group">
+        <label class="article-canvas-editor__meta-label">{% trans %}SEO Description{% endtrans %}</label>
+        <p class="article-canvas-editor__meta-value">{{ article_meta.seo_description|default('-'|trans) }}</p>
+      </div>
+      {% if article_meta.publish_date %}
+        <div class="article-canvas-editor__meta-group">
+          <label class="article-canvas-editor__meta-label">{% trans %}Fecha de publicación{% endtrans %}</label>
+          <span class="article-canvas-editor__meta-value">{{ article_meta.publish_date }}</span>
+        </div>
+      {% endif %}
+      {% if article_meta.reading_time %}
+        <div class="article-canvas-editor__meta-group">
+          <label class="article-canvas-editor__meta-label">{% trans %}Tiempo de lectura{% endtrans %}</label>
+          <span class="article-canvas-editor__meta-value">{{ article_meta.reading_time }} min</span>
+        </div>
+      {% endif %}
+
+      {# Enlace al formulario de edición para campos que no se gestionan desde el canvas #}
+      <div class="article-canvas-editor__meta-actions">
+        <a href="{{ path('jaraba_content_hub.articles.edit.frontend', { content_article: article.id() }) }}"
+           class="article-canvas-editor__btn article-canvas-editor__btn--secondary"
+           target="_blank">
+          {{ jaraba_icon('ui', 'external-link', { size: '16px' }) }}
+          {% trans %}Editar metadatos{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {# Estado de guardado #}
+  <div class="article-canvas-editor__save-status" id="save-status" hidden>
+    <span class="article-canvas-editor__save-status-icon">
+      {{ jaraba_icon('ui', 'loader', { size: '20px' }) }}
+    </span>
+    <span class="article-canvas-editor__save-status-text">{% trans %}Guardando...{% endtrans %}</span>
+  </div>
+</div>

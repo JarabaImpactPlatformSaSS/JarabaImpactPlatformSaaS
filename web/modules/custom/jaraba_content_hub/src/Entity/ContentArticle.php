@@ -175,6 +175,50 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
     }
 
     /**
+     * Obtiene el modo de layout del artículo.
+     *
+     * @return string
+     *   'legacy' para textarea clásico, 'canvas' para editor visual.
+     */
+    public function getLayoutMode(): string
+    {
+        return $this->get('layout_mode')->value ?? 'legacy';
+    }
+
+    /**
+     * Verifica si el artículo usa el Canvas Editor.
+     *
+     * @return bool
+     *   TRUE si layout_mode es 'canvas'.
+     */
+    public function isCanvasMode(): bool
+    {
+        return $this->getLayoutMode() === 'canvas';
+    }
+
+    /**
+     * Obtiene los datos JSON del Canvas GrapesJS.
+     *
+     * @return string
+     *   JSON del estado completo del editor (components, styles, html, css).
+     */
+    public function getCanvasData(): string
+    {
+        return $this->get('canvas_data')->value ?? '{}';
+    }
+
+    /**
+     * Obtiene el HTML renderizado del Canvas.
+     *
+     * @return string
+     *   HTML sanitizado para la vista pública.
+     */
+    public function getRenderedHtml(): string
+    {
+        return $this->get('rendered_html')->value ?? '';
+    }
+
+    /**
      * {@inheritdoc}
      *
      * Define los campos base de la entidad ContentArticle.
@@ -411,6 +455,54 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
         $fields['changed'] = BaseFieldDefinition::create('changed')
             ->setLabel(t('Modificado'))
             ->setDescription(t('La fecha de última modificación del artículo.'));
+
+        // =====================================================================
+        // CANVAS EDITOR GrapesJS — Editor visual para artículos premium.
+        // Permite composición drag-and-drop reutilizando el engine del
+        // Page Builder. El campo body se mantiene para artículos legacy.
+        // =====================================================================
+
+        // Modo de layout: legacy (textarea clásico) o canvas (editor visual).
+        $fields['layout_mode'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Modo de Layout'))
+            ->setDescription(t('Tipo de composición del artículo: textarea clásico o editor visual canvas.'))
+            ->setTranslatable(FALSE)
+            ->setSetting('allowed_values', [
+                'legacy' => 'Clásico (textarea)',
+                'canvas' => 'Canvas Editor (visual)',
+            ])
+            ->setDefaultValue('legacy')
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 3,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', FALSE);
+
+        // Datos del Canvas GrapesJS (components + styles + html + css).
+        $fields['canvas_data'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Datos del Canvas'))
+            ->setDescription(t('JSON con el estado completo del Canvas Editor (components, styles, html, css).'))
+            ->setTranslatable(TRUE)
+            ->setDefaultValue('{}')
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 4,
+                'settings' => [
+                    'rows' => 10,
+                ],
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', FALSE);
+
+        // HTML renderizado del canvas para el frontend público.
+        $fields['rendered_html'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('HTML Renderizado'))
+            ->setDescription(t('HTML final exportado del Canvas Editor para la vista pública.'))
+            ->setTranslatable(TRUE)
+            ->setDefaultValue('')
+            ->setDisplayConfigurable('form', FALSE)
+            ->setDisplayConfigurable('view', FALSE);
 
         return $fields;
     }

@@ -132,6 +132,44 @@ class PublicContactController extends ControllerBase {
     // Register flood event.
     $this->flood->register($floodName, 3600, $ip);
 
+    // ─── CRM Integration: crear Contact + Activity ──────────────────
+    // Sprint 5: cada submission del formulario de contacto genera un
+    // CRM Contact (o lo actualiza si ya existe por email) y crea una
+    // Activity de tipo 'contact_form_submission' para trazabilidad.
+    try {
+      if (\Drupal::hasService('jaraba_crm.contact_service')) {
+        /** @var \Drupal\jaraba_crm\Service\ContactService $contactService */
+        $contactService = \Drupal::service('jaraba_crm.contact_service');
+
+        // Intentar crear o actualizar contacto CRM.
+        $contactData = [
+          'email' => $email,
+          'first_name' => $name,
+          'source' => 'contact_form',
+          'status' => 'lead',
+        ];
+        $contactService->createOrUpdate($contactData);
+      }
+
+      if (\Drupal::hasService('jaraba_crm.activity_service')) {
+        /** @var \Drupal\jaraba_crm\Service\ActivityService $activityService */
+        $activityService = \Drupal::service('jaraba_crm.activity_service');
+        $activityService->log([
+          'type' => 'contact_form_submission',
+          'subject' => $subject ?: 'Contacto general',
+          'description' => mb_substr($message, 0, 500),
+          'contact_email' => $email,
+        ]);
+      }
+    }
+    catch (\Exception $e) {
+      // CRM integration es best-effort, no debe romper la respuesta.
+      $this->logger->warning('CRM integration failed for contact @email: @error', [
+        '@email' => $email,
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
     return new JsonResponse([
       'status' => 'success',
       'message' => $this->t('Mensaje enviado correctamente.'),

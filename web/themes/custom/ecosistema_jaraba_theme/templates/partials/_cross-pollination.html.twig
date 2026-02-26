@@ -1,0 +1,119 @@
+{#
+/**
+ * @file _cross-pollination.html.twig
+ * Sección Cross-Pollination de la homepage.
+ *
+ * Muestra las 6 verticales de la plataforma como tarjetas interactivas
+ * para descubrir servicios cruzados. Diseñada para convertir visitantes
+ * generalistas en usuarios de verticales específicos.
+ *
+ * DIRECTRICES:
+ * - Glassmorphism + gradients per vertical
+ * - i18n via {% trans %} para todos los textos
+ * - Mobile: scroll horizontal, Desktop: grid 3×2
+ * - BEM: .cross-pollination__*
+ * - Accesibilidad: aria-label, roles
+ */
+#}
+
+<section class="cross-pollination reveal-element reveal-fade-up"
+         id="verticales"
+         aria-label="{% trans %}Verticales de la plataforma{% endtrans %}">
+  <div class="cross-pollination__container">
+
+    <div class="cross-pollination__header">
+      <span class="cross-pollination__eyebrow">{% trans %}Un ecosistema, 6 verticales{% endtrans %}</span>
+      <h2 class="cross-pollination__title">{% trans %}Encuentra el servicio que necesitas{% endtrans %}</h2>
+      <p class="cross-pollination__subtitle">
+        {% trans %}Cada vertical está diseñado para un reto específico. Todos comparten el mismo copiloto IA y la misma metodología probada.{% endtrans %}
+      </p>
+    </div>
+
+    <div class="cross-pollination__grid" role="list">
+
+      {# Empleabilidad #}
+      <a href="/empleabilidad" class="cross-pollination__card cross-pollination__card--empleabilidad"
+         role="listitem" data-track-cta="xpoll_empleabilidad" data-track-position="homepage_cross_pollination">
+        <div class="cross-pollination__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="cross-pollination__card-title">{% trans %}Empleabilidad{% endtrans %}</h3>
+        <p class="cross-pollination__card-desc">{% trans %}Diagnóstico profesional, IA para CV, preparación de entrevistas y matching con ofertas.{% endtrans %}</p>
+        <span class="cross-pollination__card-cta">{% trans %}Explorar →{% endtrans %}</span>
+      </a>
+
+      {# Emprendimiento #}
+      <a href="/emprendimiento" class="cross-pollination__card cross-pollination__card--emprendimiento"
+         role="listitem" data-track-cta="xpoll_emprendimiento" data-track-position="homepage_cross_pollination">
+        <div class="cross-pollination__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="cross-pollination__card-title">{% trans %}Emprendimiento{% endtrans %}</h3>
+        <p class="cross-pollination__card-desc">{% trans %}Business Model Canvas, validación de hipótesis, aceleración y conexión con inversores.{% endtrans %}</p>
+        <span class="cross-pollination__card-cta">{% trans %}Explorar →{% endtrans %}</span>
+      </a>
+
+      {# AgroConecta #}
+      <a href="/agroconecta" class="cross-pollination__card cross-pollination__card--agroconecta"
+         role="listitem" data-track-cta="xpoll_agroconecta" data-track-position="homepage_cross_pollination">
+        <div class="cross-pollination__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 22V12M12 12C9 8 5 6 2 6c3 0 7 2 10 6zM12 12c3-4 7-6 10-6-3 0-7 2-10 6z" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="cross-pollination__card-title">{% trans %}AgroConecta{% endtrans %}</h3>
+        <p class="cross-pollination__card-desc">{% trans %}Trazabilidad agroalimentaria, marketplace local, QR inteligente y previsión de demanda.{% endtrans %}</p>
+        <span class="cross-pollination__card-cta">{% trans %}Explorar →{% endtrans %}</span>
+      </a>
+
+      {# ComercioConecta #}
+      <a href="/comercioconecta" class="cross-pollination__card cross-pollination__card--comercioconecta"
+         role="listitem" data-track-cta="xpoll_comercioconecta" data-track-position="homepage_cross_pollination">
+        <div class="cross-pollination__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 6h18l-2 12H5L3 6z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="9" cy="20" r="1" fill="currentColor"/>
+            <circle cx="17" cy="20" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3 class="cross-pollination__card-title">{% trans %}ComercioConecta{% endtrans %}</h3>
+        <p class="cross-pollination__card-desc">{% trans %}Digitalización de comercio local, SEO automático, presencia online y fidelización.{% endtrans %}</p>
+        <span class="cross-pollination__card-cta">{% trans %}Explorar →{% endtrans %}</span>
+      </a>
+
+      {# ServiciosConecta #}
+      <a href="/serviciosconecta" class="cross-pollination__card cross-pollination__card--servicios"
+         role="listitem" data-track-cta="xpoll_servicios" data-track-position="homepage_cross_pollination">
+        <div class="cross-pollination__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 3v18M3 9h18" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="cross-pollination__card-title">{% trans %}ServiciosConecta{% endtrans %}</h3>
+        <p class="cross-pollination__card-desc">{% trans %}Gestión de servicios profesionales, propuestas IA, facturación y seguimiento de proyectos.{% endtrans %}</p>
+        <span class="cross-pollination__card-cta">{% trans %}Explorar →{% endtrans %}</span>
+      </a>
+
+      {# JarabaLex #}
+      <a href="/jarabalex" class="cross-pollination__card cross-pollination__card--jarabalex"
+         role="listitem" data-track-cta="xpoll_jarabalex" data-track-position="homepage_cross_pollination">
+        <div class="cross-pollination__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3v18M4 7l8-4 8 4M4 17l8 4 8-4" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 class="cross-pollination__card-title">{% trans %}JarabaLex{% endtrans %}</h3>
+        <p class="cross-pollination__card-desc">{% trans %}Inteligencia legislativa, alertas BOE/BOJA, búsqueda jurídica IA y vigilancia normativa.{% endtrans %}</p>
+        <span class="cross-pollination__card-cta">{% trans %}Explorar →{% endtrans %}</span>
+      </a>
+
+    </div>
+
+  </div>
+</section>

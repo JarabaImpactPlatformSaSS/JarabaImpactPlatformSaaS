@@ -18,7 +18,16 @@
   "name": "{{ site_name }}",
   "url": "{{ site_url }}",
   "logo": "{{ logo_url }}",
-  "description": "{{ 'Plataforma SaaS de impacto para la gestión de ecosistemas locales.'|t }}",
+  "description": "{{ 'Plataforma SaaS de impacto para la gestión de ecosistemas locales. +100M€ en fondos europeos gestionados.'|t }}",
+  "founder": {
+    "@type": "Person",
+    "name": "Pepe Jaraba",
+    "jobTitle": "{{ 'Fundador y Director de Ecosistemas Digitales'|t }}"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Spain"
+  },
   "sameAs": [
     "https://facebook.com/JarabaImpact",
     "https://x.com/JarabaEcosistema",
@@ -29,7 +38,7 @@
     "telephone": "+34-900-000-000",
     "contactType": "customer service",
     "areaServed": "ES",
-    "availableLanguage": "Spanish"
+    "availableLanguage": ["Spanish", "English"]
   }
 }
 </script>
@@ -42,11 +51,22 @@
   "url": "{{ site_url }}",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "All",
-  "abstract": "{{ 'Conecta talento, negocios y emprendedores con inteligencia artificial.'|t }}",
+  "abstract": "{{ 'Conecta talento, negocios y emprendedores con inteligencia artificial. 6 verticales especializados, copiloto IA integrado.'|t }}",
   "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "EUR"
-  }
+    "@type": "AggregateOffer",
+    "lowPrice": "0",
+    "highPrice": "99",
+    "priceCurrency": "EUR",
+    "offerCount": "3"
+  },
+  "featureList": [
+    "{{ 'Copiloto IA personalizado'|t }}",
+    "{{ 'Empleabilidad y desarrollo profesional'|t }}",
+    "{{ 'Emprendimiento y aceleración'|t }}",
+    "{{ 'AgroConecta - Trazabilidad agroalimentaria'|t }}",
+    "{{ 'ComercioConecta - Digitalización comercio local'|t }}",
+    "{{ 'SEO local y GEO automático'|t }}"
+  ]
 }
 </script>
+

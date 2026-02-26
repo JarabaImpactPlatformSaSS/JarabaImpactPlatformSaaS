@@ -29,7 +29,7 @@
 {% set layout = layout_raw in allowed_layouts ? layout_raw : 'classic' %}
 
 {# ── Parsear navigation_items: "Texto|URL" por línea → array de {text, url} ── #}
-{% set nav_items_raw = ts.navigation_items|default("Empleo|/empleo\nTalento|/talento\nEmprender|/emprender\nComercio|/comercio\nInstituciones|/instituciones") %}
+{% set nav_items_raw = ts.navigation_items|default("Empleabilidad|/empleabilidad\nTalento|/talento\nEmprendimiento|/emprendimiento\nComercioConecta|/comercioconecta\nInstituciones|/instituciones") %}
 {% set nav_items = [] %}
 {% for line in nav_items_raw|split("\n") %}
   {% set parts = line|split('|') %}
