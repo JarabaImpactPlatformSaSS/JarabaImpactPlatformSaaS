@@ -1,0 +1,161 @@
+// =============================================================================
+// _language-switcher.scss
+// Language selector dropdown para meta-sitios multilingüe.
+// =============================================================================
+
+.language-switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.75rem;
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: 'Outfit', Arial, Helvetica, sans-serif;
+    letter-spacing: 0.025em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    &[aria-expanded="true"] {
+      background: rgba(255, 255, 255, 0.18);
+
+      .language-switcher__arrow {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &__current {
+    text-transform: uppercase;
+  }
+
+  &__arrow {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 160px;
+    padding: 0.375rem;
+    margin: 0;
+    list-style: none;
+    background: rgba(30, 40, 55, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+
+    .language-switcher__toggle[aria-expanded="true"] + & {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+  }
+
+  &__flag {
+    font-size: 1.125rem;
+    line-height: 1;
+  }
+
+  &__name {
+    flex: 1;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  &__code {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Dark text variant (for light-background headers / transparent on light)
+// -----------------------------------------------------------------------------
+.landing-header--light,
+.landing-header--transparent.is-scrolled {
+  .language-switcher__toggle {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #233D63;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Mobile: full-width inline en el overlay del menú
+// -----------------------------------------------------------------------------
+@media (max-width: 768px) {
+  .language-switcher {
+    margin-right: 0;
+
+    &__dropdown {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      background: transparent;
+      backdrop-filter: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin-top: 0.5rem;
+    }
+
+    &__toggle {
+      display: none;
+    }
+
+    &__option {
+      color: rgba(255, 255, 255, 0.85);
+      padding: 0.625rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+}

@@ -4,7 +4,17 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-26
-**Versión:** 111.0.0 (Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo)
+**Versión:** 112.0.0 (Meta-Sitios Multilingüe — i18n EN+PT-BR + Language Switcher + Hreflang Dinámico)
+
+> **🌍 META-SITIOS MULTILINGÜE — I18N EN+PT-BR + LANGUAGE SWITCHER + HREFLANG DINÁMICO** (2026-02-26)
+> - **Contexto:** Implementacion de soporte multilingüe completo para los 3 meta-sitios: pepejaraba.com (ES+EN), jarabaimpact.com (ES+EN+PT-BR), plataformadeecosistemas.es (ES+EN). Aprovecha infraestructura existente de `jaraba_i18n` (AITranslationService + TranslationManagerService) y PageContent `translatable = TRUE`.
+> - **HAL-01 (Script Traduccion Batch):** `scripts/i18n/translate-metasite-pages.php` (310+ lineas) con traduccion batch via AITranslationService. Manejo de canvas_data (GrapesJS JSON: components[].content, attributes alt/title/placeholder, recursive), content_data (JSON recursivo con skip patterns), rendered_html (regex text nodes batch), path_alias (transliteracion + slugify). 46 traducciones creadas para 3 tenants (IDs 5, 6, 7).
+> - **HAL-02 (Hreflang Dinamico):** `_hreflang-meta.html.twig` actualizado de hardcoded ES+EN a iteracion sobre `available_languages`. Soporte automatico para futuros idiomas sin cambios de template. `x-default` siempre apunta a ES.
+> - **HAL-03 (Language Switcher):** Nuevo `_language-switcher.html.twig` dropdown glassmorphism con banderas emoji (🇪🇸🇬🇧🇧🇷) + nombre + codigo ISO. JS toggle/ESC/arrow keys. SCSS dark variant + responsive. Integrado en `_header-classic.html.twig`. Libreria condicional.
+> - **HAL-04 (Preprocess Hook):** `preprocess_html()` inyecta `available_languages` + `current_langcode` via `$page_content->getTranslationLanguages()`.
+> - **HAL-05 (PT-BR):** `drush language:add pt-br` → 12.038 traducciones Drupal core importadas, 185 config objects actualizados.
+> - **2 reglas nuevas:** I18N-METASITE-001 (P0), LANG-SWITCHER-001 (P1). Aprendizaje #139.
+> - **Cross-refs:** Directrices v87.0.0, Arquitectura v80.0.0, Flujo v41.0.0.
 
 > **🔒 REMEDIACIÓN DE SECRETOS — SECRET-MGMT-001 + GIT-FILTER-REPO** (2026-02-26)
 > - **Contexto:** Auditoria de seguridad detectó 5 ficheros de configuración en `config/sync/` con secretos reales (OAuth client_secret, contraseña SMTP, reCAPTCHA secret_key). Los secretos estaban expuestos en el historial git (459 commits). Se implementó la arquitectura SECRET-MGMT-001 para mantener Drupal `config:import`/`config:export` funcional sin secretos en repositorio.

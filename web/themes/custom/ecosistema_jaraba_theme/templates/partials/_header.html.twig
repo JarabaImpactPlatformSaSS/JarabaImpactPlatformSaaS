@@ -39,6 +39,9 @@
 {% endfor %}
 
 {{ attach_library('ecosistema_jaraba_theme/mobile-menu') }}
+{% if available_languages|default([])|length > 1 %}
+  {{ attach_library('ecosistema_jaraba_theme/language-switcher') }}
+{% endif %}
 
 {# GAP-AUD-010: Proactive Insights bell notification #}
 {% if logged_in and proactive_insights_count is defined and proactive_insights_count > 0 %}
