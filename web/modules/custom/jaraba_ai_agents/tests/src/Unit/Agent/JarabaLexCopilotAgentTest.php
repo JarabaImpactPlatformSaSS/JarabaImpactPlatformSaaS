@@ -15,6 +15,11 @@ use Psr\Log\LoggerInterface;
 /**
  * Unit tests for JarabaLexCopilotAgent.
  *
+ * @deprecated in jaraba_ai_agents:2.0.0. Tests the deprecated
+ *   JarabaLexCopilotAgent. The canonical agent is
+ *   \Drupal\jaraba_legal_intelligence\Agent\LegalCopilotAgent.
+ *   See FIX-016.
+ *
  * @coversDefaultClass \Drupal\jaraba_ai_agents\Agent\JarabaLexCopilotAgent
  * @group jaraba_ai_agents
  */

@@ -639,6 +639,61 @@ jaraba_comercio_conecta.copilot.proactive:
   options:
     _format: json
 
+# FIX-017: REST API endpoints for MerchantCopilotAgent.
+jaraba_comercio_conecta.copilot.generate_description:
+  path: '/api/v1/merchant/copilot/generate/description'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::generateDescription'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_comercio_conecta.copilot.suggest_price:
+  path: '/api/v1/merchant/copilot/generate/price'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::suggestPrice'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_comercio_conecta.copilot.social_post:
+  path: '/api/v1/merchant/copilot/generate/social-post'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::generateSocialPost'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_comercio_conecta.copilot.flash_offer:
+  path: '/api/v1/merchant/copilot/generate/flash-offer'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::generateFlashOffer'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_comercio_conecta.copilot.respond_review:
+  path: '/api/v1/merchant/copilot/generate/review-response'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::respondReview'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_comercio_conecta.copilot.email_promo:
+  path: '/api/v1/merchant/copilot/generate/email-promo'
+  defaults:
+    _controller: '\Drupal\jaraba_comercio_conecta\Controller\CopilotApiController::generateEmailPromo'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
 # --- Settings Routes: Field UI base routes (Batch P2) ---
 
 entity.abandoned_cart.settings:

@@ -22,6 +22,16 @@ namespace Drupal\jaraba_ai_agents\Agent;
  * - LEGAL-RAG-001: Siempre citar fuente (ECLI/BOE/TEAC/EU).
  * - Soft upsell solo para plan free + fase >= 3.
  * - Temperaturas individuales por modo.
+ *
+ * @deprecated in jaraba_ai_agents:2.0.0 y se eliminara en jaraba_ai_agents:3.0.0.
+ *   FIX-016: Agente duplicado. El agente canonico es
+ *   \Drupal\jaraba_legal_intelligence\Agent\LegalCopilotAgent (8 modos,
+ *   contexto de expediente, RAG via LegalCopilotBridgeService). Este agente
+ *   tiene solo 6 modos y prompts sin integracion RAG real. Todos los
+ *   consumidores nuevos deben usar el servicio
+ *   'jaraba_legal_intelligence.legal_copilot_agent'.
+ *
+ * @see \Drupal\jaraba_legal_intelligence\Agent\LegalCopilotAgent
  */
 class JarabaLexCopilotAgent extends BaseAgent {
 

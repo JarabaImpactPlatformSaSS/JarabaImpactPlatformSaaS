@@ -52,3 +52,85 @@ jaraba_ai_agents.brand_voice.*:
     custom_instructions:
       type: string
       label: 'Custom Instructions'
+
+# FIX-020: Model routing tier configuration schema.
+jaraba_ai_agents.model_routing:
+  type: config_object
+  label: 'Model Routing Configuration'
+  mapping:
+    tiers:
+      type: mapping
+      label: 'Model Tiers'
+      mapping:
+        fast:
+          type: mapping
+          label: 'Fast Tier'
+          mapping:
+            provider:
+              type: string
+              label: 'Provider ID'
+            model:
+              type: string
+              label: 'Model ID'
+            cost_per_1k_input:
+              type: float
+              label: 'Cost per 1K input tokens (USD)'
+            cost_per_1k_output:
+              type: float
+              label: 'Cost per 1K output tokens (USD)'
+            max_complexity:
+              type: float
+              label: 'Max complexity score (0.0-1.0)'
+            use_cases:
+              type: sequence
+              label: 'Applicable use cases'
+              sequence:
+                type: string
+        balanced:
+          type: mapping
+          label: 'Balanced Tier'
+          mapping:
+            provider:
+              type: string
+              label: 'Provider ID'
+            model:
+              type: string
+              label: 'Model ID'
+            cost_per_1k_input:
+              type: float
+              label: 'Cost per 1K input tokens (USD)'
+            cost_per_1k_output:
+              type: float
+              label: 'Cost per 1K output tokens (USD)'
+            max_complexity:
+              type: float
+              label: 'Max complexity score (0.0-1.0)'
+            use_cases:
+              type: sequence
+              label: 'Applicable use cases'
+              sequence:
+                type: string
+        premium:
+          type: mapping
+          label: 'Premium Tier'
+          mapping:
+            provider:
+              type: string
+              label: 'Provider ID'
+            model:
+              type: string
+              label: 'Model ID'
+            cost_per_1k_input:
+              type: float
+              label: 'Cost per 1K input tokens (USD)'
+            cost_per_1k_output:
+              type: float
+              label: 'Cost per 1K output tokens (USD)'
+            max_complexity:
+              type: float
+              label: 'Max complexity score (0.0-1.0)'
+            use_cases:
+              type: sequence
+              label: 'Applicable use cases'
+              sequence:
+                type: string

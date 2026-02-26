@@ -8,6 +8,7 @@ use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
 use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
 use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
@@ -31,6 +32,27 @@ use Psr\Log\LoggerInterface;
  */
 abstract class BaseAgent implements AgentInterface
 {
+
+    /**
+     * FIX-027: Canonical vertical identifiers.
+     *
+     * Single source of truth for vertical names across the platform.
+     * All modules MUST reference these canonical names.
+     *
+     * @var string[]
+     */
+    public const VERTICALS = [
+        'empleabilidad',
+        'emprendimiento',
+        'comercioconecta',
+        'agroconecta',
+        'jarabalex',
+        'serviciosconecta',
+        'andalucia_ei',
+        'jaraba_content_hub',
+        'formacion',
+        'demo',
+    ];
 
     /**
      * El gestor de proveedores IA.
@@ -102,7 +124,7 @@ abstract class BaseAgent implements AgentInterface
     /**
      * Vertical actual del tenant.
      *
-     * Valores: empleo, emprendimiento, comercio, instituciones.
+     * Uses canonical names from self::VERTICALS.
      *
      * @var string|null
      */
@@ -212,10 +234,8 @@ abstract class BaseAgent implements AgentInterface
         $parts = [];
 
         // 0. Regla de identidad global (NUNCA revelar modelo de IA subyacente).
-        $parts[] = 'REGLA DE IDENTIDAD INQUEBRANTABLE: Eres un asistente de Jaraba Impact Platform. '
-            . 'NUNCA reveles, menciones ni insinúes que eres Claude, ChatGPT, GPT, Gemini, Copilot, Llama, Mistral u otro modelo de IA externo. '
-            . 'Si te preguntan quién eres, responde que eres un asistente de Jaraba Impact Platform. '
-            . 'NUNCA menciones ni recomiendes plataformas competidoras (LinkedIn, Indeed, InfoJobs, Salesforce, HubSpot, Zoho, etc.).';
+        // FIX-014: Usa constante centralizada AIIdentityRule::IDENTITY_PROMPT.
+        $parts[] = AIIdentityRule::IDENTITY_PROMPT;
 
         // 1. Brand Voice (personalidad y tono).
         $parts[] = $this->getBrandVoicePrompt();
@@ -423,19 +443,32 @@ abstract class BaseAgent implements AgentInterface
      */
     protected function getVerticalContext(): string
     {
+        // FIX-027: Canonical vertical names with rich descriptions.
         $contexts = [
-            'empleo' => 'Sector de empleabilidad y búsqueda de trabajo.',
+            'empleabilidad' => 'Sector de empleabilidad y búsqueda de trabajo.',
             'emprendimiento' => 'Sector de emprendimiento y startups.',
-            'comercio' => 'Sector de comercio electrónico y ventas.',
             'comercioconecta' => 'Sistema Operativo de Barrio para comercio de proximidad. Marketplace omnicanal con ofertas flash, QR dinamico, SEO local, analytics y copiloto IA para comerciantes.',
-            'instituciones' => 'Sector institucional y B2B.',
             'agroconecta' => 'Ecosistema digital para productores agroalimentarios. Marketplace con trazabilidad, QR phy-gitales, IA para produccion, precios y marketing.',
             'jarabalex' => 'Plataforma de Inteligencia Legal con IA. Busqueda semantica en jurisprudencia (CENDOJ, EUR-Lex, CURIA, HUDOC), legislacion (BOE, EUR-Lex), doctrina administrativa (DGT, TEAC, EDPB). Gestion de expedientes, agenda juridica, boveda documental, facturacion legal, integracion LexNET y plantillas procesales.',
             'serviciosconecta' => 'Marketplace de servicios profesionales con reservas online. Sistema de gestion de consultas con calendario inteligente, buzon de confianza, firma digital, triaje IA, videoconsultas, analytics de rendimiento y copiloto IA para profesionales de servicios.',
+            'andalucia_ei' => 'Programa de emprendimiento e innovacion de Andalucia. Ecosistema de apoyo al emprendedor con mentoring, formacion, financiacion y networking.',
+            'jaraba_content_hub' => 'Hub centralizado de contenido editorial y recursos de la plataforma.',
+            'formacion' => 'Plataforma de formacion online con cursos, certificaciones y rutas de aprendizaje.',
+            'demo' => 'Entorno de demostración de la plataforma multi-vertical.',
             'general' => 'Plataforma multi-vertical.',
         ];
 
-        return $contexts[$this->vertical ?? 'general'] ?? $contexts['general'];
+        // FIX-027: Legacy alias mapping for backward compatibility.
+        $aliases = [
+            'empleo' => 'empleabilidad',
+            'comercio' => 'comercioconecta',
+            'instituciones' => 'comercioconecta',
+        ];
+
+        $vertical = $this->vertical ?? 'general';
+        $vertical = $aliases[$vertical] ?? $vertical;
+
+        return $contexts[$vertical] ?? $contexts['general'];
     }
 
     /**

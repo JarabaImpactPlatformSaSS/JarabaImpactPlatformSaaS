@@ -450,10 +450,10 @@ PROMPT;
     protected function getDefaultSuggestions(): array
     {
         return [
-            ['action' => 'demo_empleo', 'label' => $this->t('🎬 Ver demo: Buscar empleo con IA')],
-            ['action' => 'demo_emprendimiento', 'label' => $this->t('🚀 Ver demo: Validar mi idea de negocio')],
-            ['action' => 'register', 'label' => $this->t('✨ Crear cuenta gratis')],
-            ['action' => 'b2b', 'label' => $this->t('🏢 Soy una organización')],
+            ['label' => (string) $this->t('Ver demo: Buscar empleo con IA'), 'url' => '/empleo'],
+            ['label' => (string) $this->t('Ver demo: Validar mi idea de negocio'), 'url' => '/emprender'],
+            ['label' => (string) $this->t('Crear cuenta gratis'), 'url' => '/user/register'],
+            ['label' => (string) $this->t('Soy una organización'), 'url' => '/contacto'],
         ];
     }
 

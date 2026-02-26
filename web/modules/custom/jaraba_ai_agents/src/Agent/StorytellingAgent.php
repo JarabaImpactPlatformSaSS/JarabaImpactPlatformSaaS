@@ -8,6 +8,12 @@ namespace Drupal\jaraba_ai_agents\Agent;
  * Storytelling Agent for brand narratives.
  *
  * Creates brand stories, product narratives, and about pages.
+ *
+ * @note Gen 1 agent — Extends BaseAgent directly (no model routing).
+ *   Provides full AI capabilities via BaseAgent contract (AI-IDENTITY-001,
+ *   observability, UnifiedPromptBuilder). Does not include SmartBaseAgent
+ *   intelligent model routing. Consider migrating to SmartBaseAgent if cost
+ *   optimization is needed.
  */
 class StorytellingAgent extends BaseAgent
 {

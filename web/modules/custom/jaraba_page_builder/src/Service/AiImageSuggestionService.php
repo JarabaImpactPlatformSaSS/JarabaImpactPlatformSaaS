@@ -65,13 +65,20 @@ class AiImageSuggestionService {
    *
    * @var array<string, string>
    */
+  /**
+   * FIX-027: Canonical vertical names for image suggestion context.
+   */
   protected const VERTICAL_CONTEXT = [
     'empleabilidad' => 'employment job career professional',
     'emprendimiento' => 'startup entrepreneurship innovation business',
+    'comercioconecta' => 'ecommerce shopping products marketplace local commerce',
     'agroconecta' => 'agriculture farming organic rural',
+    'jarabalex' => 'legal law justice courtroom',
+    'serviciosconecta' => 'professional services consulting expertise',
+    'andalucia_ei' => 'entrepreneurship innovation andalusia spain',
+    'jaraba_content_hub' => 'editorial content knowledge resources',
     'formacion' => 'education learning training classroom',
-    'comercio' => 'ecommerce shopping products marketplace',
-    'servicios' => 'professional services consulting expertise',
+    'demo' => 'technology platform demonstration',
   ];
 
   /**
@@ -88,6 +95,26 @@ class AiImageSuggestionService {
   ) {
     $this->logger = $logger_factory->get('jaraba_page_builder.ai_image');
     $this->httpClient = $http_client;
+  }
+
+  /**
+   * FIX-027: Normalizes legacy vertical names to canonical identifiers.
+   *
+   * @param string $vertical
+   *   The vertical identifier (may be legacy).
+   *
+   * @return string
+   *   Canonical vertical name.
+   */
+  protected static function normalizeLegacyVertical(string $vertical): string {
+    static $aliases = [
+      'empleo' => 'empleabilidad',
+      'comercio' => 'comercioconecta',
+      'servicios' => 'serviciosconecta',
+      'agro' => 'agroconecta',
+      'ecommerce' => 'comercioconecta',
+    ];
+    return $aliases[$vertical] ?? $vertical;
   }
 
   /**
@@ -118,6 +145,9 @@ class AiImageSuggestionService {
     int $count = 8,
   ): array {
     $count = min(12, max(1, $count));
+
+    // FIX-027: Normalize legacy vertical names to canonical.
+    $vertical = self::normalizeLegacyVertical($vertical);
 
     // Fase 1: Generar keywords de busqueda con IA.
     try {

@@ -33,6 +33,7 @@ services:
       - '@logger.factory'
       - '@config.factory'
       - '@cache.default'
+      - '@?ecosistema_jaraba_core.ai_guardrails'
 
   # ---------------------------------------------------------------------------
   # Filtrado Multi-Tenant para RAG/Qdrant

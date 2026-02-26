@@ -43,6 +43,8 @@ class AIGuardrailsService
         // PII sensible.
         '/\b\d{3}-\d{2}-\d{4}\b/', // SSN
         '/\b\d{16}\b/', // Credit card
+        // FIX-028: PII españoles en blocked patterns (alto riesgo).
+        '/\bES\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{2}[\s-]?\d{10}\b/', // IBAN ES
     ];
 
     /**
@@ -190,6 +192,12 @@ class AIGuardrailsService
             'phone' => '/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/',
             'ssn' => '/\b\d{3}-\d{2}-\d{4}\b/',
             'credit_card' => '/\b(?:\d{4}[-\s]?){3}\d{4}\b/',
+            // FIX-028: PII españoles.
+            'dni' => '/\b\d{8}[A-Za-z]\b/',
+            'nie' => '/\b[XYZxyz]\d{7}[A-Za-z]\b/',
+            'iban_es' => '/\bES\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{2}[\s-]?\d{10}\b/',
+            'nif_cif' => '/\b[A-HJ-NP-SUVW]\d{7}[A-J0-9]\b/',
+            'phone_es' => '/\b(?:\+34|0034)[\s-]?\d{9}\b/',
         ];
 
         $found = [];

@@ -300,11 +300,22 @@
           }
           html += '<div class="copilot-chat__message-content">' + escapeHtml(msg.text) + '</div>';
 
-          // CTAs/Sugerencias.
+          // CTAs/Sugerencias — soporta strings y objetos {label, url}.
           if (msg.suggestions && msg.suggestions.length > 0) {
             html += '<div class="copilot-chat__suggestions">';
             msg.suggestions.forEach(function (s) {
-              html += '<button class="copilot-chat__suggestion-btn" data-suggestion="' + escapeHtml(s) + '">' + escapeHtml(s) + '</button>';
+              var item = typeof s === 'string' ? { label: s } : s;
+              if (item.url) {
+                // Enlace directo — botón-link que navega a la URL.
+                var isExternal = item.url.indexOf('http') === 0 && item.url.indexOf(window.location.hostname) === -1;
+                html += '<a class="copilot-chat__suggestion-btn copilot-chat__suggestion-btn--link" href="' + escapeHtml(item.url) + '"';
+                if (isExternal) { html += ' target="_blank" rel="noopener noreferrer"'; }
+                html += '>' + escapeHtml(item.label);
+                html += ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                html += '</a>';
+              } else {
+                html += '<button class="copilot-chat__suggestion-btn" data-suggestion="' + escapeHtml(item.label) + '">' + escapeHtml(item.label) + '</button>';
+              }
             });
             html += '</div>';
           }
@@ -362,14 +373,15 @@
         });
       });
 
-      // Bind feedback buttons.
+      // FIX-023: Bind feedback buttons with message index for context.
       messagesContainer.querySelectorAll('.copilot-chat__feedback-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var feedbackValue = parseInt(btn.getAttribute('data-feedback'), 10);
-          sendFeedback(feedbackValue);
-          var parent = btn.closest('.copilot-chat__feedback');
-          if (parent) {
-            parent.innerHTML = '<span class="copilot-chat__feedback-sent">' + Drupal.t('Gracias por tu feedback') + '</span>';
+          var feedbackContainer = btn.closest('.copilot-chat__feedback');
+          var msgIdx = feedbackContainer ? parseInt(feedbackContainer.getAttribute('data-msg-idx'), 10) : -1;
+          sendFeedback(feedbackValue, msgIdx);
+          if (feedbackContainer) {
+            feedbackContainer.innerHTML = '<span class="copilot-chat__feedback-sent">' + Drupal.t('Gracias por tu feedback') + '</span>';
           }
         });
       });
@@ -410,9 +422,22 @@
     }
 
     /**
-     * Envia feedback al servidor.
+     * FIX-023: Envia feedback al servidor con datos completos.
+     *
+     * @param {number} value 1=util, 0=no util.
+     * @param {number} msgIdx Indice del mensaje en state.messages.
      */
-    function sendFeedback(value) {
+    function sendFeedback(value, msgIdx) {
+      var assistantMsg = state.messages[msgIdx] || {};
+      var userMsg = '';
+      // Buscar el mensaje de usuario anterior al asistente.
+      for (var i = msgIdx - 1; i >= 0; i--) {
+        if (state.messages[i] && state.messages[i].role === 'user') {
+          userMsg = state.messages[i].text || '';
+          break;
+        }
+      }
+
       fetch(Drupal.url('api/v1/copilot/feedback'), {
         method: 'POST',
         headers: {
@@ -420,8 +445,14 @@
           'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
-          was_helpful: value,
-          source: 'emprendimiento'
+          rating: value ? 'up' : 'down',
+          message_id: assistantMsg.timestamp ? String(assistantMsg.timestamp) : null,
+          user_message: userMsg,
+          assistant_response: assistantMsg.text || '',
+          context: {
+            mode: assistantMsg.mode || '',
+            source: 'emprendimiento'
+          }
         })
       }).catch(function () {
         // Silent fail.

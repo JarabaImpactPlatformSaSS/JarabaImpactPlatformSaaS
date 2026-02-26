@@ -57,6 +57,9 @@ class AITelemetryService
      * @return array
      *   Contexto de invocación para pasar a endInvocation().
      */
+    /**
+     * FIX-004: Acepta tenant_id en metadata para propagarlo a persistMetrics().
+     */
     public function startInvocation(string $agentId, string $provider, array $metadata = []): array
     {
         return [
@@ -65,6 +68,7 @@ class AITelemetryService
             'start_time' => microtime(TRUE),
             'metadata' => $metadata,
             'request_id' => uniqid('ai_', TRUE),
+            'tenant_id' => $metadata['tenant_id'] ?? NULL,
         ];
     }
 
@@ -96,6 +100,8 @@ class AITelemetryService
             'error_message' => $result['error_message'] ?? NULL,
             'model' => $invocation['metadata']['model'] ?? 'unknown',
             'timestamp' => time(),
+            // FIX-004: Propagar tenant_id para aislamiento de datos.
+            'tenant_id' => $invocation['tenant_id'] ?? $result['tenant_id'] ?? NULL,
             'cost_estimated' => $this->estimateCost(
                 $invocation['provider'],
                 $result['tokens_prompt'] ?? 0,
@@ -179,6 +185,8 @@ class AITelemetryService
                         'cost_estimated' => $metrics['cost_estimated'],
                         'model' => $metrics['model'],
                         'error_message' => $metrics['error_message'],
+                        // FIX-004: Escribir tenant_id para aislamiento cross-tenant.
+                        'tenant_id' => $metrics['tenant_id'] ?? NULL,
                         'created' => $metrics['timestamp'],
                     ])
                 ->execute();

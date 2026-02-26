@@ -24,6 +24,13 @@ namespace Drupal\jaraba_ai_agents\Agent;
  * - Variantes A/B para testing
  *
  * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
+ *
+ * @deprecated in v6.3.0 — Use SmartMarketingAgent instead.
+ *   SmartMarketingAgent extends SmartBaseAgent with intelligent model routing,
+ *   full observability logging, and AI-IDENTITY-001 compliance.
+ *   Scheduled for removal in v7.0.
+ *
+ * @see \Drupal\jaraba_ai_agents\Agent\SmartMarketingAgent
  */
 class MarketingAgent extends BaseAgent
 {

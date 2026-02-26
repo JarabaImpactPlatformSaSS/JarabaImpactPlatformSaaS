@@ -9,6 +9,7 @@ use Drupal\Core\TempStore\SharedTempStoreFactory;
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService;
 use Drupal\jaraba_rag\Client\QdrantDirectClient;
 use Psr\Log\LoggerInterface;
 
@@ -89,6 +90,7 @@ class FaqBotService {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected SharedTempStoreFactory $tempStoreFactory,
     protected LoggerInterface $logger,
+    protected ?AIGuardrailsService $guardrails = NULL,
   ) {}
 
   /**
@@ -112,6 +114,32 @@ class FaqBotService {
     }
     if (mb_strlen($message) > 500) {
       $message = mb_substr($message, 0, 500);
+    }
+
+    // FIX-015: Validar mensaje con AIGuardrailsService.
+    if ($this->guardrails) {
+      $guardrailResult = $this->guardrails->validate($message, [
+        'tenant_id' => (string) $tenantId,
+        'pipeline' => 'faq_bot',
+      ]);
+
+      if ($guardrailResult['action'] === AIGuardrailsService::ACTION_BLOCK) {
+        $this->logger->warning('FAQ Bot: mensaje bloqueado por guardrails', [
+          'tenant_id' => $tenantId,
+        ]);
+        return [
+          'text' => 'No puedo procesar esa consulta. Por favor, reformula tu pregunta.',
+          'sources' => [],
+          'escalate' => FALSE,
+          'suggestions' => [],
+          'session_id' => $sessionId ?? '',
+        ];
+      }
+
+      // Si hubo PII sanitizado, usar el mensaje limpio.
+      if ($guardrailResult['action'] === AIGuardrailsService::ACTION_MODIFY) {
+        $message = $guardrailResult['processed_prompt'];
+      }
     }
 
     // 2. Resolver/crear session ID.

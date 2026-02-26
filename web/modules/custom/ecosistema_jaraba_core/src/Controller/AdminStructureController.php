@@ -45,13 +45,14 @@ class AdminStructureController extends ControllerBase
             'description' => 'Estructura del sitio — menús, headers, footers, SEO',
             'providers' => ['jaraba_site_builder'],
         ],
-        'comercio_conecta' => [
+        // FIX-027: Canonical vertical names (no underscores).
+        'comercioconecta' => [
             'label' => 'ComercioConecta',
             'icon' => '🛍️',
             'description' => 'Marketplace de comercio local',
             'providers' => ['jaraba_comercio_conecta'],
         ],
-        'servicios_conecta' => [
+        'serviciosconecta' => [
             'label' => 'ServiciosConecta',
             'icon' => '🔧',
             'description' => 'Marketplace de servicios profesionales',

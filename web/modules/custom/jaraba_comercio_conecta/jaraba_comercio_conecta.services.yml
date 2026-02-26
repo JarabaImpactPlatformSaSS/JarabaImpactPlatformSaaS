@@ -272,6 +272,14 @@ services:
       - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'
 
+  # FIX-017: Service layer for MerchantCopilotAgent API.
+  jaraba_comercio_conecta.merchant_copilot:
+    class: Drupal\jaraba_comercio_conecta\Service\MerchantCopilotService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_comercio_conecta'
+      - '@?jaraba_ai_agents.merchant_copilot_agent'
+
   # =====================================================================
   # Breadcrumb builder for ComercioConecta routes
   # Priority 100 ensures it takes precedence over default breadcrumb builders

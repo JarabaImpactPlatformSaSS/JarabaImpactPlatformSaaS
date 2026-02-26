@@ -68,7 +68,7 @@ services:
       - '@logger.channel.jaraba_ai_agents'
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Smart Marketing Agent (con Model Routing)
   jaraba_ai_agents.smart_marketing_agent:
@@ -80,7 +80,7 @@ services:
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
       - '@jaraba_ai_agents.model_router'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Storytelling Agent
   jaraba_ai_agents.storytelling_agent:
@@ -91,7 +91,7 @@ services:
       - '@logger.channel.jaraba_ai_agents'
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Customer Experience Agent
   jaraba_ai_agents.customer_experience_agent:
@@ -102,7 +102,7 @@ services:
       - '@logger.channel.jaraba_ai_agents'
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Support Agent
   jaraba_ai_agents.support_agent:
@@ -113,7 +113,7 @@ services:
       - '@logger.channel.jaraba_ai_agents'
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Producer Copilot Agent (AgroConecta - con Model Routing)
   jaraba_ai_agents.producer_copilot_agent:
@@ -125,7 +125,7 @@ services:
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
       - '@jaraba_ai_agents.model_router'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Sales Agent (AgroConecta - con Model Routing)
   jaraba_ai_agents.sales_agent:
@@ -137,7 +137,7 @@ services:
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
       - '@jaraba_ai_agents.model_router'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
   # Merchant Copilot Agent (ComercioConecta - F8 Doc 184)
   jaraba_ai_agents.merchant_copilot_agent:
@@ -149,7 +149,7 @@ services:
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
       - '@jaraba_ai_agents.model_router'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
 
   # ========================================
@@ -228,16 +228,27 @@ services:
       - '@jaraba_ai_agents.observability'
       - '@logger.channel.jaraba_ai_agents'
 
-  # JarabaLex Copilot Agent — Asistente juridico IA (F11 Clase Mundial)
+  # JarabaLex Copilot Agent — DEPRECATED (FIX-016)
+  # El agente canonico es jaraba_legal_intelligence.legal_copilot_agent
+  # (8 modos, contexto de expediente, RAG). Este agente duplicado (6 modos,
+  # prompts muertos) se elimina. Se crea alias para compatibilidad hacia atras.
+  #
+  # Definicion original comentada:
+  # jaraba_ai_agents.jarabalex_copilot:
+  #   class: Drupal\jaraba_ai_agents\Agent\JarabaLexCopilotAgent
+  #   arguments:
+  #     - '@ai.provider'
+  #     - '@config.factory'
+  #     - '@logger.channel.jaraba_ai_agents'
+  #     - '@jaraba_ai_agents.tenant_brand_voice'
+  #     - '@jaraba_ai_agents.observability'
+  #     - '@ecosistema_jaraba_core.unified_prompt_builder'
+  #
+  # Alias: cualquier codigo que pida jaraba_ai_agents.jarabalex_copilot
+  # recibira el agente canonico de jaraba_legal_intelligence.
   jaraba_ai_agents.jarabalex_copilot:
-    class: Drupal\jaraba_ai_agents\Agent\JarabaLexCopilotAgent
-    arguments:
-      - '@ai.provider'
-      - '@config.factory'
-      - '@logger.channel.jaraba_ai_agents'
-      - '@jaraba_ai_agents.tenant_brand_voice'
-      - '@jaraba_ai_agents.observability'
-      - '@ecosistema_jaraba_core.unified_prompt_builder'
+    alias: jaraba_legal_intelligence.legal_copilot_agent
+    deprecated: 'The "%alias_id%" service is deprecated. Use "jaraba_legal_intelligence.legal_copilot_agent" directly. See FIX-016.'
 
   # MultiModal Bridge — Preparacion voz + imagen
   jaraba_ai_agents.multimodal_bridge:

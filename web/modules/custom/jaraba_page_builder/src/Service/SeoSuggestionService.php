@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_page_builder\Service;
 
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -112,8 +113,11 @@ class SeoSuggestionService
 
         $prompt = $this->buildSeoPrompt($html, $keyword, $pageTitle, $metaDescription);
 
-        $systemPrompt = 'Eres un experto SEO senior. Analiza la página web y genera sugerencias accionables. '
-            . 'Responde SIEMPRE en formato JSON válido con la estructura indicada. Responde en español.';
+        // FIX-014: AI-IDENTITY-001 universal.
+        $systemPrompt = AIIdentityRule::apply(
+            'Eres un experto SEO senior. Analiza la página web y genera sugerencias accionables. '
+            . 'Responde SIEMPRE en formato JSON válido con la estructura indicada. Responde en español.'
+        );
 
         $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([
             new \Drupal\ai\OperationType\Chat\ChatMessage('system', $systemPrompt),

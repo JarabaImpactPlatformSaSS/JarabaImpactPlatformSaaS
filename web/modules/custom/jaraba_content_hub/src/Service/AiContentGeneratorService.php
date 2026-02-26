@@ -8,6 +8,7 @@ use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -73,8 +74,9 @@ class AiContentGeneratorService {
     y en buscadores conversacionales de IA.
     Debes seguir la estrategia de 'Answer Capsules': los primeros 150 caracteres de cada sección
     deben responder directamente a la intención de búsqueda de forma concisa.";
-    
-    return $base;
+
+    // FIX-014: AI-IDENTITY-001 universal.
+    return AIIdentityRule::apply($base);
   }
 
   /**

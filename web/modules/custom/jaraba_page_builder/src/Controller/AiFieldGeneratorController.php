@@ -284,13 +284,29 @@ class AiFieldGeneratorController extends ControllerBase implements ContainerInje
      */
     protected function getVerticalContext(string $vertical): string
     {
+        // FIX-027: Canonical vertical names for AI context.
         $contexts = [
-            'agro' => 'Este es un sitio de productos agrícolas y agroalimentarios. Enfócate en frescura, origen local, sostenibilidad y tradición.',
-            'empleo' => 'Este es un portal de empleo. Enfócate en oportunidades profesionales, desarrollo de carrera y matching talento-empresa.',
+            'empleabilidad' => 'Este es un portal de empleo. Enfócate en oportunidades profesionales, desarrollo de carrera y matching talento-empresa.',
+            'emprendimiento' => 'Este es un portal de emprendimiento. Enfócate en validación de ideas, modelo de negocio y crecimiento.',
+            'comercioconecta' => 'Esta es una plataforma de comercio de proximidad. Enfócate en SEO local, ofertas flash, QR dinámico y marketplace omnicanal.',
+            'agroconecta' => 'Este es un sitio de productos agrícolas y agroalimentarios. Enfócate en frescura, origen local, sostenibilidad y tradición.',
+            'jarabalex' => 'Esta es una plataforma de inteligencia legal con IA. Enfócate en jurisprudencia, legislación y gestión de expedientes.',
+            'serviciosconecta' => 'Este es un sitio de servicios profesionales. Enfócate en experiencia, resultados y atención personalizada.',
+            'andalucia_ei' => 'Este es un portal de emprendimiento e innovación de Andalucía. Enfócate en ecosistema emprendedor y desarrollo regional.',
+            'jaraba_content_hub' => 'Este es un hub de contenido editorial. Enfócate en información relevante y recursos de calidad.',
             'formacion' => 'Este es una plataforma de formación. Enfócate en aprendizaje, desarrollo de habilidades y certificaciones.',
-            'ecommerce' => 'Esta es una tienda online. Enfócate en beneficios del producto, calidad y satisfacción del cliente.',
-            'servicios' => 'Este es un sitio de servicios profesionales. Enfócate en experiencia, resultados y atención personalizada.',
+            'demo' => 'Este es un entorno de demostración. Genera contenido apropiado para un sitio web profesional.',
         ];
+
+        // FIX-027: Legacy alias mapping for backward compatibility.
+        $legacyAliases = [
+            'empleo' => 'empleabilidad',
+            'agro' => 'agroconecta',
+            'ecommerce' => 'comercioconecta',
+            'comercio' => 'comercioconecta',
+            'servicios' => 'serviciosconecta',
+        ];
+        $vertical = $legacyAliases[$vertical] ?? $vertical;
 
         return $contexts[$vertical] ?? 'Genera contenido apropiado para un sitio web profesional.';
     }

@@ -89,6 +89,21 @@ class BrandVoiceTrainerService {
         '@ctx' => $context,
       ]);
 
+      // FIX-021: Log observability for embedding generation.
+      $this->observability->log([
+        'agent_id' => 'brand_voice_trainer',
+        'action' => 'index_example',
+        'tier' => 'fast',
+        'model_id' => self::EMBEDDING_MODEL,
+        'provider_id' => 'openai',
+        'tenant_id' => $tenantId,
+        'vertical' => 'platform',
+        'input_tokens' => (int) ceil(mb_strlen($text) / 4),
+        'output_tokens' => 0,
+        'duration_ms' => 0,
+        'success' => TRUE,
+      ]);
+
       return ['success' => TRUE, 'point_id' => $pointId];
     }
     catch (\Exception $e) {
@@ -274,8 +289,10 @@ class BrandVoiceTrainerService {
         new ChatMessage('user', $analysisPrompt),
       ]);
 
+      $startTime = microtime(TRUE);
       $response = $provider->chat($chatInput, 'gpt-4o-mini', ['temperature' => 0.3]);
       $text = $response->getNormalized()->getText();
+      $durationMs = (int) ((microtime(TRUE) - $startTime) * 1000);
 
       $suggestions = json_decode($text, TRUE);
       if (!$suggestions) {
@@ -285,6 +302,21 @@ class BrandVoiceTrainerService {
       $this->logger->info('Brand voice refined for tenant @id from @count examples.', [
         '@id' => $tenantId,
         '@count' => count($examples),
+      ]);
+
+      // FIX-021: Log observability for LLM refinement call.
+      $this->observability->log([
+        'agent_id' => 'brand_voice_trainer',
+        'action' => 'refine_brand_voice',
+        'tier' => 'fast',
+        'model_id' => 'gpt-4o-mini',
+        'provider_id' => 'openai',
+        'tenant_id' => $tenantId,
+        'vertical' => 'platform',
+        'input_tokens' => (int) ceil(mb_strlen($analysisPrompt) / 4),
+        'output_tokens' => (int) ceil(mb_strlen($text) / 4),
+        'duration_ms' => $durationMs,
+        'success' => TRUE,
       ]);
 
       return [

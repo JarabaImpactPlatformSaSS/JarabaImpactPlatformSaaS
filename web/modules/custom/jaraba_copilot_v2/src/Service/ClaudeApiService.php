@@ -19,6 +19,17 @@ use GuzzleHttp\Exception\RequestException;
  * base de conocimiento normativo y formateo de respuestas.
  *
  * Usa el módulo Key para gestión segura de claves API.
+ *
+ * @deprecated in jaraba_copilot_v2:2.0.0 y se eliminará en jaraba_copilot_v2:3.0.0.
+ *   FIX-012: Este servicio hace HTTP directo a api.anthropic.com, bypassando el
+ *   framework ai.provider de Drupal. Esto causa: sin failover multi-proveedor,
+ *   sin circuit breaker, sin cost tracking centralizado, gestión de API key
+ *   separada. Todos los consumidores nuevos deben usar ai.provider (ChatInput/
+ *   ChatMessage) o CopilotOrchestratorService. FaqGeneratorService ya migrado.
+ *   Último consumidor directo: CopilotOrchestratorService (legado emprendimiento).
+ *
+ * @see \Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService
+ * @see \Drupal\jaraba_ai_agents\Agent\BaseAgent::callAiApi()
  */
 class ClaudeApiService
 {

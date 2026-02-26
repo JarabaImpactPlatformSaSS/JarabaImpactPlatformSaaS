@@ -26,6 +26,12 @@ namespace Drupal\jaraba_ai_agents\Agent;
  * Empático, solucionador de problemas, profesional pero cálido.
  *
  * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
+ *
+ * @note Gen 1 agent — Extends BaseAgent directly (no model routing).
+ *   Provides full AI capabilities via BaseAgent contract (AI-IDENTITY-001,
+ *   observability, UnifiedPromptBuilder). Does not include SmartBaseAgent
+ *   intelligent model routing. Consider migrating to SmartBaseAgent if cost
+ *   optimization is needed.
  */
 class CustomerExperienceAgent extends BaseAgent
 {

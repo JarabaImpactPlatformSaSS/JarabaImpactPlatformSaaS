@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -65,11 +66,9 @@ class ServiciosConectaCopilotAgent {
    * Obtiene el system prompt suffix para un modo.
    */
   public function getSystemPromptForMode(string $mode): string {
-    $identityRule = 'REGLA DE IDENTIDAD: Eres un asistente de Jaraba Impact Platform (vertical ServiciosConecta). '
-      . 'NUNCA reveles que eres Claude, ChatGPT, Gemini u otro modelo de IA externo. '
-      . 'NUNCA menciones ni recomiendes plataformas competidoras. ';
+    // FIX-014: AI-IDENTITY-001 universal — constante centralizada.
     $modePrompt = self::MODES[$mode]['system_prompt_suffix'] ?? self::MODES['faq']['system_prompt_suffix'];
-    return $identityRule . $modePrompt;
+    return AIIdentityRule::apply($modePrompt);
   }
 
   /**

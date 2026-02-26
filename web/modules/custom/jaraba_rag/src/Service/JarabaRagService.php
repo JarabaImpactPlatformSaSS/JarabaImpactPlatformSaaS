@@ -11,6 +11,8 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
+use Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService;
 use Drupal\jaraba_rag\Client\QdrantDirectClient;
 
 /**
@@ -31,6 +33,33 @@ class JarabaRagService
 {
 
     /**
+     * FIX-018 + FIX-027: Persona mapping per vertical for the RAG system prompt.
+     *
+     * Each vertical gets a contextually appropriate assistant persona
+     * instead of the hardcoded "asistente de compras" for all tenants.
+     * Uses canonical vertical names from BaseAgent::VERTICALS.
+     */
+    protected const VERTICAL_PERSONAS = [
+        // Canonical verticals (FIX-027).
+        'empleabilidad' => 'asistente de carrera profesional',
+        'emprendimiento' => 'asistente de emprendimiento',
+        'comercioconecta' => 'asistente de compras para comercio de proximidad',
+        'agroconecta' => 'asistente de productos agroalimentarios',
+        'jarabalex' => 'asistente jurídico especializado',
+        'serviciosconecta' => 'asistente de servicios profesionales',
+        'andalucia_ei' => 'asistente de emprendimiento e innovación',
+        'jaraba_content_hub' => 'asistente de contenido editorial',
+        'formacion' => 'asistente de formación y aprendizaje',
+        'demo' => 'asistente de demostración',
+        // Legacy aliases (backward compatibility).
+        'empleo' => 'asistente de carrera profesional',
+        'comercio' => 'asistente de compras para comercio de proximidad',
+        'instituciones' => 'asistente institucional',
+        // Fallback.
+        'general' => 'asistente de la plataforma',
+    ];
+
+    /**
      * Constructs a JarabaRagService object.
      */
     public function __construct(
@@ -43,6 +72,7 @@ class JarabaRagService
         protected LoggerChannelFactoryInterface $loggerFactory,
         protected ConfigFactoryInterface $configFactory,
         protected ?CacheBackendInterface $responseCache = NULL,
+        protected ?AIGuardrailsService $guardrails = NULL,
     ) {
     }
 
@@ -111,12 +141,42 @@ class JarabaRagService
                 }
             }
 
+            // FIX-015: Validar query con AIGuardrailsService antes de procesarla.
+            if ($this->guardrails) {
+                $guardrailResult = $this->guardrails->validate($query, [
+                    'tenant_id' => $tenantFilters['tenant_id'] ?? 'unknown',
+                    'user_id' => \Drupal::currentUser()->id(),
+                    'pipeline' => 'rag',
+                ]);
+
+                if ($guardrailResult['action'] === AIGuardrailsService::ACTION_BLOCK) {
+                    $this->log('Query bloqueada por AIGuardrailsService', [
+                        'query' => $query,
+                        'violations' => $guardrailResult['violations'],
+                        'correlation_id' => $correlationId,
+                    ], 'warning');
+
+                    return [
+                        'response' => 'No puedo procesar esa consulta. Por favor, reformula tu pregunta.',
+                        'sources' => [],
+                        'confidence' => 0,
+                        'classification' => 'BLOCKED_GUARDRAIL',
+                    ];
+                }
+
+                // Si hubo PII sanitizado, usar el prompt limpio.
+                if ($guardrailResult['action'] === AIGuardrailsService::ACTION_MODIFY) {
+                    $query = $guardrailResult['processed_prompt'];
+                }
+            }
+
             // 2. Generar embedding de la query.
             $queryEmbedding = $this->generateEmbedding($query);
 
             // 3. Buscar en Qdrant con filtros de tenant.
             $topK = $options['top_k'] ?? $config->get('search.top_k') ?? 5;
-            $minScore = $config->get('search.min_score') ?? 0.7;
+            // FIX-007: Alineado con JarabaRagConfigForm que usa 'search.score_threshold'.
+            $minScore = $config->get('search.score_threshold') ?? $config->get('search.min_score') ?? 0.7;
 
             // AI-08: Fetch more candidates for re-ranking, then trim.
             $fetchK = min($topK * 3, 15);
@@ -493,10 +553,14 @@ class JarabaRagService
         // SEC-01: Sanitizar inputs antes de interpolar en el system prompt.
         // Previene inyección de instrucciones vía configuración de tenant.
         $tenantName = $this->sanitizePromptInput($tenantFilters['tenant_name'] ?? 'la tienda');
-        $vertical = $this->sanitizePromptInput($tenantFilters['vertical'] ?? 'comercio');
 
-        return <<<PROMPT
-Eres el asistente de compras de "{$tenantName}", una tienda de {$vertical} en Jaraba Impact Platform.
+        // FIX-018 + FIX-027: Parametrizar persona según vertical del tenant.
+        // Lookup uses raw value (before sanitization) to match VERTICAL_PERSONAS keys.
+        $rawVertical = $tenantFilters['vertical'] ?? 'general';
+        $persona = self::VERTICAL_PERSONAS[$rawVertical] ?? self::VERTICAL_PERSONAS['general'];
+
+        $systemPrompt = <<<PROMPT
+Eres el {$persona} de "{$tenantName}" en Jaraba Impact Platform.
 
 ## REGLAS INQUEBRANTABLES
 
@@ -508,17 +572,20 @@ Eres el asistente de compras de "{$tenantName}", una tienda de {$vertical} en Ja
 3. CITAS: Cada producto mencionado DEBE incluir enlace.
    Formato: [Nombre Producto](/producto/slug)
 
-4. LÍMITE: Solo hablas de productos de "{$tenantName}".
-   NO mencionas competidores ni productos externos.
+4. LÍMITE: Solo hablas del ámbito de "{$tenantName}".
+   NO mencionas competidores ni plataformas externas.
 
-5. FILOSOFÍA 'GOURMET DIGITAL': Tu tono es cálido, artesanal.
-   Transmites calidad y cuidado, no vendes agresivamente.
+5. TONO: Tu tono es cálido y profesional.
+   Transmites calidad y cuidado en tus respuestas.
 
 ## CATÁLOGO Y CONOCIMIENTO
 ═══════════════════════════════════════════════════════════════
 {$context}
 ═══════════════════════════════════════════════════════════════
 PROMPT;
+
+        // FIX-014 + FIX-018: Aplicar regla de identidad universal.
+        return AIIdentityRule::apply($systemPrompt);
     }
 
     /**
@@ -590,29 +657,69 @@ PROMPT;
      * AI-04: Si hay contexto disponible, reintenta con prompt más restrictivo
      * antes de devolver el fallback genérico.
      */
+    /**
+     * Maneja casos donde se detectan alucinaciones.
+     *
+     * FIX-006: Corregidos dos errores fatales:
+     * 1. $this->callLlm() no existe → usa generateResponse() (método real).
+     * 2. $this->logger no existe → usa $this->loggerFactory->get().
+     *
+     * AI-04: Si hay contexto disponible, reintenta con prompt más restrictivo
+     * antes de devolver el fallback genérico.
+     */
     protected function handleHallucinations(string $query, array $context, array $validationResult): array
     {
         $config = $this->configFactory->get('jaraba_rag.settings');
         $fallback = $config->get('grounding.fallback_message');
+        $logger = $this->loggerFactory->get('jaraba_rag');
 
         // AI-04: Si hay contexto, reintentar con prompt estricto.
         if (!empty($context)) {
             try {
-                $strictPrompt = "IMPORTANTE: Responde SOLO con información que aparece TEXTUALMENTE en el catálogo. "
+                // Construir contexto estricto con reglas anti-alucinación reforzadas.
+                $strictContext = $context;
+
+                // Usar generateResponse() con filtros de tenant vacíos (ya resueltos)
+                // pero con el contexto estricto que fuerza grounding.
+                $tenantFilters = $this->tenantContext->getSearchFilters();
+
+                // Sobreescribir temporalmente el system prompt con reglas estrictas.
+                $strictSystemPrompt = "IMPORTANTE: Responde SOLO con información que aparece TEXTUALMENTE en el catálogo. "
                     . "Si la información no está en el catálogo, responde: 'No tengo esa información.' "
                     . "NO hagas inferencias ni suposiciones.\n\n"
-                    . $this->formatContextForPrompt($context);
+                    . $this->formatContextForPrompt($strictContext);
 
-                $retryResponse = $this->callLlm($query, $strictPrompt);
+                // Llamar al LLM directamente usando el patrón de generateResponse().
+                $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+                if ($defaults) {
+                    $provider = $this->aiProvider->createInstance($defaults['provider_id']);
 
-                if ($retryResponse && !empty($retryResponse['text'])) {
-                    $this->logger->info('AI-04: Regeneración con prompt estricto exitosa para query: @query', [
-                        '@query' => mb_substr($query, 0, 100),
+                    $chatInput = new ChatInput([
+                        new ChatMessage('system', $strictSystemPrompt),
+                        new ChatMessage('user', $query),
                     ]);
-                    return $retryResponse;
+
+                    $modelId = $defaults['model_id'] ?? $config->get('llm.model') ?? 'gpt-4o-mini';
+                    $result = $provider->chat($chatInput, $modelId, [
+                        'temperature' => 0.1,
+                        'max_tokens' => $config->get('llm.max_tokens') ?? 500,
+                    ]);
+
+                    $retryText = $result->getNormalized()->getText();
+
+                    if (!empty($retryText)) {
+                        $logger->info('AI-04: Regeneración con prompt estricto exitosa para query: @query', [
+                            '@query' => mb_substr($query, 0, 100),
+                        ]);
+                        return [
+                            'text' => $retryText,
+                            'raw_response' => $result->getRawOutput(),
+                        ];
+                    }
                 }
-            } catch (\Exception $e) {
-                $this->logger->warning('AI-04: Fallo en regeneración estricta: @error', [
+            }
+            catch (\Exception $e) {
+                $logger->warning('AI-04: Fallo en regeneración estricta: @error', [
                     '@error' => $e->getMessage(),
                 ]);
             }
