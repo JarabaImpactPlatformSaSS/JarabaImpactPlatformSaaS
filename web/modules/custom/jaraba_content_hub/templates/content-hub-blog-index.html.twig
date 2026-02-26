@@ -13,17 +13,7 @@
 #}
 {{ attach_library('ecosistema_jaraba_theme/content-hub') }}
 
-<div class="page-wrapper page-wrapper--clean">
-  {# LOW-09: Header with only to prevent scope leakage #}
-  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
-    site_name: site_name,
-    site_slogan: site_slogan,
-    logo: logo,
-    logged_in: logged_in,
-    theme_settings: theme_settings
-  } only %}
-
-  <main class="blog-page">
+<div class="blog-page">
     {# Hero section #}
     <section class="blog-hero">
       <div class="container">
@@ -111,8 +101,4 @@
         </div>
       </div>
     </section>
-  </main>
-
-  {# Footer del tema #}
-  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}
 </div>

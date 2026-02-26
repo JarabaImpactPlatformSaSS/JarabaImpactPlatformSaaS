@@ -2206,10 +2206,20 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   try {
     $route_match = \Drupal::routeMatch();
     $page_content = $route_match->getParameter('page_content');
+    // DEBUG NAV — temporal, eliminar después de verificar.
+    $debugNav = [
+      'time' => date('H:i:s'),
+      'route' => $route_match->getRouteName(),
+      'pc_type' => $page_content ? (is_object($page_content) ? get_class($page_content) : gettype($page_content) . ':' . $page_content) : 'NULL',
+    ];
     if ($page_content instanceof \Drupal\jaraba_page_builder\Entity\PageContent) {
       /** @var \Drupal\jaraba_site_builder\Service\MetaSiteResolverService $resolver */
       $resolver = \Drupal::service('jaraba_site_builder.meta_site_resolver');
       $metaSite = $resolver->resolveFromPageContent($page_content);
+      $debugNav['metaSite_found'] = $metaSite ? true : false;
+      $debugNav['nav_items_count'] = $metaSite ? count($metaSite['nav_items_formatted'] ?? []) : 0;
+      $debugNav['nav_items'] = $metaSite ? ($metaSite['nav_items_formatted'] ?? []) : [];
+      $debugNav['tenant_name'] = $metaSite ? $metaSite['tenant_name'] : null;
       if ($metaSite) {
         $variables['meta_site'] = $metaSite;
         $tenantConfig = $metaSite['site_config'];
@@ -2221,6 +2231,7 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         // Override navegación con items del SitePageTree.
         if (!empty($metaSite['nav_items_formatted'])) {
           $variables['theme_settings']['navigation_items'] = implode("\n", $metaSite['nav_items_formatted']);
+          $debugNav['nav_override'] = $variables['theme_settings']['navigation_items'];
         }
 
         // Override header settings con SiteConfig.
@@ -2251,7 +2262,11 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   }
   catch (\Exception $e) {
     // MetaSiteResolver no disponible o error — usar valores por defecto.
+    $debugNav['error'] = $e->getMessage();
   }
+  $debugNav['final_nav_items'] = $variables['theme_settings']['navigation_items'] ?? 'NOT_SET';
+  file_put_contents('/tmp/debug_nav_preprocess.log', json_encode($debugNav) . "\n", FILE_APPEND);
+  // END DEBUG NAV
 
   // =========================================================================
   // HOMEPAGE CONTENT - Datos dinámicos desde Page Builder
@@ -3553,6 +3568,24 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   // =========================================================================
   if (str_starts_with((string) $route, 'jaraba_andalucia_ei.') || str_starts_with((string) $route, 'entity.programa_participante_ei.')) {
     $suggestions[] = 'page__andalucia_ei';
+  }
+
+  // =========================================================================
+  // BLOG - Rutas públicas del blog (content_hub + jaraba_blog frontend)
+  // Template: page--blog.html.twig (Zero Region Policy + full-width)
+  // =========================================================================
+  $blog_routes = [
+    'jaraba_content_hub.blog',              // /blog
+    'entity.content_article.canonical',     // /blog/{article}
+    'entity.content_category.canonical',    // /blog/category/{category}
+    'jaraba_blog.listing',                  // /blog (fallback)
+    'jaraba_blog.detail',                   // /blog/{slug}
+    'jaraba_blog.category',                 // /blog/categoria/{slug}
+    'jaraba_blog.author',                   // /blog/autor/{slug}
+  ];
+
+  if (in_array($route, $blog_routes)) {
+    $suggestions[] = 'page__blog';
   }
 
   // =========================================================================

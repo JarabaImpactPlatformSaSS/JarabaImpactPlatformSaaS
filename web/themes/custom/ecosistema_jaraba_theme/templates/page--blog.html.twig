@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Page template para rutas públicas del blog.
+ * SIN regiones ni bloques de Drupal — Zero Region Policy.
+ *
+ * Aplicado a:
+ * - /blog (listado de artículos)
+ * - /blog/{slug} (detalle de artículo)
+ * - /blog/category/{slug} (listado por categoría)
+ * - /blog/categoria/{slug} (listado por categoría - jaraba_blog)
+ * - /blog/autor/{slug} (listado por autor)
+ *
+ * Variables inyectadas desde preprocess_page() genérico:
+ * - clean_content: Render array del controlador (system_main)
+ * - clean_messages: Render array de mensajes del sistema
+ * - theme_settings: Configuración del tema
+ * - site_name, site_slogan, logo, footer_copyright
+ *
+ * Directrices aplicadas:
+ * - Nuclear #14: Frontend Limpio (Zero Region Policy)
+ * - Nuclear #11: Full-width layout
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--premium">
+
+  {# =============================================
+     HEADER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({}),
+    'avatar_nav': avatar_nav|default(null)
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL - Full Width, Zero Regions
+     ============================================= #}
+  <main class="main-content main-content--full" role="main">
+    {# Mensajes del sistema (status, warning, error) #}
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {# Contenido del controlador — sin bloques heredados #}
+    <div class="main-content__inner main-content__inner--full">
+      {% if clean_content %}
+        {{ clean_content }}
+      {% endif %}
+    </div>
+  </main>
+
+  {# =============================================
+     FOOTER - Incluido desde parcial reutilizable
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+</div>
