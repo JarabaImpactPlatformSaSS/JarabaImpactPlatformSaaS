@@ -45,7 +45,7 @@ class TenantListBuilder extends EntityListBuilder
         $row['domain'] = $entity->getDomain();
 
         $status = $entity->getSubscriptionStatus();
-        $row['status'] = $this->getStatusBadge($status);
+        $row['status'] = ['data' => $this->getStatusBadge($status)];
 
         $created = $entity->get('created')->value;
         $row['created'] = $created ? date('d/m/Y', $created) : '-';

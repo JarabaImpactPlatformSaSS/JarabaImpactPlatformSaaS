@@ -47,6 +47,10 @@
     {{ page_top }}
     {{ page }}
     {{ page_bottom }}
+    {# GAP-AUD-008: Command Bar (Cmd+K) — Global command palette overlay. #}
+    {% if command_bar_enabled %}
+      {% include '@ecosistema_jaraba_theme/partials/_command-bar.html.twig' %}
+    {% endif %}
     <js-bottom-placeholder token="{{ placeholder_token }}">
     
     {# PWA Install Prompt (Fase F10) #}

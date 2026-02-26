@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
 use Drupal\jaraba_billing\Service\PricingRuleEngine;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_billing\Service\TenantMeteringService;
@@ -38,6 +39,7 @@ class UsageDashboardController extends ControllerBase
     protected TenantContextService $tenantContext,
     protected TenantMeteringService $metering,
     protected PricingRuleEngine $pricingEngine,
+    protected ?AIObservabilityService $aiObservability = NULL,
   ) {
   }
 
@@ -50,6 +52,9 @@ class UsageDashboardController extends ControllerBase
       $container->get('ecosistema_jaraba_core.tenant_context'),
       $container->get('ecosistema_jaraba_core.tenant_metering'),
       $container->get('ecosistema_jaraba_core.pricing_engine'),
+      $container->has('jaraba_ai_agents.observability')
+        ? $container->get('jaraba_ai_agents.observability')
+        : NULL,
     );
   }
 
@@ -165,6 +170,9 @@ class UsageDashboardController extends ControllerBase
       ];
     }
 
+    // GAP-AUD-002: AI usage breakdown from observability.
+    $aiBreakdown = $this->getAiUsageBreakdown($tenantId);
+
     return [
       '#theme' => 'usage_dashboard',
       '#tenant' => $tenant,
@@ -174,6 +182,7 @@ class UsageDashboardController extends ControllerBase
       '#forecast' => $forecast,
       '#alerts' => $alerts,
       '#budget' => $budget,
+      '#ai_breakdown' => $aiBreakdown,
       '#attached' => [
         'library' => [
           'ecosistema_jaraba_core/usage-dashboard',
@@ -185,10 +194,44 @@ class UsageDashboardController extends ControllerBase
             'currentSpend' => $bill['subtotal'],
             'projectedSpend' => $forecast['projected_total'],
             'budget' => $budget,
+            'aiBreakdown' => $aiBreakdown,
           ],
         ],
       ],
     ];
+  }
+
+  /**
+   * Gets AI usage breakdown by agent and tier for a tenant.
+   *
+   * @param string $tenantId
+   *   The tenant ID.
+   *
+   * @return array
+   *   AI usage breakdown with by_agent, by_tier, savings, and total stats.
+   */
+  protected function getAiUsageBreakdown(string $tenantId): array
+  {
+    if (!$this->aiObservability) {
+      return [];
+    }
+
+    try {
+      $stats = $this->aiObservability->getStats('month', $tenantId);
+      $byAgent = $this->aiObservability->getUsageByAgent('month');
+      $byTier = $this->aiObservability->getCostByTier('month');
+      $savings = $this->aiObservability->getSavings('month');
+
+      return [
+        'stats' => $stats,
+        'by_agent' => $byAgent,
+        'by_tier' => $byTier,
+        'savings' => $savings,
+      ];
+    }
+    catch (\Exception $e) {
+      return [];
+    }
   }
 
 }

@@ -25,6 +25,11 @@ interface ContentArticleInterface extends ContentEntityInterface, EntityChangedI
     public function getSlug(): string;
 
     /**
+     * Sets the URL slug.
+     */
+    public function setSlug(string $slug): static;
+
+    /**
      * Gets the excerpt.
      */
     public function getExcerpt(): string;

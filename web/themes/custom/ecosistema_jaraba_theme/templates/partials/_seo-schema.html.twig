@@ -5,11 +5,34 @@
  *
  * Genera datos estructurados (Schema.org) en formato JSON-LD.
  * Ayuda a Google a entender que el sitio es una Organización y SaaS.
+ *
+ * DESIGN DECISIONS (Sprint 3 - Growth Infrastructure):
+ * - contactPoint: teléfono y email desde Theme Settings (TAB 14: Legal)
+ * - sameAs: URLs de RRSS desde Theme Settings (TAB 6: Footer > Social)
+ * - Datos reales verificables: sin placeholders
+ *
+ * DIRECTRICES:
+ * - SEO-SCHEMA-001: Schema.org Organization + WebApplication
+ * - i18n: strings traducibles con |t
+ * - No hardcoded: todos los datos provienen de configuración
  */
 #}
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 {% set site_url = url('<front>', {}, {absolute: true}) %}
 {% set logo_url = logo ? logo : (site_url ~ 'themes/custom/ecosistema_jaraba_theme/logo.svg') %}
+{% set ts = theme_settings|default({}) %}
+
+{# Datos de contacto desde Theme Settings TAB 14 (Páginas Legales) #}
+{% set contact_email = ts.contact_email|default('info@jarabaimpact.com') %}
+{% set contact_phone = ts.contact_phone|default('+34 623 174 304') %}
+
+{# RRSS desde Theme Settings TAB 6 (Footer > Social) #}
+{% set social_urls = [] %}
+{% if ts.footer_social_linkedin %}{% set social_urls = social_urls|merge([ts.footer_social_linkedin]) %}{% endif %}
+{% if ts.footer_social_twitter %}{% set social_urls = social_urls|merge([ts.footer_social_twitter]) %}{% endif %}
+{% if ts.footer_social_facebook %}{% set social_urls = social_urls|merge([ts.footer_social_facebook]) %}{% endif %}
+{% if ts.footer_social_instagram %}{% set social_urls = social_urls|merge([ts.footer_social_instagram]) %}{% endif %}
+{% if ts.footer_social_youtube %}{% set social_urls = social_urls|merge([ts.footer_social_youtube]) %}{% endif %}
 
 <script type="application/ld+json">
 {
@@ -18,7 +41,7 @@
   "name": "{{ site_name }}",
   "url": "{{ site_url }}",
   "logo": "{{ logo_url }}",
-  "description": "{{ 'Plataforma SaaS de impacto para la gestión de ecosistemas locales. +100M€ en fondos europeos gestionados.'|t }}",
+  "description": "{{ 'Plataforma SaaS de desarrollo local: empleabilidad, emprendimiento, comercio y agroalimentación — impulsada por IA.'|t }}",
   "founder": {
     "@type": "Person",
     "name": "Pepe Jaraba",
@@ -28,14 +51,13 @@
     "@type": "Country",
     "name": "Spain"
   },
-  "sameAs": [
-    "https://facebook.com/JarabaImpact",
-    "https://x.com/JarabaEcosistema",
-    "https://linkedin.com/company/jaraba-impact"
-  ],
+  {% if social_urls|length > 0 %}
+  "sameAs": {{ social_urls|json_encode|raw }},
+  {% endif %}
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+34-900-000-000",
+    "email": "{{ contact_email }}",
+    "telephone": "{{ contact_phone }}",
     "contactType": "customer service",
     "areaServed": "ES",
     "availableLanguage": ["Spanish", "English"]
@@ -51,7 +73,7 @@
   "url": "{{ site_url }}",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "All",
-  "abstract": "{{ 'Conecta talento, negocios y emprendedores con inteligencia artificial. 6 verticales especializados, copiloto IA integrado.'|t }}",
+  "abstract": "{{ 'Conecta talento, negocios y emprendedores con inteligencia artificial. 7 verticales especializados, copiloto IA integrado.'|t }}",
   "offers": {
     "@type": "AggregateOffer",
     "lowPrice": "0",
@@ -63,10 +85,12 @@
     "{{ 'Copiloto IA personalizado'|t }}",
     "{{ 'Empleabilidad y desarrollo profesional'|t }}",
     "{{ 'Emprendimiento y aceleración'|t }}",
-    "{{ 'AgroConecta - Trazabilidad agroalimentaria'|t }}",
-    "{{ 'ComercioConecta - Digitalización comercio local'|t }}",
-    "{{ 'SEO local y GEO automático'|t }}"
+    "{{ 'AgroConecta — Trazabilidad agroalimentaria'|t }}",
+    "{{ 'ComercioConecta — Digitalización comercio local'|t }}",
+    "{{ 'ServiciosConecta — Profesionales liberales'|t }}",
+    "{{ 'JarabaLex — Inteligencia Legal con IA'|t }}"
   ]
 }
 </script>
+
 

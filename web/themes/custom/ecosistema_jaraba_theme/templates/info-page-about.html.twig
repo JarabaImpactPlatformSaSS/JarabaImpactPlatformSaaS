@@ -1,0 +1,78 @@
+{#
+/**
+ * @file
+ * info-page-about.html.twig
+ *
+ * Página "Sobre nosotros" del meta-sitio.
+ *
+ * VARIABLES (desde StaticPageController):
+ * - content: HTML desde Theme Settings
+ *
+ * DIRECTRICES:
+ * - FRONTEND-PAGE-001: Full-width clean layout
+ * - SEO: Schema.org AboutPage
+ * - i18n: {% trans %}
+ */
+#}
+
+<div class="static-page static-page--about" itemscope itemtype="https://schema.org/AboutPage">
+  <div class="static-page__container">
+
+    <header class="static-page__header">
+      <h1 class="static-page__title" itemprop="name">{% trans %}Sobre nosotros{% endtrans %}</h1>
+      <p class="static-page__subtitle">
+        {% trans %}Impulsando el talento y la innovación desde el territorio{% endtrans %}
+      </p>
+    </header>
+
+    {% if content %}
+      <div class="static-page__content" itemprop="mainContentOfPage">
+        {{ content|raw }}
+      </div>
+    {% else %}
+      {# Contenido por defecto verificable #}
+      <div class="static-page__content" itemprop="mainContentOfPage">
+        <section class="static-page__section">
+          <h2>{% trans %}Nuestra misión{% endtrans %}</h2>
+          <p>
+            {% trans %}Jaraba Impact Platform es una plataforma SaaS diseñada para impulsar el desarrollo local sostenible. Conectamos talento, negocios y emprendedores con las herramientas y la inteligencia artificial necesarias para crear ecosistemas económicos prósperos.{% endtrans %}
+          </p>
+        </section>
+
+        <section class="static-page__section">
+          <h2>{% trans %}Qué hacemos{% endtrans %}</h2>
+          <p>{% trans %}Ofrecemos 7 verticales especializados:{% endtrans %}</p>
+          <ul>
+            <li>{% trans %}<strong>Empleabilidad</strong> — Orientación profesional y búsqueda de empleo con IA{% endtrans %}</li>
+            <li>{% trans %}<strong>Emprendimiento</strong> — Validación de ideas, Business Model Canvas y copiloto{% endtrans %}</li>
+            <li>{% trans %}<strong>AgroConecta</strong> — Productores agroalimentarios y trazabilidad{% endtrans %}</li>
+            <li>{% trans %}<strong>ComercioConecta</strong> — Digitalización de comercios de proximidad{% endtrans %}</li>
+            <li>{% trans %}<strong>ServiciosConecta</strong> — Profesionales liberales y autónomos{% endtrans %}</li>
+            <li>{% trans %}<strong>JarabaLex</strong> — Inteligencia legal con IA{% endtrans %}</li>
+            <li>{% trans %}<strong>Instituciones</strong> — Plataformas white-label para entidades públicas{% endtrans %}</li>
+          </ul>
+        </section>
+
+        <section class="static-page__section">
+          <h2>{% trans %}Nuestro fundador{% endtrans %}</h2>
+          <div class="static-page__founder" itemscope itemtype="https://schema.org/Person">
+            <div>
+              <h3 itemprop="name">Pepe Jaraba</h3>
+              <p itemprop="jobTitle">{% trans %}Fundador y Director de Ecosistemas Digitales{% endtrans %}</p>
+              <p>{% trans %}Más de 15 años de experiencia en desarrollo local, gestión de fondos europeos y transformación digital de territorios.{% endtrans %}</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    {% endif %}
+
+    <div class="static-page__cta-section">
+      <h2>{% trans %}¿Quieres saber más?{% endtrans %}</h2>
+      <div class="static-page__cta-actions">
+        <a href="/contacto" class="btn btn--primary btn--lg">{% trans %}Contáctanos{% endtrans %}</a>
+        <a href="/planes" class="btn btn--secondary">{% trans %}Ver planes{% endtrans %}</a>
+      </div>
+    </div>
+
+  </div>
+</div>

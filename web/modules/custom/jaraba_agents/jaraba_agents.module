@@ -205,9 +205,14 @@ function jaraba_agents_entity_update(EntityInterface $entity): void {
 /**
  * Implements hook_cron().
  *
- * FIX-041: Enqueue scheduled autonomous agents for execution.
- * Queries active AutonomousAgent entities with trigger_type='schedule'
- * that are due for execution.
+ * GAP-05/FIX-041: Encola agentes autonomos programados para ejecucion.
+ *
+ * Estructura: Consulta agentes activos con schedule_type != 'manual' cuya
+ *             fecha next_run ya ha pasado (o es NULL = primera ejecucion).
+ * Logica: Filtrado eficiente en DB por indice compuesto
+ *         autonomous_agent__schedule_due (schedule_type, next_run, is_active).
+ *         isDue() como verificacion final tras la carga para evitar
+ *         condiciones de carrera entre cron y ejecuciones manuales.
  */
 function jaraba_agents_cron(): void {
   try {
@@ -218,42 +223,54 @@ function jaraba_agents_cron(): void {
     }
 
     $storage = $entityTypeManager->getStorage('autonomous_agent');
-    $ids = $storage->getQuery()
+    $now = \Drupal::time()->getRequestTime();
+
+    // Consulta 1: Agentes con next_run <= ahora (ya calculado).
+    $dueIds = $storage->getQuery()
       ->accessCheck(FALSE)
-      ->condition('status', TRUE)
-      ->condition('trigger_type', 'schedule')
+      ->condition('is_active', TRUE)
+      ->condition('schedule_type', 'manual', '<>')
+      ->condition('next_run', $now, '<=')
       ->execute();
 
-    if (empty($ids)) {
+    // Consulta 2: Agentes sin next_run (primera ejecucion, nunca programados).
+    $firstRunIds = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('is_active', TRUE)
+      ->condition('schedule_type', 'manual', '<>')
+      ->notExists('next_run')
+      ->execute();
+
+    $candidateIds = $dueIds + $firstRunIds;
+
+    if (empty($candidateIds)) {
       return;
     }
 
     $queue = \Drupal::queue('jaraba_agents_scheduled_agent');
-    $agents = $storage->loadMultiple($ids);
+    $agents = $storage->loadMultiple($candidateIds);
 
+    $enqueued = 0;
     foreach ($agents as $agent) {
-      // Check if schedule is due (simple: run on every cron).
-      $scheduleConfig = $agent->get('schedule_config')->value ?? '';
-      if ($scheduleConfig) {
-        $config = json_decode($scheduleConfig, TRUE);
-        $lastRun = $config['last_run'] ?? 0;
-        $intervalMinutes = $config['interval_minutes'] ?? 60;
-
-        if ((time() - $lastRun) < ($intervalMinutes * 60)) {
-          continue;
-        }
+      /** @var \Drupal\jaraba_agents\Entity\AutonomousAgent $agent */
+      // Verificacion final: isDue() confirma condiciones completas.
+      if (!$agent->isDue()) {
+        continue;
       }
 
       $queue->createItem([
         'agent_id' => (int) $agent->id(),
       ]);
+      $enqueued++;
+    }
 
-      \Drupal::logger('jaraba_agents')->info('Scheduled agent @id enqueued for execution.', [
-        '@id' => $agent->id(),
+    if ($enqueued > 0) {
+      \Drupal::logger('jaraba_agents')->info('GAP-05 cron: @count agentes programados encolados para ejecucion.', [
+        '@count' => $enqueued,
       ]);
     }
   }
   catch (\Exception $e) {
-    \Drupal::logger('jaraba_agents')->error('Cron scheduling failed: @msg', ['@msg' => $e->getMessage()]);
+    \Drupal::logger('jaraba_agents')->error('GAP-05 cron scheduling error: @msg', ['@msg' => $e->getMessage()]);
   }
 }

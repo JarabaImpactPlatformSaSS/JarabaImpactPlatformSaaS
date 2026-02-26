@@ -366,6 +366,70 @@ class AutonomousAgent extends ContentEntityBase implements EntityOwnerInterface,
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // Campo 18: schedule_type — tipo de programacion (GAP-05).
+    $fields['schedule_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo de programacion'))
+      ->setDescription(t('Determina como se ejecuta el agente de forma automatica.'))
+      ->setDefaultValue('manual')
+      ->setSetting('allowed_values', [
+        'manual' => 'Manual',
+        'interval' => 'Intervalo',
+        'cron' => 'Expresion Cron',
+        'one_time' => 'Una vez',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 15,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Campo 19: schedule_config — configuracion de programacion (JSON, GAP-05).
+    // Para 'interval': {"every": 3600, "unit": "seconds"}
+    // Para 'cron': {"expression": "0 * * * *"}
+    // Para 'one_time': {"run_at": "2026-03-01T09:00:00"}
+    $fields['schedule_config'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Configuracion de programacion'))
+      ->setDescription(t('Parametros de la programacion en formato JSON.'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 16,
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'basic_string',
+        'weight' => 16,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Campo 20: last_run — timestamp de la ultima ejecucion (GAP-05).
+    $fields['last_run'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Ultima ejecucion'))
+      ->setDescription(t('Marca temporal de la ultima ejecucion programada del agente.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 17,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Campo 21: next_run — timestamp calculado de la proxima ejecucion (GAP-05).
+    $fields['next_run'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Proxima ejecucion'))
+      ->setDescription(t('Marca temporal calculada de la proxima ejecucion programada.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 18,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
     // Campo 16: created — fecha de creacion.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de creacion'))
@@ -392,6 +456,142 @@ class AutonomousAgent extends ContentEntityBase implements EntityOwnerInterface,
   }
 
   /**
+   * Devuelve el tipo de programacion del agente (GAP-05).
+   *
+   * @return string
+   *   'manual', 'interval', 'cron', o 'one_time'.
+   */
+  public function getScheduleType(): string {
+    return $this->get('schedule_type')->value ?? 'manual';
+  }
+
+  /**
+   * Devuelve la configuracion de programacion decodificada (GAP-05).
+   *
+   * @return array
+   *   Array asociativo con la configuracion de schedule.
+   */
+  public function getScheduleConfig(): array {
+    $value = $this->get('schedule_config')->value;
+    if (empty($value)) {
+      return [];
+    }
+    return json_decode($value, TRUE) ?: [];
+  }
+
+  /**
+   * Devuelve el timestamp de la ultima ejecucion (GAP-05).
+   *
+   * @return int|null
+   *   Timestamp o NULL si nunca se ha ejecutado.
+   */
+  public function getLastRun(): ?int {
+    $value = $this->get('last_run')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
+
+  /**
+   * Devuelve el timestamp de la proxima ejecucion (GAP-05).
+   *
+   * @return int|null
+   *   Timestamp o NULL si no esta programado.
+   */
+  public function getNextRun(): ?int {
+    $value = $this->get('next_run')->value;
+    return $value !== NULL ? (int) $value : NULL;
+  }
+
+  /**
+   * Determina si el agente debe ejecutarse ahora (GAP-05).
+   *
+   * Condiciones:
+   * - is_active == TRUE
+   * - schedule_type != 'manual'
+   * - next_run <= ahora (o next_run es NULL para primera ejecucion)
+   *
+   * @return bool
+   *   TRUE si el agente debe ejecutarse.
+   */
+  public function isDue(): bool {
+    if (!$this->get('is_active')->value) {
+      return FALSE;
+    }
+
+    $scheduleType = $this->getScheduleType();
+    if ($scheduleType === 'manual') {
+      return FALSE;
+    }
+
+    $nextRun = $this->getNextRun();
+
+    // Primera ejecucion (next_run no calculado aun).
+    if ($nextRun === NULL) {
+      return TRUE;
+    }
+
+    return $nextRun <= \Drupal::time()->getRequestTime();
+  }
+
+  /**
+   * Calcula el timestamp de la proxima ejecucion segun la config (GAP-05).
+   *
+   * @return int|null
+   *   Timestamp de la proxima ejecucion o NULL si no aplica.
+   */
+  public function calculateNextRun(): ?int {
+    $config = $this->getScheduleConfig();
+
+    return match ($this->getScheduleType()) {
+      'interval' => \Drupal::time()->getRequestTime() + ($config['every'] ?? 3600),
+      'cron' => $this->calculateNextCronRun($config['expression'] ?? '0 * * * *'),
+      'one_time' => isset($config['run_at']) ? strtotime($config['run_at']) : NULL,
+      default => NULL,
+    };
+  }
+
+  /**
+   * Calcula la proxima ejecucion de una expresion cron simple.
+   *
+   * Implementacion basica sin dependencia externa. Soporta:
+   * - Intervalos con asterisco y division: * /N (cada N unidades)
+   * - Valores fijos: 0, 6, 12
+   *
+   * Para cron expressions complejas, se recomienda instalar
+   * dragonmantank/cron-expression.
+   *
+   * @param string $expression
+   *   Expresion cron (5 campos: min hour day month weekday).
+   *
+   * @return int
+   *   Timestamp de la proxima ejecucion.
+   */
+  protected function calculateNextCronRun(string $expression): int {
+    // Intentar usar la libreria cron-expression si esta disponible.
+    if (class_exists('\\Cron\\CronExpression')) {
+      try {
+        $cron = new \Cron\CronExpression($expression);
+        return $cron->getNextRunDate()->getTimestamp();
+      } catch (\Exception $e) {
+        // Fallback a calculo basico.
+      }
+    }
+
+    // Calculo basico: extraer intervalo de horas del cron.
+    $parts = explode(' ', trim($expression));
+    if (count($parts) >= 2) {
+      $hourPart = $parts[1];
+      // */N = cada N horas.
+      if (str_starts_with($hourPart, '*/')) {
+        $interval = (int) substr($hourPart, 2);
+        return \Drupal::time()->getRequestTime() + ($interval * 3600);
+      }
+    }
+
+    // Fallback: proxima hora en punto.
+    return \Drupal::time()->getRequestTime() + 3600;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function schema(EntityTypeInterface $entity_type): array {
@@ -402,6 +602,8 @@ class AutonomousAgent extends ContentEntityBase implements EntityOwnerInterface,
     $schema['indexes']['autonomous_agent__vertical'] = ['vertical'];
     $schema['indexes']['autonomous_agent__is_active'] = ['is_active'];
     $schema['indexes']['autonomous_agent__autonomy_level'] = ['autonomy_level'];
+    // GAP-05: Indice para consulta eficiente de agentes programados.
+    $schema['indexes']['autonomous_agent__schedule_due'] = ['schedule_type', 'next_run', 'is_active'];
 
     return $schema;
   }

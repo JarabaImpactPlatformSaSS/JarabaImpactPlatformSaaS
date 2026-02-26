@@ -755,6 +755,25 @@ ecosistema_jaraba_core.demo_api_convert:
     _access: 'TRUE'
   methods: [POST]
 
+# GAP-AUD-008: Command Bar search API
+ecosistema_jaraba_core.command_bar.search:
+  path: '/api/v1/command-bar/search'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\CommandBarController::search'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+  methods: [GET]
+
+# GAP-AUD-003: AI Playground — Public interactive AI demo
+ecosistema_jaraba_core.demo_ai_playground:
+  path: '/demo/ai-playground'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::aiPlayground'
+    _title: 'AI Playground'
+  requirements:
+    _access: 'TRUE'
+
 # ===========================================================================
 # API REST V1 - API-FIRST ARCHITECTURE (Q1 2027)
 # ===========================================================================
@@ -2031,3 +2050,47 @@ entity.security_policy.settings:
     _title: 'Política de Seguridad settings'
   requirements:
     _permission: 'administer tenants'
+
+# ============================================================================
+# PÁGINAS ESTÁTICAS — Meta-Sitio (Sprint 3)
+# ============================================================================
+
+ecosistema_jaraba_core.static.contacto:
+  path: '/contacto'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::contacto'
+    _title: 'Contacto'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.static.sobre_nosotros:
+  path: '/sobre-nosotros'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::sobreNosotros'
+    _title: 'Sobre nosotros'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.static.privacidad:
+  path: '/politica-privacidad'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::privacidad'
+    _title: 'Política de privacidad'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.static.terminos:
+  path: '/terminos-uso'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::terminos'
+    _title: 'Términos de uso'
+  requirements:
+    _access: 'TRUE'
+
+ecosistema_jaraba_core.static.cookies:
+  path: '/politica-cookies'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::cookies'
+    _title: 'Política de cookies'
+  requirements:
+    _access: 'TRUE'

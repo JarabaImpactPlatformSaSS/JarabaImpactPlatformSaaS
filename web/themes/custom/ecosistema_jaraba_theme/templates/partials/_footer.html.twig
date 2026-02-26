@@ -176,7 +176,7 @@
     </div>
 
     {# Powered by (configurable) #}
-    {% if ts.footer_show_powered_by|default(true) %}
+    {% if (ts.footer_show_powered_by is defined) ? ts.footer_show_powered_by : true %}
       <div class="landing-footer__powered">
         <span>{% trans %}Powered by{% endtrans %} 
           <a href="{{ ts.footer_powered_url|default('https://jaraba.io') }}" target="_blank" rel="noopener">

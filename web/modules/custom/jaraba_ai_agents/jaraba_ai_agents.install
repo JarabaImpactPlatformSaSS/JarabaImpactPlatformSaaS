@@ -1,0 +1,74 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update, and uninstall functions for jaraba_ai_agents.
+ */
+
+/**
+ * Instala campos de tracing distribuido en AIUsageLog (GAP-02).
+ *
+ * Estructura: Anade 4 nuevos campos base a ai_usage_log:
+ *   - trace_id (string, 36): UUID del trace que agrupa operaciones.
+ *   - span_id (string, 36): UUID de la operacion individual.
+ *   - parent_span_id (string, 36): UUID del span padre (nullable).
+ *   - operation_name (string, 128): Nombre legible de la operacion.
+ *
+ * Logica: Patron DRUPAL-ENTUP-001 — Usa installFieldStorageDefinition()
+ *         para registrar las definiciones ya declaradas en
+ *         AIUsageLog::baseFieldDefinitions().
+ *
+ * Los registros existentes tendran estos campos en NULL — las queries
+ * de tracing filtran por IS NOT NULL para dashboards.
+ */
+function jaraba_ai_agents_update_10001(&$sandbox): string {
+  $entity_type_id = 'ai_usage_log';
+  $fields_to_install = ['trace_id', 'span_id', 'parent_span_id', 'operation_name'];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  // Obtener definiciones de campos desde la clase de entidad.
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+
+  $installed = [];
+  foreach ($fields_to_install as $field_name) {
+    if (isset($field_definitions[$field_name])) {
+      try {
+        $entity_definition_update_manager->installFieldStorageDefinition(
+          $field_name,
+          $entity_type_id,
+          'jaraba_ai_agents',
+          $field_definitions[$field_name]
+        );
+        $installed[] = $field_name;
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_ai_agents')->error(
+          'Error instalando campo @field para @entity: @message',
+          [
+            '@field' => $field_name,
+            '@entity' => $entity_type_id,
+            '@message' => $e->getMessage(),
+          ]
+        );
+      }
+    }
+    else {
+      \Drupal::logger('jaraba_ai_agents')->warning(
+        'Campo @field no encontrado en definiciones de @entity.',
+        ['@field' => $field_name, '@entity' => $entity_type_id]
+      );
+    }
+  }
+
+  if (!empty($installed)) {
+    return (string) t('GAP-02: Campos de tracing instalados en AIUsageLog: @fields', [
+      '@fields' => implode(', ', $installed),
+    ]);
+  }
+
+  return (string) t('GAP-02: Ningun campo de tracing necesitaba instalacion en AIUsageLog.');
+}

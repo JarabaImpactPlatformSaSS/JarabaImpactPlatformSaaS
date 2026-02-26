@@ -1,0 +1,91 @@
+{#
+/**
+ * @file
+ * info-page-contact.html.twig
+ *
+ * Página de contacto del meta-sitio.
+ *
+ * VARIABLES (desde StaticPageController):
+ * - content: HTML adicional desde Theme Settings
+ * - contact_email: Email de contacto
+ * - contact_phone: Teléfono
+ * - contact_address: Dirección postal
+ *
+ * DIRECTRICES:
+ * - FRONTEND-PAGE-001: Full-width clean layout
+ * - SEO: Schema.org ContactPage
+ * - i18n: {% trans %}
+ */
+#}
+
+<div class="static-page static-page--contacto">
+  <div class="static-page__container">
+
+    <header class="static-page__header">
+      <h1 class="static-page__title">{% trans %}Contacto{% endtrans %}</h1>
+      <p class="static-page__subtitle">
+        {% trans %}¿Tienes alguna pregunta? Estamos aquí para ayudarte.{% endtrans %}
+      </p>
+    </header>
+
+    <div class="static-page__grid">
+      {# Columna 1: Datos de contacto #}
+      <div class="static-page__info-card" itemscope itemtype="https://schema.org/ContactPage">
+        <div class="static-page__info-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2 7L12 13L22 7" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <div>
+            <strong>{% trans %}Email{% endtrans %}</strong>
+            <a href="mailto:{{ contact_email }}" itemprop="email">{{ contact_email }}</a>
+          </div>
+        </div>
+
+        {% if contact_phone %}
+        <div class="static-page__info-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M22 16.92V19.92C22 20.48 21.56 20.93 21 20.97C20.18 21.03 19.36 21 18.55 20.88C15.8 20.42 13.21 19.26 11 17.5C8.93 15.86 7.23 13.76 6.05 11.35C5.02 9.06 4.47 6.55 4.47 4C4.47 3.44 4.92 2.99 5.48 2.95L8.48 2.73C9.07 2.69 9.6 3.08 9.74 3.65L10.42 6.35C10.55 6.88 10.35 7.43 9.89 7.74L8.69 8.54C9.87 10.77 11.73 12.63 13.96 13.81L14.76 12.61C15.07 12.15 15.62 11.95 16.15 12.08L18.85 12.76C19.42 12.9 19.81 13.43 19.77 14.02L19.55 17.02C19.51 17.55 19.07 17.97 18.53 17.97" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <div>
+            <strong>{% trans %}Teléfono{% endtrans %}</strong>
+            <a href="tel:{{ contact_phone|replace({' ': ''}) }}" itemprop="telephone">{{ contact_phone }}</a>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if contact_address %}
+        <div class="static-page__info-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2Z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <div>
+            <strong>{% trans %}Dirección{% endtrans %}</strong>
+            <address itemprop="address">{{ contact_address|nl2br }}</address>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      {# Columna 2: CTA de registro #}
+      <div class="static-page__cta-card">
+        <h2>{% trans %}¿Listo para empezar?{% endtrans %}</h2>
+        <p>{% trans %}Crea tu cuenta gratuita y explora toda la plataforma.{% endtrans %}</p>
+        <a href="/user/register" class="btn btn--primary btn--lg">
+          {% trans %}Empezar gratis{% endtrans %}
+        </a>
+        <a href="/planes" class="btn btn--secondary">
+          {% trans %}Ver planes{% endtrans %}
+        </a>
+      </div>
+    </div>
+
+    {% if content %}
+    <div class="static-page__content">
+      {{ content|raw }}
+    </div>
+    {% endif %}
+
+  </div>
+</div>

@@ -1,0 +1,121 @@
+{#
+/**
+ * @file _ped-schema.html.twig
+ * Schema.org JSON-LD para PED S.L. (plataformadeecosistemas.es)
+ *
+ * Genera datos estructurados específicos para la entidad legal
+ * Plataforma de Ecosistemas Digitales S.L.:
+ * - Corporation (empresa con CIF, fundador, área de servicio)
+ * - SoftwareApplication (el SaaS como producto)
+ * - WebSite con SearchAction
+ *
+ * DIRECTRICES:
+ * - SEO-SCHEMA-001, SEO-GEO-001
+ * - Datos reales verificables
+ * - i18n via |t
+ */
+#}
+
+{# ─── Corporation: Entidad legal PED S.L. ─── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Corporation",
+  "name": "Plataforma de Ecosistemas Digitales S.L.",
+  "alternateName": "PED S.L.",
+  "legalName": "Plataforma de Ecosistemas Digitales S.L.",
+  "url": "https://plataformadeecosistemas.es",
+  "logo": "https://plataformadeecosistemas.es/themes/custom/ecosistema_jaraba_theme/logo.svg",
+  "description": "{{ 'Infraestructura digital para el desarrollo rural y la transformación de territorios. Tecnología de impacto al servicio de personas, pymes y municipios.'|t }}",
+  "foundingDate": "1996",
+  "founder": {
+    "@type": "Person",
+    "name": "Pepe Jaraba",
+    "jobTitle": "{{ 'Fundador y Director General'|t }}",
+    "url": "https://pepejaraba.com"
+  },
+  "numberOfEmployees": {
+    "@type": "QuantitativeValue",
+    "minValue": 10,
+    "maxValue": 50
+  },
+  "areaServed": [
+    {
+      "@type": "Country",
+      "name": "Spain"
+    },
+    {
+      "@type": "AdministrativeArea",
+      "name": "Andalucía"
+    }
+  ],
+  "knowsAbout": [
+    "{{ 'Desarrollo rural digital'|t }}",
+    "{{ 'Transformación digital territorial'|t }}",
+    "{{ 'Fondos europeos'|t }}",
+    "{{ 'Empleabilidad e inserción laboral'|t }}",
+    "{{ 'Emprendimiento social'|t }}",
+    "{{ 'Trazabilidad agroalimentaria'|t }}",
+    "{{ 'Inteligencia artificial aplicada'|t }}"
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "{{ 'Contacto institucional'|t }}",
+      "email": "contacto@plataformadeecosistemas.es",
+      "availableLanguage": ["Spanish", "English"]
+    },
+    {
+      "@type": "ContactPoint",
+      "contactType": "{{ 'Inversores y partners'|t }}",
+      "email": "inversores@plataformadeecosistemas.es",
+      "availableLanguage": ["Spanish", "English"]
+    }
+  ],
+  "sameAs": [
+    "https://pepejaraba.com",
+    "https://jarabaimpact.com"
+  ],
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "SoftwareApplication",
+      "name": "Jaraba Impact Platform",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "url": "https://plataformadeecosistemas.com",
+      "description": "{{ 'Plataforma SaaS multi-vertical: Empleabilidad, Emprendimiento, AgroConecta, ComercioConecta, ServiciosConecta, JarabaLex. Copiloto IA integrado.'|t }}",
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "0",
+        "highPrice": "99",
+        "priceCurrency": "EUR",
+        "offerCount": "3"
+      },
+      "featureList": [
+        "{{ 'Copiloto IA personalizado'|t }}",
+        "{{ '5 verticales SaaS operativas'|t }}",
+        "{{ 'Gestión de fondos europeos'|t }}",
+        "{{ 'Trazabilidad agroalimentaria'|t }}",
+        "{{ 'Análisis de mercado con IA'|t }}",
+        "{{ 'Inteligencia legislativa JarabaLex'|t }}"
+      ]
+    }
+  }
+}
+</script>
+
+{# ─── WebSite con SearchAction ─── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Plataforma de Ecosistemas Digitales",
+  "url": "https://plataformadeecosistemas.es",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://plataformadeecosistemas.es/buscar?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>

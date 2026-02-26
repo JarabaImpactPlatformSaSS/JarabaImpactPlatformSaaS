@@ -1,4 +1,4 @@
-# Aprendizaje #129: Meta-Sitio plataformadeecosistemas.es — Creacion Completa
+# Aprendizaje #132: Meta-Sitio plataformadeecosistemas.es — Creacion Completa
 
 **Fecha:** 2026-02-26
 **Sesion:** Creacion del tercer meta-sitio corporativo PED S.L.

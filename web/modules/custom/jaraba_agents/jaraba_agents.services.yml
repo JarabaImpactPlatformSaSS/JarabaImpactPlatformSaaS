@@ -20,13 +20,15 @@ services:
       - '@config.factory'
       - '@logger.channel.jaraba_agents'
 
-  # FIX-039: Agent Long-Term Memory
+  # FIX-039/GAP-07: Agent Long-Term Memory con Qdrant semantic recall
   jaraba_agents.long_term_memory:
     class: Drupal\jaraba_agents\Service\AgentLongTermMemoryService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
       - '@?jaraba_rag.qdrant_client'
+      - '@?ai.provider'
+      - '@?config.factory'
 
   jaraba_agents.guardrails:
     class: Drupal\jaraba_agents\Service\GuardrailsEnforcerService
@@ -81,11 +83,13 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
 
+  # GAP-04: Lock API inyectado para prevenir race conditions en store()
   jaraba_agents.shared_memory:
     class: Drupal\jaraba_agents\Service\SharedMemoryService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
+      - '@?lock'
 
   jaraba_agents.conversation_manager:
     class: Drupal\jaraba_agents\Service\ConversationManagerService

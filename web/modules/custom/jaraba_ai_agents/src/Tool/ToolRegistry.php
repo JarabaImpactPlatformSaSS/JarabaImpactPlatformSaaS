@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Tool;
 
+use Drupal\ai\OperationType\Chat\Tools\ToolsFunctionInput;
+use Drupal\ai\OperationType\Chat\Tools\ToolsInput;
+use Drupal\ai\OperationType\Chat\Tools\ToolsPropertyInput;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -206,6 +209,46 @@ class ToolRegistry
         $output .= "</available_tools>";
 
         return $output;
+    }
+
+    /**
+     * GAP-09: Genera ToolsInput nativo para function calling API-level.
+     *
+     * Convierte las herramientas registradas al formato OpenAI-compatible
+     * del modulo Drupal AI (ToolsInput > ToolsFunctionInput > ToolsPropertyInput).
+     *
+     * @return \Drupal\ai\OperationType\Chat\Tools\ToolsInput|null
+     *   Objeto ToolsInput con las funciones, o NULL si no hay herramientas.
+     */
+    public function generateNativeToolsInput(): ?ToolsInput
+    {
+        if (empty($this->tools)) {
+            return NULL;
+        }
+
+        $functions = [];
+
+        foreach ($this->tools as $id => $tool) {
+            $function = new ToolsFunctionInput();
+            $function->setName($id);
+            $function->setDescription($tool->getDescription());
+
+            $params = $tool->getParameters();
+            if (!empty($params)) {
+                foreach ($params as $paramName => $config) {
+                    $property = new ToolsPropertyInput();
+                    $property->setName($paramName);
+                    $property->setType($config['type'] ?? 'string');
+                    $property->setDescription($config['description'] ?? '');
+                    $property->setRequired($config['required'] ?? FALSE);
+                    $function->setProperty($property);
+                }
+            }
+
+            $functions[] = $function;
+        }
+
+        return new ToolsInput($functions);
     }
 
 }

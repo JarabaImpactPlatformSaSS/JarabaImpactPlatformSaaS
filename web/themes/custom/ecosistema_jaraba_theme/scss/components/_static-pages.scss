@@ -1,0 +1,261 @@
+// =============================================================================
+// _static-pages.scss
+// Estilos para páginas estáticas: contacto, sobre-nosotros, legal
+// Sprint 3 — Growth Infrastructure
+// =============================================================================
+
+.static-page {
+  padding: var(--ej-spacing-8, 4rem) var(--ej-spacing-4, 1.5rem);
+  min-height: 60vh;
+  background: var(--ej-color-bg-body, #f8fafc);
+
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--ej-spacing-8, 3rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--ej-color-headings, #1a1a2e);
+    margin-bottom: 0.75rem;
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    color: var(--ej-color-muted, #64748b);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__meta {
+    font-size: 0.875rem;
+    color: var(--ej-color-muted, #64748b);
+    margin-top: 0.5rem;
+
+    time {
+      font-weight: 600;
+    }
+  }
+
+  // Grid para contacto (2 columnas)
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-spacing-6, 2rem);
+    margin-bottom: var(--ej-spacing-8, 3rem);
+
+    @media (min-width: 768px) {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+  }
+
+  // Card de info con iconos
+  &__info-card {
+    background: var(--ej-color-bg-surface, #fff);
+    border-radius: var(--ej-radius-lg, 16px);
+    padding: var(--ej-spacing-6, 2rem);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+
+    svg {
+      flex-shrink: 0;
+      color: var(--ej-color-primary, #ff8c42);
+      margin-top: 2px;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ej-color-muted, #64748b);
+      margin-bottom: 0.25rem;
+    }
+
+    a {
+      color: var(--ej-color-headings, #1a1a2e);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--ej-color-primary, #ff8c42);
+      }
+    }
+
+    address {
+      font-style: normal;
+      color: var(--ej-color-body-text, #334155);
+      line-height: 1.6;
+    }
+  }
+
+  // CTA card
+  &__cta-card {
+    background: linear-gradient(135deg, var(--ej-color-corporate, #233d63) 0%, #1a2d4a 100%);
+    border-radius: var(--ej-radius-lg, 16px);
+    padding: var(--ej-spacing-6, 2rem);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    p {
+      opacity: 0.85;
+      margin: 0;
+    }
+
+    .btn {
+      text-align: center;
+    }
+  }
+
+  // Contenido HTML de Theme Settings
+  &__content {
+    background: var(--ej-color-bg-surface, #fff);
+    border-radius: var(--ej-radius-lg, 16px);
+    padding: var(--ej-spacing-6, 2rem) var(--ej-spacing-8, 3rem);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    line-height: 1.8;
+    color: var(--ej-color-body-text, #334155);
+
+    h2 {
+      font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ej-color-headings, #1a1a2e);
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--ej-color-primary, #ff8c42);
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    a {
+      color: var(--ej-color-primary, #ff8c42);
+      text-decoration: underline;
+    }
+
+    &--legal {
+      font-size: 0.9375rem;
+    }
+  }
+
+  // Sección "Sobre nosotros" — bloques
+  &__section {
+    margin-bottom: 2rem;
+  }
+
+  &__founder {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: var(--ej-color-bg-body, #f8fafc);
+    border-radius: var(--ej-radius-md, 12px);
+    border-left: 4px solid var(--ej-color-primary, #ff8c42);
+
+    h3 {
+      margin: 0 0 0.25rem;
+    }
+
+    p:first-of-type {
+      color: var(--ej-color-primary, #ff8c42);
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin: 0 0 0.5rem;
+    }
+  }
+
+  // CTA section at bottom
+  &__cta-section {
+    text-align: center;
+    padding: var(--ej-spacing-8, 3rem) 0;
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  // Footer nav for legal pages
+  &__footer-nav {
+    margin-top: var(--ej-spacing-8, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ej-color-card-border, #e5e7eb);
+  }
+
+  &__legal-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+
+    a {
+      color: var(--ej-color-muted, #64748b);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--ej-color-primary, #ff8c42);
+      }
+    }
+  }
+
+  &__placeholder {
+    text-align: center;
+    padding: var(--ej-spacing-8, 3rem);
+    color: var(--ej-color-muted, #64748b);
+    font-style: italic;
+  }
+}

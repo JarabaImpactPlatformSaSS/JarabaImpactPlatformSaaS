@@ -90,6 +90,11 @@
   </div>
 </main>
 
+{# SCHEMA.ORG — PED S.L. (Sprint 6: SEO Corporativo) #}
+{% if meta_site %}
+  {% include '@ecosistema_jaraba_theme/partials/_ped-schema.html.twig' ignore missing %}
+{% endif %}
+
 {# FOOTER - Partial configurable desde UI #}
 {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
   site_name: site_name,

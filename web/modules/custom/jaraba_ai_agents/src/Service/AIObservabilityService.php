@@ -24,107 +24,242 @@ use Psr\Log\LoggerInterface;
  * - Tasas de éxito/error
  * - Puntuaciones de calidad (LLM-as-Judge)
  *
+ * GAP-02: TRACING DISTRIBUIDO:
+ * Soporta campos trace_id, span_id, parent_span_id y operation_name
+ * para reconstruir cadenas de llamadas: Copilot -> Agent -> RAG -> Tool.
+ * Los campos se propagan automaticamente via TraceContextService.
+ *
  * CÁLCULOS DE AHORRO:
  * Compara el costo real (usando Model Routing) vs. el costo
  * equivalente si todas las llamadas usaran tier premium.
  *
  * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
  */
-class AIObservabilityService
-{
+class AIObservabilityService {
 
-    /**
-     * El gestor de tipos de entidad.
-     *
-     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-     */
-    protected EntityTypeManagerInterface $entityTypeManager;
+  /**
+   * El gestor de tipos de entidad.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
 
-    /**
-     * El usuario actual.
-     *
-     * @var \Drupal\Core\Session\AccountProxyInterface
-     */
-    protected AccountProxyInterface $currentUser;
+  /**
+   * El usuario actual.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected AccountProxyInterface $currentUser;
 
-    /**
-     * El logger para registrar errores.
-     *
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected LoggerInterface $logger;
+  /**
+   * El logger para registrar errores.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected LoggerInterface $logger;
 
-    /**
-     * Construye un AIObservabilityService.
-     *
-     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-     *   El gestor de tipos de entidad.
-     * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
-     *   El usuario actual.
-     * @param \Psr\Log\LoggerInterface $logger
-     *   El servicio de logging.
-     */
-    public function __construct(
-        EntityTypeManagerInterface $entityTypeManager,
-        AccountProxyInterface $currentUser,
-        LoggerInterface $logger,
-    ) {
-        $this->entityTypeManager = $entityTypeManager;
-        $this->currentUser = $currentUser;
-        $this->logger = $logger;
-    }
+  /**
+   * Servicio de contexto de tracing (GAP-02).
+   *
+   * @var \Drupal\jaraba_ai_agents\Service\TraceContextService|null
+   */
+  protected ?TraceContextService $traceContext;
 
-    /**
-     * Registra una ejecución de IA.
-     *
-     * Crea una entidad ai_usage_log con todos los datos de
-     * la ejecución para análisis posterior.
-     *
-     * @param array $data
-     *   Datos de la ejecución:
-     *   - agent_id: string - ID del agente.
-     *   - action: string - Acción ejecutada.
-     *   - tier: string - Tier del modelo (fast/balanced/premium).
-     *   - model_id: string - ID del modelo usado.
-     *   - provider_id: string - ID del proveedor.
-     *   - tenant_id: string - ID del tenant.
-     *   - vertical: string - Vertical del negocio.
-     *   - input_tokens: int - Tokens de entrada.
-     *   - output_tokens: int - Tokens de salida.
-     *   - cost: float - Costo de la ejecución.
-     *   - duration_ms: int - Duración en milisegundos.
-     *   - success: bool - Si fue exitosa.
-     *   - error_message: string - Mensaje de error si falló.
-     *   - quality_score: float - Puntuación de calidad (0-1).
-     */
-    public function log(array $data): void
-    {
+  /**
+   * Servicio de metering de tenant (GAP-AUD-002).
+   *
+   * @var object|null
+   */
+  protected ?object $tenantMetering;
+
+  /**
+   * Construye un AIObservabilityService.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   El gestor de tipos de entidad.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   El usuario actual.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   El servicio de logging.
+   * @param \Drupal\jaraba_ai_agents\Service\TraceContextService|null $traceContext
+   *   Servicio de contexto de tracing (GAP-02). Opcional para
+   *   backward compatibility.
+   * @param object|null $tenantMetering
+   *   Servicio de metering por tenant (GAP-AUD-002). Opcional.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entityTypeManager,
+    AccountProxyInterface $currentUser,
+    LoggerInterface $logger,
+    ?TraceContextService $traceContext = NULL,
+    ?object $tenantMetering = NULL,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->currentUser = $currentUser;
+    $this->logger = $logger;
+    $this->traceContext = $traceContext;
+    $this->tenantMetering = $tenantMetering;
+  }
+
+  /**
+   * Registra una ejecución de IA.
+   *
+   * Crea una entidad ai_usage_log con todos los datos de
+   * la ejecución para análisis posterior.
+   *
+   * GAP-02: Incluye automaticamente trace_id/span_id del
+   * TraceContextService si esta disponible. Los datos
+   * explicitos en $data tienen prioridad sobre los del contexto.
+   *
+   * @param array $data
+   *   Datos de la ejecución:
+   *   - agent_id: string - ID del agente.
+   *   - action: string - Acción ejecutada.
+   *   - tier: string - Tier del modelo (fast/balanced/premium).
+   *   - model_id: string - ID del modelo usado.
+   *   - provider_id: string - ID del proveedor.
+   *   - tenant_id: string - ID del tenant.
+   *   - vertical: string - Vertical del negocio.
+   *   - input_tokens: int - Tokens de entrada.
+   *   - output_tokens: int - Tokens de salida.
+   *   - cost: float - Costo de la ejecución.
+   *   - duration_ms: int - Duración en milisegundos.
+   *   - success: bool - Si fue exitosa.
+   *   - error_message: string - Mensaje de error si falló.
+   *   - quality_score: float - Puntuación de calidad (0-1).
+   *   - trace_id: string - (GAP-02) UUID del trace.
+   *   - span_id: string - (GAP-02) UUID del span.
+   *   - parent_span_id: string - (GAP-02) UUID del span padre.
+   *   - operation_name: string - (GAP-02) Nombre de la operacion.
+   */
+  public function log(array $data): void {
+    try {
+      $storage = $this->entityTypeManager->getStorage('ai_usage_log');
+
+      // GAP-02: Merge automatico de trace context si disponible.
+      $traceData = [];
+      if ($this->traceContext) {
+        $traceData = $this->traceContext->getSpanContext();
+      }
+
+      $log = $storage->create([
+        'agent_id' => $data['agent_id'] ?? '',
+        'action' => $data['action'] ?? '',
+        'tier' => $data['tier'] ?? '',
+        'model_id' => $data['model_id'] ?? '',
+        'provider_id' => $data['provider_id'] ?? '',
+        'tenant_id' => $data['tenant_id'] ?? '',
+        'vertical' => $data['vertical'] ?? '',
+        'input_tokens' => $data['input_tokens'] ?? 0,
+        'output_tokens' => $data['output_tokens'] ?? 0,
+        'cost' => $data['cost'] ?? 0,
+        'duration_ms' => $data['duration_ms'] ?? 0,
+        'success' => $data['success'] ?? TRUE,
+        'error_message' => $data['error_message'] ?? '',
+        'quality_score' => $data['quality_score'] ?? NULL,
+        'user_id' => $this->currentUser->id(),
+        // GAP-02: Campos de tracing — datos explicitos > contexto automatico.
+        'trace_id' => $data['trace_id'] ?? ($traceData['trace_id'] ?? NULL),
+        'span_id' => $data['span_id'] ?? ($traceData['span_id'] ?? NULL),
+        'parent_span_id' => $data['parent_span_id'] ?? ($traceData['parent_span_id'] ?? NULL),
+        'operation_name' => $data['operation_name'] ?? ($traceData['operation_name'] ?? NULL),
+      ]);
+
+      $log->save();
+
+      // GAP-AUD-002: Bridge to TenantMeteringService for billing.
+      $tenantId = $data['tenant_id'] ?? '';
+      if ($this->tenantMetering && !empty($tenantId)) {
         try {
-            $storage = $this->entityTypeManager->getStorage('ai_usage_log');
-
-            $log = $storage->create([
-                'agent_id' => $data['agent_id'] ?? '',
-                'action' => $data['action'] ?? '',
-                'tier' => $data['tier'] ?? '',
-                'model_id' => $data['model_id'] ?? '',
-                'provider_id' => $data['provider_id'] ?? '',
-                'tenant_id' => $data['tenant_id'] ?? '',
-                'vertical' => $data['vertical'] ?? '',
-                'input_tokens' => $data['input_tokens'] ?? 0,
-                'output_tokens' => $data['output_tokens'] ?? 0,
-                'cost' => $data['cost'] ?? 0,
-                'duration_ms' => $data['duration_ms'] ?? 0,
-                'success' => $data['success'] ?? TRUE,
-                'error_message' => $data['error_message'] ?? '',
-                'quality_score' => $data['quality_score'] ?? NULL,
-                'user_id' => $this->currentUser->id(),
+          $totalTokens = (float) (($data['input_tokens'] ?? 0) + ($data['output_tokens'] ?? 0));
+          if ($totalTokens > 0) {
+            $this->tenantMetering->record($tenantId, 'ai_tokens', $totalTokens, [
+              'agent_id' => $data['agent_id'] ?? '',
+              'model_id' => $data['model_id'] ?? '',
+              'tier' => $data['tier'] ?? '',
+              'cost' => $data['cost'] ?? 0,
             ]);
-
-            $log->save();
-        } catch (\Exception $e) {
-            $this->logger->error('Error al registrar uso de IA: @msg', ['@msg' => $e->getMessage()]);
+          }
         }
+        catch (\Exception $meteringError) {
+          $this->logger->warning('AI metering bridge failed for tenant @tenant: @msg', [
+            '@tenant' => $tenantId,
+            '@msg' => $meteringError->getMessage(),
+          ]);
+        }
+      }
     }
+    catch (\Exception $e) {
+      $this->logger->error('Error al registrar uso de IA: @msg', ['@msg' => $e->getMessage()]);
+    }
+  }
+
+  /**
+   * Registra un log con span completo (GAP-02).
+   *
+   * Metodo de conveniencia que inicia un span, ejecuta el log, y cierra
+   * el span. Util cuando se quiere loguear una operacion completa de golpe.
+   *
+   * @param string $operationName
+   *   Nombre de la operacion.
+   * @param array $data
+   *   Datos del log (misma estructura que log()).
+   *
+   * @return int|null
+   *   ID de la entidad log creada, o NULL si fallo.
+   */
+  public function logSpan(string $operationName, array $data): ?int {
+    $spanId = NULL;
+
+    if ($this->traceContext) {
+      $spanId = $this->traceContext->startSpan($operationName);
+      $data['span_id'] = $spanId;
+      $data['operation_name'] = $operationName;
+      $data['trace_id'] = $this->traceContext->getCurrentTraceId();
+      $data['parent_span_id'] = $this->traceContext->getParentSpanId($spanId);
+    }
+
+    $this->log($data);
+
+    if ($spanId && $this->traceContext) {
+      $this->traceContext->endSpan($spanId);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Obtiene todos los spans de un trace (GAP-02).
+   *
+   * @param string $traceId
+   *   El UUID del trace.
+   *
+   * @return array
+   *   Array de entidades AIUsageLog ordenadas por created ASC.
+   */
+  public function getTraceSpans(string $traceId): array {
+    try {
+      $storage = $this->entityTypeManager->getStorage('ai_usage_log');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('trace_id', $traceId)
+        ->sort('created', 'ASC')
+        ->execute();
+
+      if (empty($ids)) {
+        return [];
+      }
+
+      return $storage->loadMultiple($ids);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('GAP-02: Error obteniendo spans del trace @trace: @msg', [
+        '@trace' => $traceId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return [];
+    }
+  }
 
     /**
      * Obtiene estadísticas de uso para un período de tiempo.

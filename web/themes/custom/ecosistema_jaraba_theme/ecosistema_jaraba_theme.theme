@@ -752,6 +752,14 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#default_value' => $config->get('enable_preloader'),
   ];
 
+  // GAP-AUD-008: Command Bar (Cmd+K) toggle.
+  $form['advanced']['command_bar_enabled'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Command Bar (Cmd+K)'),
+    '#description' => t('Habilitar paleta de comandos global accesible con Cmd+K / Ctrl+K para usuarios autenticados.'),
+    '#default_value' => $config->get('command_bar_enabled') ?? TRUE,
+  ];
+
   $form['advanced']['custom_css'] = [
     '#type' => 'textarea',
     '#title' => t('CSS Personalizado'),
@@ -2244,6 +2252,20 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     ];
   }
 
+  // =========================================================================
+  // GAP-AUD-008: Command Bar (Cmd+K) — Global command palette.
+  // Attach library and set variable for authenticated non-admin pages.
+  // Toggle via theme setting 'command_bar_enabled' (default TRUE).
+  // =========================================================================
+  $command_bar_enabled = $config->get('command_bar_enabled') ?? TRUE;
+  if ($command_bar_enabled && \Drupal::currentUser()->isAuthenticated()) {
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/command-bar';
+    $variables['command_bar_enabled'] = TRUE;
+  }
+  else {
+    $variables['command_bar_enabled'] = FALSE;
+  }
+
   // PERF-02: Inyectar critical CSS inline en <head> para evitar render-blocking.
   $theme_path = \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme');
   $critical_css_file = DRUPAL_ROOT . '/' . $theme_path . '/css/critical/homepage.css';
@@ -2331,6 +2353,45 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
         // Override footer layout.
         $variables['theme_settings']['footer_layout'] = $tenantConfig->getFooterType();
         $variables['theme_settings']['footer_show_powered_by'] = FALSE;
+
+        // Override footer navigation columns con datos del meta-sitio.
+        // Los titulos de columna vienen de SiteConfig (campos configurables desde UI).
+        // Los links vienen del SitePageTree (nav_items + footer_items, configurables desde UI).
+        // Columna 1: Primeros N nav items. Columna 2: Restantes nav items.
+        // Columna 3: Items marcados show_in_footer (legal).
+        if (!empty($metaSite['nav_items']) || !empty($metaSite['footer_items'])) {
+          $navItems = $metaSite['nav_items'] ?? [];
+          $footerLegalItems = $metaSite['footer_items'] ?? [];
+
+          // Titulos de columna desde SiteConfig (configurables desde /admin/content/site-configs).
+          $col1Title = $tenantConfig->get('footer_col1_title')->value ?? '';
+          $col2Title = $tenantConfig->get('footer_col2_title')->value ?? '';
+          $col3Title = $tenantConfig->get('footer_col3_title')->value ?? '';
+
+          // Col 1: Primeros items de nav (mitad superior).
+          $splitPoint = (int) ceil(count($navItems) / 2);
+          $col1Items = array_slice($navItems, 0, $splitPoint);
+          if (!empty($col1Items)) {
+            $col1Links = array_map(fn($i) => $i['title'] . '|' . $i['url'], $col1Items);
+            $variables['theme_settings']['footer_nav_col1_title'] = $col1Title ?: $metaSite['tenant_name'];
+            $variables['theme_settings']['footer_nav_col1_links'] = implode("\n", $col1Links);
+          }
+
+          // Col 2: Restantes items de nav (mitad inferior).
+          $col2Items = array_slice($navItems, $splitPoint);
+          if (!empty($col2Items)) {
+            $col2Links = array_map(fn($i) => $i['title'] . '|' . $i['url'], $col2Items);
+            $variables['theme_settings']['footer_nav_col2_title'] = $col2Title ?: 'Empresa';
+            $variables['theme_settings']['footer_nav_col2_links'] = implode("\n", $col2Links);
+          }
+
+          // Col 3: Items marcados show_in_footer (legal).
+          if (!empty($footerLegalItems)) {
+            $col3Links = array_map(fn($i) => $i['title'] . '|' . $i['url'], $footerLegalItems);
+            $variables['theme_settings']['footer_nav_col3_title'] = $col3Title ?: 'Legal';
+            $variables['theme_settings']['footer_nav_col3_links'] = implode("\n", $col3Links);
+          }
+        }
 
         // Logo del tenant si está configurado.
         $logoFile = $tenantConfig->get('site_logo')->entity ?? NULL;

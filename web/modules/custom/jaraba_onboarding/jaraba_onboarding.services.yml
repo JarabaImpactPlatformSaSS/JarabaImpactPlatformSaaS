@@ -8,13 +8,22 @@ services:
     parent: logger.channel_base
     arguments: ['jaraba_onboarding']
 
-  # Orquestador principal del flujo de onboarding
+  # GAP-AUD-001: AI Recommendation Service for personalized onboarding steps
+  jaraba_onboarding.ai_recommender:
+    class: Drupal\jaraba_onboarding\Service\OnboardingAiRecommendationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_onboarding'
+      - '@?jaraba_ai_agents.support_agent'
+
+  # Orquestador principal del flujo de onboarding (GAP-AUD-001: + AI recommender)
   jaraba_onboarding.orchestrator:
     class: Drupal\jaraba_onboarding\Service\OnboardingOrchestratorService
     arguments:
       - '@entity_type.manager'
       - '@ecosistema_jaraba_core.tenant_onboarding'
       - '@logger.channel.jaraba_onboarding'
+      - '@?jaraba_onboarding.ai_recommender'
 
   # Gamificacion y recompensas de onboarding
   jaraba_onboarding.gamification:

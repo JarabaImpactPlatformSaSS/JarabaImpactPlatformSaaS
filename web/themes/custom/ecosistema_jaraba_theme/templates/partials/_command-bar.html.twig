@@ -1,0 +1,33 @@
+{#
+ # Partial: Command Bar (Cmd+K) — Global command palette.
+ #
+ # Included in the base layout via preprocess_html when enabled.
+ # Rendered as an overlay modal with keyboard-driven search.
+ #
+ # GAP-AUD-008: Command Bar (Cmd+K)
+ #}
+
+<div id="command-bar-overlay" class="command-bar" role="dialog" aria-modal="true" aria-label="{{ 'Command Bar'|t }}">
+  <div id="command-bar-modal" class="command-bar__modal">
+    <div class="command-bar__input-wrapper">
+      <span class="command-bar__search-icon material-icons" aria-hidden="true">search</span>
+      <label for="command-bar-input" class="visually-hidden">{{ 'Search commands'|t }}</label>
+      <input
+        type="text"
+        id="command-bar-input"
+        class="command-bar__input"
+        placeholder="{{ 'Search pages, articles, actions...'|t }}"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <span class="command-bar__shortcut" aria-hidden="true">Esc</span>
+    </div>
+    <ul id="command-bar-results" class="command-bar__results" role="listbox" aria-label="{{ 'Search results'|t }}">
+    </ul>
+    <div class="command-bar__footer">
+      <span>{{ '↑↓ Navigate'|t }}</span>
+      <span>{{ '↵ Open'|t }}</span>
+      <span>{{ 'Esc Close'|t }}</span>
+    </div>
+  </div>
+</div>

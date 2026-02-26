@@ -45,6 +45,9 @@
 // Sprint 5: Cross-pollination verticales
 @use 'components/cross-pollination';
 
+// Meta-sitio PED S.L. (plataformadeecosistemas.es) Sprint 6
+@use 'components/ped-metasite';
+
 // Premium Components (extensión a todas las páginas)
 @use 'components/page-premium';
 @use 'components/glass-utilities';
@@ -134,3 +137,12 @@
 
 // Pricing Page - 178_MetaSite_Remediation /planes
 @use 'components/pricing-page';
+
+// Static Pages - Sprint 3 Growth Infrastructure
+@use 'components/static-pages';
+
+// Demo AI Playground - GAP-AUD-003
+@use 'components/demo-playground';
+
+// Command Bar - GAP-AUD-008
+@use 'components/command-bar';

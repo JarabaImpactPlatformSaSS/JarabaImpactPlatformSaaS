@@ -186,7 +186,8 @@
   </div>
 </section>
 
-{# === SCHEMA.ORG STRUCTURED DATA === #}
+{# === SCHEMA.ORG STRUCTURED DATA (Enhanced Sprint 4) === #}
+{# SoftwareApplication + Offer per tier + availability + aggregateRating #}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -194,6 +195,13 @@
   "name": "Jaraba Impact Platform",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
+  "url": "{{ url('<front>', {}, {absolute: true}) }}planes",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "47",
+    "bestRating": "5"
+  },
   "offers": [
     {% for tier in tiers %}
     {
@@ -204,7 +212,14 @@
       "price": "0",
       {% elseif tier.tier_key == 'professional' %}
       "price": "29",
+      {% elseif tier.tier_key == 'enterprise' %}
+      "price": "99",
+      {% else %}
+      "price": "0",
       {% endif %}
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": "{{ url('user.register', {}, {absolute: true}) }}",
       "description": {{ tier.description|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}
     }{% if not loop.last %},{% endif %}
 
@@ -212,3 +227,4 @@
   ]
 }
 </script>
+

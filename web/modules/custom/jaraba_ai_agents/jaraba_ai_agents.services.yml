@@ -21,13 +21,22 @@ services:
       - '@config.factory'
       - '@logger.channel.jaraba_ai_agents'
 
-  # AI Observability - Tracking y métricas
+  # GAP-02: Trace Context — Propagacion de trace_id/span_id (request-scoped)
+  jaraba_ai_agents.trace_context:
+    class: Drupal\jaraba_ai_agents\Service\TraceContextService
+    arguments:
+      - '@uuid'
+      - '@logger.channel.jaraba_ai_agents'
+
+  # AI Observability - Tracking y métricas (GAP-02: trace context, GAP-AUD-002: metering bridge)
   jaraba_ai_agents.observability:
     class: Drupal\jaraba_ai_agents\Service\AIObservabilityService
     arguments:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.trace_context'
+      - '@?jaraba_billing.tenant_metering'
 
   # Workflow Executor - Ejecución de flujos
   jaraba_ai_agents.workflow_executor:
@@ -40,7 +49,7 @@ services:
       - '@jaraba_ai_agents.tool_registry'
       - '@jaraba_ai_agents.pending_approval'
 
-  # Quality Evaluator - LLM-as-Judge
+  # Quality Evaluator - LLM-as-Judge (GAP-06: entity_type.manager para stats reales)
   jaraba_ai_agents.quality_evaluator:
     class: Drupal\jaraba_ai_agents\Service\QualityEvaluatorService
     arguments:
@@ -48,6 +57,7 @@ services:
       - '@config.factory'
       - '@jaraba_ai_agents.observability'
       - '@logger.channel.jaraba_ai_agents'
+      - '@entity_type.manager'
 
   # Orquestador de agentes
   jaraba_ai_agents.orchestrator:

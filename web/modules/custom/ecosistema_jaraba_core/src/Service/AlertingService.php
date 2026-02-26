@@ -286,7 +286,7 @@ class AlertingService
                 ['title' => 'Tenant', 'value' => $tenantName],
                 ['title' => 'Plan', 'value' => $plan],
             ],
-            '/admin/structure/tenant'
+            '/admin/structure/tenants'
         );
     }
 

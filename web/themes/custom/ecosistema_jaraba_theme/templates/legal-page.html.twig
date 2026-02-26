@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * legal-page.html.twig
+ *
+ * Template genérico para páginas legales: privacidad, términos, cookies.
+ *
+ * VARIABLES (desde StaticPageController):
+ * - page_type: 'privacy' | 'terms' | 'cookies'
+ * - title: Título de la página
+ * - content: HTML desde Theme Settings
+ * - last_updated: Fecha de última actualización
+ *
+ * DIRECTRICES:
+ * - FRONTEND-PAGE-001: Full-width clean layout
+ * - i18n: {% trans %}
+ * - LEGAL-CONFIG-001: contenido editable desde admin
+ */
+#}
+
+<div class="static-page static-page--legal static-page--{{ page_type|default('generic') }}">
+  <div class="static-page__container">
+
+    <header class="static-page__header">
+      <h1 class="static-page__title">{{ title }}</h1>
+      {% if last_updated %}
+        <p class="static-page__meta">
+          {% trans %}Última actualización:{% endtrans %} <time>{{ last_updated }}</time>
+        </p>
+      {% endif %}
+    </header>
+
+    {% if content %}
+      <div class="static-page__content static-page__content--legal">
+        {{ content|raw }}
+      </div>
+    {% else %}
+      <div class="static-page__content static-page__content--legal">
+        <p class="static-page__placeholder">
+          {% trans %}El contenido de esta página está siendo preparado. Configúralo desde Apariencia > Ecosistema Jaraba Theme > Páginas Legales.{% endtrans %}
+        </p>
+      </div>
+    {% endif %}
+
+    <footer class="static-page__footer-nav">
+      <nav aria-label="{% trans %}Páginas legales{% endtrans %}">
+        <ul class="static-page__legal-links">
+          <li><a href="/politica-privacidad">{% trans %}Privacidad{% endtrans %}</a></li>
+          <li><a href="/terminos-uso">{% trans %}Términos{% endtrans %}</a></li>
+          <li><a href="/politica-cookies">{% trans %}Cookies{% endtrans %}</a></li>
+          <li><a href="/contacto">{% trans %}Contacto{% endtrans %}</a></li>
+        </ul>
+      </nav>
+    </footer>
+
+  </div>
+</div>

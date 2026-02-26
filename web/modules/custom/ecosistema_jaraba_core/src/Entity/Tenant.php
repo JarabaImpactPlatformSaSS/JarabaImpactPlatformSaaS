@@ -53,11 +53,11 @@ use Drupal\user\UserInterface;
  *     "langcode" = "langcode",
  *   },
  *   links = {
- *     "collection" = "/admin/structure/tenant",
- *     "add-form" = "/admin/structure/tenant/add",
- *     "canonical" = "/admin/structure/tenant/{tenant}",
- *     "edit-form" = "/admin/structure/tenant/{tenant}/edit",
- *     "delete-form" = "/admin/structure/tenant/{tenant}/delete",
+ *     "collection" = "/admin/structure/tenants",
+ *     "add-form" = "/admin/structure/tenants/add",
+ *     "canonical" = "/admin/structure/tenants/{tenant}",
+ *     "edit-form" = "/admin/structure/tenants/{tenant}/edit",
+ *     "delete-form" = "/admin/structure/tenants/{tenant}/delete",
  *   },
  *   field_ui_base_route = "entity.tenant.collection",
  * )

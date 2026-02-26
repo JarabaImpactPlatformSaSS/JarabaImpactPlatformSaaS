@@ -6,6 +6,7 @@ namespace Drupal\jaraba_ai_agents\Agent;
 
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\ai\OperationType\Chat\Tools\ToolsInput;
 use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
 use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
@@ -398,6 +399,11 @@ abstract class SmartBaseAgent extends BaseAgent
 
             $toolResult = $this->toolRegistry->execute($toolId, $toolParams, $toolContext);
 
+            // GAP-03/GAP-10: Sanitizar tool output para prompt injection indirecto.
+            // Los resultados de tools pueden provenir de fuentes externas (APIs, BD,
+            // busquedas) que podrian contener instrucciones de injection embebidas.
+            $toolResult = $this->sanitizeToolOutput($toolResult);
+
             $traceEntry = [
                 'iteration' => $i + 1,
                 'tool_id' => $toolId,
@@ -418,6 +424,240 @@ abstract class SmartBaseAgent extends BaseAgent
         $result['tool_trace'] = $toolTrace;
         $result['max_iterations_reached'] = TRUE;
         return $result;
+    }
+
+    /**
+     * GAP-09: Calls the AI API with native function calling (API-level tool use).
+     *
+     * Usa ChatInput::setChatTools() para pasar herramientas como funciones
+     * nativas al LLM en vez de inyectarlas como XML en el system prompt.
+     * El LLM responde con tool_use blocks estructurados en vez de JSON en texto.
+     *
+     * Loop iterativo: LLM -> tool_use -> execute tool -> tool_result message
+     * -> re-call LLM (max iterations).
+     *
+     * @param string $prompt
+     *   The user prompt.
+     * @param array $options
+     *   Optional: max_tool_iterations (default 5), force_tier, temperature.
+     *
+     * @return array
+     *   Result array with tool execution trace.
+     */
+    protected function callAiApiWithNativeTools(string $prompt, array $options = []): array
+    {
+        if (!$this->toolRegistry || empty($this->toolRegistry->getAll())) {
+            return $this->callAiApi($prompt, $options);
+        }
+
+        $nativeTools = $this->toolRegistry->generateNativeToolsInput();
+        if (!$nativeTools) {
+            return $this->callAiApi($prompt, $options);
+        }
+
+        $startTime = microtime(TRUE);
+        $success = FALSE;
+        $inputTokens = 0;
+        $outputTokens = 0;
+        $modelId = '';
+        $providerId = '';
+        $tier = 'balanced';
+        $logId = NULL;
+        $toolTrace = [];
+        $maxIterations = $options['max_tool_iterations'] ?? 5;
+
+        try {
+            // 1. Build system prompt (sin tool docs — las tools van nativas).
+            $systemPrompt = $this->buildSystemPrompt($prompt);
+
+            // FIX-033: Fit to context window.
+            if ($this->contextWindowManager) {
+                $systemPrompt = $this->contextWindowManager->fitToWindow(
+                    $systemPrompt,
+                    $prompt,
+                    $modelId ?: 'default'
+                );
+            }
+
+            // 2. Model routing.
+            $routingConfig = $this->getRoutingConfig($prompt, $options);
+            $tier = $routingConfig['tier'];
+            $providerId = $routingConfig['provider_id'];
+            $modelId = $routingConfig['model_id'];
+
+            // 3. Build initial message list.
+            $messages = [
+                new ChatMessage('system', $systemPrompt),
+                new ChatMessage('user', $prompt),
+            ];
+
+            $finalText = '';
+
+            // 4. Iterative tool use loop.
+            for ($i = 0; $i < $maxIterations; $i++) {
+                $chatOutput = $this->executeLlmCallWithTools(
+                    $messages,
+                    $nativeTools,
+                    $providerId,
+                    $modelId,
+                    $options
+                );
+
+                $chatMessage = $chatOutput->getNormalized();
+                $text = $chatMessage->getText();
+                $toolCalls = $chatMessage->getTools();
+
+                if (empty($toolCalls)) {
+                    // No tool calls — final response.
+                    $finalText = $text;
+                    break;
+                }
+
+                // Process each tool call.
+                // Append assistant message with tool calls to conversation.
+                $messages[] = $chatMessage;
+
+                foreach ($toolCalls as $toolFnOutput) {
+                    $toolId = $toolFnOutput->getName();
+                    $toolArgs = [];
+                    foreach ($toolFnOutput->getArguments() as $arg) {
+                        $toolArgs[$arg->getName()] = $arg->getValue();
+                    }
+
+                    $toolContext = [
+                        'agent_id' => $this->getAgentId(),
+                        'tenant_id' => $this->tenantId,
+                        'vertical' => $this->vertical,
+                    ];
+
+                    $toolResult = $this->toolRegistry->execute($toolId, $toolArgs, $toolContext);
+
+                    // GAP-03/GAP-10: Sanitize tool output.
+                    $toolResult = $this->sanitizeToolOutput($toolResult);
+
+                    $traceEntry = [
+                        'iteration' => $i + 1,
+                        'tool_id' => $toolId,
+                        'params' => $toolArgs,
+                        'result' => $toolResult,
+                        'native' => TRUE,
+                    ];
+                    $toolTrace[] = $traceEntry;
+
+                    // Append tool result as a user message for the next iteration.
+                    $toolResultJson = json_encode($toolResult, JSON_UNESCAPED_UNICODE);
+                    $toolResultMessage = new ChatMessage('user',
+                        "Tool result for {$toolId}: {$toolResultJson}"
+                    );
+                    if (method_exists($toolResultMessage, 'setToolsId')) {
+                        $toolResultMessage->setToolsId($toolFnOutput->getToolId());
+                    }
+                    $messages[] = $toolResultMessage;
+
+                    $this->logger->info('GAP-09: Native tool @tool executed in iteration @iter for @agent', [
+                        '@tool' => $toolId,
+                        '@iter' => $i + 1,
+                        '@agent' => $this->getAgentId(),
+                    ]);
+                }
+            }
+
+            // Estimate tokens.
+            $totalInput = $systemPrompt . $prompt;
+            foreach ($toolTrace as $trace) {
+                $totalInput .= json_encode($trace['result'] ?? [], JSON_UNESCAPED_UNICODE);
+            }
+            $inputTokens = (int) ceil(mb_strlen($totalInput) / 4);
+            $outputTokens = (int) ceil(mb_strlen($finalText) / 4);
+            $success = TRUE;
+
+            $result = [
+                'success' => TRUE,
+                'data' => ['text' => $finalText],
+                'tenant_id' => $this->tenantId,
+                'vertical' => $this->vertical,
+                'agent_id' => $this->getAgentId(),
+                'routing' => [
+                    'tier' => $tier,
+                    'model' => $modelId,
+                    'estimated_cost' => $routingConfig['estimated_cost'],
+                ],
+                'tool_trace' => $toolTrace,
+                'native_tools' => TRUE,
+            ];
+
+        } catch (\Exception $e) {
+            $this->logger->error('GAP-09: Native tool use error: @msg', ['@msg' => $e->getMessage()]);
+
+            // Fallback to text-based tool use.
+            $this->logger->info('GAP-09: Falling back to text-based tool use.');
+            return $this->callAiApiWithTools($prompt, $options);
+        }
+
+        // Observability.
+        $durationMs = (int) ((microtime(TRUE) - $startTime) * 1000);
+        $logId = $this->observability->log([
+            'agent_id' => $this->getAgentId(),
+            'action' => $this->currentAction,
+            'tier' => $tier,
+            'model_id' => $modelId,
+            'provider_id' => $providerId,
+            'tenant_id' => $this->tenantId,
+            'vertical' => $this->vertical,
+            'input_tokens' => $inputTokens,
+            'output_tokens' => $outputTokens,
+            'duration_ms' => $durationMs,
+            'success' => $success,
+            'operation_name' => 'callAiApiWithNativeTools',
+        ]);
+
+        if ($success && $logId) {
+            $this->enqueueQualityEvaluation($logId, $prompt, $result['data']['text'] ?? '', $tier);
+            $result['log_id'] = $logId;
+        }
+
+        // FIX-044: Mask PII.
+        if ($success && isset($result['data']['text'])) {
+            $result['data']['text'] = $this->maskOutputPii($result['data']['text']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * GAP-09: Executes LLM call with native tool definitions.
+     *
+     * @param array $messages
+     *   Array of ChatMessage objects (conversation history).
+     * @param \Drupal\ai\OperationType\Chat\Tools\ToolsInput $tools
+     *   Native tool definitions.
+     * @param string $providerId
+     *   Provider ID.
+     * @param string $modelId
+     *   Model ID.
+     * @param array $options
+     *   Options (temperature, etc.).
+     *
+     * @return \Drupal\ai\OperationType\Chat\ChatOutput
+     *   The chat output (may contain tool calls).
+     */
+    protected function executeLlmCallWithTools(
+        array $messages,
+        ToolsInput $tools,
+        string $providerId,
+        string $modelId,
+        array $options,
+    ): \Drupal\ai\OperationType\Chat\ChatOutput {
+        $provider = $this->aiProvider->createInstance($providerId);
+
+        $chatInput = new ChatInput($messages);
+        $chatInput->setChatTools($tools);
+
+        $configuration = [
+            'temperature' => $options['temperature'] ?? 0.7,
+        ];
+
+        return $provider->chat($chatInput, $modelId, $configuration);
     }
 
     /**
@@ -524,6 +764,43 @@ abstract class SmartBaseAgent extends BaseAgent
         }
 
         return $text;
+    }
+
+    /**
+     * Sanitizes tool output for indirect prompt injection (GAP-03/GAP-10).
+     *
+     * @param mixed $toolResult
+     *   The tool execution result (array or string).
+     *
+     * @return mixed
+     *   Sanitized result.
+     */
+    protected function sanitizeToolOutput(mixed $toolResult): mixed
+    {
+        if (!\Drupal::hasService('ecosistema_jaraba_core.ai_guardrails')) {
+            return $toolResult;
+        }
+
+        try {
+            $guardrails = \Drupal::service('ecosistema_jaraba_core.ai_guardrails');
+
+            if (is_string($toolResult)) {
+                return $guardrails->sanitizeToolOutput($toolResult);
+            }
+
+            if (is_array($toolResult)) {
+                // Sanitizar valores string dentro del array de resultado.
+                array_walk_recursive($toolResult, function (&$value) use ($guardrails) {
+                    if (is_string($value) && mb_strlen($value) > 20) {
+                        $value = $guardrails->sanitizeToolOutput($value);
+                    }
+                });
+            }
+        } catch (\Exception $e) {
+            // Non-critical — don't fail the tool response.
+        }
+
+        return $toolResult;
     }
 
     /**

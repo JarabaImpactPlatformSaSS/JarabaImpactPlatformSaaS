@@ -436,6 +436,38 @@ class SiteConfig extends ContentEntityBase
             ])
             ->setDisplayConfigurable('form', TRUE);
 
+        // --- Titulos de columnas del Footer (configurables desde UI) ---
+
+        $fields['footer_col1_title'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Titulo Columna 1 Footer'))
+            ->setDescription(t('Titulo de la primera columna del footer. Si vacio, usa el nombre del sitio.'))
+            ->setSettings(['max_length' => 100])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 75,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['footer_col2_title'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Titulo Columna 2 Footer'))
+            ->setDescription(t('Titulo de la segunda columna del footer. Si vacio, usa "Empresa".'))
+            ->setSettings(['max_length' => 100])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 76,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['footer_col3_title'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Titulo Columna 3 Footer'))
+            ->setDescription(t('Titulo de la tercera columna del footer. Si vacio, usa "Legal".'))
+            ->setSettings(['max_length' => 100])
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 77,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
         // --- Campos de sistema ---
 
         $fields['created'] = BaseFieldDefinition::create('created')

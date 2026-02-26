@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agents\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Lock\LockBackendInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -21,7 +21,14 @@ use Psr\Log\LoggerInterface;
  *   - retrieve(): Recupera un valor por clave del contexto compartido.
  *   - search(): Busca claves que contienen una subcadena.
  *   - getContext(): Devuelve el contexto completo decodificado.
- *   AUDIT-CONS-005: tenant_id como entity_reference a group.
+ *
+ * GAP-04: store() usa Drupal Lock API para prevenir race conditions
+ * en escenarios multi-agente concurrente. El lock garantiza que solo
+ * un proceso puede modificar el shared_context de una conversacion
+ * a la vez, previniendo perdida silenciosa de datos en el patron
+ * read-modify-write.
+ *
+ * AUDIT-CONS-005: tenant_id como entity_reference a group.
  */
 class SharedMemoryService {
 
@@ -32,10 +39,15 @@ class SharedMemoryService {
    *   Gestor de tipos de entidad para acceso a almacenamiento.
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger del canal jaraba_agents.
+   * @param \Drupal\Core\Lock\LockBackendInterface|null $lock
+   *   Backend de lock (Redis-backed en produccion). Opcional para
+   *   backward compatibility — si no disponible, store() funciona
+   *   sin lock (comportamiento previo).
    */
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
+    protected readonly ?LockBackendInterface $lock = NULL,
   ) {}
 
   /**
@@ -52,7 +64,33 @@ class SharedMemoryService {
    *   Valor a almacenar (serializable a JSON).
    */
   public function store(int $conversationId, string $key, mixed $value): void {
+    $lockId = 'shared_memory:' . $conversationId;
+    $lockAcquired = FALSE;
+
     try {
+      // GAP-04: Adquirir lock exclusivo antes del read-modify-write.
+      // Timeout 5s es generoso para una operacion de <50ms.
+      // Si lock no disponible (modulo de test, backward compat), continuar sin lock.
+      if ($this->lock) {
+        $lockAcquired = $this->lock->acquire($lockId, 5.0);
+
+        if (!$lockAcquired) {
+          $this->logger->warning('No se pudo adquirir lock para SharedMemory conversacion @id. Reintentando con wait...', [
+            '@id' => $conversationId,
+          ]);
+          // Esperar a que se libere y reintentar.
+          $this->lock->wait($lockId, 3);
+          $lockAcquired = $this->lock->acquire($lockId, 5.0);
+
+          if (!$lockAcquired) {
+            $this->logger->error('Lock agotado para SharedMemory conversacion @id. Operacion store abortada para prevenir corrupcion de datos.', [
+              '@id' => $conversationId,
+            ]);
+            return;
+          }
+        }
+      }
+
       $conversationStorage = $this->entityTypeManager->getStorage('agent_conversation');
       $conversation = $conversationStorage->load($conversationId);
 
@@ -78,6 +116,12 @@ class SharedMemoryService {
         '@id' => $conversationId,
         '@message' => $e->getMessage(),
       ]);
+    }
+    finally {
+      // Garantizar liberacion del lock incluso si hay excepcion.
+      if ($lockAcquired && $this->lock) {
+        $this->lock->release($lockId);
+      }
     }
   }
 

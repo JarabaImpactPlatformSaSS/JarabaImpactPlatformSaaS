@@ -188,3 +188,18 @@ contact-form:
   dependencies:
     - core/drupal
     - core/once
+
+# Páginas estáticas — Sprint 3
+static-pages:
+  css:
+    component:
+      css/main.css: {}
+
+# GAP-AUD-008: Command Bar (Cmd+K) — Global command palette
+command-bar:
+  version: 1.0.0
+  js:
+    js/command-bar.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
