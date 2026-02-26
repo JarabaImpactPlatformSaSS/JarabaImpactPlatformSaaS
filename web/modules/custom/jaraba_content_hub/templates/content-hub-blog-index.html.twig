@@ -3,102 +3,182 @@
  * @file
  * Template: Blog index page (sin regiones de Drupal).
  *
- * Variables:
- * - title: Título del blog
- * - articles: Array de artículos
- * - categories: Array de categorías
- * - trending: Array de artículos trending
+ * Variables (from BlogController::index):
+ * - title: Título del blog (configurable desde jaraba_content_hub.settings)
+ * - articles: Array de artículos con keys:
+ *   id, title, slug, excerpt, reading_time, publish_date,
+ *   category_name, category_color, category_url, featured_image, url
+ * - categories: Array de categorías con keys:
+ *   id, name, slug, color, icon, count, url
+ * - trending: Array de artículos trending con keys: id, title, url
  * - show_reading_time: Boolean
+ * - pager: Array de paginación con keys:
+ *   current_page, total_pages, total_articles, has_previous, has_next,
+ *   previous_url, next_url, pages (array con number, is_current, url)
+ *
+ * CSS classes: .blog-page, .blog-hero, .blog-filters, .blog-content,
+ * .blog-grid, .blog-grid__main, .blog-grid__sidebar, .sidebar-widget,
+ * .trending-list, .newsletter-form, .blog-empty
+ * Definidas en: scss/_content-hub.scss con tokens var(--ej-*)
+ *
+ * Directrices aplicadas:
+ * - i18n: Todos los textos con {% trans %}
+ * - URLs: path() en vez de strings hardcodeados
+ * - Parciales: _article-card.html.twig, _category-filter.html.twig
+ * - Iconos: jaraba_icon() del sistema de iconos
+ * - CSS: Clases del sistema de diseño, variables CSS
  */
 #}
 {{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+{{ attach_library('jaraba_content_hub/newsletter-form') }}
 
 <div class="blog-page">
-    {# Hero section #}
-    <section class="blog-hero">
-      <div class="container">
-        <h1 class="blog-hero__title">{{ title }}</h1>
-        <p class="blog-hero__subtitle">
-          {% trans %}Discover insights, tips, and stories from our community.{% endtrans %}
-        </p>
-      </div>
-    </section>
+  {# =========================================================
+     HERO SECTION — Glassmorphism con título configurable
+     ========================================================= #}
+  <section class="blog-hero">
+    <div class="container">
+      <h1 class="blog-hero__title">{{ title }}</h1>
+      <p class="blog-hero__subtitle">
+        {% trans %}Discover insights, tips, and stories from our community.{% endtrans %}
+      </p>
+    </div>
+  </section>
 
-    {# Category filter #}
-    <section class="blog-filters">
-      <div class="container">
-        {% include '@ecosistema_jaraba_theme/partials/_category-filter.html.twig' with {
-          categories: categories,
-          show_all_link: true,
-          all_url: '/blog'
-        } only %}
-      </div>
-    </section>
+  {# =========================================================
+     CATEGORY FILTER — Parcial reutilizable con pills
+     ========================================================= #}
+  <section class="blog-filters">
+    <div class="container">
+      {% include '@ecosistema_jaraba_theme/partials/_category-filter.html.twig' with {
+        categories: categories,
+        show_all_link: true,
+        all_url: path('jaraba_content_hub.blog')
+      } only %}
+    </div>
+  </section>
 
-    {# Articles grid #}
-    <section class="blog-content">
-      <div class="container">
-        <div class="blog-grid">
-          {# Main content #}
-          <div class="blog-grid__main">
-            {% if articles is not empty %}
-              <div class="articles-grid">
-                {% for article in articles %}
-                  {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
-                    article: article,
-                    show_reading_time: show_reading_time,
-                    variant: loop.first ? 'featured' : 'standard'
-                  } only %}
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="blog-empty">
-                <p>{% trans %}No articles found.{% endtrans %}</p>
-              </div>
-            {% endif %}
-          </div>
+  {# =========================================================
+     BLOG CONTENT — Grid principal + Sidebar
+     ========================================================= #}
+  <section class="blog-content">
+    <div class="container">
+      <div class="blog-grid">
 
-          {# Sidebar #}
-          <aside class="blog-grid__sidebar">
-            {# Trending widget #}
-            {% if trending is not empty %}
-              <div class="sidebar-widget">
-                <h3 class="sidebar-widget__title">
-                  {% trans %}Trending{% endtrans %}
-                </h3>
-                <ol class="trending-list">
-                  {% for item in trending %}
-                    <li class="trending-list__item">
-                      <a href="{{ item.url }}">{{ item.title }}</a>
+        {# --- Main: Articles grid --- #}
+        <div class="blog-grid__main">
+          {% if articles is not empty %}
+            <div class="articles-grid">
+              {% for article in articles %}
+                {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
+                  article: article,
+                  show_reading_time: show_reading_time,
+                  variant: loop.first ? 'featured' : 'standard'
+                } only %}
+              {% endfor %}
+            </div>
+
+            {# Paginación #}
+            {% if pager %}
+              <nav class="blog-pagination" aria-label="{% trans %}Blog pagination{% endtrans %}">
+                {% if pager.has_previous %}
+                  <a href="{{ pager.previous_url }}" class="blog-pagination__link blog-pagination__link--prev"
+                     aria-label="{% trans %}Previous page{% endtrans %}">
+                    {{ jaraba_icon('ui', 'chevron-left', { size: '16px' }) }}
+                    {% trans %}Previous{% endtrans %}
+                  </a>
+                {% endif %}
+
+                <ol class="blog-pagination__pages">
+                  {% for page in pager.pages %}
+                    <li>
+                      {% if page.is_current %}
+                        <span class="blog-pagination__link blog-pagination__link--current"
+                              aria-current="page">{{ page.number }}</span>
+                      {% else %}
+                        <a href="{{ page.url }}" class="blog-pagination__link">{{ page.number }}</a>
+                      {% endif %}
                     </li>
                   {% endfor %}
                 </ol>
-              </div>
+
+                {% if pager.has_next %}
+                  <a href="{{ pager.next_url }}" class="blog-pagination__link blog-pagination__link--next"
+                     aria-label="{% trans %}Next page{% endtrans %}">
+                    {% trans %}Next{% endtrans %}
+                    {{ jaraba_icon('ui', 'chevron-right', { size: '16px' }) }}
+                  </a>
+                {% endif %}
+              </nav>
             {% endif %}
 
-            {# Newsletter widget #}
-            <div class="sidebar-widget sidebar-widget--newsletter">
-              <h3 class="sidebar-widget__title">
-                {% trans %}Subscribe to our newsletter{% endtrans %}
-              </h3>
-              <p class="sidebar-widget__text">
-                {% trans %}Get the latest articles delivered to your inbox.{% endtrans %}
+          {% else %}
+            {# Empty state mejorado con icono y CTA #}
+            <div class="blog-empty">
+              <div class="blog-empty__icon">
+                {{ jaraba_icon('ui', 'search', { size: '48px', color: 'neutral' }) }}
+              </div>
+              <h2 class="blog-empty__title">
+                {% trans %}No articles published yet{% endtrans %}
+              </h2>
+              <p class="blog-empty__text">
+                {% trans %}We're working on new content. Check back soon for fresh articles and insights.{% endtrans %}
               </p>
-              <form class="newsletter-form" action="/newsletter/subscribe" method="post">
-                <input 
-                  type="email" 
-                  name="email" 
-                  class="newsletter-form__input" 
-                  placeholder="{% trans %}Your email{% endtrans %}"
-                  required
-                >
-                <button type="submit" class="newsletter-form__button">
-                  {% trans %}Subscribe{% endtrans %}
-                </button>
-              </form>
             </div>
-          </aside>
+          {% endif %}
         </div>
+
+        {# --- Sidebar: Trending + Newsletter --- #}
+        <aside class="blog-grid__sidebar" aria-label="{% trans %}Blog sidebar{% endtrans %}">
+
+          {# Trending widget #}
+          {% if trending is not empty %}
+            <div class="sidebar-widget">
+              <h2 class="sidebar-widget__title">
+                {{ jaraba_icon('ui', 'arrow-right', { size: '18px' }) }}
+                {% trans %}Trending{% endtrans %}
+              </h2>
+              <ol class="trending-list">
+                {% for item in trending %}
+                  <li class="trending-list__item">
+                    <a href="{{ item.url }}">{{ item.title }}</a>
+                  </li>
+                {% endfor %}
+              </ol>
+            </div>
+          {% endif %}
+
+          {# Newsletter widget — AJAX submit via Drupal behavior #}
+          <div class="sidebar-widget sidebar-widget--newsletter">
+            <h2 class="sidebar-widget__title">
+              {% trans %}Subscribe to our newsletter{% endtrans %}
+            </h2>
+            <p class="sidebar-widget__text">
+              {% trans %}Get the latest articles delivered to your inbox.{% endtrans %}
+            </p>
+            <form class="newsletter-form" data-newsletter-form method="post"
+                  action="{{ path('jaraba_content_hub.api.newsletter.subscribe') }}">
+              <label for="newsletter-email" class="visually-hidden">
+                {% trans %}Email address{% endtrans %}
+              </label>
+              <input
+                type="email"
+                id="newsletter-email"
+                name="email"
+                class="newsletter-form__input"
+                placeholder="{% trans %}Your email{% endtrans %}"
+                required
+                autocomplete="email"
+              >
+              <button type="submit" class="newsletter-form__button">
+                {% trans %}Subscribe{% endtrans %}
+              </button>
+            </form>
+            <div class="newsletter-form__message" role="status" aria-live="polite"></div>
+          </div>
+
+        </aside>
       </div>
-    </section>
+    </div>
+  </section>
 </div>

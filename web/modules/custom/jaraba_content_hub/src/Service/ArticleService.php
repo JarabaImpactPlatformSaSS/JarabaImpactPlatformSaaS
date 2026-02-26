@@ -100,6 +100,33 @@ class ArticleService
     }
 
     /**
+     * Cuenta el total de artículos publicados.
+     *
+     * Útil para calcular paginación sin cargar entidades.
+     *
+     * @param array $filters
+     *   Filtros opcionales:
+     *   - 'category': ID de categoría para filtrar.
+     *
+     * @return int
+     *   Total de artículos publicados.
+     */
+    public function countPublishedArticles(array $filters = []): int
+    {
+        $storage = $this->entityTypeManager->getStorage('content_article');
+        $query = $storage->getQuery()
+            ->condition('status', 'published')
+            ->accessCheck(TRUE)
+            ->count();
+
+        if (!empty($filters['category'])) {
+            $query->condition('category', $filters['category']);
+        }
+
+        return (int) $query->execute();
+    }
+
+    /**
      * Obtiene un artículo por su UUID.
      *
      * @param string $uuid

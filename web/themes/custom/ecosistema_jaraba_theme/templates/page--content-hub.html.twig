@@ -27,6 +27,11 @@
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('ecosistema_jaraba_theme/content-hub') }}
 
+  {# SKIP LINK — Accesibilidad WCAG 2.1 #}
+  <a href="#main-content" class="skip-link visually-hidden focusable">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
   {# HEADER - Partial reutilizable con menu movil #}
   {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
     site_name: site_name,

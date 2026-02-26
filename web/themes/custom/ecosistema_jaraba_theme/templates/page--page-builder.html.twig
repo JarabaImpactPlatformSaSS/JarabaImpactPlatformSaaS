@@ -31,34 +31,41 @@
 {{ attach_library('jaraba_page_builder/page-builder') }}
 
 {# =========================================================================
-   HEADER ULTRA-LIMPIO PARA PÁGINAS DE TENANT
-   - Solo logo y acciones de usuario
-   - SIN navegación del ecosistema principal
-   - SIN mobile menu con enlaces hardcoded
+   HEADER — Meta-sitio: full header con nav del tenant
+                Non-meta-sitio: ultra-limpio, solo logo + acciones
    ========================================================================= #}
-<header class="landing-header landing-header--tenant" role="banner">
-  <div class="landing-header__container">
-    {# Logo + Branding del Tenant #}
-    <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
-      {% if logo %}
-        <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
-      {% endif %}
-      <div class="landing-header__text">
-        <span class="landing-header__name">{{ site_name }}</span>
+{% if meta_site %}
+  {# Meta-sitio: usar el partial configurable que ya lee theme_settings.navigation_items #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    site_slogan: site_slogan|default(''),
+    logo: logo,
+    logged_in: logged_in,
+    theme_settings: theme_settings
+  } %}
+{% else %}
+  {# Non-meta-sitio (page-builder dashboard, preview, etc.): header limpio sin nav #}
+  <header class="landing-header landing-header--tenant" role="banner">
+    <div class="landing-header__container">
+      <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
+        {% if logo %}
+          <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
+        {% endif %}
+        <div class="landing-header__text">
+          <span class="landing-header__name">{{ site_name }}</span>
+        </div>
+      </a>
+      <div class="landing-header__actions">
+        {% if logged_in %}
+          <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+          <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+        {% else %}
+          <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+        {% endif %}
       </div>
-    </a>
-
-    {# Acciones Usuario - Solo login/cuenta, sin menú del ecosistema #}
-    <div class="landing-header__actions">
-      {% if logged_in %}
-        <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
-        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
-      {% else %}
-        <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
-      {% endif %}
     </div>
-  </div>
-</header>
+  </header>
+{% endif %}
 
 {# =========================================================================
    MAIN CONTENT - Full-width, Sin Regiones Drupal Heredadas

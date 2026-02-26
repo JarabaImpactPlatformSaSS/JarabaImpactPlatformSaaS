@@ -315,10 +315,31 @@
   font-size: var(--ej-font-size-xs, 0.75rem);
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 
   &:hover {
     background: var(--ej-cc-primary);
     color: #ffffff;
+  }
+
+  // Variante enlace directo — fondo sólido, destaca como CTA.
+  &--link {
+    background: var(--ej-cc-primary, var(--ej-color-impulse, #FF8C42));
+    color: #ffffff;
+    border-color: var(--ej-cc-primary, var(--ej-color-impulse, #FF8C42));
+    font-weight: 600;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
   }
 }
 

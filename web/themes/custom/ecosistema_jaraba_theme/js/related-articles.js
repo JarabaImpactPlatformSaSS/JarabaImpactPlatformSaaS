@@ -113,7 +113,9 @@
            </span>`
                 : '';
 
-            const url = article.slug ? `/blog/${article.slug}` : `/blog/article/${article.id}`;
+            // Usar URL canónica del API (respeta prefijo de idioma).
+            // Fallback a article.slug solo si la API no devuelve url.
+            const url = article.url || (article.slug ? `/blog/${article.slug}` : `/blog/article/${article.id}`);
 
             return `
         <article class="article-card article-card--standard" data-article-id="${article.id}">

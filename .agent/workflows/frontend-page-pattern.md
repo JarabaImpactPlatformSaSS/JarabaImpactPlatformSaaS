@@ -256,11 +256,65 @@ Si se crea un nuevo módulo `jaraba_nuevo`:
 2. (Opcional) Si necesita template específico, añadir sección después del catch-all
 3. (Opcional) Añadir al array `$module_body_classes` en `hook_preprocess_html()` para CSS por módulo
 
+## Content Hub / Blog Pattern (2026-02-26)
+
+El blog (`/blog`) es un ejemplo canonico del patron frontend completo:
+
+### Cadena de Renderizado
+
+```
+Ruta jaraba_content_hub.blog
+  → BlogController::index()
+    → #theme = content_hub_blog_index
+      → content-hub-blog-index.html.twig (contenido)
+        → Envuelto por page--content-hub.html.twig (Zero Region Policy)
+          → Envuelto por html.html.twig (DOCTYPE, head, body)
+```
+
+### Body Classes
+
+Definidas en `jaraba_content_hub_preprocess_html()` (NO en el template):
+
+- `page-content-hub` — todas las rutas `jaraba_content_hub.*`
+- `page--clean-layout` — todas las rutas `jaraba_content_hub.*`
+- `page-blog` — solo ruta `jaraba_content_hub.blog`
+
+### Template Suggestion
+
+El modulo `jaraba_content_hub` registra su propio `theme_suggestions_page_alter()`:
+
+```php
+if (str_starts_with($route_name, 'jaraba_content_hub.') && !str_contains($route_name, '.api.')) {
+  $suggestions[] = 'page__content_hub';
+}
+```
+
+NO crear `page--blog.html.twig` en el tema — la ruta ya esta cubierta por `page--content-hub.html.twig`.
+
+### Preprocess para Entidades
+
+`template_preprocess_content_article()` en `jaraba_content_hub.module` extrae:
+- Datos primitivos (title, body, dates, reading_time)
+- Entidad referenciada: category (name, color, url)
+- Owner/author: display name, bio field, avatar (user_picture)
+- Responsive images: `ImageStyle::load('article_card')->buildUrl($uri)` + srcset
+
+### Paginacion
+
+BlogController usa `?page=N` con sliding window ±2. Cache context: `url.query_args:page`.
+
+### Parciales Reutilizados
+
+- `_article-card.html.twig` — cards del grid
+- `_category-filter.html.twig` — filtros de categoria (URL por defecto: `path('jaraba_content_hub.blog')`)
+- `_header.html.twig` / `_footer.html.twig` — via page--content-hub.html.twig
+
 ## Referencia
 
 - [docs/tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md](file:///z:/home/PED/JarabaImpactPlatformSaaS/docs/tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md)
 - [docs/tecnicos/aprendizajes/2026-01-29_site_builder_frontend_fullwidth.md](file:///z:/home/PED/JarabaImpactPlatformSaaS/docs/tecnicos/aprendizajes/2026-01-29_site_builder_frontend_fullwidth.md) - Particulas y slide-panel
 - [page--content-hub.html.twig](file:///z:/home/PED/JarabaImpactPlatformSaaS/web/themes/custom/ecosistema_jaraba_theme/templates/page--content-hub.html.twig) - Ejemplo canonico migrado
+- [Blog Implementation Plan](file:///z:/home/PED/JarabaImpactPlatformSaaS/docs/implementacion/2026-02-26_Blog_Clase_Mundial_Plan_Implementacion.md) - Plan completo del blog
 
 ---
 

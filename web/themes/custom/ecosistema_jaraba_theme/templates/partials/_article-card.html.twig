@@ -15,20 +15,33 @@
  *   - category_name: Nombre de categoría
  *   - category_color: Color hex de categoría
  *   - category_url: URL de categoría
- *   - featured_image: URL de imagen destacada (opcional)
+ *   - featured_image: URL de imagen (image style 600w)
+ *   - featured_image_srcset: Srcset con múltiples tamaños (600w, 1200w)
  * - show_reading_time: Boolean para mostrar tiempo de lectura
  * - variant: 'standard' | 'featured' | 'horizontal' | 'minimal'
+ *
+ * Directrices aplicadas:
+ * - ICON-CONVENTION-001: jaraba_icon() en vez de SVG inline
+ * - TWIG-XSS-001: excerpt renderizado con autoescaping
+ * - WCAG 2.1: alt fallback, aria-label, focus states (CSS)
+ * - Performance: srcset responsive, loading="lazy"
+ * - i18n: {% trans %} en todos los textos
  */
 #}
-{% set variant = variant|default('standard') %}
+{% set valid_variants = ['standard', 'featured', 'horizontal', 'minimal'] %}
+{% set variant = variant in valid_variants ? variant : 'standard' %}
 
 <article class="article-card article-card--{{ variant }}" data-article-id="{{ article.id }}">
   {% if article.featured_image %}
     <a href="{{ article.url }}" class="article-card__image-link" aria-label="{{ article.title }}">
-      <img 
-        src="{{ article.featured_image }}" 
-        alt="{{ article.title }}" 
-        loading="lazy" 
+      <img
+        src="{{ article.featured_image }}"
+        {% if article.featured_image_srcset %}
+          srcset="{{ article.featured_image_srcset }}"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+        {% endif %}
+        alt="{{ article.title|default('Article image'|trans) }}"
+        loading="lazy"
         class="article-card__image"
       >
     </a>
@@ -36,8 +49,8 @@
 
   <div class="article-card__content">
     {% if article.category_name %}
-      <a 
-        href="{{ article.category_url }}" 
+      <a
+        href="{{ article.category_url }}"
         class="article-card__category"
         style="--category-color: {{ article.category_color|default('#233D63') }}"
       >
@@ -50,7 +63,7 @@
     </h3>
 
     {% if article.excerpt and variant != 'minimal' %}
-      <p class="article-card__excerpt">{{ article.excerpt }}</p>
+      <p class="article-card__excerpt">{{ article.excerpt|striptags }}</p>
     {% endif %}
 
     <div class="article-card__meta">
@@ -59,10 +72,9 @@
       </time>
       {% if show_reading_time and article.reading_time %}
         <span class="article-card__reading-time">
-          <svg class="article-card__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
+          <span class="article-card__icon" aria-hidden="true">
+            {{ jaraba_icon('ui', 'clock', { size: '16px' }) }}
+          </span>
           {{ article.reading_time }} {% trans %}min{% endtrans %}
         </span>
       {% endif %}

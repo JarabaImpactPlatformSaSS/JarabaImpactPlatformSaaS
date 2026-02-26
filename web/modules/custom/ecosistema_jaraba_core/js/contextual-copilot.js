@@ -274,15 +274,34 @@
           const suggestionsDiv = document.createElement('div');
           suggestionsDiv.className = 'chat-suggestions';
           suggestions.forEach(s => {
+            // Normalizar: strings planos → {label: string}
+            const item = typeof s === 'string' ? { label: s } : s;
+
+            // Si tiene URL, renderizar como enlace directo (botón-link)
+            if (item.url) {
+              const link = document.createElement('a');
+              link.className = 'suggestion-btn suggestion-btn--link';
+              link.href = item.url;
+              link.textContent = item.label;
+              // Solo abrir en nueva pestaña si es URL externa
+              if (item.url.startsWith('http') && !item.url.includes(window.location.hostname)) {
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+              }
+              suggestionsDiv.appendChild(link);
+              return;
+            }
+
+            // Botón de sugerencia clásico (envía mensaje o redirige por acción)
             const btn = document.createElement('button');
             btn.className = 'suggestion-btn';
-            btn.textContent = s.label;
+            btn.textContent = item.label;
             btn.addEventListener('click', () => {
               suggestionsDiv.remove();
-              if (s.action === 'register' || s.action === 'view_plans') {
-                window.location.href = s.action === 'register' ? '/user/register' : '/planes';
+              if (item.action === 'register' || item.action === 'view_plans') {
+                window.location.href = item.action === 'register' ? '/user/register' : '/planes';
               } else {
-                input.value = s.label;
+                input.value = item.label;
                 sendMessage();
               }
             });

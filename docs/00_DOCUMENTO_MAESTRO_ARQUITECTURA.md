@@ -1,9 +1,9 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
-## Jaraba Impact Platform SaaS v72.0
+## Jaraba Impact Platform SaaS v73.0
 
-**Fecha:** 2026-02-25
-**Versión:** 74.0.0 (Premium Forms Migration 237 + USR-004 User Edit Redirect)
-**Estado:** Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Icon Emoji Remediation + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Entity Admin UI 100% + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Fecha:** 2026-02-26
+**Versión:** 75.0.0 (AI Remediation Plan — 28 Fixes, 3 Phases)
+**Estado:** AI Stack Remediado + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Icon Emoji Remediation + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Entity Admin UI 100% + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -44,6 +44,62 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── ServiciosConectaCopilotAgent: Antepuesto a getSystemPromptFor()  │
 │   ├── CoachIaService: Antepuesto a generateCoachingPrompt()            │
 │   └── AiContentController: Identidad "copywriter de Jaraba"           │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│              AI REMEDIATION STACK (28 FIXES, 3 PHASES) ⭐              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   🔒 AIIdentityRule (Centralizada, FIX-001)                            │
+│   ├── ecosistema_jaraba_core/src/AI/AIIdentityRule.php                │
+│   ├── static apply(string $prompt): string — inyecta regla identidad  │
+│   ├── Consumida por: BaseAgent, SmartBaseAgent, CopilotOrchestrator,  │
+│   │   PublicCopilotController, FaqBotService, CoachIaService, etc.    │
+│   └── Reemplaza 14+ copias duplicadas de la regla de identidad        │
+│                                                                         │
+│   🛡️ AIGuardrailsService (Pipeline Completo, FIX-003 + FIX-028)      │
+│   ├── 4 acciones: ALLOW, MODIFY, BLOCK, FLAG                         │
+│   ├── checkPII(): DNI, NIE, IBAN ES, NIF/CIF, +34 (FIX-028)        │
+│   ├── BLOCKED_PATTERNS: IBAN ES pattern anadido                       │
+│   ├── RAG injection filter (FIX-009): detecta prompt injection        │
+│   └── Integrado en SmartBaseAgent.execute() pipeline                   │
+│                                                                         │
+│   🧠 SmartBaseAgent (Contrato Restaurado, FIX-004)                    │
+│   ├── Pipeline: guardrails → model routing → execute → observability  │
+│   ├── ModelRouterService: 3 tiers (fast/balanced/premium)             │
+│   │   ├── Regex bilingue EN+ES para assessComplexity() (FIX-019)     │
+│   │   ├── Pricing en YAML config (FIX-020):                          │
+│   │   │   └── jaraba_ai_agents.model_routing.yml (hot-updatable)     │
+│   │   └── Modelos: Haiku 4.5 / Sonnet 4.6 / Opus 4.6               │
+│   ├── AIObservabilityService: tracking completo (FIX-021)             │
+│   │   ├── BrandVoiceTrainerService: log() en indexExample + refine    │
+│   │   └── WorkflowExecutorService: log() en success + failure paths  │
+│   └── @? UnifiedPromptBuilder: DI opcional (FIX-026)                  │
+│                                                                         │
+│   📊 AIOpsService (Metricas Reales, FIX-022)                          │
+│   ├── getResourceMetrics(): /proc/stat, /proc/meminfo, disk_free     │
+│   ├── getLatencyTrend(): AVG/P95 desde ai_telemetry table            │
+│   ├── getErrorTrend(): error rates desde watchdog table               │
+│   └── getCurrentMonthlyCost(): SUM(cost_estimated) desde ai_telemetry│
+│                                                                         │
+│   🔄 Streaming SSE (FIX-006 + FIX-024)                                │
+│   ├── MIME: text/event-stream (no text/plain)                         │
+│   ├── Eventos: mode, thinking, chunk, done, error                     │
+│   ├── Chunking semantico: splitIntoParagraphs() (no 80-char)         │
+│   └── streaming_mode: 'buffered' en done event                        │
+│                                                                         │
+│   📁 Canonical Verticals (FIX-027): 10 nombres canonicos             │
+│   ├── empleabilidad, emprendimiento, comercioconecta, agroconecta    │
+│   ├── jarabalex, serviciosconecta, andalucia_ei                      │
+│   ├── jaraba_content_hub, formacion, demo                             │
+│   └── Aliases legacy: comercio_conecta→comercioconecta, etc.         │
+│                                                                         │
+│   📝 Agent Generations (FIX-025):                                      │
+│   ├── Gen 0: MarketingAgent (@deprecated → SmartMarketingAgent)      │
+│   ├── Gen 1: StorytellingAgent, CustomerExperienceAgent, SupportAgent│
+│   │   └── @note annotations con roadmap de migracion                  │
+│   └── Gen 2: SmartBaseAgent subclasses (model routing + guardrails)  │
+│                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -524,6 +580,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-26 | **75.0.0** | **AI Remediation Plan — 28 Fixes, 3 Phases:** Nuevo ASCII box AI REMEDIATION STACK. Fase 1 (P0): AIIdentityRule clase estatica centralizada, brand voice fallback, guardrails pipeline ALLOW/MODIFY/BLOCK/FLAG, SmartBaseAgent contrato restaurado (routing+observability+guardrails), CopilotOrchestratorService 8 modos reales, streaming SSE con MIME correcto y eventos tipados, AgentOrchestrator simplificado, feedback loop con threshold. Fase 2 (P1): RAG prompt injection filter, embedding cache, A/B testing framework, tenant brand voice YAML, content approval workflow entity, campaign calendar entity, performance dashboard, Qdrant graceful fallback, auto-disable por error rate, vertical context normalizado. Fase 3 (P2): ModelRouterService con regex bilingue EN+ES (FIX-019), model pricing a YAML config con schema (FIX-020), observability conectada en BrandVoiceTrainer+WorkflowExecutor (FIX-021), AIOpsService con metricas reales /proc+BD (FIX-022), feedback widget JS↔PHP alineado (FIX-023), streaming semantico por parrafos (FIX-024), Gen 0/1 agents documentados (FIX-025), @? UnifiedPromptBuilder optional DI (FIX-026), canonical verticals 10 nombres (FIX-027), PII espanol DNI/NIE/IBAN/NIF/+34 (FIX-028). 55 ficheros, +3678/-236 lineas. 5 reglas nuevas. Regla de oro #45. Aprendizaje #127. |
 | 2026-02-25 | **74.0.0** | **Premium Forms Migration 237 + USR-004 User Edit Redirect:** Nuevo ASCII box PREMIUM ENTITY FORMS. `PremiumEntityFormBase` como clase abstracta estandar para todos los formularios de entidad (237 forms en 50 modulos). 4 patrones de migracion (A: Simple, B: Computed, C: DI, D: Custom Logic). Glass-card UI con navigation pills y sticky action bar. SCSS `_premium-forms.scss`. 0 `ContentEntityForm` restantes en modulos custom. Fix USR-004: redirect de `/user/{id}/edit` a perfil canonico tras save. Regla PREMIUM-FORMS-PATTERN-001 (P1). Aprendizaje #125. |
 | 2026-02-25 | **73.0.0** | **Meta-Site Icon Emoji Remediation + PathProcessor Enhancement:** Icon System: nueva categoria `business/` con 12 SVGs (6 conceptuales + 6 duotone) para meta-sitio pepejaraba.com. 11 emojis Unicode eliminados de canvas_data (4 paginas). Seccion Icon System ampliada: categorias verticales, auditoria canvas_data, reglas ICON-EMOJI-001 + ICON-CANVAS-INLINE-001. PathProcessor: prioridad actualizada a 250, nuevo `resolveHomepage()` con MetaSiteResolverService. MetaSiteResolverService: 3-strategy domain resolution (Domain Access + Tenant.domain + subdomain prefix) documentada. Meta-sitio pepejaraba.com (9 paginas) anadido junto a jarabaimpact.com. Aprendizaje #124. |
 | 2026-02-25 | **72.0.0** | **Elevacion Empleabilidad + Andalucia EI Plan Maestro + Meta-Site Rendering:** 3 ASCII boxes nuevos. Empleabilidad: CandidateProfileForm premium con 6 secciones, ProfileSectionForm generico CRUD, photo entity_reference→image, date timestamp→datetime, 5 CV PNGs, seccion idiomas, ProfileCompletionService con entity queries. Andalucia EI Plan Maestro 8 fases: P0/P1 fixes, 11 bloques PB verticales, landing conversion, portal participante, ExpedienteDocumento (19 categorias), mensajeria integration, AI automation (CopilotContextProvider + AdaptiveDifficultyEngine + 4 nudges), SEO. Meta-Site: MetaSiteResolverService, Schema.org tenant-aware, title tag override, header/footer/nav desde SiteConfig. CRM: 5 forms a PremiumEntityFormBase. 71+ ficheros. Aprendizaje #123. |

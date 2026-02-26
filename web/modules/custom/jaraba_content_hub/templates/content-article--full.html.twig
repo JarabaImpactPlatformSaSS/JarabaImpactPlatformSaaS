@@ -1,21 +1,65 @@
 {#
 /**
  * @file
- * Template for full article display.
+ * Template: Full article display (clase mundial).
+ *
+ * Variables (from template_preprocess_content_article):
+ * - article: Array con keys:
+ *   id, title, slug, excerpt, body, reading_time, publish_date,
+ *   answer_capsule, ai_generated, url, featured_image,
+ *   featured_image_srcset, category, category_name, category_color,
+ *   category_url, author_name, author_url, author_bio, author_avatar
+ * - show_reading_time: Boolean
+ *
+ * CSS classes: .content-article, .content-article--full,
+ * .content-article__featured-image, .content-article__header,
+ * .content-article__title, .content-article__meta, .content-article__body,
+ * .content-article__footer, .content-article__share, .author-bio,
+ * .reading-progress
+ * Definidas en: scss/_content-hub.scss con tokens var(--ej-*)
+ *
+ * Directrices aplicadas:
+ * - i18n: Todos los textos con {% trans %}
+ * - URLs: path() / entity URL
+ * - Iconos: jaraba_icon() del sistema de iconos
+ * - Accesibilidad: aria-label, focus-visible, skip link
+ * - Responsive: srcset con sizes
+ * - SEO: Schema.org via preprocess_html, semantic HTML5
  */
 #}
 {{ attach_library('ecosistema_jaraba_theme/related-articles') }}
+{{ attach_library('jaraba_content_hub/reading-progress') }}
+
+{# Reading progress bar — fixed top, JS-driven #}
+<div class="reading-progress" role="progressbar"
+     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+     aria-label="{% trans %}Reading progress{% endtrans %}">
+  <div class="reading-progress__bar"></div>
+</div>
 
 <article class="content-article content-article--full" data-article-id="{{ article.id }}">
+
+  {# Featured image con srcset responsive #}
   {% if article.featured_image %}
-    <div class="content-article__featured-image">
-      <img src="{{ article.featured_image }}" alt="{{ article.title }}" loading="lazy">
-    </div>
+    <figure class="content-article__featured-image">
+      <img
+        src="{{ article.featured_image }}"
+        {% if article.featured_image_srcset %}
+          srcset="{{ article.featured_image_srcset }}"
+          sizes="(max-width: 720px) 100vw, 720px"
+        {% endif %}
+        alt="{{ article.title }}"
+        loading="eager"
+        fetchpriority="high"
+      >
+    </figure>
   {% endif %}
 
   <header class="content-article__header">
     {% if article.category %}
-      <a href="{{ article.category_url }}" class="content-article__category" style="background-color: {{ article.category_color }}">
+      <a href="{{ article.category_url }}"
+         class="content-article__category"
+         style="background-color: {{ article.category_color }}">
         {{ article.category_name }}
       </a>
     {% endif %}
@@ -23,19 +67,27 @@
     <h1 class="content-article__title">{{ article.title }}</h1>
 
     <div class="content-article__meta">
+      {% if article.author_avatar %}
+        <img src="{{ article.author_avatar }}"
+             alt="{{ article.author_name }}"
+             class="content-article__author-avatar"
+             width="32" height="32" loading="lazy">
+      {% endif %}
       <span class="content-article__author">
         {% trans %}By {{ article.author_name }}{% endtrans %}
       </span>
-      <span class="content-article__date">
+      <time class="content-article__date" datetime="{{ article.publish_date }}">
         {{ article.publish_date|date('d M Y') }}
-      </span>
-      {% if show_reading_time %}
+      </time>
+      {% if show_reading_time and article.reading_time %}
         <span class="content-article__reading-time">
+          {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
           {{ article.reading_time }} {% trans %}min read{% endtrans %}
         </span>
       {% endif %}
     </div>
 
+    {# Answer Capsule — GEO snippet optimizado #}
     {% if article.answer_capsule %}
       <div class="content-article__answer-capsule">
         <strong>{% trans %}Quick Answer{% endtrans %}:</strong>
@@ -44,25 +96,80 @@
     {% endif %}
   </header>
 
-  <div class="content-article__body">
-    {{ article.body|safe_html }}
+  {# Article body — prose column 720px #}
+  <div class="content-article__body" data-reading-content>
+    {{ article.body|raw }}
   </div>
 
+  {# Author bio block #}
+  {% if article.author_name %}
+    <aside class="author-bio" aria-label="{% trans %}About the author{% endtrans %}">
+      {% if article.author_avatar %}
+        <img src="{{ article.author_avatar }}"
+             alt="{{ article.author_name }}"
+             class="author-bio__avatar"
+             width="64" height="64" loading="lazy">
+      {% else %}
+        <div class="author-bio__avatar author-bio__avatar--placeholder">
+          {{ jaraba_icon('ui', 'user', { size: '32px' }) }}
+        </div>
+      {% endif %}
+      <div class="author-bio__content">
+        <p class="author-bio__name">
+          <strong>{{ article.author_name }}</strong>
+        </p>
+        {% if article.author_bio %}
+          <p class="author-bio__text">{{ article.author_bio }}</p>
+        {% endif %}
+      </div>
+    </aside>
+  {% endif %}
+
+  {# Footer con share y badges #}
   <footer class="content-article__footer">
     <div class="content-article__share">
-      <span>{% trans %}Share{% endtrans %}:</span>
-      <a href="https://twitter.com/intent/tweet?url={{ article.url|url_encode }}&text={{ article.title|url_encode }}" 
-         target="_blank" rel="noopener" class="content-article__share-link content-article__share-link--twitter">
-        Twitter
+      <span class="content-article__share-label">{% trans %}Share{% endtrans %}:</span>
+
+      {# Facebook #}
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ article.url|url_encode }}"
+         target="_blank" rel="noopener noreferrer"
+         class="content-article__share-link content-article__share-link--facebook"
+         aria-label="{% trans %}Share on Facebook{% endtrans %}">
+        {{ jaraba_icon('social', 'facebook', { size: '18px' }) }}
+        <span class="content-article__share-text">Facebook</span>
       </a>
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ article.url|url_encode }}" 
-         target="_blank" rel="noopener" class="content-article__share-link content-article__share-link--linkedin">
-        LinkedIn
+
+      {# Twitter/X #}
+      <a href="https://twitter.com/intent/tweet?url={{ article.url|url_encode }}&text={{ article.title|url_encode }}"
+         target="_blank" rel="noopener noreferrer"
+         class="content-article__share-link content-article__share-link--twitter"
+         aria-label="{% trans %}Share on Twitter{% endtrans %}">
+        {{ jaraba_icon('social', 'twitter', { size: '18px' }) }}
+        <span class="content-article__share-text">Twitter</span>
       </a>
+
+      {# LinkedIn #}
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ article.url|url_encode }}"
+         target="_blank" rel="noopener noreferrer"
+         class="content-article__share-link content-article__share-link--linkedin"
+         aria-label="{% trans %}Share on LinkedIn{% endtrans %}">
+        {{ jaraba_icon('social', 'linkedin', { size: '18px' }) }}
+        <span class="content-article__share-text">LinkedIn</span>
+      </a>
+
+      {# Copy link #}
+      <button type="button"
+              class="content-article__share-link content-article__share-link--copy"
+              data-copy-url="{{ article.url }}"
+              aria-label="{% trans %}Copy link{% endtrans %}">
+        {{ jaraba_icon('ui', 'link', { size: '18px' }) }}
+        <span class="content-article__share-text">{% trans %}Copy link{% endtrans %}</span>
+      </button>
     </div>
 
     {% if article.ai_generated %}
       <div class="content-article__ai-badge">
+        {{ jaraba_icon('ui', 'sparkles', { size: '14px' }) }}
         {% trans %}Content assisted by AI{% endtrans %}
       </div>
     {% endif %}
@@ -78,4 +185,3 @@
   variant: 'grid',
   show_reading_time: true
 } only %}
-

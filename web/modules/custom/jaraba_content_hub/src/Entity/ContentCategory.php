@@ -39,6 +39,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\jaraba_content_hub\ContentCategoryListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "access" = "Drupal\jaraba_content_hub\ContentCategoryAccessControlHandler",
  *     "form" = {
  *       "add" = "Drupal\jaraba_content_hub\Form\ContentCategoryForm",
  *       "edit" = "Drupal\jaraba_content_hub\Form\ContentCategoryForm",

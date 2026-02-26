@@ -79,6 +79,7 @@ class RecommendationController extends ControllerBase
                         : '',
                     'reading_time' => $article->hasField('reading_time') ? (int) $article->get('reading_time')->value : 0,
                     'featured_image' => $this->getImageUrl($article),
+                    'url' => $article->toUrl()->setAbsolute()->toString(),
                 ];
             }
 
