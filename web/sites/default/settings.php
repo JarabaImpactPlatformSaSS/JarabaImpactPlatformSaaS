@@ -938,6 +938,19 @@ if (file_exists($app_root . '/' . $site_path . '/settings.cdn.php')) {
   include $app_root . '/' . $site_path . '/settings.cdn.php';
 }
 
+// SECRET-MGMT-001: Config overrides from environment variables.
+// Loads OAuth, SMTP, reCAPTCHA, and Stripe secrets without storing them
+// in the database or config/sync. Must load BEFORE settings.local.php
+// so local overrides take precedence.
+if (file_exists($app_root . '/../config/deploy/settings.secrets.php')) {
+  include $app_root . '/../config/deploy/settings.secrets.php';
+}
+
+// GAP-AUD-025: AI queue routing to Redis for horizontal scaling.
+if (file_exists($app_root . '/../config/deploy/settings.ai-queues.php')) {
+  include $app_root . '/../config/deploy/settings.ai-queues.php';
+}
+
 /**
  * Load local development override configuration, if available.
  *
