@@ -1,9 +1,9 @@
 # Perfil Candidato — Marca Profesional con IA Nativa
 
 **Fecha:** 2026-02-25
-**Estado:** EN PROGRESO
+**Estado:** COMPLETO (pendiente verificacion manual IA en navegador)
 **Rama:** main
-**Ultimo commit:** `a491c4e3` (andalucia_ei vertical + public profile gating)
+**Ultimo commit:** `10d7e623` (slide-panel form save and redirect to profile view)
 
 ---
 
@@ -14,7 +14,7 @@ Dividir el formulario monolitico `CandidateProfileForm` (6 secciones glass-card)
 | Seccion checklist | Ruta nueva | Form class | Estado |
 |---|---|---|---|
 | Datos Personales | `/my-profile/personal` | `PersonalInfoForm` | FUNCIONAL |
-| Marca Profesional | `/my-profile/brand` | `ProfessionalBrandForm` | FUNCIONAL (IA pendiente config) |
+| Marca Profesional | `/my-profile/brand` | `ProfessionalBrandForm` | FUNCIONAL (IA config OK, pendiente verificacion navegador) |
 | Privacidad | `/my-profile/privacy` | `PrivacySettingsForm` | FUNCIONAL |
 
 La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formulario monolitico `CandidateProfileForm`.
@@ -84,6 +84,11 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
 - **Causa:** URL hardcodeada `/api/v1/copilot/employability/chat` sin prefijo `/es/`. El fetch POST llegaba a 404 o redirect que perdia el body.
 - **Fix:** `Url::fromRoute('jaraba_candidate.copilot.chat')` que incluye automaticamente prefijo de idioma y CSRF token.
 
+### 4.7 PrivacySettingsForm no existia (CRITICO)
+- **Sintoma:** Ruta `/my-profile/privacy` causaba error fatal (clase no encontrada).
+- **Causa:** `jaraba_candidate.routing.yml` referenciaba `PrivacySettingsForm` con `_form:` pero la clase no existia. Ademas, usar `_form:` no es compatible con el patron entity form + slide-panel.
+- **Fix:** Creada `PrivacySettingsForm.php` extendiendo `PremiumEntityFormBase` con 3 campos (is_public, show_photo, show_contact). Ruta cambiada de `_form:` a `_controller:` con nuevo metodo `ProfileController::privacySection()`. Form operation `privacy` registrada en `CandidateProfile.php`. Seccion anadida al checklist del theme con `$always_completed` array para secciones con defaults.
+
 ---
 
 ## 5. Estado Actual y Pendientes
@@ -107,8 +112,8 @@ La ruta antigua `/my-profile/edit` se mantiene (backward compat) con el formular
   - `generate_summary` → textarea relleno + enlace "Recuperar anterior"
 - [x] CSS para componentes IA — `css/brand-professional.css` (commit `1d752a16`). Usa `var(--ej-*)` tokens per arquitectura theming.
 
-### PENDIENTE — Icono Habilidades
-- [ ] El usuario indico "No me gusta el icono que has usado para Habilidades" — pendiente preguntar cual prefiere.
+### RESUELTO — Icono Habilidades
+- [x] Icono cambiado de `ai/brain` a gema facetada `ui/skills` con variantes outline y duotone (commit `a8b93b7a`). SVGs en `ecosistema_jaraba_core/images/icons/ui/skills.svg` y `skills-duotone.svg`.
 
 ### VERIFICACION — Formularios via slide-panel POST
 Analisis tecnico (sin cache, post-commit `03b80268`):
@@ -169,13 +174,6 @@ PremiumEntityFormBase provee:
 
 ---
 
-### 4.7 PrivacySettingsForm no existia (CRITICO)
-- **Sintoma:** Ruta `/my-profile/privacy` causaba error fatal (clase no encontrada).
-- **Causa:** `jaraba_candidate.routing.yml` referenciaba `PrivacySettingsForm` con `_form:` pero la clase no existia. Ademas, usar `_form:` no es compatible con el patron entity form + slide-panel.
-- **Fix:** Creada `PrivacySettingsForm.php` extendiendo `PremiumEntityFormBase` con 3 campos (is_public, show_photo, show_contact). Ruta cambiada de `_form:` a `_controller:` con nuevo metodo `ProfileController::privacySection()`. Form operation `privacy` registrada en `CandidateProfile.php`. Seccion anadida al checklist del theme con `$always_completed` array para secciones con defaults.
-
----
-
 ## 8. Commits de esta sesion (en orden)
 
 1. `f1810b2d` — feat: update_10006 + skills UX + brand-professional.js + completeness fix
@@ -185,4 +183,6 @@ PremiumEntityFormBase provee:
 5. `9ea8b424` — fix: Url::fromRoute for copilot URL with language prefix
 6. `1d752a16` — feat: migrate modal links to slide-panel + AI component CSS
 7. `a491c4e3` — feat: andalucia_ei vertical + domain-based tenant resolution + public profile gating
-8. *(pendiente commit)* — fix: crear PrivacySettingsForm + privacy en checklist
+8. `84b06a00` — fix: crear PrivacySettingsForm + privacy en checklist
+9. `a8b93b7a` — feat: add skills gem icon and replace brain icon in templates
+10. `10d7e623` — fix: slide-panel form save and redirect to profile view
