@@ -323,11 +323,14 @@ services:
 
   # Sprint 9-10: AI Monitoring Stack
 
-  # Guardrails para validación de prompts
+  # Guardrails para validación de prompts IA (input + intermediate + output)
+  # GAP-03: sanitizeRagContent() y sanitizeToolOutput() para prompt injection indirecto
   ecosistema_jaraba_core.ai_guardrails:
     class: Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService
     arguments:
       - '@database'
+      - '@config.factory'
+      - '@logger.channel.ecosistema_jaraba_core'
 
   # A/B Testing de prompts
   ecosistema_jaraba_core.ai_ab_testing:
@@ -1418,3 +1421,33 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # GAP-AUD-008: COMMAND BAR (Cmd+K)
+  # ===========================================
+
+  # Central registry — service collector for command providers
+  ecosistema_jaraba_core.command_registry:
+    class: Drupal\ecosistema_jaraba_core\Service\CommandRegistryService
+    tags:
+      - { name: service_collector, tag: jaraba.command_provider, call: addProvider }
+
+  # Navigation command provider — site routes
+  ecosistema_jaraba_core.command_provider.navigation:
+    class: Drupal\ecosistema_jaraba_core\CommandBar\NavigationCommandProvider
+    tags:
+      - { name: jaraba.command_provider }
+
+  # Entity search command provider — content articles
+  ecosistema_jaraba_core.command_provider.entity_search:
+    class: Drupal\ecosistema_jaraba_core\CommandBar\EntitySearchCommandProvider
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: jaraba.command_provider }
+
+  # Action command provider — quick actions
+  ecosistema_jaraba_core.command_provider.actions:
+    class: Drupal\ecosistema_jaraba_core\CommandBar\ActionCommandProvider
+    tags:
+      - { name: jaraba.command_provider }

@@ -100,17 +100,19 @@ jaraba_content_hub.ai_logs.frontend:
 
 # === Content Article Routes ===
 
+# Slug-based canonical route for blog articles.
+# Supports both slug (mi-articulo) and numeric ID (123) via ParamConverter.
 entity.content_article.canonical:
   path: '/blog/{content_article}'
   defaults:
-    _entity_view: 'content_article.full'
-    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+    _controller: '\Drupal\jaraba_content_hub\Controller\BlogArticleController::view'
+    _title_callback: '\Drupal\jaraba_content_hub\Controller\BlogArticleController::title'
   requirements:
-    _entity_access: 'content_article.view'
+    _access: 'TRUE'
   options:
     parameters:
       content_article:
-        type: entity:content_article
+        type: content_article_slug
 
 entity.content_article.collection:
   path: '/admin/content/articles'

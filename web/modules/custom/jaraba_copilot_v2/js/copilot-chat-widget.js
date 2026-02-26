@@ -225,7 +225,23 @@
 
         case 'chunk':
           state.thinking = false;
-          state.currentResponse += (state.currentResponse ? ' ' : '') + data.text;
+          // GAP-01: Streaming real — chunks llegan como fragmentos de texto.
+          // Separar con espacio solo si el chunk anterior no terminaba
+          // en salto de linea y el nuevo no empieza con uno.
+          if (state.currentResponse && !state.currentResponse.match(/\n$/) && !data.text.match(/^\n/)) {
+            state.currentResponse += ' ' + data.text;
+          }
+          else {
+            state.currentResponse += data.text;
+          }
+          renderStreamingResponse();
+          scrollToBottom();
+          break;
+
+        case 'cached':
+          // GAP-01: Respuesta servida desde cache — renderizar completa.
+          state.thinking = false;
+          state.currentResponse = data.text || '';
           renderStreamingResponse();
           scrollToBottom();
           break;

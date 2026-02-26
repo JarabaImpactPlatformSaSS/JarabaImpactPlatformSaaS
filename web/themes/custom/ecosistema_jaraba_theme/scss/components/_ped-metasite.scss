@@ -1,0 +1,574 @@
+// @file scss/components/_ped-metasite.scss
+// Estilos premium para el meta-sitio corporativo PED S.L.
+// plataformadeecosistemas.es — Puerta de entrada comercial del SaaS
+//
+// OBJETIVO: Máxima conversión + posicionamiento corporativo premium
+// DIRECTRICES: SSOT design tokens, BEM, glassmorphism, dark mode, mobile-first
+
+// ─── Variables locales PED ──────────────────────────────────────────
+$ped-azul: #233D63;
+$ped-azul-light: #2d4f7e;
+$ped-dorado: #C5A55A;
+$ped-dorado-light: #dcc07a;
+$ped-gradient: linear-gradient(135deg, $ped-azul 0%, darken($ped-azul, 8%) 50%, #1a2d4a 100%);
+$ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 100%);
+
+// ═══════════════════════════════════════════════════════════════════════
+// HERO — Impacto institucional, credibilidad inmediata
+// ═══════════════════════════════════════════════════════════════════════
+.ped-hero {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: $ped-gradient;
+  color: #fff;
+  overflow: hidden;
+  text-align: center;
+
+  // Patrones geométricos sutiles de fondo
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba($ped-dorado, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.04) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  // Grid decorativo
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  &__container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  // Eyebrow — credencial
+  &__eyebrow {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: $ped-dorado;
+    border: 1px solid rgba($ped-dorado, 0.4);
+    border-radius: 50rem;
+    padding: 0.35rem 1.2rem;
+    margin-bottom: var(--ej-space-md, 1.5rem);
+    backdrop-filter: blur(8px);
+    animation: fadeInDown 0.6s ease both;
+  }
+
+  h1 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 var(--ej-space-md, 1.5rem);
+    animation: fadeInUp 0.8s ease 0.2s both;
+
+    strong, em { color: $ped-dorado; font-style: normal; }
+  }
+
+  p {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 700px;
+    margin: 0 auto var(--ej-space-lg, 2rem);
+    line-height: 1.7;
+    animation: fadeInUp 0.8s ease 0.4s both;
+  }
+
+  // CTAs
+  &__actions {
+    display: flex;
+    gap: var(--ej-space-sm, 1rem);
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.8s ease 0.6s both;
+  }
+
+  .btn-primary, a[class*="btn-primary"] {
+    background: $ped-gradient-gold;
+    color: $ped-azul;
+    font-weight: 700;
+    padding: 0.85rem 2rem;
+    border-radius: var(--ej-radius-pill, 50rem);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba($ped-dorado, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba($ped-dorado, 0.4);
+    }
+  }
+
+  .btn-secondary, .btn-ghost, a[class*="btn-ghost"], a[class*="btn-secondary"] {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 0.85rem 2rem;
+    border-radius: var(--ej-radius-pill, 50rem);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CIFRAS CLAVE — Impacto cuantificable, confianza
+// ═══════════════════════════════════════════════════════════════════════
+.ped-cifras {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: var(--ej-bg-section-alt, #f8fafc);
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    text-align: center;
+    color: $ped-azul;
+    margin: 0 0 var(--ej-space-xl, 3rem);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--ej-space-md, 1.5rem);
+    max-width: 1000px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  &__item {
+    text-align: center;
+    padding: var(--ej-space-lg, 2rem) var(--ej-space-md, 1rem);
+    border-radius: var(--ej-radius-xl, 1.5rem);
+    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.8));
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  &__number {
+    display: block;
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: $ped-dorado;
+    line-height: 1;
+    margin-bottom: var(--ej-space-xs, 0.5rem);
+  }
+
+  &__label {
+    font-size: var(--ej-text-sm, 0.875rem);
+    color: var(--ej-color-muted, #6b7280);
+    line-height: 1.4;
+  }
+}
+
+// Fallback: GrapesJS sections use generic divs even without BEM classes
+// We target the GrapesJS-rendered content inside .ped-cifras
+.ped-cifras [data-type="stat"],
+.ped-cifras .stat-item,
+.ped-cifras > div > div > div {
+  text-align: center;
+  padding: 1.5rem 1rem;
+
+  strong, b, .stat-number { color: $ped-dorado; font-size: 2rem; font-weight: 800; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TRIPLE MOTOR ECONÓMICO — Modelo de negocio, monetización clara
+// ═══════════════════════════════════════════════════════════════════════
+.ped-motores {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: $ped-gradient;
+  color: #fff;
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    text-align: center;
+    color: #fff;
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+  }
+
+  & > p, & > div > p {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto var(--ej-space-xl, 3rem);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-space-md, 1.5rem);
+    max-width: 1100px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  &__card {
+    padding: var(--ej-space-lg, 2rem);
+    border-radius: var(--ej-radius-xl, 1.5rem);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    transition: all 0.25s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba($ped-dorado, 0.3);
+      transform: translateY(-4px);
+    }
+  }
+
+  // Percentage badge
+  &__pct {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: $ped-azul;
+    background: $ped-gradient-gold;
+    margin-bottom: var(--ej-space-sm, 1rem);
+    box-shadow: 0 4px 20px rgba($ped-dorado, 0.3);
+  }
+
+  h3 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-lg, 1.25rem);
+    font-weight: 700;
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+    color: #fff;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--ej-text-sm, 0.875rem);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// GrapesJS fallback for motor cards
+.ped-motores [data-type="motor-card"],
+.ped-motores .motor-card {
+  @extend .ped-motores__card;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// AUDIENCIA — Acceso por perfil (Inversor, Institución, Prensa, Empleo)
+// ═══════════════════════════════════════════════════════════════════════
+.ped-audiencia {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: var(--ej-bg-section-alt, #f8fafc);
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    text-align: center;
+    color: $ped-azul;
+    margin: 0 0 var(--ej-space-xl, 3rem);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-space-md, 1.5rem);
+    max-width: 1000px;
+    margin: 0 auto;
+
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--ej-space-sm, 0.75rem);
+    padding: var(--ej-space-lg, 2rem);
+    border-radius: var(--ej-radius-xl, 1.5rem);
+    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.8));
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+      border-color: $ped-dorado;
+    }
+  }
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--ej-radius-md, 0.75rem);
+    background: rgba($ped-azul, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $ped-azul;
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-base, 1rem);
+    font-weight: 700;
+    color: $ped-azul;
+    margin: 0;
+  }
+
+  p {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-sm, 0.875rem);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  // CTA dentro de cada card
+  &__cta {
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    color: $ped-dorado;
+
+    .ped-audiencia__card:hover & { color: darken($ped-dorado, 10%); }
+  }
+
+  // Color accents per audience
+  &__card--inversor .ped-audiencia__icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  &__card--institucion .ped-audiencia__icon { background: rgba($ped-azul, 0.1); color: $ped-azul; }
+  &__card--prensa .ped-audiencia__icon { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+  &__card--empleo .ped-audiencia__icon { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PARTNERS — Logos institucionales
+// ═══════════════════════════════════════════════════════════════════════
+.ped-partners {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: #fff;
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    text-align: center;
+    color: $ped-azul;
+    margin: 0 0 var(--ej-space-xl, 3rem);
+  }
+
+  &__grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ej-space-lg, 2rem);
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  &__logo {
+    max-height: 48px;
+    width: auto;
+    filter: grayscale(100%) opacity(0.6);
+    transition: all 0.3s ease;
+
+    &:hover {
+      filter: grayscale(0%) opacity(1);
+      transform: scale(1.08);
+    }
+  }
+
+  img {
+    max-height: 48px;
+    width: auto;
+    filter: grayscale(100%) opacity(0.6);
+    transition: all 0.3s ease;
+
+    &:hover {
+      filter: grayscale(0%) opacity(1);
+      transform: scale(1.08);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CTA BANNER — Conversión directa SaaS (inyectado via tema)
+// ═══════════════════════════════════════════════════════════════════════
+.ped-cta-saas {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: $ped-gradient;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba($ped-dorado, 0.1) 0%, transparent 60%);
+  }
+
+  &__container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 var(--ej-space-sm, 1rem);
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--ej-text-lg, 1.15rem);
+    line-height: 1.6;
+    margin: 0 0 var(--ej-space-lg, 2rem);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--ej-space-sm, 1rem);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-gold {
+    background: $ped-gradient-gold;
+    color: $ped-azul;
+    font-weight: 700;
+    padding: 1rem 2.5rem;
+    border-radius: var(--ej-radius-pill, 50rem);
+    text-decoration: none;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 20px rgba($ped-dorado, 0.3);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba($ped-dorado, 0.45);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ANIMACIONES
+// ═══════════════════════════════════════════════════════════════════════
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Dark mode ─────────────────────────────────────────────────────────
+[data-theme='dark'],
+.dark-mode {
+  .ped-cifras {
+    background: #0f172a;
+    h2 { color: #f1f5f9; }
+    .ped-cifras__item {
+      background: rgba(26, 26, 46, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .ped-audiencia {
+    background: #0f172a;
+    h2 { color: #f1f5f9; }
+    .ped-audiencia__card {
+      background: rgba(26, 26, 46, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    h3 { color: #f1f5f9; }
+  }
+
+  .ped-partners {
+    background: #1e293b;
+    h2 { color: #f1f5f9; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// META-SITE TENANT-7 BODY CLASS OVERRIDES
+// ═══════════════════════════════════════════════════════════════════════
+// Cuando estamos en el meta-sitio PED, ajustar header/footer
+.meta-site-tenant-7 {
+  // Header PED: fondo azul corporativo
+  .landing-header {
+    background: rgba($ped-azul, 0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba($ped-dorado, 0.15);
+
+    &__name { color: #fff; }
+
+    a { color: rgba(255, 255, 255, 0.85); }
+    a:hover { color: $ped-dorado; }
+  }
+
+  // Footer PED
+  .landing-footer {
+    background: darken($ped-azul, 5%);
+    color: rgba(255, 255, 255, 0.7);
+
+    a { color: $ped-dorado; }
+    a:hover { color: lighten($ped-dorado, 15%); }
+  }
+}

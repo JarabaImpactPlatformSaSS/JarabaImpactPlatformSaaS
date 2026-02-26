@@ -67,3 +67,78 @@ function jaraba_content_hub_update_10001(&$sandbox) {
 
   return t('No Canvas Editor fields needed installation for ContentArticle.');
 }
+
+/**
+ * Generate slugs for existing ContentArticle entities missing slugs.
+ *
+ * Iterates all articles and generates unique slugs from their titles.
+ * Uses batch processing via $sandbox for large datasets.
+ */
+function jaraba_content_hub_update_10002(&$sandbox) {
+  $storage = \Drupal::entityTypeManager()->getStorage('content_article');
+
+  if (!isset($sandbox['total'])) {
+    // Count articles without slugs.
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->notExists('slug')
+      ->execute();
+
+    // Also include articles with empty slug.
+    $empty_ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('slug', '')
+      ->execute();
+
+    $all_ids = array_unique(array_merge(array_values($ids), array_values($empty_ids)));
+    $sandbox['ids'] = array_values($all_ids);
+    $sandbox['total'] = count($all_ids);
+    $sandbox['current'] = 0;
+    $sandbox['generated'] = 0;
+  }
+
+  if ($sandbox['total'] === 0) {
+    $sandbox['#finished'] = 1;
+    return t('All ContentArticle entities already have slugs.');
+  }
+
+  // Process 50 articles per batch.
+  $batch_size = 50;
+  $batch_ids = array_slice($sandbox['ids'], $sandbox['current'], $batch_size);
+
+  foreach ($batch_ids as $id) {
+    $article = $storage->load($id);
+    if (!$article) {
+      $sandbox['current']++;
+      continue;
+    }
+
+    $slug = $article->get('slug')->value ?? '';
+    if (!empty($slug)) {
+      $sandbox['current']++;
+      continue;
+    }
+
+    $title = $article->label() ?? 'article-' . $article->id();
+
+    if (\Drupal::hasService('pathauto.alias_cleaner')) {
+      $base_slug = \Drupal::service('pathauto.alias_cleaner')->cleanString($title);
+    }
+    else {
+      $base_slug = _jaraba_content_hub_slugify($title);
+    }
+
+    $unique_slug = _jaraba_content_hub_ensure_unique_slug($base_slug, $article->id());
+    $article->set('slug', $unique_slug);
+    $article->save();
+
+    $sandbox['current']++;
+    $sandbox['generated']++;
+  }
+
+  $sandbox['#finished'] = $sandbox['current'] >= $sandbox['total'] ? 1 : $sandbox['current'] / $sandbox['total'];
+
+  if ($sandbox['#finished'] >= 1) {
+    return t('Generated slugs for @count articles.', ['@count' => $sandbox['generated']]);
+  }
+}

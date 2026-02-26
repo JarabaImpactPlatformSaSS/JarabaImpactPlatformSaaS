@@ -154,13 +154,57 @@ class AIUsageLog extends ContentEntityBase implements ContentEntityInterface
             ->setSetting('target_type', 'user')
             ->setDisplayOptions('view', ['weight' => 14]);
 
+        // GAP-02: trace_id — Identificador unico del trace completo.
+        // Un trace agrupa todas las operaciones de un request de usuario.
+        $fields['trace_id'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Trace ID'))
+            ->setDescription(t('UUID del trace que agrupa operaciones relacionadas.'))
+            ->setSettings(['max_length' => 36])
+            ->setDisplayOptions('view', ['weight' => 15]);
+
+        // GAP-02: span_id — Identificador unico de esta operacion individual.
+        $fields['span_id'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Span ID'))
+            ->setDescription(t('UUID de esta operacion individual dentro del trace.'))
+            ->setSettings(['max_length' => 36])
+            ->setDisplayOptions('view', ['weight' => 16]);
+
+        // GAP-02: parent_span_id — Span padre (NULL para el span raiz).
+        $fields['parent_span_id'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Parent Span ID'))
+            ->setDescription(t('UUID del span padre. NULL para operaciones raiz.'))
+            ->setSettings(['max_length' => 36])
+            ->setDisplayOptions('view', ['weight' => 17]);
+
+        // GAP-02: operation_name — Nombre legible de la operacion.
+        $fields['operation_name'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Operation Name'))
+            ->setDescription(t('Nombre de la operacion: ej. SmartBaseAgent.execute, RAG.query.'))
+            ->setSettings(['max_length' => 128])
+            ->setDisplayOptions('view', ['weight' => 18]);
+
         // Created timestamp.
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Created'))
             ->setDescription(t('When the execution occurred.'))
-            ->setDisplayOptions('view', ['weight' => 15]);
+            ->setDisplayOptions('view', ['weight' => 19]);
 
         return $fields;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * GAP-02: Indice en trace_id para consultas eficientes de tracing.
+     */
+    public static function schema(EntityTypeInterface $entity_type): array {
+        $schema = parent::schema($entity_type);
+
+        $schema['indexes']['ai_usage_log__trace_id'] = ['trace_id'];
+        $schema['indexes']['ai_usage_log__span_id'] = ['span_id'];
+        $schema['indexes']['ai_usage_log__created'] = ['created'];
+
+        return $schema;
     }
 
     /**

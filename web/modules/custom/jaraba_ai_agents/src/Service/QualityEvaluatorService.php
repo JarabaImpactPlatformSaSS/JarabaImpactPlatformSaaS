@@ -8,6 +8,7 @@ use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -65,6 +66,13 @@ class QualityEvaluatorService
     protected LoggerInterface $logger;
 
     /**
+     * El gestor de tipos de entidad (GAP-06).
+     *
+     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+     */
+    protected EntityTypeManagerInterface $entityTypeManager;
+
+    /**
      * Construye un QualityEvaluatorService.
      *
      * @param \Drupal\ai\AiProviderPluginManager $aiProvider
@@ -75,17 +83,22 @@ class QualityEvaluatorService
      *   El servicio de observabilidad.
      * @param \Psr\Log\LoggerInterface $logger
      *   El servicio de logging.
+     * @param \Drupal\Core\Entity\EntityTypeManagerInterface|null $entityTypeManager
+     *   Gestor de tipos de entidad para consultas aggregate (GAP-06).
+     *   Opcional para backward compatibility.
      */
     public function __construct(
         AiProviderPluginManager $aiProvider,
         ConfigFactoryInterface $configFactory,
         AIObservabilityService $observability,
         LoggerInterface $logger,
+        ?EntityTypeManagerInterface $entityTypeManager = NULL,
     ) {
         $this->aiProvider = $aiProvider;
         $this->configFactory = $configFactory;
         $this->observability = $observability;
         $this->logger = $logger;
+        $this->entityTypeManager = $entityTypeManager ?? \Drupal::entityTypeManager();
     }
 
     /**
@@ -371,24 +384,121 @@ EOT;
     }
 
     /**
-     * Obtiene estadísticas de calidad para un período.
+     * Obtiene estadísticas de calidad para un período (GAP-06).
+     *
+     * Estructura: Combina las stats generales de AIObservabilityService
+     *             con consultas COUNT eficientes a nivel de BD para los
+     *             umbrales de calidad.
+     *
+     * Logica: Usa entity queries con count() para evitar loadMultiple()
+     *         de todos los logs. Los umbrales son:
+     *         - high_quality: quality_score >= 0.8 (clase mundial)
+     *         - acceptable: quality_score >= 0.6 y < 0.8 (aceptable)
+     *         - needs_improvement: quality_score < 0.6 (necesita mejora)
      *
      * @param string $period
      *   El período: day, week, month, year.
      *
      * @return array
-     *   Estadísticas de calidad.
+     *   Estadísticas de calidad:
+     *   - avg_quality_score: float|null
+     *   - total_evaluated: int (logs con quality_score != NULL)
+     *   - high_quality: int (score >= 0.8)
+     *   - acceptable: int (0.6 <= score < 0.8)
+     *   - needs_improvement: int (score < 0.6)
+     *   - evaluation_rate: float (% de ejecuciones evaluadas)
+     *   - total_executions: int (todas las ejecuciones del periodo)
      */
-    public function getQualityStats(string $period = 'month'): array
-    {
+    public function getQualityStats(string $period = 'month'): array {
         $stats = $this->observability->getStats($period);
 
-        return [
-            'avg_quality_score' => $stats['avg_quality_score'],
-            'total_evaluated' => $stats['total_executions'],
-            'high_quality' => 0, // Requeriría query a BD para score >= 0.8
-            'needs_improvement' => 0, // Requeriría query a BD para score < 0.6
-        ];
+        try {
+            $storage = $this->entityTypeManager->getStorage('ai_usage_log');
+            $startTimestamp = $this->getPeriodStartTimestamp($period);
+
+            // Total de logs evaluados (quality_score no es NULL).
+            $totalEvaluated = (int) $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('created', $startTimestamp, '>=')
+                ->exists('quality_score')
+                ->count()
+                ->execute();
+
+            // Clase mundial: quality_score >= 0.8.
+            $highQuality = (int) $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('created', $startTimestamp, '>=')
+                ->condition('quality_score', '0.80', '>=')
+                ->count()
+                ->execute();
+
+            // Aceptable: 0.6 <= quality_score < 0.8.
+            $acceptable = (int) $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('created', $startTimestamp, '>=')
+                ->condition('quality_score', '0.60', '>=')
+                ->condition('quality_score', '0.80', '<')
+                ->count()
+                ->execute();
+
+            // Necesita mejora: quality_score < 0.6.
+            $needsImprovement = (int) $storage->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('created', $startTimestamp, '>=')
+                ->condition('quality_score', '0.60', '<')
+                ->exists('quality_score')
+                ->count()
+                ->execute();
+
+            $totalExecutions = $stats['total_executions'] ?? 0;
+            $evaluationRate = $totalExecutions > 0
+                ? round(($totalEvaluated / $totalExecutions) * 100, 1)
+                : 0.0;
+
+            return [
+                'avg_quality_score' => $stats['avg_quality_score'],
+                'total_evaluated' => $totalEvaluated,
+                'high_quality' => $highQuality,
+                'acceptable' => $acceptable,
+                'needs_improvement' => $needsImprovement,
+                'evaluation_rate' => $evaluationRate,
+                'total_executions' => $totalExecutions,
+            ];
+        }
+        catch (\Exception $e) {
+            $this->logger->error('GAP-06: Error obteniendo estadísticas de calidad: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+
+            // Fallback resiliente con datos parciales de observabilidad.
+            return [
+                'avg_quality_score' => $stats['avg_quality_score'] ?? NULL,
+                'total_evaluated' => $stats['total_executions'] ?? 0,
+                'high_quality' => 0,
+                'acceptable' => 0,
+                'needs_improvement' => 0,
+                'evaluation_rate' => 0.0,
+                'total_executions' => $stats['total_executions'] ?? 0,
+            ];
+        }
+    }
+
+    /**
+     * Calcula el timestamp de inicio para un periodo (GAP-06).
+     *
+     * @param string $period
+     *   El periodo: day, week, month, year.
+     *
+     * @return int
+     *   Timestamp Unix del inicio del periodo.
+     */
+    protected function getPeriodStartTimestamp(string $period): int {
+        return match ($period) {
+            'day' => strtotime('-1 day'),
+            'week' => strtotime('-1 week'),
+            'year' => strtotime('-1 year'),
+            default => strtotime('-1 month'),
+        };
     }
 
 }

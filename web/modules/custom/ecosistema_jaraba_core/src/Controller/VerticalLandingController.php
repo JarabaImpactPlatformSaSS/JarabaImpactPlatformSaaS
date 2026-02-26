@@ -613,18 +613,19 @@ class VerticalLandingController extends ControllerBase
   }
 
   /**
-   * Landing Empleabilidad - Empresas/Reclutadores (legacy).
+   * Landing Talento — Empresas y reclutadores.
    *
    * Ruta: /talento
+   * F4 full landing: 9 secciones completas.
+   * Sprint 3 — Growth Infrastructure (VERT-02).
    */
-  public function talento(): array
-  {
+  public function talento(): array {
     return $this->buildLanding([
       'key' => 'talento',
       'color' => 'innovation',
       'hero' => [
         'headline' => $this->t('Encuentra el talento que necesitas'),
-        'subheadline' => $this->t('Filtrado inteligente, matching por competencias y gestión simplificada'),
+        'subheadline' => $this->t('Filtrado inteligente, matching por competencias y gestión simplificada de candidaturas.'),
         'icon' => ['category' => 'business', 'name' => 'talent-search'],
         'cta' => [
           'text' => $this->t('Publicar oferta'),
@@ -635,11 +636,50 @@ class VerticalLandingController extends ControllerBase
           'url' => '/planes',
         ],
       ],
+      'pain_points' => [
+        'title' => $this->t('Retos de la contratación actual'),
+        'items' => [
+          ['title' => $this->t('CVs desbordantes'), 'description' => $this->t('Recibes cientos de candidaturas y no tienes tiempo para revisarlas todas con la atención que merecen')],
+          ['title' => $this->t('Falta de matching'), 'description' => $this->t('Los portales genéricos no filtran por las competencias reales que necesita tu empresa')],
+          ['title' => $this->t('Procesos lentos'), 'description' => $this->t('Desde la publicación hasta la contratación pasan semanas de gestión manual y seguimiento por email')],
+        ],
+      ],
+      'steps' => [
+        'title' => $this->t('Cómo funciona'),
+        'items' => [
+          ['step' => '1', 'title' => $this->t('Publica tu oferta'), 'description' => $this->t('Define el perfil, competencias técnicas y soft skills. El copiloto IA te ayuda a redactar la oferta perfecta.')],
+          ['step' => '2', 'title' => $this->t('Matching automático'), 'description' => $this->t('La IA analiza las candidaturas y te sugiere los perfiles más compatibles, ordenados por relevancia.')],
+          ['step' => '3', 'title' => $this->t('Gestiona y contrata'), 'description' => $this->t('Evalúa candidatos en equipo, programa entrevistas y gestiona todo el proceso desde un solo panel.')],
+        ],
+      ],
       'features' => [
         ['icon' => ['category' => 'ui', 'name' => 'search'], 'title' => $this->t('Búsqueda avanzada'), 'description' => $this->t('Filtra por skills, experiencia, disponibilidad y ubicación')],
         ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Preselección con IA'), 'description' => $this->t('El copiloto analiza CVs y sugiere los mejores candidatos')],
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Analytics de contratación'), 'description' => $this->t('Métricas de tiempo, conversión y calidad de contrataciones')],
         ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Gestión colaborativa'), 'description' => $this->t('Tu equipo puede evaluar y comentar candidatos en tiempo real')],
+      ],
+      'social_proof' => [
+        'metrics' => [
+          ['value' => '70', 'suffix' => '%', 'label' => $this->t('Reducción tiempo de contratación')],
+          ['value' => '3', 'suffix' => 'x', 'label' => $this->t('Más candidatos relevantes')],
+          ['value' => '24', 'suffix' => 'h', 'label' => $this->t('Primeros matches disponibles')],
+        ],
+      ],
+      'lead_magnet' => [
+        'title' => $this->t('Guía: Cómo reducir un 70% el tiempo de contratación con IA'),
+        'description' => $this->t('Aprende cómo empresas reales han transformado sus procesos de selección con matching inteligente.'),
+        'resource_url' => '/recursos/guia-talento-ia',
+        'cta_text' => $this->t('Descargar guía gratuita'),
+      ],
+      'pricing' => [
+        'title' => $this->t('Planes para empresas'),
+        'cta_url' => '/planes',
+      ],
+      'faq' => [
+        ['question' => $this->t('¿Cuántas ofertas puedo publicar?'), 'answer' => $this->t('Depende del plan. El plan Starter incluye 3 ofertas activas simultáneas. Los planes Profesional y Business incluyen ofertas ilimitadas.')],
+        ['question' => $this->t('¿Cómo funciona el matching con IA?'), 'answer' => $this->t('Nuestro copiloto analiza las competencias, experiencia y objetivos profesionales de cada candidato y los compara con los requisitos de tu oferta, generando un score de compatibilidad.')],
+        ['question' => $this->t('¿Puedo gestionar candidatos en equipo?'), 'answer' => $this->t('Sí. Puedes invitar a compañeros de equipo para que evalúen, comenten y voten candidatos. Todo queda registrado en el historial de la candidatura.')],
+        ['question' => $this->t('¿Se integra con otros ATS?'), 'answer' => $this->t('Ofrecemos API REST completa para integraciones. También disponemos de conectores para las principales herramientas de RRHH del mercado.')],
       ],
       'final_cta' => [
         'headline' => $this->t('¿Listo para encontrar talento?'),
@@ -680,12 +720,13 @@ class VerticalLandingController extends ControllerBase
   }
 
   /**
-   * Landing Instituciones B2G (legacy).
+   * Landing Instituciones B2G — Entidades públicas y desarrollo local.
    *
    * Ruta: /instituciones
+   * F4 full landing: 9 secciones completas.
+   * Sprint 3 — Growth Infrastructure (VERT-01).
    */
-  public function instituciones(): array
-  {
+  public function instituciones(): array {
     return $this->buildLanding([
       'key' => 'instituciones',
       'color' => 'corporate',
@@ -695,11 +736,27 @@ class VerticalLandingController extends ControllerBase
         'icon' => ['category' => 'business', 'name' => 'institution'],
         'cta' => [
           'text' => $this->t('Solicitar demo'),
-          'url' => '/demo',
+          'url' => '/contacto',
         ],
         'cta_secondary' => [
-          'text' => $this->t('Ver casos de éxito'),
-          'url' => '/casos',
+          'text' => $this->t('Ver planes'),
+          'url' => '/planes',
+        ],
+      ],
+      'pain_points' => [
+        'title' => $this->t('Retos del desarrollo local'),
+        'items' => [
+          ['title' => $this->t('Plataformas genéricas'), 'description' => $this->t('Las herramientas actuales no reflejan la identidad ni las necesidades específicas de tu territorio')],
+          ['title' => $this->t('Datos dispersos'), 'description' => $this->t('Sin un sistema unificado, es imposible medir el impacto real de las políticas de empleo y emprendimiento')],
+          ['title' => $this->t('Justificación de fondos'), 'description' => $this->t('Los reportes a fondos europeos (FSE+, FEDER) requieren métricas de impacto precisas y verificables')],
+        ],
+      ],
+      'steps' => [
+        'title' => $this->t('Cómo funciona'),
+        'items' => [
+          ['step' => '1', 'title' => $this->t('Configura tu marca'), 'description' => $this->t('Logo, colores corporativos y dominio personalizado. Tu ciudadanía ve tu marca, no la nuestra.')],
+          ['step' => '2', 'title' => $this->t('Activa verticales'), 'description' => $this->t('Empleabilidad, emprendimiento, comercio, agro — selecciona los que necesita tu territorio.')],
+          ['step' => '3', 'title' => $this->t('Mide el impacto'), 'description' => $this->t('Dashboards ODS, informes automáticos y métricas listas para fondos europeos.')],
         ],
       ],
       'features' => [
@@ -708,11 +765,34 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'ai', 'name' => 'screening'], 'title' => $this->t('Copiloto IA incluido'), 'description' => $this->t('Asistencia inteligente para candidatos y emprendedores')],
         ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Métricas de impacto'), 'description' => $this->t('Dashboards ODS y reportes para justificar subvenciones')],
       ],
+      'social_proof' => [
+        'metrics' => [
+          ['value' => '7', 'suffix' => '', 'label' => $this->t('Verticales disponibles')],
+          ['value' => '100', 'suffix' => 'M€+', 'label' => $this->t('Fondos europeos gestionados')],
+          ['value' => '6', 'suffix' => '', 'label' => $this->t('ODS alineados')],
+        ],
+      ],
+      'lead_magnet' => [
+        'title' => $this->t('Guía: Cómo digitalizar tu servicio de desarrollo local'),
+        'description' => $this->t('Descarga nuestra guía con casos reales de municipios que han transformado sus servicios de empleo y emprendimiento.'),
+        'resource_url' => '/recursos/guia-desarrollo-local',
+        'cta_text' => $this->t('Descargar guía gratuita'),
+      ],
+      'pricing' => [
+        'title' => $this->t('Planes para instituciones'),
+        'cta_url' => '/contacto',
+      ],
+      'faq' => [
+        ['question' => $this->t('¿Podemos usar nuestra propia marca y dominio?'), 'answer' => $this->t('Sí. Cada institución tiene su propia identidad visual: logo, colores corporativos y dominio personalizado (ej: empleo.tuayuntamiento.es).')],
+        ['question' => $this->t('¿Qué verticales podemos activar?'), 'answer' => $this->t('Todos los disponibles: Empleabilidad, Emprendimiento, AgroConecta, ComercioConecta, ServiciosConecta y JarabaLex. Puedes activar solo los que necesites.')],
+        ['question' => $this->t('¿Genera informes para fondos europeos?'), 'answer' => $this->t('Sí. Los dashboards incluyen métricas de impacto alineadas con los ODS, y los informes están preparados para FSE+, FEDER y otros programas de financiación pública.')],
+        ['question' => $this->t('¿Cómo se protegen los datos de los ciudadanos?'), 'answer' => $this->t('Cumplimos RGPD y LOPDGDD. Los datos se alojan en servidores europeos con cifrado end-to-end. Cada tenant tiene aislamiento completo de datos.')],
+      ],
       'final_cta' => [
         'headline' => $this->t('¿Listo para impulsar tu territorio?'),
         'cta' => [
           'text' => $this->t('Solicitar demo'),
-          'url' => '/demo',
+          'url' => '/contacto',
         ],
       ],
     ]);

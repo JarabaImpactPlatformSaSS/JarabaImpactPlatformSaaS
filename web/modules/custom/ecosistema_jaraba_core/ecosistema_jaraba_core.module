@@ -303,6 +303,16 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
+    // GAP-AUD-003: AI Playground — public demo with embedded copilot
+    // Ruta: /demo/ai-playground
+    'demo_ai_playground' => [
+      'variables' => [
+        'scenarios' => [],
+        'copilot_endpoint' => '',
+      ],
+      'template' => 'demo-ai-playground',
+    ],
+
     // =========================================================================
     // HERO LANDING - HOMEPAGE (2026-01-24)
     // =========================================================================

@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Url;
 use Drupal\jaraba_content_hub\Service\ArticleService;
 use Drupal\jaraba_content_hub\Service\CategoryService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -131,10 +132,16 @@ class BlogController extends ControllerBase implements ContainerInjectionInterfa
         foreach ($articles as $article) {
             $category = $article->get('category')->entity;
             $image_data = $this->getImageData($article);
+            // Use slug-based URL if slug exists, fallback to entity ID.
+            $slug = $article->getSlug();
+            $article_url = !empty($slug)
+                ? Url::fromRoute('entity.content_article.canonical', ['content_article' => $slug])->toString()
+                : $article->toUrl()->toString();
+
             $article_items[] = [
                 'id' => $article->id(),
                 'title' => $article->getTitle(),
-                'slug' => $article->getSlug(),
+                'slug' => $slug,
                 'excerpt' => $article->getExcerpt(),
                 'reading_time' => $article->getReadingTime(),
                 'publish_date' => $article->get('publish_date')->value,
@@ -143,7 +150,7 @@ class BlogController extends ControllerBase implements ContainerInjectionInterfa
                 'category_url' => $category ? $category->toUrl()->toString() : '',
                 'featured_image' => $image_data['card'] ?? NULL,
                 'featured_image_srcset' => $image_data['srcset'] ?? '',
-                'url' => $article->toUrl()->toString(),
+                'url' => $article_url,
             ];
         }
 
@@ -166,10 +173,13 @@ class BlogController extends ControllerBase implements ContainerInjectionInterfa
         // Preparar array de artículos trending.
         $trending_items = [];
         foreach ($trending as $article) {
+            $trendSlug = $article->getSlug();
             $trending_items[] = [
                 'id' => $article->id(),
                 'title' => $article->getTitle(),
-                'url' => $article->toUrl()->toString(),
+                'url' => !empty($trendSlug)
+                    ? Url::fromRoute('entity.content_article.canonical', ['content_article' => $trendSlug])->toString()
+                    : $article->toUrl()->toString(),
             ];
         }
 

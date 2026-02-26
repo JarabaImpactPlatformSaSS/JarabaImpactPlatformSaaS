@@ -80,3 +80,66 @@ function jaraba_agents_install(): void {
     'Modulo jaraba_agents instalado: vocabularios agent_type y autonomy_level creados con terminos iniciales.'
   );
 }
+
+/**
+ * Instala campos de programacion (schedule) en AutonomousAgent (GAP-05).
+ *
+ * Estructura: Anade 4 nuevos campos base a autonomous_agent:
+ *   - schedule_type (list_string): Tipo de programacion.
+ *   - schedule_config (string_long): JSON con parametros de la programacion.
+ *   - last_run (timestamp): Ultima ejecucion programada.
+ *   - next_run (timestamp): Proxima ejecucion calculada.
+ *
+ * Logica: Patron DRUPAL-ENTUP-001 — Usa installFieldStorageDefinition()
+ *         para registrar las definiciones de campos ya declaradas en
+ *         AutonomousAgent::baseFieldDefinitions().
+ */
+function jaraba_agents_update_10001(&$sandbox): string {
+  $entity_type_id = 'autonomous_agent';
+  $fields_to_install = ['schedule_type', 'schedule_config', 'last_run', 'next_run'];
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  // Obtener definiciones de campos desde la clase de entidad.
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+
+  $installed = [];
+  foreach ($fields_to_install as $field_name) {
+    if (isset($field_definitions[$field_name])) {
+      try {
+        $entity_definition_update_manager->installFieldStorageDefinition(
+          $field_name,
+          $entity_type_id,
+          'jaraba_agents',
+          $field_definitions[$field_name]
+        );
+        $installed[] = $field_name;
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_agents')->error(
+          'Error instalando campo @field para @entity: @message',
+          [
+            '@field' => $field_name,
+            '@entity' => $entity_type_id,
+            '@message' => $e->getMessage(),
+          ]
+        );
+      }
+    }
+    else {
+      \Drupal::logger('jaraba_agents')->warning(
+        'Campo @field no encontrado en definiciones de @entity.',
+        ['@field' => $field_name, '@entity' => $entity_type_id]
+      );
+    }
+  }
+
+  if (!empty($installed)) {
+    return (string) t('GAP-05: Campos de programacion instalados en AutonomousAgent: @fields', [
+      '@fields' => implode(', ', $installed),
+    ]);
+  }
+
+  return (string) t('GAP-05: Ningun campo de programacion necesitaba instalacion en AutonomousAgent.');
+}

@@ -239,6 +239,16 @@ entity.ai_feedback.collection:
   requirements:
     _permission: 'administer ai agents'
 
+# GAP-08: MCP Server — JSON-RPC 2.0 endpoint
+jaraba_ai_agents.api.mcp:
+  path: '/api/v1/mcp'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\McpServerController::handle'
+  methods: [POST]
+  requirements:
+    _permission: 'use ai agents'
+    _csrf_token: 'TRUE'
+
 entity.ai_usage_log.collection:
   path: '/admin/content/ai-usage-logs'
   defaults:

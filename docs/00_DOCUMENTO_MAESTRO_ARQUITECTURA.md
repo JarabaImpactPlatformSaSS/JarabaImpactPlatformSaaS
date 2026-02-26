@@ -2,8 +2,8 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-26
-**Versión:** 75.0.0 (AI Remediation Plan — 28 Fixes, 3 Phases)
-**Estado:** AI Stack Remediado + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Icon Emoji Remediation + Produccion (Meta-Sitio Institucional + Horizontal Audit Complete + Entity Admin UI 100% + AI Identity Hardened + Precios Configurables v2.1 + Security Hardened + Secure Messaging)
+**Versión:** 77.0.0 (Auditoria IA Clase Mundial — 25 Gaps hacia Paridad con Lideres del Mercado)
+**Estado:** Auditoria IA 25 Gaps Planificados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -99,6 +99,44 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── Gen 1: StorytellingAgent, CustomerExperienceAgent, SupportAgent│
 │   │   └── @note annotations con roadmap de migracion                  │
 │   └── Gen 2: SmartBaseAgent subclasses (model routing + guardrails)  │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│          AI ELEVATION 10 GAPs — STREAMING + MCP + NATIVE TOOLS ⭐     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   🔄 Streaming Real Token-by-Token (GAP-01)                            │
+│   ├── StreamingOrchestratorService extends CopilotOrchestrator         │
+│   ├── ChatInput::setStreamedOutput(TRUE) → Provider real streaming     │
+│   ├── PHP Generator yield: chunk, cached, done, error                  │
+│   ├── Buffer 80 chars + PII masking incremental (GAP-03/10)           │
+│   └── Fallback automatico a buffered si servicio no disponible         │
+│                                                                         │
+│   🔧 Native Function Calling API-Level (GAP-09)                        │
+│   ├── ToolRegistry::generateNativeToolsInput() → ToolsInput           │
+│   │   └── ToolsFunctionInput > ToolsPropertyInput (Drupal AI module)  │
+│   ├── SmartBaseAgent::callAiApiWithNativeTools()                       │
+│   │   ├── ChatInput::setChatTools(ToolsInput) — API-level tools       │
+│   │   ├── ChatMessage::getTools() → ToolsFunctionOutputInterface[]    │
+│   │   └── Fallback a callAiApiWithTools() (text-based) si falla      │
+│   └── Loop iterativo max 5 (identico al text-based)                   │
+│                                                                         │
+│   🌐 MCP Server JSON-RPC 2.0 (GAP-08)                                  │
+│   ├── POST /api/v1/mcp — McpServerController::handle()                │
+│   ├── Metodos: initialize, tools/list, tools/call, ping               │
+│   ├── Protocol version: 2025-11-25                                     │
+│   ├── PII sanitization en tool output                                  │
+│   └── Permiso: use ai agents + CSRF                                   │
+│                                                                         │
+│   📡 Distributed Tracing (GAP-02)                                       │
+│   ├── TraceContextService: trace_id (UUID) + span_id por operacion    │
+│   └── Propagado a: observability, cache, guardrails, SSE done event   │
+│                                                                         │
+│   🧠 Agent Long-Term Memory (GAP-07)                                    │
+│   ├── AgentLongTermMemoryService: Qdrant + BD                         │
+│   ├── Types: fact, preference, interaction_summary, correction         │
+│   └── remember() + recall() en buildSystemPrompt()                     │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -534,6 +572,63 @@ Integración unificada de soberanía legal y resiliencia técnica:
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│            AUDITORIA IA CLASE MUNDIAL: 25 GAPS (7+16+2) 🔍            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   Auditoria vs Salesforce Agentforce, HubSpot Breeze,                  │
+│   Shopify Sidekick, Intercom Fin, Notion AI                            │
+│                                                                         │
+│   📊 Nivel actual: Backend 4.2/5, UX 1.5/5, Testing 1.0/5            │
+│   🎯 Nivel objetivo: Backend 4.5/5, UX 4.0/5, Testing 3.5/5          │
+│                                                                         │
+│   7 REFINAMIENTO (codigo existente):                                    │
+│   ├── GAP-AUD-001: Onboarding Wizard + AI recommendations             │
+│   │   └── TenantOnboardingWizardService (409 ln) + SmartBaseAgent     │
+│   ├── GAP-AUD-002: Pricing AI Metering (token usage per plan)         │
+│   │   └── PricingController (356 ln) + UsageDashboardController       │
+│   ├── GAP-AUD-003: Demo/Playground publico (copilot embebido)         │
+│   │   └── DemoController (246 ln) + PublicCopilotController (547 ln)  │
+│   ├── GAP-AUD-004: AI Dashboard GEO (Chart.js visualizacion)          │
+│   ├── GAP-AUD-005: llms.txt MCP Discovery (7 Gen 2 agents + tools)   │
+│   │   └── LlmsTxtController (255 ln) + ToolRegistry integration      │
+│   ├── GAP-AUD-006: Schema.org GEO (speakable, HowTo, FAQ)            │
+│   │   └── SchemaGeneratorService (471 ln) + SchemaOrgService (529 ln) │
+│   └── GAP-AUD-007: Dark Mode AI Components (40 CSS variables)         │
+│                                                                         │
+│   16 TRUE GAPS NUEVOS:                                                  │
+│   ├── GAP-AUD-008: Command Bar Cmd+K (Spotlight)                      │
+│   │   └── CommandRegistryService + tagged jaraba.command_provider      │
+│   ├── GAP-AUD-009: Inline AI (sparkle buttons en forms)               │
+│   │   └── InlineAiService + PremiumEntityFormBase.getInlineAiFields() │
+│   ├── GAP-AUD-010: Proactive Intelligence (entity + cron + bell)      │
+│   │   └── ProactiveInsight ContentEntity + QueueWorker                │
+│   ├── GAP-AUD-011: Voice AI (Web Speech API client-side)              │
+│   ├── GAP-AUD-012: A2A Protocol (Agent Card + task lifecycle)         │
+│   │   └── Extiende McpServerController JSON-RPC 2.0                  │
+│   ├── GAP-AUD-013: Vision/Multimodal (Claude Vision / GPT-4o)        │
+│   │   └── MultiModalBridgeService implementacion                      │
+│   ├── GAP-AUD-014: AI Test Coverage (40+ unit, 15+ kernel)           │
+│   ├── GAP-AUD-015: Prompt Regression (golden fixtures)                │
+│   │   └── PromptRegressionTestBase + 7 fixtures                      │
+│   ├── GAP-AUD-016: Blog Slugs (ParamConverter, presave auto-slug)    │
+│   ├── GAP-AUD-017: Content Hub tenant_id (TENANT-ISOLATION-ACCESS)   │
+│   ├── GAP-AUD-018: Skill Inference (SkillInferenceService + LLM)     │
+│   ├── GAP-AUD-019: Adaptive Learning (activar $aiAgent unused)       │
+│   ├── GAP-AUD-020: Demand Forecasting (DemandForecastingService)     │
+│   ├── GAP-AUD-021: AI Writing in GrapesJS (grapesjs-jaraba-ai.js)   │
+│   ├── GAP-AUD-022: Service Matching (Qdrant real wiring)             │
+│   └── GAP-AUD-023: Design System Docs (ComponentDocController)       │
+│                                                                         │
+│   2 INFRAESTRUCTURA:                                                    │
+│   ├── GAP-AUD-024: Cost Attribution (Observability → Metering)        │
+│   └── GAP-AUD-025: Horizontal Scaling (Redis AI worker pool)         │
+│                                                                         │
+│   Plan: 4 sprints, 320-440h, 55+ tests                                │
+│   Doc: Plan_Implementacion_Auditoria_IA_Clase_Mundial_v1.md           │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │                      PREMIUM ENTITY FORMS: 237 FORMULARIOS ⭐          │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -580,6 +675,8 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-26 | **77.0.0** | **Auditoria IA Clase Mundial — 25 Gaps hacia Paridad con Lideres del Mercado:** Nuevo ASCII box AUDITORIA IA CLASE MUNDIAL. 25 gaps auditados contra Salesforce Agentforce, HubSpot Breeze, Shopify Sidekick, Intercom Fin. 7 refinamiento (Onboarding AI, Pricing Metering, Demo Playground, Dashboard GEO, llms.txt MCP, Schema.org GEO, Dark Mode AI) + 16 nuevos (Command Bar Cmd+K con CommandRegistryService tagged services, Inline AI con SmartBaseAgent fast tier + sparkle buttons, Proactive Intelligence ContentEntity + QueueWorker cron, Voice AI Web Speech API client-side, A2A Protocol extending MCP JSON-RPC 2.0 con Agent Card /.well-known/agent.json, Vision/Multimodal MultiModalBridgeService implementacion, 40+ unit + 15+ kernel + 7 prompt regression tests, Blog slugs ParamConverter + ContentArticle tenant_id, 5 vertical AI: SkillInferenceService + AdaptiveLearningService AI activation + DemandForecastingService + GrapesJS AI Writer + ServiceMatchingService Qdrant wiring, Design System ComponentDocumentationController) + 2 infraestructura (Cost Attribution AIObservability→TenantMetering, Horizontal Scaling Redis worker pool). 4 sprints, 320-440h. Plan: `docs/implementacion/2026-02-26_Plan_Implementacion_Auditoria_IA_Clase_Mundial_v1.md`. Aprendizaje #134. |
+| 2026-02-26 | **76.0.0** | **AI Elevation 10 GAPs — Streaming Real + MCP Server + Native Tools:** Nuevo ASCII box AI ELEVATION 10 GAPs. GAP-01: StreamingOrchestratorService extiende CopilotOrchestratorService, ChatInput::setStreamedOutput(TRUE) para streaming real, PHP Generator con eventos chunk/cached/done/error, buffer 80 chars + PII masking incremental. GAP-09: ToolRegistry::generateNativeToolsInput() convierte a ToolsInput/ToolsFunctionInput/ToolsPropertyInput, SmartBaseAgent::callAiApiWithNativeTools() con ChatInput::setChatTools(), fallback a text-based. GAP-08: McpServerController POST /api/v1/mcp JSON-RPC 2.0 con initialize/tools-list/tools-call/ping, MCP 2025-11-25. GAP-02: TraceContextService trace_id UUID + span_id. GAP-03/10: Buffer PII masking cross-chunk. GAP-07: AgentLongTermMemoryService Qdrant + BD. 3 ficheros nuevos + 4 modificados. 7 reglas nuevas. Aprendizaje #133. |
 | 2026-02-26 | **75.0.0** | **AI Remediation Plan — 28 Fixes, 3 Phases:** Nuevo ASCII box AI REMEDIATION STACK. Fase 1 (P0): AIIdentityRule clase estatica centralizada, brand voice fallback, guardrails pipeline ALLOW/MODIFY/BLOCK/FLAG, SmartBaseAgent contrato restaurado (routing+observability+guardrails), CopilotOrchestratorService 8 modos reales, streaming SSE con MIME correcto y eventos tipados, AgentOrchestrator simplificado, feedback loop con threshold. Fase 2 (P1): RAG prompt injection filter, embedding cache, A/B testing framework, tenant brand voice YAML, content approval workflow entity, campaign calendar entity, performance dashboard, Qdrant graceful fallback, auto-disable por error rate, vertical context normalizado. Fase 3 (P2): ModelRouterService con regex bilingue EN+ES (FIX-019), model pricing a YAML config con schema (FIX-020), observability conectada en BrandVoiceTrainer+WorkflowExecutor (FIX-021), AIOpsService con metricas reales /proc+BD (FIX-022), feedback widget JS↔PHP alineado (FIX-023), streaming semantico por parrafos (FIX-024), Gen 0/1 agents documentados (FIX-025), @? UnifiedPromptBuilder optional DI (FIX-026), canonical verticals 10 nombres (FIX-027), PII espanol DNI/NIE/IBAN/NIF/+34 (FIX-028). 55 ficheros, +3678/-236 lineas. 5 reglas nuevas. Regla de oro #45. Aprendizaje #127. |
 | 2026-02-25 | **74.0.0** | **Premium Forms Migration 237 + USR-004 User Edit Redirect:** Nuevo ASCII box PREMIUM ENTITY FORMS. `PremiumEntityFormBase` como clase abstracta estandar para todos los formularios de entidad (237 forms en 50 modulos). 4 patrones de migracion (A: Simple, B: Computed, C: DI, D: Custom Logic). Glass-card UI con navigation pills y sticky action bar. SCSS `_premium-forms.scss`. 0 `ContentEntityForm` restantes en modulos custom. Fix USR-004: redirect de `/user/{id}/edit` a perfil canonico tras save. Regla PREMIUM-FORMS-PATTERN-001 (P1). Aprendizaje #125. |
 | 2026-02-25 | **73.0.0** | **Meta-Site Icon Emoji Remediation + PathProcessor Enhancement:** Icon System: nueva categoria `business/` con 12 SVGs (6 conceptuales + 6 duotone) para meta-sitio pepejaraba.com. 11 emojis Unicode eliminados de canvas_data (4 paginas). Seccion Icon System ampliada: categorias verticales, auditoria canvas_data, reglas ICON-EMOJI-001 + ICON-CANVAS-INLINE-001. PathProcessor: prioridad actualizada a 250, nuevo `resolveHomepage()` con MetaSiteResolverService. MetaSiteResolverService: 3-strategy domain resolution (Domain Access + Tenant.domain + subdomain prefix) documentada. Meta-sitio pepejaraba.com (9 paginas) anadido junto a jarabaimpact.com. Aprendizaje #124. |
@@ -605,4 +702,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 72.0.0 | **Fecha:** 2026-02-25 | **Autor:** IA Asistente
+> **Versión:** 77.0.0 | **Fecha:** 2026-02-26 | **Autor:** IA Asistente

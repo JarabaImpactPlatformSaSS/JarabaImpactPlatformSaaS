@@ -87,6 +87,14 @@ services:
     arguments:
       - '@logger.channel.jaraba_content_hub'
 
+  # ParamConverter: Article Slug to Entity
+  jaraba_content_hub.paramconverter.article_slug:
+    class: Drupal\jaraba_content_hub\ParamConverter\ContentArticleSlugConverter
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: paramconverter, priority: 10 }
+
   # Reputation Monitor Service
   jaraba_content_hub.reputation_monitor:
     class: Drupal\jaraba_content_hub\Service\ReputationMonitorService

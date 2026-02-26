@@ -106,6 +106,15 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setSlug(string $slug): static
+    {
+        $this->set('slug', $slug);
+        return $this;
+    }
+
+    /**
      * Obtiene el extracto/resumen del artículo.
      *
      * @return string

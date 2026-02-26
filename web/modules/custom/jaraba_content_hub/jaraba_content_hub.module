@@ -251,7 +251,7 @@ function jaraba_content_hub_content_article_presave(EntityInterface $entity): vo
     }
   }
 
-  // 4. Auto-generación de slug.
+  // 4. Auto-generación de slug con validación de unicidad.
   if ($entity->hasField('slug') && $entity->get('slug')->isEmpty()) {
     try {
       $title = $entity->label();
@@ -259,10 +259,10 @@ function jaraba_content_hub_content_article_presave(EntityInterface $entity): vo
         $slug = \Drupal::service('pathauto.alias_cleaner')->cleanString($title);
       }
       else {
-        // Fallback: slugify básico.
-        $slug = preg_replace('/[^a-z0-9]+/', '-', strtolower($title));
-        $slug = trim($slug, '-');
+        // Fallback: slugify básico con transliteración.
+        $slug = _jaraba_content_hub_slugify($title);
       }
+      $slug = _jaraba_content_hub_ensure_unique_slug($slug, $entity->id());
       $entity->set('slug', $slug);
     }
     catch (\Exception $e) {
@@ -372,7 +372,9 @@ function template_preprocess_content_article(array &$variables): void {
     'layout_mode' => $entity->getLayoutMode(),
     'rendered_html' => $entity->getRenderedHtml(),
     'ai_generated' => $entity->isAiGenerated(),
-    'url' => $entity->toUrl()->setAbsolute()->toString(),
+    'url' => !empty($entity->getSlug())
+      ? \Drupal\Core\Url::fromRoute('entity.content_article.canonical', ['content_article' => $entity->getSlug()])->setAbsolute()->toString()
+      : $entity->toUrl()->setAbsolute()->toString(),
   ];
 
   // Imagen destacada con srcset responsive.
@@ -528,6 +530,72 @@ function jaraba_content_hub_preprocess_html(array &$variables): void {
   // Inyecta meta tags específicos que sobrescriben los genéricos del tema
   // (Drupal deduplicados por clave: 'canonical', 'og_title', etc.).
   _jaraba_content_hub_inject_seo_tags($variables, $route_name);
+}
+
+/**
+ * Generates a URL-safe slug from a string.
+ *
+ * Transliterates accented characters and converts to lowercase
+ * alphanumeric with hyphens.
+ *
+ * @param string $string
+ *   The input string.
+ *
+ * @return string
+ *   The slugified string.
+ */
+function _jaraba_content_hub_slugify(string $string): string {
+  // Transliterate common Spanish/accented characters.
+  $transliterations = [
+    'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+    'ñ' => 'n', 'ü' => 'u', 'Á' => 'a', 'É' => 'e', 'Í' => 'i',
+    'Ó' => 'o', 'Ú' => 'u', 'Ñ' => 'n', 'Ü' => 'u',
+  ];
+  $string = strtr($string, $transliterations);
+  $slug = preg_replace('/[^a-z0-9]+/', '-', strtolower($string));
+  return trim($slug, '-');
+}
+
+/**
+ * Ensures a slug is unique among ContentArticle entities.
+ *
+ * If the slug already exists, appends -2, -3, etc. (pathauto pattern).
+ * Excludes the current entity ID to avoid false positives on update.
+ *
+ * @param string $slug
+ *   The base slug to check.
+ * @param string|int|null $exclude_id
+ *   Entity ID to exclude (for updates).
+ *
+ * @return string
+ *   A unique slug.
+ */
+function _jaraba_content_hub_ensure_unique_slug(string $slug, string|int|null $exclude_id = NULL): string {
+  if (empty($slug)) {
+    return $slug;
+  }
+
+  $storage = \Drupal::entityTypeManager()->getStorage('content_article');
+  $candidate = $slug;
+  $suffix = 1;
+
+  while (TRUE) {
+    $query = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('slug', $candidate);
+
+    if ($exclude_id) {
+      $query->condition('id', $exclude_id, '<>');
+    }
+
+    $existing = $query->count()->execute();
+    if ($existing == 0) {
+      return $candidate;
+    }
+
+    $suffix++;
+    $candidate = $slug . '-' . $suffix;
+  }
 }
 
 /**

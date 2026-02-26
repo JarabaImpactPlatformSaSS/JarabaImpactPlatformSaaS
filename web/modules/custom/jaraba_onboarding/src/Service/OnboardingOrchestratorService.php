@@ -22,6 +22,7 @@ class OnboardingOrchestratorService {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected TenantOnboardingService $tenantOnboarding,
     protected LoggerInterface $logger,
+    protected ?OnboardingAiRecommendationService $aiRecommender = NULL,
   ) {}
 
   /**
@@ -201,6 +202,28 @@ class OnboardingOrchestratorService {
           'completed_at' => $progress->get('completed_at')->value ? (int) $progress->get('completed_at')->value : NULL,
           'is_complete' => $progress->isComplete(),
         ];
+      }
+
+      // GAP-AUD-001: Enrich with AI recommendations if available.
+      if ($this->aiRecommender && !empty($result)) {
+        try {
+          $latestProgress = $result[0];
+          $recommendations = $this->aiRecommender->getRecommendations(
+            $userId,
+            'default',
+            $latestProgress,
+          );
+          if (!empty($recommendations)) {
+            $result[0]['ai_recommendations'] = $recommendations;
+          }
+        }
+        catch (\Exception $aiError) {
+          // Graceful degradation — no recommendations, no failure.
+          $this->logger->info('AI recommendations unavailable for user @user: @msg', [
+            '@user' => $userId,
+            '@msg' => $aiError->getMessage(),
+          ]);
+        }
       }
 
       return $result;

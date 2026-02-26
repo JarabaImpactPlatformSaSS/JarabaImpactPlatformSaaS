@@ -206,6 +206,19 @@ class JarabaRagService
             // 4. Enriquecer resultados con datos actuales de Drupal.
             $enrichedContext = $this->enrichWithDrupalData($searchResults);
 
+            // GAP-03/GAP-10: Sanitizar contenido RAG para prompt injection indirecto.
+            // Los chunks de documentos de Qdrant pueden contener instrucciones
+            // maliciosas embebidas que manipularian al LLM si se inyectan sin filtrar.
+            if ($this->guardrails) {
+                try {
+                    $enrichedContext = $this->guardrails->sanitizeRagContent($enrichedContext);
+                } catch (\Exception $e) {
+                    $this->log('Error sanitizing RAG content (non-blocking)', [
+                        'error' => $e->getMessage(),
+                    ], 'warning');
+                }
+            }
+
             // 5. Construir prompt y generar respuesta.
             $response = $this->generateResponse($query, $enrichedContext, $tenantFilters);
 

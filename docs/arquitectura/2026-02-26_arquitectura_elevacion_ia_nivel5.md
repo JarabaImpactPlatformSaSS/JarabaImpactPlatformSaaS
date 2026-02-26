@@ -1,8 +1,8 @@
 # Arquitectura: Elevacion IA a Nivel 5/5 — Clase Mundial
 
 **Fecha:** 2026-02-26
-**Version:** 1.0.0
-**Estado:** Implementado
+**Version:** 2.0.0 (+ 10 GAPs: Streaming Real, MCP Server, Native Tools, Tracing, Memoria)
+**Estado:** Implementado — Nivel 5/5 Completo
 **Referencia Plan:** `docs/implementacion/2026-02-26_Plan_Elevacion_IA_Nivel5_Clase_Mundial_v1.md`
 
 ---
@@ -18,6 +18,11 @@ El stack IA del SaaS tenia una base solida (agentes Gen 2, model routing, guardr
 - Agentes Gen 1 (Storytelling, CustomerExperience, Support) sin model routing
 - Cache por hash exacto sin matching semantico
 - Sin verificacion de context window ni provider fallback
+- Streaming buffered (LLM completo → chunking artificial), no real token-by-token
+- Function calling via XML en system prompt + JSON parsing manual
+- Sin MCP server para clientes externos (Claude Desktop, VS Code)
+- Sin distributed tracing para correlacionar requests SSE/API
+- Memoria de agentes session-only sin persistencia semantica
 
 **Estado inicial: ~Nivel 3/5. Objetivo: Nivel 5/5.**
 
@@ -215,9 +220,108 @@ public function __construct(
 [notify()] → admin email + watchdog
 ```
 
+### 2.10 Streaming Real Token-by-Token (GAP-01)
+
+```
+[User SSE Request: /api/v1/copilot/stream]
+    ↓
+[CopilotStreamController::stream()]
+    ↓ $container->has('streaming_orchestrator') ?
+    ├── YES → handleRealStreaming()
+    │     ↓
+    │   [StreamingOrchestratorService::streamChat()]
+    │     ├── extends CopilotOrchestratorService (acceso a setup methods)
+    │     ├── ChatInput::setStreamedOutput(TRUE)
+    │     ├── Returns PHP Generator<array>
+    │     ↓
+    │   [Generator yields]
+    │     ├── {type: 'chunk', text: '...', index: N}
+    │     ├── {type: 'cached', text: '...'} ← respuesta completa desde cache
+    │     ├── {type: 'done', tokens: {...}, log_id: N}
+    │     └── {type: 'error', message: '...'}
+    │     ↓
+    │   [Buffer PII Masking] ← GAP-03/GAP-10
+    │     ├── maskBufferPII() sobre buffer acumulado (no por chunk)
+    │     ├── Detecta PIIs que cruzan boundaries de chunks
+    │     └── Emite delta post-masking
+    │     ↓
+    │   [SSE Events] → mode, thinking, chunk, cached, done, error
+    │
+    └── NO → handleBufferedStreaming() (comportamiento original)
+```
+
+### 2.11 Native Function Calling API-Level (GAP-09)
+
+```
+[SmartBaseAgent con ToolRegistry inyectado]
+    ↓
+[callAiApiWithNativeTools()] ← PREFERIDO
+    ↓
+[ToolRegistry::generateNativeToolsInput()]
+    ├── ToolsInput > ToolsFunctionInput[] > ToolsPropertyInput[]
+    └── Formato OpenAI-compatible del modulo Drupal AI
+    ↓
+[executeLlmCallWithTools()]
+    ├── ChatInput::setChatTools(ToolsInput) ← API-level tools
+    ├── provider->chat(chatInput, modelId, config)
+    └── ChatOutput::getNormalized() → ChatMessage
+    ↓
+[ChatMessage::getTools()] → ToolsFunctionOutputInterface[]
+    ├── getName() → tool_id
+    ├── getArguments() → params array
+    └── Parseado nativamente por el provider (no JSON manual)
+    ↓
+[ToolRegistry::execute(toolName, params, context)]
+    ├── Sanitiza output via AIGuardrails::maskOutputPII()
+    └── Appends resultado como mensaje para siguiente iteracion
+    ↓
+[Loop: max 5 iteraciones]
+    ↓ Si falla → fallback a callAiApiWithTools() (text-based)
+```
+
+### 2.12 MCP Server — JSON-RPC 2.0 (GAP-08)
+
+```
+[Cliente MCP Externo]
+  ├── Claude Desktop
+  ├── VS Code Copilot
+  └── Custom MCP clients
+    ↓
+[POST /api/v1/mcp] → McpServerController::handle()
+    ├── Requiere permiso 'use ai agents' + CSRF token
+    ↓
+[JSON-RPC 2.0 Dispatch]
+    ├── initialize → protocolVersion '2025-11-25', capabilities {tools}
+    ├── tools/list → ToolRegistry::getAll() → JSON Schema inputSchema
+    ├── tools/call → ToolRegistry::execute() → content [{type: text, text}]
+    └── ping → {} (health check)
+    ↓
+[Seguridad]
+    ├── Tool output sanitizado via AIGuardrails::maskOutputPII()
+    ├── JSON-RPC error codes: -32700, -32600, -32601, -32602, -32603
+    └── HTTP status codes mapeados: 400, 404, 422, 500
+```
+
+### 2.13 Distributed Tracing (GAP-02)
+
+```
+[Request SSE]
+    ↓
+[TraceContextService::generateTraceId()] → UUID
+    ↓
+[Propagacion a servicios internos]
+    ├── AIObservabilityService::log() ← trace_id + span_id
+    ├── CopilotCacheService ← trace_id
+    ├── AIGuardrailsService ← trace_id
+    ├── ToolRegistry::execute() ← trace_id
+    └── SSE done event ← trace_id (para frontend)
+    ↓
+[Correlacion] → buscar logs por trace_id para reconstruir flujo completo
+```
+
 ---
 
-## 3. Servicios Nuevos (16 ficheros nuevos)
+## 3. Servicios Nuevos (16 ficheros nuevos + 4 GAPs)
 
 | Servicio | Modulo | Responsabilidad |
 |----------|--------|-----------------|
@@ -237,6 +341,9 @@ public function __construct(
 | `AdaptiveLearningService` | jaraba_lms | Rutas de aprendizaje adaptativas |
 | `CostAlertService` | ecosistema_jaraba_core | Alertas 80%/95% de limite de coste IA |
 | `QueryDatabaseTool`, `UpdateEntityTool`, `SearchContentTool` | jaraba_ai_agents | 3 tools nuevos para ToolRegistry |
+| `McpServerController` | jaraba_ai_agents | GAP-08: MCP Server JSON-RPC 2.0 |
+| `StreamingOrchestratorService` | jaraba_copilot_v2 | GAP-01: Streaming real token-by-token via Generator |
+| `TraceContextService` | jaraba_copilot_v2 | GAP-02: Distributed tracing trace_id/span_id |
 
 ---
 
@@ -244,7 +351,8 @@ public function __construct(
 
 | Fichero | Cambio |
 |---------|--------|
-| `SmartBaseAgent.php` | Tool use loop, context window, output PII mask, prompt experiments, evaluation queue |
+| `SmartBaseAgent.php` | Tool use loop, context window, output PII mask, prompt experiments, evaluation queue + GAP-09 native function calling |
+| `ToolRegistry.php` | GAP-09: generateNativeToolsInput() para ToolsInput nativo |
 | `ProducerCopilotAgent.php` | Constructor 10 args |
 | `SalesAgent.php` | Constructor 10 args |
 | `MerchantCopilotAgent.php` | Constructor 10 args |
@@ -252,7 +360,7 @@ public function __construct(
 | `CustomerExperienceAgent.php` | Migrado Gen 1 → Gen 2 |
 | `SupportAgent.php` | Migrado Gen 1 → Gen 2 |
 | `CopilotCacheService.php` | 2-layer cache (exact + semantic) |
-| `CopilotStreamController.php` | log_id en SSE done event |
+| `CopilotStreamController.php` | log_id en SSE done event + GAP-01 real streaming via Generator |
 | `JarabaRagService.php` | LLM re-ranker integration |
 | `AIGuardrailsService.php` | checkJailbreak() + maskOutputPII() |
 | `AgentOrchestratorService.php` | Bridge integration |
@@ -311,12 +419,16 @@ mapping:
 
 ## 6. Impacto por Fase
 
-| Fase | FIX Items | Nivel |
-|------|-----------|-------|
+| Fase | Items | Nivel |
+|------|-------|-------|
 | Fase 1 — Conectar Infraestructura | FIX-029 a FIX-037 (9) | 3.0 → 4.0 |
 | Fase 2 — Capacidades Autonomas | FIX-038 a FIX-045 (8) | 4.0 → 4.5 |
 | Fase 3 — Inteligencia por Vertical | FIX-046 a FIX-051 (6) | 4.5 → 5.0 |
-| **Total** | **23 FIX items** | **5.0/5** |
+| **Subtotal FIX** | **23 FIX items** | **5.0/5** |
+| GAP Fase A — Seguridad/Fiabilidad | GAP-03, GAP-10, GAP-04, GAP-05, GAP-06 | Streaming seguro |
+| GAP Fase B — Capacidades Avanzadas | GAP-02, GAP-07, GAP-01 | Streaming real + tracing + memoria |
+| GAP Fase C — Integracion Nativa | GAP-09, GAP-08 | Native tools + MCP server |
+| **Total** | **23 FIX + 10 GAP = 33 items** | **5.0/5 Clase Mundial** |
 
 ---
 
@@ -327,5 +439,7 @@ mapping:
 - Copilot contextual: `docs/arquitectura/2026-01-26_arquitectura_copiloto_contextual.md`
 - Model routing config: `jaraba_ai_agents/config/install/jaraba_ai_agents.model_routing.yml`
 - Provider fallback config: `jaraba_ai_agents/config/install/jaraba_ai_agents.provider_fallback.yml`
-- Directrices v78.0.0, Flujo v33.0.0, Indice v103.0.0
-- Aprendizajes #129, #130
+- Directrices v81.0.0, Flujo v36.0.0, Indice v106.0.0
+- Aprendizajes #129 (23 FIX items), #130 (auditoria post-implementacion), #133 (10 GAPs)
+- MCP spec: Protocol version 2025-11-25
+- Drupal AI module: `ChatInput::setChatTools()`, `ChatMessage::getTools()`

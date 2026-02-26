@@ -78,6 +78,22 @@ services:
       - '@jaraba_self_discovery.context'
       - '@ecosistema_jaraba_core.tenant_context'
 
+  # GAP-01: Streaming real token-by-token via ChatInput::setStreamedOutput()
+  jaraba_copilot_v2.streaming_orchestrator:
+    class: Drupal\jaraba_copilot_v2\Service\StreamingOrchestratorService
+    arguments:
+      - '@?ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@jaraba_copilot_v2.feature_unlock'
+      - '@jaraba_copilot_v2.normative_knowledge'
+      - '@jaraba_copilot_v2.mode_detector'
+      - '@jaraba_copilot_v2.normative_rag'
+      - '@jaraba_copilot_v2.copilot_cache'
+      - '@jaraba_copilot_v2.entrepreneur_context'
+      - '@jaraba_self_discovery.context'
+      - '@ecosistema_jaraba_core.tenant_context'
+
   jaraba_copilot_v2.mode_detector:
     class: Drupal\jaraba_copilot_v2\Service\ModeDetectorService
     arguments:

@@ -4,16 +4,27 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
+use Psr\Log\LoggerInterface;
 
 /**
  * Servicio de guardrails para prompts de IA.
  *
  * PROPÓSITO:
- * Implementa validación y sanitización de prompts antes de enviarlos
- * a los modelos de IA, previniendo abusos y asegurando calidad.
+ * Implementa validación y sanitización bidireccional de prompts IA:
+ * - INPUT: Valida prompts de usuario (PII, jailbreak, rate limit)
+ * - INTERMEDIATE: Sanitiza contenido RAG y tool outputs (prompt injection indirecto)
+ * - OUTPUT: Enmascara PII en respuestas del LLM
  *
- * Q3 2026 - Sprint 9-10: AI Operations
+ * GAP-03: Defensa contra prompt injection indirecto — contenido malicioso
+ * embebido en documentos RAG o resultados de tools puede manipular al LLM.
+ * sanitizeRagContent() y sanitizeToolOutput() neutralizan instrucciones
+ * embebidas ANTES de inyectarlas en el system prompt.
+ *
+ * @see JAILBREAK-DETECT-001
+ * @see AI-GUARDRAILS-PII-001
+ * @see OUTPUT-PII-MASK-001
  */
 class AIGuardrailsService
 {
@@ -57,10 +68,52 @@ class AIGuardrailsService
     ];
 
     /**
+     * Patrones de prompt injection indirecto (GAP-03).
+     *
+     * Detectan instrucciones maliciosas embebidas en contenido recuperado via
+     * RAG (chunks de documentos) o resultados de tools. Bilingues ES/EN.
+     *
+     * Diferencia con BLOCKED_PATTERNS y checkJailbreak():
+     * - BLOCKED_PATTERNS / checkJailbreak() se aplican al INPUT del usuario → BLOCK
+     * - INDIRECT_INJECTION_PATTERNS se aplican a contenido INTERMEDIO → SANITIZE
+     *
+     * La accion es SANITIZE (neutralizar, no bloquear), porque el contenido
+     * proviene de documentos legitimos que pueden contener frases coincidentes.
+     */
+    protected const INDIRECT_INJECTION_PATTERNS = [
+        // EN: Override de instrucciones del sistema.
+        '/ignore\s+(?:all\s+)?(?:previous|above|prior|earlier)\s+(?:instructions|rules|constraints|guidelines)/i',
+        '/(?:new|updated|revised)\s+(?:instructions?|rules?|objective|task|goal)\s*:/i',
+        '/(?:system|admin|root|sudo)\s+(?:override|access|command|mode)/i',
+        '/from\s+(?:now|this\s+point)\s+(?:on|forward),?\s+(?:you|ignore)/i',
+        '/(?:forget|disregard)\s+(?:everything|all|the\s+above)/i',
+        // EN: Inyeccion de rol/identidad.
+        '/(?:you\s+are|become|switch\s+to)\s+(?:now|a|an|the)\s+(?:different|new|evil|unrestricted)/i',
+        '/(?:enter|activate|enable)\s+(?:DAN|jailbreak|unrestricted|developer)\s+mode/i',
+        // EN: Extraccion de prompt del sistema.
+        '/(?:output|print|display|show|repeat|reveal)\s+(?:your|the|all)\s+(?:system|initial|original|hidden)\s+(?:prompt|instructions|message)/i',
+        // EN: XML/Markdown injection (delimitadores de prompt).
+        '/<\/?(?:system|instruction|command|override|admin|prompt|rules)>/i',
+        '/```(?:system|prompt|instruction|override|admin)/i',
+        '/\[(?:SYSTEM|INST|ADMIN)\]/i',
+        // ES: Override de instrucciones.
+        '/(?:ignora|olvida|descarta)\s+(?:todas?\s+)?(?:las\s+)?(?:instrucciones|reglas|anteriores|previas|de\s+arriba)/i',
+        '/(?:nuevas?|actualizadas?)\s+(?:instrucciones|reglas|objetivo)\s*:/i',
+        '/a\s+partir\s+de\s+ahora,?\s+(?:ignora|eres|cambia|actua)/i',
+        // ES: Inyeccion de rol/identidad.
+        '/(?:ahora\s+)?(?:eres|conviertete\s+en|actua\s+como)\s+(?:un|una|el|la)\s+(?:diferente|nuevo|malvado|libre)/i',
+        '/(?:activa|entra\s+en)\s+modo\s+(?:DAN|libre|sin\s+restricciones|desarrollador)/i',
+        // ES: Extraccion de prompt.
+        '/(?:muestra|repite|revela|imprime)\s+(?:tu|el|las)\s+(?:prompt|instrucciones|mensaje)\s+(?:de\s+sistema|inicial|original|oculto)/i',
+    ];
+
+    /**
      * Constructor.
      */
     public function __construct(
         protected Connection $database,
+        protected ?ConfigFactoryInterface $configFactory = NULL,
+        protected ?LoggerInterface $logger = NULL,
     ) {
     }
 
@@ -459,6 +512,211 @@ class AIGuardrailsService
         }
 
         return $masked;
+    }
+
+    /**
+     * Sanitiza contenido RAG antes de inyectarlo en el system prompt (GAP-03).
+     *
+     * Escanea cada chunk de documento recuperado de Qdrant buscando patrones
+     * de prompt injection indirecto. A diferencia de validate() que BLOQUEA
+     * input del usuario, este metodo NEUTRALIZA el contenido sospechoso
+     * reemplazandolo con un placeholder, ya que los documentos pueden contener
+     * coincidencias parciales legitimas.
+     *
+     * Cada chunk sanitizado conserva su estructura (title, url, score, etc.)
+     * — solo se modifica chunk_text y se marca is_sanitized=TRUE.
+     *
+     * @param array $chunks
+     *   Array de chunks RAG. Cada chunk es un array asociativo con al menos
+     *   'chunk_text' (string). Estructura tipica:
+     *   - chunk_text: Texto del fragmento del documento.
+     *   - title: Titulo del documento.
+     *   - url: URL del documento.
+     *   - score: Puntuacion de relevancia.
+     *
+     * @return array
+     *   Los mismos chunks con chunk_text sanitizado donde se detecto injection.
+     *
+     * @see JAILBREAK-DETECT-001
+     * @see AI-GUARDRAILS-PII-001
+     */
+    public function sanitizeRagContent(array $chunks): array
+    {
+        $sanitizedChunks = [];
+
+        foreach ($chunks as $chunk) {
+            $text = $chunk['chunk_text'] ?? '';
+
+            if (empty($text)) {
+                $sanitizedChunks[] = $chunk;
+                continue;
+            }
+
+            $detections = $this->scanForIndirectInjection($text);
+
+            if (!empty($detections)) {
+                // Neutralizar cada patron encontrado.
+                $sanitizedText = $text;
+                foreach ($detections as $detection) {
+                    $sanitizedText = preg_replace(
+                        $detection['pattern'],
+                        '[CONTENIDO NEUTRALIZADO POR GUARDRAILS]',
+                        $sanitizedText
+                    );
+                }
+
+                $chunk['chunk_text'] = $sanitizedText;
+                $chunk['is_sanitized'] = TRUE;
+                $chunk['sanitization_count'] = count($detections);
+
+                $this->logIndirectInjection('rag_content', $detections, $chunk['title'] ?? 'unknown');
+            }
+
+            // Adicionalmente, enmascarar PII en el contenido RAG.
+            $chunk['chunk_text'] = $this->maskOutputPII($chunk['chunk_text']);
+
+            $sanitizedChunks[] = $chunk;
+        }
+
+        return $sanitizedChunks;
+    }
+
+    /**
+     * Sanitiza el output de un tool antes de inyectarlo en el prompt (GAP-03).
+     *
+     * Los resultados de herramientas (ToolRegistry::execute()) pueden contener
+     * datos de fuentes externas (APIs, base de datos, busquedas web) que podrian
+     * incluir instrucciones de prompt injection embebidas.
+     *
+     * @param string $toolOutput
+     *   El resultado del tool como string (JSON serializado o texto plano).
+     *
+     * @return string
+     *   El resultado sanitizado.
+     *
+     * @see TOOL-USE-AGENT-001
+     */
+    public function sanitizeToolOutput(string $toolOutput): string
+    {
+        if (empty($toolOutput)) {
+            return $toolOutput;
+        }
+
+        $detections = $this->scanForIndirectInjection($toolOutput);
+
+        $sanitized = $toolOutput;
+        if (!empty($detections)) {
+            foreach ($detections as $detection) {
+                $sanitized = preg_replace(
+                    $detection['pattern'],
+                    '[CONTENIDO NEUTRALIZADO POR GUARDRAILS]',
+                    $sanitized
+                );
+            }
+
+            $this->logIndirectInjection('tool_output', $detections);
+        }
+
+        // Enmascarar PII tambien en outputs de tools.
+        return $this->maskOutputPII($sanitized);
+    }
+
+    /**
+     * Escanea texto buscando patrones de prompt injection indirecto.
+     *
+     * @param string $text
+     *   Texto a escanear (chunk RAG, tool output, memoria de agente).
+     *
+     * @return array
+     *   Array de detecciones, cada una con 'pattern', 'match', 'severity'.
+     */
+    protected function scanForIndirectInjection(string $text): array
+    {
+        $detections = [];
+
+        foreach (self::INDIRECT_INJECTION_PATTERNS as $pattern) {
+            if (preg_match($pattern, $text, $matches)) {
+                $detections[] = [
+                    'pattern' => $pattern,
+                    'match' => $matches[0],
+                    'severity' => $this->classifyInjectionSeverity($matches[0]),
+                ];
+            }
+        }
+
+        return $detections;
+    }
+
+    /**
+     * Clasifica la severidad de una deteccion de injection indirecto.
+     *
+     * @param string $match
+     *   El texto coincidente.
+     *
+     * @return string
+     *   'critical', 'high', o 'medium'.
+     */
+    protected function classifyInjectionSeverity(string $match): string
+    {
+        $loweredMatch = mb_strtolower($match);
+
+        // Critico: intentos directos de override del sistema.
+        if (str_contains($loweredMatch, 'system') || str_contains($loweredMatch, 'admin')
+            || str_contains($loweredMatch, 'override') || str_contains($loweredMatch, 'sudo')) {
+            return 'critical';
+        }
+
+        // Alto: inyeccion de instrucciones o identidad.
+        if (str_contains($loweredMatch, 'instrucciones') || str_contains($loweredMatch, 'instructions')
+            || str_contains($loweredMatch, 'eres') || str_contains($loweredMatch, 'you are')) {
+            return 'high';
+        }
+
+        return 'medium';
+    }
+
+    /**
+     * Loguea un intento de prompt injection indirecto.
+     *
+     * @param string $source
+     *   Origen: 'rag_content', 'tool_output', 'agent_memory'.
+     * @param array $detections
+     *   Array de detecciones.
+     * @param string $contextLabel
+     *   Etiqueta de contexto (titulo del documento, tool_id, etc.).
+     */
+    protected function logIndirectInjection(string $source, array $detections, string $contextLabel = ''): void
+    {
+        if ($this->logger) {
+            $this->logger->warning('Indirect prompt injection detected in @source: @count pattern(s). Context: @context. Matches: @matches', [
+                '@source' => $source,
+                '@count' => count($detections),
+                '@context' => $contextLabel ?: 'N/A',
+                '@matches' => implode(', ', array_column($detections, 'match')),
+            ]);
+        }
+
+        // Registrar en tabla de guardrail logs para auditoria.
+        try {
+            $this->database->insert('ai_guardrail_logs')
+                ->fields([
+                    'tenant_id' => 'system',
+                    'user_id' => 0,
+                    'action' => self::ACTION_MODIFY,
+                    'score' => 50,
+                    'violations_count' => count($detections),
+                    'details' => json_encode([
+                        'type' => 'indirect_injection',
+                        'source' => $source,
+                        'context' => $contextLabel,
+                        'detections' => $detections,
+                    ]),
+                    'created' => time(),
+                ])
+                ->execute();
+        } catch (\Exception $e) {
+            // No bloquear por fallo de logging.
+        }
     }
 
 }

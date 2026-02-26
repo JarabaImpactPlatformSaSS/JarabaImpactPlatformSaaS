@@ -208,6 +208,67 @@ class DemoController extends ControllerBase
     }
 
     /**
+     * AI Playground page — public interactive demo of AI capabilities.
+     *
+     * Displays an embedded copilot widget with pre-configured demo scenarios
+     * for anonymous users. Rate-limited via PublicCopilotController.
+     */
+    public function aiPlayground(): array
+    {
+        $scenarios = [
+            [
+                'id' => 'marketing',
+                'title' => (string) $this->t('Marketing Digital'),
+                'description' => (string) $this->t('Generate campaign ideas, social media content, and marketing strategies.'),
+                'icon' => 'campaign',
+                'prompt' => (string) $this->t('I need ideas for a social media campaign for an organic food brand targeting millennials.'),
+            ],
+            [
+                'id' => 'legal',
+                'title' => (string) $this->t('Consulta Legal'),
+                'description' => (string) $this->t('Get guidance on legal questions for entrepreneurs and businesses.'),
+                'icon' => 'gavel',
+                'prompt' => (string) $this->t('What are the legal requirements to start a cooperative in Spain?'),
+            ],
+            [
+                'id' => 'employment',
+                'title' => (string) $this->t('Empleabilidad'),
+                'description' => (string) $this->t('Optimize your CV, prepare for interviews, and discover career paths.'),
+                'icon' => 'work',
+                'prompt' => (string) $this->t('Help me optimize my CV for a digital marketing position. I have 3 years of experience.'),
+            ],
+            [
+                'id' => 'entrepreneurship',
+                'title' => (string) $this->t('Emprendimiento'),
+                'description' => (string) $this->t('Validate business ideas, build your canvas, and plan your launch.'),
+                'icon' => 'rocket_launch',
+                'prompt' => (string) $this->t('I want to validate a SaaS idea for restaurant management. Where do I start?'),
+            ],
+        ];
+
+        return [
+            '#theme' => 'demo_ai_playground',
+            '#scenarios' => $scenarios,
+            '#copilot_endpoint' => '/api/v1/public-copilot/chat',
+            '#attached' => [
+                'library' => [
+                    'ecosistema_jaraba_core/demo-ai-playground',
+                ],
+                'drupalSettings' => [
+                    'demoPlayground' => [
+                        'scenarios' => $scenarios,
+                        'copilotEndpoint' => '/api/v1/public-copilot/chat',
+                        'maxMessages' => 10,
+                    ],
+                ],
+            ],
+            '#cache' => [
+                'max-age' => 3600,
+            ],
+        ];
+    }
+
+    /**
      * Generación de historia con IA (demo).
      */
     public function demoAiStorytelling(Request $request, string $sessionId): array
