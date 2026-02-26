@@ -1,15 +1,28 @@
 {#
 /**
  * @file _landing-social-proof.html.twig
- * Parcial reutilizable: Social Proof (testimonios + metricas de impacto).
+ * Parcial reutilizable: Social Proof (testimonios + métricas de impacto).
  *
  * VARIABLES:
- * - social_proof.testimonials: Array de { quote, author, role, vertical }
- * - social_proof.metrics: Array de { value, label } (ej. "500+", "Productores")
+ * - social_proof.testimonials: Array de { quote, author, role, vertical, video_url }
+ * - social_proof.metrics: Array de { value, label } (ej. "7", "Verticales")
  * - color: Color del vertical
  * - vertical_key: ID del vertical
  *
- * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos estáticos
+ * - TESTIMONIAL-HONESTY: Solo datos verificables de personas reales
+ * - ICON-CONVENTION-001: SVG inline para checkmarks y quotes
+ *
+ * DESIGN DECISIONS (Auditoría Meta-Sitio Feb 2026):
+ * - Testimonios anteriores (Antonio, María) eran fabricados
+ * - Reemplazados por 3 testimonios reales de jarabaimpact.com:
+ *   → Marcela Calabia (Coach, Programa Andalucía +ei)
+ *   → Ángel Martínez (Camino Viejo, gastrobiking rural)
+ *   → Luis Miguel Criado (Terapeuta, autónomo)
+ * - Video enlaces: Marcela (MP4 jarabaimpact.com), Ángel (YouTube)
+ *
+ * @see 20260226-Plan_Implementacion_MetaSitio_Remediacion_Integral_v1.md
  */
 #}
 
@@ -17,11 +30,37 @@
 {% set testimonials = proof.testimonials|default([]) %}
 {% set metrics = proof.metrics|default([]) %}
 
+{# Fallback: 3 testimonios reales de jarabaimpact.com (programa Andalucía +ei) #}
+{% if testimonials|length == 0 %}
+  {% set testimonials = [
+    {
+      quote: 'Este curso es oro puro. Es el mejor tiempo invertido que van a poder disponer, porque realmente vale la pena.'|t,
+      author: 'Marcela Calabia'|t,
+      role: 'Coach de Comunicación Estratégica y Resiliencia'|t,
+      vertical: 'Programa Andalucía +ei'|t,
+      video_url: 'https://jarabaimpact.com/wp-content/uploads/2025/09/Jaraba-Impact-Testimonio-Marcela-Calabia_1080pHDI.mp4'
+    },
+    {
+      quote: 'La formación Jaraba Impact de PED es oro puro. Ahora tengo conciencia de que ES POSIBLE. Participar en la formación fue un acierto total.'|t,
+      author: 'Ángel Martínez'|t,
+      role: 'Cofundador de Camino Viejo — Gastrobiking rural'|t,
+      vertical: 'Programa Andalucía +ei'|t,
+      video_url: 'https://www.youtube.com/watch?v=gk8MGO8ldLE'
+    },
+    {
+      quote: 'El programa me dio las herramientas para dar los pasos más difíciles: empezar a cotizar y conseguir mis primeras ayudas.'|t,
+      author: 'Luis Miguel Criado'|t,
+      role: 'Terapeuta de masajes — Autónomo'|t,
+      vertical: 'Programa Andalucía +ei'|t
+    }
+  ] %}
+{% endif %}
+
 {% if testimonials|length > 0 or metrics|length > 0 %}
-<section class="landing-social-proof" aria-labelledby="social-proof-title">
+<section class="landing-social-proof reveal-element reveal-fade-up" aria-labelledby="social-proof-title">
   <div class="landing-social-proof__container">
 
-    {# Metricas de impacto #}
+    {# Métricas de impacto #}
     {% if metrics|length > 0 %}
       <div class="landing-social-proof__metrics">
         {% for metric in metrics %}
@@ -33,24 +72,44 @@
       </div>
     {% endif %}
 
-    {# Testimonios #}
+    {# Testimonios reales #}
     {% if testimonials|length > 0 %}
       <h2 id="social-proof-title" class="landing-social-proof__title">
-        {% trans %}Lo que dicen nuestros usuarios{% endtrans %}
+        {% trans %}Historias reales de transformación{% endtrans %}
       </h2>
 
       <div class="landing-social-proof__testimonials">
         {% for testimonial in testimonials %}
-          <blockquote class="landing-testimonial">
-            <p class="landing-testimonial__quote">{{ testimonial.quote }}</p>
+          <blockquote class="landing-testimonial" itemscope itemtype="https://schema.org/Review">
+            <div class="landing-testimonial__quote-mark" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M3 21V13C3 7.5 7.5 3 13 3H14V5C9 5 5 9.5 5 14V15H11V21H3ZM13 21V13C13 7.5 17.5 3 23 3H24V5C19 5 15 9.5 15 14V15H21V21H13Z" fill="currentColor" opacity="0.2"/>
+              </svg>
+            </div>
+            <p class="landing-testimonial__quote" itemprop="reviewBody">{{ testimonial.quote }}</p>
             <footer class="landing-testimonial__author">
-              <cite>
-                <strong>{{ testimonial.author }}</strong>
+              <cite itemprop="author" itemscope itemtype="https://schema.org/Person">
+                <strong itemprop="name">{{ testimonial.author }}</strong>
                 {% if testimonial.role is defined %}
-                  <span class="landing-testimonial__role">{{ testimonial.role }}</span>
+                  <span class="landing-testimonial__role" itemprop="jobTitle">{{ testimonial.role }}</span>
+                {% endif %}
+                {% if testimonial.vertical is defined %}
+                  <span class="landing-testimonial__vertical">{{ testimonial.vertical }}</span>
                 {% endif %}
               </cite>
             </footer>
+            {% if testimonial.video_url is defined and testimonial.video_url %}
+              <a href="{{ testimonial.video_url }}"
+                 class="landing-testimonial__video-link"
+                 target="_blank"
+                 rel="noopener"
+                 aria-label="{% trans %}Ver testimonio en vídeo de{% endtrans %} {{ testimonial.author }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M6 4L12 8L6 12V4Z" fill="currentColor"/>
+                </svg>
+                {% trans %}Ver vídeo{% endtrans %}
+              </a>
+            {% endif %}
           </blockquote>
         {% endfor %}
       </div>

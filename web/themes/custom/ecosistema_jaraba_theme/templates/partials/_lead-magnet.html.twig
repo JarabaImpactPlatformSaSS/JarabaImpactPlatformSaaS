@@ -1,0 +1,133 @@
+{#
+/**
+ * @file
+ * _lead-magnet.html.twig — Parcial: Formulario Lead Magnet Kit de Impulso Digital.
+ *
+ * PROPÓSITO:
+ * Formulario de captura de email con segmentación por avatar (job_seeker,
+ * entrepreneur, business_owner). Envía datos vía fetch() al endpoint público
+ * /api/v1/public/subscribe de jaraba_email. Al éxito, oculta el formulario
+ * y muestra un mensaje de confirmación.
+ *
+ * DIRECTRICES CUMPLIDAS:
+ * - i18n: Todos los textos con {% trans %} / |t
+ * - SCSS: var(--ej-*) para todos los valores visuales
+ * - Iconos: jaraba_icon() del icon system SVG
+ * - Zero Region Policy: Partial sin bloques de Drupal
+ * - Mobile-first: Layout flex/column por defecto
+ * - GDPR: Checkbox explícito con link a política de privacidad
+ * - Accesibilidad: aria-labelledby, labels, roles
+ *
+ * VARIABLES (desde theme_settings):
+ * - lead_magnet_title: string|null — Título principal
+ * - lead_magnet_subtitle: string|null — Subtítulo descriptivo
+ * - lead_magnet_cta_text: string|null — Texto del botón
+ * - lead_magnet_success_message: string|null — Mensaje post-submit
+ * - lead_magnet_tenant_id: int|null — Tenant ID para el formulario
+ *
+ * LIBRARY REQUERIDA:
+ *   {{ attach_library('ecosistema_jaraba_theme/lead-magnet') }}
+ *
+ * @see js/lead-magnet.js
+ * @see scss/components/_lead-magnet.scss
+ * @see \Drupal\jaraba_email\Controller\PublicSubscribeController
+ */
+#}
+
+{{ attach_library('ecosistema_jaraba_theme/lead-magnet') }}
+
+<section id="kit-impulso" class="lead-magnet" aria-labelledby="lead-magnet-title">
+  <div class="lead-magnet__container">
+
+    {# Icono decorativo #}
+    <div class="lead-magnet__icon" aria-hidden="true">
+      {{ jaraba_icon('actions', 'download', { variant: 'duotone', size: 'xl' }) }}
+    </div>
+
+    {# Título configurable desde UI Drupal #}
+    <h2 id="lead-magnet-title" class="lead-magnet__title">
+      {{ lead_magnet_title|default('Descarga tu Kit de Impulso Digital Gratuito'|t) }}
+    </h2>
+
+    <p class="lead-magnet__subtitle">
+      {{ lead_magnet_subtitle|default('11 páginas con las 7 herramientas que uso con mis clientes. Sin humo.'|t) }}
+    </p>
+
+    {# Formulario principal — procesado por Drupal.behaviors.jarabaLeadMagnet #}
+    <form class="lead-magnet__form" data-lead-magnet-form
+          data-tenant-id="{{ lead_magnet_tenant_id|default(5) }}"
+          novalidate>
+
+      <div class="lead-magnet__field">
+        <label for="lead-magnet-email" class="visually-hidden">{{ 'Email'|t }}</label>
+        <input type="email"
+               id="lead-magnet-email"
+               name="email"
+               required
+               autocomplete="email"
+               placeholder="{{ 'Tu email profesional'|t }}"
+               class="lead-magnet__input"
+               data-lead-magnet-email>
+      </div>
+
+      <div class="lead-magnet__field">
+        <label for="lead-magnet-avatar" class="visually-hidden">{{ '¿Qué te describe mejor?'|t }}</label>
+        <select id="lead-magnet-avatar"
+                name="avatar_type"
+                required
+                class="lead-magnet__select"
+                data-lead-magnet-avatar>
+          <option value="" disabled selected>{{ '¿Qué te describe mejor?'|t }}</option>
+          <option value="job_seeker">{{ 'Busco empleo o quiero reciclarme'|t }}</option>
+          <option value="entrepreneur">{{ 'Quiero emprender o tengo una idea'|t }}</option>
+          <option value="business_owner">{{ 'Tengo un negocio y quiero digitalizarlo'|t }}</option>
+        </select>
+      </div>
+
+      <div class="lead-magnet__consent">
+        <label class="lead-magnet__consent-label">
+          <input type="checkbox" name="gdpr_consent" required data-lead-magnet-gdpr>
+          <span>
+            {% trans %}
+              Acepto la <a href="/politica-de-privacidad" target="_blank" rel="noopener">política de privacidad</a>
+            {% endtrans %}
+          </span>
+        </label>
+      </div>
+
+      <button type="submit"
+              class="lead-magnet__btn btn--primary"
+              data-lead-magnet-submit>
+        {{ lead_magnet_cta_text|default('Descargar Kit Gratuito →'|t) }}
+      </button>
+    </form>
+
+    {# Mensaje de éxito — visible tras submit exitoso #}
+    <div class="lead-magnet__success" data-lead-magnet-success hidden>
+      <div class="lead-magnet__success-icon" aria-hidden="true">
+        {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: 'xl' }) }}
+      </div>
+      <h3 class="lead-magnet__success-title">{{ '¡Kit enviado!'|t }}</h3>
+      <p class="lead-magnet__success-text">
+        {{ lead_magnet_success_message|default('Revisa tu bandeja de entrada. Tu Kit de Impulso Digital está en camino.'|t) }}
+      </p>
+    </div>
+
+    {# Checklist de lo que incluye el Kit #}
+    <ul class="lead-magnet__checklist" aria-label="{{ 'Contenido del Kit'|t }}">
+      <li class="lead-magnet__checklist-item">
+        {{ jaraba_icon('ui', 'check', { size: 'sm' }) }}
+        <span>{{ '7 herramientas gratuitas probadas con +100 clientes'|t }}</span>
+      </li>
+      <li class="lead-magnet__checklist-item">
+        {{ jaraba_icon('ui', 'check', { size: 'sm' }) }}
+        <span>{{ 'Hoja de ruta de 7 días para empezar hoy'|t }}</span>
+      </li>
+      <li class="lead-magnet__checklist-item">
+        {{ jaraba_icon('ui', 'check', { size: 'sm' }) }}
+        <span>{{ 'Sin tecnicismos, sin humo, sin sorpresas'|t }}</span>
+      </li>
+    </ul>
+
+  </div>
+</section>

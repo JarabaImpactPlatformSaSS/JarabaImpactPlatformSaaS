@@ -221,6 +221,24 @@ jaraba_ai_agents.api.multimodal.capabilities:
   requirements:
     _permission: 'use ai agents'
 
+# FIX-034 — AI Feedback API
+jaraba_ai_agents.api.feedback.submit:
+  path: '/api/v1/ai/feedback'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AiFeedbackController::submit'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_token: 'TRUE'
+
+entity.ai_feedback.collection:
+  path: '/admin/content/ai-feedback'
+  defaults:
+    _entity_list: 'ai_feedback'
+    _title: 'AI Feedback'
+  requirements:
+    _permission: 'administer ai agents'
+
 entity.ai_usage_log.collection:
   path: '/admin/content/ai-usage-logs'
   defaults:

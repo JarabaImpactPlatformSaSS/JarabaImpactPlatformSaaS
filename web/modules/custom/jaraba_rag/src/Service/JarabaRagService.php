@@ -60,6 +60,13 @@ class JarabaRagService
     ];
 
     /**
+     * Optional LLM re-ranker for improved relevance (FIX-037).
+     *
+     * @var \Drupal\jaraba_rag\Service\LlmReRankerService|null
+     */
+    protected ?LlmReRankerService $llmReRanker = NULL;
+
+    /**
      * Constructs a JarabaRagService object.
      */
     public function __construct(
@@ -74,6 +81,14 @@ class JarabaRagService
         protected ?CacheBackendInterface $responseCache = NULL,
         protected ?AIGuardrailsService $guardrails = NULL,
     ) {
+        // FIX-037: Resolve LlmReRankerService optionally.
+        if (\Drupal::hasService('jaraba_rag.llm_reranker')) {
+            try {
+                $this->llmReRanker = \Drupal::service('jaraba_rag.llm_reranker');
+            } catch (\Exception $e) {
+                // Optional — not critical.
+            }
+        }
     }
 
     /**
@@ -368,6 +383,45 @@ class JarabaRagService
     {
         if (count($results) <= $topK) {
             return $results;
+        }
+
+        // FIX-037: Use LLM re-ranker if available and configured.
+        $config = $this->configFactory->get('jaraba_rag.settings');
+        $strategy = $config->get('reranking.strategy') ?? 'keyword';
+
+        if (($strategy === 'llm' || $strategy === 'hybrid') && $this->llmReRanker) {
+            try {
+                $candidates = [];
+                foreach ($results as $r) {
+                    $candidates[] = [
+                        'text' => $r['payload']['text'] ?? '',
+                        'score' => $r['score'],
+                        'payload' => $r['payload'] ?? [],
+                    ];
+                }
+
+                $reranked = $this->llmReRanker->reRank($query, $candidates, $topK);
+                if (!empty($reranked)) {
+                    // Map back to original format.
+                    $mapped = [];
+                    foreach ($reranked as $item) {
+                        $mapped[] = [
+                            'score' => $item['hybrid_score'] ?? $item['score'],
+                            'payload' => $item['payload'] ?? $item,
+                        ];
+                    }
+                    return $mapped;
+                }
+            } catch (\Exception $e) {
+                $this->log('LLM re-ranker failed, falling back to keyword', [
+                    'error' => $e->getMessage(),
+                ], 'warning');
+            }
+
+            // If strategy is 'llm' only (no hybrid fallback), return trimmed.
+            if ($strategy === 'llm') {
+                return array_slice($results, 0, $topK);
+            }
         }
 
         // Normalize query for keyword matching.

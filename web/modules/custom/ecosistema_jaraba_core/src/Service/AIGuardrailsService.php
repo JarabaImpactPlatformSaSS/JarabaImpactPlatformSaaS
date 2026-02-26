@@ -123,6 +123,14 @@ class AIGuardrailsService
             $result['score'] -= 10;
         }
 
+        // FIX-043: Jailbreak detection.
+        $jailbreakCheck = $this->checkJailbreak($prompt);
+        if ($jailbreakCheck['detected']) {
+            $result['violations'][] = $jailbreakCheck;
+            $result['action'] = self::ACTION_BLOCK;
+            $result['score'] -= 100;
+        }
+
         $result['score'] = max(0, $result['score']);
 
         // Logging.
@@ -345,6 +353,112 @@ class AIGuardrailsService
         $result = $query->execute()->fetchField();
 
         return round((float) $result, 1);
+    }
+
+    /**
+     * Detects jailbreak and prompt injection attempts (FIX-043).
+     *
+     * Bilingual (ES/EN) pattern detection for:
+     * - Prompt injection ("ignore previous", "you are now")
+     * - Role-play attacks ("DAN mode", "pretend you are")
+     * - System prompt extraction ("repeat your instructions")
+     * - Identity manipulation ("eres ChatGPT", "act as GPT")
+     *
+     * @param string $prompt
+     *   The user prompt.
+     *
+     * @return array
+     *   Result with detected flag and matched patterns.
+     */
+    protected function checkJailbreak(string $prompt): array
+    {
+        $jailbreakPatterns = [
+            // EN: Prompt injection.
+            '/ignore\s+(all\s+)?(previous|prior|above)\s+(instructions|rules|prompts)/i',
+            '/disregard\s+(all\s+)?(your|the|above|previous)\s+(instructions|rules|guidelines)/i',
+            '/override\s+(your|all|the)\s+(instructions|rules|safety)/i',
+            // EN: Role-play attacks.
+            '/you\s+are\s+now\s+(a|an|the|DAN|evil|unrestricted)/i',
+            '/pretend\s+(you\s+are|to\s+be)\s+(a|an|the|DAN)/i',
+            '/DAN\s+mode/i',
+            '/jailbreak/i',
+            '/\bDAN\b/',
+            // EN: System prompt extraction.
+            '/repeat\s+(your|the|all)\s+(instructions|system\s+prompt|rules)/i',
+            '/show\s+(me\s+)?(your|the)\s+(system|initial)\s+(prompt|message|instructions)/i',
+            '/what\s+(are|were)\s+your\s+(initial|original|system)\s+(instructions|prompt)/i',
+            // EN: Identity manipulation.
+            '/you\s+are\s+(ChatGPT|GPT|Claude|Gemini|Llama|Mistral)/i',
+            '/act\s+as\s+(ChatGPT|GPT|Claude|an?\s+AI\s+without\s+restrictions)/i',
+            // ES: Inyeccion de prompts.
+            '/ignora\s+(todas?\s+)?(las\s+)?(instrucciones|reglas)\s+(anteriores|previas)/i',
+            '/olvida\s+(todas?\s+)?(las\s+)?(instrucciones|reglas|lo\s+anterior)/i',
+            '/no\s+sigas\s+(las|tus)\s+(instrucciones|reglas)/i',
+            // ES: Ataques de rol.
+            '/ahora\s+eres\s+(un|una|el|la|DAN)/i',
+            '/finge\s+(que\s+)?(eres|ser)\s+(un|una|DAN|libre)/i',
+            '/modo\s+(DAN|sin\s+restricciones|libre)/i',
+            // ES: Extraccion de prompt.
+            '/repite\s+(tu|el)\s+(prompt|mensaje)\s+(de\s+sistema|inicial)/i',
+            '/muestra\s+(tu|el)\s+prompt\s+(de\s+sistema|inicial|original)/i',
+            // ES: Manipulacion de identidad.
+            '/eres\s+(ChatGPT|GPT|Claude|Gemini|Llama|Mistral)/i',
+            '/actua\s+como\s+(ChatGPT|GPT|Claude|Gemini|una?\s+IA\s+sin\s+restricciones)/i',
+        ];
+
+        $matches = [];
+
+        foreach ($jailbreakPatterns as $pattern) {
+            if (preg_match($pattern, $prompt, $m)) {
+                $matches[] = [
+                    'pattern' => $pattern,
+                    'match' => $m[0],
+                ];
+            }
+        }
+
+        return [
+            'type' => 'jailbreak',
+            'detected' => !empty($matches),
+            'matches' => $matches,
+            'message' => empty($matches) ? NULL : 'Jailbreak/prompt injection attempt detected.',
+        ];
+    }
+
+    /**
+     * Masks PII in LLM output text (FIX-044).
+     *
+     * Scans the LLM response and replaces detected PII with
+     * [DATO PROTEGIDO] placeholder. Reuses the same PII patterns
+     * from checkPII().
+     *
+     * @param string $text
+     *   The LLM output text.
+     *
+     * @return string
+     *   Text with PII masked.
+     */
+    public function maskOutputPII(string $text): string
+    {
+        $piiPatterns = [
+            'email' => '/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/',
+            'phone_us' => '/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/',
+            'ssn' => '/\b\d{3}-\d{2}-\d{4}\b/',
+            'credit_card' => '/\b(?:\d{4}[-\s]?){3}\d{4}\b/',
+            // Spanish PII.
+            'dni' => '/\b\d{8}[A-Za-z]\b/',
+            'nie' => '/\b[XYZxyz]\d{7}[A-Za-z]\b/',
+            'iban_es' => '/\bES\d{2}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{2}[\s-]?\d{10}\b/',
+            'nif_cif' => '/\b[A-HJ-NP-SUVW]\d{7}[A-J0-9]\b/',
+            'phone_es' => '/\b(?:\+34|0034)[\s-]?\d{9}\b/',
+        ];
+
+        $masked = $text;
+        foreach ($piiPatterns as $pattern) {
+            $masked = preg_replace($pattern, '[DATO PROTEGIDO]', $masked);
+        }
+
+        return $masked;
     }
 
 }

@@ -1,7 +1,7 @@
 # 📖 Arquitectura del Copiloto Contextual
 
 **Fecha:** 2026-01-26  
-**Versión:** 1.0.0  
+**Versión:** 1.1.0 (Action Buttons + URL Suggestions)
 **Estado:** Aprobada
 
 ---
@@ -252,6 +252,67 @@ Si es necesario revertir:
 1. Eliminar el include en `html.html.twig`
 2. Eliminar el preprocess hook
 3. Reactivar bloques anteriores
+
+---
+
+## 8. Sugerencias y Action Buttons (v1.1.0)
+
+### 8.1 Formato de Sugerencias
+
+Las sugerencias del copilot soportan dos formatos:
+
+**String plano** — se envia como mensaje al chat:
+```json
+"Ver demo: Buscar empleo con IA"
+```
+
+**Objeto con URL** — se renderiza como link directo:
+```json
+{"label": "Crear cuenta gratis", "url": "/user/register"}
+```
+
+### 8.2 Backend: Action Buttons Contextuales
+
+`CopilotOrchestratorService::getContextualActionButtons(string $mode)` genera CTAs segun el modo y estado de autenticacion:
+
+```
+Usuario Anonimo → [{label: "Crear cuenta gratis", url: "/user/register"}]
+Coach           → [{label: "Mi perfil", url: "/user"}]
+Consultor       → [{label: "Mi dashboard", url: "/user"}]
+CFO             → [{label: "Panel financiero", url: "/emprendimiento/dashboard"}]
+Landing         → [{label: "Explorar plataforma", url: "/"}]
+```
+
+`formatResponse()` fusiona sugerencias extraidas del texto IA + action buttons contextuales.
+
+### 8.3 Frontend: Renderizado Dual
+
+Ambas implementaciones JS normalizan el formato:
+
+```javascript
+var item = typeof s === 'string' ? { label: s } : s;
+if (item.url) {
+    // <a class="suggestion-btn--link" href="...">Label →</a>
+} else {
+    // <button class="suggestion-btn">Label</button>
+}
+```
+
+| Clase CSS | Estilo | Uso |
+|-----------|--------|-----|
+| `.suggestion-btn` | Outline, borde naranja | Sugerencia de texto |
+| `.suggestion-btn--link` | Fondo naranja, blanco, bold | Link directo con URL |
+
+Links externos (`http` + diferente hostname) llevan `target="_blank" rel="noopener noreferrer"`.
+
+### 8.4 Implementaciones
+
+| Modulo | Fichero JS | Fichero SCSS |
+|--------|------------|-------------|
+| ecosistema_jaraba_core (v1) | `contextual-copilot.js` | `_contextual-copilot.scss` |
+| jaraba_copilot_v2 (v2) | `copilot-chat-widget.js` | `_copilot-chat-widget.scss` |
+
+Regla COPILOT-LINK-001: Ambas implementaciones DEBEN soportar el formato dual.
 
 ---
 

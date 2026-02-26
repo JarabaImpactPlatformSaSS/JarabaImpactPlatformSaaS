@@ -1,0 +1,129 @@
+{#
+/**
+ * @file _testimonials.html.twig
+ * Sección de testimonios / casos de éxito para la homepage.
+ *
+ * Muestra 3 quotes de personas reales del programa Andalucía +ei,
+ * extraídos de los BlogPosts de casos de éxito.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos estáticos
+ * - ICON-CONVENTION-001: jaraba_icon() para SVGs
+ * - CSS: BEM .testimonials__*, var(--ej-*)
+ * - BRAND-FONT-001: Outfit como font principal
+ * - TWIG-XSS-001: Autoescaping en todas las variables
+ *
+ * @see scripts/create-case-studies.php
+ */
+#}
+
+<section id="testimonios" class="testimonials reveal-element reveal-fade-up"
+         aria-labelledby="testimonials-title">
+  <div class="testimonials__container">
+
+    {# Título de sección #}
+    <span class="testimonials__eyebrow">
+      {% trans %}Historias Reales{% endtrans %}
+    </span>
+    <h2 id="testimonials-title" class="testimonials__title">
+      {% trans %}Profesionales que ya se han transformado{% endtrans %}
+    </h2>
+    <p class="testimonials__subtitle">
+      {% trans %}Personas reales del programa Andalucía +ei que han reinventado su carrera con el Método Jaraba.{% endtrans %}
+    </p>
+
+    {# Grid de testimonios #}
+    <div class="testimonials__grid" role="list">
+
+      {# Testimonio 1: Marcela Calabia #}
+      <article class="testimonials__card" role="listitem">
+        <div class="testimonials__quote-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M12 8H6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h4l-2 6h3l2-6V10c0-1.1-.9-2-2-2zm14 0h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h4l-2 6h3l2-6V10c0-1.1-.9-2-2-2z" fill="currentColor" opacity="0.15"/>
+          </svg>
+        </div>
+        <blockquote class="testimonials__text">
+          {% trans %}Este curso es oro puro. Es el mejor tiempo invertido que van a poder disponer. Ninguno de los cursos de pago que he hecho me ha dado lo que me dio este curso gratuito.{% endtrans %}
+        </blockquote>
+        <div class="testimonials__author">
+          <div class="testimonials__author-avatar" aria-hidden="true">MC</div>
+          <div class="testimonials__author-info">
+            <cite class="testimonials__author-name">Marcela Calabia</cite>
+            <span class="testimonials__author-role">{% trans %}Coach de Comunicación Estratégica{% endtrans %}</span>
+          </div>
+        </div>
+        <div class="testimonials__result">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M13.3 4.7L6 12 2.7 8.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{% trans %}2 emprendimientos lanzados como autónoma{% endtrans %}</span>
+        </div>
+      </article>
+
+      {# Testimonio 2: Ángel Martínez #}
+      <article class="testimonials__card" role="listitem">
+        <div class="testimonials__quote-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M12 8H6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h4l-2 6h3l2-6V10c0-1.1-.9-2-2-2zm14 0h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h4l-2 6h3l2-6V10c0-1.1-.9-2-2-2z" fill="currentColor" opacity="0.15"/>
+          </svg>
+        </div>
+        <blockquote class="testimonials__text">
+          {% trans %}La formación de PED es oro puro. Ahora tengo conciencia de que ES POSIBLE. Es un acierto total.{% endtrans %}
+        </blockquote>
+        <div class="testimonials__author">
+          <div class="testimonials__author-avatar" aria-hidden="true">ÁM</div>
+          <div class="testimonials__author-info">
+            <cite class="testimonials__author-name">Ángel Martínez</cite>
+            <span class="testimonials__author-role">{% trans %}Cofundador de Camino Viejo{% endtrans %}</span>
+          </div>
+        </div>
+        <div class="testimonials__result">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M13.3 4.7L6 12 2.7 8.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{% trans %}Negocio de gastrobiking en Cazalla de la Sierra{% endtrans %}</span>
+        </div>
+      </article>
+
+      {# Testimonio 3: Luis Miguel Criado #}
+      <article class="testimonials__card" role="listitem">
+        <div class="testimonials__quote-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M12 8H6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h4l-2 6h3l2-6V10c0-1.1-.9-2-2-2zm14 0h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h4l-2 6h3l2-6V10c0-1.1-.9-2-2-2z" fill="currentColor" opacity="0.15"/>
+          </svg>
+        </div>
+        <blockquote class="testimonials__text">
+          {% trans %}El programa me dio las herramientas para dar los pasos más difíciles: empezar a cotizar y conseguir mis primeras ayudas. Sin depender de una gestoría.{% endtrans %}
+        </blockquote>
+        <div class="testimonials__author">
+          <div class="testimonials__author-avatar" aria-hidden="true">LM</div>
+          <div class="testimonials__author-info">
+            <cite class="testimonials__author-name">Luis Miguel Criado</cite>
+            <span class="testimonials__author-role">{% trans %}Terapeuta y Emprendedor{% endtrans %}</span>
+          </div>
+        </div>
+        <div class="testimonials__result">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M13.3 4.7L6 12 2.7 8.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{% trans %}Alta de autónomo + ayuda de la Junta de Andalucía{% endtrans %}</span>
+        </div>
+      </article>
+
+    </div>
+
+    {# CTA a la página de casos de éxito #}
+    <div class="testimonials__cta">
+      <a href="/blog"
+         class="btn-secondary btn-secondary--large"
+         data-track-cta="testimonials_see_all"
+         data-track-position="homepage_testimonials">
+        {% trans %}Ver todos los casos{% endtrans %}
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>

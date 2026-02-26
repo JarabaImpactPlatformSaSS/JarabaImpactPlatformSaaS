@@ -1,0 +1,12 @@
+# FIX-030: Agent type to service ID mapping.
+# Maps AutonomousAgent.agent_type field values to concrete jaraba_ai_agents service IDs.
+# Extend this mapping when new agent types are created.
+mapping:
+  marketing: jaraba_ai_agents.smart_marketing_agent
+  smart_marketing: jaraba_ai_agents.smart_marketing_agent
+  storytelling: jaraba_ai_agents.storytelling_agent
+  customer_experience: jaraba_ai_agents.customer_experience_agent
+  support: jaraba_ai_agents.support_agent
+  producer_copilot: jaraba_ai_agents.producer_copilot_agent
+  sales: jaraba_ai_agents.sales_agent
+  merchant_copilot: jaraba_ai_agents.merchant_copilot_agent

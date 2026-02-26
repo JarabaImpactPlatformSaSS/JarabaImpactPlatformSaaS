@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Template: Blog index page (sin regiones de Drupal).
+ * Template: Blog index page — Premium world-class design.
  *
  * Variables (from BlogController::index):
  * - title: Título del blog (configurable desde jaraba_content_hub.settings)
@@ -15,66 +15,207 @@
  * - pager: Array de paginación con keys:
  *   current_page, total_pages, total_articles, has_previous, has_next,
  *   previous_url, next_url, pages (array con number, is_current, url)
- *
- * CSS classes: .blog-page, .blog-hero, .blog-filters, .blog-content,
- * .blog-grid, .blog-grid__main, .blog-grid__sidebar, .sidebar-widget,
- * .trending-list, .newsletter-form, .blog-empty
- * Definidas en: scss/_content-hub.scss con tokens var(--ej-*)
+ * - stats: Array con total_articles, total_categories
  *
  * Directrices aplicadas:
  * - i18n: Todos los textos con {% trans %}
  * - URLs: path() en vez de strings hardcodeados
  * - Parciales: _article-card.html.twig, _category-filter.html.twig
  * - Iconos: jaraba_icon() del sistema de iconos
- * - CSS: Clases del sistema de diseño, variables CSS
+ * - CSS: Clases BEM del sistema de diseño con tokens var(--ej-*)
+ * - Animaciones: .animate-on-scroll compatible con scroll-animations.js
  */
 #}
 {{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+{{ attach_library('ecosistema_jaraba_theme/blog-hero-particles') }}
 {{ attach_library('jaraba_content_hub/newsletter-form') }}
 
 <div class="blog-page">
+
   {# =========================================================
-     HERO SECTION — Glassmorphism con título configurable
+     S1 — HERO: 2-column layout (text + visual element)
+     Inspired by AEI hero pattern with eyebrow + CTA
      ========================================================= #}
-  <section class="blog-hero">
-    <div class="container">
-      <h1 class="blog-hero__title">{{ title }}</h1>
-      <p class="blog-hero__subtitle">
-        {% trans %}Discover insights, tips, and stories from our community.{% endtrans %}
-      </p>
+  <section class="blog-hero blog-hero--premium" aria-label="{{ title }}">
+    <canvas id="blog-hero-particles" class="blog-hero__particles" aria-hidden="true"></canvas>
+    <div class="blog-hero__container">
+      <div class="blog-hero__text">
+        <span class="blog-hero__eyebrow">
+          {{ jaraba_icon('ui', 'book-open', { size: '14px' }) }}
+          {% trans %}Knowledge Hub{% endtrans %}
+        </span>
+        <h1 class="blog-hero__title">{{ title }}</h1>
+        <p class="blog-hero__subtitle">
+          {% trans %}Insights, strategies, and stories to power your growth. Expert content curated for impact-driven professionals.{% endtrans %}
+        </p>
+        <div class="blog-hero__actions">
+          <a href="#blog-articles" class="blog-hero__cta blog-hero__cta--primary">
+            {{ jaraba_icon('ui', 'arrow-down', { size: '16px' }) }}
+            {% trans %}Explore articles{% endtrans %}
+          </a>
+          {% if categories is not empty %}
+            <a href="#blog-categories" class="blog-hero__cta blog-hero__cta--secondary">
+              {% trans %}Browse categories{% endtrans %}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="blog-hero__visual" aria-hidden="true">
+        <div class="blog-hero__visual-circle">
+          {{ jaraba_icon('ui', 'book-open', { variant: 'duotone', size: '64px' }) }}
+        </div>
+      </div>
     </div>
   </section>
 
   {# =========================================================
-     CATEGORY FILTER — Parcial reutilizable con pills
+     S2 — STATS BAR: Credibilidad con números
      ========================================================= #}
-  <section class="blog-filters">
-    <div class="container">
-      {% include '@ecosistema_jaraba_theme/partials/_category-filter.html.twig' with {
-        categories: categories,
-        show_all_link: true,
-        all_url: path('jaraba_content_hub.blog')
-      } only %}
-    </div>
-  </section>
+  {% if stats.total_articles > 0 or stats.total_categories > 0 %}
+    <section class="blog-stats animate-on-scroll" data-delay="100" aria-label="{% trans %}Blog statistics{% endtrans %}">
+      <div class="blog-stats__container">
+        <div class="blog-stats__grid">
+          <div class="blog-stats__card">
+            <div class="blog-stats__icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'file-text', { size: '24px' }) }}
+            </div>
+            <span class="blog-stats__value">{{ stats.total_articles }}</span>
+            <span class="blog-stats__label">{% trans %}Articles{% endtrans %}</span>
+          </div>
+          <div class="blog-stats__card">
+            <div class="blog-stats__icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'folder', { size: '24px' }) }}
+            </div>
+            <span class="blog-stats__value">{{ stats.total_categories }}</span>
+            <span class="blog-stats__label">{% trans %}Categories{% endtrans %}</span>
+          </div>
+          <div class="blog-stats__card">
+            <div class="blog-stats__icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'clock', { size: '24px' }) }}
+            </div>
+            <span class="blog-stats__value">{% trans %}Weekly{% endtrans %}</span>
+            <span class="blog-stats__label">{% trans %}Fresh content{% endtrans %}</span>
+          </div>
+          <div class="blog-stats__card">
+            <div class="blog-stats__icon" aria-hidden="true">
+              {{ jaraba_icon('ui', 'star', { size: '24px' }) }}
+            </div>
+            <span class="blog-stats__value">{% trans %}Free{% endtrans %}</span>
+            <span class="blog-stats__label">{% trans %}Always open{% endtrans %}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
 
   {# =========================================================
-     BLOG CONTENT — Grid principal + Sidebar
+     S3 — CATEGORY FILTERS: Section header + pills
      ========================================================= #}
-  <section class="blog-content">
+  {% if categories is not empty %}
+    <section id="blog-categories" class="blog-filters animate-on-scroll" data-delay="150">
+      <div class="container">
+        <div class="blog-section-header">
+          <span class="blog-section-header__eyebrow">{% trans %}Explore{% endtrans %}</span>
+          <h2 class="blog-section-header__title">{% trans %}Browse by topic{% endtrans %}</h2>
+        </div>
+        {% include '@ecosistema_jaraba_theme/partials/_category-filter.html.twig' with {
+          categories: categories,
+          show_all_link: true,
+          all_url: path('jaraba_content_hub.blog')
+        } only %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# =========================================================
+     S4 — FEATURED ARTICLE: Spotlight para el primer artículo
+     ========================================================= #}
+  {% if articles is not empty %}
+    {% set featured = articles|first %}
+    <section class="blog-featured animate-on-scroll" data-delay="100" aria-label="{% trans %}Featured article{% endtrans %}">
+      <div class="container">
+        <div class="blog-section-header">
+          <span class="blog-section-header__eyebrow">
+            {{ jaraba_icon('ui', 'star', { size: '14px' }) }}
+            {% trans %}Featured{% endtrans %}
+          </span>
+          <h2 class="blog-section-header__title">{% trans %}Editor's pick{% endtrans %}</h2>
+        </div>
+        <div class="blog-featured__card">
+          {% if featured.featured_image %}
+            <a href="{{ featured.url }}" class="blog-featured__image-link" aria-label="{{ featured.title }}">
+              <img
+                src="{{ featured.featured_image }}"
+                {% if featured.featured_image_srcset %}
+                  srcset="{{ featured.featured_image_srcset }}"
+                  sizes="(max-width: 640px) 100vw, 60vw"
+                {% endif %}
+                alt="{{ featured.title }}"
+                loading="eager"
+                class="blog-featured__image"
+              >
+            </a>
+          {% endif %}
+          <div class="blog-featured__content">
+            {% if featured.category_name %}
+              <a href="{{ featured.category_url }}" class="blog-featured__category"
+                 style="--category-color: {{ featured.category_color|default('#233D63') }}">
+                {{ featured.category_name }}
+              </a>
+            {% endif %}
+            <h3 class="blog-featured__title">
+              <a href="{{ featured.url }}">{{ featured.title }}</a>
+            </h3>
+            {% if featured.excerpt %}
+              <p class="blog-featured__excerpt">{{ featured.excerpt|striptags }}</p>
+            {% endif %}
+            <div class="blog-featured__meta">
+              <time datetime="{{ featured.publish_date }}" class="blog-featured__date">
+                {{ featured.publish_date|date('d M Y') }}
+              </time>
+              {% if show_reading_time and featured.reading_time %}
+                <span class="blog-featured__reading-time">
+                  {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
+                  {{ featured.reading_time }} {% trans %}min read{% endtrans %}
+                </span>
+              {% endif %}
+            </div>
+            <a href="{{ featured.url }}" class="blog-featured__read-more">
+              {% trans %}Read article{% endtrans %}
+              {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# =========================================================
+     S5 — ARTICLES GRID + SIDEBAR
+     ========================================================= #}
+  <section id="blog-articles" class="blog-content">
     <div class="container">
+      {% if articles|length > 1 %}
+        <div class="blog-section-header animate-on-scroll" data-delay="100">
+          <span class="blog-section-header__eyebrow">{% trans %}Latest{% endtrans %}</span>
+          <h2 class="blog-section-header__title">{% trans %}Recent articles{% endtrans %}</h2>
+        </div>
+      {% endif %}
+
       <div class="blog-grid">
-
-        {# --- Main: Articles grid --- #}
+        {# --- Main: Articles grid (skip first = featured) --- #}
         <div class="blog-grid__main">
-          {% if articles is not empty %}
+          {% if articles|length > 1 %}
             <div class="articles-grid">
-              {% for article in articles %}
-                {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
-                  article: article,
-                  show_reading_time: show_reading_time,
-                  variant: loop.first ? 'featured' : 'standard'
-                } only %}
+              {% for article in articles|slice(1) %}
+                <div class="animate-on-scroll" data-delay="{{ loop.index0 * 80 }}">
+                  {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
+                    article: article,
+                    show_reading_time: show_reading_time,
+                    variant: 'standard'
+                  } only %}
+                </div>
               {% endfor %}
             </div>
 
@@ -112,31 +253,37 @@
               </nav>
             {% endif %}
 
-          {% else %}
-            {# Empty state mejorado con icono y CTA #}
-            <div class="blog-empty">
-              <div class="blog-empty__icon">
-                {{ jaraba_icon('ui', 'search', { size: '48px', color: 'neutral' }) }}
+          {% elseif articles is empty %}
+            {# Empty state premium #}
+            <div class="blog-empty blog-empty--premium">
+              <div class="blog-empty__visual" aria-hidden="true">
+                <div class="blog-empty__circle">
+                  {{ jaraba_icon('ui', 'edit', { variant: 'duotone', size: '48px' }) }}
+                </div>
               </div>
               <h2 class="blog-empty__title">
-                {% trans %}No articles published yet{% endtrans %}
+                {% trans %}Content is brewing{% endtrans %}
               </h2>
               <p class="blog-empty__text">
-                {% trans %}We're working on new content. Check back soon for fresh articles and insights.{% endtrans %}
+                {% trans %}Our team is crafting expert articles to help you grow. Subscribe below and be the first to know when we publish.{% endtrans %}
               </p>
+              <a href="#blog-newsletter" class="blog-empty__cta">
+                {{ jaraba_icon('ui', 'bell', { size: '16px' }) }}
+                {% trans %}Get notified{% endtrans %}
+              </a>
             </div>
           {% endif %}
         </div>
 
-        {# --- Sidebar: Trending + Newsletter --- #}
+        {# --- Sidebar: Trending + Categories quick links --- #}
         <aside class="blog-grid__sidebar" aria-label="{% trans %}Blog sidebar{% endtrans %}">
 
           {# Trending widget #}
           {% if trending is not empty %}
-            <div class="sidebar-widget">
+            <div class="sidebar-widget sidebar-widget--trending animate-on-scroll" data-delay="200">
               <h2 class="sidebar-widget__title">
-                {{ jaraba_icon('ui', 'arrow-right', { size: '18px' }) }}
-                {% trans %}Trending{% endtrans %}
+                {{ jaraba_icon('ui', 'fire', { size: '18px' }) }}
+                {% trans %}Trending now{% endtrans %}
               </h2>
               <ol class="trending-list">
                 {% for item in trending %}
@@ -148,37 +295,79 @@
             </div>
           {% endif %}
 
-          {# Newsletter widget — AJAX submit via Drupal behavior #}
-          <div class="sidebar-widget sidebar-widget--newsletter">
-            <h2 class="sidebar-widget__title">
-              {% trans %}Subscribe to our newsletter{% endtrans %}
-            </h2>
-            <p class="sidebar-widget__text">
-              {% trans %}Get the latest articles delivered to your inbox.{% endtrans %}
-            </p>
-            <form class="newsletter-form" data-newsletter-form method="post"
-                  action="{{ path('jaraba_content_hub.api.newsletter.subscribe') }}">
-              <label for="newsletter-email" class="visually-hidden">
-                {% trans %}Email address{% endtrans %}
-              </label>
-              <input
-                type="email"
-                id="newsletter-email"
-                name="email"
-                class="newsletter-form__input"
-                placeholder="{% trans %}Your email{% endtrans %}"
-                required
-                autocomplete="email"
-              >
-              <button type="submit" class="newsletter-form__button">
-                {% trans %}Subscribe{% endtrans %}
-              </button>
-            </form>
-            <div class="newsletter-form__message" role="status" aria-live="polite"></div>
-          </div>
+          {# Categories sidebar widget #}
+          {% if categories is not empty %}
+            <div class="sidebar-widget animate-on-scroll" data-delay="250">
+              <h2 class="sidebar-widget__title">
+                {{ jaraba_icon('ui', 'folder', { size: '18px' }) }}
+                {% trans %}Categories{% endtrans %}
+              </h2>
+              <ul class="sidebar-categories">
+                {% for category in categories %}
+                  <li class="sidebar-categories__item">
+                    <a href="{{ category.url }}" class="sidebar-categories__link">
+                      <span class="sidebar-categories__dot" style="background: {{ category.color|default('#233D63') }}"></span>
+                      <span class="sidebar-categories__name">{{ category.name }}</span>
+                      {% if category.count %}
+                        <span class="sidebar-categories__count">{{ category.count }}</span>
+                      {% endif %}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
 
         </aside>
       </div>
     </div>
   </section>
+
+  {# =========================================================
+     S6 — NEWSLETTER CTA: Full-width conversion section
+     Inspired by AEI CTA Final pattern
+     ========================================================= #}
+  <section id="blog-newsletter" class="blog-newsletter-section animate-on-scroll" data-delay="100"
+           aria-label="{% trans %}Subscribe to newsletter{% endtrans %}">
+    <div class="blog-newsletter-section__container">
+      <div class="blog-newsletter-section__content">
+        <span class="blog-newsletter-section__eyebrow">
+          {{ jaraba_icon('ui', 'mail', { size: '16px' }) }}
+          {% trans %}Stay in the loop{% endtrans %}
+        </span>
+        <h2 class="blog-newsletter-section__title">
+          {% trans %}Get expert insights delivered weekly{% endtrans %}
+        </h2>
+        <p class="blog-newsletter-section__subtitle">
+          {% trans %}Join our community of professionals. No spam, just valuable content.{% endtrans %}
+        </p>
+        <form class="blog-newsletter-section__form newsletter-form" data-newsletter-form method="post"
+              action="{{ path('jaraba_content_hub.api.newsletter.subscribe') }}">
+          <div class="blog-newsletter-section__input-group">
+            <label for="newsletter-email-cta" class="visually-hidden">
+              {% trans %}Email address{% endtrans %}
+            </label>
+            <input
+              type="email"
+              id="newsletter-email-cta"
+              name="email"
+              class="blog-newsletter-section__input"
+              placeholder="{% trans %}Enter your email{% endtrans %}"
+              required
+              autocomplete="email"
+            >
+            <button type="submit" class="blog-newsletter-section__button">
+              {% trans %}Subscribe{% endtrans %}
+              {{ jaraba_icon('ui', 'arrow-right', { size: '16px' }) }}
+            </button>
+          </div>
+          <div class="newsletter-form__message" role="status" aria-live="polite"></div>
+        </form>
+        <p class="blog-newsletter-section__footer">
+          {% trans %}Free forever. Unsubscribe anytime.{% endtrans %}
+        </p>
+      </div>
+    </div>
+  </section>
+
 </div>

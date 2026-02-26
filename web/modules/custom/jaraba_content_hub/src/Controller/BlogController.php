@@ -212,6 +212,10 @@ class BlogController extends ControllerBase implements ContainerInjectionInterfa
             '#trending' => $trending_items,
             '#show_reading_time' => $config->get('show_reading_time') ?? TRUE,
             '#pager' => $pager,
+            '#stats' => [
+                'total_articles' => $total_articles,
+                'total_categories' => count($categories),
+            ],
             '#cache' => [
                 'tags' => ['content_article_list', 'content_category_list'],
                 'contexts' => ['url.query_args:page', 'languages'],

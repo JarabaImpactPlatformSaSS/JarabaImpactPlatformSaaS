@@ -61,6 +61,7 @@ class AgentOrchestratorService {
     protected readonly GuardrailsEnforcerService $guardrails,
     protected readonly AgentMetricsCollectorService $metrics,
     protected readonly ApprovalManagerService $approvalManager,
+    protected readonly ?AgentExecutionBridgeService $executionBridge = NULL,
   ) {}
 
   /**
@@ -174,6 +175,38 @@ class AgentOrchestratorService {
         'status' => 'running',
       ]);
 
+      // FIX-030: Bridge to real LLM execution via SmartBaseAgent services.
+      $bridgeResult = NULL;
+      if ($this->executionBridge) {
+        $agentType = $agent->get('agent_type')->value ?? '';
+        $action = $triggerData['action'] ?? 'default';
+        $bridgeContext = [
+          'tenant_id' => $agent->get('tenant_id')->target_id ?? NULL,
+          'vertical' => $triggerData['vertical'] ?? 'general',
+          'input_data' => $triggerData,
+        ];
+
+        $bridgeResult = $this->executionBridge->execute($agentType, $action, $bridgeContext);
+
+        // Update execution with LLM results.
+        if ($bridgeResult['success']) {
+          $actionsTaken = [
+            [
+              'action' => $action,
+              'timestamp' => date('Y-m-d\TH:i:s'),
+              'result' => 'success',
+              'tokens' => $bridgeResult['routing']['estimated_cost'] ?? 0,
+            ],
+          ];
+          $execution->set('actions_taken', json_encode($actionsTaken, JSON_THROW_ON_ERROR));
+          $execution->set('tokens_used', $bridgeResult['routing']['estimated_cost'] ?? 0);
+          $this->transitionStatus($executionId, 'completed');
+        }
+        else {
+          $this->transitionStatus($executionId, 'failed');
+        }
+      }
+
       $this->logger->info('Ejecucion @exec iniciada para agente @agent (trigger: @trigger).', [
         '@exec' => $executionId,
         '@agent' => $agentId,
@@ -183,8 +216,9 @@ class AgentOrchestratorService {
       return [
         'success' => TRUE,
         'execution_id' => $executionId,
-        'status' => 'running',
+        'status' => $bridgeResult ? ($bridgeResult['success'] ? 'completed' : 'failed') : 'running',
         'message' => (string) new TranslatableMarkup('Ejecucion del agente iniciada correctamente.'),
+        'bridge_result' => $bridgeResult,
       ];
     }
     catch (\Exception $e) {

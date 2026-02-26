@@ -32,6 +32,16 @@
 @use 'components/mobile-menu';
 @use 'components/avatar-nav';
 
+// Lead Magnet — Kit de Impulso Digital (BUG-001 Fix)
+@use 'components/lead-magnet';
+
+// Sprint 2: Testimonios + WhatsApp FAB
+@use 'components/testimonials';
+@use 'components/whatsapp-fab';
+
+// Sprint 3: Pagina de contacto
+@use 'components/contact-page';
+
 // Premium Components (extensión a todas las páginas)
 @use 'components/page-premium';
 @use 'components/glass-utilities';
@@ -116,8 +126,8 @@
 // Landing Sections - F4 Doc180 Vertical landing page 9-section components
 @use 'components/landing-sections';
 
-// Error Pages - 404, 403 premium pages
-@use 'components/error-pages';
-
 // Retention Playbooks Dashboard - Doc 179 Vertical Retention
 @use 'retention-playbooks';
+
+// Pricing Page - 178_MetaSite_Remediation /planes
+@use 'components/pricing-page';

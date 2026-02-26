@@ -1381,6 +1381,20 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # ===========================================
+  # META-SITE PRICING SERVICE (178_MetaSite_Remediation)
+  # ===========================================
+
+  # Servicio de datos de pricing para el meta-sitio público.
+  # Lee de SaasPlanTier y SaasPlanFeatures vía PlanResolverService cascade
+  # para generar datos listos para presentación en landing pages y /planes.
+  # Incluye fallbacks hardcoded para entornos sin ConfigEntities.
+  ecosistema_jaraba_core.metasite_pricing:
+    class: Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService
+    arguments:
+      - '@entity_type.manager'
+      - '@ecosistema_jaraba_core.plan_resolver'
+
   # Drush command: jaraba:validate-plans
   ecosistema_jaraba_core.plan_validation_commands:
     class: Drupal\ecosistema_jaraba_core\Commands\PlanValidationCommands

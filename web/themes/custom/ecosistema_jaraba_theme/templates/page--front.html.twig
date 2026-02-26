@@ -76,6 +76,18 @@
       stats: homepage.stats|default([])
     } %}
 
+    {# LEAD MAGNET - Kit de Impulso Digital — BUG-001 Fix #}
+    {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {
+      lead_magnet_title: theme_settings.lead_magnet_title|default(null),
+      lead_magnet_subtitle: theme_settings.lead_magnet_subtitle|default(null),
+      lead_magnet_cta_text: theme_settings.lead_magnet_cta_text|default(null),
+      lead_magnet_success_message: theme_settings.lead_magnet_success_message|default(null),
+      lead_magnet_tenant_id: theme_settings.lead_magnet_tenant_id|default(5),
+    } %}
+
+    {# TESTIMONIOS — Casos de éxito reales (Sprint 2) #}
+    {% include '@ecosistema_jaraba_theme/partials/_testimonials.html.twig' %}
+
   </main>
 
   {# FOOTER - Partial configurable desde UI #}
@@ -92,5 +104,11 @@
     avatar_type: 'general',
     fab_color: 'var(--ej-color-impulse, #FF8C42)',
     greeting: '¡Hola! Soy tu asesor de Jaraba. Puedo mostrarte demos personalizadas, ayudarte a explorar la plataforma o resolver cualquier duda. ¿Qué te trae por aquí?'|t
+  } %}
+
+  {# WHATSAPP FAB — Contacto rápido móvil (Sprint 2) #}
+  {% include '@ecosistema_jaraba_theme/partials/_whatsapp-fab.html.twig' with {
+    whatsapp_number: theme_settings.whatsapp_number|default('34600000000'),
+    whatsapp_message: theme_settings.whatsapp_message|default('Hola, me interesa conocer más sobre la Plataforma de Ecosistemas Digitales.'|t|url_encode)
   } %}
 

@@ -152,8 +152,9 @@ proxy:
     # Marca Personal Pepe Jaraba (dev proxy)
     - pepejaraba.jaraba-saas.lndo.site
     # Institucional B2B Jaraba Impact (dev proxy)
-    # Institucional B2B Jaraba Impact (dev proxy)
     - jarabaimpact.jaraba-saas.lndo.site
+    # Corporativo Legal PED S.L. (dev proxy)
+    - plataformadeecosistemas.jaraba-saas.lndo.site
   phpmyadmin:
     - phpmyadmin.jaraba-saas.lndo.site
   qdrant:

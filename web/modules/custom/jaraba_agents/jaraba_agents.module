@@ -201,3 +201,59 @@ function jaraba_agents_entity_update(EntityInterface $entity): void {
     );
   }
 }
+
+/**
+ * Implements hook_cron().
+ *
+ * FIX-041: Enqueue scheduled autonomous agents for execution.
+ * Queries active AutonomousAgent entities with trigger_type='schedule'
+ * that are due for execution.
+ */
+function jaraba_agents_cron(): void {
+  try {
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    if (!$entityTypeManager->hasDefinition('autonomous_agent')) {
+      return;
+    }
+
+    $storage = $entityTypeManager->getStorage('autonomous_agent');
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', TRUE)
+      ->condition('trigger_type', 'schedule')
+      ->execute();
+
+    if (empty($ids)) {
+      return;
+    }
+
+    $queue = \Drupal::queue('jaraba_agents_scheduled_agent');
+    $agents = $storage->loadMultiple($ids);
+
+    foreach ($agents as $agent) {
+      // Check if schedule is due (simple: run on every cron).
+      $scheduleConfig = $agent->get('schedule_config')->value ?? '';
+      if ($scheduleConfig) {
+        $config = json_decode($scheduleConfig, TRUE);
+        $lastRun = $config['last_run'] ?? 0;
+        $intervalMinutes = $config['interval_minutes'] ?? 60;
+
+        if ((time() - $lastRun) < ($intervalMinutes * 60)) {
+          continue;
+        }
+      }
+
+      $queue->createItem([
+        'agent_id' => (int) $agent->id(),
+      ]);
+
+      \Drupal::logger('jaraba_agents')->info('Scheduled agent @id enqueued for execution.', [
+        '@id' => $agent->id(),
+      ]);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_agents')->error('Cron scheduling failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}

@@ -11,6 +11,22 @@ services:
       - '@jaraba_agents.guardrails'
       - '@jaraba_agents.metrics'
       - '@jaraba_agents.approval_manager'
+      - '@?jaraba_agents.execution_bridge'
+
+  # FIX-030: Bridge Autonomous Agents <-> SmartBaseAgent
+  jaraba_agents.execution_bridge:
+    class: Drupal\jaraba_agents\Service\AgentExecutionBridgeService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_agents'
+
+  # FIX-039: Agent Long-Term Memory
+  jaraba_agents.long_term_memory:
+    class: Drupal\jaraba_agents\Service\AgentLongTermMemoryService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_agents'
+      - '@?jaraba_rag.qdrant_client'
 
   jaraba_agents.guardrails:
     class: Drupal\jaraba_agents\Service\GuardrailsEnforcerService

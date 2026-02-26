@@ -164,12 +164,14 @@ class CopilotStreamController extends ControllerBase {
         }
 
         // Enviar evento de finalizacion con metadata.
+        // FIX-034: Include log_id for feedback correlation.
         $this->sendSSEEvent('done', [
           'mode' => $response['mode'] ?? $detectedMode,
           'provider' => $response['provider'] ?? 'unknown',
           'model' => $response['model'] ?? '',
           'suggestions' => $response['suggestions'] ?? [],
           'streaming_mode' => 'buffered',
+          'log_id' => $response['log_id'] ?? NULL,
         ]);
       }
       catch (\Exception $e) {

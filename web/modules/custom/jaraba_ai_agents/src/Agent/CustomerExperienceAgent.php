@@ -4,37 +4,50 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Agent;
 
+use Drupal\ai\AiProviderPluginManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
+use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
+use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
+use Drupal\jaraba_ai_agents\Service\ModelRouterService;
+use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
+use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_ai_agents\Tool\ToolRegistry;
+use Psr\Log\LoggerInterface;
+
 /**
  * Agente de Experiencia del Cliente.
  *
- * PROPÓSITO:
  * Especializado en gestionar la experiencia post-venta del cliente:
  * respuestas a reseñas, emails de seguimiento y manejo de quejas.
  *
- * ACCIONES DISPONIBLES:
- * - 'review_response': Genera respuestas profesionales a reseñas
- * - 'followup_email': Crea emails de seguimiento post-compra
- * - 'complaint_response': Genera respuestas empáticas a quejas
- *
- * CARACTERÍSTICAS:
- * - Detección automática de sentimiento (positivo/neutral/negativo)
- * - Sugerencias de cross-sell naturales
- * - Solicitudes sutiles de reseñas
- * - Propuestas de compensación cuando aplica
- *
- * ESTILO:
- * Empático, solucionador de problemas, profesional pero cálido.
- *
- * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
- *
- * @note Gen 1 agent — Extends BaseAgent directly (no model routing).
- *   Provides full AI capabilities via BaseAgent contract (AI-IDENTITY-001,
- *   observability, UnifiedPromptBuilder). Does not include SmartBaseAgent
- *   intelligent model routing. Consider migrating to SmartBaseAgent if cost
- *   optimization is needed.
+ * FIX-035: Migrated Gen 1 -> Gen 2. Now extends SmartBaseAgent with
+ * model routing, tool use, provider fallback, and context window management.
  */
-class CustomerExperienceAgent extends BaseAgent
+class CustomerExperienceAgent extends SmartBaseAgent
 {
+
+    /**
+     * Constructs a CustomerExperienceAgent.
+     */
+    public function __construct(
+        AiProviderPluginManager $aiProvider,
+        ConfigFactoryInterface $configFactory,
+        LoggerInterface $logger,
+        TenantBrandVoiceService $brandVoice,
+        AIObservabilityService $observability,
+        ModelRouterService $modelRouter,
+        ?UnifiedPromptBuilder $promptBuilder = NULL,
+        ?ToolRegistry $toolRegistry = NULL,
+        ?ProviderFallbackService $providerFallback = NULL,
+        ?ContextWindowManager $contextWindowManager = NULL,
+    ) {
+        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+        $this->setModelRouter($modelRouter);
+        $this->setToolRegistry($toolRegistry);
+        $this->setProviderFallback($providerFallback);
+        $this->setContextWindowManager($contextWindowManager);
+    }
 
     /**
      * {@inheritdoc}
@@ -62,8 +75,6 @@ class CustomerExperienceAgent extends BaseAgent
 
     /**
      * {@inheritdoc}
-     *
-     * Define las acciones disponibles con sus parámetros.
      */
     public function getAvailableActions(): array
     {
@@ -91,13 +102,9 @@ class CustomerExperienceAgent extends BaseAgent
 
     /**
      * {@inheritdoc}
-     *
-     * Enruta la ejecución al método de acción correspondiente.
      */
-    public function execute(string $action, array $context): array
+    protected function doExecute(string $action, array $context): array
     {
-        $this->setCurrentAction($action);
-
         return match ($action) {
             'review_response' => $this->generateReviewResponse($context),
             'followup_email' => $this->generateFollowupEmail($context),
@@ -111,17 +118,6 @@ class CustomerExperienceAgent extends BaseAgent
 
     /**
      * Genera una respuesta a reseña.
-     *
-     * Analiza el sentimiento basado en la puntuación y genera
-     * una respuesta apropiada: agradecimiento para positivas,
-     * solución para negativas.
-     *
-     * @param array $context
-     *   Contexto con 'review_text', 'rating' (1-5).
-     *   Opcionales: 'customer_name', 'order_id'.
-     *
-     * @return array
-     *   Resultado con 'response', 'sentiment_detected', 'key_points_addressed'.
      */
     protected function generateReviewResponse(array $context): array
     {
@@ -171,16 +167,6 @@ EOT;
 
     /**
      * Genera un email de seguimiento post-compra.
-     *
-     * Crea un email personalizado para verificar satisfacción,
-     * ofrecer ayuda y solicitar reseñas de manera sutil.
-     *
-     * @param array $context
-     *   Contexto con 'purchase_type', 'days_since_purchase'.
-     *   Opcionales: 'product_name', 'customer_name'.
-     *
-     * @return array
-     *   Resultado con 'subject', 'body', 'review_request', 'cross_sell_suggestion'.
      */
     protected function generateFollowupEmail(array $context): array
     {
@@ -232,16 +218,6 @@ EOT;
 
     /**
      * Genera una respuesta a queja de cliente.
-     *
-     * Crea una respuesta empática que reconoce el problema,
-     * ofrece una solución concreta y establece próximos pasos.
-     *
-     * @param array $context
-     *   Contexto con 'complaint_summary', 'severity' (baja/media/alta).
-     *   Opcionales: 'compensation_offered', 'previous_interactions'.
-     *
-     * @return array
-     *   Resultado con 'acknowledgment', 'empathy_statement', 'solution', etc.
      */
     protected function generateComplaintResponse(array $context): array
     {
@@ -294,8 +270,6 @@ EOT;
 
     /**
      * {@inheritdoc}
-     *
-     * Define el Brand Voice por defecto para experiencia del cliente.
      */
     protected function getDefaultBrandVoice(): string
     {

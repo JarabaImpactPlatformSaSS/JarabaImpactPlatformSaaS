@@ -69,3 +69,13 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_servicios_conecta'
+
+
+  # FIX-046: Service Matching — Hybrid scoring for seeker/provider matching
+  jaraba_servicios_conecta.service_matching:
+    class: Drupal\jaraba_servicios_conecta\Service\ServiceMatchingService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_servicios_conecta'
+      - '@?jaraba_rag.indexer'
+      - '@?jaraba_rag.qdrant_client'

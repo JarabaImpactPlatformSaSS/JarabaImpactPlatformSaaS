@@ -2,7 +2,7 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-26
-**Version:** 31.0.0 (Meta-Site Nav Fix + Copilot Link Buttons)
+**Version:** 33.0.0 (Auditoria Post-Implementacion IA — Service Call Contracts)
 
 ---
 
@@ -196,6 +196,57 @@
   - **PublicCopilotController:** `buildPublicSystemPrompt()` incluye bloque `IDENTIDAD INQUEBRANTABLE` con instruccion de respuesta ante preguntas de identidad.
   - **Servicios standalone:** FaqBotService, ServiciosConectaCopilotAgent, CoachIaService — anteponen la regla directamente al system prompt.
   - Si se crea un nuevo agente o copiloto, DEBE heredar de BaseAgent o incluir la regla manualmente.
+- **SmartBaseAgent Gen 2 Constructor (SMART-AGENT-DI-001):**
+  - Todo agente Gen 2 acepta 10 argumentos: 6 core + 4 opcionales.
+  - Core: `$aiProvider`, `$configFactory`, `$logger`, `$brandVoice`, `$observability`, `$modelRouter`.
+  - Opcionales (`@?`): `$promptBuilder`, `$toolRegistry`, `$providerFallback`, `$contextWindowManager`.
+  - Constructor body: `parent::__construct(6 core)` → `$this->setModelRouter($modelRouter)` → conditional setters.
+  - Patron: `if ($toolRegistry) { $this->setToolRegistry($toolRegistry); }` — no setter si null.
+  - services.yml: los 3 ultimos args usan `@?jaraba_ai_agents.tool_registry`, etc.
+  - Migracion Gen 1→Gen 2: cambiar `extends BaseAgent` a `extends SmartBaseAgent`, renombrar `execute()` a `doExecute()`, copiar constructor de SmartMarketingAgent como referencia.
+- **Tool Use Loop (TOOL-USE-AGENT-001):**
+  - `callAiApiWithTools()` implementa loop: LLM call → parse `{"tool_call": {"tool_id", "params"}}` → `ToolRegistry::execute()` → append resultado → re-call LLM.
+  - Max 5 iteraciones para prevenir loops infinitos.
+  - `buildSystemPrompt()` appendea `ToolRegistry::generateToolsDocumentation()` (XML format) si hay tools disponibles.
+  - Los tools se registran con tag `jaraba_ai_agents.tool` en services.yml y se auto-descubren via compiler pass.
+  - 6 tools: SendEmail, CreateEntity, SearchKnowledge, QueryDatabase, UpdateEntity, SearchContent.
+  - UpdateEntity tiene `requiresApproval=true` (usa AgentApproval entity).
+- **Provider Fallback (PROVIDER-FALLBACK-001):**
+  - `ProviderFallbackService::callWithFallback($tier, $prompt, $config)` — intenta primary, luego fallback si falla.
+  - Circuit breaker: 3 fallos consecutivos en ventana de 5 min = OPEN (skip provider). Estado en `\Drupal::state()`.
+  - Cadenas por tier en `jaraba_ai_agents.provider_fallback.yml`: fast (Haiku→GPT-4o-mini), balanced (Sonnet→GPT-4o), premium (Opus→Sonnet).
+  - Inyectado opcionalmente en SmartBaseAgent (`@?`). Si no disponible, llamada directa sin fallback (backward compatible).
+- **Cache Semantica 2 Capas (SEMANTIC-CACHE-001):**
+  - Layer 1: hash exacto (MD5 de message+mode+context) via Drupal Cache API (Redis).
+  - Layer 2: `SemanticCacheService` genera embedding → vectorSearch en Qdrant coleccion `semantic_cache` → threshold 0.92.
+  - `CopilotCacheService::set()` escribe en AMBAS capas. `get()` intenta L1, si miss intenta L2.
+  - Respuesta incluye `cache_layer: 'exact'|'semantic'` para observabilidad.
+  - Degradacion graceful: `\Drupal::hasService('jaraba_copilot_v2.semantic_cache')` + try-catch.
+- **Jailbreak Detection (JAILBREAK-DETECT-001):**
+  - `AIGuardrailsService::checkJailbreak()` con patrones bilingues ES/EN.
+  - Patrones: "ignore previous", "you are now", "DAN mode", "pretend you are", "olvida tus instrucciones", "actua como si fueras".
+  - Accion: BLOCK — se rechaza el mensaje antes de llegar al LLM.
+  - Integrado en pipeline de `validate()` junto con `checkPII()` y `checkBlockedPatterns()`.
+- **Output PII Masking (OUTPUT-PII-MASK-001):**
+  - `AIGuardrailsService::maskOutputPII($text)` reutiliza patrones de `checkPII()` pero reemplaza con `[DATO PROTEGIDO]`.
+  - Llamado por SmartBaseAgent DESPUES de recibir respuesta LLM, ANTES de retornar al usuario.
+  - El LLM puede "inventar" datos que parezcan PII real — los guardrails DEBEN ser bidireccionales (input + output).
+- **ReAct Loop (REACT-LOOP-001):**
+  - `ReActLoopService::run($agent, $objective, $context, $maxSteps)` orquesta ciclos multi-paso.
+  - Ciclo: PLAN (descomponer objetivo) → EXECUTE (paso con tools) → OBSERVE (resultados) → REFLECT (ajustar plan) → FINISH.
+  - Cada paso logueado individualmente via `AIObservabilityService`.
+  - Depende de: tool use (FIX-029) y bridge (FIX-030).
+  - Usar para tareas autonomas con `execution_mode: 'react'` en AgentOrchestratorService.
+- **LLM Re-ranking Config-Driven (FIX-037):**
+  - `jaraba_rag.settings.yml` con `reranking.strategy: keyword|llm|hybrid`.
+  - `keyword`: overlap de palabras (existente). `llm`: `LlmReRankerService` con tier fast (Haiku). `hybrid`: combinacion ponderada.
+  - El servicio se inyecta opcionalmente en JarabaRagService. Fallback a keyword si falla.
+  - Patron: cuando hay multiples estrategias, hacerlas seleccionables via config.
+- **Recomendaciones Personalizadas via Centroid Embedding (FIX-047):**
+  - Generar centroid = promedio de embeddings de los ultimos 5 articulos leidos por el usuario.
+  - Buscar articulos no leidos similares en Qdrant (threshold 0.55 — mas bajo que cache porque es recomendacion).
+  - Fallback: recomendacion por categorias favoritas (top 3 por frecuencia de lectura).
+  - El centroid captura "tema general de interes" sin perfil explicito.
 - **Aislamiento de Competidores en IA (AI-COMPETITOR-001):**
   - Ningun prompt DEBE mencionar plataformas competidoras ni modelos de IA por nombre.
   - Si un dato de dominio (recommendations, quick_wins, actions) sugiere un competidor, reemplazar por la funcionalidad equivalente de Jaraba.
@@ -539,6 +590,9 @@
 44. **Resiliencia en presave hooks:** Los hooks presave que invoquen servicios opcionales (sentiment, reputation, pathauto) DEBEN usar `\Drupal::hasService()` + try-catch. El save de la entidad NUNCA debe fallar por un servicio opcional. Patron: check → try → catch(\Throwable) → log warning → continue. Aplicado en `jaraba_content_hub_content_article_presave()`.
 45. **Remediacion IA integral con plan estructurado:** Cuando se detectan multiples problemas en el stack IA (identidad, guardrails, routing, observabilidad, streaming), crear un plan de remediacion con FIX-IDs priorizados (P0/P1/P2) y ejecutarlos en fases. Cada FIX DEBE: (1) centralizar logica duplicada en clases/servicios reutilizables (ej. `AIIdentityRule::apply()`), (2) mover configuracion hardcodeada a YAML config (ej. model pricing), (3) conectar observabilidad en todos los puntos de ejecucion IA (input/output tokens, duration, success), (4) usar regex bilingues EN+ES para plataformas hispanohablantes, (5) documentar generaciones de agentes (@deprecated para Gen 0, @note para Gen 1), (6) validar con `php -l` + `yaml.safe_load()` antes de commit. Patron de PII: cada mercado geografico DEBE anadir sus patrones al guardrail (DNI/NIE/IBAN para Espana).
 46. **Meta-site nav requiere header partial + classic layout:** Cuando la navegacion de un meta-sitio no aparece, verificar 2 cosas: (1) El page template (`page--page-builder.html.twig`) DEBE incluir `_header.html.twig` cuando `meta_site` es truthy — el header inline hardcodeado solo muestra logo+acciones sin nav. (2) El SiteConfig `header_type` DEBE ser `classic` (no `minimal`) — el layout minimal solo muestra hamburguesa sin nav horizontal. La cadena completa es: `theme_preprocess_page()` → `resolveFromPageContent()` → override `navigation_items` → `_header.html.twig` → parse → `_header-classic.html.twig` renderiza `<nav>`. Debug: verificar `$variables['theme_settings']['navigation_items']` en preprocess y `header_type` en BD (`SELECT header_type FROM site_config`).
+48. **Conectar infraestructura IA existente antes de construir nueva:** Cuando el stack IA tiene piezas desconectadas (ToolRegistry con tools pero sin agentes que los usen, QualityEvaluator implementado pero sin pipeline que lo llame, AgentOrchestrator con estado pero sin ejecucion LLM), los mayores wins vienen de CONECTAR piezas existentes, no de construir desde cero. Patron: auditar servicios existentes con `grep -rn 'class.*Service' | grep -v Test` y verificar cuales tienen metodos publicos que nadie llama (dead code funcional). Inyectar opcionalmente (`@?`) en los consumidores, crear bridges donde los modulos tienen responsabilidades solapantes (estado vs ejecucion). Ejemplo: ToolRegistry (3 tools) → inyectar en SmartBaseAgent → `callAiApiWithTools()` loop iterativo. AgentOrchestrator (estado) → bridge → SmartBaseAgent (ejecucion).
+49. **Circuit breaker + fallback chain para providers IA:** Nunca depender de un unico provider LLM. Usar `ProviderFallbackService` con circuit breaker: 3 fallos en 5 minutos = skip provider (estado OPEN), cascada por tier (primary → fallback → emergency). Config en YAML (`provider_fallback.yml`) para cambiar providers sin code deploy. Estado en Drupal State API (`provider_circuit:{provider_id}`). Cooldown de 5 minutos antes de volver a probar (HALF_OPEN). Verificar con: revisar State API entries y logs de observabilidad por provider_id.
+50. **Auditoria post-implementacion obligatoria para cambios batch:** Despues de implementar multiples FIX items o cambios batch, ejecutar auditoria sistematica de 4 dimensiones: (1) **Registro de servicios** — verificar con `grep -rn 'class.*Service' modules/custom/` que todo servicio PHP tiene entrada en `services.yml` del modulo correspondiente. (2) **Contratos de llamada** — para cada servicio nuevo, buscar todos los callers con `grep -rn 'serviceName->methodName'` y verificar que el numero, orden y tipo de argumentos coincide exactamente con la firma del metodo. Un `hasService()` + `try-catch` NO protege contra errores de firma — el servicio se resuelve pero explota con `TypeError`. (3) **Schemas de config** — todo `config/install/*.yml` DEBE tener schema correspondiente en `config/schema/*.schema.yml`. Per CONFIG-SCHEMA-001, la ausencia causa `SchemaIncompleteException` en Kernel tests. (4) **Config completitud** — verificar que los servicios que leen `$config->get('section.key')` tienen esa seccion definida en el YAML de instalacion. Caso real: `JarabaRagService::reRankResults()` leia `reranking.strategy` pero el YAML no tenia seccion `reranking`, causando fallback silencioso a `'keyword'`.
 47. **Copilot sugerencias con URL action buttons:** Las sugerencias del copilot soportan formato dual: strings planos (se envian como mensaje) y objetos `{label, url}` (se renderizan como `<a>` links con estilo CTA). El backend `CopilotOrchestratorService::getContextualActionButtons()` genera CTAs contextuales por rol/modo. El JS normaliza ambos formatos: `typeof s === 'string' ? { label: s } : s`. Los links con URL llevan clase `--link` (fondo naranja, font-weight 600). Links externos detectados por `item.url.indexOf('http') === 0 && item.url.indexOf(window.location.hostname) === -1` llevan `target="_blank"`. Ambas implementaciones (v1 contextual-copilot.js, v2 copilot-chat-widget.js) DEBEN soportar el formato.
 
 ---
@@ -547,6 +601,8 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-26 | **33.0.0** | **Auditoria Post-Implementacion IA Workflow**: 1 patron nuevo: auditoria post-implementacion de 4 dimensiones (registro de servicios en services.yml, contratos de llamada con firma exacta, schemas de config completos, config completitud con secciones YAML). Regla de oro #50 (auditoria post-implementacion obligatoria para cambios batch — verificar registros, firmas, schemas, config). Hallazgos criticos: SemanticCacheService no registrado (Layer 2 deshabilitado), 2 call signature mismatches en CopilotCacheService (args faltantes y en orden incorrecto), seccion reranking faltante en RAG settings, 3 schemas faltantes. Regla SERVICE-CALL-CONTRACT-001. Aprendizaje #130. |
+| 2026-02-26 | **32.0.0** | **Elevacion IA Nivel 5/5 — 23 FIX Items Workflow**: 11 patrones nuevos: SmartBaseAgent Gen 2 constructor (10 args, 3 opcionales @?, conditional setters, migracion Gen 1→Gen 2), tool use loop (callAiApiWithTools max 5 iteraciones, ToolRegistry auto-discover via tag), provider fallback (circuit breaker 3/5min, cadenas por tier en YAML, Drupal State), cache semantica 2 capas (exact hash + Qdrant vectorSearch 0.92, degradacion graceful), jailbreak detection bilingue (checkJailbreak con patrones ES/EN, accion BLOCK), output PII masking (maskOutputPII reutiliza checkPII patterns, bidireccional), ReAct loop (PLAN→EXECUTE→OBSERVE→REFLECT→FINISH, per-step observability), LLM re-ranking config-driven (keyword\|llm\|hybrid en YAML), recomendaciones personalizadas via centroid embedding (promedio 5 ultimos leidos, Qdrant 0.55, fallback categorias), bridge autonomo→smart (AgentExecutionBridgeService con mapping YAML), scheduled agents (QueueWorker + hook_cron). Reglas de oro #48 (conectar infra existente antes de construir), #49 (circuit breaker + fallback chain para providers). Aprendizaje #129. |
 | 2026-02-26 | **31.0.0** | **Meta-Site Nav Fix + Copilot Link Buttons Workflow**: 2 patrones nuevos: Meta-site nav chain debugging (page template → header partial → header_type → sub-partial, verificar `meta_site` variable y `header_type` en BD), copilot suggestion URL format (dual string/`{label, url}`, `getContextualActionButtons()` por rol, JS normalization, `--link` CSS variant, external link detection). Reglas de oro #46 (meta-site nav requiere header partial + classic layout), #47 (copilot sugerencias con URL action buttons). Aprendizaje #128. |
 | 2026-02-26 | **30.0.0** | **AI Remediation Plan — 28 Fixes Workflow**: 10 patrones nuevos: AIIdentityRule centralizada (clase estatica con `apply()`), guardrails pipeline con PII espanol (DNI/NIE/IBAN/NIF/+34), model routing con config YAML + regex bilingue EN+ES, observabilidad conectada (log en todos los puntos de ejecucion IA), AIOpsService con metricas reales (/proc + BD + watchdog), streaming SSE semantico (parrafos, no chunks arbitrarios, sin usleep), canonical verticals (10 nombres con alias normalization), agent generations (Gen 0 @deprecated, Gen 1 @note, Gen 2 SmartBaseAgent), @? optional DI para cross-module services, feedback widget alineado JS↔PHP. Regla de oro #45 (remediacion IA integral con plan estructurado). Aprendizaje #127. |
 | 2026-02-26 | **29.0.0** | **Blog Clase Mundial — Content Hub Elevation Workflow**: 8 patrones nuevos: template_preprocess para custom entities (ENTITY-PREPROCESS-001), presave resilience con hasService()+try-catch (PRESAVE-RESILIENCE-001), paginacion server-side con sliding window y cache context url.query_args:page, N+1 query fix con GROUP BY, share buttons via URL schemes + Clipboard API (sin JS SDKs), reading progress bar con requestAnimationFrame + prefers-reduced-motion, prose column 720px, responsive images con ImageStyle srcset. Reglas de oro #43 (preprocess para custom entities), #44 (resiliencia en presave hooks). Aprendizaje #126. |
