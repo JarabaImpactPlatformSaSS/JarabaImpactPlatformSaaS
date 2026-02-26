@@ -1026,6 +1026,27 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       break;
 
     // =========================================================================
+    // CONTACT FORM NOTIFICATION (Sprint 3 Remediation)
+    // =========================================================================
+    case 'contact_form_notification':
+      $message['subject'] = t('Nuevo mensaje de contacto: @subject', [
+        '@subject' => $params['subject'] ?? 'Contacto general',
+      ]);
+
+      $message['body'][] = t('Se ha recibido un nuevo mensaje desde el formulario de contacto:');
+      $message['body'][] = '';
+      $message['body'][] = t('Nombre: @name', ['@name' => $params['sender_name'] ?? '']);
+      $message['body'][] = t('Email: @email', ['@email' => $params['sender_email'] ?? '']);
+      $message['body'][] = t('Asunto: @subject', ['@subject' => $params['subject'] ?? 'N/A']);
+      $message['body'][] = '';
+      $message['body'][] = t('Mensaje:');
+      $message['body'][] = $params['message'] ?? '';
+      $message['body'][] = '';
+      $message['body'][] = '---';
+      $message['body'][] = t('Jaraba Impact Platform - Formulario de Contacto');
+      break;
+
+    // =========================================================================
     // LEAD MAGNET EMAILS (F3 Doc 178)
     // =========================================================================
 

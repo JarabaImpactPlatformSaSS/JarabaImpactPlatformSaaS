@@ -1,0 +1,141 @@
+// @file scss/components/_cross-pollination.scss
+// Sección cross-pollination de la homepage — 6 verticales.
+//
+// DIRECTRICES:
+// - SSOT Design Tokens: var(--ej-*)
+// - Mobile-first: scroll horizontal → Desktop: grid 3×2
+// - Glassmorphism + gradient accent per vertical
+// - Dark mode
+
+.cross-pollination {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: var(--ej-bg-section-alt, #f8fafc);
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--ej-space-xl, 3rem);
+  }
+
+  &__eyebrow {
+    display: block;
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-naranja-impulso, #ff8c42);
+    margin-bottom: var(--ej-space-xs, 0.5rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-2xl, 1.75rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+    @media (min-width: 768px) { font-size: var(--ej-text-3xl, 2.25rem); }
+  }
+
+  &__subtitle {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-base, 1rem);
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  // ─── Grid ──────────────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-space-md, 1rem);
+
+    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  // ─── Card ──────────────────────────────────────────────────────────
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-space-sm, 0.75rem);
+    padding: var(--ej-space-lg, 2rem);
+    border-radius: var(--ej-radius-xl, 1.5rem);
+    text-decoration: none;
+
+    // Glassmorphism base
+    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.7));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    // Accent colors per vertical
+    &--empleabilidad { &:hover { border-color: #0ea5e9; } .cross-pollination__icon { color: #0ea5e9; } }
+    &--emprendimiento { &:hover { border-color: #f59e0b; } .cross-pollination__icon { color: #f59e0b; } }
+    &--agroconecta { &:hover { border-color: #10b981; } .cross-pollination__icon { color: #10b981; } }
+    &--comercioconecta { &:hover { border-color: #8b5cf6; } .cross-pollination__icon { color: #8b5cf6; } }
+    &--servicios { &:hover { border-color: #ec4899; } .cross-pollination__icon { color: #ec4899; } }
+    &--jarabalex { &:hover { border-color: #f97316; } .cross-pollination__icon { color: #f97316; } }
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ej-radius-md, 0.75rem);
+    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.5));
+  }
+
+  &__card-title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-lg, 1.25rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0;
+  }
+
+  &__card-desc {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-sm, 0.875rem);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+  }
+
+  &__card-cta {
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--ej-naranja-impulso, #ff8c42);
+    transition: color 0.15s ease;
+
+    .cross-pollination__card:hover & {
+      color: var(--ej-naranja-hover, #e07a35);
+    }
+  }
+}
+
+// ─── Dark mode ─────────────────────────────────────────────────────────
+[data-theme='dark'] .cross-pollination,
+.dark-mode .cross-pollination {
+  background: var(--ej-bg-section-alt-dark, #0f172a);
+
+  .cross-pollination__title,
+  .cross-pollination__card-title { color: var(--ej-color-heading-dark, #f1f5f9); }
+
+  .cross-pollination__card {
+    background: var(--ej-bg-glass-dark, rgba(26, 26, 46, 0.6));
+    border-color: var(--ej-border-glass-dark, rgba(255, 255, 255, 0.08));
+  }
+}

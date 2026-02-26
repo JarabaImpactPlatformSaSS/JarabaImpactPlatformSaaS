@@ -54,4 +54,27 @@ interface ContentArticleInterface extends ContentEntityInterface, EntityChangedI
      */
     public function isAiGenerated(): bool;
 
+    /**
+     * Gets the layout mode.
+     *
+     * @return string
+     *   'legacy' for classic textarea, 'canvas' for visual editor.
+     */
+    public function getLayoutMode(): string;
+
+    /**
+     * Checks if the article uses the Canvas Editor.
+     */
+    public function isCanvasMode(): bool;
+
+    /**
+     * Gets the GrapesJS Canvas JSON data.
+     */
+    public function getCanvasData(): string;
+
+    /**
+     * Gets the rendered HTML from the Canvas.
+     */
+    public function getRenderedHtml(): string;
+
 }

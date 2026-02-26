@@ -190,6 +190,26 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
                 '@tenant' => $tenantId,
             ]);
 
+            // ─── Auto-enroll en secuencia de bienvenida del meta-sitio ──
+            // Sprint 5: si source es kit_impulso_digital, inscribir en
+            // SEQ_META_001 (Bienvenida + Kit Impulso Digital) automáticamente.
+            if ($source === 'kit_impulso_digital' && !empty($result['id'])) {
+              try {
+                if (\Drupal::hasService('ecosistema_jaraba_core.metasite_email_sequence')) {
+                  /** @var \Drupal\ecosistema_jaraba_core\Service\MetaSiteEmailSequenceService $metaSiteSequence */
+                  $metaSiteSequence = \Drupal::service('ecosistema_jaraba_core.metasite_email_sequence');
+                  $metaSiteSequence->enrollInWelcome((int) $result['id']);
+                }
+              }
+              catch (\Exception $e) {
+                // No debe romper la suscripción principal.
+                $this->logger->warning('MetaSite enroll failed for @email: @error', [
+                  '@email' => $email,
+                  '@error' => $e->getMessage(),
+                ]);
+              }
+            }
+
             return new JsonResponse([
                 'success' => TRUE,
                 'data' => $result,

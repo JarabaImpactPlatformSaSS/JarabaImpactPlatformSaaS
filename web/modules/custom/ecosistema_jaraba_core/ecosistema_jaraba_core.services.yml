@@ -1402,3 +1402,19 @@ services:
       - '@entity_type.manager'
     tags:
       - { name: drush.command }
+
+  # ===========================================
+  # METASITE EMAIL SEQUENCES (Sprint 5 Remediation)
+  # ===========================================
+
+  # Servicio de email sequences automatizadas para el meta-sitio público.
+  # Gestiona 5 secuencias del funnel de nurturing post-suscripción:
+  # SEQ_META_001 (Bienvenida + Kit Impulso), SEQ_META_002 (Caso Éxito),
+  # SEQ_META_003 (Guía Verticales / Cross-Pollination),
+  # SEQ_META_004 (Demo + Pricing), SEQ_META_005 (Re-engagement 15d).
+  # Resuelve jaraba_email.sequence_manager en runtime (sin hard dependency).
+  ecosistema_jaraba_core.metasite_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\MetaSiteEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'

@@ -3221,3 +3221,428 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
 }
+
+// ===============================================
+// === ARTICLE CANVAS EDITOR — GrapesJS Integration
+// ===============================================
+
+// Editor wrapper — ocupa viewport completo
+.article-canvas-editor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--ej-bg-body, $ej-bg-body);
+}
+
+// SaaS Header — branding compacto (40px)
+.article-canvas-editor__saas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    padding: 0 $ej-spacing-md;
+    background: var(--ej-bg-dark, $ej-bg-dark);
+    color: #fff;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.article-canvas-editor__saas-branding {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+.article-canvas-editor__saas-logo {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+}
+
+.article-canvas-editor__saas-logo-link {
+    display: flex;
+    align-items: center;
+}
+
+.article-canvas-editor__saas-name {
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.article-canvas-editor__saas-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+// Toolbar Superior
+.article-canvas-editor__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 $ej-spacing-md;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.article-canvas-editor__toolbar-left,
+.article-canvas-editor__toolbar-center,
+.article-canvas-editor__toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+}
+
+.article-canvas-editor__toolbar-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.article-canvas-editor__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--ej-text-muted, $ej-text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    padding: 6px 8px;
+    border-radius: $ej-btn-radius;
+    transition: background-color 0.15s;
+
+    &:hover {
+        background: var(--ej-bg-muted, #f1f5f9);
+    }
+}
+
+.article-canvas-editor__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ej-color-headings, $ej-color-headings);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+    margin: 0;
+}
+
+// Status badge
+.article-canvas-editor__status-badge {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--draft {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    &--review {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    &--published {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    &--scheduled {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    &--archived {
+        background: #f1f5f9;
+        color: #475569;
+    }
+}
+
+// Viewport dropdown (reutiliza pattern del Page Builder)
+.article-canvas-editor__viewport-dropdown {
+    position: relative;
+}
+
+.article-canvas-editor__viewport-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    font-size: 0.8rem;
+    color: var(--ej-text-primary, $ej-color-body);
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    &:hover {
+        background: var(--ej-bg-muted, #f1f5f9);
+    }
+}
+
+.article-canvas-editor__viewport-panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    padding: $ej-spacing-sm;
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-border-radius;
+    box-shadow: $ej-shadow-lg;
+    z-index: 200;
+    min-width: 220px;
+
+    &[aria-hidden="true"] {
+        display: none;
+    }
+}
+
+.article-canvas-editor__viewport-panel-group {
+    margin-bottom: $ej-spacing-sm;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.article-canvas-editor__viewport-panel-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ej-text-muted, $ej-text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.article-canvas-editor__viewport-panel-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.article-canvas-editor__viewport-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: transparent;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--ej-text-primary, $ej-color-body);
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+        background: var(--ej-bg-muted, #f1f5f9);
+    }
+
+    &.is-active {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+        border-color: var(--ej-color-primary, $ej-color-primary);
+    }
+}
+
+// History controls (undo/redo)
+.article-canvas-editor__history-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.article-canvas-editor__history-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-btn-radius;
+    color: var(--ej-text-primary, $ej-color-body);
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover:not(:disabled) {
+        background: var(--ej-bg-muted, #f1f5f9);
+    }
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+}
+
+// Action buttons
+.article-canvas-editor__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: $ej-btn-radius;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+
+    &--secondary {
+        background: transparent;
+        border: 1px solid var(--ej-border-color, $ej-border-color);
+        color: var(--ej-text-primary, $ej-color-body);
+
+        &:hover {
+            background: var(--ej-bg-muted, #f1f5f9);
+        }
+    }
+
+    &--primary {
+        background: var(--ej-color-primary, $ej-color-primary);
+        color: #fff;
+
+        &:hover {
+            opacity: $ej-hover-opacity;
+        }
+    }
+
+    &--success {
+        background: var(--ej-color-success, $ej-color-success);
+        color: #fff;
+
+        &:hover {
+            opacity: $ej-hover-opacity;
+        }
+    }
+}
+
+.article-canvas-editor__toolbar-separator {
+    width: 1px;
+    height: 24px;
+    background: var(--ej-border-color, $ej-border-color);
+}
+
+// Layout principal
+.article-canvas-editor__layout {
+    flex: 1;
+    overflow: hidden;
+}
+
+.article-canvas-editor__canvas {
+    height: 100%;
+}
+
+// GrapesJS layout variant for articles (sin design tab)
+.jaraba-grapesjs-layout--article {
+    display: grid;
+    grid-template-columns: 240px 1fr 280px;
+    height: 100%;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 200px 1fr 240px;
+    }
+}
+
+// Meta panel (slide-panel)
+.article-canvas-editor__meta-panel {
+    .slide-panel__body {
+        padding: $ej-spacing-md;
+    }
+}
+
+.article-canvas-editor__meta-group {
+    margin-bottom: $ej-spacing-md;
+    padding-bottom: $ej-spacing-md;
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.article-canvas-editor__meta-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ej-text-muted, $ej-text-muted);
+    letter-spacing: 0.03em;
+    margin-bottom: 4px;
+}
+
+.article-canvas-editor__meta-value {
+    font-size: 0.875rem;
+    color: var(--ej-text-primary, $ej-color-body);
+
+    &--excerpt {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--ej-text-muted, $ej-text-muted);
+    }
+}
+
+.article-canvas-editor__meta-actions {
+    margin-top: $ej-spacing-lg;
+}
+
+// Save status indicator
+.article-canvas-editor__save-status {
+    position: fixed;
+    bottom: $ej-spacing-lg;
+    right: $ej-spacing-lg;
+    display: inline-flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    background: var(--ej-bg-dark, $ej-bg-dark);
+    color: #fff;
+    border-radius: $ej-border-radius;
+    box-shadow: $ej-shadow-lg;
+    font-size: 0.8125rem;
+    z-index: 1000;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+// Canvas content view (public articles with canvas)
+.content-article__body--canvas {
+    max-width: none;
+
+    .canvas-content {
+        // Hereda estilos del canvas personalizado (CSS inyectado en <head>).
+        // No aplicamos prose max-width para respetar el diseño del canvas.
+    }
+}
+
+// Body class override: ocultar toolbar admin en editor canvas
+body.page-article-canvas-editor {
+    .toolbar-bar,
+    .toolbar-tray {
+        display: none !important;
+    }
+
+    // Compensar la ausencia del toolbar
+    .article-canvas-editor {
+        padding-top: 0;
+    }
+}

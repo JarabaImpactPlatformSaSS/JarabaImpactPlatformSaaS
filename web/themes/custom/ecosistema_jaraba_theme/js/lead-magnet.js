@@ -1,11 +1,17 @@
 /**
  * @file
- * lead-magnet.js — Drupal behavior para el formulario de Lead Magnet.
+ * lead-magnet.js — Drupal behavior para Lead Magnet con slide-panel.
  *
  * PROPÓSITO:
- * Captura email + avatar_type desde el formulario de Lead Magnet y envía
- * un POST a /api/v1/public/subscribe. Maneja estados de loading, error,
- * y éxito con transiciones suaves.
+ * Captura nombre + email + consentimiento RGPD desde formularios de Lead Magnet
+ * dentro de slide-panels. Envía POST a /api/v1/public/subscribe.
+ * Maneja estados: form → loading → success/error.
+ *
+ * DESIGN DECISIONS (Auditoría Meta-Sitio Feb 2026):
+ * - Antes: captura solo email + avatar_type
+ * - Ahora: captura nombre + email + vertical desde data-attributes
+ * - Soporte para múltiples formularios en la misma página
+ * - Post-submit: muestra estado de éxito con enlace de descarga
  *
  * DIRECTRICES CUMPLIDAS:
  * - Drupal.behaviors pattern (no scripts sueltos)
@@ -14,7 +20,7 @@
  * - CSRF token desde /session/token (core)
  * - No dependencias externas (vanilla JS fetch)
  *
- * @see templates/partials/_lead-magnet.html.twig
+ * @see templates/partials/_landing-lead-magnet.html.twig
  * @see \Drupal\jaraba_email\Controller\PublicSubscribeController
  */
 (function (Drupal, once) {
@@ -47,114 +53,119 @@
    * Behavior principal del formulario de Lead Magnet.
    *
    * Se adjunta a cualquier elemento con [data-lead-magnet-form].
-   * Maneja validación client-side, submit asíncrono, y transiciones
-   * entre estados (form → loading → success/error).
+   * Compatible con la estructura slide-panel + formulario inline.
    */
   Drupal.behaviors.jarabaLeadMagnet = {
     attach(context) {
       once('lead-magnet', '[data-lead-magnet-form]', context).forEach(
         function (form) {
-          var btnSubmit = form.querySelector('[data-lead-magnet-submit]');
-          var inputEmail = form.querySelector('[data-lead-magnet-email]');
-          var selectAvatar = form.querySelector('[data-lead-magnet-avatar]');
-          var checkGdpr = form.querySelector('[data-lead-magnet-gdpr]');
-          var successEl = form
-            .closest('.lead-magnet')
-            .querySelector('[data-lead-magnet-success]');
-          var tenantId = parseInt(form.dataset.tenantId, 10) || 5;
-          var originalBtnText = btnSubmit ? btnSubmit.textContent : '';
+          const inputName = form.querySelector('input[name="name"]');
+          const inputEmail = form.querySelector('input[name="email"]');
+          const checkGdpr = form.querySelector('input[name="gdpr_consent"]');
+          const btnSubmit = form.querySelector('button[type="submit"]');
+          const successEl = form.querySelector('.lead-magnet-form__success');
+          const errorEl = form.querySelector('.lead-magnet-form__error');
+          const vertical = form.dataset.vertical || '';
+          const resourceUrl = form.dataset.resourceUrl || '';
+          const originalBtnText = btnSubmit ? btnSubmit.innerHTML : '';
 
           /**
-           * Actualiza el estado visual del botón.
+           * Actualiza el estado visual del botón de submit.
            *
            * @param {string} state - 'loading' | 'error' | 'reset'
-           * @param {string} [message] - Mensaje a mostrar.
+           * @param {string} [message] - Mensaje opcional.
            */
           function setBtnState(state, message) {
             if (!btnSubmit) return;
             switch (state) {
               case 'loading':
                 btnSubmit.disabled = true;
-                btnSubmit.classList.add('lead-magnet__btn--loading');
+                btnSubmit.classList.add('lead-magnet-form__submit--loading');
                 btnSubmit.textContent = message || Drupal.t('Enviando…');
                 break;
               case 'error':
                 btnSubmit.disabled = false;
-                btnSubmit.classList.remove('lead-magnet__btn--loading');
-                btnSubmit.classList.add('lead-magnet__btn--error');
-                btnSubmit.textContent =
-                  message || Drupal.t('Error. Inténtalo de nuevo.');
-                // Reset a original tras 3 segundos.
+                btnSubmit.classList.remove('lead-magnet-form__submit--loading');
+                btnSubmit.innerHTML = originalBtnText;
+                if (errorEl) {
+                  errorEl.hidden = false;
+                  errorEl.querySelector('p').textContent =
+                    message || Drupal.t('Error al enviar. Inténtalo de nuevo.');
+                }
                 setTimeout(function () {
-                  btnSubmit.classList.remove('lead-magnet__btn--error');
-                  btnSubmit.textContent = originalBtnText;
-                }, 3000);
+                  if (errorEl) errorEl.hidden = true;
+                }, 5000);
                 break;
               case 'reset':
                 btnSubmit.disabled = false;
-                btnSubmit.classList.remove(
-                  'lead-magnet__btn--loading',
-                  'lead-magnet__btn--error'
-                );
-                btnSubmit.textContent = originalBtnText;
+                btnSubmit.classList.remove('lead-magnet-form__submit--loading');
+                btnSubmit.innerHTML = originalBtnText;
                 break;
             }
           }
 
           /**
-           * Muestra la sección de éxito con animación.
+           * Muestra la sección de éxito y oculta el formulario.
            */
           function showSuccess() {
-            form.style.opacity = '0';
-            form.style.transform = 'translateY(-10px)';
+            // Hide form fields.
+            const fields = form.querySelectorAll(
+              '.lead-magnet-form__field, .lead-magnet-form__intro, .lead-magnet-form__submit'
+            );
+            fields.forEach(function (el) {
+              el.style.opacity = '0';
+              el.style.transition = 'opacity 0.3s ease';
+              setTimeout(function () { el.hidden = true; }, 300);
+            });
+
+            // Show success state.
             setTimeout(function () {
-              form.hidden = true;
               if (successEl) {
                 successEl.hidden = false;
                 successEl.style.opacity = '0';
                 successEl.style.transform = 'translateY(10px)';
-                // Forzar reflow para que la transición se aplique.
                 void successEl.offsetHeight;
                 successEl.style.transition =
                   'opacity 0.4s ease, transform 0.4s ease';
                 successEl.style.opacity = '1';
                 successEl.style.transform = 'translateY(0)';
               }
-            }, 300);
+            }, 350);
           }
 
           // ─── Event Listener ─────────────────────────────────────────
           form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            var email = inputEmail ? inputEmail.value.trim() : '';
-            var avatar = selectAvatar ? selectAvatar.value : '';
-            var gdprChecked = checkGdpr ? checkGdpr.checked : false;
+            const email = inputEmail ? inputEmail.value.trim() : '';
+            const name = inputName ? inputName.value.trim() : '';
+            const gdprChecked = checkGdpr ? checkGdpr.checked : false;
 
             // Validación client-side.
-            if (!email || !avatar || !gdprChecked) {
-              // Resaltar campos vacíos.
+            if (!email || !gdprChecked) {
               if (!email && inputEmail) {
-                inputEmail.classList.add('lead-magnet__input--error');
+                inputEmail.classList.add('form-email--error');
+                inputEmail.focus();
               }
-              if (!avatar && selectAvatar) {
-                selectAvatar.classList.add('lead-magnet__select--error');
+              if (!gdprChecked && checkGdpr) {
+                checkGdpr.parentElement.classList.add('lead-magnet-form__gdpr-label--error');
               }
               return;
             }
 
-            // Limpiar posibles clases de error.
-            if (inputEmail)
-              inputEmail.classList.remove('lead-magnet__input--error');
-            if (selectAvatar)
-              selectAvatar.classList.remove('lead-magnet__select--error');
+            // Limpiar errores.
+            if (inputEmail) inputEmail.classList.remove('form-email--error');
+            if (checkGdpr) {
+              checkGdpr.parentElement.classList.remove('lead-magnet-form__gdpr-label--error');
+            }
+            if (errorEl) errorEl.hidden = true;
 
             setBtnState('loading');
 
             try {
-              var csrfToken = await getCsrfToken();
+              const csrfToken = await getCsrfToken();
 
-              var response = await fetch('/api/v1/public/subscribe', {
+              const response = await fetch('/api/v1/public/subscribe', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -162,20 +173,21 @@
                 },
                 body: JSON.stringify({
                   email: email,
-                  source: 'kit_impulso_digital',
-                  tags: [avatar],
-                  tenant_id: tenantId,
+                  name: name,
+                  source: 'lead_magnet_' + vertical,
+                  tags: [vertical, 'lead_magnet'],
+                  resource_url: resourceUrl,
                 }),
               });
 
               if (response.ok) {
                 showSuccess();
               } else {
-                var errorData = {};
+                let errorData = {};
                 try {
                   errorData = await response.json();
                 } catch (_) {
-                  // No es JSON, usar mensaje genérico.
+                  // Not JSON, use generic message.
                 }
                 setBtnState(
                   'error',
@@ -183,19 +195,17 @@
                 );
               }
             } catch (networkError) {
-              setBtnState('error', Drupal.t('Error de conexión. Verifica tu internet.'));
+              setBtnState(
+                'error',
+                Drupal.t('Error de conexión. Verifica tu internet.')
+              );
             }
           });
 
           // ─── Limpiar error visual al interactuar ─────────────────────
           if (inputEmail) {
             inputEmail.addEventListener('input', function () {
-              inputEmail.classList.remove('lead-magnet__input--error');
-            });
-          }
-          if (selectAvatar) {
-            selectAvatar.addEventListener('change', function () {
-              selectAvatar.classList.remove('lead-magnet__select--error');
+              inputEmail.classList.remove('form-email--error');
             });
           }
         }

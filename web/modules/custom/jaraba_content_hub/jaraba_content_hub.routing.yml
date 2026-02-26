@@ -388,6 +388,48 @@ entity.content_category.settings:
   requirements:
     _permission: 'administer content categories'
 
+# === Canvas Editor Routes ===
+
+jaraba_content_hub.article.canvas_editor:
+  path: '/content-hub/articles/{content_article}/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleCanvasEditorController::editor'
+    _title_callback: '\Drupal\jaraba_content_hub\Controller\ArticleCanvasEditorController::editorTitle'
+  requirements:
+    _permission: 'use article canvas editor'
+  options:
+    _admin_route: FALSE
+    parameters:
+      content_article:
+        type: entity:content_article
+
+# === Canvas Editor API Routes ===
+
+jaraba_content_hub.api.article.canvas.get:
+  path: '/api/v1/articles/{content_article}/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleCanvasApiController::getCanvas'
+  methods: [GET]
+  requirements:
+    _permission: 'use article canvas editor'
+  options:
+    parameters:
+      content_article:
+        type: entity:content_article
+
+jaraba_content_hub.api.article.canvas.save:
+  path: '/api/v1/articles/{content_article}/canvas'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\ArticleCanvasApiController::saveCanvas'
+  methods: [PATCH]
+  requirements:
+    _permission: 'use article canvas editor'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      content_article:
+        type: entity:content_article
+
 # === Newsletter Subscribe API ===
 
 jaraba_content_hub.api.newsletter.subscribe:

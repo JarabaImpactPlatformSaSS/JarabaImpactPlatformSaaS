@@ -19,8 +19,12 @@
 #}
 
 {% set price = pricing|default({}) %}
+{# Dynamic data from MetaSitePricingService merges with controller data #}
+{% set from_price = price.from_price|default(price.from_price_display|default('0')) %}
+{% set from_label = price.from_label|default('Empieza gratis'|t) %}
+{% set features = price.features_highlights|default(price.features_preview|default([])) %}
 
-{% if price.from_price is defined %}
+{% if from_price is defined %}
 <section class="landing-pricing" aria-labelledby="pricing-title">
   <div class="landing-pricing__container">
     <h2 id="pricing-title" class="landing-pricing__title">

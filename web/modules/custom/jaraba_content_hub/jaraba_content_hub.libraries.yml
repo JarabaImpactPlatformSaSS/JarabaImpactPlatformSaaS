@@ -12,3 +12,13 @@ reading-progress:
     js/reading-progress.js: {}
   dependencies:
     - core/drupal
+
+article-canvas-editor:
+  version: 1.0
+  js:
+    js/article-canvas-editor.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_page_builder/grapesjs-canvas

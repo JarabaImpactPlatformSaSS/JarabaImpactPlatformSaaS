@@ -96,10 +96,20 @@
     {% endif %}
   </header>
 
-  {# Article body — prose column 720px #}
-  <div class="content-article__body" data-reading-content>
-    {{ article.body|raw }}
-  </div>
+  {# Article body — bifurcación canvas/legacy #}
+  {% if article.layout_mode|default('legacy') == 'canvas' and article.rendered_html %}
+    {# Canvas mode: HTML renderizado desde GrapesJS #}
+    <div class="content-article__body content-article__body--canvas" data-reading-content>
+      <div class="canvas-content">
+        {{ article.rendered_html|raw }}
+      </div>
+    </div>
+  {% else %}
+    {# Legacy mode: textarea clásico — prose column 720px #}
+    <div class="content-article__body" data-reading-content>
+      {{ article.body|raw }}
+    </div>
+  {% endif %}
 
   {# Author bio block #}
   {% if article.author_name %}

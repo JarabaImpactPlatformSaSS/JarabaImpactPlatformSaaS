@@ -259,7 +259,7 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
   $form['header_options']['navigation']['navigation_items'] = [
     '#type' => 'textarea',
     '#title' => t('Enlaces de Navegación'),
-    '#default_value' => $config->get('navigation_items') ?: "Empleo|/empleo\nTalento|/talento\nEmprender|/emprender\nComercio|/comercio\nInstituciones|/instituciones",
+    '#default_value' => $config->get('navigation_items') ?: "Empleabilidad|/empleabilidad\nTalento|/talento\nEmprendimiento|/emprendimiento\nComercioConecta|/comercioconecta\nInstituciones|/instituciones",
     '#rows' => 6,
     '#description' => t('Formato: <code>Texto|URL</code>, uno por línea. Máximo 7 enlaces.'),
   ];
@@ -988,6 +988,97 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#rows' => 6,
     '#description' => t('Contenido libre adicional para la página de contacto.'),
   ];
+
+  // =========================================================================
+  // TAB 15: META-SITIO (Homepage + Métricas)
+  // =========================================================================
+  $form['metasite'] = [
+    '#type' => 'details',
+    '#title' => _ecosistema_jaraba_theme_tab_title('home', t('Meta-Sitio'), '#FF8C42'),
+    '#group' => 'jaraba_tabs',
+    '#weight' => -15,
+  ];
+
+  // --- Hero Homepage ---
+  $form['metasite']['hero_content'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Hero del Homepage'),
+    '#description' => t('Textos del hero principal. Dejar vacío para usar los valores por defecto.'),
+  ];
+  $form['metasite']['hero_content']['hero_eyebrow'] = [
+    '#type' => 'textfield',
+    '#title' => t('Eyebrow'),
+    '#default_value' => $config->get('hero_eyebrow') ?: '',
+    '#placeholder' => t('La plataforma que transforma profesionales en emprendedores de impacto'),
+    '#description' => t('Texto encima del headline principal.'),
+  ];
+  $form['metasite']['hero_content']['hero_headline'] = [
+    '#type' => 'textfield',
+    '#title' => t('Headline (H1)'),
+    '#default_value' => $config->get('hero_headline') ?: '',
+    '#placeholder' => t('Empleo, emprendimiento y digitalización — impulsados por IA'),
+    '#maxlength' => 120,
+  ];
+  $form['metasite']['hero_content']['hero_subtitle'] = [
+    '#type' => 'textarea',
+    '#title' => t('Subtítulo'),
+    '#default_value' => $config->get('hero_subtitle') ?: '',
+    '#rows' => 2,
+    '#placeholder' => t('Empleabilidad · Emprendimiento · AgroConecta · ComercioConecta...'),
+  ];
+  $form['metasite']['hero_content']['hero_cta_primary_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('CTA Primario Texto'),
+    '#default_value' => $config->get('hero_cta_primary_text') ?: '',
+    '#placeholder' => t('Empezar gratis'),
+  ];
+  $form['metasite']['hero_content']['hero_cta_secondary_text'] = [
+    '#type' => 'textfield',
+    '#title' => t('CTA Secundario Texto'),
+    '#default_value' => $config->get('hero_cta_secondary_text') ?: '',
+    '#placeholder' => t('Conoce el método'),
+  ];
+  $form['metasite']['hero_content']['hero_cta_secondary_url'] = [
+    '#type' => 'textfield',
+    '#title' => t('CTA Secundario URL'),
+    '#default_value' => $config->get('hero_cta_secondary_url') ?: '/metodo',
+    '#description' => t('Ruta interna del botón secundario del hero.'),
+  ];
+
+  // --- Métricas de Social Proof ---
+  $form['metasite']['metrics'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Métricas de Impacto (Social Proof)'),
+    '#description' => t('Métricas que se muestran en la sección de estadísticas. Dejar vacío para usar los datos verificables por defecto.'),
+  ];
+  for ($i = 1; $i <= 4; $i++) {
+    $form['metasite']['metrics']["metric_{$i}"] = [
+      '#type' => 'fieldset',
+      '#title' => t('Métrica @num', ['@num' => $i]),
+      '#attributes' => ['class' => ['container-inline']],
+    ];
+    $form['metasite']['metrics']["metric_{$i}"]["stat_value_{$i}"] = [
+      '#type' => 'textfield',
+      '#title' => t('Valor'),
+      '#default_value' => $config->get("stat_value_{$i}") ?: '',
+      '#size' => 10,
+      '#placeholder' => t('7'),
+    ];
+    $form['metasite']['metrics']["metric_{$i}"]["stat_suffix_{$i}"] = [
+      '#type' => 'textfield',
+      '#title' => t('Sufijo'),
+      '#default_value' => $config->get("stat_suffix_{$i}") ?: '',
+      '#size' => 5,
+      '#placeholder' => '+',
+    ];
+    $form['metasite']['metrics']["metric_{$i}"]["stat_label_{$i}"] = [
+      '#type' => 'textfield',
+      '#title' => t('Etiqueta'),
+      '#default_value' => $config->get("stat_label_{$i}") ?: '',
+      '#size' => 30,
+      '#placeholder' => t('Verticales activas'),
+    ];
+  }
 }
 
 /**

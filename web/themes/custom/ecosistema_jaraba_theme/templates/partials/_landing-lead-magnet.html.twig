@@ -1,16 +1,27 @@
 {#
 /**
  * @file _landing-lead-magnet.html.twig
- * Parcial reutilizable: Lead Magnet CTA banner (enlaza con F3).
+ * Parcial reutilizable: Lead Magnet con captura de email vía slide-panel.
  *
  * VARIABLES:
  * - lead_magnet.title: Titulo del lead magnet
  * - lead_magnet.description: Breve descripcion
- * - lead_magnet.url: URL del lead magnet (F3)
+ * - lead_magnet.url: URL del recurso (se entrega post-captura)
  * - lead_magnet.cta_text: Texto del boton
  * - lead_magnet.icon: { category, name }
  * - color: Color del vertical
  * - vertical_key: ID del vertical
+ *
+ * DESIGN DECISIONS (Auditoría Meta-Sitio Feb 2026):
+ * - Antes: link directo al recurso (sin captura de email)
+ * - Ahora: slide-panel con formulario Nombre + Email + RGPD
+ * - Post-submit: entrega recurso + creación jaraba_lead entity
+ * - Sigue directriz /slide-panel-modales (data-slide-panel)
+ *
+ * DIRECTRICES:
+ * - CSRF-API-001: Token CSRF en formulario
+ * - ICON-CONVENTION-001: jaraba_icon() con variant duotone
+ * - i18n: {% trans %} en todos los textos
  *
  * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
  */
@@ -18,7 +29,7 @@
 
 {% set magnet = lead_magnet|default({}) %}
 
-{% if magnet.url is defined %}
+{% if magnet.url is defined or magnet.title is defined %}
 <section class="landing-lead-magnet landing-lead-magnet--{{ vertical_key|default('default') }}" aria-labelledby="lead-magnet-title">
   <div class="landing-lead-magnet__container">
     <div class="landing-lead-magnet__content">
@@ -41,13 +52,85 @@
         {% endif %}
       </div>
 
-      <a href="{{ magnet.url }}"
-         class="btn btn--primary btn--lg landing-lead-magnet__cta"
-         data-track-cta="lead_magnet_{{ vertical_key|default('') }}"
-         data-track-position="landing_lead_magnet">
+      {# Slide-panel con formulario de captura de email #}
+      <button type="button"
+              class="btn btn--primary btn--lg landing-lead-magnet__cta"
+              data-slide-panel="medium"
+              data-slide-panel-title="{{ magnet.title|default('Recurso gratuito'|t) }}"
+              data-track-cta="lead_magnet_{{ vertical_key|default('') }}"
+              data-track-position="landing_lead_magnet"
+              aria-haspopup="dialog">
         {{ magnet.cta_text|default('Acceder gratis'|t) }}
-      </a>
+      </button>
     </div>
   </div>
+
+  {# ── Slide-panel content: formulario de captura ── #}
+  <template class="slide-panel-content" data-slide-panel-for="lead_magnet_{{ vertical_key|default('default') }}">
+    <form class="lead-magnet-form" data-lead-magnet-form
+          data-vertical="{{ vertical_key|default('') }}"
+          data-resource-url="{{ magnet.url|default('') }}">
+
+      <p class="lead-magnet-form__intro">
+        {% trans %}Déjanos tu email y te enviaremos el recurso directamente a tu bandeja de entrada.{% endtrans %}
+      </p>
+
+      <div class="lead-magnet-form__field">
+        <label for="lead-name-{{ vertical_key|default('default') }}">
+          {% trans %}Nombre{% endtrans %}
+        </label>
+        <input type="text"
+               id="lead-name-{{ vertical_key|default('default') }}"
+               name="name"
+               required
+               placeholder="{% trans %}Tu nombre{% endtrans %}"
+               class="form-text" />
+      </div>
+
+      <div class="lead-magnet-form__field">
+        <label for="lead-email-{{ vertical_key|default('default') }}">
+          {% trans %}Email{% endtrans %} *
+        </label>
+        <input type="email"
+               id="lead-email-{{ vertical_key|default('default') }}"
+               name="email"
+               required
+               placeholder="{% trans %}tu@email.com{% endtrans %}"
+               class="form-email" />
+      </div>
+
+      <div class="lead-magnet-form__field lead-magnet-form__field--checkbox">
+        <label class="lead-magnet-form__gdpr-label">
+          <input type="checkbox" name="gdpr_consent" required />
+          <span>
+            {% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a> y el tratamiento de mis datos.{% endtrans %}
+          </span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--lg lead-magnet-form__submit">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2 2L14 8L2 14V9L10 8L2 7V2Z" fill="currentColor"/>
+        </svg>
+        {% trans %}Enviar y acceder{% endtrans %}
+      </button>
+
+      <div class="lead-magnet-form__success" hidden>
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <circle cx="24" cy="24" r="22" stroke="var(--ej-color-verde-innovacion, #2ECC71)" stroke-width="2" fill="none"/>
+          <path d="M14 24L21 31L34 18" stroke="var(--ej-color-verde-innovacion, #2ECC71)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <h3>{% trans %}¡Listo! Revisa tu email{% endtrans %}</h3>
+        <p>{% trans %}Te hemos enviado el recurso. Si no lo ves, revisa la carpeta de spam.{% endtrans %}</p>
+        <a href="{{ magnet.url|default('#') }}" class="btn btn--secondary" target="_blank" rel="noopener">
+          {% trans %}Descargar ahora{% endtrans %}
+        </a>
+      </div>
+
+      <div class="lead-magnet-form__error" hidden>
+        <p>{% trans %}Ha ocurrido un error. Inténtalo de nuevo.{% endtrans %}</p>
+      </div>
+    </form>
+  </template>
 </section>
 {% endif %}

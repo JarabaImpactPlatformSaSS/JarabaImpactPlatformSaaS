@@ -183,6 +183,17 @@ function jaraba_content_hub_theme(): array {
         'back_url' => NULL,
       ],
     ],
+    // === Canvas Editor Template ===
+    'article_canvas_editor' => [
+      'template' => 'article-canvas-editor',
+      'variables' => [
+        'article' => NULL,
+        'preview_url' => NULL,
+        'tenant_logo' => NULL,
+        'tenant_name' => NULL,
+        'article_meta' => [],
+      ],
+    ],
   ];
 }
 
@@ -191,9 +202,19 @@ function jaraba_content_hub_theme(): array {
  */
 function jaraba_content_hub_content_article_presave(EntityInterface $entity): void {
   // 1. Cálculo de tiempo de lectura.
-  if ($entity->hasField('body') && !$entity->get('body')->isEmpty()) {
-    $text = strip_tags($entity->get('body')->value);
-    $word_count = str_word_count($text);
+  // Canvas mode: usar rendered_html; Legacy mode: usar body.
+  $textForAnalysis = '';
+  $isCanvas = $entity->hasField('layout_mode') && $entity->get('layout_mode')->value === 'canvas';
+
+  if ($isCanvas && $entity->hasField('rendered_html') && !$entity->get('rendered_html')->isEmpty()) {
+    $textForAnalysis = strip_tags($entity->get('rendered_html')->value);
+  }
+  elseif ($entity->hasField('body') && !$entity->get('body')->isEmpty()) {
+    $textForAnalysis = strip_tags($entity->get('body')->value);
+  }
+
+  if (!empty($textForAnalysis)) {
+    $word_count = str_word_count($textForAnalysis);
     $reading_time = (int) ceil($word_count / 200);
     $entity->set('reading_time', max(1, $reading_time));
 
@@ -347,6 +368,9 @@ function template_preprocess_content_article(array &$variables): void {
     'reading_time' => $entity->getReadingTime(),
     'publish_date' => $entity->get('publish_date')->value ?? '',
     'answer_capsule' => $entity->getAnswerCapsule(),
+    // Canvas Editor fields.
+    'layout_mode' => $entity->getLayoutMode(),
+    'rendered_html' => $entity->getRenderedHtml(),
     'ai_generated' => $entity->isAiGenerated(),
     'url' => $entity->toUrl()->setAbsolute()->toString(),
   ];
@@ -494,6 +518,12 @@ function jaraba_content_hub_preprocess_html(array &$variables): void {
     $variables['attributes']['class'][] = 'page-blog';
   }
 
+  // Body class para el Canvas Editor de artículos.
+  if ($route_name === 'jaraba_content_hub.article.canvas_editor') {
+    $variables['attributes']['class'][] = 'page-article-canvas-editor';
+    $variables['attributes']['class'][] = 'page--canvas-editor';
+  }
+
   // --- SEO: Canonical, OG, Twitter Card, Schema.org JSON-LD ---
   // Inyecta meta tags específicos que sobrescriben los genéricos del tema
   // (Drupal deduplicados por clave: 'canonical', 'og_title', etc.).
@@ -623,6 +653,29 @@ function _jaraba_content_hub_inject_seo_tags(array &$variables, string $route_na
           'Error generando Schema.org para artículo @id: @error',
           ['@id' => $article->id(), '@error' => $e->getMessage()]
         );
+      }
+
+      // Canvas Editor: inyectar CSS personalizado del canvas en <head>.
+      if ($article->isCanvasMode()) {
+        $canvasDataRaw = $article->getCanvasData();
+        $canvasData = json_decode($canvasDataRaw, TRUE) ?: [];
+        $canvasCss = $canvasData['css'] ?? '';
+        if (!empty($canvasCss)) {
+          // Sanitizar CSS para prevenir inyección.
+          $canvasCss = preg_replace('/javascript\s*:/i', '', $canvasCss);
+          $canvasCss = preg_replace('/expression\s*\(/i', '', $canvasCss);
+          $canvasCss = preg_replace('/@import\b/i', '', $canvasCss);
+          $canvasCss = preg_replace('/behavior\s*:/i', '', $canvasCss);
+          $canvasCss = preg_replace('/-moz-binding\s*:/i', '', $canvasCss);
+          $variables['#attached']['html_head'][] = [
+            [
+              '#tag' => 'style',
+              '#value' => $canvasCss,
+              '#attributes' => ['data-canvas-styles' => 'article-' . $article->id()],
+            ],
+            'article-canvas-custom-styles',
+          ];
+        }
       }
     }
   }
