@@ -334,6 +334,19 @@ jaraba_email.api.sequences.enroll:
     _csrf_token: 'TRUE'
     id: '\d+'
 
+# --- Public Subscribe (Lead Magnets) ---
+# Endpoint público para formularios de meta-sitio (Kit de Impulso Digital).
+# Seguridad: CSRF token + Flood API (5 req/hr/IP) en el controlador.
+# @see \Drupal\jaraba_email\Controller\PublicSubscribeController
+
+jaraba_email.api.public_subscribe:
+  path: '/api/v1/public/subscribe'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\PublicSubscribeController::subscribe'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
 # --- Webhooks ---
 
 jaraba_email.api.webhooks.sendgrid:

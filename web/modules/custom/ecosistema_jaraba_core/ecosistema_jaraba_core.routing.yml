@@ -1381,6 +1381,23 @@ ecosistema_jaraba_core.landing.legal:
   requirements:
     _access: 'TRUE'
 
+# =============================================================================
+# /PLANES — PRICING PAGE (178_MetaSite_Remediation)
+# =============================================================================
+# Página pública de planes y precios con datos dinámicos de ConfigEntities.
+# Los datos se leen de SaasPlanTier y SaasPlanFeatures vía MetaSitePricingService.
+# DIRECTRIZ: LEGAL-ROUTE-001 (URL en español)
+
+ecosistema_jaraba_core.pricing.page:
+  path: '/planes'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PricingController::pricingPage'
+    _title: 'Planes y Precios'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: FALSE
+
 # Lead Magnet: Guia Vende Online sin Intermediarios (AgroConecta)
 ecosistema_jaraba_core.lead_magnet.guia_agroconecta:
   path: '/agroconecta/guia-vende-online'
@@ -1911,6 +1928,15 @@ ecosistema_jaraba_core.contact:
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\InfoPagesController::contact'
     _title: 'Contacto'
+  requirements:
+    _access: 'TRUE'
+
+# POST: Envío público de formulario de contacto (Sprint 3 Remediation)
+ecosistema_jaraba_core.public_contact.submit:
+  path: '/api/v1/public/contact'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PublicContactController::submit'
+  methods: [POST]
   requirements:
     _access: 'TRUE'
 

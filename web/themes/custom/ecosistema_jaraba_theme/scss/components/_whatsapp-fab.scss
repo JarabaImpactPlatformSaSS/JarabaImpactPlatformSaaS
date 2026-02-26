@@ -1,0 +1,63 @@
+// @file scss/components/_whatsapp-fab.scss
+// Botón flotante de WhatsApp — solo visible en móvil.
+//
+// Posicionado en la esquina inferior izquierda (la derecha está
+// ocupada por el FAB del Copiloto IA).
+
+.whatsapp-fab {
+  position: fixed;
+  bottom: var(--ej-space-lg, 2rem);
+  left: var(--ej-space-md, 1rem);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: var(--ej-space-xs, 0.5rem);
+  padding: 12px 16px;
+  background: #25d366;
+  color: #fff;
+  border-radius: 50px;
+  text-decoration: none;
+  font-family: var(--ej-font-body, 'Inter', sans-serif);
+  font-size: var(--ej-text-sm, 0.875rem);
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  animation: whatsapp-pulse 2s ease-in-out infinite;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 28px rgba(37, 211, 102, 0.5);
+    color: #fff;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+  }
+
+  &__label {
+    display: none;
+
+    @media (min-width: 400px) {
+      display: inline;
+    }
+  }
+
+  // Ocultar en desktop (hay formulario de contacto visible)
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+@keyframes whatsapp-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.55),
+                0 0 0 8px rgba(37, 211, 102, 0.1);
+  }
+}

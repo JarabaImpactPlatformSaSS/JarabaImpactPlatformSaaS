@@ -1,0 +1,11 @@
+id: comercioconecta_profesional_copilot_uses
+label: 'ComercioConecta Profesional: Copilot Uses'
+vertical: comercioconecta
+plan: profesional
+feature_key: copilot_uses_per_month
+limit_value: 0
+description: 'Usos ilimitados del copiloto IA en plan Profesional ComercioConecta (limit_value 0 = sin limite).'
+upgrade_message: ''
+expected_conversion: 0.00
+weight: 110
+status: true

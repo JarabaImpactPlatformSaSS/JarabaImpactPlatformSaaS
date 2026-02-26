@@ -4,38 +4,50 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Agent;
 
+use Drupal\ai\AiProviderPluginManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
+use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
+use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
+use Drupal\jaraba_ai_agents\Service\ModelRouterService;
+use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
+use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_ai_agents\Tool\ToolRegistry;
+use Psr\Log\LoggerInterface;
+
 /**
  * Agente de Soporte al Cliente.
  *
- * PROPÓSITO:
  * Especializado en gestionar soporte técnico y de ayuda:
- * respuestas a FAQs, tickets de soporte y artículos del
- * centro de ayuda.
+ * respuestas a FAQs, tickets de soporte y artículos del centro de ayuda.
  *
- * ACCIONES DISPONIBLES:
- * - 'faq_answer': Genera respuestas para preguntas frecuentes
- * - 'ticket_response': Crea respuestas para tickets de soporte
- * - 'help_article': Genera artículos para el centro de ayuda
- *
- * CARACTERÍSTICAS:
- * - Respuestas claras y estructuradas
- * - Pasos numerados para procedimientos
- * - Sección de troubleshooting
- * - Links a temas relacionados
- *
- * ESTILO:
- * Claro, paciente, técnicamente preciso pero accesible.
- *
- * ESPECIFICACIÓN: Doc 156 - World_Class_AI_Elevation_v3
- *
- * @note Gen 1 agent — Extends BaseAgent directly (no model routing).
- *   Provides full AI capabilities via BaseAgent contract (AI-IDENTITY-001,
- *   observability, UnifiedPromptBuilder). Does not include SmartBaseAgent
- *   intelligent model routing. Consider migrating to SmartBaseAgent if cost
- *   optimization is needed.
+ * FIX-035: Migrated Gen 1 -> Gen 2. Now extends SmartBaseAgent with
+ * model routing, tool use, provider fallback, and context window management.
  */
-class SupportAgent extends BaseAgent
+class SupportAgent extends SmartBaseAgent
 {
+
+    /**
+     * Constructs a SupportAgent.
+     */
+    public function __construct(
+        AiProviderPluginManager $aiProvider,
+        ConfigFactoryInterface $configFactory,
+        LoggerInterface $logger,
+        TenantBrandVoiceService $brandVoice,
+        AIObservabilityService $observability,
+        ModelRouterService $modelRouter,
+        ?UnifiedPromptBuilder $promptBuilder = NULL,
+        ?ToolRegistry $toolRegistry = NULL,
+        ?ProviderFallbackService $providerFallback = NULL,
+        ?ContextWindowManager $contextWindowManager = NULL,
+    ) {
+        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+        $this->setModelRouter($modelRouter);
+        $this->setToolRegistry($toolRegistry);
+        $this->setProviderFallback($providerFallback);
+        $this->setContextWindowManager($contextWindowManager);
+    }
 
     /**
      * {@inheritdoc}
@@ -63,8 +75,6 @@ class SupportAgent extends BaseAgent
 
     /**
      * {@inheritdoc}
-     *
-     * Define las acciones disponibles con sus parámetros.
      */
     public function getAvailableActions(): array
     {
@@ -92,13 +102,9 @@ class SupportAgent extends BaseAgent
 
     /**
      * {@inheritdoc}
-     *
-     * Enruta la ejecución al método de acción correspondiente.
      */
-    public function execute(string $action, array $context): array
+    protected function doExecute(string $action, array $context): array
     {
-        $this->setCurrentAction($action);
-
         return match ($action) {
             'faq_answer' => $this->generateFaqAnswer($context),
             'ticket_response' => $this->generateTicketResponse($context),
@@ -112,16 +118,6 @@ class SupportAgent extends BaseAgent
 
     /**
      * Genera una respuesta FAQ.
-     *
-     * Crea una respuesta estructurada con versión corta
-     * y detallada, pasos si aplica, y temas relacionados.
-     *
-     * @param array $context
-     *   Contexto con 'question'.
-     *   Opcionales: 'context', 'related_docs'.
-     *
-     * @return array
-     *   Resultado con 'short_answer', 'detailed_answer', 'steps', etc.
      */
     protected function generateFaqAnswer(array $context): array
     {
@@ -170,17 +166,6 @@ EOT;
 
     /**
      * Genera una respuesta a ticket de soporte.
-     *
-     * Crea una respuesta completa que reconoce el problema,
-     * proporciona solución y alternativas, y establece
-     * expectativas de tiempo.
-     *
-     * @param array $context
-     *   Contexto con 'ticket_content', 'category'.
-     *   Opcionales: 'priority', 'previous_interactions'.
-     *
-     * @return array
-     *   Resultado con 'greeting', 'solution', 'alternatives', 'next_steps'.
      */
     protected function generateTicketResponse(array $context): array
     {
@@ -232,16 +217,6 @@ EOT;
 
     /**
      * Genera un artículo de ayuda.
-     *
-     * Crea un artículo completo con estructura, pasos
-     * numerados, sección de troubleshooting y SEO.
-     *
-     * @param array $context
-     *   Contexto con 'topic', 'steps'.
-     *   Opcionales: 'screenshots_locations', 'common_errors'.
-     *
-     * @return array
-     *   Resultado con 'title', 'intro', 'steps', 'troubleshooting'.
      */
     protected function generateHelpArticle(array $context): array
     {
@@ -298,8 +273,6 @@ EOT;
 
     /**
      * {@inheritdoc}
-     *
-     * Define el Brand Voice por defecto para soporte.
      */
     protected function getDefaultBrandVoice(): string
     {

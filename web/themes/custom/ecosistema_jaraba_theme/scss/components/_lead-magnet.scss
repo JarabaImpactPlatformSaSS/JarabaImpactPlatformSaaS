@@ -1,0 +1,321 @@
+// @file scss/components/_lead-magnet.scss
+// Estilos del formulario Lead Magnet — Kit de Impulso Digital.
+//
+// DIRECTRICES CUMPLIDAS:
+// - SSOT Design Tokens: todos los valores vía var(--ej-*)
+// - Dart Sass: @use en vez de @import, sin funciones deprecated
+// - Mobile-first: diseño columnar por defecto, horizontal en desktop
+// - Glassmorphism premium: backdrop-filter + border translúcido
+// - Accesibilidad: focus visible, contraste AA
+//
+// VARIABLES CSS INYECTABLES (configurables desde UI Drupal):
+// --ej-naranja-impulso: Color CTA principal
+// --ej-verde-crecimiento: Color de éxito
+// --ej-bg-glass: Fondo glassmorphism
+// --ej-border-glass: Borde glassmorphism
+// --ej-radius-xl: Radio de esquinas
+// --ej-font-heading: Fuente de títulos
+//
+// @see templates/partials/_lead-magnet.html.twig
+// @see js/lead-magnet.js
+
+.lead-magnet {
+  position: relative;
+  background: var(--ej-bg-glass, rgba(255, 255, 255, 0.06));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.12));
+  border-radius: var(--ej-radius-xl, 1.5rem);
+  padding: var(--ej-space-xl, 3rem) var(--ej-space-lg, 2rem);
+  max-width: 640px;
+  margin: var(--ej-space-xxl, 5rem) auto;
+  text-align: center;
+  overflow: hidden;
+
+  // Gradient sutil decorativo (esquina superior derecha)
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(
+      circle,
+      rgba(255, 140, 66, 0.15) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Contenedor interno con z-index para estar sobre el gradient
+  &__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  // ─── Icono decorativo ───────────────────────────────────────────────
+  &__icon {
+    margin-bottom: var(--ej-space-md, 1rem);
+
+    svg {
+      width: 48px;
+      height: 48px;
+      color: var(--ej-naranja-impulso, #ff8c42);
+    }
+  }
+
+  // ─── Título ─────────────────────────────────────────────────────────
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-2xl, 1.75rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+    line-height: 1.2;
+
+    @media (min-width: 768px) {
+      font-size: var(--ej-text-3xl, 2.25rem);
+    }
+  }
+
+  // ─── Subtítulo ──────────────────────────────────────────────────────
+  &__subtitle {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-base, 1rem);
+    margin: 0 0 var(--ej-space-lg, 2rem);
+    line-height: 1.5;
+  }
+
+  // ─── Formulario ─────────────────────────────────────────────────────
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-space-md, 1rem);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  // ─── Campos de entrada ──────────────────────────────────────────────
+  &__input,
+  &__select {
+    width: 100%;
+    padding: var(--ej-space-sm, 0.75rem) var(--ej-space-md, 1rem);
+    border: 2px solid var(--ej-border-input, #e5e7eb);
+    border-radius: var(--ej-radius-md, 0.5rem);
+    font-family: var(--ej-font-body, 'Inter', sans-serif);
+    font-size: var(--ej-text-base, 1rem);
+    color: var(--ej-color-text, #1f2937);
+    background: var(--ej-bg-surface, #ffffff);
+    appearance: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &::placeholder {
+      color: var(--ej-color-muted, #9ca3af);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-naranja-impulso, #ff8c42);
+      box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+    }
+
+    // Estado de error (aplicado por JS)
+    &--error {
+      border-color: var(--ej-color-error, #ef4444);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      animation: shake 0.4s ease;
+    }
+  }
+
+  // Flecha custom para el select
+  &__select {
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+  }
+
+  // ─── Consentimiento GDPR ────────────────────────────────────────────
+  &__consent {
+    text-align: left;
+  }
+
+  &__consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ej-space-xs, 0.5rem);
+    font-size: var(--ej-text-sm, 0.875rem);
+    color: var(--ej-color-muted, #6b7280);
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      margin-top: 3px;
+      accent-color: var(--ej-naranja-impulso, #ff8c42);
+    }
+
+    a {
+      color: var(--ej-naranja-impulso, #ff8c42);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+
+      &:hover {
+        color: var(--ej-color-heading, #1a1a2e);
+      }
+    }
+  }
+
+  // ─── Botón CTA ──────────────────────────────────────────────────────
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ej-space-xs, 0.5rem);
+    padding: var(--ej-space-sm, 0.875rem) var(--ej-space-lg, 2rem);
+    background: linear-gradient(
+      135deg,
+      var(--ej-naranja-impulso, #ff8c42) 0%,
+      var(--ej-color-primary-accent, #e67e22) 100%
+    );
+    color: #fff;
+    border: none;
+    border-radius: var(--ej-radius-md, 0.5rem);
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-lg, 1.125rem);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 140, 66, 0.35);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    // Estado de loading (aplicado por JS)
+    &--loading {
+      pointer-events: none;
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        margin-left: var(--ej-space-xs, 0.5rem);
+      }
+    }
+
+    // Estado de error (aplicado por JS)
+    &--error {
+      background: var(--ej-color-error, #ef4444);
+    }
+  }
+
+  // ─── Sección de éxito ────────────────────────────────────────────
+  &__success {
+    padding: var(--ej-space-xl, 3rem) var(--ej-space-md, 1rem);
+
+    &-icon svg {
+      width: 64px;
+      height: 64px;
+      color: var(--ej-verde-crecimiento, #10b981);
+      margin-bottom: var(--ej-space-md, 1rem);
+    }
+
+    &-title {
+      font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+      font-size: var(--ej-text-xl, 1.5rem);
+      font-weight: 700;
+      color: var(--ej-verde-crecimiento, #10b981);
+      margin: 0 0 var(--ej-space-xs, 0.5rem);
+    }
+
+    &-text {
+      color: var(--ej-color-muted, #6b7280);
+      font-size: var(--ej-text-base, 1rem);
+      margin: 0;
+    }
+  }
+
+  // ─── Checklist ──────────────────────────────────────────────────────
+  &__checklist {
+    list-style: none;
+    padding: 0;
+    margin: var(--ej-space-lg, 2rem) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-space-xs, 0.5rem);
+  }
+
+  &__checklist-item {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-space-xs, 0.5rem);
+    font-size: var(--ej-text-sm, 0.875rem);
+    color: var(--ej-color-muted, #6b7280);
+    text-align: left;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--ej-verde-crecimiento, #10b981);
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ─── Animación shake para errores ─────────────────────────────────────
+@keyframes shake {
+  0%,
+  100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+// ─── Animación spinner del botón ──────────────────────────────────────
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─── Dark mode override ───────────────────────────────────────────────
+[data-theme='dark'] .lead-magnet,
+.dark-mode .lead-magnet {
+  background: var(--ej-bg-glass-dark, rgba(26, 26, 46, 0.6));
+  border-color: var(--ej-border-glass-dark, rgba(255, 255, 255, 0.08));
+
+  &__title {
+    color: var(--ej-color-heading-dark, #f1f5f9);
+  }
+
+  &__subtitle,
+  &__checklist-item,
+  &__consent-label {
+    color: var(--ej-color-muted-dark, #94a3b8);
+  }
+
+  &__input,
+  &__select {
+    background: var(--ej-bg-surface-dark, rgba(255, 255, 255, 0.06));
+    border-color: var(--ej-border-input-dark, rgba(255, 255, 255, 0.1));
+    color: var(--ej-color-text-dark, #e2e8f0);
+  }
+}

@@ -3,30 +3,45 @@
  * @file
  * templates/partials/_stats.html.twig
  *
- * Sección de estadísticas/social proof.
+ * Sección de estadísticas/social proof del homepage.
  * Contador animado con data-count.
- * Soporta datos dinámicos desde Page Builder o fallbacks hardcodeados.
- * i18n con {% trans %}
  *
- * Variables esperadas:
- * - stats: Array de estadísticas desde Page Builder (opcional)
+ * VARIABLES:
+ * - stats: Array de estadísticas desde theme settings o Page Builder
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos estáticos
+ * - METRICS-HONESTY: Solo datos verificables. Sin métricas fabricadas.
+ *
+ * DESIGN DECISIONS (Auditoría Meta-Sitio Feb 2026):
+ * - Métricas anteriores (1500+ candidatos, 120+ empresas) eran fabricadas
+ * - Reemplazadas por datos verificables del programa real:
+ *   → 3 casos de éxito documentados con testimonios reales
+ *   → 7 verticales activas en la plataforma
+ *   → 100% participantes recomendarían el programa
+ *   → 1 negocio rural nacido del programa (Camino Viejo)
+ *
+ * Cuando la plataforma SaaS tenga datos reales de uso,
+ * estas métricas se actualizarán vía Theme Settings o query a ContentEntities.
+ *
+ * @see 20260226-Plan_Implementacion_MetaSitio_Remediacion_Integral_v1.md
  */
 #}
 
-{# Fallback: Si no hay stats dinámicas, usar hardcodeadas #}
+{# Fallback: Datos verificables del programa Andalucía +ei #}
 {% set default_stats = [
-  { value: 1500, suffix: '+', label: 'Candidatos activos'|t },
-  { value: 120, suffix: '+', label: 'Empresas'|t },
-  { value: 85, suffix: '+', label: 'Emprendimientos'|t },
-  { value: 98, suffix: '%', label: 'Satisfacción'|t }
+  { value: 7, suffix: '', label: 'Verticales activas'|t },
+  { value: 3, suffix: '', label: 'Casos de éxito documentados'|t },
+  { value: 100, suffix: '%', label: 'Recomendarían el programa'|t },
+  { value: 1, suffix: '', label: 'Negocio rural creado'|t }
 ] %}
 
 {% set stat_items = stats|default([])|length > 0 ? stats : default_stats %}
 
-<section class="stats-section" aria-labelledby="stats-title">
+<section class="stats-section reveal-element reveal-fade-up" aria-labelledby="stats-title">
   <div class="stats-section__container">
-    <h2 id="stats-title" class="visually-hidden">{% trans %}Estadísticas{% endtrans %}</h2>
-    
+    <h2 id="stats-title" class="visually-hidden">{% trans %}Resultados verificables{% endtrans %}</h2>
+
     <div class="stats-grid">
       {% for stat in stat_items %}
         <div class="stat-item">
@@ -38,4 +53,3 @@
     </div>
   </div>
 </section>
-

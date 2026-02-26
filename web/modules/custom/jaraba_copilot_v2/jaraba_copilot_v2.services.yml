@@ -39,6 +39,14 @@ services:
       - '@jaraba_copilot_v2.feature_unlock'
       - '@jaraba_copilot_v2.normative_knowledge'
 
+  # FIX-036: Semantic Cache — Qdrant-based fuzzy matching for similar queries
+  jaraba_copilot_v2.semantic_cache:
+    class: Drupal\jaraba_copilot_v2\Service\SemanticCacheService
+    arguments:
+      - '@logger.channel.jaraba_copilot_v2'
+      - '@?jaraba_rag.qdrant_client'
+      - '@?jaraba_rag.rag_service'
+
   # Cache service for AI responses (reduces costs)
   jaraba_copilot_v2.copilot_cache:
     class: Drupal\jaraba_copilot_v2\Service\CopilotCacheService

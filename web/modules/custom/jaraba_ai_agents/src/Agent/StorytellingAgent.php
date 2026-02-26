@@ -4,19 +4,49 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Agent;
 
+use Drupal\ai\AiProviderPluginManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
+use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
+use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
+use Drupal\jaraba_ai_agents\Service\ModelRouterService;
+use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
+use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_ai_agents\Tool\ToolRegistry;
+use Psr\Log\LoggerInterface;
+
 /**
  * Storytelling Agent for brand narratives.
  *
  * Creates brand stories, product narratives, and about pages.
  *
- * @note Gen 1 agent — Extends BaseAgent directly (no model routing).
- *   Provides full AI capabilities via BaseAgent contract (AI-IDENTITY-001,
- *   observability, UnifiedPromptBuilder). Does not include SmartBaseAgent
- *   intelligent model routing. Consider migrating to SmartBaseAgent if cost
- *   optimization is needed.
+ * FIX-035: Migrated Gen 1 -> Gen 2. Now extends SmartBaseAgent with
+ * model routing, tool use, provider fallback, and context window management.
  */
-class StorytellingAgent extends BaseAgent
+class StorytellingAgent extends SmartBaseAgent
 {
+
+    /**
+     * Constructs a StorytellingAgent.
+     */
+    public function __construct(
+        AiProviderPluginManager $aiProvider,
+        ConfigFactoryInterface $configFactory,
+        LoggerInterface $logger,
+        TenantBrandVoiceService $brandVoice,
+        AIObservabilityService $observability,
+        ModelRouterService $modelRouter,
+        ?UnifiedPromptBuilder $promptBuilder = NULL,
+        ?ToolRegistry $toolRegistry = NULL,
+        ?ProviderFallbackService $providerFallback = NULL,
+        ?ContextWindowManager $contextWindowManager = NULL,
+    ) {
+        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+        $this->setModelRouter($modelRouter);
+        $this->setToolRegistry($toolRegistry);
+        $this->setProviderFallback($providerFallback);
+        $this->setContextWindowManager($contextWindowManager);
+    }
 
     /**
      * {@inheritdoc}
@@ -72,10 +102,8 @@ class StorytellingAgent extends BaseAgent
     /**
      * {@inheritdoc}
      */
-    public function execute(string $action, array $context): array
+    protected function doExecute(string $action, array $context): array
     {
-        $this->setCurrentAction($action);
-
         return match ($action) {
             'brand_story' => $this->generateBrandStory($context),
             'product_story' => $this->generateProductStory($context),

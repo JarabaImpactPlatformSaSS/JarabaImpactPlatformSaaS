@@ -6,6 +6,9 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Controlador para landing pages de los verticales.
@@ -20,7 +23,28 @@ use Drupal\Core\Url;
  *
  * @see docs/implementacion/2026-02-12_F4_Landing_Pages_Verticales_Doc180_Implementacion.md
  */
-class VerticalLandingController extends ControllerBase {
+class VerticalLandingController extends ControllerBase
+{
+
+  /**
+   * The MetaSite pricing service.
+   *
+   * Provides dynamic pricing from SaasPlanTier/Features ConfigEntities.
+   * Optional: if null, fallback hardcoded pricing is used.
+   */
+  protected ?MetaSitePricingService $pricingService = NULL;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    $instance = parent::create($container);
+    // Optional injection: doesn't break if service not registered.
+    if ($container->has('ecosistema_jaraba_core.metasite_pricing')) {
+      $instance->pricingService = $container->get('ecosistema_jaraba_core.metasite_pricing');
+    }
+    return $instance;
+  }
 
   // =========================================================================
   // F4 LANDING PAGES — 9 secciones completas (Doc 180)
@@ -31,7 +55,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /agroconecta
    */
-  public function agroconecta(): array {
+  public function agroconecta(): array
+  {
     return $this->buildLanding([
       'key' => 'agroconecta',
       'color' => 'agro',
@@ -120,7 +145,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /comercioconecta
    */
-  public function comercioconecta(): array {
+  public function comercioconecta(): array
+  {
     return $this->buildLanding([
       'key' => 'comercioconecta',
       'color' => 'success',
@@ -209,7 +235,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /serviciosconecta
    */
-  public function serviciosconecta(): array {
+  public function serviciosconecta(): array
+  {
     return $this->buildLanding([
       'key' => 'serviciosconecta',
       'color' => 'innovation',
@@ -298,7 +325,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /empleabilidad
    */
-  public function empleabilidad(): array {
+  public function empleabilidad(): array
+  {
     return $this->buildLanding([
       'key' => 'empleabilidad',
       'color' => 'innovation',
@@ -387,7 +415,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /emprendimiento
    */
-  public function emprendimientoLanding(): array {
+  public function emprendimientoLanding(): array
+  {
     return $this->buildLanding([
       'key' => 'emprendimiento',
       'color' => 'impulse',
@@ -477,7 +506,8 @@ class VerticalLandingController extends ControllerBase {
    * Ruta: /jarabalex
    * Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
    */
-  public function jarabalex(): array {
+  public function jarabalex(): array
+  {
     return $this->buildLanding([
       'key' => 'jarabalex',
       'color' => 'corporate',
@@ -569,41 +599,17 @@ class VerticalLandingController extends ControllerBase {
   // =========================================================================
 
   /**
-   * Landing Empleabilidad - Candidatos (legacy).
+   * Redirect legacy /empleo → /empleabilidad (301 permanent).
    *
-   * Ruta: /empleo
+   * SEO: Consolidates legacy route to avoid duplicate content.
+   * DIRECTRIZ: LEGAL-ROUTE-001 (F4 route naming convention).
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   301 Moved Permanently redirect.
    */
-  public function empleo(): array {
-    return $this->buildLanding([
-      'key' => 'empleo',
-      'color' => 'innovation',
-      'hero' => [
-        'headline' => $this->t('Encuentra tu próximo empleo'),
-        'subheadline' => $this->t('Ofertas personalizadas con IA, preparación de entrevistas y seguimiento profesional'),
-        'icon' => ['category' => 'verticals', 'name' => 'briefcase'],
-        'cta' => [
-          'text' => $this->t('Crear perfil gratis'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-        'cta_secondary' => [
-          'text' => $this->t('Ya tengo cuenta'),
-          'url' => Url::fromRoute('user.login')->toString(),
-        ],
-      ],
-      'features' => [
-        ['icon' => ['category' => 'business', 'name' => 'target'], 'title' => $this->t('Matching inteligente'), 'description' => $this->t('Ofertas que realmente encajan contigo basadas en tus competencias')],
-        ['icon' => ['category' => 'business', 'name' => 'cv-optimized'], 'title' => $this->t('CV optimizado'), 'description' => $this->t('El copiloto te ayuda a mejorar tu CV para cada oferta')],
-        ['icon' => ['category' => 'business', 'name' => 'interview'], 'title' => $this->t('Prepara entrevistas'), 'description' => $this->t('Simulaciones con IA para llegar seguro a tus entrevistas')],
-        ['icon' => ['category' => 'business', 'name' => 'tracking-board'], 'title' => $this->t('Seguimiento de candidaturas'), 'description' => $this->t('Dashboard para ver el estado de todas tus aplicaciones')],
-      ],
-      'final_cta' => [
-        'headline' => $this->t('¿Listo para encontrar tu empleo?'),
-        'cta' => [
-          'text' => $this->t('Crear perfil gratis'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-      ],
-    ]);
+  public function empleo(): RedirectResponse
+  {
+    return new RedirectResponse('/empleabilidad', 301);
   }
 
   /**
@@ -611,7 +617,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /talento
    */
-  public function talento(): array {
+  public function talento(): array
+  {
     return $this->buildLanding([
       'key' => 'talento',
       'color' => 'innovation',
@@ -645,79 +652,31 @@ class VerticalLandingController extends ControllerBase {
   }
 
   /**
-   * Landing Emprendimiento (legacy).
+   * Redirect legacy /emprender → /emprendimiento (301 permanent).
    *
-   * Ruta: /emprender
+   * SEO: Consolidates legacy route to avoid duplicate content.
+   * DIRECTRIZ: LEGAL-ROUTE-001 (F4 route naming convention).
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   301 Moved Permanently redirect.
    */
-  public function emprender(): array {
-    return $this->buildLanding([
-      'key' => 'emprender',
-      'color' => 'impulse',
-      'hero' => [
-        'headline' => $this->t('Valida tu idea con metodología'),
-        'subheadline' => $this->t('Lean Startup, Business Model Canvas y un copiloto IA que te guía paso a paso'),
-        'icon' => ['category' => 'verticals', 'name' => 'rocket'],
-        'cta' => [
-          'text' => $this->t('Empezar ahora'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-        'cta_secondary' => [
-          'text' => $this->t('Ver metodología'),
-          'url' => '/metodologia',
-        ],
-      ],
-      'features' => [
-        ['icon' => ['category' => 'ai', 'name' => 'lightbulb'], 'title' => $this->t('Valida tu idea'), 'description' => $this->t('Metodología Lean para validar hipótesis antes de invertir')],
-        ['icon' => ['category' => 'business', 'name' => 'canvas'], 'title' => $this->t('Business Model Canvas'), 'description' => $this->t('Diseña tu modelo de negocio con asistencia del copiloto')],
-        ['icon' => ['category' => 'business', 'name' => 'target'], 'title' => $this->t('Tareas guiadas'), 'description' => $this->t('El copiloto te asigna tareas y desbloquea etapas progresivas')],
-        ['icon' => ['category' => 'business', 'name' => 'achievement'], 'title' => $this->t('Acceso a mentores'), 'description' => $this->t('Conecta con expertos que te ayudan a crecer')],
-      ],
-      'final_cta' => [
-        'headline' => $this->t('¿Listo para emprender?'),
-        'cta' => [
-          'text' => $this->t('Empezar ahora'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-      ],
-    ]);
+  public function emprender(): RedirectResponse
+  {
+    return new RedirectResponse('/emprendimiento', 301);
   }
 
   /**
-   * Landing Comercio/Marketplace (legacy).
+   * Redirect legacy /comercio → /comercioconecta (301 permanent).
    *
-   * Ruta: /comercio
+   * SEO: Consolidates legacy route to avoid duplicate content.
+   * DIRECTRIZ: LEGAL-ROUTE-001 (F4 route naming convention).
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   301 Moved Permanently redirect.
    */
-  public function comercio(): array {
-    return $this->buildLanding([
-      'key' => 'comercio',
-      'color' => 'success',
-      'hero' => [
-        'headline' => $this->t('Vende tus productos y servicios'),
-        'subheadline' => $this->t('Marketplace de impacto con visibilidad local, pagos seguros y gestión simplificada'),
-        'icon' => ['category' => 'business', 'name' => 'cart'],
-        'cta' => [
-          'text' => $this->t('Crear mi tienda'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-        'cta_secondary' => [
-          'text' => $this->t('Ver marketplace'),
-          'url' => '/marketplace',
-        ],
-      ],
-      'features' => [
-        ['icon' => ['category' => 'ui', 'name' => 'storefront'], 'title' => $this->t('Tu tienda online'), 'description' => $this->t('Perfil profesional con catálogo de productos y servicios')],
-        ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Pagos seguros'), 'description' => $this->t('Stripe Connect para cobros directos en tu cuenta')],
-        ['icon' => ['category' => 'verticals', 'name' => 'leaf'], 'title' => $this->t('Producción local'), 'description' => $this->t('Destaca tu origen local y prácticas sostenibles')],
-        ['icon' => ['category' => 'ui', 'name' => 'package'], 'title' => $this->t('Gestión de pedidos'), 'description' => $this->t('Dashboard para gestionar pedidos y envíos')],
-      ],
-      'final_cta' => [
-        'headline' => $this->t('¿Listo para vender online?'),
-        'cta' => [
-          'text' => $this->t('Crear mi tienda'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-      ],
-    ]);
+  public function comercio(): RedirectResponse
+  {
+    return new RedirectResponse('/comercioconecta', 301);
   }
 
   /**
@@ -725,7 +684,8 @@ class VerticalLandingController extends ControllerBase {
    *
    * Ruta: /instituciones
    */
-  public function instituciones(): array {
+  public function instituciones(): array
+  {
     return $this->buildLanding([
       'key' => 'instituciones',
       'color' => 'corporate',
@@ -772,7 +732,19 @@ class VerticalLandingController extends ControllerBase {
    * @return array
    *   Render array con template vertical_landing_content.
    */
-  protected function buildLanding(array $data): array {
+  protected function buildLanding(array $data): array
+  {
+    // Enrich pricing data from ConfigEntities if available.
+    // Uses MetaSitePricingService cascade resolution:
+    //   specific {vertical}_{tier} → _default_{tier} → fallback.
+    $verticalKey = $data['key'] ?? '';
+    if ($verticalKey && $this->pricingService) {
+      $dynamicPricing = $this->pricingService->getFromPrice($verticalKey);
+      if (!empty($dynamicPricing['from_price'])) {
+        $data['pricing'] = array_merge($data['pricing'] ?? [], $dynamicPricing);
+      }
+    }
+
     return [
       '#theme' => 'vertical_landing_content',
       '#vertical_data' => $data,
@@ -782,6 +754,10 @@ class VerticalLandingController extends ControllerBase {
           'ecosistema_jaraba_theme/progressive-profiling',
           'ecosistema_jaraba_theme/landing-sections',
         ],
+      ],
+      '#cache' => [
+        'tags' => ['config:saas_plan_tier_list', 'config:saas_plan_features_list'],
+        'max-age' => 3600,
       ],
     ];
   }

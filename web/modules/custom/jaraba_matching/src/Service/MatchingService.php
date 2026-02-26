@@ -338,6 +338,9 @@ class MatchingService
     /**
      * Obtiene los top-N candidatos para un job.
      *
+     * FIX-050: Reads jaraba_matching.settings config to decide whether
+     * to use hybrid (semantic + rules) or rule-based-only scoring.
+     *
      * @param int $job_id
      *   ID del job posting.
      * @param int $limit
@@ -350,6 +353,31 @@ class MatchingService
      */
     public function getTopCandidatesForJob(int $job_id, int $limit = 20, int $tenant_id = 0): array
     {
+        // FIX-050: Check if semantic matching is enabled via config.
+        try {
+            $config = \Drupal::config('jaraba_matching.settings');
+            $semanticEnabled = (bool) $config->get('semantic_matching_enabled');
+            if ($semanticEnabled) {
+                $configLimit = (int) $config->get('scoring.max_results');
+                $effectiveLimit = $configLimit > 0 ? min($limit, $configLimit) : $limit;
+                $minScore = (float) ($config->get('scoring.min_score') ?: 0);
+                $result = $this->getTopCandidatesHybrid($job_id, $effectiveLimit, $tenant_id);
+                if (!empty($result)) {
+                    // Filter by minimum score if configured.
+                    if ($minScore > 0) {
+                        $result = array_filter($result, fn($r) => ($r['score'] ?? 0) >= ($minScore * 100));
+                        $result = array_values($result);
+                    }
+                    return $result;
+                }
+                // Fall through to rule-based if hybrid returns nothing.
+            }
+        } catch (\Exception $e) {
+            $this->logger->notice('Config jaraba_matching.settings not available, using rule-based: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+        }
+
         $cache_key = "match:job:{$job_id}:top:{$limit}:tenant:{$tenant_id}";
 
         if ($cached = $this->cache->get($cache_key)) {
@@ -387,6 +415,7 @@ class MatchingService
             $results[] = [
                 'candidate_id' => $candidate->id(),
                 'score' => $score['total'],
+                'score_type' => 'rule_based',
                 'breakdown' => $score['breakdown'],
             ];
         }

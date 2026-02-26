@@ -1,0 +1,176 @@
+// @file scss/components/_testimonials.scss
+// Estilos de la sección de testimonios / casos de éxito.
+//
+// DIRECTRICES:
+// - SSOT Design Tokens: var(--ej-*)
+// - Dart Sass: @use, no @import
+// - Mobile-first
+// - Glassmorphism premium
+
+.testimonials {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  text-align: center;
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__eyebrow {
+    display: block;
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-naranja-impulso, #ff8c42);
+    margin-bottom: var(--ej-space-xs, 0.5rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-2xl, 1.75rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+
+    @media (min-width: 768px) {
+      font-size: var(--ej-text-3xl, 2.25rem);
+    }
+  }
+
+  &__subtitle {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-base, 1rem);
+    max-width: 600px;
+    margin: 0 auto var(--ej-space-xl, 3rem);
+    line-height: 1.5;
+  }
+
+  // ─── Grid de cards ─────────────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-space-lg, 2rem);
+    text-align: left;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  // ─── Card individual ───────────────────────────────────────────────
+  &__card {
+    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.06));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.12));
+    border-radius: var(--ej-radius-xl, 1.5rem);
+    padding: var(--ej-space-lg, 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-space-md, 1rem);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  &__quote-icon {
+    color: var(--ej-naranja-impulso, #ff8c42);
+  }
+
+  &__text {
+    font-size: var(--ej-text-base, 1rem);
+    line-height: 1.6;
+    color: var(--ej-color-text, #1f2937);
+    margin: 0;
+    font-style: italic;
+    flex: 1;
+  }
+
+  // ─── Autor ─────────────────────────────────────────────────────────
+  &__author {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-space-sm, 0.75rem);
+  }
+
+  &__author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      var(--ej-naranja-impulso, #ff8c42) 0%,
+      var(--ej-color-primary-accent, #e67e22) 100%
+    );
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--ej-text-sm, 0.875rem);
+    flex-shrink: 0;
+  }
+
+  &__author-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__author-name {
+    font-weight: 700;
+    font-size: var(--ej-text-sm, 0.875rem);
+    color: var(--ej-color-heading, #1a1a2e);
+    font-style: normal;
+  }
+
+  &__author-role {
+    font-size: var(--ej-text-xs, 0.75rem);
+    color: var(--ej-color-muted, #6b7280);
+  }
+
+  // ─── Resultado concreto ────────────────────────────────────────────
+  &__result {
+    display: flex;
+    align-items: center;
+    gap: var(--ej-space-xs, 0.5rem);
+    padding-top: var(--ej-space-sm, 0.75rem);
+    border-top: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.12));
+    font-size: var(--ej-text-sm, 0.875rem);
+    color: var(--ej-verde-crecimiento, #10b981);
+    font-weight: 600;
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  // ─── CTA ───────────────────────────────────────────────────────────
+  &__cta {
+    margin-top: var(--ej-space-xl, 3rem);
+  }
+}
+
+// ─── Dark mode ─────────────────────────────────────────────────────────
+[data-theme='dark'] .testimonials,
+.dark-mode .testimonials {
+  &__card {
+    background: var(--ej-bg-glass-dark, rgba(26, 26, 46, 0.6));
+    border-color: var(--ej-border-glass-dark, rgba(255, 255, 255, 0.08));
+  }
+
+  &__title {
+    color: var(--ej-color-heading-dark, #f1f5f9);
+  }
+
+  &__text {
+    color: var(--ej-color-text-dark, #e2e8f0);
+  }
+
+  &__author-name {
+    color: var(--ej-color-heading-dark, #f1f5f9);
+  }
+}

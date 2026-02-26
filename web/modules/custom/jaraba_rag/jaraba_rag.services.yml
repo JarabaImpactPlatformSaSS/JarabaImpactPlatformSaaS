@@ -86,3 +86,14 @@ services:
       - '@config.factory'
       - '@cache.default'
 
+  # ---------------------------------------------------------------------------
+  # FIX-037: LLM Re-Ranker Service
+  # Uses fast tier (Haiku) to re-rank RAG candidates by relevance.
+  # ---------------------------------------------------------------------------
+  jaraba_rag.llm_reranker:
+    class: Drupal\jaraba_rag\Service\LlmReRankerService
+    arguments:
+      - '@ai.provider'
+      - '@jaraba_ai_agents.model_router'
+      - '@logger.channel.jaraba_ai_agents'
+

@@ -634,6 +634,25 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // =========================================================================
+    // PRICING PAGE (178_MetaSite_Remediation)
+    // =========================================================================
+
+    // Página pública de planes y precios /planes.
+    // Datos dinámicos desde SaasPlanTier/Features vía MetaSitePricingService.
+    // DIRECTRIZ: LEGAL-ROUTE-001, PLAN-CASCADE-001, i18n
+    'pricing_page' => [
+      'variables' => [
+        'tiers' => [],
+        'page_title' => '',
+        'page_subtitle' => '',
+        'guarantee_text' => '',
+        'faq_items' => [],
+      ],
+      'template' => 'pricing-page',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
+
+    // =========================================================================
     // PÁGINAS LEGALES E INFORMATIVAS
     // =========================================================================
 

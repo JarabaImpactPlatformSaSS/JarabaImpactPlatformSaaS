@@ -1,3 +1,15 @@
+# FIX-030: Agent type to service ID mapping.
+jaraba_agents.agent_type_mapping:
+  type: config_object
+  label: 'Agent Type to Service Mapping'
+  mapping:
+    mapping:
+      type: sequence
+      label: 'Agent Type Mappings'
+      sequence:
+        type: string
+        label: 'Service ID'
+
 jaraba_agents.settings:
   type: config_object
   label: 'Configuracion del modulo Jaraba Agents'

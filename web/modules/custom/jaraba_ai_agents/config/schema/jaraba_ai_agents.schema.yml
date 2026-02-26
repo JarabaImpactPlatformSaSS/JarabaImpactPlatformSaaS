@@ -53,6 +53,52 @@ jaraba_ai_agents.brand_voice.*:
       type: string
       label: 'Custom Instructions'
 
+# FIX-031: Provider fallback chain configuration schema.
+jaraba_ai_agents.provider_fallback:
+  type: config_object
+  label: 'Provider Fallback Configuration'
+  mapping:
+    chains:
+      type: mapping
+      label: 'Fallback Chains per Tier'
+      mapping:
+        fast:
+          type: sequence
+          label: 'Fast Tier Chain'
+          sequence:
+            type: mapping
+            mapping:
+              provider_id:
+                type: string
+                label: 'Provider ID'
+              model_id:
+                type: string
+                label: 'Model ID'
+        balanced:
+          type: sequence
+          label: 'Balanced Tier Chain'
+          sequence:
+            type: mapping
+            mapping:
+              provider_id:
+                type: string
+                label: 'Provider ID'
+              model_id:
+                type: string
+                label: 'Model ID'
+        premium:
+          type: sequence
+          label: 'Premium Tier Chain'
+          sequence:
+            type: mapping
+            mapping:
+              provider_id:
+                type: string
+                label: 'Provider ID'
+              model_id:
+                type: string
+                label: 'Model ID'
+
 # FIX-020: Model routing tier configuration schema.
 jaraba_ai_agents.model_routing:
   type: config_object

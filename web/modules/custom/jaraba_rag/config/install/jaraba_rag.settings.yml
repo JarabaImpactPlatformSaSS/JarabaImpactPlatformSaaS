@@ -65,6 +65,15 @@ llm:
   # Máximo de tokens en respuesta
   max_tokens: 500
 
+# Re-ranking (FIX-037)
+reranking:
+  # Estrategia: keyword (overlap basico), llm (Haiku re-ranker), hybrid (ambos)
+  strategy: 'hybrid'
+  # Peso del score LLM en hybrid (complemento = keyword weight)
+  llm_weight: 0.6
+  # Peso del score de vector similarity en hybrid
+  vector_weight: 0.4
+
 # Entidades indexables
 indexable_entities:
   commerce_product:

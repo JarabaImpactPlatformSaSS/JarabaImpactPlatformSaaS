@@ -1,0 +1,19 @@
+# FIX-031: Provider fallback chains per tier.
+# Each tier defines a fallback chain of (provider_id, model_id) pairs.
+# The primary provider is tried first, then fallbacks in order.
+chains:
+  fast:
+    - provider_id: anthropic
+      model_id: claude-haiku-4-5-20251001
+    - provider_id: openai
+      model_id: gpt-4o-mini
+  balanced:
+    - provider_id: anthropic
+      model_id: claude-sonnet-4-6
+    - provider_id: openai
+      model_id: gpt-4o
+  premium:
+    - provider_id: anthropic
+      model_id: claude-opus-4-6
+    - provider_id: openai
+      model_id: gpt-4o

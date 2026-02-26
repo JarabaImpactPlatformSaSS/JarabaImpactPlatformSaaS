@@ -7,8 +7,11 @@ namespace Drupal\jaraba_ai_agents\Agent;
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
+use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
+use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
 use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_ai_agents\Tool\ToolRegistry;
 use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
 use Psr\Log\LoggerInterface;
 
@@ -41,9 +44,21 @@ class MerchantCopilotAgent extends SmartBaseAgent {
     AIObservabilityService $observability,
     ModelRouterService $modelRouter,
     ?UnifiedPromptBuilder $promptBuilder = NULL,
+    ?ToolRegistry $toolRegistry = NULL,
+    ?ProviderFallbackService $providerFallback = NULL,
+    ?ContextWindowManager $contextWindowManager = NULL,
   ) {
     parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
     $this->setModelRouter($modelRouter);
+    if ($toolRegistry) {
+      $this->setToolRegistry($toolRegistry);
+    }
+    if ($providerFallback) {
+      $this->setProviderFallback($providerFallback);
+    }
+    if ($contextWindowManager) {
+      $this->setContextWindowManager($contextWindowManager);
+    }
   }
 
   /**

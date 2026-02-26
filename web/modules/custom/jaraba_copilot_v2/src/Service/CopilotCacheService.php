@@ -94,6 +94,10 @@ class CopilotCacheService
     /**
      * Gets cached response if available.
      *
+     * FIX-036: Two-layer cache: exact match (Drupal cache) then semantic
+     * match (SemanticCacheService via Qdrant). Semantic layer catches
+     * queries like "AOVE premium" vs "aceite de oliva virgen extra".
+     *
      * @param string $message
      *   User message.
      * @param string $mode
@@ -106,19 +110,42 @@ class CopilotCacheService
      */
     public function get(string $message, string $mode, array $context): ?array
     {
+        // Layer 1: Exact match via Drupal cache.
         $key = $this->generateCacheKey($message, $mode, $context);
         $cached = $this->cache->get($key);
 
         if ($cached && isset($cached->data)) {
             $this->trackCacheHit();
-            $this->logger->debug('Copilot cache HIT: @key', ['@key' => $key]);
+            $this->logger->debug('Copilot cache HIT (exact): @key', ['@key' => $key]);
 
-            // Mark response as cached
             $response = $cached->data;
             $response['from_cache'] = TRUE;
             $response['cache_key'] = $key;
+            $response['cache_layer'] = 'exact';
 
             return $response;
+        }
+
+        // Layer 2: Semantic match via SemanticCacheService (FIX-036).
+        if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
+            try {
+                $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
+                $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? '';
+                $semanticResult = $semanticCache->get($message, $mode, (string) $tenantId);
+
+                if ($semanticResult !== NULL) {
+                    $this->trackCacheHit();
+                    $this->logger->debug('Copilot cache HIT (semantic): @msg', ['@msg' => mb_substr($message, 0, 80)]);
+
+                    $semanticResult['from_cache'] = TRUE;
+                    $semanticResult['cache_layer'] = 'semantic';
+
+                    return $semanticResult;
+                }
+            } catch (\Exception $e) {
+                // Semantic cache failure is non-critical.
+                $this->logger->debug('Semantic cache lookup failed: @msg', ['@msg' => $e->getMessage()]);
+            }
         }
 
         $this->trackCacheMiss();
@@ -163,6 +190,18 @@ class CopilotCacheService
         }
 
         $this->cache->set($key, $response, $expires, $tags);
+
+        // FIX-036: Also store in semantic cache for fuzzy matching.
+        if (\Drupal::hasService('jaraba_copilot_v2.semantic_cache')) {
+            try {
+                $semanticCache = \Drupal::service('jaraba_copilot_v2.semantic_cache');
+                $tenantId = $context['tenant_id'] ?? $context['vertical'] ?? '';
+                $responseText = $response['text'] ?? json_encode($response);
+                $semanticCache->set($message, $responseText, $mode, (string) $tenantId, $ttl);
+            } catch (\Exception $e) {
+                // Non-critical — exact cache already stored.
+            }
+        }
 
         $this->logger->debug('Copilot cache SET: @key (TTL: @ttl)', [
             '@key' => $key,

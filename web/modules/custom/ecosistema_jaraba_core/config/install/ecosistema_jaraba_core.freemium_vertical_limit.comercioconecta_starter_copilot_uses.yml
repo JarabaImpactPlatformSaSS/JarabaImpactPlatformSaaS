@@ -1,0 +1,11 @@
+id: comercioconecta_starter_copilot_uses
+label: 'ComercioConecta Starter: Copilot Uses'
+vertical: comercioconecta
+plan: starter
+feature_key: copilot_uses_per_month
+limit_value: 200
+description: 'Maximo 200 usos del copiloto IA por mes en plan Starter ComercioConecta.'
+upgrade_message: 'Has alcanzado el limite de 200 consultas IA este mes. Actualiza a Profesional para usos ilimitados.'
+expected_conversion: 0.25
+weight: 110
+status: true

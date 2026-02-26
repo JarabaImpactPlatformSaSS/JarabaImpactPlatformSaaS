@@ -152,3 +152,39 @@ lenis-scroll:
     - core/drupal
     - core/once
     - ecosistema_jaraba_theme/lenis
+
+# Blog Hero Particles — Canvas network animation for blog hero
+blog-hero-particles:
+  version: 1.0.0
+  js:
+    js/blog-hero-particles.js: {}
+  dependencies:
+    - core/drupal
+
+# Lead Magnet — Kit de Impulso Digital form (public subscribe)
+lead-magnet:
+  version: 1.0.0
+  js:
+    js/lead-magnet.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# Pricing Page — /planes (178_MetaSite_Remediation)
+pricing-page:
+  version: 1.0.0
+  css:
+    theme:
+      css/components/pricing-page.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# Contact Form — /contacto (Sprint 3 Remediation)
+contact-form:
+  version: 1.0.0
+  js:
+    js/contact-form.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

@@ -1,0 +1,237 @@
+// @file scss/components/_contact-page.scss
+// Estilos para la página de contacto /contacto.
+//
+// DIRECTRICES:
+// - SSOT Design Tokens: var(--ej-*)
+// - Dart Sass: @use
+// - Mobile-first
+// - Glassmorphism
+
+.contact-page {
+
+  // ─── Hero ──────────────────────────────────────────────────────────
+  &__hero {
+    padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem) var(--ej-space-lg, 2rem);
+    text-align: center;
+  }
+
+  &__hero-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  &__eyebrow {
+    display: block;
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-naranja-impulso, #ff8c42);
+    margin-bottom: var(--ej-space-xs, 0.5rem);
+  }
+
+  &__title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-2xl, 1.75rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+    @media (min-width: 768px) { font-size: var(--ej-text-3xl, 2.25rem); }
+  }
+
+  &__subtitle {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-base, 1rem);
+    line-height: 1.5;
+  }
+
+  // ─── Grid layout ───────────────────────────────────────────────────
+  &__grid {
+    padding: 0 var(--ej-space-lg, 2rem) var(--ej-space-xxl, 5rem);
+  }
+
+  &__container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ej-space-xl, 3rem);
+    @media (min-width: 768px) {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+  }
+
+  // ─── Form ──────────────────────────────────────────────────────────
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ej-space-md, 1rem);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    &--checkbox {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--ej-space-sm, 0.75rem);
+
+      input[type="checkbox"] {
+        margin-top: 3px;
+        accent-color: var(--ej-naranja-impulso, #ff8c42);
+      }
+    }
+  }
+
+  &__label {
+    font-size: var(--ej-text-sm, 0.875rem);
+    font-weight: 600;
+    color: var(--ej-color-heading, #1a1a2e);
+
+    &--small {
+      font-weight: 400;
+      font-size: var(--ej-text-xs, 0.75rem);
+      color: var(--ej-color-muted, #6b7280);
+
+      a {
+        color: var(--ej-naranja-impulso, #ff8c42);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__input,
+  &__select,
+  &__textarea {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--ej-border-glass, rgba(0, 0, 0, 0.12));
+    border-radius: var(--ej-radius-md, 0.75rem);
+    font-size: var(--ej-text-base, 1rem);
+    font-family: inherit;
+    background: var(--ej-bg-input, #fff);
+    color: var(--ej-color-text, #1f2937);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-naranja-impulso, #ff8c42);
+      box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+    }
+
+    &::placeholder {
+      color: var(--ej-color-muted, #9ca3af);
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  &__hp {
+    position: absolute;
+    left: -9999px;
+    height: 0;
+    overflow: hidden;
+  }
+
+  &__submit {
+    margin-top: var(--ej-space-sm, 0.75rem);
+  }
+
+  // ─── Messages ──────────────────────────────────────────────────────
+  &__message {
+    padding: 0.75rem 1rem;
+    border-radius: var(--ej-radius-md, 0.75rem);
+    font-size: var(--ej-text-sm, 0.875rem);
+    display: flex;
+    align-items: center;
+    gap: var(--ej-space-xs, 0.5rem);
+
+    &--success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--ej-verde-crecimiento, #10b981);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    &--error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+  }
+
+  // ─── Info column ───────────────────────────────────────────────────
+  &__info-card {
+    background: var(--ej-bg-glass, rgba(255, 255, 255, 0.06));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.12));
+    border-radius: var(--ej-radius-xl, 1.5rem);
+    padding: var(--ej-space-lg, 2rem);
+    margin-bottom: var(--ej-space-md, 1rem);
+  }
+
+  &__info-title {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-lg, 1.25rem);
+    font-weight: 700;
+    color: var(--ej-color-heading, #1a1a2e);
+    margin: 0 0 var(--ej-space-md, 1rem);
+  }
+
+  &__info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ej-space-sm, 0.75rem);
+    padding: var(--ej-space-sm, 0.75rem) 0;
+    border-bottom: 1px solid var(--ej-border-glass, rgba(0, 0, 0, 0.06));
+
+    &:last-child { border-bottom: none; }
+
+    svg {
+      color: var(--ej-naranja-impulso, #ff8c42);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    a {
+      color: var(--ej-naranja-impulso, #ff8c42);
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  &__info-label {
+    display: block;
+    font-size: var(--ej-text-xs, 0.75rem);
+    color: var(--ej-color-muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.15rem;
+  }
+
+  &__wa-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+// ─── Dark mode ─────────────────────────────────────────────────────────
+[data-theme='dark'] .contact-page,
+.dark-mode .contact-page {
+  &__title, &__info-title { color: var(--ej-color-heading-dark, #f1f5f9); }
+  &__label { color: var(--ej-color-text-dark, #e2e8f0); }
+  &__input, &__select, &__textarea {
+    background: rgba(26, 26, 46, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--ej-color-text-dark, #e2e8f0);
+  }
+  &__info-card {
+    background: var(--ej-bg-glass-dark, rgba(26, 26, 46, 0.6));
+    border-color: var(--ej-border-glass-dark, rgba(255, 255, 255, 0.08));
+  }
+}

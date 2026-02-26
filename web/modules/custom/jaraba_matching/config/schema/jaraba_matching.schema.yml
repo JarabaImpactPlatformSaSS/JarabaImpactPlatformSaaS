@@ -1,0 +1,63 @@
+# FIX-050: Job matching settings schema.
+jaraba_matching.settings:
+  type: config_object
+  label: 'Jaraba Matching Settings'
+  mapping:
+    semantic_matching_enabled:
+      type: boolean
+      label: 'Enable semantic matching via Qdrant'
+    scoring:
+      type: mapping
+      label: 'Scoring Configuration'
+      mapping:
+        weights:
+          type: mapping
+          label: 'Scoring Weights'
+          mapping:
+            skills_match:
+              type: float
+              label: 'Skills Match Weight'
+            experience_alignment:
+              type: float
+              label: 'Experience Alignment Weight'
+            location_proximity:
+              type: float
+              label: 'Location Proximity Weight'
+            salary_compatibility:
+              type: float
+              label: 'Salary Compatibility Weight'
+            semantic_similarity:
+              type: float
+              label: 'Semantic Similarity Weight'
+            freshness_boost:
+              type: float
+              label: 'Freshness Boost Weight'
+        min_score:
+          type: float
+          label: 'Minimum Score Threshold'
+        max_results:
+          type: integer
+          label: 'Maximum Results per Query'
+    semantic:
+      type: mapping
+      label: 'Semantic Search Configuration'
+      mapping:
+        collection:
+          type: string
+          label: 'Qdrant Collection Name'
+        min_similarity:
+          type: float
+          label: 'Minimum Similarity Score'
+        vector_top_k:
+          type: integer
+          label: 'Vector Search Top K'
+    freshness:
+      type: mapping
+      label: 'Freshness Decay Configuration'
+      mapping:
+        decay_start_days:
+          type: integer
+          label: 'Days Before Decay Starts'
+        decay_end_days:
+          type: integer
+          label: 'Days at Zero Freshness'

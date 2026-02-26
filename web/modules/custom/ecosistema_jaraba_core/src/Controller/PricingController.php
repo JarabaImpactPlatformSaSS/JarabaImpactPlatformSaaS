@@ -6,32 +6,49 @@ use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\ecosistema_jaraba_core\Entity\VerticalInterface;
+use Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Controlador para la API pública de precios.
+ * Controlador para la API pública de precios y página /planes.
  *
- * Proporciona endpoints que pueden ser consumidos por:
- * - Páginas de pricing públicas
- * - Widgets embebidos
- * - Comparadores externos
+ * Proporciona:
+ * - Endpoints JSON API consumidos por widgets y comparadores externos
+ * - Página HTML /planes con pricing dinámico desde ConfigEntities
  *
- * Todos los endpoints son públicos y con cache agresivo.
+ * DIRECTRICES:
+ * - i18n: $this->t() en todos los textos facing del controlador.
+ * - LEGAL-ROUTE-001: URL en español (/planes), SEO-friendly.
+ * - PLAN-CASCADE-001: Datos resueltos vía PlanResolverService cascade.
+ * - Zero Region Policy: Template usa clean_content, no page.content.
  *
  * @example
  * GET /api/v1/pricing/agroconecta
  * Retorna los planes disponibles con precios para AgroConecta.
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService
  */
 class PricingController extends ControllerBase
 {
+
+    /**
+     * The meta-site pricing service (optional, may be NULL in older installs).
+     *
+     * @var \Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService|null
+     */
+    protected ?MetaSitePricingService $pricingService = NULL;
 
     /**
      * {@inheritdoc}
      */
     public static function create(ContainerInterface $container)
     {
-        return new static();
+        $instance = new static();
+        if ($container->has('ecosistema_jaraba_core.metasite_pricing')) {
+            $instance->pricingService = $container->get('ecosistema_jaraba_core.metasite_pricing');
+        }
+        return $instance;
     }
 
     /**
@@ -255,6 +272,85 @@ class PricingController extends ControllerBase
         }
 
         return $formatted;
+    }
+
+    /**
+     * Renders the /planes pricing page with dynamic data from ConfigEntities.
+     *
+     * Loads all SaasPlanTier entities sorted by weight, enriches each with
+     * features/limits from SaasPlanFeatures (via cascade resolution),
+     * and passes the data to the pricing_page theme.
+     *
+     * The template renders:
+     * - Hero section with headline and subheadline
+     * - Grid of 3 pricing cards (Free / Pro / Enterprise)
+     * - Feature comparison table
+     * - FAQ section
+     * - Guarantee and final CTA
+     *
+     * @return array
+     *   Render array with pricing_page theme.
+     */
+    public function pricingPage(): array
+    {
+        // Get all tiers with features (using _default vertical for meta-site).
+        $tiers = $this->pricingService
+            ? $this->pricingService->getPricingPreview('_default')
+            : [];
+
+        return [
+            '#theme' => 'pricing_page',
+            '#tiers' => $tiers,
+            '#page_title' => $this->t('Elige el plan que se adapta a ti'),
+            '#page_subtitle' => $this->t('Empieza gratis. Actualiza cuando lo necesites. Sin permanencia.'),
+            '#guarantee_text' => $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.'),
+            '#faq_items' => $this->getPricingFaq(),
+            '#attached' => [
+                'library' => [
+                    'ecosistema_jaraba_core/global',
+                    'ecosistema_jaraba_theme/pricing-page',
+                ],
+            ],
+            '#cache' => [
+                'tags' => ['config:saas_plan_tier_list', 'config:saas_plan_features_list'],
+                'contexts' => ['languages:language_content'],
+                'max-age' => 3600,
+            ],
+        ];
+    }
+
+    /**
+     * Builds the FAQ items for the pricing page.
+     *
+     * DIRECTRIZ: i18n — $this->t() en todos los textos.
+     *
+     * @return array
+     *   Array of FAQ items with 'question' and 'answer' keys.
+     */
+    protected function getPricingFaq(): array
+    {
+        return [
+            [
+                'question' => $this->t('¿Puedo empezar gratis?'),
+                'answer' => $this->t('Sí. El plan Starter es 100%% gratuito y no requiere tarjeta de crédito. Incluye acceso a la plataforma con funcionalidades básicas.'),
+            ],
+            [
+                'question' => $this->t('¿Puedo cambiar de plan en cualquier momento?'),
+                'answer' => $this->t('Sí. Puedes actualizar o cambiar tu plan en cualquier momento desde tu panel de control. Los cambios se aplican inmediatamente.'),
+            ],
+            [
+                'question' => $this->t('¿Qué métodos de pago aceptáis?'),
+                'answer' => $this->t('Aceptamos tarjetas de crédito/débito (Visa, Mastercard, AMEX) y SEPA (domiciliación bancaria) a través de Stripe, nuestro procesador de pagos seguro.'),
+            ],
+            [
+                'question' => $this->t('¿Hay permanencia o compromiso?'),
+                'answer' => $this->t('No. Puedes cancelar cuando quieras. Si cancelas, mantienes acceso hasta el final del período facturado.'),
+            ],
+            [
+                'question' => $this->t('¿Ofrecéis descuento para instituciones o grandes organizaciones?'),
+                'answer' => $this->t('Sí. El plan Empresa incluye precios personalizados según volumen. Contacta con nosotros para recibir una propuesta a medida.'),
+            ],
+        ];
     }
 
 }

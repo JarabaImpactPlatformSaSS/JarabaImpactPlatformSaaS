@@ -8,8 +8,11 @@ use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
 use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
+use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
+use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
 use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
+use Drupal\jaraba_ai_agents\Tool\ToolRegistry;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -18,8 +21,9 @@ use Psr\Log\LoggerInterface;
  * Uses intelligent model selection for cost optimization.
  *
  * FIX-008: Constructor alineado con BaseAgent (6 args) + ModelRouterService.
- * services.yml inyecta 7 argumentos: aiProvider, configFactory, logger,
- * brandVoice, observability, modelRouter, promptBuilder.
+ * FIX-029: Tool Registry injected for agentic tool use.
+ * FIX-031: Provider Fallback for resilience.
+ * FIX-033: Context Window Manager.
  */
 class SmartMarketingAgent extends SmartBaseAgent
 {
@@ -35,9 +39,15 @@ class SmartMarketingAgent extends SmartBaseAgent
         AIObservabilityService $observability,
         ModelRouterService $modelRouter,
         ?UnifiedPromptBuilder $promptBuilder = NULL,
+        ?ToolRegistry $toolRegistry = NULL,
+        ?ProviderFallbackService $providerFallback = NULL,
+        ?ContextWindowManager $contextWindowManager = NULL,
     ) {
         parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
         $this->setModelRouter($modelRouter);
+        $this->setToolRegistry($toolRegistry);
+        $this->setProviderFallback($providerFallback);
+        $this->setContextWindowManager($contextWindowManager);
     }
 
     /**

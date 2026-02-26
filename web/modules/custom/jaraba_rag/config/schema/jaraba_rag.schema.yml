@@ -92,6 +92,19 @@ jaraba_rag.settings:
         max_tokens:
           type: integer
           label: 'Max Tokens'
+    reranking:
+      type: mapping
+      label: 'Re-ranking Settings'
+      mapping:
+        strategy:
+          type: string
+          label: 'Re-ranking Strategy (keyword, llm, hybrid)'
+        llm_weight:
+          type: float
+          label: 'LLM Score Weight in Hybrid Mode'
+        vector_weight:
+          type: float
+          label: 'Vector Score Weight in Hybrid Mode'
     indexable_entities:
       type: sequence
       label: 'Indexable Entities'

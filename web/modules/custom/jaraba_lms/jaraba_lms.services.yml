@@ -93,3 +93,11 @@ services:
     parent: logger.channel_base
     arguments: ['jaraba_lms']
 
+
+  # FIX-048: Adaptive Learning Service
+  jaraba_lms.adaptive_learning:
+    class: Drupal\jaraba_lms\Service\AdaptiveLearningService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_lms'
+      - '@?jaraba_ai_agents.support_agent'

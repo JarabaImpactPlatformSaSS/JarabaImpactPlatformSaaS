@@ -1,0 +1,214 @@
+{#
+/**
+ * @file pricing-page.html.twig
+ * Página /planes — Pricing dinámico desde SaasPlanTier/SaasPlanFeatures.
+ *
+ * VARIABLES:
+ * - tiers: Array de tiers con:
+ *   - tier_key: string (e.g. 'starter', 'professional', 'enterprise')
+ *   - label: string (nombre legible del plan)
+ *   - description: string
+ *   - features: string[] (lista de features habilitadas)
+ *   - limits: object (key → int)
+ *   - is_recommended: bool (TRUE para 'professional')
+ * - page_title: string
+ * - page_subtitle: string
+ * - guarantee_text: string
+ * - faq_items: array de {question, answer}
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %} en todos los textos estáticos
+ * - ICON-CONVENTION-001: jaraba_icon('category', 'name', {variant: 'duotone'})
+ * - ICON-COLOR-001: Colores de paleta Jaraba (naranja-impulso, verde-innovacion)
+ * - CSS: var(--ej-*) con fallbacks inline
+ * - BRAND-FONT-001: Outfit como font-family principal
+ * - TWIG-XSS-001: Todos los datos con autoescaping, NUNCA |raw
+ *
+ * DATOS DINÁMICOS:
+ * Los tiers y features provienen de SaasPlanTier y SaasPlanFeatures
+ * ConfigEntities vía MetaSitePricingService → PlanResolverService cascade:
+ *   1. Specific: {vertical}_{tier}
+ *   2. Default: _default_{tier}
+ *   3. Fallback: datos hardcoded del servicio
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Controller\PricingController::pricingPage()
+ * @see \Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService
+ */
+#}
+
+{# === HERO SECTION === #}
+<section class="pricing-hero reveal-element reveal-fade-up" aria-labelledby="pricing-title">
+  <div class="pricing-hero__container">
+    <span class="pricing-hero__eyebrow">{% trans %}Planes y Precios{% endtrans %}</span>
+    <h1 id="pricing-title" class="pricing-hero__title">
+      {{ page_title }}
+    </h1>
+    <p class="pricing-hero__subtitle">
+      {{ page_subtitle }}
+    </p>
+  </div>
+</section>
+
+{# === PRICING CARDS GRID === #}
+<section class="pricing-grid reveal-element reveal-fade-up" aria-label="{% trans %}Comparar planes{% endtrans %}">
+  <div class="pricing-grid__container">
+    {% for tier in tiers %}
+      <article class="pricing-card{% if tier.is_recommended %} pricing-card--recommended{% endif %}"
+               id="plan-{{ tier.tier_key }}"
+               aria-labelledby="plan-title-{{ tier.tier_key }}">
+
+        {# Badge "Más popular" para plan recomendado #}
+        {% if tier.is_recommended %}
+          <div class="pricing-card__badge" aria-label="{% trans %}Plan más popular{% endtrans %}">
+            {% trans %}Más popular{% endtrans %}
+          </div>
+        {% endif %}
+
+        {# Plan name + description #}
+        <div class="pricing-card__header">
+          <h2 id="plan-title-{{ tier.tier_key }}" class="pricing-card__name">
+            {{ tier.label }}
+          </h2>
+          <p class="pricing-card__description">{{ tier.description }}</p>
+        </div>
+
+        {# Price display #}
+        <div class="pricing-card__price">
+          {% if tier.tier_key == 'starter' %}
+            <span class="pricing-card__amount">{% trans %}Gratis{% endtrans %}</span>
+            <span class="pricing-card__period">{% trans %}para siempre{% endtrans %}</span>
+          {% elseif tier.tier_key == 'enterprise' %}
+            <span class="pricing-card__amount">{% trans %}A medida{% endtrans %}</span>
+            <span class="pricing-card__period">{% trans %}contactar{% endtrans %}</span>
+          {% else %}
+            <span class="pricing-card__amount">{% trans %}Desde 29€{% endtrans %}</span>
+            <span class="pricing-card__period">/{% trans %}mes{% endtrans %}</span>
+          {% endif %}
+        </div>
+
+        {# Features list #}
+        {% if tier.features is not empty %}
+          <ul class="pricing-card__features" role="list">
+            {% for feature in tier.features %}
+              <li class="pricing-card__feature">
+                <svg class="pricing-card__check" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M13.3 4.7L6 12 2.7 8.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>{{ feature|t }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {# CTA button #}
+        <div class="pricing-card__cta">
+          {% if tier.tier_key == 'starter' %}
+            <a href="/user/register?plan=starter"
+               class="btn btn--primary btn--lg pricing-card__btn"
+               data-track-cta="pricing_starter"
+               data-track-position="pricing_page">
+              {% trans %}Empezar gratis{% endtrans %}
+            </a>
+          {% elseif tier.tier_key == 'enterprise' %}
+            <a href="/contacto?asunto=plan-empresa"
+               class="btn btn--outline btn--lg pricing-card__btn"
+               data-track-cta="pricing_enterprise"
+               data-track-position="pricing_page">
+              {% trans %}Contactar{% endtrans %}
+            </a>
+          {% else %}
+            <a href="/user/register?plan={{ tier.tier_key }}"
+               class="btn btn--primary btn--lg pricing-card__btn"
+               data-track-cta="pricing_{{ tier.tier_key }}"
+               data-track-position="pricing_page">
+              {% trans %}Empezar ahora{% endtrans %}
+            </a>
+          {% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# === GUARANTEE SECTION === #}
+<section class="pricing-guarantee reveal-element reveal-fade-up">
+  <div class="pricing-guarantee__container">
+    <svg class="pricing-guarantee__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="pricing-guarantee__text">{{ guarantee_text }}</p>
+  </div>
+</section>
+
+{# === FAQ SECTION === #}
+{% if faq_items is not empty %}
+  <section class="pricing-faq reveal-element reveal-fade-up" aria-labelledby="pricing-faq-title">
+    <div class="pricing-faq__container">
+      <h2 id="pricing-faq-title" class="pricing-faq__title">
+        {% trans %}Preguntas frecuentes{% endtrans %}
+      </h2>
+
+      <div class="pricing-faq__list" itemscope itemtype="https://schema.org/FAQPage">
+        {% for item in faq_items %}
+          <details class="pricing-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <summary class="pricing-faq__question" itemprop="name">
+              {{ item.question }}
+              <svg class="pricing-faq__chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </summary>
+            <div class="pricing-faq__answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">{{ item.answer }}</p>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# === FINAL CTA === #}
+<section class="pricing-final-cta reveal-element reveal-fade-up">
+  <div class="pricing-final-cta__container">
+    <h2 class="pricing-final-cta__title">
+      {% trans %}¿Listo para empezar?{% endtrans %}
+    </h2>
+    <p class="pricing-final-cta__subtitle">
+      {% trans %}Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.{% endtrans %}
+    </p>
+    <a href="/user/register"
+       class="btn btn--primary btn--xl pricing-final-cta__btn"
+       data-track-cta="pricing_final_cta"
+       data-track-position="pricing_page_bottom">
+      {% trans %}Crear cuenta gratuita{% endtrans %}
+    </a>
+  </div>
+</section>
+
+{# === SCHEMA.ORG STRUCTURED DATA === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Jaraba Impact Platform",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": [
+    {% for tier in tiers %}
+    {
+      "@type": "Offer",
+      "name": {{ tier.label|json_encode(constant('JSON_UNESCAPED_UNICODE')) }},
+      "priceCurrency": "EUR",
+      {% if tier.tier_key == 'starter' %}
+      "price": "0",
+      {% elseif tier.tier_key == 'professional' %}
+      "price": "29",
+      {% endif %}
+      "description": {{ tier.description|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}
+    }{% if not loop.last %},{% endif %}
+
+    {% endfor %}
+  ]
+}
+</script>
