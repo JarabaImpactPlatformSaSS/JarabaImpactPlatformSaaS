@@ -12,17 +12,7 @@
 #}
 {{ attach_library('ecosistema_jaraba_theme/content-hub') }}
 
-<div class="page-wrapper page-wrapper--clean">
-  {# LOW-09: Header with only to prevent scope leakage #}
-  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
-    site_name: site_name,
-    site_slogan: site_slogan,
-    logo: logo,
-    logged_in: logged_in,
-    theme_settings: theme_settings
-  } only %}
-
-  <main class="category-page">
+<div class="category-page">
     {# Category hero #}
     <section class="category-hero" style="--category-color: {{ category.color|default('#233D63') }}">
       <div class="container">
@@ -62,8 +52,4 @@
         {% endif %}
       </div>
     </section>
-  </main>
-
-  {# Footer del tema #}
-  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' %}
 </div>
