@@ -41,9 +41,9 @@ jaraba_rag.settings:
         top_k:
           type: integer
           label: 'Top K Results'
-        min_score:
+        score_threshold:
           type: float
-          label: 'Minimum Similarity Score'
+          label: 'Minimum Similarity Score Threshold'
         include_vertical_content:
           type: boolean
           label: 'Include Vertical Content'

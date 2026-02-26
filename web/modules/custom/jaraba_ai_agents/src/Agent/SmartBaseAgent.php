@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_ai_agents\Agent;
 
-use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
-use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
-use Psr\Log\LoggerInterface;
 
 /**
  * Smart Base Agent with Model Routing.
  *
  * Extends BaseAgent with intelligent model selection based on task complexity.
  * Reduces costs by up to 40% by routing simple tasks to cheaper models.
+ *
+ * FIX-001: Restaurado contrato con BaseAgent — callAiApi() ahora invoca
+ * buildSystemPrompt() (identidad + brand voice + unified context + vertical)
+ * y registra observabilidad completa, preservando el contrato de BaseAgent
+ * mientras añade model routing inteligente.
  */
 abstract class SmartBaseAgent extends BaseAgent
 {
@@ -40,18 +41,12 @@ abstract class SmartBaseAgent extends BaseAgent
     }
 
     /**
-     * Sets the current action for routing context.
-     *
-     * @param string $action
-     *   The action being executed.
-     */
-    protected function setCurrentAction(string $action): void
-    {
-        $this->currentAction = $action;
-    }
-
-    /**
      * Calls the AI provider with intelligent model routing.
+     *
+     * FIX-001: Preserva el contrato completo de BaseAgent::callAiApi():
+     * 1. buildSystemPrompt() — AI-IDENTITY-001 + Brand Voice + Unified Context
+     * 2. observability->log() — Tracking completo de métricas
+     * 3. Model routing inteligente vía ModelRouterService
      *
      * @param string $prompt
      *   The user prompt to send.
@@ -67,12 +62,26 @@ abstract class SmartBaseAgent extends BaseAgent
      */
     protected function callAiApi(string $prompt, array $options = []): array
     {
-        try {
-            // Get routing decision.
-            $routingConfig = $this->getRoutingConfig($prompt, $options);
+        $startTime = microtime(TRUE);
+        $success = FALSE;
+        $inputTokens = 0;
+        $outputTokens = 0;
+        $modelId = '';
+        $providerId = '';
+        $tier = 'balanced';
 
-            $provider = $this->aiProvider->createInstance($routingConfig['provider_id']);
-            $systemPrompt = $this->getBrandVoicePrompt();
+        try {
+            // 1. System prompt COMPLETO (identidad + brand voice + unified context + vertical).
+            $systemPrompt = $this->buildSystemPrompt($prompt);
+
+            // 2. Model routing inteligente.
+            $routingConfig = $this->getRoutingConfig($prompt, $options);
+            $tier = $routingConfig['tier'];
+            $providerId = $routingConfig['provider_id'];
+            $modelId = $routingConfig['model_id'];
+
+            // 3. Llamada al provider via ai.provider framework.
+            $provider = $this->aiProvider->createInstance($providerId);
 
             $chatInput = new ChatInput([
                 new ChatMessage('system', $systemPrompt),
@@ -83,36 +92,60 @@ abstract class SmartBaseAgent extends BaseAgent
                 'temperature' => $options['temperature'] ?? 0.7,
             ];
 
-            $response = $provider->chat($chatInput, $routingConfig['model_id'], $configuration);
+            $response = $provider->chat($chatInput, $modelId, $configuration);
             $text = $response->getNormalized()->getText();
 
-            $this->logger->info('Smart Agent @agent executed: tier=@tier, model=@model, tenant=@tenant', [
+            // Estimar tokens (aprox 4 caracteres por token).
+            $inputTokens = (int) ceil((mb_strlen($systemPrompt) + mb_strlen($prompt)) / 4);
+            $outputTokens = (int) ceil(mb_strlen($text) / 4);
+            $success = TRUE;
+
+            $this->logger->info('Smart Agent @agent ejecutado: tier=@tier, model=@model, tenant=@tenant', [
                 '@agent' => $this->getAgentId(),
-                '@tier' => $routingConfig['tier'],
-                '@model' => $routingConfig['model_id'],
+                '@tier' => $tier,
+                '@model' => $modelId,
                 '@tenant' => $this->tenantId ?? 'global',
             ]);
 
-            return [
+            $result = [
                 'success' => TRUE,
                 'data' => ['text' => $text],
                 'tenant_id' => $this->tenantId,
                 'vertical' => $this->vertical,
                 'agent_id' => $this->getAgentId(),
                 'routing' => [
-                    'tier' => $routingConfig['tier'],
-                    'model' => $routingConfig['model_id'],
+                    'tier' => $tier,
+                    'model' => $modelId,
                     'estimated_cost' => $routingConfig['estimated_cost'],
                 ],
             ];
 
         } catch (\Exception $e) {
             $this->logger->error('Smart AI Agent error: @msg', ['@msg' => $e->getMessage()]);
-            return [
+            $result = [
                 'success' => FALSE,
                 'error' => $e->getMessage(),
             ];
         }
+
+        // 4. Observabilidad OBLIGATORIA (siempre se registra, éxito o fallo).
+        $durationMs = (int) ((microtime(TRUE) - $startTime) * 1000);
+
+        $this->observability->log([
+            'agent_id' => $this->getAgentId(),
+            'action' => $this->currentAction,
+            'tier' => $tier,
+            'model_id' => $modelId,
+            'provider_id' => $providerId,
+            'tenant_id' => $this->tenantId,
+            'vertical' => $this->vertical,
+            'input_tokens' => $inputTokens,
+            'output_tokens' => $outputTokens,
+            'duration_ms' => $durationMs,
+            'success' => $success,
+        ]);
+
+        return $result;
     }
 
     /**

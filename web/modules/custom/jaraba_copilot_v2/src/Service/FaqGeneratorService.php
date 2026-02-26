@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_copilot_v2\Service;
 
+use Drupal\ai\OperationType\Chat\ChatInput;
+use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Drupal\node\NodeInterface;
 use Psr\Log\LoggerInterface;
 
@@ -12,20 +15,33 @@ use Psr\Log\LoggerInterface;
  * Servicio para generar FAQs automáticas desde preguntas frecuentes.
  *
  * Usa el CopilotQueryLoggerService para obtener preguntas frecuentes
- * y ClaudeApiService para generar respuestas estructuradas.
+ * y el framework ai.provider de Drupal para generar respuestas via LLM.
  *
  * Las FAQs generadas se guardan como nodos de tipo 'faq' o en un
  * campo de configuración según la vertical.
+ *
+ * FIX-012: Migrado de ClaudeApiService (HTTP directo a Anthropic) al
+ * framework ai.provider para beneficiarse de: failover multi-proveedor,
+ * circuit breaker, cost tracking centralizado y gestión unificada de API keys.
  */
 class FaqGeneratorService
 {
 
     /**
      * Constructor del servicio.
+     *
+     * @param \Drupal\jaraba_copilot_v2\Service\CopilotQueryLoggerService $queryLogger
+     *   Servicio de logging de queries del copiloto.
+     * @param object|null $aiProvider
+     *   Gestor de proveedores IA (ai.provider). Opcional para entornos sin módulo AI.
+     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+     *   Gestor de tipos de entidad.
+     * @param \Psr\Log\LoggerInterface $logger
+     *   Logger del canal jaraba_copilot_v2.
      */
     public function __construct(
         protected CopilotQueryLoggerService $queryLogger,
-        protected ClaudeApiService $claudeApi,
+        protected ?object $aiProvider,
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerInterface $logger,
     ) {
@@ -87,10 +103,18 @@ class FaqGeneratorService
 
     /**
      * Llama al LLM para generar FAQs estructuradas.
+     *
+     * FIX-012: Usa ai.provider (ChatInput/ChatMessage) en lugar de
+     * ClaudeApiService HTTP directo. Incluye AIIdentityRule.
      */
     protected function callLlmForFaqs(string $questionsText, int $limit): array
     {
-        $systemPrompt = <<<PROMPT
+        if (!$this->aiProvider) {
+            $this->logger->error('FaqGenerator: ai.provider no disponible. Módulo AI no instalado.');
+            return [];
+        }
+
+        $systemPrompt = AIIdentityRule::apply(<<<PROMPT
 Eres un experto en comunicación y UX. Tu tarea es generar FAQs claras y útiles para una plataforma SaaS llamada "Jaraba Impact Platform".
 
 La plataforma tiene las siguientes verticales:
@@ -117,7 +141,7 @@ FORMATO DE RESPUESTA (JSON array):
 ]
 
 Solo responde con el JSON, sin explicaciones adicionales.
-PROMPT;
+PROMPT);
 
         $userMessage = <<<MSG
 Genera un máximo de {$limit} FAQs a partir de estas preguntas frecuentes de usuarios:
@@ -128,19 +152,30 @@ Recuerda: responde SOLO con el JSON array de FAQs.
 MSG;
 
         try {
-            // Usar chat() que es el método público de ClaudeApiService
-            // El prompt completo va como mensaje, modo 'general'
-            $fullPrompt = $systemPrompt . "\n\n" . $userMessage;
-            $response = $this->claudeApi->chat($fullPrompt, [], 'general');
+            $defaults = $this->aiProvider->getDefaultProviderForOperationType('chat');
+            if (empty($defaults)) {
+                $this->logger->error('FaqGenerator: No hay proveedor IA configurado para operación chat.');
+                return [];
+            }
 
-            // chat() devuelve ['text' => ..., 'mode' => ..., 'suggestions' => ...]
-            $text = $response['text'] ?? '';
+            $provider = $this->aiProvider->createInstance($defaults['provider_id']);
 
-            // Intentar parsear JSON
+            $chatInput = new ChatInput([
+                new ChatMessage('system', $systemPrompt),
+                new ChatMessage('user', $userMessage),
+            ]);
+
+            $response = $provider->chat($chatInput, $defaults['model_id'], [
+                'temperature' => 0.5,
+            ]);
+
+            $text = $response->getNormalized()->getText();
+
+            // Intentar parsear JSON.
             $faqs = $this->parseJsonResponse($text);
 
             if (!empty($faqs)) {
-                $this->logger->info('FaqGenerator: Generated @count FAQs successfully', [
+                $this->logger->info('FaqGenerator: Generated @count FAQs successfully via ai.provider', [
                     '@count' => count($faqs),
                 ]);
                 return $faqs;
@@ -148,7 +183,7 @@ MSG;
 
             return [];
         } catch (\Exception $e) {
-            $this->logger->error('FaqGenerator: Error calling LLM: @error', [
+            $this->logger->error('FaqGenerator: Error calling LLM via ai.provider: @error', [
                 '@error' => $e->getMessage(),
             ]);
             return [];

@@ -84,10 +84,13 @@ class AICostOptimizationService
         $complexity = $this->detectComplexity($prompt);
 
         // Verificar budget del tenant.
-        $budget = $this->getTenantBudget($tenantId);
+        // FIX-005: getTenantBudget() retorna centavos, getTenantUsage() retorna dólares.
+        // Convertir budget a dólares antes de comparar.
+        $budgetCents = $this->getTenantBudget($tenantId);
+        $budget = $budgetCents / 100;
         $usage = $this->getTenantUsage($tenantId);
 
-        // Si está cerca del límite, degradar a modelo más barato.
+        // Si está cerca del límite (90%), degradar a modelo más barato.
         if ($usage >= $budget * 0.9) {
             $complexity = 'simple';
             $this->loggerFactory->get('ai_cost')->warning(
@@ -261,9 +264,33 @@ class AICostOptimizationService
      * @return string|null
      *   Respuesta cacheada o NULL.
      */
-    public function getCachedResponse(string $prompt, string $model): ?string
+    /**
+     * FIX-004: Método helper para obtener el tenant actual del contexto.
+     *
+     * @return int|null
+     *   ID del tenant actual o NULL si no hay contexto.
+     */
+    protected function getCurrentTenantId(): ?int
     {
-        $hash = md5($prompt . $model);
+        // Intentar obtener del TenantContextService si está disponible.
+        try {
+            if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+                $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+                $tenant = $tenantContext->getCurrentTenant();
+                return $tenant ? (int) $tenant->id() : NULL;
+            }
+        }
+        catch (\Exception $e) {
+            // Silenciar — no bloquear por resolución de tenant.
+        }
+        return NULL;
+    }
+
+    public function getCachedResponse(string $prompt, string $model, ?int $tenantId = NULL): ?string
+    {
+        // FIX-004: Incluir tenant_id en la cache key para evitar cross-tenant leak.
+        $tenantId = $tenantId ?? $this->getCurrentTenantId() ?? 0;
+        $hash = md5($prompt . $model . (string) $tenantId);
         $key = "ai_cache_{$hash}";
 
         $cached = $this->state->get($key);
@@ -291,9 +318,11 @@ class AICostOptimizationService
      * @param int $ttl
      *   Tiempo de vida en segundos (default: 1 hora).
      */
-    public function cacheResponse(string $prompt, string $model, string $response, int $ttl = 3600): void
+    public function cacheResponse(string $prompt, string $model, string $response, int $ttl = 3600, ?int $tenantId = NULL): void
     {
-        $hash = md5($prompt . $model);
+        // FIX-004: Incluir tenant_id en la cache key para evitar cross-tenant leak.
+        $tenantId = $tenantId ?? $this->getCurrentTenantId() ?? 0;
+        $hash = md5($prompt . $model . (string) $tenantId);
         $key = "ai_cache_{$hash}";
 
         $this->state->set($key, [

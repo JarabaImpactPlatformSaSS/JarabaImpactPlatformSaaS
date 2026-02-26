@@ -6,6 +6,7 @@ namespace Drupal\jaraba_page_builder\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -249,7 +250,10 @@ class AiContentController extends ControllerBase implements ContainerInjectionIn
             $modelId = $defaults['model_id'];
 
             $prompt = $this->buildFallbackPrompt($fieldType, $context, $currentValue);
-            $systemPrompt = 'Eres el copywriter de Jaraba Impact Platform. Genera contenido conciso y profesional en español. NUNCA menciones plataformas competidoras ni modelos de IA externos.';
+            // FIX-014: AI-IDENTITY-001 universal.
+            $systemPrompt = AIIdentityRule::apply(
+                'Eres el copywriter de Jaraba Impact Platform. Genera contenido conciso y profesional en español.'
+            );
 
             // Construir input de chat con la API correcta.
             $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([

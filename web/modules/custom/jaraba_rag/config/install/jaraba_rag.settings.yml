@@ -29,8 +29,8 @@ embeddings:
 search:
   # Número máximo de resultados a recuperar
   top_k: 5
-  # Score mínimo de similitud (0-1)
-  min_score: 0.7
+  # FIX-007: Renombrado a score_threshold para alinear con JarabaRagConfigForm.
+  score_threshold: 0.7
   # Incluir contenido compartido de vertical
   include_vertical_content: true
   # Incluir contenido compartido de plataforma

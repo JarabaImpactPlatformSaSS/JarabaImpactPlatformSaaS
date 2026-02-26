@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_andalucia_ei\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -143,8 +144,8 @@ class DocumentoRevisionIaService {
   protected function buildPrompt(string $categoria, string $titulo): string {
     $basePrompt = self::PROMPTS_POR_CATEGORIA[$categoria] ?? '';
 
-    // AI-IDENTITY-001: Use Jaraba identity.
-    return sprintf(
+    // FIX-014: AI-IDENTITY-001 universal.
+    $systemPrompt = sprintf(
       "Eres el asistente de revisión documental del programa Andalucía +ei de la Fundación Jaraba. " .
       "Documento: \"%s\". %s " .
       "Responde en formato JSON con las claves: score (número 0-100), " .
@@ -153,6 +154,7 @@ class DocumentoRevisionIaService {
       $titulo,
       $basePrompt,
     );
+    return AIIdentityRule::apply($systemPrompt);
   }
 
   /**

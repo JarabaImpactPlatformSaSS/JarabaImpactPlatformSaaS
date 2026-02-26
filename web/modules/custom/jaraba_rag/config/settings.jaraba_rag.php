@@ -105,7 +105,18 @@ $config['jaraba_rag.settings']['security'] = [
     'max_query_length' => 1000,     // Characters.
     'max_embedding_text' => 8000,   // Characters.
 
-    // Multi-tenancy whitelists.
-    'allowed_verticals' => ['agro', 'arte', 'turismo', 'empleo', 'kb'],
+    // FIX-027: Multi-tenancy whitelists using canonical vertical names.
+    'allowed_verticals' => [
+        'empleabilidad',
+        'emprendimiento',
+        'comercioconecta',
+        'agroconecta',
+        'jarabalex',
+        'serviciosconecta',
+        'andalucia_ei',
+        'jaraba_content_hub',
+        'formacion',
+        'demo',
+    ],
     'allowed_plans' => ['starter', 'growth', 'pro', 'enterprise'],
 ];

@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 class BmcValidationService {
 
   /**
-   * Los 9 bloques del Business Model Canvas.
+   * Los 9 bloques del Business Model Canvas (código → label).
    */
   const BMC_BLOCKS = [
     'CS' => 'Customer Segments',
@@ -31,6 +31,44 @@ class BmcValidationService {
     'KA' => 'Key Activities',
     'KP' => 'Key Partnerships',
     'C$' => 'Cost Structure',
+  ];
+
+  /**
+   * Mapeo canónico: código 2-letras → snake_case key.
+   *
+   * FIX-013: Constante compartida para unificar las dos representaciones
+   * de bloques BMC usadas en el sistema. La entidad Hypothesis almacena
+   * códigos 2-letras; varios servicios usan snake_case para legibilidad.
+   *
+   * Uso:
+   *   $snakeKey = BmcValidationService::CODE_TO_KEY[$code];
+   *   $code = BmcValidationService::KEY_TO_CODE[$snakeKey];
+   */
+  const CODE_TO_KEY = [
+    'CS' => 'customer_segments',
+    'VP' => 'value_propositions',
+    'CH' => 'channels',
+    'CR' => 'customer_relationships',
+    'RS' => 'revenue_streams',
+    'KR' => 'key_resources',
+    'KA' => 'key_activities',
+    'KP' => 'key_partnerships',
+    'C$' => 'cost_structure',
+  ];
+
+  /**
+   * Mapeo canónico inverso: snake_case key → código 2-letras.
+   */
+  const KEY_TO_CODE = [
+    'customer_segments' => 'CS',
+    'value_propositions' => 'VP',
+    'channels' => 'CH',
+    'customer_relationships' => 'CR',
+    'revenue_streams' => 'RS',
+    'key_resources' => 'KR',
+    'key_activities' => 'KA',
+    'key_partnerships' => 'KP',
+    'cost_structure' => 'C$',
   ];
 
   protected EntityTypeManagerInterface $entityTypeManager;

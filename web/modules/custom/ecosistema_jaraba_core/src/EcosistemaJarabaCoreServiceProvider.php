@@ -126,7 +126,8 @@ class EcosistemaJarabaCoreServiceProvider extends ServiceProviderBase
                 ->addArgument(new Reference('jaraba_tenant_knowledge.manager'))
                 ->addArgument(new Reference('jaraba_tenant_knowledge.indexer'))
                 ->addArgument(new Reference('logger.channel.ecosistema_jaraba_core'))
-                ->addArgument(new Reference('ecosistema_jaraba_core.tenant_context')); // AUDIT-CONS-N10: Proper DI for tenant context.
+                ->addArgument(new Reference('ecosistema_jaraba_core.tenant_context')) // AUDIT-CONS-N10: Proper DI for tenant context.
+                ->addArgument(new Reference('ecosistema_jaraba_core.ai_guardrails')); // FIX-015: Guardrails para queries RAG.
         }
     }
 

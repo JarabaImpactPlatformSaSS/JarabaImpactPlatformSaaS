@@ -261,6 +261,10 @@ class EntrepreneurContextService {
   /**
    * Obtiene el estado de validación del Business Model Canvas.
    *
+   * FIX-013: Usa BmcValidationService::CODE_TO_KEY para convertir los
+   * códigos 2-letras almacenados en la entidad Hypothesis (CS, VP, etc.)
+   * a las claves snake_case usadas en este servicio.
+   *
    * @param int $userId
    *   ID del usuario.
    *
@@ -285,11 +289,14 @@ class EntrepreneurContextService {
       ];
 
       foreach ($hypotheses as $hypothesis) {
-        $block = $hypothesis->get('bmc_block')->value ?? '';
+        $blockCode = $hypothesis->get('bmc_block')->value ?? '';
         $status = $hypothesis->get('status')->value ?? 'pending';
 
-        if (isset($bmcBlocks[$block])) {
-          $bmcBlocks[$block][$status] = ($bmcBlocks[$block][$status] ?? 0) + 1;
+        // FIX-013: Convertir código 2-letras (CS, VP...) a snake_case.
+        $blockKey = BmcValidationService::CODE_TO_KEY[$blockCode] ?? $blockCode;
+
+        if (isset($bmcBlocks[$blockKey])) {
+          $bmcBlocks[$blockKey][$status] = ($bmcBlocks[$blockKey][$status] ?? 0) + 1;
         }
       }
 

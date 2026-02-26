@@ -44,6 +44,7 @@ services:
       - '@entity_type.manager'
       - '@tempstore.shared'
       - '@logger.channel.jaraba_tenant_knowledge'
+      - '@?ecosistema_jaraba_core.ai_guardrails'
 
   # Búsqueda semántica en la base de conocimiento pública.
   jaraba_tenant_knowledge.kb_search:

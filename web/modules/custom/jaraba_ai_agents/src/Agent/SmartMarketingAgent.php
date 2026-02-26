@@ -6,6 +6,8 @@ namespace Drupal\jaraba_ai_agents\Agent;
 
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder;
+use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
 use Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService;
 use Psr\Log\LoggerInterface;
@@ -14,6 +16,10 @@ use Psr\Log\LoggerInterface;
  * Smart Marketing Agent with Model Routing.
  *
  * Uses intelligent model selection for cost optimization.
+ *
+ * FIX-008: Constructor alineado con BaseAgent (6 args) + ModelRouterService.
+ * services.yml inyecta 7 argumentos: aiProvider, configFactory, logger,
+ * brandVoice, observability, modelRouter, promptBuilder.
  */
 class SmartMarketingAgent extends SmartBaseAgent
 {
@@ -26,9 +32,11 @@ class SmartMarketingAgent extends SmartBaseAgent
         ConfigFactoryInterface $configFactory,
         LoggerInterface $logger,
         TenantBrandVoiceService $brandVoice,
+        AIObservabilityService $observability,
         ModelRouterService $modelRouter,
+        ?UnifiedPromptBuilder $promptBuilder = NULL,
     ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice);
+        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
         $this->setModelRouter($modelRouter);
     }
 

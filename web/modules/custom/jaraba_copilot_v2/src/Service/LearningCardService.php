@@ -190,6 +190,16 @@ class LearningCardService
 
     /**
      * Detecta qué bloque del BMC afecta la hipótesis.
+     *
+     * FIX-013: Retorna código 2-letras (CS, VP, etc.) que es el formato
+     * almacenado en las entidades Hypothesis y EntrepreneurLearning.
+     * Usa BmcValidationService::KEY_TO_CODE para la conversión.
+     *
+     * @param string $hypothesis
+     *   Texto de la hipótesis.
+     *
+     * @return string
+     *   Código 2-letras del bloque BMC (ej: 'VP', 'CS').
      */
     protected function detectBmcBlock(string $hypothesis): string
     {
@@ -207,15 +217,16 @@ class LearningCardService
             'cost_structure' => ['coste', 'gasto', 'margen'],
         ];
 
-        foreach ($blockKeywords as $block => $keywords) {
+        foreach ($blockKeywords as $snakeKey => $keywords) {
             foreach ($keywords as $keyword) {
                 if (str_contains($lower, $keyword)) {
-                    return $block;
+                    // FIX-013: Convertir snake_case a código 2-letras para la entidad.
+                    return BmcValidationService::KEY_TO_CODE[$snakeKey] ?? 'VP';
                 }
             }
         }
 
-        return 'value_propositions'; // Default
+        return 'VP'; // Default: Value Propositions.
     }
 
     /**

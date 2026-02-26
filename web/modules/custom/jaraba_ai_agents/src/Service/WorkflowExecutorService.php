@@ -188,12 +188,29 @@ class WorkflowExecutorService
                 $onFailure = $step['on_failure'] ?? 'abort';
 
                 if ($onFailure === 'abort') {
+                    $abortDuration = (int) ((microtime(TRUE) - $startTime) * 1000);
+
+                    // FIX-021: Log observability for failed workflow.
+                    $this->observability->log([
+                        'agent_id' => 'workflow_executor',
+                        'action' => 'execute_workflow',
+                        'tier' => 'balanced',
+                        'model_id' => 'workflow',
+                        'provider_id' => 'internal',
+                        'tenant_id' => $context['tenant_id'] ?? 0,
+                        'vertical' => $context['vertical'] ?? 'platform',
+                        'input_tokens' => 0,
+                        'output_tokens' => 0,
+                        'duration_ms' => $abortDuration,
+                        'success' => FALSE,
+                    ]);
+
                     return [
                         'success' => FALSE,
                         'error' => "Step '{$currentStepId}' failed: " . ($stepResult['error'] ?? 'Unknown error'),
                         'failed_step' => $currentStepId,
                         'step_results' => $stepResults,
-                        'duration_ms' => (int) ((microtime(TRUE) - $startTime) * 1000),
+                        'duration_ms' => $abortDuration,
                     ];
                 }
 
@@ -207,6 +224,21 @@ class WorkflowExecutorService
         $this->logger->info('Workflow @id completed in @duration ms', [
             '@id' => $workflow->id(),
             '@duration' => $duration,
+        ]);
+
+        // FIX-021: Log observability for workflow execution.
+        $this->observability->log([
+            'agent_id' => 'workflow_executor',
+            'action' => 'execute_workflow',
+            'tier' => 'balanced',
+            'model_id' => 'workflow',
+            'provider_id' => 'internal',
+            'tenant_id' => $context['tenant_id'] ?? 0,
+            'vertical' => $context['vertical'] ?? 'platform',
+            'input_tokens' => 0,
+            'output_tokens' => 0,
+            'duration_ms' => $duration,
+            'success' => TRUE,
         ]);
 
         return [

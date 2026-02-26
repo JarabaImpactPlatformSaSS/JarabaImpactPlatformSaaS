@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_page_builder\Service;
 
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -126,11 +127,14 @@ class AiTemplateGeneratorService
             $brandVoice
         );
 
-        $systemPrompt = 'Eres un diseñador web y desarrollador frontend experto. '
+        // FIX-014: AI-IDENTITY-001 universal.
+        $systemPrompt = AIIdentityRule::apply(
+            'Eres un diseñador web y desarrollador frontend experto. '
             . 'Genera HTML y CSS de alta calidad para landing pages profesionales. '
             . 'Responde SIEMPRE en formato JSON válido con la estructura indicada. '
             . 'El HTML debe ser semántico, responsivo y accesible. '
-            . 'Los estilos CSS deben usar clases con prefijo "jaraba-" y variables CSS del sistema.';
+            . 'Los estilos CSS deben usar clases con prefijo "jaraba-" y variables CSS del sistema.'
+        );
 
         $chatInput = new \Drupal\ai\OperationType\Chat\ChatInput([
             new \Drupal\ai\OperationType\Chat\ChatMessage('system', $systemPrompt),

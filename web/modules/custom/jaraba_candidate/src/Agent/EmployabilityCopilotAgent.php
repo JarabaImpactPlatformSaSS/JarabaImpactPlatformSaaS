@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_candidate\Agent;
 
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Drupal\jaraba_ai_agents\Agent\BaseAgent;
 
 /**
@@ -33,6 +34,14 @@ use Drupal\jaraba_ai_agents\Agent\BaseAgent;
  * @see \Drupal\jaraba_ai_agents\Agent\BaseAgent
  */
 class EmployabilityCopilotAgent extends BaseAgent {
+
+  /**
+   * Modo activo para la solicitud actual.
+   *
+   * FIX-009: Almacenado para que buildSystemPrompt() pueda inyectar
+   * el prompt especializado del modo.
+   */
+  protected string $currentMode = 'faq';
 
   /**
    * Modos del copilot con sus metadatos.
@@ -111,6 +120,12 @@ class EmployabilityCopilotAgent extends BaseAgent {
   /**
    * {@inheritdoc}
    */
+  /**
+   * {@inheritdoc}
+   *
+   * FIX-009: Establece el modo ANTES de callAiApi() para que
+   * buildSystemPrompt() pueda inyectar el prompt del modo.
+   */
   public function execute(string $action, array $context): array {
     $this->setCurrentAction($action);
 
@@ -120,10 +135,10 @@ class EmployabilityCopilotAgent extends BaseAgent {
     // Detectar modo automaticamente si no se especifica.
     $mode = $requestedMode ?: $this->detectMode($userMessage);
 
-    // Construir prompt con system prompt del modo.
-    $systemPrompt = $this->buildModePrompt($mode, $userMessage);
+    // FIX-009: Establecer modo activo para buildSystemPrompt().
+    $this->currentMode = $mode;
 
-    // Ejecutar llamada IA.
+    // Ejecutar llamada IA — buildSystemPrompt() inyectará el mode prompt.
     $result = $this->callAiApi($userMessage, [
       'temperature' => $this->getModeTemperature($mode),
       'tier' => 'balanced',
@@ -185,26 +200,37 @@ class EmployabilityCopilotAgent extends BaseAgent {
   }
 
   /**
-   * Construye el system prompt completo para un modo.
+   * {@inheritdoc}
+   *
+   * FIX-009: Override para inyectar el MODE_PROMPT específico del modo activo.
+   * Preserva: AI-IDENTITY-001 + Brand Voice + Unified Context + Vertical Context.
+   * Añade: System prompt especializado por modo (profile_coach, job_advisor, etc.).
    */
-  protected function buildModePrompt(string $mode, ?string $userMessage = NULL): string {
+  protected function buildSystemPrompt(?string $userMessage = NULL): string {
     $parts = [];
 
-    // Brand Voice del tenant.
+    // 0. Regla de identidad global (FIX-014: constante centralizada).
+    $parts[] = AIIdentityRule::IDENTITY_PROMPT;
+
+    // 1. Brand Voice del tenant.
     $parts[] = $this->getBrandVoicePrompt();
 
-    // System prompt del modo.
+    // 2. System prompt especializado del modo (FIX-009: ahora llega al LLM).
+    $mode = $this->currentMode ?? 'faq';
     $modePrompt = self::MODE_PROMPTS[$mode] ?? self::MODE_PROMPTS['faq'];
     $parts[] = $modePrompt;
 
-    // Contexto unificado (Skills + Knowledge + RAG).
+    // 3. Contexto unificado (Skills + Knowledge + RAG).
     $unifiedContext = $this->getUnifiedContext($userMessage);
     if (!empty($unifiedContext)) {
       $parts[] = $unifiedContext;
     }
 
-    // Contexto del vertical.
-    $parts[] = '<vertical_context>Vertical de empleabilidad - plataforma de apoyo a la búsqueda de empleo con herramientas de CV, formación LMS, job board y gamificación.</vertical_context>';
+    // 4. Contexto del vertical.
+    $verticalContext = $this->getVerticalContext();
+    if (!empty($verticalContext)) {
+      $parts[] = "\n<vertical_context>" . $verticalContext . "</vertical_context>";
+    }
 
     return implode("\n\n", array_filter($parts));
   }

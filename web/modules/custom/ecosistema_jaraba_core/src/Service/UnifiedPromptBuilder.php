@@ -49,6 +49,7 @@ class UnifiedPromptBuilder
         protected KnowledgeIndexerService $knowledgeIndexer,
         protected LoggerInterface $logger,
         protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+        protected ?AIGuardrailsService $guardrails = NULL, // FIX-015: Guardrails para queries.
     ) {
     }
 
@@ -93,10 +94,28 @@ class UnifiedPromptBuilder
         }
 
         // 4. Conocimiento relevante (RAG per-query).
+        // FIX-015: Validar query con guardrails antes de usarla en RAG.
         if (!empty($query)) {
-            $ragSection = $this->getRelevantKnowledge($query, $context['tenant_id'] ?? NULL);
-            if (!empty($ragSection)) {
-                $output .= $ragSection . "\n";
+            $sanitizedQuery = $query;
+            if ($this->guardrails) {
+                $guardrailResult = $this->guardrails->validate($query, [
+                    'tenant_id' => (string) ($context['tenant_id'] ?? 'unknown'),
+                    'pipeline' => 'unified_prompt',
+                ]);
+                if ($guardrailResult['action'] === AIGuardrailsService::ACTION_BLOCK) {
+                    $this->logger->warning('UnifiedPromptBuilder: query bloqueada por guardrails.');
+                    $sanitizedQuery = NULL;
+                }
+                elseif ($guardrailResult['action'] === AIGuardrailsService::ACTION_MODIFY) {
+                    $sanitizedQuery = $guardrailResult['processed_prompt'];
+                }
+            }
+
+            if ($sanitizedQuery) {
+                $ragSection = $this->getRelevantKnowledge($sanitizedQuery, $context['tenant_id'] ?? NULL);
+                if (!empty($ragSection)) {
+                    $output .= $ragSection . "\n";
+                }
             }
         }
 

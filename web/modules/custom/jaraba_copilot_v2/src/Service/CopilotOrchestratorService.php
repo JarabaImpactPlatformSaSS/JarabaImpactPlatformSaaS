@@ -36,6 +36,10 @@ class CopilotOrchestratorService
         'laboral' => ['anthropic', 'google_gemini'],                    // Claude principal (RAG)
         'devil' => ['anthropic', 'openai', 'google_gemini'],
         'landing_copilot' => ['google_gemini', 'anthropic', 'openai'],  // Gemini primario (landing=alto volumen)
+        'vpc_designer' => ['anthropic', 'openai', 'google_gemini'],
+        'customer_discovery' => ['anthropic', 'openai', 'google_gemini'],
+        'pattern_expert' => ['google_gemini', 'anthropic', 'openai'],
+        'pivot_advisor' => ['anthropic', 'openai', 'google_gemini'],
     ];
 
     /**
@@ -51,6 +55,10 @@ class CopilotOrchestratorService
         'devil' => 'claude-sonnet-4-5-20250929',
         'detection' => 'claude-haiku-4-5-20251001',          // Economico para deteccion
         'landing_copilot' => 'gemini-2.5-flash',             // Gemini Flash (alto volumen)
+        'vpc_designer' => 'claude-sonnet-4-5-20250929',
+        'customer_discovery' => 'claude-sonnet-4-5-20250929',
+        'pattern_expert' => 'gemini-2.5-flash',
+        'pivot_advisor' => 'claude-sonnet-4-5-20250929',
     ];
 
     /**
@@ -286,6 +294,16 @@ class CopilotOrchestratorService
             $state = \Drupal::state();
             $key = "mode_detector_{$detectedMode}_count";
             $state->set($key, $state->get($key, 0) + 1);
+        }
+
+        // FIX-010: Verificar disponibilidad del modo según FeatureUnlockService.
+        if ($this->featureUnlock && !$this->featureUnlock->isCopilotModeAvailable($detectedMode)) {
+            $originalMode = $detectedMode;
+            $detectedMode = $this->getHighestAvailableCopilotMode() ?? 'coach';
+            $this->logger->info('Mode @original not available for user, downgraded to @fallback', [
+                '@original' => $originalMode,
+                '@fallback' => $detectedMode,
+            ]);
         }
 
         // Llamar al chat con el modo detectado
@@ -589,6 +607,35 @@ class CopilotOrchestratorService
     }
 
     /**
+     * FIX-010: Obtiene el modo de copiloto más alto disponible para el usuario actual.
+     *
+     * Recorre los modos disponibles según FeatureUnlockService y devuelve
+     * el que tiene la semana de desbloqueo más alta (el más avanzado).
+     *
+     * @return string|null
+     *   Nombre del modo más alto disponible, o NULL si ninguno está disponible.
+     */
+    protected function getHighestAvailableCopilotMode(): ?string
+    {
+        if (!$this->featureUnlock) {
+            return NULL;
+        }
+
+        $modes = $this->featureUnlock->getAvailableCopilotModes();
+        $highestMode = NULL;
+        $highestWeek = -1;
+
+        foreach ($modes as $modeName => $config) {
+            if (!empty($config['available']) && ($config['unlock_week'] ?? 0) > $highestWeek) {
+                $highestWeek = $config['unlock_week'] ?? 0;
+                $highestMode = $modeName;
+            }
+        }
+
+        return $highestMode;
+    }
+
+    /**
      * Obtiene el máximo de tokens configurado.
      */
     protected function getMaxTokens(): int
@@ -658,7 +705,10 @@ class CopilotOrchestratorService
             }
 
             // Obtener tenant del usuario actual.
-            if (!$this->tenantContext !== NULL) {
+            // FIX-002: Corregido bug de precedencia de operadores.
+            // ANTES: !$this->tenantContext !== NULL → siempre TRUE (bool !== NULL).
+            // AHORA: Retorna vacío solo si no hay contexto de tenant.
+            if ($this->tenantContext === NULL) {
                 return '';
             }
 
@@ -1162,12 +1212,20 @@ PROMPT,
             }
         }
 
+        $suggestions = $this->extractSuggestions($text);
+
+        // Append contextual action buttons with direct URLs.
+        $actionButtons = $this->getContextualActionButtons($mode);
+        if (!empty($actionButtons)) {
+            $suggestions = array_merge($suggestions, $actionButtons);
+        }
+
         return [
             'text' => $text,
             'mode' => $mode,
             'model' => $response['model'] ?? '',
             'provider' => $provider,
-            'suggestions' => $this->extractSuggestions($text),
+            'suggestions' => $suggestions,
         ];
     }
 
@@ -1184,6 +1242,48 @@ PROMPT,
         }
 
         return $suggestions;
+    }
+
+    /**
+     * Returns contextual action buttons with direct URLs based on mode.
+     *
+     * These are appended to suggestions as {label, url} objects that the
+     * frontend renders as CTA link-buttons.
+     *
+     * @param string $mode
+     *   Current copilot mode.
+     *
+     * @return array
+     *   Array of ['label' => string, 'url' => string] objects.
+     */
+    protected function getContextualActionButtons(string $mode): array
+    {
+        $isAuthenticated = \Drupal::currentUser()->isAuthenticated();
+
+        // Common actions for anonymous users.
+        if (!$isAuthenticated) {
+            return [
+                ['label' => 'Crear cuenta gratis', 'url' => '/user/register'],
+            ];
+        }
+
+        // Mode-specific actions for authenticated users.
+        $modeActions = [
+            'coach' => [
+                ['label' => 'Mi perfil', 'url' => '/user'],
+            ],
+            'consultor' => [
+                ['label' => 'Mi dashboard', 'url' => '/user'],
+            ],
+            'cfo' => [
+                ['label' => 'Panel financiero', 'url' => '/emprendimiento/dashboard'],
+            ],
+            'landing_copilot' => [
+                ['label' => 'Explorar plataforma', 'url' => '/'],
+            ],
+        ];
+
+        return $modeActions[$mode] ?? [];
     }
 
     /**

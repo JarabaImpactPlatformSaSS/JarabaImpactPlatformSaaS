@@ -61,29 +61,34 @@ class ModelRouterService
      *
      * @var array
      */
+    /**
+     * FIX-020: Default tiers. Overridden by jaraba_ai_agents.model_routing config.
+     *
+     * Model IDs and pricing are kept in config/install/jaraba_ai_agents.model_routing.yml
+     * so they can be updated without code deploy.
+     *
+     * @var array
+     */
     protected array $modelTiers = [
-        // Tier 1: Rápido y económico - Tareas simples.
         'fast' => [
             'provider' => 'anthropic',
-            'model' => 'claude-3-haiku-20240307',
-            'cost_per_1k_input' => 0.00025,
-            'cost_per_1k_output' => 0.00125,
+            'model' => 'claude-haiku-4-5-20251001',
+            'cost_per_1k_input' => 0.0008,
+            'cost_per_1k_output' => 0.004,
             'max_complexity' => 0.3,
             'use_cases' => ['classification', 'simple_extraction', 'formatting'],
         ],
-        // Tier 2: Balanceado - Complejidad media.
         'balanced' => [
             'provider' => 'anthropic',
-            'model' => 'claude-3-5-sonnet-20241022',
+            'model' => 'claude-sonnet-4-6-20250514',
             'cost_per_1k_input' => 0.003,
             'cost_per_1k_output' => 0.015,
             'max_complexity' => 0.7,
             'use_cases' => ['content_generation', 'summarization', 'translation'],
         ],
-        // Tier 3: Premium - Razonamiento complejo.
         'premium' => [
             'provider' => 'anthropic',
-            'model' => 'claude-sonnet-4-20250514',
+            'model' => 'claude-opus-4-6-20250515',
             'cost_per_1k_input' => 0.015,
             'cost_per_1k_output' => 0.075,
             'max_complexity' => 1.0,
@@ -228,17 +233,17 @@ class ModelRouterService
             $complexity -= 0.1;
         }
 
-        // Ajustar según requisitos especiales detectados en el prompt.
-        if (preg_match('/\b(analyze|compare|evaluate|critique|synthesize)\b/i', $prompt)) {
+        // FIX-019: Ajustar según requisitos especiales (EN + ES keywords).
+        if (preg_match('/\b(analyze|compare|evaluate|critique|synthesize|analiza|compara|evalúa|evalua|sintetiza|critica)\b/iu', $prompt)) {
             $complexity += 0.2;
         }
-        if (preg_match('/\b(JSON|structured|format)\b/i', $prompt)) {
+        if (preg_match('/\b(JSON|structured|format|formato|estructurado)\b/iu', $prompt)) {
             $complexity -= 0.05; // Output estructurado es más fácil.
         }
-        if (preg_match('/\b(creative|innovative|unique|original)\b/i', $prompt)) {
+        if (preg_match('/\b(creative|innovative|unique|original|creativo|innovador|único|unico|original)\b/iu', $prompt)) {
             $complexity += 0.15;
         }
-        if (preg_match('/\b(translate|summarize|extract)\b/i', $prompt)) {
+        if (preg_match('/\b(translate|summarize|extract|traduce|resume|extrae|resumen|traducir|extraer)\b/iu', $prompt)) {
             $complexity -= 0.1;
         }
 
@@ -306,14 +311,24 @@ class ModelRouterService
      *
      * Permite sobrescribir modelos y costos via configuración Drupal.
      */
+    /**
+     * FIX-020: Load tier config from YAML, deep-merging with defaults.
+     */
     protected function loadCustomConfig(): void
     {
         $config = $this->configFactory->get('jaraba_ai_agents.model_routing');
 
         if (!$config->isNew()) {
             $customTiers = $config->get('tiers');
-            if (!empty($customTiers)) {
-                $this->modelTiers = array_merge($this->modelTiers, $customTiers);
+            if (!empty($customTiers) && is_array($customTiers)) {
+                foreach ($customTiers as $tierName => $tierConfig) {
+                    if (isset($this->modelTiers[$tierName]) && is_array($tierConfig)) {
+                        $this->modelTiers[$tierName] = array_merge($this->modelTiers[$tierName], $tierConfig);
+                    }
+                    elseif (is_array($tierConfig)) {
+                        $this->modelTiers[$tierName] = $tierConfig;
+                    }
+                }
             }
         }
     }
