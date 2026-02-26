@@ -1,0 +1,15 @@
+uuid: 2aff2a98-dfa2-4810-bdb5-4ee77d45c29a
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.plataformadeecosistemas_es
+  module:
+    - domain_access
+id: domain_access_add_action_plataformadeecosistemas_es
+label: 'Agregar el contenido seleccionado al dominio Plataforma de Ecosistemas Digitales'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - plataformadeecosistemas_es

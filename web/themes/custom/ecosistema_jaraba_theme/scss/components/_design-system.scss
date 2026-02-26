@@ -1,0 +1,301 @@
+/**
+ * @file
+ * GAP-AUD-023: Design System Documentation page styles.
+ */
+
+@use '../variables' as *;
+
+.ds-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $ej-spacing-xl $ej-spacing-md;
+
+  &__header {
+    margin-bottom: $ej-spacing-2xl;
+    padding-bottom: $ej-spacing-lg;
+    border-bottom: 2px solid $ej-color-impulse;
+  }
+
+  &__title {
+    font-family: $ej-font-headings;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $ej-color-corporate;
+    margin: 0 0 $ej-spacing-sm;
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    color: $ej-color-muted;
+    margin: 0;
+  }
+}
+
+// Section containers.
+.ds-section {
+  margin-bottom: $ej-spacing-2xl;
+
+  &__title {
+    font-family: $ej-font-headings;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: $ej-color-headings;
+    margin: 0 0 $ej-spacing-lg;
+    padding-bottom: $ej-spacing-sm;
+    border-bottom: 1px solid $ej-border-color;
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $ej-color-corporate;
+    margin: $ej-spacing-lg 0 $ej-spacing-md;
+    text-transform: capitalize;
+  }
+}
+
+// Color swatches.
+.ds-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: $ej-spacing-md;
+  margin-bottom: $ej-spacing-lg;
+}
+
+.ds-color-swatch {
+  border: 1px solid $ej-border-color;
+  border-radius: $ej-border-radius;
+  overflow: hidden;
+  background: $ej-bg-surface;
+
+  &__preview {
+    height: 80px;
+  }
+
+  &__info {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: $ej-color-headings;
+  }
+
+  &__var {
+    font-size: 0.8rem;
+    color: $ej-color-impulse;
+  }
+
+  &__hex {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: $ej-color-muted;
+  }
+
+  &__usage {
+    font-size: 0.75rem;
+    color: $ej-color-muted;
+    margin-top: 2px;
+  }
+}
+
+// Typography specimens.
+.ds-type-specimens {
+  display: flex;
+  flex-direction: column;
+  gap: $ej-spacing-md;
+}
+
+.ds-type-specimen {
+  display: flex;
+  align-items: baseline;
+  gap: $ej-spacing-md;
+  padding: $ej-spacing-sm 0;
+  border-bottom: 1px solid lighten($ej-border-color, 4%);
+
+  &__label {
+    flex-shrink: 0;
+    width: 60px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: $ej-color-impulse;
+  }
+
+  &__sample {
+    flex: 1;
+    color: $ej-color-headings;
+    font-family: $ej-font-body;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: $ej-color-muted;
+  }
+}
+
+// Spacing scale.
+.ds-spacing-scale {
+  display: flex;
+  flex-direction: column;
+  gap: $ej-spacing-sm;
+}
+
+.ds-spacing-item {
+  display: flex;
+  align-items: center;
+  gap: $ej-spacing-md;
+
+  &__bar {
+    height: 24px;
+    background: $ej-color-innovation;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: 0.8rem;
+    color: $ej-color-impulse;
+    flex-shrink: 0;
+    width: 140px;
+  }
+
+  &__value {
+    font-size: 0.8rem;
+    color: $ej-color-muted;
+  }
+}
+
+// Shadow cards.
+.ds-shadow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: $ej-spacing-lg;
+}
+
+.ds-shadow-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $ej-spacing-xs;
+  padding: $ej-spacing-xl $ej-spacing-md;
+  background: $ej-bg-surface;
+  border-radius: $ej-border-radius;
+  text-align: center;
+
+  strong {
+    color: $ej-color-headings;
+  }
+
+  code {
+    font-size: 0.75rem;
+    color: $ej-color-muted;
+  }
+}
+
+// Tables.
+.ds-table-wrap {
+  overflow-x: auto;
+}
+
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th, td {
+    padding: $ej-spacing-sm $ej-spacing-md;
+    text-align: left;
+    border-bottom: 1px solid $ej-border-color;
+  }
+
+  th {
+    font-weight: 600;
+    color: $ej-color-corporate;
+    background: rgba($ej-color-corporate, 0.04);
+  }
+
+  code {
+    font-size: 0.8rem;
+    color: $ej-color-impulse;
+  }
+}
+
+// Icon grid.
+.ds-icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $ej-spacing-sm;
+  margin-bottom: $ej-spacing-md;
+}
+
+.ds-icon-item {
+  display: flex;
+  align-items: center;
+  gap: $ej-spacing-xs;
+  padding: $ej-spacing-xs $ej-spacing-sm;
+  border: 1px solid $ej-border-color;
+  border-radius: $ej-btn-radius;
+  background: $ej-bg-surface;
+  font-size: 0.8rem;
+
+  code {
+    color: $ej-color-corporate;
+  }
+}
+
+// Component list.
+.ds-component-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: $ej-spacing-sm;
+}
+
+.ds-component-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $ej-spacing-sm $ej-spacing-md;
+  border: 1px solid $ej-border-color;
+  border-radius: $ej-btn-radius;
+  background: $ej-bg-surface;
+
+  strong {
+    color: $ej-color-headings;
+    font-size: 0.9rem;
+  }
+
+  code {
+    font-size: 0.75rem;
+    color: $ej-color-muted;
+  }
+}
+
+// Dark mode.
+.dark-mode .ds-page {
+  &__title { color: var(--ej-color-headings, #e2e8f0); }
+}
+
+.dark-mode .ds-section__title {
+  color: var(--ej-color-headings, #e2e8f0);
+  border-color: var(--ej-border-color, #374151);
+}
+
+.dark-mode .ds-color-swatch,
+.dark-mode .ds-shadow-card,
+.dark-mode .ds-icon-item,
+.dark-mode .ds-component-item {
+  background: var(--ej-bg-surface, #252538);
+  border-color: var(--ej-border-color, #374151);
+}
+
+.dark-mode .ds-table th {
+  background: rgba(255, 255, 255, 0.04);
+}

@@ -1,0 +1,60 @@
+uuid: null
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_social_proof
+label: 'Andalucia +ei: Entidades Colaboradoras'
+description: 'Sección credibilidad y logos institucionales del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/social_proof.html.twig'
+fields_schema:
+  type: object
+  title: 'Entidades Colaboradoras'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    logos:
+      type: array
+      title: Logos
+      items:
+        type: object
+        properties:
+          src:
+            type: string
+            title: Imagen
+            format: image
+          alt:
+            type: string
+            title: 'Texto alternativo'
+          url:
+            type: string
+            title: Enlace
+            format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-social_proof.png
+preview_data:
+  eyebrow: Colaboradores
+  title: 'Programa respaldado por instituciones de referencia'
+  subtitle: 'Entidades públicas y privadas que hacen posible Andalucía +ei.'
+  logos:
+    -
+      src: ''
+      alt: 'Junta de Andalucía'
+      url: 'https://www.juntadeandalucia.es'
+    -
+      src: ''
+      alt: 'Servicio Público de Empleo Estatal (SEPE)'
+      url: 'https://www.sepe.es'
+    -
+      src: ''
+      alt: 'Fondo Social Europeo'
+      url: 'https://ec.europa.eu/esf'
+weight: 46

@@ -142,3 +142,75 @@ function jaraba_content_hub_update_10002(&$sandbox) {
     return t('Generated slugs for @count articles.', ['@count' => $sandbox['generated']]);
   }
 }
+
+/**
+ * GAP-AUD-017: Install tenant_id field for ContentArticle entity.
+ *
+ * Enables multi-tenant isolation per TENANT-ISOLATION-ACCESS-001.
+ * Existing articles get tenant_id = 0 (backward compatible).
+ */
+function jaraba_content_hub_update_10003(&$sandbox) {
+  $entity_type_id = 'content_article';
+  $field_name = 'tenant_id';
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+
+  if (isset($field_definitions[$field_name])) {
+    try {
+      $entity_definition_update_manager->installFieldStorageDefinition(
+        $field_name,
+        $entity_type_id,
+        'jaraba_content_hub',
+        $field_definitions[$field_name]
+      );
+      return t('GAP-AUD-017: Installed tenant_id field for ContentArticle.');
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->error(
+        'Error installing tenant_id for @entity: @message',
+        ['@entity' => $entity_type_id, '@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  return t('GAP-AUD-017: tenant_id field not found or already installed for ContentArticle.');
+}
+
+/**
+ * GAP-AUD-017: Install tenant_id field for ContentCategory entity.
+ *
+ * Enables multi-tenant isolation for categories.
+ * Existing categories get tenant_id = 0 (backward compatible).
+ */
+function jaraba_content_hub_update_10004(&$sandbox) {
+  $entity_type_id = 'content_category';
+  $field_name = 'tenant_id';
+
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+
+  if (isset($field_definitions[$field_name])) {
+    try {
+      $entity_definition_update_manager->installFieldStorageDefinition(
+        $field_name,
+        $entity_type_id,
+        'jaraba_content_hub',
+        $field_definitions[$field_name]
+      );
+      return t('GAP-AUD-017: Installed tenant_id field for ContentCategory.');
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->error(
+        'Error installing tenant_id for @entity: @message',
+        ['@entity' => $entity_type_id, '@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  return t('GAP-AUD-017: tenant_id field not found or already installed for ContentCategory.');
+}

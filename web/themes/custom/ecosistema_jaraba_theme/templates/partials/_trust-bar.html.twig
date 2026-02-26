@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * _trust-bar.html.twig
+ *
+ * Barra de confianza con logos de tecnologías y partners.
+ *
+ * Sprint 4 — Remaining Audit Items (#12)
+ * Muestra logos de tecnologías y certificaciones para reforzar
+ * la credibilidad del producto.
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %}
+ * - CSS: BEM + design tokens
+ * - A11y: aria-label, role="list"
+ */
+#}
+
+<section class="trust-bar" aria-label="{% trans %}Tecnologías y partners{% endtrans %}">
+  <div class="trust-bar__container">
+    <p class="trust-bar__label">{% trans %}Tecnología de confianza{% endtrans %}</p>
+    <div class="trust-bar__logos" role="list">
+      {# Tecnologías reales usadas en la plataforma #}
+      <div class="trust-bar__item" role="listitem" title="Drupal">
+        <svg viewBox="0 0 120 40" width="100" height="32" aria-label="Drupal">
+          <text x="10" y="28" font-family="Outfit, sans-serif" font-size="18" font-weight="700" fill="var(--ej-color-muted, #94a3b8)">Drupal</text>
+        </svg>
+      </div>
+      <div class="trust-bar__item" role="listitem" title="OpenAI">
+        <svg viewBox="0 0 120 40" width="100" height="32" aria-label="OpenAI">
+          <text x="10" y="28" font-family="Outfit, sans-serif" font-size="18" font-weight="700" fill="var(--ej-color-muted, #94a3b8)">OpenAI</text>
+        </svg>
+      </div>
+      <div class="trust-bar__item" role="listitem" title="Stripe">
+        <svg viewBox="0 0 120 40" width="100" height="32" aria-label="Stripe">
+          <text x="10" y="28" font-family="Outfit, sans-serif" font-size="18" font-weight="700" fill="var(--ej-color-muted, #94a3b8)">Stripe</text>
+        </svg>
+      </div>
+      <div class="trust-bar__item" role="listitem" title="Google Cloud">
+        <svg viewBox="0 0 160 40" width="130" height="32" aria-label="Google Cloud">
+          <text x="10" y="28" font-family="Outfit, sans-serif" font-size="16" font-weight="600" fill="var(--ej-color-muted, #94a3b8)">Google Cloud</text>
+        </svg>
+      </div>
+      <div class="trust-bar__item" role="listitem" title="Symfony">
+        <svg viewBox="0 0 120 40" width="100" height="32" aria-label="Symfony">
+          <text x="10" y="28" font-family="Outfit, sans-serif" font-size="18" font-weight="700" fill="var(--ej-color-muted, #94a3b8)">Symfony</text>
+        </svg>
+      </div>
+    </div>
+    <div class="trust-bar__badges">
+      <span class="trust-bar__badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 22C6.44 22 2 17.56 2 12S6.44 2 12 2s10 4.44 10 10-4.44 10-10 10Zm-1-11H7v2h4v4h2v-4h4v-2h-4V7h-2v4Z" fill="currentColor"/>
+        </svg>
+        {% trans %}RGPD{% endtrans %}
+      </span>
+      <span class="trust-bar__badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3Zm-1 15-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8Z" fill="currentColor"/>
+        </svg>
+        {% trans %}Datos protegidos{% endtrans %}
+      </span>
+      <span class="trust-bar__badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8Zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8-1.41-1.42Z" fill="currentColor"/>
+        </svg>
+        {% trans %}IA de clase mundial{% endtrans %}
+      </span>
+    </div>
+  </div>
+</section>

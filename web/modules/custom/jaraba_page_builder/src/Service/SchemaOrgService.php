@@ -509,6 +509,165 @@ class SchemaOrgService
     }
 
     /**
+     * GAP-AUD-006: Genera schema LocalBusiness con GEO enriquecido.
+     *
+     * Añade areaServed (multi-region) y hasMap a negocios locales.
+     *
+     * @param array $business
+     *   Datos del negocio.
+     * @param array $areaServed
+     *   Regiones servidas (array de strings: nombres de regiones/países).
+     * @param string|null $mapUrl
+     *   URL de Google Maps opcional.
+     *
+     * @return string
+     *   JSON-LD válido para LocalBusiness con GEO enriquecido.
+     */
+    public function generateLocalBusinessGeoSchema(array $business, array $areaServed = [], ?string $mapUrl = NULL): string
+    {
+        $baseJson = $this->generateLocalBusinessSchema($business);
+        if (empty($baseJson)) {
+            return '';
+        }
+
+        $schema = Json::decode($baseJson);
+
+        // GAP-AUD-006: Multi-region areaServed.
+        if (!empty($areaServed)) {
+            if (count($areaServed) === 1) {
+                $schema['areaServed'] = [
+                    '@type' => 'AdministrativeArea',
+                    'name' => $areaServed[0],
+                ];
+            }
+            else {
+                $schema['areaServed'] = array_map(function (string $region) {
+                    return [
+                        '@type' => 'AdministrativeArea',
+                        'name' => $region,
+                    ];
+                }, $areaServed);
+            }
+        }
+
+        // GAP-AUD-006: Google Maps link.
+        if (!empty($mapUrl)) {
+            $schema['hasMap'] = $mapUrl;
+        }
+
+        return Json::encode($schema);
+    }
+
+    /**
+     * GAP-AUD-006: Genera schema HowTo para tutoriales LMS.
+     *
+     * @param array $howTo
+     *   Datos del tutorial con 'title', 'description', 'steps'.
+     *   Cada step: ['name' => string, 'text' => string, 'image' => string|null].
+     * @param array $tenant
+     *   Datos del tenant/organización.
+     *
+     * @return string
+     *   JSON-LD válido para HowTo.
+     *
+     * @see https://schema.org/HowTo
+     * @see https://developers.google.com/search/docs/appearance/structured-data/how-to
+     */
+    public function generateHowToSchema(array $howTo, array $tenant = []): string
+    {
+        if (empty($howTo['title']) || empty($howTo['steps'])) {
+            return '';
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'HowTo',
+            'name' => $howTo['title'],
+            'description' => strip_tags($howTo['description'] ?? ''),
+        ];
+
+        // Estimated total time.
+        if (!empty($howTo['total_time_minutes'])) {
+            $schema['totalTime'] = 'PT' . (int) $howTo['total_time_minutes'] . 'M';
+        }
+
+        // Steps.
+        $steps = [];
+        $position = 1;
+        foreach ($howTo['steps'] as $step) {
+            if (empty($step['name']) || empty($step['text'])) {
+                continue;
+            }
+
+            $howToStep = [
+                '@type' => 'HowToStep',
+                'position' => $position,
+                'name' => strip_tags($step['name']),
+                'text' => strip_tags($step['text']),
+            ];
+
+            if (!empty($step['image'])) {
+                $howToStep['image'] = $step['image'];
+            }
+
+            if (!empty($step['url'])) {
+                $howToStep['url'] = $step['url'];
+            }
+
+            $steps[] = $howToStep;
+            $position++;
+        }
+
+        if (empty($steps)) {
+            return '';
+        }
+
+        $schema['step'] = $steps;
+
+        // Supply (materials needed).
+        if (!empty($howTo['supplies'])) {
+            $schema['supply'] = array_map(function (string $supply) {
+                return [
+                    '@type' => 'HowToSupply',
+                    'name' => strip_tags($supply),
+                ];
+            }, $howTo['supplies']);
+        }
+
+        // Tool (tools needed).
+        if (!empty($howTo['tools'])) {
+            $schema['tool'] = array_map(function (string $tool) {
+                return [
+                    '@type' => 'HowToTool',
+                    'name' => strip_tags($tool),
+                ];
+            }, $howTo['tools']);
+        }
+
+        // Estimated cost.
+        if (isset($howTo['estimated_cost'])) {
+            $schema['estimatedCost'] = [
+                '@type' => 'MonetaryAmount',
+                'currency' => 'EUR',
+                'value' => (string) $howTo['estimated_cost'],
+            ];
+        }
+
+        // Provider organization.
+        if (!empty($tenant['name'])) {
+            $schema['author'] = [
+                '@type' => 'Organization',
+                'name' => $tenant['name'],
+            ];
+            if (!empty($tenant['url'])) {
+                $schema['author']['url'] = $tenant['url'];
+            }
+        }
+
+        return Json::encode($schema);
+    }
+
+    /**
      * Envuelve JSON-LD en script tag para insertar en HTML.
      *
      * @param string $jsonLd

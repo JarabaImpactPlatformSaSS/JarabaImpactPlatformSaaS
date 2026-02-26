@@ -1,8 +1,8 @@
+_core:
+  default_config_hash: ''
 langcode: es
 status: true
 dependencies: {  }
-_core:
-  default_config_hash: ''
 variant: default
 entity_type_id: job_posting
 bundle: job_posting

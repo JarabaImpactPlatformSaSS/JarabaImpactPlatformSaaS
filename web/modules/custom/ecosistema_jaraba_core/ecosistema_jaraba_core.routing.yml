@@ -2094,3 +2094,43 @@ ecosistema_jaraba_core.static.cookies:
     _title: 'Política de cookies'
   requirements:
     _access: 'TRUE'
+
+# GAP-AUD-023: Design System Documentation.
+ecosistema_jaraba_core.design_system:
+  path: '/admin/design-system'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ComponentDocumentationController::page'
+    _title: 'Design System'
+  requirements:
+    _permission: 'access administration pages'
+
+# Blog placeholder — Sprint 5
+ecosistema_jaraba_core.blog:
+  path: '/blog'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\StaticPageController::blog'
+    _title: 'Blog'
+  requirements:
+    _access: 'TRUE'
+
+# ============================================
+# Sprint 6: REST API Endpoints
+# ============================================
+
+# Contact Form API — public, POST only
+ecosistema_jaraba_core.api_contact:
+  path: '/api/v1/public/contact'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ContactApiController::submit'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# Analytics Event Collection — public, POST only
+ecosistema_jaraba_core.api_analytics_event:
+  path: '/api/v1/analytics/event'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\AnalyticsEventController::collect'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

@@ -1,0 +1,15 @@
+uuid: eba391aa-17c4-4aec-b4bb-d57439b8f235
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jarabaimpact_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_remove_action_jarabaimpact_jaraba_saas_lndo_site
+label: 'Eliminar el contenido seleccionado del dominio Jaraba Impact (Dev)'
+type: node
+plugin: domain_access_remove_action
+configuration:
+  domain_id:
+    - jarabaimpact_jaraba_saas_lndo_site

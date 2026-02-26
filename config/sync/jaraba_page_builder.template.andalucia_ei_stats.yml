@@ -1,0 +1,61 @@
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_stats
+label: 'Andalucia +ei: Impacto del Programa'
+description: 'Sección métricas de impacto del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/stats.html.twig'
+fields_schema:
+  type: object
+  title: 'Impacto del Programa'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    stats:
+      type: array
+      title: Estadísticas
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+            title: Valor
+          label:
+            type: string
+            title: Etiqueta
+          icon:
+            type: string
+            title: Icono
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-stats.png
+preview_data:
+  eyebrow: Resultados
+  title: 'Impacto real en el ecosistema emprendedor andaluz'
+  subtitle: 'Cifras que avalan la efectividad del programa Andalucía +ei.'
+  stats:
+    -
+      value: '+200'
+      label: 'Participantes formados'
+      icon: users
+    -
+      value: 85%
+      label: 'Tasa de inserción laboral'
+      icon: briefcase
+    -
+      value: '4.8'
+      label: 'Satisfacción media'
+      icon: star
+    -
+      value: +500h
+      label: 'Formación en IA impartida'
+      icon: brain
+weight: 47

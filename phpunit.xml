@@ -40,6 +40,11 @@
     <testsuite name="Functional">
       <directory>web/modules/custom/*/tests/src/Functional</directory>
     </testsuite>
+
+    <!-- GAP-AUD-015: Prompt regression tests con golden fixtures -->
+    <testsuite name="PromptRegression">
+      <directory>web/modules/custom/*/tests/src/Unit/PromptRegression</directory>
+    </testsuite>
   </testsuites>
 
   <source>

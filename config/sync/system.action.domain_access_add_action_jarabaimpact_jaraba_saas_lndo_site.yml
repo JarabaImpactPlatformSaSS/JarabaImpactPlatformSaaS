@@ -1,0 +1,15 @@
+uuid: ea58bd9d-3667-4957-95e4-71227b8ed38e
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jarabaimpact_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_action_jarabaimpact_jaraba_saas_lndo_site
+label: 'Agregar el contenido seleccionado al dominio Jaraba Impact (Dev)'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - jarabaimpact_jaraba_saas_lndo_site

@@ -140,5 +140,24 @@ class StaticPageController extends ControllerBase {
       ],
     ];
   }
+  /**
+   * Renders the /blog placeholder page.
+   *
+   * Sprint 5 — Optimización Continua (#19).
+   * Placeholder until full blog content type is implemented.
+   *
+   * @return array
+   *   Render array.
+   */
+  public function blog(): array {
+    return [
+      '#theme' => 'info_page_about',
+      '#content' => '<p>' . $this->t('Próximamente publicaremos artículos sobre empleo, emprendimiento, tecnología e impacto social. ¡Suscríbete para no perderte nada!') . '</p>',
+      '#cache' => [
+        'tags' => ['config:ecosistema_jaraba_theme.settings'],
+        'max-age' => 3600,
+      ],
+    ];
+  }
 
 }

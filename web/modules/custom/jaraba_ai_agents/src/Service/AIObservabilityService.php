@@ -436,6 +436,169 @@ class AIObservabilityService {
     }
 
     /**
+     * GAP-AUD-004: Gets usage grouped by region/tenant.
+     *
+     * Groups AI usage logs by tenant_id as a proxy for region,
+     * since tenants map to geographic regions.
+     *
+     * @param string $tenantId
+     *   Optional tenant filter (empty = all tenants).
+     * @param int $days
+     *   Number of days to look back.
+     *
+     * @return array
+     *   Array of ['region' => string, 'count' => int, 'cost' => float, 'tokens' => int].
+     */
+    public function getUsageByRegion(string $tenantId = '', int $days = 30): array
+    {
+        $startTime = strtotime("-{$days} days");
+
+        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('created', $startTime, '>=');
+
+        if (!empty($tenantId)) {
+            $query->condition('tenant_id', $tenantId);
+        }
+
+        $ids = $query->execute();
+        if (empty($ids)) {
+            return [];
+        }
+
+        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+
+        $byRegion = [];
+        foreach ($logs as $log) {
+            $region = $log->get('tenant_id')->value ?: 'global';
+            if (!isset($byRegion[$region])) {
+                $byRegion[$region] = ['region' => $region, 'count' => 0, 'cost' => 0.0, 'tokens' => 0];
+            }
+            $byRegion[$region]['count']++;
+            $byRegion[$region]['cost'] += $log->getCost();
+            $byRegion[$region]['tokens'] += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
+        }
+
+        // Round costs.
+        foreach ($byRegion as &$data) {
+            $data['cost'] = round($data['cost'], 4);
+        }
+
+        return array_values($byRegion);
+    }
+
+    /**
+     * GAP-AUD-004: Exports usage data as CSV string.
+     *
+     * @param string $tenantId
+     *   Optional tenant filter.
+     * @param int $days
+     *   Number of days to export.
+     *
+     * @return string
+     *   CSV formatted string with headers.
+     */
+    public function exportCsv(string $tenantId = '', int $days = 30): string
+    {
+        $startTime = strtotime("-{$days} days");
+
+        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('created', $startTime, '>=')
+            ->sort('created', 'DESC');
+
+        if (!empty($tenantId)) {
+            $query->condition('tenant_id', $tenantId);
+        }
+
+        $ids = $query->range(0, 10000)->execute();
+        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+
+        $output = fopen('php://temp', 'r+');
+        fputcsv($output, [
+            'id', 'agent_id', 'action', 'tier', 'model_id', 'provider_id',
+            'tenant_id', 'vertical', 'input_tokens', 'output_tokens',
+            'cost', 'duration_ms', 'success', 'quality_score', 'created',
+        ]);
+
+        foreach ($logs as $log) {
+            fputcsv($output, [
+                $log->id(),
+                $log->get('agent_id')->value ?? '',
+                $log->get('action')->value ?? '',
+                $log->get('tier')->value ?? '',
+                $log->get('model_id')->value ?? '',
+                $log->get('provider_id')->value ?? '',
+                $log->get('tenant_id')->value ?? '',
+                $log->get('vertical')->value ?? '',
+                $log->get('input_tokens')->value ?? 0,
+                $log->get('output_tokens')->value ?? 0,
+                $log->getCost(),
+                $log->get('duration_ms')->value ?? 0,
+                $log->isSuccessful() ? '1' : '0',
+                $log->get('quality_score')->value ?? '',
+                date('Y-m-d H:i:s', (int) $log->get('created')->value),
+            ]);
+        }
+
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return $csv;
+    }
+
+    /**
+     * GAP-AUD-004: Gets daily usage trend for sparklines.
+     *
+     * @param string $tenantId
+     *   Optional tenant filter.
+     * @param int $days
+     *   Number of days for the trend.
+     *
+     * @return array
+     *   Array of ['date' => 'Y-m-d', 'tokens' => int, 'cost' => float, 'count' => int].
+     */
+    public function getUsageTrend(string $tenantId = '', int $days = 7): array
+    {
+        $startTime = strtotime("-{$days} days");
+
+        $query = $this->entityTypeManager->getStorage('ai_usage_log')->getQuery()
+            ->accessCheck(FALSE)
+            ->condition('created', $startTime, '>=');
+
+        if (!empty($tenantId)) {
+            $query->condition('tenant_id', $tenantId);
+        }
+
+        $ids = $query->execute();
+        $logs = $this->entityTypeManager->getStorage('ai_usage_log')->loadMultiple($ids);
+
+        // Initialize all days.
+        $trend = [];
+        for ($i = $days; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $trend[$date] = ['date' => $date, 'tokens' => 0, 'cost' => 0.0, 'count' => 0];
+        }
+
+        foreach ($logs as $log) {
+            $date = date('Y-m-d', (int) $log->get('created')->value);
+            if (isset($trend[$date])) {
+                $trend[$date]['tokens'] += ($log->get('input_tokens')->value ?? 0) + ($log->get('output_tokens')->value ?? 0);
+                $trend[$date]['cost'] += $log->getCost();
+                $trend[$date]['count']++;
+            }
+        }
+
+        // Round costs.
+        foreach ($trend as &$day) {
+            $day['cost'] = round($day['cost'], 4);
+        }
+
+        return array_values($trend);
+    }
+
+    /**
      * Obtiene el timestamp de inicio para un período.
      *
      * @param string $period

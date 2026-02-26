@@ -63,6 +63,15 @@ class ContentArticleForm extends PremiumEntityFormBase {
 
   /**
    * {@inheritdoc}
+   *
+   * GAP-AUD-009: Enable Inline AI sparkle buttons for key content fields.
+   */
+  protected function getInlineAiFields(): array {
+    return ['title', 'excerpt', 'answer_capsule', 'seo_title', 'seo_description'];
+  }
+
+  /**
+   * {@inheritdoc}
    */
   protected function getCharacterLimits(): array {
     return [

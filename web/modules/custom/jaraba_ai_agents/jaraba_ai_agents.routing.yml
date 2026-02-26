@@ -97,6 +97,31 @@ jaraba_ai_agents.api.observability.dashboard:
   requirements:
     _permission: 'administer ai agents'
 
+# GAP-AUD-004: GEO Dashboard API Routes
+jaraba_ai_agents.api.observability.usage_by_region:
+  path: '/api/v1/ai/observability/usage-by-region'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getUsageByRegion'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.observability.export_csv:
+  path: '/api/v1/ai/observability/export-csv'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::exportCsv'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
+jaraba_ai_agents.api.observability.trend:
+  path: '/api/v1/ai/observability/trend'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getTrend'
+  methods: [GET]
+  requirements:
+    _permission: 'administer ai agents'
+
 # Workflow API Routes
 jaraba_ai_agents.api.workflows.list:
   path: '/api/v1/ai/workflows'
@@ -249,6 +274,46 @@ jaraba_ai_agents.api.mcp:
     _permission: 'use ai agents'
     _csrf_token: 'TRUE'
 
+# GAP-AUD-010: Proactive Insights API
+jaraba_ai_agents.api.proactive_insights.list:
+  path: '/api/v1/proactive-insights'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ProactiveInsightApiController::listUnread'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_ai_agents.api.proactive_insights.mark_read:
+  path: '/api/v1/proactive-insights/{proactive_insight}/read'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ProactiveInsightApiController::markRead'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      proactive_insight:
+        type: entity:proactive_insight
+
+entity.proactive_insight.collection:
+  path: '/admin/content/proactive-insight'
+  defaults:
+    _entity_list: 'proactive_insight'
+    _title: 'Proactive Insights'
+  requirements:
+    _permission: 'administer proactive insights'
+
+# GAP-AUD-009: Inline AI Suggestions API
+jaraba_ai_agents.inline_ai.suggest:
+  path: '/api/v1/inline-ai/suggest'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\InlineAiController::suggest'
+  methods: [POST]
+  requirements:
+    _permission: 'use ai agents'
+    _csrf_request_header_token: 'TRUE'
+
 entity.ai_usage_log.collection:
   path: '/admin/content/ai-usage-logs'
   defaults:
@@ -288,3 +353,56 @@ entity.pending_approval.settings:
     _title: 'Pending Approval settings'
   requirements:
     _permission: 'administer ai agents'
+
+# GAP-AUD-012: A2A Protocol routes.
+jaraba_ai_agents.a2a.agent_card:
+  path: '/.well-known/agent.json'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AgentCardController::agentCard'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+
+jaraba_ai_agents.a2a.task_submit:
+  path: '/api/v1/a2a/tasks/send'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\A2ATaskController::submitTask'
+  requirements:
+    _permission: 'use ai agents'
+  methods: [POST]
+
+jaraba_ai_agents.a2a.task_status:
+  path: '/api/v1/a2a/tasks/{task_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\A2ATaskController::getTaskStatus'
+  requirements:
+    _permission: 'use ai agents'
+    task_id: '\d+'
+  methods: [GET]
+
+jaraba_ai_agents.a2a.task_cancel:
+  path: '/api/v1/a2a/tasks/{task_id}/cancel'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\A2ATaskController::cancelTask'
+  requirements:
+    _permission: 'use ai agents'
+    _csrf_request_header_token: 'TRUE'
+    task_id: '\d+'
+  methods: [POST]
+
+entity.a2a_task.collection:
+  path: '/admin/content/a2a-tasks'
+  defaults:
+    _entity_list: 'a2a_task'
+    _title: 'A2A Tasks'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-AUD-024: Per-tenant AI cost attribution.
+jaraba_ai_agents.api.observability.cost_attribution:
+  path: '/api/v1/ai/observability/cost-attribution'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\ObservabilityApiController::getCostAttribution'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'

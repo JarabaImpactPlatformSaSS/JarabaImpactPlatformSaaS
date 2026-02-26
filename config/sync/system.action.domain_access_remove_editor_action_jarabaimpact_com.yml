@@ -1,0 +1,15 @@
+uuid: 9b22d08f-a749-4c0f-a71b-5e2ddf18977a
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jarabaimpact_com
+  module:
+    - domain_access
+id: domain_access_remove_editor_action_jarabaimpact_com
+label: 'Quitar editores del dominio Jaraba Impact (Prod)'
+type: user
+plugin: domain_access_remove_editor_action
+configuration:
+  domain_id:
+    - jarabaimpact_com

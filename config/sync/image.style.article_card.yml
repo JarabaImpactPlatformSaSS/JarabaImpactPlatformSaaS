@@ -1,0 +1,15 @@
+uuid: e77342e7-bc54-4806-9257-243d1ab0ba3c
+langcode: es
+status: true
+dependencies: {  }
+name: article_card
+label: 'Article Card (600x400)'
+effects:
+  643b7c40-e0eb-43d1-b8de-34f867ef9bde:
+    uuid: 643b7c40-e0eb-43d1-b8de-34f867ef9bde
+    id: image_scale_and_crop
+    weight: null
+    data:
+      width: 600
+      height: 400
+      anchor: center-center

@@ -91,6 +91,19 @@ abstract class PremiumEntityFormBase extends ContentEntityForm {
   }
 
   /**
+   * Returns field names eligible for Inline AI sparkle buttons.
+   *
+   * GAP-AUD-009: Override in subclasses to enable AI suggestions
+   * for specific fields. Returns empty array by default (no AI).
+   *
+   * @return array
+   *   Field machine names (e.g., ['title', 'excerpt', 'seo_description']).
+   */
+  protected function getInlineAiFields(): array {
+    return [];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
@@ -106,6 +119,14 @@ abstract class PremiumEntityFormBase extends ContentEntityForm {
       'charLimits' => $char_limits,
       'sections' => array_keys($sections),
     ];
+
+    // ── GAP-AUD-009: Inline AI sparkle buttons ────────────────────────
+    $inlineAiFields = $this->getInlineAiFields();
+    if (!empty($inlineAiFields) && \Drupal::hasService('jaraba_ai_agents.inline_ai')) {
+      $form['#attached']['library'][] = 'jaraba_ai_agents/inline-ai-trigger';
+      $form['#attached']['drupalSettings']['inlineAiFields'] = $inlineAiFields;
+      $form['#attached']['drupalSettings']['inlineAiEntityType'] = $entity_type_id;
+    }
 
     // ── CSS classes on form root ────────────────────────────────────────
     $form['#attributes']['class'][] = 'premium-entity-form';

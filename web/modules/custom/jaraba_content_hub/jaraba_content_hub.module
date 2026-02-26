@@ -251,7 +251,27 @@ function jaraba_content_hub_content_article_presave(EntityInterface $entity): vo
     }
   }
 
-  // 4. Auto-generación de slug con validación de unicidad.
+  // 4. GAP-AUD-017: Auto-asignar tenant_id si está vacío (PRESAVE-RESILIENCE-001).
+  if ($entity->hasField('tenant_id') && (int) ($entity->get('tenant_id')->value ?? 0) === 0) {
+    try {
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+        /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+        $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        $currentTenant = $tenantContext->getCurrentTenant();
+        if ($currentTenant !== NULL) {
+          $entity->set('tenant_id', (int) $currentTenant->id());
+        }
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->warning(
+        'Tenant auto-assign failed for article @id: @error',
+        ['@id' => $entity->id() ?? 'new', '@error' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 5. Auto-generación de slug con validación de unicidad.
   if ($entity->hasField('slug') && $entity->get('slug')->isEmpty()) {
     try {
       $title = $entity->label();
@@ -438,7 +458,48 @@ function template_preprocess_content_article(array &$variables): void {
     $article['author_avatar'] = $avatar_url;
   }
 
+  // GAP-AUD-006: Schema.org speakable JSON-LD for AI search engines.
+  $speakableJsonLd = '';
+  if (!empty($article['answer_capsule']) || !empty($article['title'])) {
+    $speakableSchema = [
+      '@context' => 'https://schema.org',
+      '@type' => 'BlogPosting',
+      'headline' => $article['title'],
+      'url' => $article['url'],
+      'speakable' => [
+        '@type' => 'SpeakableSpecification',
+        'cssSelector' => [
+          '.article-body__content h2',
+          '.article-body__content p:first-of-type',
+        ],
+      ],
+    ];
+
+    if (!empty($article['answer_capsule'])) {
+      $speakableSchema['description'] = $article['answer_capsule'];
+    }
+    elseif (!empty($article['excerpt'])) {
+      $speakableSchema['description'] = $article['excerpt'];
+    }
+
+    if (!empty($article['publish_date'])) {
+      $speakableSchema['datePublished'] = $article['publish_date'];
+    }
+
+    if (!empty($article['author_name'])) {
+      $speakableSchema['author'] = [
+        '@type' => 'Person',
+        'name' => $article['author_name'],
+      ];
+    }
+
+    $speakableJsonLd = '<script type="application/ld+json">'
+      . json_encode($speakableSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+      . '</script>';
+  }
+
   $variables['article'] = $article;
+  $variables['speakable_json_ld'] = $speakableJsonLd;
   $variables['show_reading_time'] = TRUE;
 }
 

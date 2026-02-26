@@ -1,0 +1,20 @@
+{#
+/**
+ * @file _hreflang-meta.html.twig
+ * Tags hreflang para SEO internacional de meta-sitios.
+ *
+ * Genera <link rel="alternate" hreflang="xx"> para ES y EN.
+ * Incluye x-default apuntando a ES como idioma principal.
+ *
+ * DIRECTRICES:
+ * - SEO-GEO-001: hreflang tags
+ * - i18n: soporte multilingüe
+ */
+#}
+{% set current_path = path('<current>') %}
+{% set base_url = (url('<front>', {}, {absolute: true}) ~ '')|trim('/') %}
+
+{# ES es el idioma principal (x-default) #}
+<link rel="alternate" hreflang="es" href="{{ base_url }}/es{{ current_path }}" />
+<link rel="alternate" hreflang="en" href="{{ base_url }}/en{{ current_path }}" />
+<link rel="alternate" hreflang="x-default" href="{{ base_url }}/es{{ current_path }}" />

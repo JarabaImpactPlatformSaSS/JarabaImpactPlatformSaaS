@@ -1,0 +1,15 @@
+uuid: 73b1fe3d-965d-4e06-817e-467e909913c7
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.pepejaraba_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_editor_action_pepejaraba_jaraba_saas_lndo_site
+label: 'Agregar editores al dominio Pepe Jaraba (dev proxy)'
+type: user
+plugin: domain_access_add_editor_action
+configuration:
+  domain_id:
+    - pepejaraba_jaraba_saas_lndo_site

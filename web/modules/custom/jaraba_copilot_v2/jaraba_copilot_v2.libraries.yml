@@ -45,3 +45,14 @@ copilot-chat-widget:
     - core/drupal
     - core/once
     - core/drupalSettings
+
+# GAP-AUD-011: Voice input for copilot widget.
+voice-input:
+  version: VERSION
+  js:
+    js/voice-input.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupalSettings
+    - jaraba_copilot_v2/copilot-chat-widget

@@ -1,0 +1,11 @@
+uuid: 13bd360e-9df5-4b61-9471-fc95a41bb000
+langcode: es
+status: true
+dependencies: {  }
+id: plataformadeecosistemas_es
+domain_id: 2622542
+hostname: plataformadeecosistemas.es
+name: 'Plataforma de Ecosistemas Digitales'
+scheme: https
+weight: 0
+is_default: false

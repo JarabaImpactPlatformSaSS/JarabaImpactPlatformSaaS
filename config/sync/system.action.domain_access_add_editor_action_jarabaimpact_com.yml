@@ -1,0 +1,15 @@
+uuid: 4064a464-d9fc-497f-9590-bdbefa5fd987
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jarabaimpact_com
+  module:
+    - domain_access
+id: domain_access_add_editor_action_jarabaimpact_com
+label: 'Agregar editores al dominio Jaraba Impact (Prod)'
+type: user
+plugin: domain_access_add_editor_action
+configuration:
+  domain_id:
+    - jarabaimpact_com

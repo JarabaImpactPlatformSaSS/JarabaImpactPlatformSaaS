@@ -1,0 +1,15 @@
+uuid: b71058eb-6802-4057-88a2-b5f73e175f2b
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.plataformadeecosistemas_es
+  module:
+    - domain_access
+id: domain_access_add_editor_action_plataformadeecosistemas_es
+label: 'Agregar editores al dominio Plataforma de Ecosistemas Digitales'
+type: user
+plugin: domain_access_add_editor_action
+configuration:
+  domain_id:
+    - plataformadeecosistemas_es

@@ -30,6 +30,13 @@
 {{ attach_library('ecosistema_jaraba_theme/global') }}
 {{ attach_library('jaraba_page_builder/page-builder') }}
 
+{# Sprint 9-12-15: Tracking + Experiments + Heatmap para meta-sitios #}
+{% if meta_site %}
+  {{ attach_library('ecosistema_jaraba_theme/metasite-tracking') }}
+  {{ attach_library('ecosistema_jaraba_theme/metasite-experiments') }}
+  {{ attach_library('jaraba_heatmap/tracker') }}
+{% endif %}
+
 {# =========================================================================
    HEADER — Meta-sitio: full header con nav del tenant
                 Non-meta-sitio: ultra-limpio, solo logo + acciones

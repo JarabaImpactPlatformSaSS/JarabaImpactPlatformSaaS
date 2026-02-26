@@ -119,6 +119,23 @@ class ContentCategory extends ContentEntityBase
     }
 
     /**
+     * Gets the tenant ID that owns this category.
+     */
+    public function getTenantId(): int
+    {
+        return (int) ($this->get('tenant_id')->value ?? 0);
+    }
+
+    /**
+     * Sets the tenant ID that owns this category.
+     */
+    public function setTenantId(int $tenantId): static
+    {
+        $this->set('tenant_id', $tenantId);
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      *
      * Define los campos base de la entidad ContentCategory.
@@ -216,6 +233,15 @@ class ContentCategory extends ContentEntityBase
                 'weight' => 10,
             ])
             ->setDisplayConfigurable('form', TRUE);
+
+        // GAP-AUD-017: Tenant ID para aislamiento multi-tenant.
+        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Tenant ID'))
+            ->setDescription(t('The tenant that owns this category.'))
+            ->setDefaultValue(0)
+            ->setDisplayOptions('form', ['type' => 'number', 'weight' => 90])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', FALSE);
 
         // Timestamps automáticos.
         $fields['created'] = BaseFieldDefinition::create('created')

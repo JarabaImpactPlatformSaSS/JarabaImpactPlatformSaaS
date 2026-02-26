@@ -1,0 +1,15 @@
+uuid: 77067f84-1485-43c3-81a4-c47505bb2340
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jarabaimpact_com
+  module:
+    - domain_access
+id: domain_access_add_action_jarabaimpact_com
+label: 'Agregar el contenido seleccionado al dominio Jaraba Impact (Prod)'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - jarabaimpact_com

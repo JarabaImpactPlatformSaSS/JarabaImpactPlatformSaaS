@@ -1,0 +1,392 @@
+// =============================================================================
+// _trust-bar.scss & _product-demo.scss
+// Sprint 4 — Remaining Audit Items
+// =============================================================================
+
+// --- TRUST BAR ---
+.trust-bar {
+  padding: var(--ej-spacing-4, 1.5rem) var(--ej-spacing-4, 1.5rem);
+  background: var(--ej-color-bg-body, #f8fafc);
+  border-bottom: 1px solid var(--ej-color-card-border, #e5e7eb);
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ej-color-muted, #94a3b8);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__logos {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__item {
+    flex-shrink: 0;
+  }
+
+  &__badges {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ej-color-muted, #64748b);
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    background: var(--ej-color-bg-surface, #fff);
+    border: 1px solid var(--ej-color-card-border, #e5e7eb);
+
+    svg {
+      color: var(--ej-color-success, #22c55e);
+    }
+  }
+}
+
+// --- PRODUCT DEMO ---
+.product-demo {
+  padding: var(--ej-spacing-12, 5rem) var(--ej-spacing-4, 1.5rem);
+  background: linear-gradient(180deg, var(--ej-color-bg-body, #f8fafc) 0%, #fff 100%);
+
+  &__container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--ej-spacing-8, 3rem);
+  }
+
+  &__eyebrow {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ej-color-primary, #FF8C42);
+    margin-bottom: 0.75rem;
+  }
+
+  &__title {
+    font-family: var(--ej-font-headings, 'Outfit', sans-serif);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    color: var(--ej-color-headings, #1a1a2e);
+    margin: 0 0 0.75rem;
+  }
+
+  &__subtitle {
+    font-size: 1.0625rem;
+    color: var(--ej-color-muted, #64748b);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  // Tabs
+  &__tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid var(--ej-color-card-border, #e5e7eb);
+    border-radius: 999px;
+    background: var(--ej-color-bg-surface, #fff);
+    color: var(--ej-color-muted, #64748b);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--ej-color-primary, #FF8C42);
+      color: var(--ej-color-primary, #FF8C42);
+    }
+
+    &--active {
+      background: var(--ej-color-primary, #FF8C42);
+      color: #fff;
+      border-color: var(--ej-color-primary, #FF8C42);
+
+      svg {
+        color: #fff;
+      }
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  // Browser mockup
+  &__mockup {
+    border-radius: var(--ej-radius-lg, 16px);
+    overflow: hidden;
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
+
+  &__browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #2d2d3d;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff5f57;
+
+    &:nth-child(2) { background: #ffbd2e; }
+    &:nth-child(3) { background: #28c840; }
+  }
+
+  &__url-bar {
+    flex: 1;
+    margin-left: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  &__content {
+    display: flex;
+    min-height: 300px;
+    background: #1a1a2e;
+    color: #e2e8f0;
+
+    &--chat {
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    &--analytics {
+      flex-direction: column;
+      padding: 1.5rem;
+    }
+  }
+
+  // Sidebar mockup
+  &__sidebar {
+    width: 200px;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    display: none;
+
+    @media (min-width: 768px) {
+      display: block;
+    }
+  }
+
+  &__nav-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.5);
+
+    &--active {
+      background: rgba(255, 140, 66, 0.15);
+      color: var(--ej-color-primary, #FF8C42);
+      font-weight: 600;
+    }
+  }
+
+  // Main area
+  &__main {
+    flex: 1;
+    padding: 1.5rem;
+  }
+
+  &__stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+
+    &--highlight {
+      background: rgba(255, 140, 66, 0.15);
+      border: 1px solid rgba(255, 140, 66, 0.3);
+    }
+  }
+
+  &__stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  &__stat-label {
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__chart-placeholder {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  // Chat mockup
+  &__chat-bubble {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+
+    &--user {
+      align-self: flex-end;
+      background: var(--ej-color-primary, #FF8C42);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    &--ai {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.08);
+      border-bottom-left-radius: 4px;
+
+      ul {
+        margin: 0.5rem 0 0;
+        padding-left: 1.25rem;
+        font-size: 0.8125rem;
+      }
+
+      li {
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+
+  &__chat-typing {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.75rem 1rem;
+    align-self: flex-start;
+
+    span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      animation: typingDot 1.4s infinite;
+
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+  }
+
+  // Analytics mockup
+  &__panel-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 1.25rem;
+    color: #fff;
+  }
+
+  &__metric-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__metric-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+
+    > span:first-child {
+      min-width: 120px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    > span:last-child {
+      min-width: 40px;
+      text-align: right;
+      font-weight: 600;
+      color: var(--ej-color-primary, #FF8C42);
+    }
+  }
+
+  &__bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--ej-color-primary, #FF8C42), #FFB366);
+    transition: width 0.8s ease;
+  }
+
+  // CTA
+  &__cta {
+    text-align: center;
+    margin-top: var(--ej-spacing-6, 2rem);
+  }
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}

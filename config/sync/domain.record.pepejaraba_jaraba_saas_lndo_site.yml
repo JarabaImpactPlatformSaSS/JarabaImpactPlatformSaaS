@@ -1,0 +1,11 @@
+uuid: d6fcbfb3-cc9d-4e66-9872-a96bd0792c91
+langcode: es
+status: true
+dependencies: {  }
+id: pepejaraba_jaraba_saas_lndo_site
+domain_id: 14270151
+hostname: pepejaraba.jaraba-saas.lndo.site
+name: 'Pepe Jaraba (dev proxy)'
+scheme: https
+weight: 5
+is_default: false

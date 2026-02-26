@@ -3,20 +3,14 @@
  * @file
  * info-page-contact.html.twig
  *
- * Página de contacto del meta-sitio.
+ * Página de contacto con formulario funcional.
+ * Sprint 5 — Optimización Continua (#18).
  *
- * VARIABLES (desde StaticPageController):
- * - content: HTML adicional desde Theme Settings
- * - contact_email: Email de contacto
- * - contact_phone: Teléfono
- * - contact_address: Dirección postal
- *
- * DIRECTRICES:
- * - FRONTEND-PAGE-001: Full-width clean layout
- * - SEO: Schema.org ContactPage
- * - i18n: {% trans %}
+ * VARIABLES:
+ * - contact_email, contact_phone, contact_address, content
  */
 #}
+{{ attach_library('ecosistema_jaraba_theme/contact-form') }}
 
 <div class="static-page static-page--contacto">
   <div class="static-page__container">
@@ -68,16 +62,48 @@
         {% endif %}
       </div>
 
-      {# Columna 2: CTA de registro #}
-      <div class="static-page__cta-card">
-        <h2>{% trans %}¿Listo para empezar?{% endtrans %}</h2>
-        <p>{% trans %}Crea tu cuenta gratuita y explora toda la plataforma.{% endtrans %}</p>
-        <a href="/user/register" class="btn btn--primary btn--lg">
-          {% trans %}Empezar gratis{% endtrans %}
-        </a>
-        <a href="/planes" class="btn btn--secondary">
-          {% trans %}Ver planes{% endtrans %}
-        </a>
+      {# Columna 2: Formulario de contacto funcional (Sprint 5 #18) #}
+      <div class="contact-form__wrapper" id="contact-form-wrapper">
+        <h2 class="contact-form__title">{% trans %}Envíanos un mensaje{% endtrans %}</h2>
+        <form class="contact-form" id="contact-form" novalidate>
+          <div class="contact-form__field">
+            <label for="contact-name">{% trans %}Nombre{% endtrans %} <span aria-hidden="true">*</span></label>
+            <input type="text" id="contact-name" name="name" required
+                   placeholder="{% trans %}Tu nombre{% endtrans %}" autocomplete="name">
+          </div>
+          <div class="contact-form__field">
+            <label for="contact-email">{% trans %}Email{% endtrans %} <span aria-hidden="true">*</span></label>
+            <input type="email" id="contact-email" name="email" required
+                   placeholder="{% trans %}tu@email.com{% endtrans %}" autocomplete="email">
+          </div>
+          <div class="contact-form__field">
+            <label for="contact-subject">{% trans %}Asunto{% endtrans %}</label>
+            <input type="text" id="contact-subject" name="subject"
+                   placeholder="{% trans %}¿Sobre qué quieres hablar?{% endtrans %}">
+          </div>
+          <div class="contact-form__field">
+            <label for="contact-message">{% trans %}Mensaje{% endtrans %} <span aria-hidden="true">*</span></label>
+            <textarea id="contact-message" name="message" rows="4" required
+                      placeholder="{% trans %}Cuéntanos en qué podemos ayudarte...{% endtrans %}"></textarea>
+          </div>
+          <div class="contact-form__consent">
+            <label>
+              <input type="checkbox" name="gdpr" required>
+              {% trans %}Acepto la <a href="/politica-privacidad" target="_blank">política de privacidad</a>{% endtrans %}
+            </label>
+          </div>
+          <button type="submit" class="btn btn--primary btn--lg contact-form__submit">
+            {% trans %}Enviar mensaje{% endtrans %}
+          </button>
+        </form>
+        <div class="contact-form__success" id="contact-form-success" style="display:none">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="var(--ej-color-success, #22c55e)" stroke-width="1.5"/>
+            <path d="M8 12l3 3 5-6" stroke="var(--ej-color-success, #22c55e)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>{% trans %}¡Mensaje enviado!{% endtrans %}</h3>
+          <p>{% trans %}Te responderemos en menos de 24 horas.{% endtrans %}</p>
+        </div>
       </div>
     </div>
 

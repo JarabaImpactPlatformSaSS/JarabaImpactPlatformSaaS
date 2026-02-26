@@ -1,0 +1,179 @@
+{#
+/**
+ * @file
+ * _product-demo.html.twig
+ *
+ * Sección de demo / screenshots del producto para homepage.
+ *
+ * Sprint 4 — Remaining Audit Items (#9)
+ * Muestra capturas de pantalla del producto real para que el visitante
+ * vea la interfaz antes de registrarse ("try before you buy").
+ *
+ * DIRECTRICES:
+ * - i18n: {% trans %}
+ * - CSS: BEM + design tokens
+ * - A11y: aria-label, alt text
+ */
+#}
+
+<section class="product-demo" aria-labelledby="product-demo-title">
+  <div class="product-demo__container">
+
+    <header class="product-demo__header">
+      <span class="product-demo__eyebrow">{% trans %}Mira la plataforma{% endtrans %}</span>
+      <h2 id="product-demo-title" class="product-demo__title">
+        {% trans %}Todo lo que necesitas, en un solo lugar{% endtrans %}
+      </h2>
+      <p class="product-demo__subtitle">
+        {% trans %}Dashboard inteligente, copiloto IA integrado y herramientas especializadas para cada vertical.{% endtrans %}
+      </p>
+    </header>
+
+    <div class="product-demo__showcase">
+      {# Tabs de features principales #}
+      <div class="product-demo__tabs" role="tablist" aria-label="{% trans %}Funcionalidades{% endtrans %}">
+        <button class="product-demo__tab product-demo__tab--active" role="tab" aria-selected="true" data-demo-tab="dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          {% trans %}Dashboard{% endtrans %}
+        </button>
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="copilot">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26C18.81 13.47 20 11.38 20 9a7 7 0 0 0-7-7Z" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="10" y1="22" x2="14" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          {% trans %}Copiloto IA{% endtrans %}
+        </button>
+        <button class="product-demo__tab" role="tab" aria-selected="false" data-demo-tab="analytics">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 20h18M6 16v-4M10 16V8M14 16v-6M18 16V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          {% trans %}Analytics{% endtrans %}
+        </button>
+      </div>
+
+      {# Preview de features — mockup visual #}
+      <div class="product-demo__preview">
+        <div class="product-demo__screen" data-demo-panel="dashboard" aria-hidden="false">
+          <div class="product-demo__mockup">
+            <div class="product-demo__browser-bar">
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/dashboard</span>
+            </div>
+            <div class="product-demo__content">
+              <div class="product-demo__sidebar">
+                <div class="product-demo__nav-item product-demo__nav-item--active">Dashboard</div>
+                <div class="product-demo__nav-item">Empleabilidad</div>
+                <div class="product-demo__nav-item">Emprendimiento</div>
+                <div class="product-demo__nav-item">AgroConecta</div>
+                <div class="product-demo__nav-item">Copiloto IA</div>
+              </div>
+              <div class="product-demo__main">
+                <div class="product-demo__stat-grid">
+                  <div class="product-demo__stat-card">
+                    <span class="product-demo__stat-value">1.247</span>
+                    <span class="product-demo__stat-label">{% trans %}Usuarios activos{% endtrans %}</span>
+                  </div>
+                  <div class="product-demo__stat-card product-demo__stat-card--highlight">
+                    <span class="product-demo__stat-value">89%</span>
+                    <span class="product-demo__stat-label">{% trans %}Satisfacción{% endtrans %}</span>
+                  </div>
+                  <div class="product-demo__stat-card">
+                    <span class="product-demo__stat-value">342</span>
+                    <span class="product-demo__stat-label">{% trans %}Tareas IA{% endtrans %}</span>
+                  </div>
+                </div>
+                <div class="product-demo__chart-placeholder">
+                  <svg viewBox="0 0 400 120" width="100%" height="120" aria-label="{% trans %}Gráfico de actividad{% endtrans %}">
+                    <path d="M0 100 L50 80 L100 90 L150 60 L200 70 L250 40 L300 50 L350 20 L400 30" fill="none" stroke="var(--ej-color-primary, #FF8C42)" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M0 100 L50 80 L100 90 L150 60 L200 70 L250 40 L300 50 L350 20 L400 30 L400 120 L0 120Z" fill="url(#demoGrad)" opacity="0.15"/>
+                    <defs><linearGradient id="demoGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ej-color-primary, #FF8C42)"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-demo__screen" data-demo-panel="copilot" aria-hidden="true" style="display:none">
+          <div class="product-demo__mockup">
+            <div class="product-demo__browser-bar">
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/copiloto</span>
+            </div>
+            <div class="product-demo__content product-demo__content--chat">
+              <div class="product-demo__chat-bubble product-demo__chat-bubble--user">
+                {% trans %}Necesito mejorar mi CV para el sector tecnológico{% endtrans %}
+              </div>
+              <div class="product-demo__chat-bubble product-demo__chat-bubble--ai">
+                {% trans %}He analizado tu perfil. Aquí tienes 3 sugerencias concretas para destacar tu experiencia técnica:{% endtrans %}
+                <ul>
+                  <li>{% trans %}Añade métricas cuantificables a cada rol{% endtrans %}</li>
+                  <li>{% trans %}Destaca tus certificaciones técnicas{% endtrans %}</li>
+                  <li>{% trans %}Adapta las keywords al puesto objetivo{% endtrans %}</li>
+                </ul>
+              </div>
+              <div class="product-demo__chat-bubble product-demo__chat-bubble--user">
+                {% trans %}¿Puedes reescribir mi experiencia actual?{% endtrans %}
+              </div>
+              <div class="product-demo__chat-typing">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-demo__screen" data-demo-panel="analytics" aria-hidden="true" style="display:none">
+          <div class="product-demo__mockup">
+            <div class="product-demo__browser-bar">
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__dot"></span>
+              <span class="product-demo__url-bar">app.jarabaimpact.com/analytics</span>
+            </div>
+            <div class="product-demo__content product-demo__content--analytics">
+              <h3 class="product-demo__panel-title">{% trans %}Métricas de impacto{% endtrans %}</h3>
+              <div class="product-demo__metric-bars">
+                <div class="product-demo__metric-row">
+                  <span>{% trans %}Empleabilidad{% endtrans %}</span>
+                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:85%"></div></div>
+                  <span>85%</span>
+                </div>
+                <div class="product-demo__metric-row">
+                  <span>{% trans %}Emprendimiento{% endtrans %}</span>
+                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:72%"></div></div>
+                  <span>72%</span>
+                </div>
+                <div class="product-demo__metric-row">
+                  <span>{% trans %}AgroConecta{% endtrans %}</span>
+                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:91%"></div></div>
+                  <span>91%</span>
+                </div>
+                <div class="product-demo__metric-row">
+                  <span>{% trans %}ComercioConecta{% endtrans %}</span>
+                  <div class="product-demo__bar"><div class="product-demo__bar-fill" style="width:68%"></div></div>
+                  <span>68%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-demo__cta">
+      <a href="/user/register" class="btn btn--primary btn--lg" data-track-cta="product_demo_register">
+        {% trans %}Pruébalo gratis{% endtrans %}
+      </a>
+    </div>
+
+  </div>
+</section>

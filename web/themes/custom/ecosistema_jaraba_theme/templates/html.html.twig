@@ -16,8 +16,14 @@
   <head>
     <head-placeholder token="{{ placeholder_token }}">
     <title>{{ head_title|safe_join(' | ') }}</title>
+    {# Sprint 13: hreflang tags para SEO internacional #}
+    {% include '@ecosistema_jaraba_theme/partials/_hreflang-meta.html.twig' ignore missing %}
     <css-placeholder token="{{ placeholder_token }}">
     <js-placeholder token="{{ placeholder_token }}">
+    {# Sprint 11: GTM/GA4 Analytics — Consent Mode v2 + dataLayer #}
+    {% include '@ecosistema_jaraba_theme/partials/_gtm-analytics.html.twig' ignore missing with {
+      theme_settings: theme_settings|default({})
+    } %}
     {# PERF-02: Async CSS loading when critical CSS is inline. #}
     <script>
     (function(){
@@ -41,6 +47,11 @@
     </noscript>
   </head>
   <body{{ attributes }}>
+    {# Sprint 11: GTM noscript fallback #}
+    {% set gtm_id = theme_settings.gtm_container_id|default('') %}
+    {% if gtm_id %}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_id }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {% endif %}
     <a href="#main-content" class="visually-hidden focusable">
       {{ 'Skip to main content'|t }}
     </a>

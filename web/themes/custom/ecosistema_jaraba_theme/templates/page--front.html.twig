@@ -33,6 +33,9 @@
 {{ attach_library('ecosistema_jaraba_theme/progressive-profiling') }}
 {{ attach_library('ecosistema_jaraba_theme/lenis-scroll') }}
 {{ attach_library('ecosistema_jaraba_core/visitor-journey') }}
+{{ attach_library('ecosistema_jaraba_theme/metasite-tracking') }}
+{{ attach_library('ecosistema_jaraba_theme/product-demo') }}
+{{ attach_library('ecosistema_jaraba_theme/funnel-analytics') }}
 
 {# SEO Avanzado — Datos Estructurados Schema.org #}
 {% include '@ecosistema_jaraba_theme/partials/_seo-schema.html.twig' with {
@@ -60,6 +63,9 @@
       intentions: homepage.intentions|default([])
     } %}
 
+    {# TRUST BAR - Logos tecnologías + badges (Sprint 4 #12) #}
+    {% include '@ecosistema_jaraba_theme/partials/_trust-bar.html.twig' %}
+
     {# VERTICAL SELECTOR - 5 cards interactivas (Doc 178 §4.1) #}
     {% include '@ecosistema_jaraba_theme/partials/_vertical-selector.html.twig' with {
       verticals: verticals|default([]),
@@ -75,6 +81,9 @@
     {% include '@ecosistema_jaraba_theme/partials/_stats.html.twig' with {
       stats: homepage.stats|default([])
     } %}
+
+    {# PRODUCT DEMO - Screenshots + tabs interactivos (Sprint 4 #9) #}
+    {% include '@ecosistema_jaraba_theme/partials/_product-demo.html.twig' %}
 
     {# LEAD MAGNET - Kit de Impulso Digital — BUG-001 Fix #}
     {% include '@ecosistema_jaraba_theme/partials/_lead-magnet.html.twig' with {

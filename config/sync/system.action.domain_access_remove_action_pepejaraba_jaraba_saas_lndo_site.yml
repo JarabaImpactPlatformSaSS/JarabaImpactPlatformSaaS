@@ -1,0 +1,15 @@
+uuid: 36cd107b-e429-4805-88f3-da6c2366de83
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.pepejaraba_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_remove_action_pepejaraba_jaraba_saas_lndo_site
+label: 'Eliminar el contenido seleccionado del dominio Pepe Jaraba (dev proxy)'
+type: node
+plugin: domain_access_remove_action
+configuration:
+  domain_id:
+    - pepejaraba_jaraba_saas_lndo_site

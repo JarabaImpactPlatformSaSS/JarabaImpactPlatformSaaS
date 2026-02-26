@@ -1,3 +1,4 @@
+uuid: f9eaf8f2-5158-4a70-8360-d2bfef719b8e
 langcode: es
 status: true
 dependencies: {  }
@@ -88,5 +89,4 @@ preview_data:
       icon_category: analytics
       title: 'Derecho fiscal'
       desc: 'Planificación tributaria, inspecciones fiscales, recursos y optimización de la carga impositiva.'
-animation: fade-up
 weight: 1

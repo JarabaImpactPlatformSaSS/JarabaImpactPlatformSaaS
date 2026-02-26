@@ -1,0 +1,153 @@
+{#
+/**
+ * @file
+ * GAP-AUD-023: Design System Documentation page.
+ *
+ * Variables:
+ *   - colors: Color palette grouped by category.
+ *   - typography: Font families, colors, and sizes.
+ *   - spacing: Spacing scale tokens.
+ *   - shadows: Shadow tokens.
+ *   - breakpoints: Responsive breakpoints.
+ *   - icons: Icon categories with icon names.
+ *   - components: List of SCSS component files.
+ */
+#}
+
+<div class="ds-page">
+  <header class="ds-page__header">
+    <h1 class="ds-page__title">Jaraba Design System</h1>
+    <p class="ds-page__subtitle">Guia de referencia para el ecosistema visual Jaraba Impact Platform.</p>
+  </header>
+
+  {# === COLOR PALETTE === #}
+  <section class="ds-section" id="colors">
+    <h2 class="ds-section__title">Paleta de Colores</h2>
+
+    {% for group_name, group_colors in colors %}
+      <h3 class="ds-section__subtitle">{{ group_name|capitalize }}</h3>
+      <div class="ds-color-grid">
+        {% for color in group_colors %}
+          <div class="ds-color-swatch">
+            <div class="ds-color-swatch__preview" style="background-color: {{ color.hex }};"></div>
+            <div class="ds-color-swatch__info">
+              <strong class="ds-color-swatch__name">{{ color.name }}</strong>
+              <code class="ds-color-swatch__var">{{ color.var }}</code>
+              <span class="ds-color-swatch__hex">{{ color.hex }}</span>
+              <span class="ds-color-swatch__usage">{{ color.usage }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+
+  {# === TYPOGRAPHY === #}
+  <section class="ds-section" id="typography">
+    <h2 class="ds-section__title">Tipografia</h2>
+
+    <h3 class="ds-section__subtitle">Familias</h3>
+    <div class="ds-table-wrap">
+      <table class="ds-table">
+        <thead><tr><th>Uso</th><th>Variable</th><th>Valor</th></tr></thead>
+        <tbody>
+        {% for family in typography.families %}
+          <tr>
+            <td>{{ family.name }}</td>
+            <td><code>{{ family.var }}</code></td>
+            <td style="font-family: {{ family.value }};">{{ family.value }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="ds-section__subtitle">Escala tipografica</h3>
+    <div class="ds-type-specimens">
+      {% for size in typography.sizes %}
+        <div class="ds-type-specimen" style="font-size: {{ size.size }}; font-weight: {{ size.weight }};">
+          <span class="ds-type-specimen__label">{{ size.label }}</span>
+          <span class="ds-type-specimen__sample">El rapido zorro marron salta sobre el perro perezoso</span>
+          <code class="ds-type-specimen__meta">{{ size.size }} / {{ size.weight }}</code>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# === SPACING === #}
+  <section class="ds-section" id="spacing">
+    <h2 class="ds-section__title">Spacing</h2>
+    <div class="ds-spacing-scale">
+      {% for space in spacing %}
+        <div class="ds-spacing-item">
+          <div class="ds-spacing-item__bar" style="width: {{ space.value|split('(')|first|trim }}; min-width: 4px;"></div>
+          <code class="ds-spacing-item__name">{{ space.var }}</code>
+          <span class="ds-spacing-item__value">{{ space.value }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# === SHADOWS === #}
+  <section class="ds-section" id="shadows">
+    <h2 class="ds-section__title">Sombras</h2>
+    <div class="ds-shadow-grid">
+      {% for shadow in shadows %}
+        <div class="ds-shadow-card" style="box-shadow: {{ shadow.value }};">
+          <strong>{{ shadow.name }}</strong>
+          <code>{{ shadow.var }}</code>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# === BREAKPOINTS === #}
+  <section class="ds-section" id="breakpoints">
+    <h2 class="ds-section__title">Breakpoints</h2>
+    <div class="ds-table-wrap">
+      <table class="ds-table">
+        <thead><tr><th>Nombre</th><th>Variable</th><th>Valor</th><th>Uso</th></tr></thead>
+        <tbody>
+        {% for bp in breakpoints %}
+          <tr>
+            <td><code>{{ bp.name }}</code></td>
+            <td><code>{{ bp.var }}</code></td>
+            <td>{{ bp.value }}</td>
+            <td>{{ bp.usage }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {# === ICONS === #}
+  <section class="ds-section" id="icons">
+    <h2 class="ds-section__title">Iconos</h2>
+    <p>Uso: <code>jaraba_icon(['category' => 'ui', 'name' => 'search'])</code></p>
+
+    {% for category, icon_names in icons %}
+      <h3 class="ds-section__subtitle">{{ category|capitalize }}</h3>
+      <div class="ds-icon-grid">
+        {% for icon_name in icon_names %}
+          <div class="ds-icon-item">
+            <code>{{ icon_name }}</code>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+
+  {# === COMPONENTS === #}
+  <section class="ds-section" id="components">
+    <h2 class="ds-section__title">Componentes SCSS</h2>
+    <div class="ds-component-list">
+      {% for component in components %}
+        <div class="ds-component-item">
+          <strong>{{ component.name }}</strong>
+          <code>{{ component.file }}</code>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>

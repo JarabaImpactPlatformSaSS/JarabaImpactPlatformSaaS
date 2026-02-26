@@ -1,0 +1,95 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Outfit, Arial, Helvetica, sans-serif" />
+      <mj-text font-size="14px" color="#333333" line-height="1.6" />
+      <mj-button background-color="#1565C0" color="#ffffff" font-size="16px" border-radius="6px" inner-padding="12px 28px" />
+      <mj-section padding="0px" />
+    </mj-attributes>
+    <mj-style>
+      .footer-link { color: #666666 !important; text-decoration: underline; }
+      .label { color: #666666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+      .value { color: #333333; font-size: 15px; margin-top: 4px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#f8f9fa" width="600px">
+    <mj-preview>Nuevo mensaje de contacto de {{ sender_name }} &mdash; {{ subject }}</mj-preview>
+    <!-- Header -->
+    <mj-section background-color="#1565C0" padding="20px 0">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="22px" font-weight="bold">
+          &#x1F4E9; Nuevo contacto desde el meta-sitio
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Data Card -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="bold" color="#1565C0" padding-bottom="16px">
+          Datos del contacto
+        </mj-text>
+
+        <mj-text padding-bottom="4px">
+          <span class="label">Nombre</span>
+        </mj-text>
+        <mj-text padding-bottom="16px">
+          <span class="value">{{ sender_name }}</span>
+        </mj-text>
+
+        <mj-text padding-bottom="4px">
+          <span class="label">Email</span>
+        </mj-text>
+        <mj-text padding-bottom="16px">
+          <span class="value"><a href="mailto:{{ sender_email }}">{{ sender_email }}</a></span>
+        </mj-text>
+
+        <mj-text padding-bottom="4px">
+          <span class="label">Asunto</span>
+        </mj-text>
+        <mj-text padding-bottom="16px">
+          <span class="value">{{ subject }}</span>
+        </mj-text>
+
+        <mj-divider border-color="#E0E0E0" border-width="1px" padding-bottom="16px" />
+
+        <mj-text padding-bottom="4px">
+          <span class="label">Mensaje</span>
+        </mj-text>
+        <mj-text padding-bottom="16px" font-size="15px" line-height="1.8">
+          {{ message }}
+        </mj-text>
+
+        <mj-divider border-color="#E0E0E0" border-width="1px" padding-bottom="16px" />
+
+        <mj-text font-size="12px" color="#999999">
+          <strong>Fuente:</strong> {{ source }} &nbsp;|&nbsp;
+          <strong>Fecha:</strong> {{ date }} &nbsp;|&nbsp;
+          <strong>IP:</strong> {{ ip_address }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- CTA -->
+    <mj-section background-color="#ffffff" padding="0 24px 32px">
+      <mj-column>
+        <mj-button href="{{ crm_url }}" align="center">
+          Ver en CRM
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Footer -->
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-divider border-color="#E0E0E0" border-width="1px" />
+        <mj-text align="center" font-size="12px" color="#666666" padding-top="16px">
+          &copy; {{ current_year }} {{ site_name }}. Notificaci&oacute;n autom&aacute;tica del formulario de contacto.
+        </mj-text>
+        <mj-text align="center" font-size="11px" color="#999999" padding-top="8px">
+          Pol. Ind. Juncaril, C/ Baza Parcela 124, 18220 Albolote, Granada, Espa&ntilde;a
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

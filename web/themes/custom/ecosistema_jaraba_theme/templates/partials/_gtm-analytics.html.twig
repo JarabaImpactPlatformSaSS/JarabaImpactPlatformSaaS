@@ -1,0 +1,82 @@
+{#
+/**
+ * @file _gtm-analytics.html.twig
+ * Google Tag Manager + GA4 Integration Layer
+ *
+ * Inyecta:
+ * 1. GTM container snippet (head + noscript body)
+ * 2. GA4 config via dataLayer (medición sin cookies cuando posible)
+ * 3. Mapeo automático de meta-sitio → GA4 property
+ *
+ * El GTM ID se lee de theme_settings.gtm_container_id.
+ * Si no está configurado, usa un dataLayer-only mode (sin GTM externo).
+ *
+ * DIRECTRICES:
+ * - GDPR-001: consentMode v2 default deny
+ * - PERF-01: script async, no render-blocking
+ * - SEO-SCHEMA-001: compatible con Schema.org
+ *
+ * @see https://developers.google.com/tag-platform/tag-manager
+ */
+#}
+{% set gtm_id = theme_settings.gtm_container_id|default('') %}
+{% set ga4_id = theme_settings.ga4_measurement_id|default('') %}
+
+{# ─── Consent Mode v2 (GDPR) ─── #}
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+
+{# Default: denegar cookies hasta consentimiento explícito #}
+gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied',
+  'analytics_storage': 'denied',
+  'wait_for_update': 500
+});
+</script>
+
+{% if gtm_id %}
+{# ─── GTM Head Snippet ─── #}
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','{{ gtm_id }}');</script>
+{% endif %}
+
+{% if ga4_id and not gtm_id %}
+{# ─── GA4 Standalone (fallback sin GTM) ─── #}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga4_id }}"></script>
+<script>
+gtag('js', new Date());
+gtag('config', '{{ ga4_id }}', {
+  send_page_view: true,
+  anonymize_ip: true,
+  cookie_flags: 'SameSite=None;Secure'
+});
+</script>
+{% endif %}
+
+{# ─── Meta-site context para GA4 ─── #}
+<script>
+(function() {
+  var body = document.body || document.documentElement;
+  var cls = body ? body.className : '';
+  var tenantMatch = cls.match(/meta-site-tenant-(\d+)/);
+  var tenant = tenantMatch ? tenantMatch[1] : '0';
+  var metaSite = 'saas-main';
+  if (tenant === '7') metaSite = 'plataformadeecosistemas';
+  else if (tenant === '6') metaSite = 'jarabaimpact';
+  else if (cls.indexOf('meta-site') !== -1) metaSite = 'pepejaraba';
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    'meta_site': metaSite,
+    'tenant_id': tenant,
+    'page_language': document.documentElement.lang || 'es',
+    'user_type': cls.indexOf('logged-in') !== -1 ? 'authenticated' : 'anonymous'
+  });
+})();
+</script>

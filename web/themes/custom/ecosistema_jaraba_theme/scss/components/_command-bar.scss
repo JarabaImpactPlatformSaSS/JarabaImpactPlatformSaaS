@@ -142,28 +142,22 @@
     color: var(--ej-color-text-tertiary, #adb5bd);
   }
 
-  // Dark mode
-  @media (prefers-color-scheme: dark) {
-    background: rgba(0, 0, 0, 0.6);
+}
 
-    &__modal {
-      background: var(--ej-color-bg-dark, #1a1a2e);
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
-    }
+// GAP-AUD-007: Dark mode overrides for command bar.
+// Variables --ej-command-bar-* are set by _dark-mode.scss mixin.
+.dark-mode .command-bar {
+  background: var(--ej-command-bar-overlay, rgba(0, 0, 0, 0.75));
+}
 
-    &__input {
-      color: var(--ej-color-text-dark, #e0e0e0);
-    }
+.dark-mode .command-bar__modal {
+  background: var(--ej-command-bar-bg, #1F1F35);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+}
 
-    &__result {
-      &:hover,
-      &--active {
-        background: var(--ej-color-surface-dark, #2d2d44);
-      }
-    }
-
-    &__result-label {
-      color: var(--ej-color-text-dark, #e0e0e0);
-    }
+.dark-mode .command-bar__result {
+  &:hover,
+  &--active {
+    background: var(--ej-command-bar-result-hover, #2D2D42);
   }
 }

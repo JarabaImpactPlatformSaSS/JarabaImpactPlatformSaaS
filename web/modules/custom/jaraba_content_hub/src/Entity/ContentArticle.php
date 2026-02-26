@@ -229,6 +229,23 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
 
     /**
      * {@inheritdoc}
+     */
+    public function getTenantId(): int
+    {
+        return (int) ($this->get('tenant_id')->value ?? 0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTenantId(int $tenantId): static
+    {
+        $this->set('tenant_id', $tenantId);
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * Define los campos base de la entidad ContentArticle.
      */
@@ -511,6 +528,15 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
             ->setTranslatable(TRUE)
             ->setDefaultValue('')
             ->setDisplayConfigurable('form', FALSE)
+            ->setDisplayConfigurable('view', FALSE);
+
+        // GAP-AUD-017: Tenant ID para aislamiento multi-tenant.
+        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Tenant ID'))
+            ->setDescription(t('The tenant that owns this article.'))
+            ->setDefaultValue(0)
+            ->setDisplayOptions('form', ['type' => 'number', 'weight' => 90])
+            ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', FALSE);
 
         return $fields;

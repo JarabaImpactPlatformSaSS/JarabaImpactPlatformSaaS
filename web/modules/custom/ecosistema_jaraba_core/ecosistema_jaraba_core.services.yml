@@ -1451,3 +1451,31 @@ services:
     class: Drupal\ecosistema_jaraba_core\CommandBar\ActionCommandProvider
     tags:
       - { name: jaraba.command_provider }
+
+  # ===========================================
+  # INSTITUTIONAL EMAIL SEQUENCES (Sprint 8)
+  # ===========================================
+
+  # Servicio de email sequences B2B para meta-sitios institucionales
+  # (plataformadeecosistemas.es y jarabaimpact.com).
+  # 5 secuencias del funnel B2B:
+  # SEQ_INST_001 (Bienvenida + Dossier), SEQ_INST_002 (Caso Éxito),
+  # SEQ_INST_003 (Demo + Plataforma), SEQ_INST_004 (Propuesta + Pricing),
+  # SEQ_INST_005 (Follow-up 30d).
+  ecosistema_jaraba_core.institutional_email_sequence:
+    class: Drupal\ecosistema_jaraba_core\Service\InstitutionalEmailSequenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Onboarding Email Sequence — Sprint 4
+  ecosistema_jaraba_core.onboarding_email_subscriber:
+    class: Drupal\ecosistema_jaraba_core\EventSubscriber\OnboardingEmailSubscriber
+    arguments: ['@plugin.manager.mail', '@config.factory']
+    tags:
+      - { name: event_subscriber }
+
+  # A/B Test Service — Sprint 5
+  ecosistema_jaraba_core.ab_test:
+    class: Drupal\ecosistema_jaraba_core\Service\AbTestService
+    arguments: ['@config.factory', '@current_user']

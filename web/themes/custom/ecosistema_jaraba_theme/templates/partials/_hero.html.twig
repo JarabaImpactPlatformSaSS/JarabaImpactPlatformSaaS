@@ -79,7 +79,7 @@
       <svg class="btn-icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
         <path d="M10 2L13 8H18L14 12L16 18L10 14L4 18L6 12L2 8H7L10 2Z" fill="currentColor"/>
       </svg>
-      <span>{% if h.cta_primary.text %}{{ h.cta_primary.text }}{% else %}{% trans %}Empezar gratis{% endtrans %}{% endif %}</span>
+      <span>{% if ab_variants.homepage_hero_cta.label is defined %}{{ ab_variants.homepage_hero_cta.label }}{% elseif h.cta_primary.text %}{{ h.cta_primary.text }}{% else %}{% trans %}Empezar gratis{% endtrans %}{% endif %}</span>
     </a>
 
     <a href="{{ h.cta_secondary.url|default('/metodo') }}"

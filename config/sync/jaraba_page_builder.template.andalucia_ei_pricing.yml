@@ -1,0 +1,98 @@
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_pricing
+label: 'Andalucia +ei: Itinerarios Formativos'
+description: 'Sección tabla de itinerarios y precios del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/pricing.html.twig'
+fields_schema:
+  type: object
+  title: 'Itinerarios Formativos'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    tracks:
+      type: array
+      title: Itinerarios
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: Nombre
+          price:
+            type: string
+            title: Precio
+          features:
+            type: array
+            title: Características
+            items:
+              type: string
+          cta_text:
+            type: string
+            title: 'Texto del botón'
+          highlighted:
+            type: boolean
+            title: Destacado
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-pricing.png
+preview_data:
+  eyebrow: Itinerarios
+  title: 'Elige el itinerario que impulse tu proyecto'
+  subtitle: 'Tres vías formativas adaptadas a tu nivel y objetivos como emprendedor.'
+  tracks:
+    -
+      name: 'Impulso Digital'
+      price: Gratuito
+      period: '3 meses'
+      featured: false
+      badge: ''
+      cta_text: 'Solicitar plaza'
+      url: /solicitar/impulso-digital
+      features:
+        - 'Formación en competencias digitales básicas'
+        - 'Introducción a herramientas de IA'
+        - 'Mentoría grupal quincenal'
+        - 'Certificado de competencias digitales'
+    -
+      name: 'Acelera Pro'
+      price: Gratuito
+      period: '6 meses'
+      featured: true
+      badge: 'Más solicitado'
+      cta_text: 'Solicitar plaza'
+      url: /solicitar/acelera-pro
+      features:
+        - 'Todo de Impulso Digital'
+        - 'Mentoría IA personalizada semanal'
+        - 'Plan de negocio con validación de mercado'
+        - 'Acceso a bolsa de empleo exclusiva'
+        - 'Presentación en feria de emprendimiento'
+    -
+      name: 'Híbrido Empresa'
+      price: Gratuito
+      period: '6 meses'
+      featured: false
+      badge: ''
+      cta_text: 'Solicitar plaza'
+      url: /solicitar/hibrido
+      features:
+        - 'Todo de Acelera Pro'
+        - 'Prácticas en empresa colaboradora'
+        - 'Mentoría con inversores'
+        - 'Acceso a financiación semilla'
+        - 'Acompañamiento post-programa 3 meses'
+weight: 48

@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Drupal\jaraba_servicios_conecta\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
- * Service Matching Service for ServiciosConecta (FIX-046).
+ * Service Matching Service for ServiciosConecta (FIX-046 + GAP-AUD-022).
  *
  * Implements hybrid scoring (semantic + rules) to match service
  * seekers with service providers. Follows the pattern of
  * jaraba_matching/MatchingService.
+ *
+ * GAP-AUD-022: Enhanced with real location distance, availability
+ * data, corrected embedding wiring, and AI re-ranking.
  */
 class ServiceMatchingService
 {
@@ -30,13 +34,33 @@ class ServiceMatchingService
     ];
 
     /**
+     * Earth radius in kilometers for Haversine formula.
+     */
+    protected const EARTH_RADIUS_KM = 6371.0;
+
+    /**
      * Constructor.
+     *
+     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+     *   Entity type manager.
+     * @param \Psr\Log\LoggerInterface $logger
+     *   Logger.
+     * @param object|null $embeddingService
+     *   Embedding service for vector search (optional).
+     * @param object|null $qdrantClient
+     *   Qdrant client for vector search (optional).
+     * @param object|null $availabilityService
+     *   Availability service for real availability data (optional).
+     * @param object|null $aiAgent
+     *   AI agent for re-ranking (optional).
      */
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerInterface $logger,
         protected ?object $embeddingService = NULL,
         protected ?object $qdrantClient = NULL,
+        protected ?object $availabilityService = NULL,
+        protected ?object $aiAgent = NULL,
     ) {
     }
 
@@ -77,12 +101,19 @@ class ServiceMatchingService
         // Sort by match score descending.
         usort($scored, fn($a, $b) => ($b['match_score'] ?? 0) <=> ($a['match_score'] ?? 0));
 
+        $topResults = array_slice($scored, 0, $limit);
+
+        // GAP-AUD-022: AI re-ranking for top results.
+        if ($this->aiAgent !== NULL && count($topResults) > 1 && !empty($request['description'])) {
+            $topResults = $this->aiReRank($request, $topResults);
+        }
+
         $this->logger->info('Service matching: @count results for category=@cat', [
-            '@count' => count($scored),
+            '@count' => count($topResults),
             '@cat' => $request['category'] ?? 'any',
         ]);
 
-        return array_slice($scored, 0, $limit);
+        return $topResults;
     }
 
     /**
@@ -188,8 +219,8 @@ class ServiceMatchingService
         $categoryMatch = (($request['category'] ?? '') === ($candidate['category'] ?? '')) ? 1.0 : 0.0;
         $score += self::WEIGHTS['category_match'] * $categoryMatch;
 
-        // Location proximity (simplified: same city = 1.0).
-        $locationMatch = (($request['location'] ?? '') === ($candidate['location'] ?? '')) ? 1.0 : 0.5;
+        // GAP-AUD-022: Location proximity with Haversine distance calculation.
+        $locationMatch = $this->calculateLocationProximity($request, $candidate);
         $score += self::WEIGHTS['location_proximity'] * $locationMatch;
 
         // Rating (normalize to 0-1).
@@ -200,8 +231,9 @@ class ServiceMatchingService
         $experience = min(($candidate['experience_years'] ?? 0) / 10.0, 1.0);
         $score += self::WEIGHTS['experience_level'] * $experience;
 
-        // Availability (default: available).
-        $score += self::WEIGHTS['availability_match'] * 0.8;
+        // GAP-AUD-022: Real availability data from AvailabilityService.
+        $availabilityScore = $this->getAvailabilityScore($candidate);
+        $score += self::WEIGHTS['availability_match'] * $availabilityScore;
 
         return $score;
     }
@@ -229,12 +261,181 @@ class ServiceMatchingService
         return match ($factor) {
             'semantic_similarity' => $candidate['semantic_score'] ?? 0,
             'category_match' => (($request['category'] ?? '') === ($candidate['category'] ?? '')) ? 1.0 : 0.0,
-            'location_proximity' => (($request['location'] ?? '') === ($candidate['location'] ?? '')) ? 1.0 : 0.5,
+            'location_proximity' => $this->calculateLocationProximity($request, $candidate),
             'rating_score' => min(($candidate['rating'] ?? 0) / 5.0, 1.0),
             'experience_level' => min(($candidate['experience_years'] ?? 0) / 10.0, 1.0),
-            'availability_match' => 0.8,
+            'availability_match' => $this->getAvailabilityScore($candidate),
             default => 0,
         };
+    }
+
+    /**
+     * GAP-AUD-022: Calculates location proximity using Haversine formula.
+     *
+     * Falls back to city-name comparison if coordinates not available.
+     */
+    protected function calculateLocationProximity(array $request, array $candidate): float
+    {
+        $reqLat = (float) ($request['latitude'] ?? 0);
+        $reqLng = (float) ($request['longitude'] ?? 0);
+        $candLat = (float) ($candidate['latitude'] ?? 0);
+        $candLng = (float) ($candidate['longitude'] ?? 0);
+
+        // If both have coordinates, use Haversine.
+        if ($reqLat !== 0.0 && $reqLng !== 0.0 && $candLat !== 0.0 && $candLng !== 0.0) {
+            $distance = $this->haversineDistance($reqLat, $reqLng, $candLat, $candLng);
+
+            // Score: 1.0 at 0km, decays to 0 at 100km.
+            return max(0.0, 1.0 - ($distance / 100.0));
+        }
+
+        // Fallback: city-name comparison.
+        $reqLocation = mb_strtolower(trim($request['location'] ?? ''));
+        $candLocation = mb_strtolower(trim($candidate['location'] ?? ''));
+
+        if (empty($reqLocation) || empty($candLocation)) {
+            return 0.5;
+        }
+
+        if ($reqLocation === $candLocation) {
+            return 1.0;
+        }
+
+        // Partial match (e.g., "Sevilla" in "Sevilla, Andalucía").
+        if (str_contains($candLocation, $reqLocation) || str_contains($reqLocation, $candLocation)) {
+            return 0.7;
+        }
+
+        return 0.3;
+    }
+
+    /**
+     * Haversine formula for distance between two GPS coordinates.
+     *
+     * @return float
+     *   Distance in kilometers.
+     */
+    protected function haversineDistance(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($dLng / 2) * sin($dLng / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return self::EARTH_RADIUS_KM * $c;
+    }
+
+    /**
+     * GAP-AUD-022: Gets real availability score from AvailabilityService.
+     *
+     * Falls back to 0.8 if service unavailable.
+     */
+    protected function getAvailabilityScore(array $candidate): float
+    {
+        if ($this->availabilityService === NULL || empty($candidate['provider_id'])) {
+            return 0.8;
+        }
+
+        try {
+            if (method_exists($this->availabilityService, 'getAvailabilityScore')) {
+                $score = $this->availabilityService->getAvailabilityScore((int) $candidate['provider_id']);
+                return max(0.0, min(1.0, (float) $score));
+            }
+
+            // Alternative: check next available slot.
+            if (method_exists($this->availabilityService, 'getNextAvailableSlot')) {
+                $slot = $this->availabilityService->getNextAvailableSlot((int) $candidate['provider_id']);
+                if (empty($slot)) {
+                    return 0.2;
+                }
+                // Score based on how soon: within 24h=1.0, 48h=0.8, 72h=0.6, 7d=0.4.
+                $hoursUntil = (strtotime($slot['start'] ?? 'now') - time()) / 3600;
+                if ($hoursUntil <= 24) {
+                    return 1.0;
+                }
+                if ($hoursUntil <= 48) {
+                    return 0.8;
+                }
+                if ($hoursUntil <= 72) {
+                    return 0.6;
+                }
+                return 0.4;
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->warning('Availability check failed: @msg', ['@msg' => $e->getMessage()]);
+        }
+
+        return 0.8;
+    }
+
+    /**
+     * GAP-AUD-022: AI re-ranking of top results for description relevance.
+     */
+    protected function aiReRank(array $request, array $candidates): array
+    {
+        try {
+            $description = $request['description'] ?? '';
+            $candidateSummaries = array_map(fn($c) => [
+                'provider_id' => $c['provider_id'] ?? 0,
+                'name' => $c['name'] ?? '',
+                'category' => $c['category'] ?? '',
+                'rating' => $c['rating'] ?? 0,
+                'match_score' => $c['match_score'] ?? 0,
+            ], $candidates);
+
+            $prompt = AIIdentityRule::apply(
+                "Re-rank these service providers by relevance to this request. " .
+                "Request: \"$description\". " .
+                "Providers: " . json_encode($candidateSummaries) . ". " .
+                "Return JSON array of provider_id in order of best fit: [id1, id2, ...].",
+                TRUE
+            );
+
+            $result = $this->aiAgent->execute([
+                'prompt' => $prompt,
+                'tier' => 'fast',
+                'max_tokens' => 256,
+                'temperature' => 0.2,
+            ]);
+
+            $responseText = $result['response'] ?? $result['text'] ?? '';
+            if (preg_match('/\[[\s\S]*\]/u', $responseText, $matches)) {
+                $rankedIds = json_decode($matches[0], TRUE);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($rankedIds)) {
+                    $idMap = [];
+                    foreach ($candidates as $c) {
+                        $idMap[$c['provider_id'] ?? 0] = $c;
+                    }
+
+                    $reranked = [];
+                    foreach ($rankedIds as $id) {
+                        if (isset($idMap[(int) $id])) {
+                            $entry = $idMap[(int) $id];
+                            $entry['ai_reranked'] = TRUE;
+                            $reranked[] = $entry;
+                            unset($idMap[(int) $id]);
+                        }
+                    }
+
+                    // Append any candidates not in AI response.
+                    foreach ($idMap as $remaining) {
+                        $reranked[] = $remaining;
+                    }
+
+                    return $reranked;
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->warning('AI re-ranking failed: @msg', ['@msg' => $e->getMessage()]);
+        }
+
+        return $candidates;
     }
 
 }

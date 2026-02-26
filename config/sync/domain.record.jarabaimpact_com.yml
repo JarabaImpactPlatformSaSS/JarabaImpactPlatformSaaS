@@ -1,0 +1,11 @@
+uuid: d5396e92-bb7d-4d13-a63b-d5bb00aa178b
+langcode: es
+status: true
+dependencies: {  }
+id: jarabaimpact_com
+domain_id: 12504811
+hostname: jarabaimpact.com
+name: 'Jaraba Impact (Prod)'
+scheme: https
+weight: 11
+is_default: false

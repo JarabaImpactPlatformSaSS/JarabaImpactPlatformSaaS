@@ -715,6 +715,19 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'template' => 'premium-form-wrapper',
       'path' => $path . '/templates',
     ],
+
+    // GAP-AUD-023: Design System Documentation page.
+    'design_system_page' => [
+      'variables' => [
+        'colors' => [],
+        'typography' => [],
+        'spacing' => [],
+        'shadows' => [],
+        'breakpoints' => [],
+        'icons' => [],
+        'components' => [],
+      ],
+    ],
   ];
 
 
@@ -729,6 +742,10 @@ function ecosistema_jaraba_core_page_attachments(array &$attachments): void {
   $route = \Drupal::routeMatch()->getRouteObject();
   if ($route && \Drupal::service('router.admin_context')->isAdminRoute($route)) {
     $attachments['#attached']['library'][] = 'ecosistema_jaraba_core/back-to-top';
+  }
+  else {
+    // Sprint 5 #20: Funnel analytics on ALL non-admin pages (all meta-sites).
+    $attachments['#attached']['library'][] = 'ecosistema_jaraba_theme/funnel-analytics';
   }
 }
 
@@ -1129,6 +1146,78 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = '';
       $message['body'][] = '---';
       $message['body'][] = t('Sistema de monitorización automática - Jaraba Impact Platform');
+      break;
+
+    // =========================================================================
+    // Sprint 6: Contact Form Notification
+    // =========================================================================
+    case 'contact_notification':
+      $message['subject'] = $params['subject'] ?? t('[Contacto Web] Nuevo mensaje');
+
+      // Use premium MJML template (NOTIF_001) if jaraba_email is available.
+      if (\Drupal::hasService('jaraba_email.template_loader')) {
+        try {
+          /** @var \Drupal\jaraba_email\Service\TemplateLoaderService $templateLoader */
+          $templateLoader = \Drupal::service('jaraba_email.template_loader');
+          $html = $templateLoader->load('NOTIF_001', [
+            'sender_name' => $params['sender_name'] ?? '',
+            'sender_email' => $params['sender_email'] ?? '',
+            'subject' => $params['subject'] ?? '',
+            'message' => nl2br(htmlspecialchars($params['message'] ?? '')),
+            'source' => $params['source'] ?? 'web',
+            'date' => $params['date'] ?? date('d/m/Y H:i'),
+            'ip_address' => $params['ip_address'] ?? '',
+            'crm_url' => '/admin/jaraba/crm/contacts',
+          ]);
+          $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+          $message['body'][] = $html;
+        }
+        catch (\Exception $e) {
+          // Fallback to plain text if template fails.
+          $message['body'][] = t('Nuevo contacto desde el meta-sitio:');
+          $message['body'][] = t('Nombre: @name', ['@name' => $params['sender_name'] ?? '']);
+          $message['body'][] = t('Email: @email', ['@email' => $params['sender_email'] ?? '']);
+          $message['body'][] = $params['message'] ?? '';
+        }
+      }
+      else {
+        $message['body'][] = t('Nuevo contacto desde el meta-sitio:');
+        $message['body'][] = t('Nombre: @name', ['@name' => $params['sender_name'] ?? '']);
+        $message['body'][] = t('Email: @email', ['@email' => $params['sender_email'] ?? '']);
+        $message['body'][] = t('Asunto: @subject', ['@subject' => $params['subject'] ?? '']);
+        $message['body'][] = '';
+        $message['body'][] = $params['message'] ?? '';
+      }
+      break;
+
+    // =========================================================================
+    // Sprint 5: Onboarding Email Sequence
+    // =========================================================================
+    case 'onboarding_welcome':
+    case 'onboarding_vertical':
+    case 'onboarding_first_action':
+    case 'onboarding_success_story':
+      $message['subject'] = $params['subject'] ?? t('Información de tu cuenta');
+
+      // Use premium welcome template (AUTH_002) if jaraba_email available.
+      if (\Drupal::hasService('jaraba_email.template_loader') && $key === 'onboarding_welcome') {
+        try {
+          $templateLoader = \Drupal::service('jaraba_email.template_loader');
+          $html = $templateLoader->load('AUTH_002', [
+            'user_name' => $params['user_name'] ?? '',
+            'vertical_name' => $params['vertical_name'] ?? 'Jaraba',
+            'dashboard_url' => $params['dashboard_url'] ?? '/dashboard',
+          ]);
+          $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+          $message['body'][] = $html;
+        }
+        catch (\Exception $e) {
+          $message['body'][] = $params['body'] ?? '';
+        }
+      }
+      else {
+        $message['body'][] = $params['body'] ?? '';
+      }
       break;
   }
 }
@@ -2457,7 +2546,19 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
       }
     }
 
-    // 4. [REMOVED] ActiveCampaign webhook — descartado del SaaS.
+    // 4. Onboarding email sequence (Sprint 4).
+    if (\Drupal::hasService('ecosistema_jaraba_core.onboarding_email_subscriber')) {
+      try {
+        \Drupal::service('ecosistema_jaraba_core.onboarding_email_subscriber')
+          ->enqueueOnboardingSequence($account);
+      }
+      catch (\Exception $e) {
+        $logger->warning('Onboarding email failed for @uid: @error', [
+          '@uid' => $account->id(),
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
 
     $logger->info('USR-001: Usuario @uid registrado. Avatar: @avatar, Vertical: @vertical, Source: @source', [
       '@uid' => $account->id(),
@@ -3028,3 +3129,40 @@ function _ecosistema_jaraba_core_password_set_redirect(array &$form, \Drupal\Cor
   $form_state->setRedirectUrl(\Drupal\Core\Url::fromUserInput('/empleabilidad'));
 }
 
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Sprint 7: Injects A/B test variants into page variables.
+ * Templates access via {{ ab_variants.homepage_hero_cta.label }}.
+ *
+ * Architecture: Layer 4 runtime injection (see 2026-02-05 theming master doc).
+ * Follows SSOT principle — config in ecosistema_jaraba_core.ab_tests,
+ * service in AbTestService, variants passed via preprocess.
+ */
+function ecosistema_jaraba_core_preprocess_page(array &$variables): void {
+  if (!\Drupal::hasService('ecosistema_jaraba_core.ab_test')) {
+    return;
+  }
+
+  /** @var \Drupal\ecosistema_jaraba_core\Service\AbTestService $abTest */
+  $abTest = \Drupal::service('ecosistema_jaraba_core.ab_test');
+
+  // Load A/B test config.
+  $config = \Drupal::config('ecosistema_jaraba_core.ab_tests');
+  $tests = $config->get('tests') ?? [];
+
+  $variants = [];
+  foreach ($tests as $testId => $testConfig) {
+    if (!empty($testConfig['enabled'])) {
+      $variant = $abTest->getVariant($testId);
+      $variants[$testId] = [
+        'variant' => $variant,
+        'label' => $testConfig['variants'][$variant] ?? $variant,
+      ];
+      // Record impression for analytics.
+      $abTest->recordConversion($testId, $variant, 'impression');
+    }
+  }
+
+  $variables['ab_variants'] = $variants;
+}

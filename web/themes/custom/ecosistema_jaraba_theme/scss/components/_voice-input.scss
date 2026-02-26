@@ -1,0 +1,177 @@
+/**
+ * @file
+ * GAP-AUD-011: Voice input button styles for Copilot widget.
+ * Uses CSS custom properties for dark mode support.
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// Mic button inside copilot input area.
+.copilot-voice-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--ej-border-color, #e2e8f0);
+  background: var(--ej-bg-surface, #fff);
+  color: var(--ej-color-body, #{$ej-color-corporate});
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--ej-color-impulse, #{$ej-color-impulse});
+    color: var(--ej-color-impulse, #{$ej-color-impulse});
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-color-impulse, #{$ej-color-impulse});
+    outline-offset: 2px;
+  }
+
+  // Recording state — pulsing red.
+  &--recording {
+    background: #EF4444;
+    border-color: #EF4444;
+    color: #fff;
+    animation: voice-pulse 1.5s ease-in-out infinite;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@keyframes voice-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+// GrapesJS AI loading state.
+.jaraba-ai-loading {
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 140, 66, 0.1) 50%,
+      transparent
+    );
+    animation: gjs-ai-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes gjs-ai-shimmer {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.3; }
+}
+
+// GrapesJS inline AI suggestion panel.
+.gjs-ai-inline-panel {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  margin-bottom: 4px;
+  background: var(--ej-bg-surface, #fff);
+  border: 1px solid var(--ej-border-color, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.gjs-ai-inline-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--ej-color-impulse, #{$ej-color-impulse});
+  background: transparent;
+  color: var(--ej-color-body, #{$ej-color-corporate});
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--ej-color-impulse, #{$ej-color-impulse});
+    color: #fff;
+  }
+}
+
+// GAP-AUD-013: Image upload button in copilot widget.
+.copilot-chat__image-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--ej-border-color, #e2e8f0);
+  background: var(--ej-bg-surface, #fff);
+  color: var(--ej-color-muted, #64748b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--ej-color-impulse, #{$ej-color-impulse});
+    color: var(--ej-color-impulse, #{$ej-color-impulse});
+  }
+
+  &--active {
+    background: var(--ej-color-impulse, #{$ej-color-impulse});
+    border-color: var(--ej-color-impulse, #{$ej-color-impulse});
+    color: #fff;
+  }
+}
+
+// Image badge in user messages.
+.copilot-chat__image-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background: rgba(255, 140, 66, 0.12);
+  color: var(--ej-color-impulse, #{$ej-color-impulse});
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.gjs-ai-inline-close {
+  background: none;
+  border: none;
+  color: var(--ej-color-muted, #64748b);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  margin-left: auto;
+
+  &:hover {
+    color: var(--ej-color-body, #{$ej-color-corporate});
+  }
+}

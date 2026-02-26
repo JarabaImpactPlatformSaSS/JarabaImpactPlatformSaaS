@@ -65,6 +65,10 @@ class DashboardController extends ControllerBase
         $savings = $this->observability->getSavings($period);
         $qualityStats = $this->qualityEvaluator->getQualityStats($period);
 
+        // GAP-AUD-004: GEO data for dashboard.
+        $usageByRegion = $this->observability->getUsageByRegion('', 30);
+        $usageTrend = $this->observability->getUsageTrend('', 7);
+
         return [
             '#theme' => 'jaraba_ai_dashboard',
             '#period' => $period,
@@ -75,6 +79,13 @@ class DashboardController extends ControllerBase
             '#quality_stats' => $qualityStats,
             '#attached' => [
                 'library' => ['jaraba_ai_agents/dashboard'],
+                'drupalSettings' => [
+                    'aiDashboard' => [
+                        'geoData' => $usageByRegion,
+                        'trendData' => $usageTrend,
+                        'exportCsvUrl' => '/api/v1/ai/observability/export-csv',
+                    ],
+                ],
             ],
             '#cache' => [
                 'max-age' => 300, // 5 minutes cache.

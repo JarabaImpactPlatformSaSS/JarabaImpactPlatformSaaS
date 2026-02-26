@@ -1,0 +1,63 @@
+uuid: null
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_hero
+label: 'Andalucia +ei: Emprendimiento Aumentado'
+description: 'Sección hero principal del programa Andalucía Emprende e Innova con IA.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/hero.html.twig'
+fields_schema:
+  type: object
+  title: 'Emprendimiento Aumentado'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Etiqueta superior'
+      maxLength: 80
+    image:
+      type: string
+      title: Imagen
+      format: image
+    cta_text:
+      type: string
+      title: 'Texto del Botón'
+      maxLength: 50
+    cta_url:
+      type: string
+      title: 'URL del Botón'
+      format: uri
+    cta_secondary_text:
+      type: string
+      title: 'Texto del Botón Secundario'
+      maxLength: 50
+    cta_secondary_url:
+      type: string
+      title: 'URL del Botón Secundario'
+      format: uri
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-hero.png
+preview_data:
+  eyebrow: 'Andalucía Emprende +ei'
+  title: 'Emprendimiento Aumentado con IA'
+  subtitle: 'Programa integral de formación, mentoría con inteligencia artificial e inserción laboral para emprendedores andaluces'
+  image: /modules/custom/jaraba_page_builder/images/heroes/andalucia_ei-hero.png
+  cta_text: 'Solicitar plaza'
+  cta_url: /solicitar-plaza
+  cta_secondary_text: 'Conocer el programa'
+  cta_secondary_url: /programa
+weight: 40

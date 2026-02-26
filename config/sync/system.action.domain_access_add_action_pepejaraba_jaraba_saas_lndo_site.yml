@@ -1,0 +1,15 @@
+uuid: 3a0ac697-ff15-44d3-9c94-55d6114a7df7
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.pepejaraba_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_action_pepejaraba_jaraba_saas_lndo_site
+label: 'Agregar el contenido seleccionado al dominio Pepe Jaraba (dev proxy)'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - pepejaraba_jaraba_saas_lndo_site

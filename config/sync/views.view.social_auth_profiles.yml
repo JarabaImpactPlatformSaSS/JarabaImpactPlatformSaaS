@@ -312,7 +312,7 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: true
-          content: 'There are no configured third-party authentication profiles yet.'
+          content: 'Todavía no hay perfiles de autenticación de terceros configurados.'
           tokenize: false
       sorts: {  }
       arguments:

@@ -1,0 +1,15 @@
+uuid: 4c946e2e-c95f-43a1-883c-1dac0f49bbcd
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.jarabaimpact_com
+  module:
+    - domain_access
+id: domain_access_remove_action_jarabaimpact_com
+label: 'Eliminar el contenido seleccionado del dominio Jaraba Impact (Prod)'
+type: node
+plugin: domain_access_remove_action
+configuration:
+  domain_id:
+    - jarabaimpact_com

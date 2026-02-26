@@ -284,6 +284,16 @@ services:
   # Breadcrumb builder for ComercioConecta routes
   # Priority 100 ensures it takes precedence over default breadcrumb builders
   # =====================================================================
+  # =====================================================================
+  # GAP-AUD-020: DemandForecastingService — AI demand prediction
+  # =====================================================================
+  jaraba_comercio_conecta.demand_forecasting:
+    class: Drupal\jaraba_comercio_conecta\Service\DemandForecastingService
+    arguments:
+      - '@jaraba_comercio_conecta.comercio_analytics'
+      - '@logger.channel.jaraba_comercio_conecta'
+      - '@?jaraba_ai_agents.smart_marketing_agent'
+
   jaraba_comercio_conecta.breadcrumb:
     class: Drupal\jaraba_comercio_conecta\Breadcrumb\ComercioConectaBreadcrumbBuilder
     arguments:

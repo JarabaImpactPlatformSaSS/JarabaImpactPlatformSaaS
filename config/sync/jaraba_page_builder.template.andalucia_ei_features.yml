@@ -1,0 +1,81 @@
+uuid: null
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_features
+label: 'Andalucia +ei: Pilares del Programa'
+description: 'Sección rejilla de características del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/features.html.twig'
+fields_schema:
+  type: object
+  title: 'Pilares del Programa'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Etiqueta superior'
+      maxLength: 80
+    columns:
+      type: integer
+      title: Columnas
+      enum:
+        - 2
+        - 3
+        - 4
+      default: 3
+    features:
+      type: array
+      title: Características
+      items:
+        type: object
+        properties:
+          icon:
+            type: string
+            title: Icono
+          icon_category:
+            type: string
+            title: 'Categoría del icono'
+          title:
+            type: string
+            title: Título
+          desc:
+            type: string
+            title: Descripción
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-features.png
+preview_data:
+  eyebrow: Pilares
+  title: 'Un programa diseñado para transformar tu futuro profesional'
+  subtitle: 'Tres ejes fundamentales que combinan tecnología, formación y oportunidades reales.'
+  columns: 3
+  features:
+    -
+      icon: copilot
+      icon_category: ai
+      title: 'Mentoría IA'
+      desc: 'Acompañamiento personalizado con inteligencia artificial que analiza tu perfil, identifica oportunidades y genera planes de acción adaptados a tu sector.'
+    -
+      icon: graduation-cap
+      icon_category: education
+      title: 'Formación Certificada'
+      desc: 'Módulos formativos avalados por la Junta de Andalucía en competencias digitales, emprendimiento y herramientas de IA aplicadas al negocio.'
+    -
+      icon: briefcase
+      icon_category: business
+      title: 'Inserción Laboral'
+      desc: 'Red de empresas colaboradoras y bolsa de empleo exclusiva con más de 200 ofertas activas en sectores estratégicos de Andalucía.'
+weight: 41

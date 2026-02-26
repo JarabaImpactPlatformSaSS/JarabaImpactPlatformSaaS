@@ -2547,6 +2547,32 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       }
     }
   }
+
+  // GAP-AUD-010: Proactive Insights bell notification count.
+  $variables['proactive_insights_count'] = 0;
+  if (\Drupal::currentUser()->isAuthenticated()) {
+    try {
+      $entityTypeManager = \Drupal::entityTypeManager();
+      if ($entityTypeManager->hasDefinition('proactive_insight')) {
+        $count = $entityTypeManager->getStorage('proactive_insight')
+          ->getQuery()
+          ->accessCheck(FALSE)
+          ->condition('target_user', \Drupal::currentUser()->id())
+          ->condition('read_status', FALSE)
+          ->count()
+          ->execute();
+        $variables['proactive_insights_count'] = (int) $count;
+      }
+    }
+    catch (\Exception $e) {
+      // Silently fail — bell will show 0.
+    }
+
+    if ($variables['proactive_insights_count'] > 0) {
+      $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/proactive-insights';
+      $variables['#attached']['drupalSettings']['proactiveInsightsCount'] = $variables['proactive_insights_count'];
+    }
+  }
 }
 
 /**

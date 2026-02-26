@@ -1,0 +1,15 @@
+uuid: dcc728e8-b71a-4409-a841-7d665e951346
+langcode: es
+status: true
+dependencies: {  }
+name: article_hero
+label: 'Article Hero (1600x800)'
+effects:
+  dbab6b5b-4800-4658-95ba-7670e559d29c:
+    uuid: dbab6b5b-4800-4658-95ba-7670e559d29c
+    id: image_scale_and_crop
+    weight: null
+    data:
+      width: 1600
+      height: 800
+      anchor: center-center

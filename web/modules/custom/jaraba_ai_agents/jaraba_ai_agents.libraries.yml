@@ -4,3 +4,13 @@ dashboard:
     theme:
       # Carga los estilos del tema principal para el dashboard
       /themes/custom/ecosistema_jaraba_theme/css/ecosistema-jaraba-theme.css: {}
+
+# GAP-AUD-009: Inline AI sparkle button triggers
+inline-ai-trigger:
+  version: 1.0.0
+  js:
+    js/inline-ai-trigger.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

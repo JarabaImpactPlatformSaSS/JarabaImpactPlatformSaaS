@@ -100,4 +100,4 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_lms'
-      - '@?jaraba_ai_agents.support_agent'
+      - '@?jaraba_ai_agents.smart_marketing_agent'

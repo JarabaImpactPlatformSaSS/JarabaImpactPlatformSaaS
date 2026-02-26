@@ -1,0 +1,68 @@
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_faq
+label: 'Andalucia +ei: Preguntas Frecuentes'
+description: 'Sección preguntas frecuentes del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/faq.html.twig'
+fields_schema:
+  type: object
+  title: 'Preguntas Frecuentes'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    eyebrow:
+      type: string
+      title: 'Etiqueta superior'
+      maxLength: 80
+    faqs:
+      type: array
+      title: 'Preguntas frecuentes'
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            title: Pregunta
+          answer:
+            type: string
+            title: Respuesta
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-faq.png
+preview_data:
+  eyebrow: FAQ
+  title: 'Preguntas frecuentes sobre el programa'
+  subtitle: 'Todo lo que necesitas saber sobre Andalucía +ei antes de solicitar tu plaza.'
+  faqs:
+    -
+      question: '¿Quién puede participar en el programa?'
+      answer: 'Cualquier persona mayor de 18 años residente en Andalucía que esté en situación de desempleo o mejora profesional y tenga una idea de negocio o proyecto emprendedor. No se requiere experiencia previa en tecnología.'
+    -
+      question: '¿El programa tiene algún coste?'
+      answer: 'No, el programa es completamente gratuito para los participantes seleccionados. Está financiado por el Fondo Social Europeo y la Junta de Andalucía a través de la Consejería de Empleo.'
+    -
+      question: '¿Cómo funciona la mentoría con inteligencia artificial?'
+      answer: 'Cada participante recibe acceso a un sistema de mentoría IA que analiza su perfil emprendedor, evalúa la viabilidad de su proyecto, sugiere mejoras en el modelo de negocio y genera planes de acción personalizados con seguimiento semanal.'
+    -
+      question: '¿Cuánto dura el programa y qué dedicación requiere?'
+      answer: 'El programa tiene una duración de 6 meses con sesiones presenciales y online. Se requiere una asistencia mínima del 80% de las sesiones, con una dedicación aproximada de 15 horas semanales entre formación, mentoría y trabajo autónomo.'
+    -
+      question: '¿Qué certificación se obtiene al finalizar?'
+      answer: 'Los participantes que completen el programa reciben certificación oficial de la Junta de Andalucía en competencias digitales y emprendimiento, además de un certificado específico en herramientas de IA aplicadas al negocio.'
+    -
+      question: '¿Cómo funciona la inserción laboral?'
+      answer: 'El programa incluye acceso a una bolsa de empleo exclusiva con más de 200 empresas colaboradoras en Andalucía, sesiones de networking con inversores y feria de emprendimiento donde presentar tu proyecto ante potenciales socios e inversores.'
+weight: 44

@@ -82,4 +82,14 @@ interface ContentArticleInterface extends ContentEntityInterface, EntityChangedI
      */
     public function getRenderedHtml(): string;
 
+    /**
+     * Gets the tenant ID that owns this article.
+     */
+    public function getTenantId(): int;
+
+    /**
+     * Sets the tenant ID that owns this article.
+     */
+    public function setTenantId(int $tenantId): static;
+
 }

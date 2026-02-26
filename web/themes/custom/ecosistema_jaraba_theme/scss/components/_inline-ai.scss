@@ -1,0 +1,109 @@
+/**
+ * @file
+ * Inline AI sparkle buttons and suggestion panel.
+ *
+ * GAP-AUD-009: Sparkle buttons on premium entity form fields.
+ * Uses CSS custom properties for dark mode support (GAP-AUD-007).
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// Sparkle trigger button — absolute positioned in form-item.
+.inline-ai-trigger {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+  background: transparent;
+  color: var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
+
+  &:hover {
+    background: var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+    color: #fff;
+    transform: scale(1.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+    outline-offset: 2px;
+  }
+
+  // Loading state with pulse animation.
+  &.is-loading {
+    animation: inline-ai-pulse 1s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+// Suggestion panel — flex wrap below the field.
+.inline-ai-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--ej-inline-ai-panel-bg, #f8f9fa);
+  border: 1px solid var(--ej-border-color, #e2e8f0);
+  border-radius: 8px;
+  animation: inline-ai-fade-in 0.2s ease;
+}
+
+// Suggestion chip — pill button.
+.inline-ai-chip {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+  background: transparent;
+  color: var(--ej-color-body, #{$ej-color-corporate});
+  font-size: 0.85rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ej-inline-ai-sparkle, #{$ej-color-impulse});
+    outline-offset: 2px;
+  }
+}
+
+// Pulse animation for loading state.
+@keyframes inline-ai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+// Fade-in animation for panel appearance.
+@keyframes inline-ai-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Mobile: full-width chips on small screens.
+@media (max-width: 640px) {
+  .inline-ai-chip {
+    white-space: normal;
+    text-overflow: clip;
+  }
+}

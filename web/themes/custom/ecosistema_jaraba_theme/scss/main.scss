@@ -48,6 +48,9 @@
 // Meta-sitio PED S.L. (plataformadeecosistemas.es) Sprint 6
 @use 'components/ped-metasite';
 
+// Meta-sitio Jaraba Impact B2B (jarabaimpact.com) Sprint 7
+@use 'components/ji-metasite';
+
 // Premium Components (extensión a todas las páginas)
 @use 'components/page-premium';
 @use 'components/glass-utilities';
@@ -55,6 +58,8 @@
 @use 'components/template-picker';
 @use 'components/template-preview-premium';
 @use 'components/section-editor';
+
+@use 'components/voice-input';
 
 // Features
 @use 'features/dark-mode';
@@ -126,11 +131,6 @@
 // Upgrade Trigger - F2 Doc183 Freemium PLG conversion modal
 @use 'components/upgrade-trigger';
 
-// Vertical Selector - F3 Doc178 Homepage vertical cards
-@use 'components/vertical-selector';
-
-// Landing Sections - F4 Doc180 Vertical landing page 9-section components
-@use 'components/landing-sections';
 
 // Retention Playbooks Dashboard - Doc 179 Vertical Retention
 @use 'retention-playbooks';
@@ -141,8 +141,23 @@
 // Static Pages - Sprint 3 Growth Infrastructure
 @use 'components/static-pages';
 
+// Product Demo + Trust Bar - Sprint 4
+@use 'components/product-demo';
+
 // Demo AI Playground - GAP-AUD-003
 @use 'components/demo-playground';
 
 // Command Bar - GAP-AUD-008
 @use 'components/command-bar';
+
+// Inline AI Sparkle Buttons - GAP-AUD-009
+@use 'components/inline-ai';
+
+// Proactive Insights Bell - GAP-AUD-010
+@use 'components/proactive-insights';
+
+// Contact Form - Sprint 5
+@use 'components/contact-form';
+
+// Design System Documentation - GAP-AUD-023
+@use 'components/design-system';

@@ -1,0 +1,424 @@
+// @file scss/components/_ji-metasite.scss
+// Estilos premium para el meta-sitio B2B Jaraba Impact
+// jarabaimpact.com — Canal institucional para partners, inversores y programas
+//
+// OBJETIVO: Posicionamiento premium B2B, conversión Demo/Contacto Institucional
+// DIRECTRICES: SSOT design tokens, BEM, glassmorphism, dark mode, mobile-first
+
+// ─── Variables locales Jaraba Impact ────────────────────────────────
+$ji-teal: #00695C;
+$ji-teal-light: #00897B;
+$ji-navy: #1B2A4A;
+$ji-gold: #D4A847;
+$ji-gradient: linear-gradient(135deg, $ji-navy 0%, #0d1b2e 50%, #142640 100%);
+$ji-gradient-teal: linear-gradient(135deg, $ji-teal 0%, $ji-teal-light 100%);
+
+// ═══════════════════════════════════════════════════════════════════════
+// HERO — Impacto inmediato, CTA Demo
+// ═══════════════════════════════════════════════════════════════════════
+.ji-hero {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: $ji-gradient;
+  color: #fff;
+  overflow: hidden;
+  text-align: center;
+
+  // Patrones de circuitos / nodos digitales
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 75%, rgba($ji-teal, 0.1) 0%, transparent 35%),
+      radial-gradient(circle at 85% 25%, rgba($ji-gold, 0.06) 0%, transparent 35%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+  }
+
+  // Eyebrow badge
+  span[class*="badge"], span[class*="eyebrow"], & > div > span:first-child {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: $ji-teal-light;
+    border: 1px solid rgba($ji-teal, 0.4);
+    border-radius: 50rem;
+    padding: 0.35rem 1.2rem;
+    margin-bottom: var(--ej-space-md, 1.5rem);
+    backdrop-filter: blur(8px);
+    animation: jiFadeInDown 0.6s ease both;
+  }
+
+  h1 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.12;
+    margin: 0 0 var(--ej-space-md, 1.5rem);
+    max-width: 850px;
+    animation: jiFadeInUp 0.8s ease 0.2s both;
+
+    strong, em { color: $ji-teal-light; font-style: normal; }
+  }
+
+  p {
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 700px;
+    margin: 0 auto var(--ej-space-lg, 2rem);
+    line-height: 1.7;
+    animation: jiFadeInUp 0.8s ease 0.4s both;
+  }
+
+  // CTAs
+  a[class*="btn"], .btn-primary, .ji-hero__cta {
+    display: inline-block;
+    padding: 0.9rem 2.2rem;
+    border-radius: var(--ej-radius-pill, 50rem);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    margin: 0 0.4rem;
+
+    &:first-of-type {
+      background: $ji-gradient-teal;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba($ji-teal, 0.3);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba($ji-teal, 0.4);
+      }
+    }
+
+    &:nth-of-type(2) {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      backdrop-filter: blur(8px);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SECCIONES GENÉRICAS ji-section
+// ═══════════════════════════════════════════════════════════════════════
+.ji-section {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+
+  &.ji-text-center { text-align: center; }
+
+  // Container interno
+  & > div {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+  }
+
+  // Subtitles / descriptions after h2
+  h2 + p, h2 + div > p:first-child {
+    color: var(--ej-color-muted, #6b7280);
+    max-width: 650px;
+    margin: 0 auto var(--ej-space-xl, 3rem);
+    line-height: 1.6;
+  }
+
+  // ─── Light variant (fondo claro) ──────────────────────────
+  &--light {
+    background: var(--ej-bg-section-alt, #f8fafc);
+
+    h2 { color: $ji-navy; }
+  }
+
+  // ─── Dark variant (Triple Motor, Resultados) ─────────────
+  &--dark {
+    background: $ji-gradient;
+    color: #fff;
+
+    h2 { color: #fff; }
+    h2 + p, h2 + div > p:first-child { color: rgba(255, 255, 255, 0.7); }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CARDS GENÉRICAS dentro de ji-section (motores, verticales, resultados)
+// ═══════════════════════════════════════════════════════════════════════
+
+// Grid de cards
+.ji-section [class*="grid"],
+.ji-section [class*="cards"],
+.ji-section > div > div[style*="display"] {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ej-space-md, 1.5rem);
+  margin-top: var(--ej-space-lg, 2rem);
+
+  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+// Card base en secciones light
+.ji-section--light [class*="card"],
+.ji-section--light [data-type="card"] {
+  padding: var(--ej-space-lg, 2rem);
+  border-radius: var(--ej-radius-xl, 1.5rem);
+  background: var(--ej-bg-glass, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
+  transition: all 0.25s ease;
+  text-align: left;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    border-color: rgba($ji-teal, 0.3);
+  }
+
+  h3 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-lg, 1.25rem);
+    font-weight: 700;
+    color: $ji-navy;
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+  }
+
+  p {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-sm, 0.875rem);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// Cards en secciones dark (Triple Motor)
+.ji-section--dark [class*="card"],
+.ji-section--dark [data-type="card"] {
+  padding: var(--ej-space-lg, 2rem);
+  border-radius: var(--ej-radius-xl, 1.5rem);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba($ji-teal, 0.4);
+    transform: translateY(-4px);
+  }
+
+  h3 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-lg, 1.25rem);
+    font-weight: 700;
+    color: #fff;
+  }
+
+  p { color: rgba(255, 255, 255, 0.7); font-size: var(--ej-text-sm, 0.875rem); line-height: 1.6; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// STATS / RESULTADOS — números de impacto
+// ═══════════════════════════════════════════════════════════════════════
+.ji-section--dark [class*="stat"],
+.ji-section--dark [data-type="stat"] {
+  text-align: center;
+  padding: var(--ej-space-lg, 2rem);
+
+  strong, b, [class*="number"] {
+    display: block;
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: $ji-teal-light;
+    line-height: 1;
+    margin-bottom: var(--ej-space-xs, 0.5rem);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TESTIMONIALS — Social proof B2B
+// ═══════════════════════════════════════════════════════════════════════
+.ji-section [class*="testimonial"],
+.ji-section [class*="historia"] {
+  padding: var(--ej-space-lg, 2rem);
+  border-radius: var(--ej-radius-xl, 1.5rem);
+  background: var(--ej-bg-glass, rgba(255, 255, 255, 0.8));
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--ej-border-glass, rgba(255, 255, 255, 0.3));
+  text-align: left;
+  transition: all 0.2s ease;
+  position: relative;
+
+  // Comillas decorativas
+  &::before {
+    content: '\201C';
+    position: absolute;
+    top: 0.5rem;
+    left: 1rem;
+    font-size: 3rem;
+    color: rgba($ji-teal, 0.15);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  h3 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: var(--ej-text-base, 1rem);
+    font-weight: 700;
+    color: $ji-navy;
+    margin: 0 0 var(--ej-space-xs, 0.5rem);
+  }
+
+  p {
+    color: var(--ej-color-muted, #6b7280);
+    font-size: var(--ej-text-sm, 0.875rem);
+    line-height: 1.6;
+    font-style: italic;
+    margin: 0;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CTA BLOCK — Conversión B2B (Demo + Contacto Institucional)
+// ═══════════════════════════════════════════════════════════════════════
+.ji-cta-block {
+  padding: var(--ej-space-xxl, 5rem) var(--ej-space-lg, 2rem);
+  background: $ji-gradient;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba($ji-teal, 0.12) 0%, transparent 55%);
+  }
+
+  & > div {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-family: var(--ej-font-heading, 'Outfit', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 var(--ej-space-sm, 1rem);
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--ej-text-lg, 1.15rem);
+    line-height: 1.6;
+    margin: 0 0 var(--ej-space-lg, 2rem);
+  }
+
+  a[class*="btn"], .btn-primary {
+    display: inline-block;
+    background: $ji-gradient-teal;
+    color: #fff;
+    font-weight: 700;
+    padding: 1rem 2.5rem;
+    border-radius: var(--ej-radius-pill, 50rem);
+    text-decoration: none;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 20px rgba($ji-teal, 0.3);
+    transition: all 0.2s ease;
+    margin: 0 0.5rem;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba($ji-teal, 0.45);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ANIMACIONES
+// ═══════════════════════════════════════════════════════════════════════
+@keyframes jiFadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes jiFadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// META-SITE TENANT-6 BODY CLASS OVERRIDES
+// ═══════════════════════════════════════════════════════════════════════
+.meta-site-tenant-6 {
+  .landing-header {
+    background: rgba($ji-navy, 0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba($ji-teal, 0.15);
+
+    &__name { color: #fff; }
+    a { color: rgba(255, 255, 255, 0.85); }
+    a:hover { color: $ji-teal-light; }
+  }
+
+  .landing-footer {
+    background: #0d1b2e;
+    color: rgba(255, 255, 255, 0.7);
+
+    a { color: $ji-teal-light; }
+    a:hover { color: #4dd0c1; }
+  }
+}
+
+// ─── Dark mode ─────────────────────────────────────────────────────────
+[data-theme='dark'],
+.dark-mode {
+  .ji-section--light {
+    background: #0f172a;
+    h2 { color: #f1f5f9; }
+
+    [class*="card"], [data-type="card"] {
+      background: rgba(26, 26, 46, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+      h3 { color: #f1f5f9; }
+    }
+  }
+}

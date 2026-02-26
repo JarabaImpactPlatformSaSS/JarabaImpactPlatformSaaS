@@ -140,7 +140,50 @@ class SchemaGeneratorService
             $schema['keywords'] = implode(', ', $keywords);
         }
 
+        // GAP-AUD-006: Speakable specification for AI search engines.
+        $schema['speakable'] = [
+            '@type' => 'SpeakableSpecification',
+            'cssSelector' => [
+                '.article-body__content h2',
+                '.article-body__content p:first-of-type',
+            ],
+        ];
+
         return $schema;
+    }
+
+    /**
+     * GAP-AUD-006: Genera Schema.org SoftwareApplication para el SaaS.
+     *
+     * @param string $baseUrl
+     *   URL base del sitio.
+     *
+     * @return array
+     *   Schema.org SoftwareApplication.
+     */
+    public function generateSoftwareApplication(string $baseUrl): array
+    {
+        $siteConfig = $this->getSiteConfig();
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'SoftwareApplication',
+            'name' => $siteConfig['site_name'] ?? 'Jaraba Impact Platform',
+            'applicationCategory' => 'BusinessApplication',
+            'operatingSystem' => 'Web',
+            'url' => $baseUrl,
+            'description' => $siteConfig['site_tagline'] ?? 'Multi-vertical SaaS platform for impact ecosystems.',
+            'offers' => [
+                '@type' => 'Offer',
+                'price' => '0',
+                'priceCurrency' => 'EUR',
+                'description' => 'Freemium tier available',
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => $siteConfig['site_name'] ?? 'Jaraba Impact Platform',
+            ],
+        ];
     }
 
     /**
@@ -218,13 +261,31 @@ class SchemaGeneratorService
             }
         }
 
-        // Región.
+        // GAP-AUD-006: Enhanced areaServed with multiple regions.
         $geoRegion = $config->getGeoRegion();
         if (!empty($geoRegion)) {
-            $schema['areaServed'] = [
-                '@type' => 'AdministrativeArea',
-                'name' => $geoRegion,
-            ];
+            // Support comma-separated regions.
+            $regions = array_map('trim', explode(',', $geoRegion));
+            if (count($regions) === 1) {
+                $schema['areaServed'] = [
+                    '@type' => 'AdministrativeArea',
+                    'name' => $regions[0],
+                ];
+            }
+            else {
+                $schema['areaServed'] = array_map(function (string $region) {
+                    return [
+                        '@type' => 'AdministrativeArea',
+                        'name' => $region,
+                    ];
+                }, $regions);
+            }
+        }
+
+        // GAP-AUD-006: Google Maps link if available via custom JSON.
+        $customJson = $config->getSchemaCustomJson();
+        if (!empty($customJson) && isset($customJson['hasMap'])) {
+            $schema['hasMap'] = $customJson['hasMap'];
         }
 
         // Datos de contacto desde SiteConfig.

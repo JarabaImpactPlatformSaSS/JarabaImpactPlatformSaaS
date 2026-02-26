@@ -230,6 +230,13 @@ class TemplateLoaderService {
       'file' => 'fiscal/face_invoice_rejected.mjml',
       'description' => 'Notificación de factura rechazada por FACe',
     ],
+
+    // Notification templates (NOTIF_001+).
+    // Sprint 6 — REST Endpoints.
+    'NOTIF_001' => [
+      'file' => 'notifications/contact_form.mjml',
+      'description' => 'Notificación de nuevo contacto desde formulario web',
+    ],
   ];
 
   /**
@@ -542,6 +549,17 @@ class TemplateLoaderService {
       'rejection_reason' => 'Error en NIF del emisor: no coincide con el certificado',
       'rejection_date' => '15 de febrero de 2026',
       'invoice_url' => 'https://jaraba.es/admin/jaraba/facturae/15',
+    ],
+    // Notification sample data (NOTIF_001+).
+    'NOTIF_001' => [
+      'sender_name' => 'María García',
+      'sender_email' => 'maria@ejemplo.com',
+      'subject' => 'Consulta sobre plan Enterprise',
+      'message' => 'Hola, estoy interesada en el plan Enterprise para una organización de 200 empleados. ¿Podemos agendar una demo?',
+      'source' => 'web',
+      'date' => '26 de febrero de 2026, 14:30',
+      'ip_address' => '83.45.123.45',
+      'crm_url' => 'https://jaraba.es/admin/jaraba/crm/contacts',
     ],
   ];
 

@@ -311,11 +311,13 @@ services:
     alias: jaraba_legal_intelligence.legal_copilot_agent
     deprecated: 'The "%alias_id%" service is deprecated. Use "jaraba_legal_intelligence.legal_copilot_agent" directly. See FIX-016.'
 
-  # MultiModal Bridge — Preparacion voz + imagen
+  # GAP-AUD-011 + GAP-AUD-013: MultiModal Bridge — Voice + Vision AI
   jaraba_ai_agents.multimodal_bridge:
     class: Drupal\jaraba_ai_agents\Service\MultiModalBridgeService
     arguments:
       - '@logger.channel.jaraba_ai_agents'
+      - '@?ai.provider'
+      - '@?ecosistema_jaraba_core.ai_guardrails'
 
   # ========================================
   # FIX-029-051 — Elevacion IA Nivel 5/5
@@ -341,6 +343,13 @@ services:
       - '@jaraba_ai_agents.tool_registry'
       - '@jaraba_ai_agents.observability'
       - '@logger.channel.jaraba_ai_agents'
+
+  # GAP-AUD-009: Inline AI Suggestions Service
+  jaraba_ai_agents.inline_ai:
+    class: Drupal\jaraba_ai_agents\Service\InlineAiService
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.smart_marketing_agent'
 
   # FIX-040: Handoff Decision Service
   jaraba_ai_agents.handoff_decision:

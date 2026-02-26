@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Drupal\jaraba_lms\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ecosistema_jaraba_core\AI\AIIdentityRule;
 use Psr\Log\LoggerInterface;
 
 /**
- * Adaptive Learning Service (FIX-048).
+ * Adaptive Learning Service (FIX-048 + GAP-AUD-019).
  *
  * Uses AI to recommend next lessons based on student progress,
  * quiz scores, and time invested. Creates personalized learning
  * paths that adapt to individual performance.
+ *
+ * GAP-AUD-019: AI agent now actively used for personalized
+ * recommendations, explanations, and completion predictions.
  */
 class AdaptiveLearningService
 {
@@ -54,7 +58,7 @@ class AdaptiveLearningService
             return [];
         }
 
-        // Score lessons based on learner profile.
+        // Score lessons based on learner profile (rule-based baseline).
         $scored = [];
         foreach ($availableLessons as $lesson) {
             $score = $this->scoreLessonForLearner($lesson, $profile);
@@ -67,7 +71,14 @@ class AdaptiveLearningService
         // Sort by recommendation score descending.
         usort($scored, fn($a, $b) => ($b['recommendation_score'] ?? 0) <=> ($a['recommendation_score'] ?? 0));
 
-        return array_slice($scored, 0, $limit);
+        $topLessons = array_slice($scored, 0, $limit);
+
+        // GAP-AUD-019: AI-enhanced personalization.
+        if ($this->aiAgent !== NULL && !empty($topLessons)) {
+            $topLessons = $this->aiEnhanceRecommendations($topLessons, $profile);
+        }
+
+        return $topLessons;
     }
 
     /**
@@ -117,6 +128,19 @@ class AdaptiveLearningService
             }
             elseif ($avgScore >= 50) {
                 $profile['current_level'] = 'intermediate';
+            }
+
+            // GAP-AUD-019: Populate strengths/weaknesses from per-category scores.
+            $categoryScores = json_decode($enrollment?->get('progress_data')->value ?? '{}', TRUE);
+            $categoryScores = $categoryScores['category_scores'] ?? [];
+            foreach ($categoryScores as $category => $catScore) {
+                $catScore = (float) $catScore;
+                if ($catScore >= 80) {
+                    $profile['strengths'][] = $category;
+                }
+                elseif ($catScore < 50) {
+                    $profile['weaknesses'][] = $category;
+                }
             }
 
         } catch (\Exception $e) {
@@ -231,6 +255,79 @@ class AdaptiveLearningService
         }
 
         return 'Reinforce foundational knowledge.';
+    }
+
+    /**
+     * GAP-AUD-019: AI-enhanced personalization of recommendations.
+     *
+     * Uses AI to generate personalized reasons and re-order lessons
+     * based on the learner's specific profile (strengths, weaknesses,
+     * learning style).
+     */
+    protected function aiEnhanceRecommendations(array $lessons, array $profile): array
+    {
+        try {
+            $lessonSummaries = array_map(fn($l) => [
+                'lesson_id' => $l['lesson_id'],
+                'title' => $l['title'],
+                'difficulty' => $l['difficulty'],
+                'category' => $l['category'],
+                'estimated_minutes' => $l['estimated_minutes'],
+            ], $lessons);
+
+            $profileSummary = [
+                'current_level' => $profile['current_level'],
+                'average_score' => $profile['average_score'],
+                'completed_count' => count($profile['completed_lessons']),
+                'total_time_minutes' => $profile['total_time_minutes'],
+                'strengths' => $profile['strengths'],
+                'weaknesses' => $profile['weaknesses'],
+            ];
+
+            $prompt = AIIdentityRule::apply(
+                'Given this learner profile and available lessons, provide personalized recommendations. ' .
+                'Return JSON: [{"lesson_id": N, "reason": "personalized explanation in Spanish", "priority": 1-3, "completion_prediction": 0.0-1.0}]. ' .
+                'Profile: ' . json_encode($profileSummary) . '. ' .
+                'Lessons: ' . json_encode($lessonSummaries) . '.',
+                TRUE
+            );
+
+            $result = $this->aiAgent->execute([
+                'prompt' => $prompt,
+                'tier' => 'fast',
+                'max_tokens' => 512,
+                'temperature' => 0.3,
+            ]);
+
+            $responseText = $result['response'] ?? $result['text'] ?? '';
+            if (preg_match('/\[[\s\S]*\]/u', $responseText, $matches)) {
+                $aiRecommendations = json_decode($matches[0], TRUE);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($aiRecommendations)) {
+                    // Merge AI insights into the lesson data.
+                    $aiMap = [];
+                    foreach ($aiRecommendations as $rec) {
+                        if (isset($rec['lesson_id'])) {
+                            $aiMap[(int) $rec['lesson_id']] = $rec;
+                        }
+                    }
+
+                    foreach ($lessons as &$lesson) {
+                        $lid = (int) $lesson['lesson_id'];
+                        if (isset($aiMap[$lid])) {
+                            $lesson['reason'] = $aiMap[$lid]['reason'] ?? $lesson['reason'];
+                            $lesson['completion_prediction'] = (float) ($aiMap[$lid]['completion_prediction'] ?? 0.0);
+                            $lesson['ai_enhanced'] = TRUE;
+                        }
+                    }
+                    unset($lesson);
+                }
+            }
+        }
+        catch (\Exception $e) {
+            $this->logger->warning('AI enhancement failed, using rule-based: @msg', ['@msg' => $e->getMessage()]);
+        }
+
+        return $lessons;
     }
 
 }

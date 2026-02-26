@@ -1,3 +1,4 @@
+uuid: d0f24b51-94d2-49e7-ac3b-a6b5fe487c87
 langcode: es
 status: true
 dependencies: {  }
@@ -93,7 +94,7 @@ preview_data:
     -
       name: Consulta
       price: 0€
-      period: /primera sesión
+      period: '/primera sesión'
       featured: false
       badge: ''
       cta: 'Reservar consulta'
@@ -128,5 +129,4 @@ preview_data:
         - 'Litigios incluidos'
         - 'Compliance integral'
         - 'Abogado dedicado'
-animation: fade-up
 weight: 2

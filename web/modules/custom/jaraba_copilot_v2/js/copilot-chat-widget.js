@@ -85,6 +85,43 @@
     var toggleBtn = el.querySelector('.copilot-chat__toggle');
     var body = el.querySelector('.copilot-chat__body');
     var modeIndicator = el.querySelector('.copilot-chat__mode-indicator');
+    var pendingImage = null;
+
+    // GAP-AUD-013: Image upload button.
+    var inputArea = el.querySelector('.copilot-chat__input-area');
+    if (inputArea && sendBtn) {
+      var imageInput = document.createElement('input');
+      imageInput.type = 'file';
+      imageInput.accept = 'image/jpeg,image/png,image/webp,image/gif';
+      imageInput.style.display = 'none';
+      imageInput.setAttribute('aria-label', Drupal.t('Adjuntar imagen'));
+      inputArea.appendChild(imageInput);
+
+      var imageBtn = document.createElement('button');
+      imageBtn.type = 'button';
+      imageBtn.className = 'copilot-chat__image-btn';
+      imageBtn.setAttribute('aria-label', Drupal.t('Adjuntar imagen'));
+      imageBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+      sendBtn.parentNode.insertBefore(imageBtn, sendBtn);
+
+      imageBtn.addEventListener('click', function () {
+        imageInput.click();
+      });
+
+      imageInput.addEventListener('change', function () {
+        if (imageInput.files && imageInput.files[0]) {
+          var file = imageInput.files[0];
+          if (file.size > 10 * 1024 * 1024) {
+            alert(Drupal.t('La imagen no puede superar 10MB.'));
+            imageInput.value = '';
+            return;
+          }
+          pendingImage = file;
+          imageBtn.classList.add('copilot-chat__image-btn--active');
+          imageBtn.title = Drupal.t('Imagen adjunta: @name', { '@name': file.name });
+        }
+      });
+    }
 
     // Renderizar historial existente.
     renderMessages();
@@ -137,18 +174,31 @@
       renderMessages();
       scrollToBottom();
 
-      // Llamar al endpoint SSE.
-      fetch(Drupal.url('api/v1/copilot/chat/stream'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({
+      // GAP-AUD-013: Build request — multipart if image attached, JSON otherwise.
+      var fetchOptions = { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } };
+      if (pendingImage) {
+        var formData = new FormData();
+        formData.append('message', text);
+        formData.append('context', JSON.stringify(drupalSettings.jarabaCopilot || {}));
+        formData.append('image', pendingImage);
+        fetchOptions.body = formData;
+        // Show image preview in user message.
+        state.messages[state.messages.length - 1].hasImage = true;
+        state.messages[state.messages.length - 1].imageName = pendingImage.name;
+        pendingImage = null;
+        if (imageBtn) { imageBtn.classList.remove('copilot-chat__image-btn--active'); }
+        if (imageInput) { imageInput.value = ''; }
+        renderMessages();
+      }
+      else {
+        fetchOptions.headers['Content-Type'] = 'application/json';
+        fetchOptions.body = JSON.stringify({
           message: text,
           context: drupalSettings.jarabaCopilot || {}
-        })
-      }).then(function (response) {
+        });
+      }
+
+      fetch(Drupal.url('api/v1/copilot/chat/stream'), fetchOptions).then(function (response) {
         if (!response.ok) {
           throw new Error('HTTP ' + response.status);
         }
@@ -301,6 +351,12 @@
       state.messages.forEach(function (msg, idx) {
         if (msg.role === 'user') {
           html += '<div class="copilot-chat__message copilot-chat__message--user">';
+          if (msg.hasImage) {
+            html += '<div class="copilot-chat__image-badge">';
+            html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> ';
+            html += escapeHtml(msg.imageName || Drupal.t('Imagen'));
+            html += '</div>';
+          }
           html += '<div class="copilot-chat__message-content">' + escapeHtml(msg.text) + '</div>';
           html += '</div>';
         }

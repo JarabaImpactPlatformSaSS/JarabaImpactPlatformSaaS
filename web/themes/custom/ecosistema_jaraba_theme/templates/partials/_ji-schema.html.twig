@@ -1,0 +1,120 @@
+{#
+/**
+ * @file _ji-schema.html.twig
+ * Schema.org JSON-LD para Jaraba Impact (jarabaimpact.com)
+ *
+ * Genera datos estructurados B2B:
+ * - Organization (empresa de impacto social con tecnología)
+ * - SoftwareApplication (el SaaS multi-vertical)
+ * - WebSite con SearchAction
+ * - ProfessionalService (certificación Método Jaraba)
+ *
+ * DIRECTRICES: SEO-SCHEMA-001, i18n via |t
+ */
+#}
+
+{# ─── Organization B2B ─── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Jaraba Impact",
+  "alternateName": "Jaraba Impact Platform",
+  "legalName": "Plataforma de Ecosistemas Digitales S.L.",
+  "url": "https://jarabaimpact.com",
+  "logo": "https://jarabaimpact.com/themes/custom/ecosistema_jaraba_theme/logo.svg",
+  "description": "{{ 'Infraestructura digital para la transformación que importa. Plataforma SaaS multi-tenant que sincroniza empleo, emprendimiento y comercio local con tecnología de impacto.'|t }}",
+  "foundingDate": "1996",
+  "founder": {
+    "@type": "Person",
+    "name": "Pepe Jaraba",
+    "jobTitle": "{{ 'Fundador y Director de Ecosistemas Digitales'|t }}",
+    "url": "https://pepejaraba.com"
+  },
+  "areaServed": [
+    { "@type": "Country", "name": "Spain" },
+    { "@type": "AdministrativeArea", "name": "Andalucía" }
+  ],
+  "knowsAbout": [
+    "{{ 'Plataformas SaaS multi-tenant'|t }}",
+    "{{ 'Transformación digital territorial'|t }}",
+    "{{ 'Fondos europeos NextGen EU'|t }}",
+    "{{ 'Certificación profesional'|t }}",
+    "{{ 'Inteligencia artificial aplicada'|t }}",
+    "{{ 'Trazabilidad agroalimentaria'|t }}",
+    "{{ 'Comercio local digital'|t }}"
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "{{ 'Contacto institucional'|t }}",
+      "email": "institucional@jarabaimpact.com",
+      "availableLanguage": ["Spanish", "English"]
+    },
+    {
+      "@type": "ContactPoint",
+      "contactType": "{{ 'Solicitar demo'|t }}",
+      "email": "demo@jarabaimpact.com",
+      "availableLanguage": ["Spanish", "English"]
+    }
+  ],
+  "sameAs": [
+    "https://pepejaraba.com",
+    "https://plataformadeecosistemas.es"
+  ],
+  "makesOffer": [
+    {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "SoftwareApplication",
+        "name": "Jaraba Impact Platform",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "url": "https://plataformadeecosistemas.com",
+        "offers": {
+          "@type": "AggregateOffer",
+          "lowPrice": "0",
+          "highPrice": "99",
+          "priceCurrency": "EUR",
+          "offerCount": "3"
+        },
+        "featureList": [
+          "{{ 'AgroConecta — Trazabilidad agroalimentaria'|t }}",
+          "{{ 'ComercioConecta — Digitalización comercio local'|t }}",
+          "{{ 'ServiciosConecta — Profesionales liberales'|t }}",
+          "{{ 'Empleabilidad — Orientación e inserción laboral'|t }}",
+          "{{ 'Emprendimiento — Aceleración y financiación'|t }}",
+          "{{ 'Copiloto IA personalizado por vertical'|t }}"
+        ]
+      }
+    },
+    {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Course",
+        "name": "{{ 'Certificación Método Jaraba'|t }}",
+        "description": "{{ 'Programa de certificación para consultores y profesionales del desarrollo territorial.'|t }}",
+        "provider": {
+          "@type": "Organization",
+          "name": "Jaraba Impact"
+        }
+      }
+    }
+  ]
+}
+</script>
+
+{# ─── WebSite ─── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Jaraba Impact",
+  "url": "https://jarabaimpact.com",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://jarabaimpact.com/buscar?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>

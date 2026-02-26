@@ -1,3 +1,4 @@
+uuid: 5334a2cc-88de-4be8-aa5b-1629b269d763
 langcode: es
 status: true
 dependencies: {  }
@@ -43,15 +44,15 @@ preview_data:
   subtitle: 'Más de dos décadas ofreciendo excelencia jurídica.'
   stats:
     -
-      value: '20+'
+      value: 20+
       label: 'Años de experiencia'
     -
-      value: '500+'
+      value: 500+
       label: 'Casos resueltos'
     -
-      value: '98%'
+      value: 98%
       label: 'Tasa de éxito'
     -
-      value: '150+'
+      value: 150+
       label: 'Empresas confían en nosotros'
 weight: 9

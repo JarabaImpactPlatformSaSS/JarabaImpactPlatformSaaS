@@ -1,0 +1,15 @@
+uuid: 4211628d-9c64-49ad-a15a-360082b69e43
+langcode: es
+status: true
+dependencies: {  }
+name: article_featured
+label: 'Article Featured (1200x600)'
+effects:
+  c5436800-c203-4eab-8de5-ea3f19dd7e28:
+    uuid: c5436800-c203-4eab-8de5-ea3f19dd7e28
+    id: image_scale_and_crop
+    weight: null
+    data:
+      width: 1200
+      height: 600
+      anchor: center-center

@@ -40,6 +40,14 @@
 
 {{ attach_library('ecosistema_jaraba_theme/mobile-menu') }}
 
+{# GAP-AUD-010: Proactive Insights bell notification #}
+{% if logged_in and proactive_insights_count is defined and proactive_insights_count > 0 %}
+  {% include '@ecosistema_jaraba_theme/partials/_proactive-insights-bell.html.twig' with {
+    proactive_insights_count: proactive_insights_count,
+    logged_in: logged_in,
+  } only %}
+{% endif %}
+
 {# Incluir sub-partial según layout validado — pasamos nav_items parseados #}
 {% include '@ecosistema_jaraba_theme/partials/_header-' ~ layout ~ '.html.twig' with {
   site_name: site_name,

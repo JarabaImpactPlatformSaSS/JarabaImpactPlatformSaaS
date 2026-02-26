@@ -2,8 +2,8 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-26
-**Versión:** 77.0.0 (Auditoria IA Clase Mundial — 25 Gaps hacia Paridad con Lideres del Mercado)
-**Estado:** Auditoria IA 25 Gaps Planificados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
+**Versión:** 78.0.0 (Meta-Sitios Analytics Stack — GTM/GA4 + A/B Testing + i18n Hreflang + Heatmap)
+**Estado:** Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 25 Gaps Planificados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -137,6 +137,48 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── AgentLongTermMemoryService: Qdrant + BD                         │
 │   ├── Types: fact, preference, interaction_summary, correction         │
 │   └── remember() + recall() en buildSystemPrompt()                     │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│         META-SITES ANALYTICS STACK (4 CAPAS) ⭐                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📊 Capa 1: Conversion Tracking (metasite-tracking.js)                │
+│   ├── 6 behaviors: CTA clicks, form submits, scroll depth,           │
+│   │   engagement time, section views, cross-pollination               │
+│   └── dataLayer push para cada evento                                │
+│                                                                         │
+│   🧪 Capa 2: A/B Testing (metasite-experiments.js)                     │
+│   ├── Cookie jb_exp_{id} persistente 30 dias, pesos por variante     │
+│   ├── DOM manipulation: text/html/style/class/attribute/href         │
+│   ├── Impression tracking: POST /api/experiments/{id}/impression     │
+│   └── dataLayer: experiment_view, experiment_conversion               │
+│                                                                         │
+│   🔥 Capa 3: Heatmap (jaraba_heatmap/tracker)                          │
+│   ├── heatmap-tracker.js: clicks, scroll, hover                      │
+│   ├── HeatmapApiController (backend)                                 │
+│   └── Dashboard: /heatmap/analytics                                  │
+│                                                                         │
+│   🌐 Capa 4: GTM/GA4 (_gtm-analytics.html.twig)                       │
+│   ├── Google Consent Mode v2 (GDPR/RGPD defaults conservadores)      │
+│   ├── GTM container ID desde theme_settings (configurable)           │
+│   ├── GA4 standalone fallback si no hay GTM                          │
+│   └── dataLayer context push: meta_site, tenant_id, user_type        │
+│                                                                         │
+│   🌍 SEO Internacional (_hreflang-meta.html.twig)                      │
+│   ├── hreflang tags: es, en, x-default                               │
+│   └── Inyectado en html.html.twig <head>                             │
+│                                                                         │
+│   📦 Activacion: page--page-builder.html.twig                         │
+│   ├── Condicionado: {% if meta_site %} (no cargar en dashboard)      │
+│   ├── attach_library: ecosistema_jaraba_theme/metasite-tracking      │
+│   ├── attach_library: ecosistema_jaraba_theme/metasite-experiments   │
+│   └── attach_library: jaraba_heatmap/tracker                        │
+│                                                                         │
+│   📡 PWA (preexistente)                                                │
+│   ├── manifest.json + sw.js ya implementados                        │
+│   └── Sin cambios adicionales necesarios                            │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -675,6 +717,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-26 | **78.0.0** | **Meta-Sitios Analytics Stack — GTM/GA4 + A/B Testing + i18n Hreflang + Heatmap:** Nuevo bloque arquitectonico "META-SITES ANALYTICS STACK (4 CAPAS)": (1) Conversion Tracking con 6 behaviors dataLayer, (2) A/B Testing frontend con cookies y DOM manipulation, (3) Heatmap con jaraba_heatmap/tracker, (4) GTM/GA4 con Consent Mode v2 GDPR. SEO internacional con hreflang ES/EN/x-default. PWA preexistente verificada. 4 librerias condicionadas con meta_site. 5 reglas nuevas en Directrices v83.0.0. |
 | 2026-02-26 | **77.0.0** | **Auditoria IA Clase Mundial — 25 Gaps hacia Paridad con Lideres del Mercado:** Nuevo ASCII box AUDITORIA IA CLASE MUNDIAL. 25 gaps auditados contra Salesforce Agentforce, HubSpot Breeze, Shopify Sidekick, Intercom Fin. 7 refinamiento (Onboarding AI, Pricing Metering, Demo Playground, Dashboard GEO, llms.txt MCP, Schema.org GEO, Dark Mode AI) + 16 nuevos (Command Bar Cmd+K con CommandRegistryService tagged services, Inline AI con SmartBaseAgent fast tier + sparkle buttons, Proactive Intelligence ContentEntity + QueueWorker cron, Voice AI Web Speech API client-side, A2A Protocol extending MCP JSON-RPC 2.0 con Agent Card /.well-known/agent.json, Vision/Multimodal MultiModalBridgeService implementacion, 40+ unit + 15+ kernel + 7 prompt regression tests, Blog slugs ParamConverter + ContentArticle tenant_id, 5 vertical AI: SkillInferenceService + AdaptiveLearningService AI activation + DemandForecastingService + GrapesJS AI Writer + ServiceMatchingService Qdrant wiring, Design System ComponentDocumentationController) + 2 infraestructura (Cost Attribution AIObservability→TenantMetering, Horizontal Scaling Redis worker pool). 4 sprints, 320-440h. Plan: `docs/implementacion/2026-02-26_Plan_Implementacion_Auditoria_IA_Clase_Mundial_v1.md`. Aprendizaje #134. |
 | 2026-02-26 | **76.0.0** | **AI Elevation 10 GAPs — Streaming Real + MCP Server + Native Tools:** Nuevo ASCII box AI ELEVATION 10 GAPs. GAP-01: StreamingOrchestratorService extiende CopilotOrchestratorService, ChatInput::setStreamedOutput(TRUE) para streaming real, PHP Generator con eventos chunk/cached/done/error, buffer 80 chars + PII masking incremental. GAP-09: ToolRegistry::generateNativeToolsInput() convierte a ToolsInput/ToolsFunctionInput/ToolsPropertyInput, SmartBaseAgent::callAiApiWithNativeTools() con ChatInput::setChatTools(), fallback a text-based. GAP-08: McpServerController POST /api/v1/mcp JSON-RPC 2.0 con initialize/tools-list/tools-call/ping, MCP 2025-11-25. GAP-02: TraceContextService trace_id UUID + span_id. GAP-03/10: Buffer PII masking cross-chunk. GAP-07: AgentLongTermMemoryService Qdrant + BD. 3 ficheros nuevos + 4 modificados. 7 reglas nuevas. Aprendizaje #133. |
 | 2026-02-26 | **75.0.0** | **AI Remediation Plan — 28 Fixes, 3 Phases:** Nuevo ASCII box AI REMEDIATION STACK. Fase 1 (P0): AIIdentityRule clase estatica centralizada, brand voice fallback, guardrails pipeline ALLOW/MODIFY/BLOCK/FLAG, SmartBaseAgent contrato restaurado (routing+observability+guardrails), CopilotOrchestratorService 8 modos reales, streaming SSE con MIME correcto y eventos tipados, AgentOrchestrator simplificado, feedback loop con threshold. Fase 2 (P1): RAG prompt injection filter, embedding cache, A/B testing framework, tenant brand voice YAML, content approval workflow entity, campaign calendar entity, performance dashboard, Qdrant graceful fallback, auto-disable por error rate, vertical context normalizado. Fase 3 (P2): ModelRouterService con regex bilingue EN+ES (FIX-019), model pricing a YAML config con schema (FIX-020), observability conectada en BrandVoiceTrainer+WorkflowExecutor (FIX-021), AIOpsService con metricas reales /proc+BD (FIX-022), feedback widget JS↔PHP alineado (FIX-023), streaming semantico por parrafos (FIX-024), Gen 0/1 agents documentados (FIX-025), @? UnifiedPromptBuilder optional DI (FIX-026), canonical verticals 10 nombres (FIX-027), PII espanol DNI/NIE/IBAN/NIF/+34 (FIX-028). 55 ficheros, +3678/-236 lineas. 5 reglas nuevas. Regla de oro #45. Aprendizaje #127. |
@@ -702,4 +745,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 77.0.0 | **Fecha:** 2026-02-26 | **Autor:** IA Asistente
+> **Versión:** 78.0.0 | **Fecha:** 2026-02-26 | **Autor:** IA Asistente

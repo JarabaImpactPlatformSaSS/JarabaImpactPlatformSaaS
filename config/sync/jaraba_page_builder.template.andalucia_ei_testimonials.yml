@@ -1,0 +1,73 @@
+langcode: es
+status: true
+dependencies: {  }
+id: andalucia_ei_testimonials
+label: 'Andalucia +ei: Historias de Participantes'
+description: 'Sección testimonios de participantes del programa Andalucía Emprende e Innova.'
+category: andalucia_ei
+twig_template: '@jaraba_page_builder/blocks/verticals/andalucia_ei/testimonials.html.twig'
+fields_schema:
+  type: object
+  title: 'Historias de Participantes'
+  properties:
+    title:
+      type: string
+      title: Título
+      maxLength: 150
+    subtitle:
+      type: string
+      title: Subtítulo
+      maxLength: 300
+    testimonials:
+      type: array
+      title: Testimonios
+      items:
+        type: object
+        properties:
+          quote:
+            type: string
+            title: Testimonio
+          name:
+            type: string
+            title: Nombre
+          role:
+            type: string
+            title: Rol
+          rating:
+            type: integer
+            title: Valoración
+  required:
+    - title
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: /modules/custom/jaraba_page_builder/images/previews/andalucia_ei-testimonials.png
+preview_data:
+  eyebrow: Testimonios
+  title: 'Lo que dicen nuestros participantes'
+  subtitle: 'Experiencias reales de emprendedores que han transformado su proyecto con Andalucía +ei.'
+  testimonials:
+    -
+      quote: 'La mentoría con IA me ayudó a pivotar mi modelo de negocio en solo 3 semanas. Hoy mi startup de agrotech factura 4.000€ mensuales y sigue creciendo.'
+      name: 'Lucía Fernández'
+      role: 'Fundadora de AgriData Sur'
+      rating: 5
+      avatar: ''
+      initials: LF
+    -
+      quote: 'Llegué al programa sin saber nada de tecnología y salí con un e-commerce funcionando y certificación en IA. El acompañamiento es excepcional.'
+      name: 'Miguel Ángel Torres'
+      role: 'Emprendedor en artesanía digital'
+      rating: 5
+      avatar: ''
+      initials: MT
+    -
+      quote: 'Gracias a la red de contactos del programa conseguí mi primer inversor. La feria de emprendimiento fue el punto de inflexión para mi proyecto.'
+      name: 'Carmen Ruiz'
+      role: 'CEO de EcoAndalucía Solutions'
+      rating: 4
+      avatar: ''
+      initials: CR
+weight: 45

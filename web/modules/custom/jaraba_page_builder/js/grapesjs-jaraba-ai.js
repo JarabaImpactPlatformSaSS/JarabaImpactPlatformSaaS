@@ -569,6 +569,122 @@
             });
         }
 
+        // =====================================================================
+        // GAP-AUD-021: Inline AI Writing — quick text suggestions via
+        // InlineAiService using selected text as context.
+        // =====================================================================
+
+        /** Cached CSRF token promise for Inline AI calls. */
+        let inlineCsrfPromise = null;
+        function getInlineCsrfToken() {
+            if (!inlineCsrfPromise) {
+                inlineCsrfPromise = fetch(Drupal.url('session/token'))
+                    .then(r => r.text());
+            }
+            return inlineCsrfPromise;
+        }
+
+        /**
+         * Command: jaraba:ai-inline-suggest
+         * Uses selected text in the RTE as context for quick suggestions.
+         */
+        editor.Commands.add('jaraba:ai-inline-suggest', {
+            run: function (ed, sender, options) {
+                const component = ed.getSelected();
+                if (!component) { return; }
+
+                const currentText = component.getEl()?.innerText || component.get('content') || '';
+                if (!currentText.trim()) { return; }
+
+                // Determine field type from component type.
+                const compType = component.get('type') || 'text';
+                const fieldName = compType === 'heading' ? 'title' : 'body';
+
+                // Show loading state.
+                const el = component.getEl();
+                if (el) { el.classList.add('jaraba-ai-loading'); }
+
+                getInlineCsrfToken().then(function (token) {
+                    return fetch(Drupal.url('api/v1/inline-ai/suggest'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-Token': token,
+                        },
+                        body: JSON.stringify({
+                            field: fieldName,
+                            value: currentText.substring(0, 500),
+                            entity_type: 'page_content',
+                            context: { vertical: vertical, tenant_id: tenantId },
+                        }),
+                    });
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    if (el) { el.classList.remove('jaraba-ai-loading'); }
+
+                    const suggestions = data.suggestions || [];
+                    if (suggestions.length === 0) { return; }
+
+                    showInlineSuggestionsPanel(ed, component, suggestions);
+                }).catch(function () {
+                    if (el) { el.classList.remove('jaraba-ai-loading'); }
+                });
+            },
+        });
+
+        /**
+         * Shows a floating panel with inline AI suggestions near the component.
+         */
+        function showInlineSuggestionsPanel(ed, component, suggestions) {
+            // Remove any existing panel.
+            const existingPanel = document.querySelector('.gjs-ai-inline-panel');
+            if (existingPanel) { existingPanel.remove(); }
+
+            const panel = document.createElement('div');
+            panel.className = 'gjs-ai-inline-panel';
+            panel.setAttribute('role', 'listbox');
+            panel.setAttribute('aria-label', Drupal.t('AI Suggestions'));
+
+            suggestions.forEach(function (suggestion) {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'gjs-ai-inline-chip';
+                chip.setAttribute('role', 'option');
+                chip.textContent = typeof suggestion === 'string'
+                    ? suggestion
+                    : (suggestion.text || suggestion.label || String(suggestion));
+
+                chip.addEventListener('click', function () {
+                    const text = chip.textContent;
+                    component.set('content', text);
+                    const el = component.getEl();
+                    if (el) { el.innerHTML = Drupal.checkPlain(text); }
+                    panel.remove();
+                });
+
+                panel.appendChild(chip);
+            });
+
+            // Close button.
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'gjs-ai-inline-close';
+            closeBtn.textContent = '×';
+            closeBtn.addEventListener('click', function () { panel.remove(); });
+            panel.appendChild(closeBtn);
+
+            // Position near the component.
+            const canvasFrame = ed.Canvas.getFrameEl();
+            const wrapper = canvasFrame?.closest('.gjs-frame-wrapper') || document.querySelector('.gjs-cv-canvas');
+            if (wrapper) {
+                wrapper.appendChild(panel);
+            } else {
+                document.body.appendChild(panel);
+            }
+        }
+
         editor.on('component:selected', (component) => {
             const type = component.get('type');
             if (type === 'jaraba-header' || type === 'jaraba-footer' || type === 'jaraba-content-zone') {
@@ -584,11 +700,23 @@
                     command: 'jaraba:ai-generate',
                     label: '✨',
                 });
-                component.set('toolbar', toolbar);
             }
+
+            // GAP-AUD-021: Add inline suggest button for text components.
+            const textTypes = ['text', 'textnode', 'heading', 'paragraph', 'default'];
+            const hasInlineButton = toolbar.some(item => item.command === 'jaraba:ai-inline-suggest');
+            if (!hasInlineButton && textTypes.includes(type)) {
+                toolbar.push({
+                    attributes: { class: 'jaraba-toolbar-ai-inline', title: Drupal.t('Sugerir con IA') },
+                    command: 'jaraba:ai-inline-suggest',
+                    label: '💡',
+                });
+            }
+
+            component.set('toolbar', toolbar);
         });
 
-        console.log('Jaraba AI Plugin v2 inicializado (C4: Vertical, Brand Voice, Prompt-to-Page, SEO IA).');
+        console.log('Jaraba AI Plugin v3 inicializado (C4 + GAP-AUD-021: Inline AI Writing).');
     };
 
     // Registrar plugin en GrapesJS

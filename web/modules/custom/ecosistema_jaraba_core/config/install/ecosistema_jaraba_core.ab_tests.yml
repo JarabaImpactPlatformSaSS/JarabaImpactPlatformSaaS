@@ -1,0 +1,48 @@
+# A/B Tests Configuration — Sprint 7.
+# Managed by ecosistema_jaraba_core.ab_test service.
+# Each test: enabled (bool), split (int 0-100 = % traffic to variant A).
+
+tests:
+  # Test 1: Hero CTA text on homepage.
+  # A (control): "Empieza gratis" — B: "Solicita una demo".
+  homepage_hero_cta:
+    enabled: true
+    split: 50
+    description: "CTA principal del hero: genérico vs orientado a demo"
+    variants:
+      A: "Empieza gratis"
+      B: "Solicita una demo"
+    goal: "click"
+
+  # Test 2: Pricing page layout.
+  # A (control): 3 columns — B: 2 columns (hide Starter, highlight Pro).
+  pricing_layout:
+    enabled: true
+    split: 50
+    description: "Layout pricing: 3-col standard vs 2-col con Pro destacado"
+    variants:
+      A: "three_column"
+      B: "two_column_pro_featured"
+    goal: "register"
+
+  # Test 3: Social proof section position.
+  # A (control): After hero — B: Before pricing CTA.
+  social_proof_position:
+    enabled: true
+    split: 50
+    description: "Posición testimonios: tras hero vs antes de pricing"
+    variants:
+      A: "after_hero"
+      B: "before_pricing"
+    goal: "click"
+
+  # Test 4: Lead magnet copy.
+  # A (control): "Descarga gratis" — B: "Accede al recurso".
+  lead_magnet_cta:
+    enabled: true
+    split: 50
+    description: "CTA lead magnet: descarga vs acceso"
+    variants:
+      A: "Descarga gratis"
+      B: "Accede al recurso"
+    goal: "click"

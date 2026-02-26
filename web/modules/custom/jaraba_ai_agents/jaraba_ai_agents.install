@@ -72,3 +72,53 @@ function jaraba_ai_agents_update_10001(&$sandbox): string {
 
   return (string) t('GAP-02: Ningun campo de tracing necesitaba instalacion en AIUsageLog.');
 }
+
+/**
+ * GAP-AUD-010: Install ProactiveInsight entity schema.
+ *
+ * Creates the proactive_insight table with all base fields.
+ */
+function jaraba_ai_agents_update_10002(&$sandbox): string {
+  // Entity type install is handled automatically by Drupal when the module
+  // defines the entity and entity_type.manager detects it on cache rebuild.
+  // We just need to trigger the entity type definition update.
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    // Apply any pending entity type updates.
+    $entity_definition_update_manager->applyUpdates();
+    return (string) t('GAP-AUD-010: ProactiveInsight entity schema installed.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_ai_agents')->error(
+      'Error installing ProactiveInsight entity: @message',
+      ['@message' => $e->getMessage()]
+    );
+    return (string) t('GAP-AUD-010: ProactiveInsight install encountered an error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * GAP-AUD-012: Install A2ATask entity schema.
+ *
+ * Creates the a2a_task table with all base fields for A2A protocol.
+ */
+function jaraba_ai_agents_update_10003(&$sandbox): string {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    $entity_definition_update_manager->applyUpdates();
+    return (string) t('GAP-AUD-012: A2ATask entity schema installed.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_ai_agents')->error(
+      'Error installing A2ATask entity: @message',
+      ['@message' => $e->getMessage()]
+    );
+    return (string) t('GAP-AUD-012: A2ATask install encountered an error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}

@@ -42,6 +42,15 @@ services:
       - '@jaraba_candidate.profile'
       - '@logger.factory'
 
+  # GAP-AUD-018: AI-powered skill inference from unstructured text.
+  jaraba_candidate.skill_inference:
+    class: Drupal\jaraba_candidate\Service\SkillInferenceService
+    arguments:
+      - '@jaraba_candidate.skills'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.smart_marketing_agent'
+      - '@?jaraba_rag.embedding_service'
+
   # ============================================================================
   # AGENTES IA
   # ============================================================================

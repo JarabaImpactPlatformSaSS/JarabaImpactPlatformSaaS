@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Endpoint SSE para streaming de respuestas del copiloto.
@@ -38,6 +39,7 @@ class CopilotStreamController extends ControllerBase {
     protected AIUsageLimitService $aiUsageLimit,
     protected TenantContextService $tenantContext,
     protected ?StreamingOrchestratorService $streamingOrchestrator = NULL,
+    protected ?object $multiModalBridge = NULL,
   ) {
   }
 
@@ -53,6 +55,9 @@ class CopilotStreamController extends ControllerBase {
       $container->get('ecosistema_jaraba_core.tenant_context'),
       $container->has('jaraba_copilot_v2.streaming_orchestrator')
         ? $container->get('jaraba_copilot_v2.streaming_orchestrator')
+        : NULL,
+      $container->has('jaraba_ai_agents.multimodal_bridge')
+        ? $container->get('jaraba_ai_agents.multimodal_bridge')
         : NULL,
     );
   }
@@ -82,8 +87,37 @@ class CopilotStreamController extends ControllerBase {
       return $response;
     }
 
-    // 2. Input validation.
-    $data = json_decode($request->getContent(), TRUE);
+    // 2. Input validation — support both JSON and multipart/form-data (GAP-AUD-013).
+    $contentType = $request->headers->get('Content-Type', '');
+    $imageAnalysis = NULL;
+
+    if (str_contains($contentType, 'multipart/form-data')) {
+      // GAP-AUD-013: Multipart request with optional image attachment.
+      $data = [
+        'message' => $request->request->get('message', ''),
+        'context' => json_decode($request->request->get('context', '{}'), TRUE) ?: [],
+        'mode' => $request->request->get('mode'),
+      ];
+      /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile */
+      $imageFile = $request->files->get('image');
+      if ($imageFile instanceof UploadedFile && $imageFile->isValid() && $this->multiModalBridge !== NULL) {
+        try {
+          $imageData = file_get_contents($imageFile->getPathname());
+          if ($imageData !== FALSE && strlen($imageData) <= 10 * 1024 * 1024) {
+            $imageAnalysis = $this->multiModalBridge->analyzeImage($imageData, $data['message']);
+          }
+        }
+        catch (\Exception $e) {
+          // Log but don't block the message.
+          \Drupal::logger('jaraba_copilot_v2')->warning('Image analysis failed: @error', [
+            '@error' => $e->getMessage(),
+          ]);
+        }
+      }
+    }
+    else {
+      $data = json_decode($request->getContent(), TRUE);
+    }
 
     if (empty($data['message'])) {
       return new JsonResponse([
@@ -95,6 +129,12 @@ class CopilotStreamController extends ControllerBase {
     $message = $data['message'];
     $context = $data['context'] ?? [];
     $mode = $data['mode'] ?? NULL;
+
+    // GAP-AUD-013: Enrich context with image analysis if available.
+    if ($imageAnalysis !== NULL) {
+      $context['image_analysis'] = $imageAnalysis;
+      $message .= "\n\n[Imagen adjunta: " . ($imageAnalysis['description'] ?? 'imagen analizada') . ']';
+    }
 
     // 3. Resolve tenant y verificar AI usage limit.
     $tenant = $this->tenantContext->getCurrentTenant();

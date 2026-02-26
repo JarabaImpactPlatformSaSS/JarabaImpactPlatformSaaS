@@ -98,7 +98,7 @@
       <button type="submit"
               class="lead-magnet__btn btn--primary"
               data-lead-magnet-submit>
-        {{ lead_magnet_cta_text|default('Descargar Kit Gratuito →'|t) }}
+        {{ ab_variants.lead_magnet_cta.label|default(lead_magnet_cta_text|default('Descargar Kit Gratuito →'|t)) }}
       </button>
     </form>
 

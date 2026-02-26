@@ -1,0 +1,15 @@
+uuid: 63a2c14c-6dab-43b4-9685-03b32871563a
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.plataformadeecosistemas_es
+  module:
+    - domain_access
+id: domain_access_remove_editor_action_plataformadeecosistemas_es
+label: 'Quitar editores del dominio Plataforma de Ecosistemas Digitales'
+type: user
+plugin: domain_access_remove_editor_action
+configuration:
+  domain_id:
+    - plataformadeecosistemas_es

@@ -71,11 +71,13 @@ services:
       - '@logger.channel.jaraba_servicios_conecta'
 
 
-  # FIX-046: Service Matching — Hybrid scoring for seeker/provider matching
+  # FIX-046 + GAP-AUD-022: Service Matching — Hybrid scoring with AI re-ranking
   jaraba_servicios_conecta.service_matching:
     class: Drupal\jaraba_servicios_conecta\Service\ServiceMatchingService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_servicios_conecta'
-      - '@?jaraba_rag.indexer'
+      - '@?jaraba_rag.embedding_service'
       - '@?jaraba_rag.qdrant_client'
+      - '@?jaraba_servicios_conecta.availability'
+      - '@?jaraba_ai_agents.smart_marketing_agent'

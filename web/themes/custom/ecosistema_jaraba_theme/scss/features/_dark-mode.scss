@@ -1,12 +1,23 @@
 /**
  * @file
  * Dark Mode - Ecosistema Jaraba Theme.
+ *
+ * GAP-AUD-007: Expanded from 14 to ~35 CSS custom properties.
+ * Covers: base UI, copilot widget, AI dashboard, command bar,
+ * inline AI, proactive insights, and chart components.
+ *
+ * Uses @mixin for DRY application in both .dark-mode class
+ * and @media (prefers-color-scheme: dark) auto-detection.
  */
 
+@use 'sass:color';
 @use '../variables' as *;
 
-// Dark mode override
-.dark-mode {
+// ==========================================================================
+// Dark Mode Variables Mixin (DRY)
+// ==========================================================================
+@mixin dark-mode-vars {
+    // --- Base UI (14 original variables) ---
     --ej-bg-body: #1A1A2E;
     --ej-bg-surface: #252538;
     --ej-color-headings: #F8FAFC;
@@ -22,9 +33,69 @@
     --ej-input-bg: #252538;
     --ej-input-border: #374151;
     --ej-border-color: #374151;
+
+    // --- Generic overrides for components using --ej-color-* ---
+    --ej-color-bg: #1A1A2E;
+    --ej-color-background: #1A1A2E;
+    --ej-color-background-secondary: #252538;
+    --ej-color-text: #F8FAFC;
+    --ej-color-text-secondary: #94A3B8;
+    --ej-color-text-tertiary: #64748B;
+    --ej-color-border: #374151;
+    --ej-color-surface: #2D2D42;
+
+    // --- Copilot Widget (5 vars) ---
+    --ej-copilot-bg: #1A1A2E;
+    --ej-copilot-bubble-user: #{color.adjust($ej-color-impulse, $lightness: -15%)};
+    --ej-copilot-bubble-ai: #2D2D42;
+    --ej-copilot-input-bg: #1F1F35;
+    --ej-copilot-input-border: #4A4A6A;
+
+    // --- AI Dashboard (3 vars) ---
+    --ej-dashboard-chart-bg: #252538;
+    --ej-dashboard-sparkline: #{$ej-color-innovation};
+    --ej-dashboard-badge-bg: #2D2D42;
+
+    // --- Command Bar (4 vars) ---
+    --ej-command-bar-overlay: rgba(0, 0, 0, 0.75);
+    --ej-command-bar-bg: #1F1F35;
+    --ej-command-bar-result-hover: #2D2D42;
+    --ej-command-bar-highlight: #{$ej-color-impulse};
+
+    // --- Inline AI (2 vars) ---
+    --ej-inline-ai-sparkle: #{$ej-color-impulse};
+    --ej-inline-ai-panel-bg: #252538;
+
+    // --- Proactive Insights (4 vars) ---
+    --ej-insight-card-bg: #252538;
+    --ej-insight-severity-high: #EF4444;
+    --ej-insight-severity-medium: #F59E0B;
+    --ej-insight-severity-low: #10B981;
+
+    // --- Charts (2 vars) ---
+    --ej-chart-grid: #374151;
+    --ej-chart-text: #94A3B8;
 }
 
-// Toggle button
+// ==========================================================================
+// .dark-mode class (toggled via JS)
+// ==========================================================================
+.dark-mode {
+    @include dark-mode-vars;
+}
+
+// ==========================================================================
+// Auto-detection via prefers-color-scheme
+// ==========================================================================
+@media (prefers-color-scheme: dark) {
+    body:not(.light-mode-forced) {
+        @include dark-mode-vars;
+    }
+}
+
+// ==========================================================================
+// Toggle Button
+// ==========================================================================
 .dark-mode-toggle {
     position: fixed;
     bottom: var(--ej-spacing-md);
