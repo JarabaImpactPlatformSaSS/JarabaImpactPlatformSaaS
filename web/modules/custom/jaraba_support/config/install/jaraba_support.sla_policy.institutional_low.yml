@@ -1,0 +1,15 @@
+id: institutional_low
+label: 'Institutional - Low'
+plan_tier: institutional
+priority: low
+first_response_hours: 4
+resolution_hours: 24
+business_hours_only: false
+schedule: twentyfour_seven
+phone_support: true
+priority_queue: true
+escalation_after_hours: 8
+idle_timeout_hours: 24
+auto_close_hours: 120
+pause_on_pending: true
+active: true

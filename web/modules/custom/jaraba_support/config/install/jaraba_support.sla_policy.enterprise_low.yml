@@ -1,0 +1,15 @@
+id: enterprise_low
+label: 'Enterprise - Low'
+plan_tier: enterprise
+priority: low
+first_response_hours: 8
+resolution_hours: 72
+business_hours_only: true
+schedule: extended
+phone_support: true
+priority_queue: true
+escalation_after_hours: 0
+idle_timeout_hours: 48
+auto_close_hours: 168
+pause_on_pending: true
+active: true

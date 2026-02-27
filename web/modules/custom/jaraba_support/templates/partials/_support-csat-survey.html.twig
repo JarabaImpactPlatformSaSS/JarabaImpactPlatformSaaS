@@ -1,0 +1,83 @@
+{#
+/**
+ * @file
+ * Parcial: CSAT Survey — Inline satisfaction rating for resolved tickets.
+ *
+ * Variables:
+ * - ticket_id: Integer — The ticket ID for form submission
+ */
+#}
+
+<div class="support-csat" data-support-csat data-ticket-id="{{ ticket_id }}">
+  <div class="support-csat__header">
+    {{ jaraba_icon('ui', 'smile', { variant: 'duotone', size: '24px' }) }}
+    <h3 class="support-csat__title">
+      {% trans %}How was your experience?{% endtrans %}
+    </h3>
+    <p class="support-csat__subtitle">
+      {% trans %}Your feedback helps us improve our support.{% endtrans %}
+    </p>
+  </div>
+
+  <form class="support-csat__form" data-support-csat-form>
+    <input type="hidden" name="ticket_id" value="{{ ticket_id }}">
+
+    {# Star rating #}
+    <fieldset class="support-csat__rating">
+      <legend class="visually-hidden">{% trans %}Satisfaction rating{% endtrans %}</legend>
+      <div class="support-csat__stars" role="radiogroup" aria-label="{% trans %}Rating{% endtrans %}">
+        {% for i in 1..5 %}
+          <label class="support-csat__star" data-rating="{{ i }}">
+            <input type="radio" name="satisfaction_rating" value="{{ i }}" class="visually-hidden" required>
+            {{ jaraba_icon('ui', 'star', { size: '28px' }) }}
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    {# CES (Customer Effort Score) #}
+    <fieldset class="support-csat__effort">
+      <legend class="support-csat__effort-label">
+        {% trans %}How easy was it to resolve your issue?{% endtrans %}
+      </legend>
+      <div class="support-csat__effort-scale">
+        {% for i in 1..5 %}
+          <label class="support-csat__effort-option">
+            <input type="radio" name="effort_score" value="{{ i }}" class="visually-hidden">
+            <span class="support-csat__effort-value">{{ i }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <div class="support-csat__effort-labels">
+        <span>{% trans %}Very difficult{% endtrans %}</span>
+        <span>{% trans %}Very easy{% endtrans %}</span>
+      </div>
+    </fieldset>
+
+    {# Comment #}
+    <div class="support-csat__comment">
+      <label for="support-csat-comment" class="support-csat__comment-label">
+        {% trans %}Additional comments (optional){% endtrans %}
+      </label>
+      <textarea id="support-csat-comment"
+                name="satisfaction_comment"
+                class="support-csat__comment-input"
+                rows="3"
+                placeholder="{{ 'Tell us more about your experience...'|t }}"></textarea>
+    </div>
+
+    {# Submit #}
+    <button type="submit" class="btn btn--primary support-csat__submit">
+      {{ jaraba_icon('ui', 'send', { size: '14px' }) }}
+      {% trans %}Submit Feedback{% endtrans %}
+    </button>
+  </form>
+
+  {# Thank you state (hidden initially) #}
+  <div class="support-csat__thanks" style="display: none;" data-support-csat-thanks>
+    {{ jaraba_icon('ui', 'heart', { variant: 'duotone', size: '32px' }) }}
+    <p class="support-csat__thanks-text">
+      {% trans %}Thank you for your feedback!{% endtrans %}
+    </p>
+  </div>
+</div>

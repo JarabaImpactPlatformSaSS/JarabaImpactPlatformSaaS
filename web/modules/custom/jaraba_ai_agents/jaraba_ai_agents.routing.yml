@@ -494,6 +494,49 @@ entity.prompt_improvement.settings:
   requirements:
     _permission: 'administer ai agents'
 
+# GAP-L5-H/I: Causal Analytics & Federated Insights Dashboard.
+jaraba_ai_agents.causal_analytics_dashboard:
+  path: '/admin/config/ai/causal-analytics'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\CausalAnalyticsDashboardController::dashboard'
+    _title: 'Causal Analytics & Federated Insights'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-H: Aggregated Insights entity routes.
+entity.aggregated_insight.collection:
+  path: '/admin/content/ai/federated-insights'
+  defaults:
+    _entity_list: 'aggregated_insight'
+    _title: 'Federated Insights'
+  requirements:
+    _permission: 'administer ai agents'
+
+entity.aggregated_insight.settings:
+  path: '/admin/structure/aggregated-insight/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\AggregatedInsightSettingsForm'
+    _title: 'Aggregated Insight settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-I: Causal Analysis entity routes.
+entity.causal_analysis.collection:
+  path: '/admin/content/ai/causal-analyses'
+  defaults:
+    _entity_list: 'causal_analysis'
+    _title: 'Causal Analyses'
+  requirements:
+    _permission: 'administer ai agents'
+
+entity.causal_analysis.settings:
+  path: '/admin/structure/causal-analysis/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\CausalAnalysisSettingsForm'
+    _title: 'Causal Analysis settings'
+  requirements:
+    _permission: 'administer ai agents'
+
 # GAP-L5-F: Autonomous Agents Dashboard.
 jaraba_ai_agents.autonomous_agents_dashboard:
   path: '/admin/config/ai/autonomous-agents'

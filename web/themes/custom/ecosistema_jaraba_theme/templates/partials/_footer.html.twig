@@ -176,12 +176,19 @@
     </div>
 
     {# --- BANDA ECOSISTEMA: Navegacion transversal entre dominios del ecosistema --- #}
-    {% set eco_enabled = (ts.ecosystem_footer_enabled is defined) ? ts.ecosystem_footer_enabled : false %}
-    {% set eco_links = ts.ecosystem_footer_links|default([]) %}
+    {# Regla #68: Configurable por tenant. Default: visible con links del ecosistema. #}
+    {% set eco_enabled = (ts.ecosystem_footer_enabled is defined) ? ts.ecosystem_footer_enabled : true %}
+    {% set eco_links_default = [
+      { name: 'Pepe Jaraba'|t, url: 'https://pepejaraba.com' },
+      { name: 'Jaraba Impact'|t, url: 'https://jarabaimpact.com' },
+      { name: 'PED Corporativo'|t, url: 'https://plataformadeecosistemas.es' },
+      { name: 'Plataforma SaaS'|t, url: 'https://plataformadeempresas.com' },
+    ] %}
+    {% set eco_links = ts.ecosystem_footer_links|default(eco_links_default) %}
     {% if eco_enabled and eco_links|length > 0 %}
       <div class="landing-footer__ecosystem">
-        <span class="landing-footer__ecosystem-label">Ecosistema Jaraba</span>
-        <nav class="landing-footer__ecosystem-nav" aria-label="Ecosistema Jaraba">
+        <span class="landing-footer__ecosystem-label">{% trans %}Ecosistema Jaraba{% endtrans %}</span>
+        <nav class="landing-footer__ecosystem-nav" aria-label="{% trans %}Ecosistema Jaraba{% endtrans %}">
           {% for link in eco_links %}
             {% if link.current|default(false) %}
               <span class="landing-footer__ecosystem-link landing-footer__ecosystem-link--current"

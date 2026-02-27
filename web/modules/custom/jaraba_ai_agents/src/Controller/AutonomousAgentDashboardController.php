@@ -98,6 +98,9 @@ class AutonomousAgentDashboardController extends ControllerBase {
         'kb_maintainer' => $this->t('Knowledge Base Maintainer'),
         'churn_prevention' => $this->t('Churn Prevention'),
       ],
+      '#attached' => [
+        'library' => ['ecosistema_jaraba_theme/route-autonomous-agents'],
+      ],
     ];
   }
 

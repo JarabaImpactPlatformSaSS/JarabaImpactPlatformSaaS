@@ -1,0 +1,10 @@
+/**
+ * @file
+ * Route-specific CSS — Causal Analytics Dashboard (GAP-L5-H/I).
+ *
+ * Covers: /admin/config/ai/causal-analytics
+ * Compile: sass scss/routes/causal-analytics.scss css/routes/causal-analytics.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use 'causal-analytics';

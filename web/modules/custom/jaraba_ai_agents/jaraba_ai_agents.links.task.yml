@@ -77,3 +77,23 @@ entity.remediation_log.settings_tab:
   title: 'Settings'
   route_name: entity.remediation_log.settings
   base_route: entity.remediation_log.settings
+
+entity.aggregated_insight.collection:
+  title: 'Federated Insights'
+  route_name: entity.aggregated_insight.collection
+  base_route: system.admin_content
+
+entity.aggregated_insight.settings_tab:
+  title: 'Settings'
+  route_name: entity.aggregated_insight.settings
+  base_route: entity.aggregated_insight.settings
+
+entity.causal_analysis.collection:
+  title: 'Causal Analyses'
+  route_name: entity.causal_analysis.collection
+  base_route: system.admin_content
+
+entity.causal_analysis.settings_tab:
+  title: 'Settings'
+  route_name: entity.causal_analysis.settings
+  base_route: entity.causal_analysis.settings

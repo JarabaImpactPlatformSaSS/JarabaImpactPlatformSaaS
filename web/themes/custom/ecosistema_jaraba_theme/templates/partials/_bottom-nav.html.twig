@@ -1,0 +1,52 @@
+{#
+ # @file
+ # Bottom Navigation Mobile — Barra de navegacion fija inferior.
+ #
+ # Muestra 5 items de navegacion en mobile (max-width: 768px).
+ # En desktop se oculta automaticamente via CSS media query.
+ # El CSS ya existe en _mobile-components.scss lineas 150-282.
+ #
+ # @param bottom_nav_items array  Items de navegacion (opcional, usa defaults)
+ # @param active_bottom_nav string  Ruta activa para resaltar item (opcional)
+ #
+ # Uso:
+ #   {% include '@ecosistema_jaraba_theme/partials/_bottom-nav.html.twig' %}
+ #
+ # Directivas: ICON-CONVENTION-001, BEM-NAMING-001, i18n, WCAG 2.5.5 (touch 48px)
+ # CSS: _mobile-components.scss (ya compilado, no crear CSS nuevo)
+ # Visibilidad: Solo mobile via CSS @media (max-width: $ej-breakpoint-md)
+ # Body class: has-bottom-nav inyectada via hook_preprocess_html()
+ #}
+
+{% set nav_items = bottom_nav_items|default([
+  { icon_cat: 'ui', icon_name: 'dashboard', label: 'Inicio'|trans, url: '/dashboard', route: 'dashboard' },
+  { icon_cat: 'actions', icon_name: 'search', label: 'Buscar'|trans, url: '/search', route: 'search' },
+  { icon_cat: 'actions', icon_name: 'plus-circle', label: 'Crear'|trans, url: '#', route: 'create', is_fab: true },
+  { icon_cat: 'general', icon_name: 'bell', label: 'Alertas'|trans, url: '/notifications', route: 'notifications' },
+  { icon_cat: 'general', icon_name: 'user', label: 'Perfil'|trans, url: '/mi-cuenta', route: 'profile' },
+]) %}
+
+<nav class="bottom-nav" aria-label="{% trans %}Navegacion principal{% endtrans %}">
+  <div class="bottom-nav__items">
+    {% for item in nav_items %}
+      <a href="{{ item.url }}"
+         class="bottom-nav__link{{ item.route == active_bottom_nav ? ' is-active' : '' }}{{ item.is_fab is defined and item.is_fab ? ' bottom-nav__link--fab' : '' }}"
+         {% if item.is_fab is defined and item.is_fab %}
+           data-action="quick-create"
+           aria-haspopup="dialog"
+         {% endif %}
+         aria-label="{{ item.label }}"
+         {% if item.route == active_bottom_nav %}aria-current="page"{% endif %}>
+        <span class="bottom-nav__icon">
+          {{ jaraba_icon(item.icon_cat, item.icon_name, { size: '24px' }) }}
+        </span>
+        <span class="bottom-nav__label">{{ item.label }}</span>
+        {% if item.badge is defined and item.badge > 0 %}
+          <span class="bottom-nav__badge" aria-label="{{ item.badge }} {% trans %}notificaciones{% endtrans %}">
+            {{ item.badge > 9 ? '9+' : item.badge }}
+          </span>
+        {% endif %}
+      </a>
+    {% endfor %}
+  </div>
+</nav>

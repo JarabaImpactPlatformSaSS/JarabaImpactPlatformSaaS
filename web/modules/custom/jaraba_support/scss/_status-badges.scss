@@ -1,0 +1,87 @@
+// ═══════════════════════════════════════════════════════════
+// Status & Priority Badges
+// ═══════════════════════════════════════════════════════════
+
+@use 'variables' as *;
+
+.support-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: $support-font-size-sm;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: capitalize;
+
+  &__icon {
+    display: inline-flex;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+// Status variants
+.support-badge--status {
+  &-new {
+    background: color-mix(in srgb, #{$support-status-new} 15%, transparent);
+    color: $support-status-new;
+  }
+
+  &-ai_handling {
+    background: color-mix(in srgb, #{$support-status-ai-handling} 15%, transparent);
+    color: $support-status-ai-handling;
+  }
+
+  &-open {
+    background: color-mix(in srgb, #{$support-status-open} 15%, transparent);
+    color: $support-status-open;
+  }
+
+  &-pending_customer,
+  &-pending_internal {
+    background: color-mix(in srgb, #{$support-status-pending} 15%, transparent);
+    color: $support-status-pending;
+  }
+
+  &-escalated {
+    background: color-mix(in srgb, #{$support-status-escalated} 15%, transparent);
+    color: $support-status-escalated;
+  }
+
+  &-resolved {
+    background: color-mix(in srgb, #{$support-status-resolved} 15%, transparent);
+    color: $support-status-resolved;
+  }
+
+  &-closed,
+  &-merged {
+    background: color-mix(in srgb, #{$support-status-closed} 15%, transparent);
+    color: $support-status-closed;
+  }
+}
+
+// Priority variants
+.support-badge--priority {
+  &-critical {
+    background: color-mix(in srgb, #{$support-priority-critical} 15%, transparent);
+    color: $support-priority-critical;
+  }
+
+  &-high {
+    background: color-mix(in srgb, #{$support-priority-high} 15%, transparent);
+    color: $support-priority-high;
+  }
+
+  &-medium {
+    background: color-mix(in srgb, #{$support-priority-medium} 15%, transparent);
+    color: $support-priority-medium;
+  }
+
+  &-low {
+    background: color-mix(in srgb, #{$support-priority-low} 15%, transparent);
+    color: $support-priority-low;
+  }
+}

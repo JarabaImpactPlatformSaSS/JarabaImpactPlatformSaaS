@@ -1,0 +1,78 @@
+{#
+ # @file
+ # Skeleton screen placeholder con animacion shimmer.
+ #
+ # Muestra formas animadas que replican la estructura del contenido
+ # mientras los datos se cargan via AJAX/fetch. Reduce percepcion
+ # de espera y mantiene el layout estable (evita CLS).
+ #
+ # @param variant string 'card'|'stat'|'table'|'list' (default: 'card')
+ # @param count   int    Numero de skeleton items a renderizar (default: 1)
+ #
+ # Uso:
+ #   {% include '@ecosistema_jaraba_theme/partials/_skeleton.html.twig' with {
+ #     variant: 'stat',
+ #     count: 4
+ #   } %}
+ #
+ # Directivas: DESIGN-TOKEN-FEDERATED-001, BEM-NAMING-001, TWIG-XSS-001
+ # Accesibilidad: WCAG 2.1 AA — role="status", aria-label, .visually-hidden
+ # Traduccion: {% trans %} para todos los textos
+ # CSS: _skeleton.scss (compilar con Dart Sass)
+ #}
+
+{% set variant = variant|default('card') %}
+{% set count = count|default(1) %}
+
+<div class="ej-skeleton ej-skeleton--{{ variant }}" role="status" aria-label="{% trans %}Cargando contenido{% endtrans %}">
+  <span class="visually-hidden">{% trans %}Cargando...{% endtrans %}</span>
+
+  {% for i in 1..count %}
+    {% if variant == 'card' %}
+      <div class="ej-skeleton__card">
+        <div class="ej-skeleton__image"></div>
+        <div class="ej-skeleton__line ej-skeleton__line--full"></div>
+        <div class="ej-skeleton__line ej-skeleton__line--80"></div>
+        <div class="ej-skeleton__line ej-skeleton__line--60"></div>
+      </div>
+
+    {% elseif variant == 'stat' %}
+      <div class="ej-skeleton__stat">
+        <div class="ej-skeleton__circle"></div>
+        <div class="ej-skeleton__lines">
+          <div class="ej-skeleton__line ej-skeleton__line--60"></div>
+          <div class="ej-skeleton__line ej-skeleton__line--40"></div>
+        </div>
+      </div>
+
+    {% elseif variant == 'table' %}
+      <div class="ej-skeleton__table">
+        <div class="ej-skeleton__table-header">
+          {% for col in 1..4 %}
+            <div class="ej-skeleton__cell ej-skeleton__cell--header"></div>
+          {% endfor %}
+        </div>
+        {% for row in 1..5 %}
+          <div class="ej-skeleton__table-row">
+            {% for col in 1..4 %}
+              <div class="ej-skeleton__cell"></div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+
+    {% elseif variant == 'list' %}
+      <div class="ej-skeleton__list">
+        {% for item in 1..6 %}
+          <div class="ej-skeleton__list-item">
+            <div class="ej-skeleton__circle ej-skeleton__circle--sm"></div>
+            <div class="ej-skeleton__lines">
+              <div class="ej-skeleton__line ej-skeleton__line--70"></div>
+              <div class="ej-skeleton__line ej-skeleton__line--50"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

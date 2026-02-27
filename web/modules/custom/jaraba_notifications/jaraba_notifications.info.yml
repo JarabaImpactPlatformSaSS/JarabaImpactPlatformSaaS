@@ -1,0 +1,14 @@
+name: 'Jaraba Notifications'
+type: module
+description: 'Centro de notificaciones multi-tenant con panel desplegable, filtros por tipo, mark-as-read y acciones inline.'
+package: Jaraba SaaS
+core_version_requirement: ^10 || ^11
+
+dependencies:
+  - drupal:user
+  - drupal:field
+  - drupal:options
+  - drupal:views
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+
+configure: entity.notification.collection

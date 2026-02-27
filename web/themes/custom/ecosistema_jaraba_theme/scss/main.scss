@@ -164,3 +164,18 @@
 
 // Reviews & Comments — REV-PHASE5
 @use 'components/reviews';
+
+// Skeleton Screens — Shimmer loading placeholders (FASE 1 Elevacion Clase Mundial)
+@use 'components/skeleton';
+
+// Empty States — Informative placeholders with CTA (FASE 2 Elevacion Clase Mundial)
+@use 'components/empty-state';
+
+// Toast Notifications — Error recovery with retry (FASE 4 Elevacion Clase Mundial)
+@use 'components/toasts';
+
+// Notification Panel — Centro de notificaciones desplegable (FASE 6 Elevacion Clase Mundial)
+@use 'components/notification-panel';
+
+// Quick-Start Overlay — First-visit welcome modal (FASE 8 Elevacion Clase Mundial)
+@use 'components/quick-start';

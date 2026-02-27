@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * @file
+ * Jaraba Notifications — Centro de notificaciones multi-tenant.
+ *
+ * Proporciona entidad Notification, servicio CRUD, y endpoints REST
+ * para el panel de notificaciones del frontend.
+ */
+
+declare(strict_types=1);

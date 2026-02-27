@@ -1,0 +1,51 @@
+{#
+/**
+ * @file
+ * Parcial: KB Deflection results — Shows relevant knowledge base articles
+ * before creating a ticket to reduce support volume.
+ *
+ * Variables:
+ * - deflection_results: Array of KB articles with keys:
+ *   id, title, excerpt, url, relevance_score
+ */
+#}
+
+{% if deflection_results is not empty %}
+  <div class="support-deflection">
+    <div class="support-deflection__header">
+      {{ jaraba_icon('ui', 'lightbulb', { variant: 'duotone', size: '20px' }) }}
+      <h3 class="support-deflection__title">
+        {% trans %}We found some articles that might help{% endtrans %}
+      </h3>
+    </div>
+
+    <ul class="support-deflection__list">
+      {% for article in deflection_results %}
+        <li class="support-deflection__item">
+          <a href="{{ article.url }}"
+             class="support-deflection__link"
+             target="_blank"
+             rel="noopener"
+             data-deflection-article-id="{{ article.id }}">
+            <span class="support-deflection__article-title">
+              {{ jaraba_icon('ui', 'file-text', { size: '14px' }) }}
+              {{ article.title }}
+            </span>
+            {% if article.excerpt %}
+              <p class="support-deflection__excerpt">{{ article.excerpt }}</p>
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <p class="support-deflection__cta">
+      {% trans %}Did any of these solve your issue?{% endtrans %}
+      <button type="button"
+              class="btn btn--sm btn--ghost"
+              data-support-action="deflection-solved">
+        {% trans %}Yes, problem solved{% endtrans %}
+      </button>
+    </p>
+  </div>
+{% endif %}

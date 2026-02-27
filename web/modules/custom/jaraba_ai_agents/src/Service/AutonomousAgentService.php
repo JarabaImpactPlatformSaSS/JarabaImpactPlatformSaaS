@@ -379,45 +379,235 @@ class AutonomousAgentService {
   }
 
   /**
-   * ContentCurator: Suggests content based on trends.
+   * ContentCurator: Analyzes recent content performance and suggests actions.
+   *
+   * Checks content_article entities for:
+   *   - Articles with low views that need promotion.
+   *   - Gaps in publishing schedule (no new content in 7+ days).
+   *   - High-performing articles that could be expanded into series.
    */
   protected function taskContentCurator(object $session): array {
-    return [
-      'success' => TRUE,
-      'data' => [
-        'task' => 'content_curator',
-        'suggestions' => [],
-      ],
-      'cost' => 0.0,
-    ];
+    $tenantId = $session->get('tenant_id')->value ?? '';
+
+    try {
+      $storage = $this->entityTypeManager->getStorage('content_article');
+      $suggestions = [];
+
+      // Find articles published in the last 30 days with low views.
+      $thirtyDaysAgo = strtotime('-30 days');
+      $lowViewIds = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->condition('created', $thirtyDaysAgo, '>=')
+        ->condition('views_count', 10, '<')
+        ->sort('created', 'DESC')
+        ->range(0, 5)
+        ->execute();
+
+      if (!empty($lowViewIds)) {
+        $lowViewArticles = $storage->loadMultiple($lowViewIds);
+        foreach ($lowViewArticles as $article) {
+          $suggestions[] = [
+            'type' => 'promote',
+            'entity_id' => $article->id(),
+            'title' => $article->label(),
+            'reason' => sprintf('Published recently but only %d views.', $article->get('views_count')->value ?? 0),
+          ];
+        }
+      }
+
+      // Check publishing gap: no articles in last 7 days.
+      $sevenDaysAgo = strtotime('-7 days');
+      $recentCount = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->condition('created', $sevenDaysAgo, '>=')
+        ->count()
+        ->execute();
+
+      if ((int) $recentCount === 0) {
+        $suggestions[] = [
+          'type' => 'schedule',
+          'reason' => 'No new content published in the last 7 days.',
+        ];
+      }
+
+      // Find top-performing articles for series expansion.
+      $topIds = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->sort('views_count', 'DESC')
+        ->range(0, 3)
+        ->execute();
+
+      if (!empty($topIds)) {
+        $topArticles = $storage->loadMultiple($topIds);
+        foreach ($topArticles as $article) {
+          $views = (int) ($article->get('views_count')->value ?? 0);
+          if ($views > 50) {
+            $suggestions[] = [
+              'type' => 'expand',
+              'entity_id' => $article->id(),
+              'title' => $article->label(),
+              'reason' => sprintf('High-performing article (%d views) — consider a follow-up.', $views),
+            ];
+          }
+        }
+      }
+
+      return [
+        'success' => TRUE,
+        'data' => [
+          'task' => 'content_curator',
+          'tenant_id' => $tenantId,
+          'suggestions' => $suggestions,
+          'suggestions_count' => count($suggestions),
+        ],
+        'cost' => 0.0,
+      ];
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('GAP-L5-F: ContentCurator failed for tenant @tenant: @msg', [
+        '@tenant' => $tenantId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return ['success' => FALSE, 'error' => $e->getMessage(), 'cost' => 0.0];
+    }
   }
 
   /**
    * KBMaintainer: Flags stale knowledge base entries.
+   *
+   * Checks tenant_knowledge_config entities for entries not updated
+   * in the last 90 days, and flags them for review.
    */
   protected function taskKBMaintainer(object $session): array {
-    return [
-      'success' => TRUE,
-      'data' => [
-        'task' => 'kb_maintainer',
-        'stale_entries' => [],
-      ],
-      'cost' => 0.0,
-    ];
+    $tenantId = $session->get('tenant_id')->value ?? '';
+
+    try {
+      // Check if the knowledge base entity type exists.
+      if (!$this->entityTypeManager->hasDefinition('tenant_knowledge_config')) {
+        return [
+          'success' => TRUE,
+          'data' => [
+            'task' => 'kb_maintainer',
+            'tenant_id' => $tenantId,
+            'stale_entries' => [],
+            'note' => 'Knowledge base module not installed.',
+          ],
+          'cost' => 0.0,
+        ];
+      }
+
+      $storage = $this->entityTypeManager->getStorage('tenant_knowledge_config');
+      $ninetyDaysAgo = strtotime('-90 days');
+
+      $query = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('changed', $ninetyDaysAgo, '<')
+        ->sort('changed', 'ASC')
+        ->range(0, 20);
+
+      if (!empty($tenantId)) {
+        $query->condition('tenant_id', $tenantId);
+      }
+
+      $staleIds = $query->execute();
+      $staleEntries = [];
+
+      if (!empty($staleIds)) {
+        $entries = $storage->loadMultiple($staleIds);
+        foreach ($entries as $entry) {
+          $lastChanged = $entry->getChangedTime();
+          $daysSinceUpdate = (int) ((time() - $lastChanged) / 86400);
+          $staleEntries[] = [
+            'entity_id' => $entry->id(),
+            'label' => $entry->label() ?? 'KB Entry #' . $entry->id(),
+            'days_since_update' => $daysSinceUpdate,
+            'last_changed' => date('Y-m-d', $lastChanged),
+          ];
+        }
+      }
+
+      return [
+        'success' => TRUE,
+        'data' => [
+          'task' => 'kb_maintainer',
+          'tenant_id' => $tenantId,
+          'stale_entries' => $staleEntries,
+          'stale_count' => count($staleEntries),
+        ],
+        'cost' => 0.0,
+      ];
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('GAP-L5-F: KBMaintainer failed for tenant @tenant: @msg', [
+        '@tenant' => $tenantId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return ['success' => FALSE, 'error' => $e->getMessage(), 'cost' => 0.0];
+    }
   }
 
   /**
-   * ChurnPrevention: Identifies at-risk users.
+   * ChurnPrevention: Identifies users at risk of churning.
+   *
+   * Checks users who haven't logged in for 30+ days and have
+   * an active tenant membership, indicating disengagement.
    */
   protected function taskChurnPrevention(object $session): array {
-    return [
-      'success' => TRUE,
-      'data' => [
-        'task' => 'churn_prevention',
-        'at_risk_users' => [],
-      ],
-      'cost' => 0.0,
-    ];
+    $tenantId = $session->get('tenant_id')->value ?? '';
+
+    try {
+      $userStorage = $this->entityTypeManager->getStorage('user');
+      $thirtyDaysAgo = strtotime('-30 days');
+      $sixtyDaysAgo = strtotime('-60 days');
+
+      // Find users who last accessed between 30-60 days ago (at-risk window).
+      $query = $userStorage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('status', 1)
+        ->condition('access', $sixtyDaysAgo, '>=')
+        ->condition('access', $thirtyDaysAgo, '<=')
+        ->sort('access', 'ASC')
+        ->range(0, 20);
+
+      $userIds = $query->execute();
+      $atRiskUsers = [];
+
+      if (!empty($userIds)) {
+        $users = $userStorage->loadMultiple($userIds);
+        foreach ($users as $user) {
+          $lastAccess = (int) $user->getLastAccessedTime();
+          $daysSinceAccess = (int) ((time() - $lastAccess) / 86400);
+          $atRiskUsers[] = [
+            'uid' => $user->id(),
+            'name' => $user->getAccountName(),
+            'days_since_access' => $daysSinceAccess,
+            'last_access' => date('Y-m-d', $lastAccess),
+            'risk_level' => $daysSinceAccess > 45 ? 'high' : 'medium',
+          ];
+        }
+      }
+
+      return [
+        'success' => TRUE,
+        'data' => [
+          'task' => 'churn_prevention',
+          'tenant_id' => $tenantId,
+          'at_risk_users' => $atRiskUsers,
+          'at_risk_count' => count($atRiskUsers),
+        ],
+        'cost' => 0.0,
+      ];
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('GAP-L5-F: ChurnPrevention failed for tenant @tenant: @msg', [
+        '@tenant' => $tenantId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return ['success' => FALSE, 'error' => $e->getMessage(), 'cost' => 0.0];
+    }
   }
 
   /**

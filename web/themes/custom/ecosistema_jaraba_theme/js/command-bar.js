@@ -3,7 +3,8 @@
  * Command Bar (Cmd+K) — Global command palette for all pages.
  *
  * GAP-AUD-008: Implements keyboard-driven command palette with
- * debounced search, keyboard navigation, and XSS prevention.
+ * debounced search, keyboard navigation, XSS prevention, and
+ * recent items history via localStorage.
  *
  * DIRECTRICES:
  * - Drupal.checkPlain() for XSS prevention (INNERHTML-XSS-001)
@@ -26,6 +27,44 @@
         });
     }
     return csrfTokenPromise;
+  }
+
+  // === Recent items — localStorage persistence ===
+  var RECENTS_KEY = 'jaraba_command_bar_recents';
+  var MAX_RECENTS = 5;
+
+  function getRecents() {
+    try {
+      var stored = localStorage.getItem(RECENTS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    }
+    catch (e) {
+      return [];
+    }
+  }
+
+  function addToRecents(item) {
+    if (!item || !item.url || !item.label) {
+      return;
+    }
+    var recents = getRecents();
+    // Remove duplicate by URL.
+    recents = recents.filter(function (r) { return r.url !== item.url; });
+    // Add to front.
+    recents.unshift({
+      label: item.label,
+      url: item.url,
+      icon: item.icon || 'history',
+      category: item.category || ''
+    });
+    // Trim to max.
+    recents = recents.slice(0, MAX_RECENTS);
+    try {
+      localStorage.setItem(RECENTS_KEY, JSON.stringify(recents));
+    }
+    catch (e) {
+      // localStorage full or unavailable — fail silently.
+    }
   }
 
   Drupal.behaviors.commandBar = {
@@ -54,10 +93,11 @@
         overlay.classList.add('command-bar--open');
         modal.classList.add('command-bar__modal--open');
         input.value = '';
-        resultsList.innerHTML = '';
         selectedIndex = -1;
         results = [];
         isOpen = true;
+        // Show recent items when opening with empty query.
+        showRecents();
         // Focus after animation.
         setTimeout(function () { input.focus(); }, 50);
       }
@@ -67,6 +107,39 @@
         modal.classList.remove('command-bar__modal--open');
         isOpen = false;
         input.blur();
+      }
+
+      // Show recent items as initial content.
+      function showRecents() {
+        var recents = getRecents();
+        if (recents.length === 0) {
+          resultsList.innerHTML = '<li class="command-bar__hint">' +
+            Drupal.checkPlain(Drupal.t('Type to search pages, articles, and users...')) +
+            '</li>';
+          return;
+        }
+
+        results = recents;
+        selectedIndex = 0;
+
+        var html = '<li class="command-bar__section-header">' +
+          Drupal.checkPlain(Drupal.t('Recent')) +
+          '</li>';
+        for (var i = 0; i < recents.length; i++) {
+          var r = recents[i];
+          var activeClass = i === selectedIndex ? ' command-bar__result--active' : '';
+          html += '<li class="command-bar__result' + activeClass + '" data-index="' + i + '">';
+          html += '<span class="command-bar__result-icon material-icons">' + Drupal.checkPlain(r.icon || 'history') + '</span>';
+          html += '<span class="command-bar__result-content">';
+          html += '<span class="command-bar__result-label">' + Drupal.checkPlain(r.label) + '</span>';
+          if (r.category) {
+            html += '<span class="command-bar__result-category">' + Drupal.checkPlain(r.category) + '</span>';
+          }
+          html += '</span>';
+          html += '</li>';
+        }
+        resultsList.innerHTML = html;
+        attachResultHandlers();
       }
 
       // Keyboard shortcut: Cmd+K / Ctrl+K.
@@ -101,9 +174,13 @@
         }
 
         if (query.length < 2) {
-          resultsList.innerHTML = '';
-          results = [];
-          selectedIndex = -1;
+          if (query.length === 0) {
+            showRecents();
+          } else {
+            resultsList.innerHTML = '';
+            results = [];
+            selectedIndex = -1;
+          }
           return;
         }
 
@@ -129,7 +206,7 @@
         } else if (e.key === 'Enter') {
           e.preventDefault();
           if (selectedIndex >= 0 && results[selectedIndex]) {
-            navigateTo(results[selectedIndex].url);
+            navigateTo(results[selectedIndex]);
           }
         }
       });
@@ -170,8 +247,18 @@
         }
 
         var html = '';
+        var currentCategory = '';
         for (var i = 0; i < results.length; i++) {
           var r = results[i];
+
+          // Group header by category.
+          if (r.category && r.category !== currentCategory) {
+            currentCategory = r.category;
+            html += '<li class="command-bar__section-header">' +
+              Drupal.checkPlain(currentCategory) +
+              '</li>';
+          }
+
           var activeClass = i === selectedIndex ? ' command-bar__result--active' : '';
           html += '<li class="command-bar__result' + activeClass + '" data-index="' + i + '">';
           html += '<span class="command-bar__result-icon material-icons">' + Drupal.checkPlain(r.icon || 'link') + '</span>';
@@ -182,14 +269,16 @@
           html += '</li>';
         }
         resultsList.innerHTML = html;
+        attachResultHandlers();
+      }
 
-        // Click handlers on results.
+      function attachResultHandlers() {
         var items = resultsList.querySelectorAll('.command-bar__result');
         items.forEach(function (item) {
           item.addEventListener('click', function () {
             var idx = parseInt(item.getAttribute('data-index'), 10);
             if (results[idx]) {
-              navigateTo(results[idx].url);
+              navigateTo(results[idx]);
             }
           });
           item.addEventListener('mouseenter', function () {
@@ -212,7 +301,10 @@
         });
       }
 
-      function navigateTo(url) {
+      function navigateTo(result) {
+        var url = result.url;
+        // Save to recents before navigating.
+        addToRecents(result);
         close();
         if (url && url.charAt(0) === '#') {
           // Special action: trigger JS event.

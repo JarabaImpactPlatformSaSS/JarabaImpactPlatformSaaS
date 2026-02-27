@@ -1,0 +1,39 @@
+# Task tabs for Support Ticket
+entity.support_ticket.canonical:
+  title: 'View'
+  route_name: entity.support_ticket.canonical
+  base_route: entity.support_ticket.canonical
+
+entity.support_ticket.edit_form:
+  title: 'Edit'
+  route_name: entity.support_ticket.edit_form
+  base_route: entity.support_ticket.canonical
+
+entity.support_ticket.delete_form:
+  title: 'Delete'
+  route_name: entity.support_ticket.delete_form
+  base_route: entity.support_ticket.canonical
+  weight: 10
+
+# Settings tab — FIELD-UI-SETTINGS-TAB-001
+jaraba_support.ticket_settings:
+  title: 'Settings'
+  route_name: entity.support_ticket.settings
+  base_route: entity.support_ticket.settings
+
+# SLA Policies admin tabs
+jaraba_support.sla_policies_tab:
+  title: 'SLA Policies'
+  route_name: jaraba_support.admin.sla_policies
+  base_route: jaraba_support.settings
+
+jaraba_support.business_hours_tab:
+  title: 'Business Hours'
+  route_name: jaraba_support.admin.business_hours
+  base_route: jaraba_support.settings
+
+jaraba_support.general_settings_tab:
+  title: 'General'
+  route_name: jaraba_support.settings
+  base_route: jaraba_support.settings
+  weight: -10

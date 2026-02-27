@@ -306,59 +306,296 @@ final class AutoDiagnosticService {
   }
 
   /**
-   * Auto-downgrade: forces balanced or fast tier temporarily.
+   * State key prefix for tier override flags.
+   */
+  protected const STATE_TIER_OVERRIDE = 'jaraba_ai_agents.tier_override.';
+
+  /**
+   * State key prefix for provider rotation flags.
+   */
+  protected const STATE_PROVIDER_ROTATED = 'jaraba_ai_agents.provider_rotated.';
+
+  /**
+   * State key prefix for throttle flags.
+   */
+  protected const STATE_THROTTLE = 'jaraba_ai_agents.throttle.';
+
+  /**
+   * Duration (seconds) for temporary tier overrides.
+   */
+  protected const TIER_OVERRIDE_TTL = 3600;
+
+  /**
+   * Duration (seconds) for provider rotation.
+   */
+  protected const PROVIDER_ROTATION_TTL = 1800;
+
+  /**
+   * Duration (seconds) for throttle flag.
+   */
+  protected const THROTTLE_TTL = 7200;
+
+  /**
+   * Auto-downgrade: forces fast tier temporarily via State API.
+   *
+   * Sets a state flag that ModelRouter reads at call time via
+   * $options['force_tier']. Agents call getTierOverride() before routing.
+   * Override auto-expires after TIER_OVERRIDE_TTL seconds.
    */
   protected function executeAutoDowngrade(string $tenantId): string {
-    $this->logger->notice('GAP-L5-G: Auto-downgrading tier for tenant @tenant due to high latency.', [
-      '@tenant' => $tenantId,
+    $state = \Drupal::state();
+    $key = self::STATE_TIER_OVERRIDE . $tenantId;
+
+    $state->set($key, [
+      'tier' => 'fast',
+      'reason' => 'auto_downgrade_high_latency',
+      'expires' => time() + self::TIER_OVERRIDE_TTL,
+      'previous_tier' => 'balanced',
     ]);
-    // ModelRouter respects force_tier at call site. The remediation triggers
-    // a state flag that agents read on next execution.
+
+    $this->logger->notice('GAP-L5-G: Auto-downgrading to fast tier for tenant @tenant (TTL: @ttl s).', [
+      '@tenant' => $tenantId,
+      '@ttl' => self::TIER_OVERRIDE_TTL,
+    ]);
+
     return 'success';
   }
 
   /**
-   * Auto-refresh: rolls back to last-known-good prompt.
+   * Auto-refresh: rolls back auto-generated prompts to last-known-good.
+   *
+   * Finds PromptTemplate entities with auto_generated=TRUE for the tenant,
+   * and resets their template_text to the last verified version.
    */
   protected function executeAutoRefreshPrompt(string $tenantId): string {
-    $this->logger->notice('GAP-L5-G: Auto-refreshing prompts for tenant @tenant due to low quality.', [
-      '@tenant' => $tenantId,
-    ]);
-    return 'success';
+    try {
+      $storage = $this->entityTypeManager->getStorage('prompt_template');
+      $query = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('auto_generated', TRUE)
+        ->condition('tenant_id', $tenantId);
+
+      $ids = $query->execute();
+      if (empty($ids)) {
+        $this->logger->notice('GAP-L5-G: No auto-generated prompts to refresh for tenant @tenant.', [
+          '@tenant' => $tenantId,
+        ]);
+        return 'success';
+      }
+
+      $templates = $storage->loadMultiple($ids);
+      $refreshed = 0;
+
+      foreach ($templates as $template) {
+        // Roll back to original_text if available, otherwise mark for review.
+        $originalText = $template->get('original_text')->value ?? NULL;
+        if ($originalText) {
+          $template->set('template_text', $originalText);
+          $template->set('auto_generated', FALSE);
+          $template->set('constitutional_status', 'needs_review');
+          $template->save();
+          $refreshed++;
+        }
+      }
+
+      $this->logger->notice('GAP-L5-G: Refreshed @count prompts for tenant @tenant.', [
+        '@count' => $refreshed,
+        '@tenant' => $tenantId,
+      ]);
+
+      return $refreshed > 0 ? 'success' : 'partial';
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('GAP-L5-G: Prompt refresh failed for tenant @tenant: @msg', [
+        '@tenant' => $tenantId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return 'failed';
+    }
   }
 
   /**
-   * Auto-rotate: triggers provider fallback chain.
+   * Auto-rotate: marks the primary provider as temporarily unavailable.
+   *
+   * Sets a state flag so that ProviderFallbackService skips the primary
+   * provider and uses the next one in the fallback chain.
    */
   protected function executeAutoRotate(string $tenantId): string {
-    $this->logger->notice('GAP-L5-G: Auto-rotating provider for tenant @tenant due to high error rate.', [
-      '@tenant' => $tenantId,
+    $state = \Drupal::state();
+    $key = self::STATE_PROVIDER_ROTATED . $tenantId;
+
+    $state->set($key, [
+      'rotated' => TRUE,
+      'reason' => 'auto_rotate_high_error_rate',
+      'expires' => time() + self::PROVIDER_ROTATION_TTL,
     ]);
+
+    $this->logger->notice('GAP-L5-G: Auto-rotating provider for tenant @tenant (TTL: @ttl s).', [
+      '@tenant' => $tenantId,
+      '@ttl' => self::PROVIDER_ROTATION_TTL,
+    ]);
+
     return 'success';
   }
 
   /**
-   * Auto-warm: queues frequent queries to warm cache.
+   * Auto-warm: pre-populates semantic cache with frequent queries.
+   *
+   * Reads the most frequent recent queries from observability data
+   * and ensures they are present in the semantic cache.
    */
   protected function executeAutoWarmCache(string $tenantId): string {
     if ($this->semanticCache === NULL) {
+      $this->logger->info('GAP-L5-G: SemanticCacheService not available; cache warm skipped for @tenant.', [
+        '@tenant' => $tenantId,
+      ]);
       return 'partial';
     }
 
-    $this->logger->notice('GAP-L5-G: Auto-warming cache for tenant @tenant due to low hit rate.', [
-      '@tenant' => $tenantId,
-    ]);
-    return 'success';
+    if ($this->observability === NULL || !method_exists($this->observability, 'getFrequentQueries')) {
+      $this->logger->info('GAP-L5-G: Observability lacks getFrequentQueries(); cache warm skipped for @tenant.', [
+        '@tenant' => $tenantId,
+      ]);
+      return 'partial';
+    }
+
+    try {
+      $frequentQueries = $this->observability->getFrequentQueries($tenantId, 20);
+      $warmed = 0;
+
+      foreach ($frequentQueries as $queryData) {
+        $query = $queryData['query'] ?? '';
+        $mode = $queryData['mode'] ?? 'chat';
+        if (empty($query)) {
+          continue;
+        }
+
+        // Check if already cached.
+        $cached = $this->semanticCache->get($query, $mode, $tenantId);
+        if ($cached === NULL && !empty($queryData['last_response'])) {
+          $this->semanticCache->set($query, $queryData['last_response'], $mode, $tenantId);
+          $warmed++;
+        }
+      }
+
+      $this->logger->notice('GAP-L5-G: Warmed @count cache entries for tenant @tenant.', [
+        '@count' => $warmed,
+        '@tenant' => $tenantId,
+      ]);
+
+      return $warmed > 0 ? 'success' : 'partial';
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('GAP-L5-G: Cache warm failed for tenant @tenant: @msg', [
+        '@tenant' => $tenantId,
+        '@msg' => $e->getMessage(),
+      ]);
+      return 'failed';
+    }
   }
 
   /**
    * Auto-throttle: enables rate limiting for the tenant.
+   *
+   * Sets a state flag with a reduced requests-per-minute cap.
+   * Services check this flag before processing new requests.
    */
   protected function executeAutoThrottle(string $tenantId): string {
-    $this->logger->notice('GAP-L5-G: Auto-throttling tenant @tenant due to cost spike.', [
-      '@tenant' => $tenantId,
+    $state = \Drupal::state();
+    $key = self::STATE_THROTTLE . $tenantId;
+
+    $state->set($key, [
+      'throttled' => TRUE,
+      'max_requests_per_minute' => 10,
+      'reason' => 'auto_throttle_cost_spike',
+      'expires' => time() + self::THROTTLE_TTL,
     ]);
+
+    $this->logger->notice('GAP-L5-G: Auto-throttling tenant @tenant to 10 req/min (TTL: @ttl s).', [
+      '@tenant' => $tenantId,
+      '@ttl' => self::THROTTLE_TTL,
+    ]);
+
     return 'success';
+  }
+
+  /**
+   * Gets the active tier override for a tenant, if any.
+   *
+   * Agents should call this before ModelRouter::route() and pass the result
+   * as $options['force_tier'] if not NULL.
+   *
+   * @param string $tenantId
+   *   The tenant ID.
+   *
+   * @return string|null
+   *   The forced tier name ('fast', 'balanced') or NULL if no override.
+   */
+  public function getTierOverride(string $tenantId): ?string {
+    $state = \Drupal::state();
+    $data = $state->get(self::STATE_TIER_OVERRIDE . $tenantId);
+
+    if (!is_array($data)) {
+      return NULL;
+    }
+
+    // Auto-expire.
+    if (isset($data['expires']) && time() > $data['expires']) {
+      $state->delete(self::STATE_TIER_OVERRIDE . $tenantId);
+      return NULL;
+    }
+
+    return $data['tier'] ?? NULL;
+  }
+
+  /**
+   * Checks whether the provider is rotated for a tenant.
+   *
+   * @param string $tenantId
+   *   The tenant ID.
+   *
+   * @return bool
+   *   TRUE if the primary provider should be skipped.
+   */
+  public function isProviderRotated(string $tenantId): bool {
+    $state = \Drupal::state();
+    $data = $state->get(self::STATE_PROVIDER_ROTATED . $tenantId);
+
+    if (!is_array($data)) {
+      return FALSE;
+    }
+
+    if (isset($data['expires']) && time() > $data['expires']) {
+      $state->delete(self::STATE_PROVIDER_ROTATED . $tenantId);
+      return FALSE;
+    }
+
+    return !empty($data['rotated']);
+  }
+
+  /**
+   * Gets the throttle configuration for a tenant.
+   *
+   * @param string $tenantId
+   *   The tenant ID.
+   *
+   * @return array|null
+   *   Throttle config ['max_requests_per_minute' => int] or NULL.
+   */
+  public function getThrottleConfig(string $tenantId): ?array {
+    $state = \Drupal::state();
+    $data = $state->get(self::STATE_THROTTLE . $tenantId);
+
+    if (!is_array($data)) {
+      return NULL;
+    }
+
+    if (isset($data['expires']) && time() > $data['expires']) {
+      $state->delete(self::STATE_THROTTLE . $tenantId);
+      return NULL;
+    }
+
+    return $data;
   }
 
   /**

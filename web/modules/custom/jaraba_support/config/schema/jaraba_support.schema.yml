@@ -1,0 +1,142 @@
+jaraba_support.day_schedule:
+  type: mapping
+  label: 'Day schedule'
+  mapping:
+    open:
+      type: string
+      label: 'Opening time'
+    close:
+      type: string
+      label: 'Closing time'
+    closed:
+      type: boolean
+      label: 'Closed all day'
+
+jaraba_support.settings:
+  type: config_object
+  label: 'Jaraba Support settings'
+  mapping:
+    default_vertical:
+      type: string
+      label: 'Default vertical'
+    ai_auto_classify:
+      type: boolean
+      label: 'AI auto-classification enabled'
+    ai_auto_resolve:
+      type: boolean
+      label: 'AI auto-resolution enabled'
+    deflection_enabled:
+      type: boolean
+      label: 'KB deflection enabled'
+    max_files_per_ticket:
+      type: integer
+      label: 'Max files per ticket'
+    virus_scanning_enabled:
+      type: boolean
+      label: 'Virus scanning enabled'
+    clamav_socket:
+      type: string
+      label: 'ClamAV socket path'
+    email_notifications:
+      type: boolean
+      label: 'Email notifications enabled'
+    csat_delay_hours:
+      type: integer
+      label: 'CSAT survey delay hours'
+
+jaraba_support.sla_policy.*:
+  type: config_entity
+  label: 'SLA Policy'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    plan_tier:
+      type: string
+      label: 'Plan tier'
+    priority:
+      type: string
+      label: 'Priority'
+    first_response_hours:
+      type: integer
+      label: 'First response hours'
+    resolution_hours:
+      type: integer
+      label: 'Resolution hours'
+    business_hours_only:
+      type: boolean
+      label: 'Business hours only'
+    business_hours_schedule_id:
+      type: string
+      label: 'Business hours schedule ID'
+    escalation_after_hours:
+      type: integer
+      label: 'Escalation after hours'
+    includes_phone:
+      type: boolean
+      label: 'Includes phone support'
+    includes_priority_queue:
+      type: boolean
+      label: 'Includes priority queue'
+    idle_reminder_hours:
+      type: integer
+      label: 'Idle reminder hours'
+    auto_close_hours:
+      type: integer
+      label: 'Auto-close hours'
+    pause_on_pending:
+      type: boolean
+      label: 'Pause SLA on pending'
+    active:
+      type: boolean
+      label: 'Active'
+
+jaraba_support.business_hours.*:
+  type: config_entity
+  label: 'Business Hours Schedule'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    timezone:
+      type: string
+      label: 'Timezone'
+    schedule:
+      type: mapping
+      label: 'Weekly schedule'
+      mapping:
+        monday:
+          type: jaraba_support.day_schedule
+        tuesday:
+          type: jaraba_support.day_schedule
+        wednesday:
+          type: jaraba_support.day_schedule
+        thursday:
+          type: jaraba_support.day_schedule
+        friday:
+          type: jaraba_support.day_schedule
+        saturday:
+          type: jaraba_support.day_schedule
+        sunday:
+          type: jaraba_support.day_schedule
+    holidays:
+      type: sequence
+      label: 'Holidays'
+      sequence:
+        type: mapping
+        mapping:
+          date:
+            type: string
+            label: 'Date'
+          label:
+            type: string
+            label: 'Holiday name'
+    active:
+      type: boolean
+      label: 'Active'

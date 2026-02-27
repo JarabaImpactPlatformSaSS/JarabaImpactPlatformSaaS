@@ -1,0 +1,161 @@
+{#
+/**
+ * @file
+ * Parcial: Right sidebar with ticket context info and SLA countdown.
+ *
+ * Shows ticket metadata, SLA status, assigned agent, requester info,
+ * tags, and attachment list.
+ *
+ * Variables:
+ * - ticket: Array with keys:
+ *   id, ticket_number, subject, status, priority, created, updated,
+ *   category, assigned_agent, requester, tags
+ * - sla_status: Array with keys:
+ *   response_due, resolution_due, response_breached, resolution_breached,
+ *   time_remaining, percentage_elapsed
+ * - attachments: Array of file attachments
+ * - is_agent: Boolean
+ */
+#}
+
+<div class="support-sidebar">
+
+  {# SLA Status #}
+  {% if sla_status %}
+    <div class="support-sidebar__section">
+      <h3 class="support-sidebar__section-title">
+        {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
+        {% trans %}SLA Status{% endtrans %}
+      </h3>
+      {% include '@jaraba_support/partials/_support-sla-indicator.html.twig' with {
+        sla_status: sla_status,
+        compact: false,
+      } only %}
+    </div>
+  {% endif %}
+
+  {# Ticket Details #}
+  <div class="support-sidebar__section">
+    <h3 class="support-sidebar__section-title">
+      {{ jaraba_icon('ui', 'file-text', { size: '14px' }) }}
+      {% trans %}Details{% endtrans %}
+    </h3>
+    <dl class="support-sidebar__details">
+      <div class="support-sidebar__detail-row">
+        <dt class="support-sidebar__detail-label">{% trans %}Status{% endtrans %}</dt>
+        <dd class="support-sidebar__detail-value">
+          {% include '@jaraba_support/partials/_support-status-badge.html.twig' with {
+            status: ticket.status,
+          } only %}
+        </dd>
+      </div>
+
+      <div class="support-sidebar__detail-row">
+        <dt class="support-sidebar__detail-label">{% trans %}Priority{% endtrans %}</dt>
+        <dd class="support-sidebar__detail-value">
+          {% include '@jaraba_support/partials/_support-priority-badge.html.twig' with {
+            priority: ticket.priority,
+          } only %}
+        </dd>
+      </div>
+
+      {% if ticket.category %}
+        <div class="support-sidebar__detail-row">
+          <dt class="support-sidebar__detail-label">{% trans %}Category{% endtrans %}</dt>
+          <dd class="support-sidebar__detail-value">{{ ticket.category }}</dd>
+        </div>
+      {% endif %}
+
+      <div class="support-sidebar__detail-row">
+        <dt class="support-sidebar__detail-label">{% trans %}Created{% endtrans %}</dt>
+        <dd class="support-sidebar__detail-value">{{ ticket.created }}</dd>
+      </div>
+
+      <div class="support-sidebar__detail-row">
+        <dt class="support-sidebar__detail-label">{% trans %}Updated{% endtrans %}</dt>
+        <dd class="support-sidebar__detail-value">{{ ticket.updated }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  {# Requester Info #}
+  {% if ticket.requester %}
+    <div class="support-sidebar__section">
+      <h3 class="support-sidebar__section-title">
+        {{ jaraba_icon('ui', 'user', { size: '14px' }) }}
+        {% trans %}Requester{% endtrans %}
+      </h3>
+      <div class="support-sidebar__requester">
+        <span class="support-sidebar__requester-name">{{ ticket.requester.name|default('--') }}</span>
+        {% if ticket.requester.email %}
+          <span class="support-sidebar__requester-email">{{ ticket.requester.email }}</span>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Assigned Agent #}
+  <div class="support-sidebar__section">
+    <h3 class="support-sidebar__section-title">
+      {{ jaraba_icon('ui', 'headphones', { size: '14px' }) }}
+      {% trans %}Assigned Agent{% endtrans %}
+    </h3>
+    {% if ticket.assigned_agent %}
+      <span class="support-sidebar__agent-name">{{ ticket.assigned_agent }}</span>
+    {% else %}
+      <span class="support-sidebar__unassigned">
+        {% trans %}Unassigned{% endtrans %}
+      </span>
+      {% if is_agent %}
+        <button type="button"
+                class="btn btn--xs btn--outline support-sidebar__assign-btn"
+                data-support-action="assign-self">
+          {% trans %}Assign to me{% endtrans %}
+        </button>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {# Tags #}
+  {% if ticket.tags is not empty %}
+    <div class="support-sidebar__section">
+      <h3 class="support-sidebar__section-title">
+        {{ jaraba_icon('ui', 'tag', { size: '14px' }) }}
+        {% trans %}Tags{% endtrans %}
+      </h3>
+      <div class="support-sidebar__tags">
+        {% for tag in ticket.tags %}
+          <span class="support-sidebar__tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Attachments #}
+  {% if attachments is not empty %}
+    <div class="support-sidebar__section">
+      <h3 class="support-sidebar__section-title">
+        {{ jaraba_icon('ui', 'paperclip', { size: '14px' }) }}
+        {% trans %}Attachments{% endtrans %}
+        <span class="support-sidebar__attachment-count">({{ attachments|length }})</span>
+      </h3>
+      <ul class="support-sidebar__attachment-list">
+        {% for file in attachments %}
+          <li class="support-sidebar__attachment-item">
+            <a href="{{ file.url }}"
+               class="support-sidebar__attachment-link"
+               target="_blank"
+               rel="noopener">
+              {{ jaraba_icon('ui', 'file', { size: '12px' }) }}
+              {{ file.filename }}
+              {% if file.size %}
+                <span class="support-sidebar__attachment-size">({{ file.size }})</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+</div>

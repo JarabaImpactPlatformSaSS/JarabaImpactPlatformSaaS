@@ -1,0 +1,169 @@
+{#
+/**
+ * @file
+ * Template: Ticket detail — Conversational timeline with sidebar.
+ *
+ * Variables (from SupportTicketController::detail):
+ * - ticket: Ticket data with keys:
+ *   id, ticket_number, subject, status, priority, created, updated,
+ *   description, category, assigned_agent, requester, tags
+ * - messages: Array of message data with keys:
+ *   id, author, author_role (customer|agent|ai|system), body,
+ *   created, is_internal_note, attachments
+ * - attachments: Array of file attachments
+ * - sla_status: Array with keys:
+ *   response_due, resolution_due, response_breached, resolution_breached,
+ *   time_remaining, percentage_elapsed
+ * - can_respond: Boolean
+ * - can_close: Boolean
+ * - is_agent: Boolean — whether current user is a support agent
+ * - theme_settings: Array of theme configuration
+ *
+ * Directrices:
+ * - Two-column: timeline left, sidebar right (single column mobile)
+ * - i18n: {% trans %} para todos los textos
+ * - Iconos: jaraba_icon()
+ * - CSS: BEM support-ticket-detail-*
+ */
+#}
+
+{% set ts = theme_settings|default({}) %}
+
+<div class="support-ticket-detail">
+
+  {# =========================================================
+     S1 — BREADCRUMB + HEADER
+     ========================================================= #}
+  <header class="support-ticket-detail__header">
+    <nav class="support-ticket-detail__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+      <a href="{{ path('jaraba_support.portal') }}" class="support-ticket-detail__breadcrumb-link">
+        {{ jaraba_icon('ui', 'arrow-left', { size: '14px' }) }}
+        {% trans %}Back to Support{% endtrans %}
+      </a>
+    </nav>
+
+    <div class="support-ticket-detail__title-row">
+      <div class="support-ticket-detail__title-group">
+        <span class="support-ticket-detail__ticket-number">#{{ ticket.ticket_number }}</span>
+        <h1 class="support-ticket-detail__subject">{{ ticket.subject }}</h1>
+      </div>
+      <div class="support-ticket-detail__badges">
+        {% include '@jaraba_support/partials/_support-status-badge.html.twig' with {
+          status: ticket.status,
+        } only %}
+        {% include '@jaraba_support/partials/_support-priority-badge.html.twig' with {
+          priority: ticket.priority,
+        } only %}
+      </div>
+    </div>
+
+    {# Agent actions #}
+    {% if is_agent %}
+      <div class="support-ticket-detail__agent-actions">
+        <button type="button" class="btn btn--sm btn--outline" data-support-action="assign">
+          {{ jaraba_icon('ui', 'user-plus', { size: '14px' }) }}
+          {% trans %}Assign{% endtrans %}
+        </button>
+        <button type="button" class="btn btn--sm btn--outline" data-support-action="merge">
+          {{ jaraba_icon('ui', 'git-merge', { size: '14px' }) }}
+          {% trans %}Merge{% endtrans %}
+        </button>
+        {% if can_close %}
+          <button type="button" class="btn btn--sm btn--success" data-support-action="close">
+            {{ jaraba_icon('ui', 'check', { size: '14px' }) }}
+            {% trans %}Close Ticket{% endtrans %}
+          </button>
+        {% endif %}
+      </div>
+    {% endif %}
+  </header>
+
+  {# =========================================================
+     S2 — TWO-COLUMN LAYOUT: Timeline + Sidebar
+     ========================================================= #}
+  <div class="support-ticket-detail__layout">
+
+    {# LEFT COLUMN — Timeline #}
+    <div class="support-ticket-detail__main">
+
+      {# Original description #}
+      {% if ticket.description %}
+        <div class="support-ticket-detail__description">
+          <div class="support-ticket-detail__description-label">
+            {{ jaraba_icon('ui', 'file-text', { size: '14px' }) }}
+            {% trans %}Original description{% endtrans %}
+          </div>
+          <div class="support-ticket-detail__description-body">
+            {{ ticket.description|raw }}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Conversation timeline #}
+      {% include '@jaraba_support/partials/_support-ticket-timeline.html.twig' with {
+        messages: messages,
+        is_agent: is_agent,
+      } only %}
+
+      {# Reply form #}
+      {% if can_respond %}
+        <div class="support-ticket-detail__reply">
+          <form class="support-ticket-detail__reply-form" data-support-reply-form>
+            <div class="support-ticket-detail__reply-editor">
+              <label for="support-reply-body" class="visually-hidden">
+                {% trans %}Your reply{% endtrans %}
+              </label>
+              <textarea id="support-reply-body"
+                        name="body"
+                        class="support-ticket-detail__reply-textarea"
+                        placeholder="{{ 'Type your reply...'|t }}"
+                        rows="4"
+                        required></textarea>
+            </div>
+
+            <div class="support-ticket-detail__reply-actions">
+              {% if is_agent %}
+                <label class="support-ticket-detail__internal-note-toggle">
+                  <input type="checkbox" name="is_internal_note" value="1">
+                  {{ jaraba_icon('ui', 'lock', { size: '14px' }) }}
+                  {% trans %}Internal note{% endtrans %}
+                </label>
+              {% endif %}
+
+              <div class="support-ticket-detail__reply-buttons">
+                <button type="button"
+                        class="btn btn--sm btn--ghost"
+                        data-support-action="attach-file">
+                  {{ jaraba_icon('ui', 'paperclip', { size: '14px' }) }}
+                  {% trans %}Attach{% endtrans %}
+                </button>
+                <button type="submit" class="btn btn--sm btn--primary">
+                  {{ jaraba_icon('ui', 'send', { size: '14px' }) }}
+                  {% trans %}Send Reply{% endtrans %}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      {% endif %}
+
+      {# CSAT survey (shown when ticket is resolved) #}
+      {% if ticket.status == 'resolved' and not is_agent %}
+        {% include '@jaraba_support/partials/_support-csat-survey.html.twig' with {
+          ticket_id: ticket.id,
+        } only %}
+      {% endif %}
+    </div>
+
+    {# RIGHT COLUMN — Sidebar context #}
+    <aside class="support-ticket-detail__sidebar">
+      {% include '@jaraba_support/partials/_support-sidebar-context.html.twig' with {
+        ticket: ticket,
+        sla_status: sla_status,
+        attachments: attachments,
+        is_agent: is_agent,
+      } only %}
+    </aside>
+
+  </div>
+</div>

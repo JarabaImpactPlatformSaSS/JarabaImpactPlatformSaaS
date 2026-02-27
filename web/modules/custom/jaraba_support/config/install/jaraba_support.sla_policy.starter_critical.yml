@@ -1,0 +1,15 @@
+id: starter_critical
+label: 'Starter - Critical'
+plan_tier: starter
+priority: critical
+first_response_hours: 4
+resolution_hours: 24
+business_hours_only: true
+schedule: spain_standard
+phone_support: false
+priority_queue: false
+escalation_after_hours: 0
+pause_on_pending: true
+idle_timeout_hours: 48
+auto_close_hours: 168
+active: true

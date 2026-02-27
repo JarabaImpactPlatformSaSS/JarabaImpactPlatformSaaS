@@ -1,0 +1,25 @@
+id: extended
+label: 'Extended Business Hours'
+timezone: Europe/Madrid
+schedule:
+  monday:
+    open: '08:00'
+    close: '20:00'
+  tuesday:
+    open: '08:00'
+    close: '20:00'
+  wednesday:
+    open: '08:00'
+    close: '20:00'
+  thursday:
+    open: '08:00'
+    close: '20:00'
+  friday:
+    open: '08:00'
+    close: '20:00'
+  saturday:
+    open: '09:00'
+    close: '14:00'
+  sunday:
+    closed: true
+holidays: []

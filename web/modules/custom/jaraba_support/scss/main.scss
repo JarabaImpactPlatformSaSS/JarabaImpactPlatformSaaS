@@ -1,0 +1,22 @@
+// ═══════════════════════════════════════════════════════════
+// JARABA SUPPORT — Main SCSS Entry Point
+// ═══════════════════════════════════════════════════════════
+//
+// Compiled via: npx sass scss/main.scss:css/jaraba-support.css --style=compressed
+// Dart Sass: @use instead of @import, color.adjust() instead of darken/lighten
+//
+// Federated Design Tokens: All values consume var(--ej-*)
+// from ecosistema_jaraba_core. No $ej-* definitions here.
+// ═══════════════════════════════════════════════════════════
+
+@use 'variables';
+@use 'status-badges';
+@use 'sla-indicators';
+@use 'portal';
+@use 'ticket-detail';
+@use 'timeline';
+@use 'sidebar-context';
+@use 'agent-dashboard';
+@use 'attachment-preview';
+@use 'create-form';
+@use 'csat-survey';

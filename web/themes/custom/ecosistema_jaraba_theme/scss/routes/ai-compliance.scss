@@ -1,0 +1,10 @@
+/**
+ * @file
+ * Route-specific CSS — AI Compliance Dashboard (GAP-L5-C).
+ *
+ * Covers: /admin/config/ai/compliance
+ * Compile: sass scss/routes/ai-compliance.scss css/routes/ai-compliance.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use 'ai-compliance';

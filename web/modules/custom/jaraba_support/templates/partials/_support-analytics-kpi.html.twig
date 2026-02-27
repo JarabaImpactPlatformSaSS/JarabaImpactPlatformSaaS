@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Parcial: KPI card — Reusable analytics metric card.
+ *
+ * Variables:
+ * - label: String — metric label (e.g. "Open Tickets")
+ * - value: String|Number — metric value
+ * - icon: String — icon name from jaraba_icon ui set
+ * - variant: String (info|success|warning|neutral) — color theme
+ * - trend: (optional) String — "+12%" or "-5%"
+ * - trend_direction: (optional) String (up|down|neutral)
+ */
+#}
+
+{% set variant = variant|default('neutral') %}
+
+<div class="support-kpi support-kpi--{{ variant }}">
+  <div class="support-kpi__icon-wrap">
+    {{ jaraba_icon('ui', icon|default('activity'), { variant: 'duotone', size: '20px' }) }}
+  </div>
+  <div class="support-kpi__content">
+    <span class="support-kpi__value">{{ value|default('--') }}</span>
+    <span class="support-kpi__label">{{ label|default('') }}</span>
+    {% if trend is defined and trend %}
+      <span class="support-kpi__trend support-kpi__trend--{{ trend_direction|default('neutral') }}">
+        {{ trend }}
+      </span>
+    {% endif %}
+  </div>
+</div>

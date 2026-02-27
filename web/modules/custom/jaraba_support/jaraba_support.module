@@ -1,0 +1,266 @@
+<?php
+
+/**
+ * @file
+ * Module file for Jaraba Support.
+ *
+ * World-class support ticket system with AI proactive classification,
+ * SLA engine, multi-channel communication, and tenant isolation.
+ *
+ * SPEC: 178_Platform_Tenant_Support_Tickets_v1_Claude
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function jaraba_support_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.jaraba_support') {
+    return '<p>' . t('Provides a world-class support ticket system with AI classification, SLA management, multi-channel support, and comprehensive analytics.') . '</p>';
+  }
+  return '';
+}
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_support_theme(): array {
+  return [
+    // Page-level templates.
+    'support_portal' => [
+      'variables' => [
+        'tickets' => [],
+        'stats' => [],
+        'can_create' => FALSE,
+        'theme_settings' => [],
+      ],
+      'template' => 'support-portal',
+    ],
+    'support_ticket_detail' => [
+      'variables' => [
+        'ticket' => NULL,
+        'messages' => [],
+        'attachments' => [],
+        'sla_status' => [],
+        'can_respond' => FALSE,
+        'can_close' => FALSE,
+        'is_agent' => FALSE,
+        'theme_settings' => [],
+      ],
+      'template' => 'support-ticket-detail',
+    ],
+    'support_agent_dashboard' => [
+      'variables' => [
+        'tickets' => [],
+        'stats' => [],
+        'saved_views' => [],
+        'agent_metrics' => [],
+        'theme_settings' => [],
+      ],
+      'template' => 'support-agent-dashboard',
+    ],
+    'support_ticket_create_modal' => [
+      'variables' => [
+        'deflection_results' => [],
+        'theme_settings' => [],
+      ],
+      'template' => 'support-ticket-create-modal',
+    ],
+    // Entity render.
+    'support_ticket' => [
+      'render element' => 'elements',
+    ],
+    'ticket_message' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds body classes for support routes. DIRECTRICES 2.2.2: body classes
+ * ALWAYS via hook_preprocess_html(), never attributes.addClass() in templates.
+ */
+function jaraba_support_preprocess_html(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (!str_starts_with($route_name, 'jaraba_support.')) {
+    return;
+  }
+
+  $variables['attributes']['class'][] = 'page-support';
+
+  $route_map = [
+    'jaraba_support.portal' => 'page-support-portal',
+    'jaraba_support.portal.create' => 'page-support-create',
+    'jaraba_support.ticket.detail' => 'page-support-ticket-detail',
+    'jaraba_support.agent.dashboard' => 'page-agent-dashboard',
+    'jaraba_support.agent.ticket' => 'page-agent-ticket',
+  ];
+
+  if (isset($route_map[$route_name])) {
+    $variables['attributes']['class'][] = $route_map[$route_name];
+  }
+
+  // Attach support styles on support pages.
+  $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/bundle-support';
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Passes theme_settings to support page templates for partials.
+ */
+function jaraba_support_preprocess_page(array &$variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (!str_starts_with($route_name, 'jaraba_support.')) {
+    return;
+  }
+
+  // Replicate theme_settings from theme for partials.
+  if (!isset($variables['theme_settings'])) {
+    $config = \Drupal::config('ecosistema_jaraba_theme.settings');
+    $variables['theme_settings'] = [
+      'site_name' => \Drupal::config('system.site')->get('name'),
+      'header_layout' => $config->get('header_layout') ?? 'standard',
+      'footer_layout' => $config->get('footer_layout') ?? 'standard',
+    ];
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Adds page--support suggestion for support routes.
+ */
+function jaraba_support_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  $route_name = \Drupal::routeMatch()->getRouteName() ?? '';
+
+  if (str_starts_with($route_name, 'jaraba_support.')) {
+    $suggestions[] = 'page__support';
+  }
+}
+
+/**
+ * Prepares variables for support_ticket templates.
+ *
+ * ENTITY-PREPROCESS-001: Every custom ContentEntity rendered in view mode
+ * MUST have template_preprocess_{entity_type}() in the .module file.
+ */
+function template_preprocess_support_ticket(array &$variables): void {
+  /** @var \Drupal\jaraba_support\Entity\SupportTicketInterface $ticket */
+  $ticket = $variables['elements']['#support_ticket'] ?? NULL;
+  if (!$ticket) {
+    return;
+  }
+
+  $variables['ticket'] = $ticket;
+  $variables['ticket_number'] = $ticket->getTicketNumber();
+  $variables['subject'] = $ticket->label();
+  $variables['status'] = $ticket->getStatus();
+  $variables['priority'] = $ticket->getPriority();
+  $variables['vertical'] = $ticket->get('vertical')->value ?? '';
+  $variables['channel'] = $ticket->get('channel')->value ?? '';
+  $variables['description'] = $ticket->get('description')->value ?? '';
+  $variables['sla_breached'] = $ticket->isSlaBreached();
+  $variables['is_resolved'] = $ticket->isResolved();
+
+  // Reporter.
+  $reporter = $ticket->getOwner();
+  $variables['reporter_name'] = $reporter ? $reporter->getDisplayName() : '';
+
+  // Assignee.
+  $variables['assignee_name'] = '';
+  if (!$ticket->get('assignee_uid')->isEmpty()) {
+    $assignee = $ticket->get('assignee_uid')->entity;
+    $variables['assignee_name'] = $assignee ? $assignee->getDisplayName() : '';
+  }
+
+  // Formatted dates.
+  $date_formatter = \Drupal::service('date.formatter');
+  $variables['created_formatted'] = $date_formatter->format(
+    $ticket->get('created')->value,
+    'medium'
+  );
+}
+
+/**
+ * Prepares variables for ticket_message templates.
+ */
+function template_preprocess_ticket_message(array &$variables): void {
+  /** @var \Drupal\jaraba_support\Entity\TicketMessageInterface $message */
+  $message = $variables['elements']['#ticket_message'] ?? NULL;
+  if (!$message) {
+    return;
+  }
+
+  $variables['message'] = $message;
+  $variables['body'] = $message->get('body')->value ?? '';
+  $variables['author_type'] = $message->getAuthorType();
+  $variables['is_internal_note'] = $message->isInternalNote();
+  $variables['is_ai_generated'] = $message->isAiGenerated();
+
+  // Author name.
+  $variables['author_name'] = '';
+  if (!$message->get('author_uid')->isEmpty()) {
+    $author = $message->get('author_uid')->entity;
+    $variables['author_name'] = $author ? $author->getDisplayName() : '';
+  }
+  if (empty($variables['author_name'])) {
+    $type_labels = [
+      'ai' => t('AI Assistant'),
+      'system' => t('System'),
+    ];
+    $variables['author_name'] = $type_labels[$variables['author_type']] ?? t('Unknown');
+  }
+
+  $date_formatter = \Drupal::service('date.formatter');
+  $variables['created_formatted'] = $date_formatter->format(
+    $message->get('created')->value,
+    'medium'
+  );
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Delegates to SupportCronService for SLA checks, auto-close, and reminders.
+ */
+function jaraba_support_cron(): void {
+  if (\Drupal::hasService('jaraba_support.cron')) {
+    try {
+      \Drupal::service('jaraba_support.cron')->run();
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_support')->error('Cron error: @msg', ['@msg' => $e->getMessage()]);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_presave() for support_ticket.
+ *
+ * PRESAVE-RESILIENCE-001: Optional services with hasService() + try-catch.
+ */
+function jaraba_support_support_ticket_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  // Auto-classify via AI if enabled and ticket is new.
+  if ($entity->isNew() && \Drupal::hasService('jaraba_support.ai_classification')) {
+    try {
+      $config = \Drupal::config('jaraba_support.settings');
+      if ($config->get('ai_auto_classify')) {
+        // Classification is deferred to post-save to avoid blocking.
+        // The actual classification happens in TicketService::createTicket().
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_support')->warning('AI classification skipped: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+  }
+}

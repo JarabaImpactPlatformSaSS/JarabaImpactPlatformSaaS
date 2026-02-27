@@ -1,0 +1,29 @@
+{#
+ # @file
+ # AI Health Indicator — Reusable partial for GAP-L5-G self-healing dashboards.
+ #
+ # Variables:
+ #   - health_score: int (0-100)
+ #   - health_label: string ('Healthy'|'Warning'|'Critical')
+ #   - escalated_count: int (optional, shows badge if > 0)
+ #
+ # Usage:
+ #   {% include '@ecosistema_jaraba_theme/partials/_ai-health-indicator.html.twig' with {
+ #     health_score: 85,
+ #     health_label: 'Healthy',
+ #     escalated_count: 0,
+ #   } only %}
+ #}
+{% set score = health_score|default(100) %}
+{% set label = health_label|default('Healthy'|t) %}
+{% set variant = score >= 80 ? 'healthy' : (score >= 50 ? 'warning' : 'critical') %}
+
+<div class="ai-health-indicator ai-health-indicator--{{ variant }}">
+  <span class="ai-health-indicator__score">{{ score }}</span>
+  <span class="ai-health-indicator__label">{{ label }}</span>
+  {% if escalated_count|default(0) > 0 %}
+    <span class="ai-health-indicator__badge" title="{{ 'Escalated sessions'|t }}">
+      {{ escalated_count }}
+    </span>
+  {% endif %}
+</div>

@@ -1,0 +1,62 @@
+# Module SCSS compiled styles
+support-styles:
+  css:
+    theme:
+      css/jaraba-support.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# Support Portal interactivity
+support-portal:
+  js:
+    js/support-portal.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_support/support-styles
+
+# Ticket detail + SSE
+ticket-detail:
+  js:
+    js/ticket-detail.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_support/support-styles
+
+# Agent dashboard + SSE
+agent-dashboard:
+  js:
+    js/agent-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - jaraba_support/support-styles
+
+# Ticket creation with deflection
+ticket-create:
+  js:
+    js/ticket-create.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - jaraba_support/support-styles
+
+# Drag-and-drop attachment upload
+attachment-upload:
+  js:
+    js/attachment-upload.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# GrapesJS support widget block
+grapesjs-support-blocks:
+  js:
+    js/grapesjs-jaraba-support-blocks.js: {}
+  dependencies:
+    - jaraba_page_builder/grapesjs-canvas

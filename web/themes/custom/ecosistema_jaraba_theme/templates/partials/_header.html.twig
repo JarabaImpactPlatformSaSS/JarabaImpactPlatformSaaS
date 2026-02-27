@@ -64,8 +64,12 @@
 } %}
 
 {# Mobile Menu Overlay (compartido por todos los layouts) #}
+{# NAV-006: Condicional — megamenu accordion para SaaS, lista plana para meta-sitios #}
+{% set use_megamenu = ts.header_megamenu|default(false) %}
+
 <div class="mobile-menu-overlay" aria-hidden="true">
   <nav class="mobile-menu-nav" aria-label="{% trans %}Mobile navigation{% endtrans %}">
+    {% if use_megamenu %}
     {# Grupo: Para Profesionales #}
     <details class="mobile-menu-group" open>
       <summary class="mobile-menu-group__title">{% trans %}Para Profesionales{% endtrans %}</summary>
@@ -98,6 +102,14 @@
       <li><a href="/planes">{% trans %}Precios{% endtrans %}</a></li>
       <li><a href="/casos-de-exito">{% trans %}Casos de Éxito{% endtrans %}</a></li>
     </ul>
+    {% else %}
+    {# Navegación plana (meta-sitios) — usa nav_items inyectados por MetaSiteResolverService #}
+    <ul class="mobile-menu-list">
+      {% for item in nav_items %}
+        <li><a href="{{ item.url }}">{{ item.text }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
   </nav>
 
   {# Selector de idioma en mobile #}

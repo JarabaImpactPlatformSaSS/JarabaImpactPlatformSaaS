@@ -1,0 +1,61 @@
+// ═══════════════════════════════════════════════════════════
+// Attachment Preview
+// ═══════════════════════════════════════════════════════════
+
+@use 'variables' as *;
+
+.support-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.support-attachment {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--ej-color-surface-alt, #F8FAFC);
+  border: 1px solid var(--ej-color-border, #E2E8F0);
+  border-radius: 8px;
+  font-size: $support-font-size-sm;
+  text-decoration: none;
+  color: var(--ej-color-text-primary, #1E293B);
+  transition: all 0.2s ease;
+  max-width: 280px;
+
+  &:hover {
+    border-color: var(--ej-color-corporate, #233D63);
+    background: var(--ej-color-surface, #fff);
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  &__size {
+    flex-shrink: 0;
+    color: var(--ej-color-text-muted, #94A3B8);
+    font-size: 0.75rem;
+  }
+
+  // Scan status
+  &--pending {
+    opacity: 0.6;
+  }
+
+  &--infected {
+    border-color: var(--ej-color-danger, #EF4444);
+    background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 5%, transparent);
+    pointer-events: none;
+  }
+}

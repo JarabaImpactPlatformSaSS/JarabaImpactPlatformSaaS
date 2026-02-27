@@ -63,6 +63,14 @@ bundle-agent-dashboard:
   dependencies:
     - ecosistema_jaraba_theme/global-styling
 
+bundle-support:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/support.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 icons:
   version: 1.0.0
   css:
@@ -391,6 +399,79 @@ route-ai-features:
       css/routes/ai-features.css: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
+
+# GAP-L5-C: EU AI Act Compliance Dashboard
+route-ai-compliance:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/ai-compliance.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# GAP-L5-F/G: Autonomous Agents & Self-Healing Dashboard
+route-autonomous-agents:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/autonomous-agents.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# GAP-L5-H/I: Causal Analytics & Federated Insights Dashboard
+route-causal-analytics:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/causal-analytics.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# Legacy alias: AiComplianceDashboardController referenced this name
+bundle-ai-compliance:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/ai-compliance.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# FASE 6 Elevacion: Notification Panel (centro de notificaciones desplegable)
+notification-panel:
+  version: 1.0.0
+  js:
+    js/notification-panel.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/fetch-retry
+
+# FASE 5 Elevacion: Bottom Navigation Mobile (activa CSS existente en _mobile-components.scss)
+bottom-nav:
+  version: 1.0.0
+  js:
+    js/bottom-nav.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# FASE 4 Elevacion: Fetch con reintentos + toast error recovery
+fetch-retry:
+  version: 1.0.0
+  js:
+    js/fetch-retry.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+quick-start:
+  version: 1.0.0
+  js:
+    js/quick-start.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
 
 # HAL-AI-10: Core Web Vitals tracking (LCP, CLS, INP, FCP, TTFB)
 cwv-tracking:

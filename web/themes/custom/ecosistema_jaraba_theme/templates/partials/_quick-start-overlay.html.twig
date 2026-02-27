@@ -1,0 +1,44 @@
+{#
+ # _quick-start-overlay.html.twig — First-visit quick start modal.
+ #
+ # Shows 3 contextual quick actions on first login to guide the user.
+ # Displayed once per user (tracked via localStorage in JS).
+ # Only shown to authenticated SaaS users, not meta-site visitors.
+ #
+ # Directivas:
+ # - MODAL-ACCESSIBILITY-001: Esc close, focus trap, focus restoration
+ # - MODAL-ARIA-001: role="dialog", aria-modal="true", aria-labelledby
+ # - BEM-NAMING-001: .ej-quick-start, .ej-quick-start__content, etc.
+ # - i18n: All text translatable via {% trans %}
+ # - TWIG-XSS-001: No |raw, autoescape active
+ #}
+
+<div class="ej-quick-start" id="quick-start-overlay"
+     role="dialog" aria-modal="true"
+     aria-labelledby="quick-start-title"
+     hidden>
+  <div class="ej-quick-start__backdrop"></div>
+  <div class="ej-quick-start__content">
+    <button class="ej-quick-start__close" aria-label="{% trans %}Cerrar{% endtrans %}">&times;</button>
+
+    <div class="ej-quick-start__header">
+      <h2 class="ej-quick-start__title" id="quick-start-title">
+        {% trans %}Bienvenido a la Plataforma{% endtrans %}
+      </h2>
+      <p class="ej-quick-start__subtitle">
+        {% trans %}Completa estas acciones rapidas para empezar{% endtrans %}
+      </p>
+    </div>
+
+    <div class="ej-quick-start__actions" id="quick-start-actions">
+      {# Actions rendered via JS based on user vertical #}
+      {% include '@ecosistema_jaraba_theme/partials/_skeleton.html.twig' with { variant: 'list' } %}
+    </div>
+
+    <div class="ej-quick-start__footer">
+      <button class="ej-btn ej-btn--outline" id="quick-start-skip">
+        {% trans %}Explorar por mi cuenta{% endtrans %}
+      </button>
+    </div>
+  </div>
+</div>

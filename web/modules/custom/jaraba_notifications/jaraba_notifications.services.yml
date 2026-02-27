@@ -1,0 +1,12 @@
+services:
+  logger.channel.jaraba_notifications:
+    parent: logger.channel_base
+    arguments: ['jaraba_notifications']
+
+  jaraba_notifications.notification:
+    class: Drupal\jaraba_notifications\Service\NotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_notifications'
+      - '@?ecosistema_jaraba_core.tenant_context'

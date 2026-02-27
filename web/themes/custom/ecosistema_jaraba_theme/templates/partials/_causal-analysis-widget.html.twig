@@ -1,0 +1,51 @@
+{#
+ # @file
+ # Causal Analysis Widget — Embeddable summary for GAP-L5-H/I dashboards.
+ #
+ # Variables:
+ #   - analysis: array with keys:
+ #       query: string
+ #       query_type: string ('causal'|'counterfactual'|'diagnostic')
+ #       summary: string
+ #       confidence_score: float (0-1)
+ #       factors_count: int
+ #       recommendations_count: int
+ #
+ # Usage:
+ #   {% include '@ecosistema_jaraba_theme/partials/_causal-analysis-widget.html.twig' with {
+ #     analysis: analysis_item,
+ #   } only %}
+ #}
+{% set a = analysis|default({}) %}
+{% set confidence = a.confidence_score|default(0) %}
+{% set confidence_pct = (confidence * 100)|round %}
+
+<div class="causal-analytics-dashboard__insight-card">
+  <div class="causal-analytics-dashboard__insight-header">
+    <span class="causal-analytics-dashboard__insight-type">
+      {{ a.query_type|default('diagnostic'|t) }}
+    </span>
+    <span class="causal-analytics-dashboard__insight-vertical">
+      {{ 'Confidence'|t }}: {{ confidence_pct }}%
+    </span>
+  </div>
+
+  <h4 class="causal-analytics-dashboard__insight-title">
+    {{ a.query|default(''|t) }}
+  </h4>
+
+  {% if a.summary %}
+    <p class="causal-analytics-dashboard__insight-summary">
+      {{ a.summary }}
+    </p>
+  {% endif %}
+
+  <div class="causal-analytics-dashboard__insight-meta">
+    {% if a.factors_count is defined %}
+      <span>{{ '%count factors'|t({'%count': a.factors_count}) }}</span>
+    {% endif %}
+    {% if a.recommendations_count is defined %}
+      <span>{{ '%count recommendations'|t({'%count': a.recommendations_count}) }}</span>
+    {% endif %}
+  </div>
+</div>

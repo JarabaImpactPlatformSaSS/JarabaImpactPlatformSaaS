@@ -1,0 +1,74 @@
+{#
+/**
+ * @file
+ * Parcial: Single ticket card for the portal ticket list.
+ *
+ * Variables:
+ * - ticket: Array with keys:
+ *   id, ticket_number, subject, status, priority, created, updated,
+ *   sla_status, assigned_agent, category, last_message_preview
+ */
+#}
+
+<article class="support-ticket-card"
+         data-ticket-id="{{ ticket.id }}"
+         data-status="{{ ticket.status }}"
+         data-priority="{{ ticket.priority }}">
+
+  <a href="{{ path('jaraba_support.ticket_detail', { 'support_ticket': ticket.id }) }}"
+     class="support-ticket-card__link">
+
+    {# Top row: number + badges #}
+    <div class="support-ticket-card__top">
+      <span class="support-ticket-card__number">#{{ ticket.ticket_number }}</span>
+
+      <div class="support-ticket-card__badges">
+        {% include '@jaraba_support/partials/_support-status-badge.html.twig' with {
+          status: ticket.status,
+        } only %}
+        {% include '@jaraba_support/partials/_support-priority-badge.html.twig' with {
+          priority: ticket.priority,
+        } only %}
+      </div>
+    </div>
+
+    {# Subject #}
+    <h3 class="support-ticket-card__subject">{{ ticket.subject }}</h3>
+
+    {# Preview of last message #}
+    {% if ticket.last_message_preview %}
+      <p class="support-ticket-card__preview">{{ ticket.last_message_preview|length > 120 ? ticket.last_message_preview|slice(0, 120) ~ '...' : ticket.last_message_preview }}</p>
+    {% endif %}
+
+    {# Bottom row: metadata #}
+    <div class="support-ticket-card__meta">
+      {% if ticket.category %}
+        <span class="support-ticket-card__category">
+          {{ jaraba_icon('ui', 'tag', { size: '12px' }) }}
+          {{ ticket.category }}
+        </span>
+      {% endif %}
+
+      <span class="support-ticket-card__date">
+        {{ jaraba_icon('ui', 'clock', { size: '12px' }) }}
+        {{ ticket.updated|default(ticket.created) }}
+      </span>
+
+      {% if ticket.assigned_agent %}
+        <span class="support-ticket-card__agent">
+          {{ jaraba_icon('ui', 'user', { size: '12px' }) }}
+          {{ ticket.assigned_agent }}
+        </span>
+      {% endif %}
+    </div>
+
+    {# SLA indicator #}
+    {% if ticket.sla_status %}
+      {% include '@jaraba_support/partials/_support-sla-indicator.html.twig' with {
+        sla_status: ticket.sla_status,
+        compact: true,
+      } only %}
+    {% endif %}
+
+  </a>
+</article>

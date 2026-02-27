@@ -11,6 +11,7 @@ libraries:
   - ecosistema_jaraba_theme/global-styling
   - ecosistema_jaraba_theme/icons
   - ecosistema_jaraba_theme/cwv-tracking
+  - ecosistema_jaraba_theme/fetch-retry
 
 regions:
   header: Header

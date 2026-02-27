@@ -9,7 +9,19 @@
     background: var(--ej-card-bg, #FFFFFF);
     border-radius: var(--ej-card-radius, 12px);
     overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Micro-interaction: hover lift sutil en todas las cards
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ej-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+    }
+
+    // Micro-interaction: press feedback
+    &:active {
+        transform: translateY(0) scale(0.99);
+    }
 }
 
 // Styles

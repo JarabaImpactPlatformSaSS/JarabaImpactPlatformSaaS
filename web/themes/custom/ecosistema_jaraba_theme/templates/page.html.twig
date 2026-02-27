@@ -103,5 +103,17 @@
       'context': copilot_context
     } only %}
   {% endif %}
-  
+
+  {# Bottom Nav Mobile — FASE 5 Elevacion Clase Mundial #}
+  {# Solo usuarios autenticados SaaS (no meta-sites). Oculto en desktop via CSS. #}
+  {% if logged_in and not meta_site %}
+    {% include '@ecosistema_jaraba_theme/partials/_bottom-nav.html.twig' %}
+  {% endif %}
+
+  {# Quick-Start Overlay — FASE 8 Elevacion Clase Mundial #}
+  {# Primera visita: modal con 3 acciones rapidas por vertical. Dismiss via localStorage. #}
+  {% if logged_in and not meta_site %}
+    {% include '@ecosistema_jaraba_theme/partials/_quick-start-overlay.html.twig' %}
+  {% endif %}
+
 </div>

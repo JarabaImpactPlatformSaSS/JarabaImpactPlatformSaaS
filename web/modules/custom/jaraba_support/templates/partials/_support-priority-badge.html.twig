@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * Parcial: Priority badge — Colored pill for ticket priority level.
+ *
+ * Variables:
+ * - priority: String (low|medium|high|urgent)
+ */
+#}
+
+{% set priority_labels = {
+  'low': 'Low'|t,
+  'medium': 'Medium'|t,
+  'high': 'High'|t,
+  'urgent': 'Urgent'|t,
+} %}
+
+{% set priority_icons = {
+  'low': 'minus',
+  'medium': 'alert-circle',
+  'high': 'arrow-up',
+  'urgent': 'alert-triangle',
+} %}
+
+<span class="support-badge support-badge--priority-{{ priority|default('medium') }}"
+      aria-label="{{ priority_labels[priority]|default(priority) }}">
+  {{ jaraba_icon('ui', priority_icons[priority]|default('minus'), { size: '12px' }) }}
+  {{ priority_labels[priority]|default(priority) }}
+</span>

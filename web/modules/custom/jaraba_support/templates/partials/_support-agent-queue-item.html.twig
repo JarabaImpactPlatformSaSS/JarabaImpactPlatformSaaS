@@ -1,0 +1,107 @@
+{#
+/**
+ * @file
+ * Parcial: Single ticket in the agent queue.
+ *
+ * Denser than the customer-facing card. Shows SLA urgency, requester,
+ * assignment status, and quick-action buttons for agents.
+ *
+ * Variables:
+ * - ticket: Array with keys:
+ *   id, ticket_number, subject, status, priority, created, updated,
+ *   sla_status, assigned_agent, category, requester, last_message_preview
+ */
+#}
+
+<div class="support-queue-item"
+     data-ticket-id="{{ ticket.id }}"
+     data-status="{{ ticket.status }}"
+     data-priority="{{ ticket.priority }}">
+
+  {# Left: SLA indicator strip #}
+  {% if ticket.sla_status %}
+    {% set sla_pct = ticket.sla_status.percentage_elapsed|default(0) %}
+    {% set is_breached = ticket.sla_status.response_breached|default(false) or ticket.sla_status.resolution_breached|default(false) %}
+    <div class="support-queue-item__sla-strip support-queue-item__sla-strip--{% if is_breached %}red{% elseif sla_pct >= 75 %}yellow{% else %}green{% endif %}"
+         aria-label="{% trans %}SLA status{% endtrans %}"></div>
+  {% endif %}
+
+  {# Content #}
+  <div class="support-queue-item__content">
+
+    {# Top row: ticket number + badges #}
+    <div class="support-queue-item__top">
+      <a href="{{ path('jaraba_support.ticket_detail', { 'support_ticket': ticket.id }) }}"
+         class="support-queue-item__number">
+        #{{ ticket.ticket_number }}
+      </a>
+      <div class="support-queue-item__badges">
+        {% include '@jaraba_support/partials/_support-priority-badge.html.twig' with {
+          priority: ticket.priority,
+        } only %}
+        {% include '@jaraba_support/partials/_support-status-badge.html.twig' with {
+          status: ticket.status,
+        } only %}
+      </div>
+    </div>
+
+    {# Subject #}
+    <a href="{{ path('jaraba_support.ticket_detail', { 'support_ticket': ticket.id }) }}"
+       class="support-queue-item__subject">
+      {{ ticket.subject }}
+    </a>
+
+    {# Middle row: requester + category + time #}
+    <div class="support-queue-item__meta">
+      {% if ticket.requester %}
+        <span class="support-queue-item__requester">
+          {{ jaraba_icon('ui', 'user', { size: '12px' }) }}
+          {{ ticket.requester.name|default(ticket.requester.email|default('--')) }}
+        </span>
+      {% endif %}
+
+      {% if ticket.category %}
+        <span class="support-queue-item__category">
+          {{ jaraba_icon('ui', 'tag', { size: '12px' }) }}
+          {{ ticket.category }}
+        </span>
+      {% endif %}
+
+      <span class="support-queue-item__time">
+        {{ jaraba_icon('ui', 'clock', { size: '12px' }) }}
+        {{ ticket.updated|default(ticket.created) }}
+      </span>
+
+      {% if ticket.sla_status and ticket.sla_status.time_remaining %}
+        {% include '@jaraba_support/partials/_support-sla-indicator.html.twig' with {
+          sla_status: ticket.sla_status,
+          compact: true,
+        } only %}
+      {% endif %}
+    </div>
+
+    {# Preview #}
+    {% if ticket.last_message_preview %}
+      <p class="support-queue-item__preview">{{ ticket.last_message_preview|length > 100 ? ticket.last_message_preview|slice(0, 100) ~ '...' : ticket.last_message_preview }}</p>
+    {% endif %}
+  </div>
+
+  {# Right: quick actions #}
+  <div class="support-queue-item__actions">
+    {% if not ticket.assigned_agent %}
+      <button type="button"
+              class="btn btn--xs btn--outline"
+              data-support-action="claim"
+              data-ticket-id="{{ ticket.id }}"
+              title="{{ 'Assign to me'|t }}">
+        {{ jaraba_icon('ui', 'user-plus', { size: '14px' }) }}
+      </button>
+    {% endif %}
+    <a href="{{ path('jaraba_support.ticket_detail', { 'support_ticket': ticket.id }) }}"
+       class="btn btn--xs btn--ghost"
+       title="{{ 'View ticket'|t }}">
+      {{ jaraba_icon('ui', 'eye', { size: '14px' }) }}
+    </a>
+  </div>
+
+</div>

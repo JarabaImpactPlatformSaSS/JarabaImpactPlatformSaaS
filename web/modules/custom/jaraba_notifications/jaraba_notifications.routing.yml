@@ -1,0 +1,57 @@
+# Ruta admin settings para field_ui_base_route.
+entity.notification.settings:
+  path: '/admin/structure/notification'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Notificaciones'
+  requirements:
+    _permission: 'administer site structure'
+
+# ═══════════════════════════════════════════════════════════
+# API REST — Centro de Notificaciones (CSRF obligatorio en mutaciones)
+# ═══════════════════════════════════════════════════════════
+
+jaraba_notifications.api.list:
+  path: '/api/v1/notifications'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationApiController::listNotifications'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_notifications.api.count:
+  path: '/api/v1/notifications/count'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationApiController::countUnread'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+jaraba_notifications.api.mark_read:
+  path: '/api/v1/notifications/{notification}/read'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationApiController::markRead'
+  methods: [PATCH]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    notification: '\d+'
+
+jaraba_notifications.api.mark_all_read:
+  path: '/api/v1/notifications/read-all'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationApiController::markAllRead'
+  methods: [PATCH]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_notifications.api.dismiss:
+  path: '/api/v1/notifications/{notification}/dismiss'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationApiController::dismiss'
+  methods: [PATCH]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    notification: '\d+'

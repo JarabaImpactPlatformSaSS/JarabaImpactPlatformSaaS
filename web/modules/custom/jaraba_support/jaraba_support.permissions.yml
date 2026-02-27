@@ -1,0 +1,72 @@
+# Support System Permissions (RBAC)
+
+'administer support system':
+  title: 'Administer Support System'
+  description: 'Full administrative access to support configuration, SLA policies, and all tickets.'
+  restrict access: true
+
+'create support ticket':
+  title: 'Create support tickets'
+  description: 'Create new support tickets.'
+
+'view own support tickets':
+  title: 'View own support tickets'
+  description: 'View tickets created by the user.'
+
+'view tenant support tickets':
+  title: 'View tenant support tickets'
+  description: 'View all tickets belonging to the same tenant.'
+
+'view all support tickets':
+  title: 'View all support tickets'
+  description: 'View tickets from all tenants. For platform admins and support leads.'
+  restrict access: true
+
+'edit own support ticket':
+  title: 'Edit own support tickets'
+  description: 'Edit tickets created by the user (add messages, close).'
+
+'edit any support ticket':
+  title: 'Edit any support ticket'
+  description: 'Edit any ticket (change status, priority, assignment).'
+
+'delete support tickets':
+  title: 'Delete support tickets'
+  description: 'Permanently delete support tickets.'
+  restrict access: true
+
+'add internal notes':
+  title: 'Add internal notes'
+  description: 'Add internal notes visible only to agents.'
+
+'change ticket priority':
+  title: 'Change ticket priority'
+  description: 'Modify the priority level of tickets.'
+
+'change ticket assignment':
+  title: 'Change ticket assignment'
+  description: 'Reassign tickets to other agents.'
+
+'escalate tickets':
+  title: 'Escalate tickets'
+  description: 'Escalate tickets to higher support tiers.'
+
+'merge tickets':
+  title: 'Merge tickets'
+  description: 'Merge duplicate tickets.'
+
+'view support analytics':
+  title: 'View support analytics'
+  description: 'Access support analytics dashboards and reports.'
+
+'manage response templates':
+  title: 'Manage response templates'
+  description: 'Create and edit response templates for quick replies.'
+
+'use support agent dashboard':
+  title: 'Use support agent dashboard'
+  description: 'Access the support agent dashboard and ticket queue.'
+
+'access support overview':
+  title: 'Access support overview'
+  description: 'View the support tickets admin listing.'

@@ -559,6 +559,24 @@ services:
     tags:
       - { name: jaraba_ai_agents.tool }
 
+  # GAP-L5-H: Federated Insight Service — Cross-tenant anonymized aggregation
+  jaraba_ai_agents.federated_insight:
+    class: Drupal\jaraba_ai_agents\Service\FederatedInsightService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.observability'
+
+  # GAP-L5-I: Causal Analytics Service — LLM premium tier causal reasoning
+  jaraba_ai_agents.causal_analytics:
+    class: Drupal\jaraba_ai_agents\Service\CausalAnalyticsService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?ai.provider'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.observability'
+
   # GAP-L5-G: Auto-Diagnostic Service — Self-healing with anomaly detection
   jaraba_ai_agents.auto_diagnostic:
     class: Drupal\jaraba_ai_agents\Service\AutoDiagnosticService

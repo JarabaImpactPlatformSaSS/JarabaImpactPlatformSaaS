@@ -1,0 +1,48 @@
+// ═══════════════════════════════════════════════════════════
+// JARABA SUPPORT — SCSS Variables (Federated Design Tokens)
+// ═══════════════════════════════════════════════════════════
+//
+// GOLD RULE: Satellite modules ONLY consume CSS custom properties
+// from the core theme. NEVER define $ej-* variables here.
+//
+// All values reference var(--ej-*) from ecosistema_jaraba_core.
+// ═══════════════════════════════════════════════════════════
+
+// --- Status Colors (map to CSS custom properties) ---
+$support-status-new: var(--ej-color-info, #3B82F6);
+$support-status-ai-handling: var(--ej-color-innovation, #00A9A5);
+$support-status-open: var(--ej-color-success, #10B981);
+$support-status-pending: var(--ej-color-warning, #F59E0B);
+$support-status-escalated: var(--ej-color-danger, #EF4444);
+$support-status-resolved: var(--ej-color-neutral, #64748B);
+$support-status-closed: var(--ej-color-neutral-light, #94A3B8);
+$support-status-merged: var(--ej-color-neutral-light, #94A3B8);
+
+// --- Priority Colors ---
+$support-priority-critical: var(--ej-color-danger, #EF4444);
+$support-priority-high: var(--ej-color-warning, #F59E0B);
+$support-priority-medium: var(--ej-color-info, #3B82F6);
+$support-priority-low: var(--ej-color-neutral, #64748B);
+
+// --- SLA Indicator Colors ---
+$support-sla-ok: var(--ej-color-success, #10B981);
+$support-sla-warning: var(--ej-color-warning, #F59E0B);
+$support-sla-breached: var(--ej-color-danger, #EF4444);
+
+// --- Layout ---
+$support-sidebar-width: 360px;
+$support-timeline-max-width: 720px;
+$support-card-border-radius: var(--ej-radius-md, 12px);
+$support-card-padding: var(--ej-spacing-md, 1.5rem);
+
+// --- Typography (inherit from theme) ---
+$support-font-family: var(--ej-font-family, "Outfit", sans-serif);
+$support-font-size-sm: var(--ej-font-size-sm, 0.875rem);
+$support-font-size-base: var(--ej-font-size-base, 1rem);
+$support-font-size-lg: var(--ej-font-size-lg, 1.125rem);
+
+// --- Breakpoints (mirrors theme) ---
+$support-bp-sm: 640px;
+$support-bp-md: 768px;
+$support-bp-lg: 992px;
+$support-bp-xl: 1200px;

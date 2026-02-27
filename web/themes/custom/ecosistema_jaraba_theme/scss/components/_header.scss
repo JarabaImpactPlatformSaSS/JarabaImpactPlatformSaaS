@@ -337,6 +337,7 @@
 /* VARIANT: MEGA MENU */
 .header--mega .header__menu {
     display: flex;
+    align-items: center;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -351,10 +352,14 @@
     display: flex;
     align-items: center;
     gap: var(--ej-spacing-xxs, 0.25rem);
-    padding: var(--ej-spacing-sm, 0.75rem);
+    padding: var(--ej-spacing-xs, 0.5rem) var(--ej-spacing-sm, 0.75rem);
     border: none;
     background: none;
     cursor: pointer;
+    font: inherit;
+    color: inherit;
+    line-height: 1.5;
+    text-decoration: none;
 }
 
 .header--mega .header__mega-panel {
@@ -363,8 +368,9 @@
     right: auto;
     left: -200px;
     width: 840px;
-    background: var(--header-bg);
-    box-shadow: var(--ej-shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.1));
+    background: var(--header-bg, #ffffff);
+    color: var(--ej-text-primary, #1a1d29);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     border-radius: 0 0 var(--ej-border-radius-lg, 16px) var(--ej-border-radius-lg, 16px);
     opacity: 0;
     visibility: hidden;

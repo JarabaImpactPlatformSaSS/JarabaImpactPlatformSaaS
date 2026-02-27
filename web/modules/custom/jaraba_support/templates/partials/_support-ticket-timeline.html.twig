@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Parcial: Conversation timeline wrapper.
+ *
+ * Renders all messages in a ticket conversation as a vertical timeline
+ * with alternating styles for customer/agent/ai/system messages.
+ *
+ * Variables:
+ * - messages: Array of message data with keys:
+ *   id, author, author_role (customer|agent|ai|system), body,
+ *   created, is_internal_note, attachments
+ * - is_agent: Boolean — whether viewer is an agent (shows internal notes)
+ */
+#}
+
+<div class="support-timeline" aria-label="{% trans %}Conversation{% endtrans %}">
+
+  {% if messages is not empty %}
+    <ol class="support-timeline__list">
+      {% for message in messages %}
+        {# Skip internal notes for non-agents #}
+        {% if not message.is_internal_note or is_agent %}
+          <li class="support-timeline__item support-timeline__item--{{ message.author_role|default('customer') }}">
+            {% include '@jaraba_support/partials/_support-message-bubble.html.twig' with {
+              message: message,
+              is_agent: is_agent,
+            } only %}
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+  {% else %}
+    <div class="support-timeline__empty">
+      <p class="support-timeline__empty-text">
+        {{ jaraba_icon('ui', 'message-circle', { variant: 'duotone', size: '24px' }) }}
+        {% trans %}No messages yet.{% endtrans %}
+      </p>
+    </div>
+  {% endif %}
+
+</div>

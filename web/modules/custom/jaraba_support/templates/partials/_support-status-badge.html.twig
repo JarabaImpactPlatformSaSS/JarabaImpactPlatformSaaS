@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Parcial: Status badge — Renders a colored pill for ticket status.
+ *
+ * Variables:
+ * - status: String (open|in_progress|pending_customer|pending_third_party|
+ *           on_hold|escalated|resolved|closed|cancelled|merged)
+ */
+#}
+
+{% set status_labels = {
+  'open': 'Open'|t,
+  'in_progress': 'In Progress'|t,
+  'pending_customer': 'Pending Customer'|t,
+  'pending_third_party': 'Pending 3rd Party'|t,
+  'on_hold': 'On Hold'|t,
+  'escalated': 'Escalated'|t,
+  'resolved': 'Resolved'|t,
+  'closed': 'Closed'|t,
+  'cancelled': 'Cancelled'|t,
+  'merged': 'Merged'|t,
+} %}
+
+<span class="support-badge support-badge--status-{{ status|default('open') }}"
+      aria-label="{{ status_labels[status]|default(status) }}">
+  {{ status_labels[status]|default(status) }}
+</span>

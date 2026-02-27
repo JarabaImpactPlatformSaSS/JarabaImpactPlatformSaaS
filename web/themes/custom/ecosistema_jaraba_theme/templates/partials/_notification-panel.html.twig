@@ -1,0 +1,54 @@
+{#
+ # @file
+ # Notification Panel — Panel desplegable del centro de notificaciones.
+ #
+ # Se ancla al icono de campana del header (proactive-insights-bell).
+ # El contenido de la lista se renderiza via JS desde /api/v1/notifications.
+ # Incluye filtros por tipo, mark-all-read, y skeleton durante carga.
+ #
+ # Directivas: BEM-NAMING-001, WCAG 2.1 AA, i18n, TWIG-XSS-001
+ # CSS: _notification-panel.scss
+ # JS: notification-panel.js
+ #}
+
+<div class="ej-notification-panel" id="notification-panel"
+     role="dialog" aria-modal="false"
+     aria-label="{% trans %}Centro de notificaciones{% endtrans %}"
+     hidden>
+
+  <div class="ej-notification-panel__header">
+    <h3 class="ej-notification-panel__title">{% trans %}Notificaciones{% endtrans %}</h3>
+    <button class="ej-notification-panel__mark-all" id="notification-mark-all"
+            aria-label="{% trans %}Marcar todas como leidas{% endtrans %}">
+      {% trans %}Marcar todo{% endtrans %}
+    </button>
+  </div>
+
+  <div class="ej-notification-panel__filters" role="tablist">
+    <button class="ej-notification-panel__filter is-active" data-filter="all" role="tab" aria-selected="true">
+      {% trans %}Todas{% endtrans %}
+    </button>
+    <button class="ej-notification-panel__filter" data-filter="system" role="tab" aria-selected="false">
+      {% trans %}Sistema{% endtrans %}
+    </button>
+    <button class="ej-notification-panel__filter" data-filter="social" role="tab" aria-selected="false">
+      {% trans %}Social{% endtrans %}
+    </button>
+    <button class="ej-notification-panel__filter" data-filter="workflow" role="tab" aria-selected="false">
+      {% trans %}Workflow{% endtrans %}
+    </button>
+  </div>
+
+  <div class="ej-notification-panel__list" id="notification-list" role="tabpanel">
+    {% include '@ecosistema_jaraba_theme/partials/_skeleton.html.twig' with { variant: 'list' } %}
+  </div>
+
+  <div class="ej-notification-panel__empty is-hidden" id="notification-empty">
+    {% include '@ecosistema_jaraba_theme/partials/_empty-state.html.twig' with {
+      icon: 'general',
+      icon_name: 'bell',
+      title: 'Sin notificaciones'|trans,
+      description: 'Cuando haya novedades, apareceran aqui.'|trans
+    } %}
+  </div>
+</div>

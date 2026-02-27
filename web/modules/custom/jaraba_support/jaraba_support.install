@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ * Install/update/uninstall functions for jaraba_support module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_schema().
+ *
+ * Defines auxiliary tables for SSE event streaming and agent collision
+ * detection. Content entity tables are managed by entity type definitions.
+ */
+function jaraba_support_schema(): array {
+  $schema['support_ticket_events'] = [
+    'description' => 'Event queue for SSE ticket stream.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'ticket_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'data' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'ticket_created' => ['ticket_id', 'created'],
+      'event_type' => ['event_type'],
+    ],
+  ];
+
+  $schema['support_ticket_viewers'] = [
+    'description' => 'Tracks which agents are currently viewing tickets (collision detection).',
+    'fields' => [
+      'agent_uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'ticket_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'last_seen' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['agent_uid', 'ticket_id'],
+    'indexes' => [
+      'ticket_lastseen' => ['ticket_id', 'last_seen'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_support_install(): void {
+  \Drupal::messenger()->addStatus(t('Jaraba Support module installed. Configure at /admin/config/support/settings.'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function jaraba_support_uninstall(): void {
+  // Remove module configuration.
+  \Drupal::configFactory()->getEditable('jaraba_support.settings')->delete();
+
+  // Drop auxiliary tables.
+  $schema = \Drupal::database()->schema();
+  $schema->dropTable('support_ticket_events');
+  $schema->dropTable('support_ticket_viewers');
+}
+
+/**
+ * Add SSE event stream and agent collision detection tables.
+ */
+function jaraba_support_update_10001(): void {
+  $schema = jaraba_support_schema();
+  $db_schema = \Drupal::database()->schema();
+
+  foreach ($schema as $table_name => $table_spec) {
+    if (!$db_schema->tableExists($table_name)) {
+      $db_schema->createTable($table_name, $table_spec);
+    }
+  }
+}

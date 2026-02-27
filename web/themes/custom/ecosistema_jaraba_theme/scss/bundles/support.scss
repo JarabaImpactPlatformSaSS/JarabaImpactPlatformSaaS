@@ -1,0 +1,17 @@
+// Route-specific bundle: Support Tickets (HAL-AI-12 code splitting)
+// Compiled via: npx sass scss/bundles/support.scss:css/bundles/support.css --style=compressed
+@use '../variables' as *;
+
+// Import the module's SCSS directly as a federated satellite.
+// The module owns its SCSS source; the theme bundles it for code-splitting.
+@use '../../../../../modules/custom/jaraba_support/scss/variables' as support-vars;
+@use '../../../../../modules/custom/jaraba_support/scss/status-badges';
+@use '../../../../../modules/custom/jaraba_support/scss/sla-indicators';
+@use '../../../../../modules/custom/jaraba_support/scss/portal';
+@use '../../../../../modules/custom/jaraba_support/scss/ticket-detail';
+@use '../../../../../modules/custom/jaraba_support/scss/timeline';
+@use '../../../../../modules/custom/jaraba_support/scss/sidebar-context';
+@use '../../../../../modules/custom/jaraba_support/scss/agent-dashboard';
+@use '../../../../../modules/custom/jaraba_support/scss/attachment-preview';
+@use '../../../../../modules/custom/jaraba_support/scss/create-form';
+@use '../../../../../modules/custom/jaraba_support/scss/csat-survey';

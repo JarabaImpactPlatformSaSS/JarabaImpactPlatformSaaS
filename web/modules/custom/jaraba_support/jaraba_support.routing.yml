@@ -1,0 +1,334 @@
+# ═══════════════════════════════════════════════════════════
+# FRONTEND ROUTES (_admin_route: FALSE)
+# ═══════════════════════════════════════════════════════════
+
+jaraba_support.portal:
+  path: '/soporte'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportPortalController::index'
+    _title: 'Support'
+  requirements:
+    _permission: 'view own support tickets'
+  options:
+    _admin_route: FALSE
+
+jaraba_support.portal.create:
+  path: '/soporte/crear'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportPortalController::createForm'
+    _title: 'Create Ticket'
+  requirements:
+    _permission: 'create support ticket'
+  options:
+    _admin_route: FALSE
+
+jaraba_support.ticket.detail:
+  path: '/soporte/ticket/{support_ticket}'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\TicketDetailController::view'
+    _title_callback: '\Drupal\jaraba_support\Controller\TicketDetailController::title'
+  requirements:
+    _entity_access: 'support_ticket.view'
+  options:
+    _admin_route: FALSE
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.agent.dashboard:
+  path: '/soporte/agente'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\AgentDashboardController::dashboard'
+    _title: 'Agent Dashboard'
+  requirements:
+    _permission: 'use support agent dashboard'
+  options:
+    _admin_route: FALSE
+
+jaraba_support.agent.ticket:
+  path: '/soporte/agente/ticket/{support_ticket}'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\AgentDashboardController::ticketView'
+    _title_callback: '\Drupal\jaraba_support\Controller\AgentDashboardController::ticketTitle'
+  requirements:
+    _permission: 'use support agent dashboard'
+  options:
+    _admin_route: FALSE
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+# ═══════════════════════════════════════════════════════════
+# ADMIN ROUTES
+# ═══════════════════════════════════════════════════════════
+
+entity.support_ticket.collection:
+  path: '/admin/content/support-tickets'
+  defaults:
+    _entity_list: 'support_ticket'
+    _title: 'Support Tickets'
+  requirements:
+    _permission: 'access support overview'
+
+entity.support_ticket.settings:
+  path: '/admin/structure/support-ticket/settings'
+  defaults:
+    _form: '\Drupal\jaraba_support\Form\SupportSettingsForm'
+    _title: 'Support Ticket Settings'
+  requirements:
+    _permission: 'administer support system'
+
+jaraba_support.settings:
+  path: '/admin/config/support/settings'
+  defaults:
+    _form: '\Drupal\jaraba_support\Form\SupportSettingsForm'
+    _title: 'Support Settings'
+  requirements:
+    _permission: 'administer support system'
+
+jaraba_support.admin.sla_policies:
+  path: '/admin/config/support/sla-policies'
+  defaults:
+    _entity_list: 'sla_policy'
+    _title: 'SLA Policies'
+  requirements:
+    _permission: 'administer support system'
+
+jaraba_support.admin.business_hours:
+  path: '/admin/config/support/business-hours'
+  defaults:
+    _entity_list: 'business_hours_schedule'
+    _title: 'Business Hours'
+  requirements:
+    _permission: 'administer support system'
+
+# ═══════════════════════════════════════════════════════════
+# API ROUTES (JSON + CSRF)
+# ═══════════════════════════════════════════════════════════
+
+jaraba_support.api.tickets.create:
+  path: '/api/v1/support/tickets'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::createTicket'
+  methods: [POST]
+  requirements:
+    _permission: 'create support ticket'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_support.api.tickets.list:
+  path: '/api/v1/support/tickets'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::listTickets'
+  methods: [GET]
+  requirements:
+    _permission: 'view own support tickets'
+
+jaraba_support.api.ticket.get:
+  path: '/api/v1/support/tickets/{support_ticket}'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::getTicket'
+  methods: [GET]
+  requirements:
+    _entity_access: 'support_ticket.view'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.update:
+  path: '/api/v1/support/tickets/{support_ticket}'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::updateTicket'
+  methods: [PATCH]
+  requirements:
+    _entity_access: 'support_ticket.update'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.messages:
+  path: '/api/v1/support/tickets/{support_ticket}/messages'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::addMessage'
+  methods: [POST]
+  requirements:
+    _entity_access: 'support_ticket.view'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.attachments.upload:
+  path: '/api/v1/support/tickets/{support_ticket}/attachments'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::uploadAttachment'
+  methods: [POST]
+  requirements:
+    _entity_access: 'support_ticket.view'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.attachments.list:
+  path: '/api/v1/support/tickets/{support_ticket}/attachments'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::listAttachments'
+  methods: [GET]
+  requirements:
+    _entity_access: 'support_ticket.view'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.resolve:
+  path: '/api/v1/support/tickets/{support_ticket}/resolve'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::resolveTicket'
+  methods: [POST]
+  requirements:
+    _entity_access: 'support_ticket.update'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.reopen:
+  path: '/api/v1/support/tickets/{support_ticket}/reopen'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::reopenTicket'
+  methods: [POST]
+  requirements:
+    _entity_access: 'support_ticket.update'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.escalate:
+  path: '/api/v1/support/tickets/{support_ticket}/escalate'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::escalateTicket'
+  methods: [POST]
+  requirements:
+    _permission: 'escalate tickets'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.satisfaction:
+  path: '/api/v1/support/tickets/{support_ticket}/satisfaction'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::submitSatisfaction'
+  methods: [POST]
+  requirements:
+    _entity_access: 'support_ticket.view'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.ticket.merge:
+  path: '/api/v1/support/tickets/{support_ticket}/merge'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::mergeTicket'
+  methods: [POST]
+  requirements:
+    _permission: 'merge tickets'
+    _csrf_request_header_token: 'TRUE'
+  options:
+    parameters:
+      support_ticket:
+        type: entity:support_ticket
+
+jaraba_support.api.stats:
+  path: '/api/v1/support/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'view support analytics'
+
+jaraba_support.api.sla_policies:
+  path: '/api/v1/support/sla-policies'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::listSlaPolicies'
+  methods: [GET]
+  requirements:
+    _permission: 'administer support system'
+
+jaraba_support.api.ai.classify:
+  path: '/api/v1/support/ai/classify'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::classifyText'
+  methods: [POST]
+  requirements:
+    _permission: 'administer support system'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_support.api.ai.suggest:
+  path: '/api/v1/support/ai/suggest'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::suggestSolution'
+  methods: [POST]
+  requirements:
+    _permission: 'administer support system'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_support.api.search:
+  path: '/api/v1/support/search'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::searchTickets'
+  methods: [GET]
+  requirements:
+    _permission: 'view all support tickets'
+
+jaraba_support.api.deflection:
+  path: '/api/v1/support/deflection'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::deflectionSearch'
+  methods: [POST]
+  requirements:
+    _permission: 'create support ticket'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_support.api.inbound.email:
+  path: '/api/v1/support/inbound/email'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::inboundEmail'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+# ═══════════════════════════════════════════════════════════
+# SSE STREAM ROUTE
+# ═══════════════════════════════════════════════════════════
+
+jaraba_support.stream:
+  path: '/api/v1/support/stream'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportStreamController::stream'
+  methods: [GET]
+  requirements:
+    _permission: 'view own support tickets'
+
+# ═══════════════════════════════════════════════════════════
+# ATTACHMENT DOWNLOAD (pre-signed URL)
+# ═══════════════════════════════════════════════════════════
+
+jaraba_support.attachment.download:
+  path: '/support/attachments/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_support\Controller\SupportApiController::downloadAttachment'
+  requirements:
+    _access: 'TRUE'

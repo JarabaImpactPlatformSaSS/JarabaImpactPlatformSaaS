@@ -1,0 +1,10 @@
+/**
+ * @file
+ * Route-specific CSS — Autonomous Agents Dashboard (GAP-L5-F/G).
+ *
+ * Covers: /admin/config/ai/autonomous-agents
+ * Compile: sass scss/routes/autonomous-agents.scss css/routes/autonomous-agents.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use 'autonomous-agents';

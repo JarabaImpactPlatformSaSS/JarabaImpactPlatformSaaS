@@ -80,6 +80,9 @@ class CausalAnalyticsDashboardController extends ControllerBase {
       '#insights' => $insightData,
       '#analyses' => $analysisData,
       '#k_anonymity_threshold' => FederatedInsightService::K_ANONYMITY_THRESHOLD,
+      '#attached' => [
+        'library' => ['ecosistema_jaraba_theme/route-causal-analytics'],
+      ],
     ];
   }
 

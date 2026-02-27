@@ -1,0 +1,152 @@
+// ═══════════════════════════════════════════════════════════
+// CSAT Survey — Inline satisfaction rating
+// ═══════════════════════════════════════════════════════════
+
+@use 'variables' as *;
+
+.support-csat {
+  background: var(--ej-color-surface, #fff);
+  border-radius: $support-card-border-radius;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-top: 1.5rem;
+  text-align: center;
+
+  &__header {
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-size: $support-font-size-lg;
+    font-weight: 700;
+    color: var(--ej-color-text-primary, #1E293B);
+    margin: 0.75rem 0 0.25rem;
+  }
+
+  &__subtitle {
+    font-size: $support-font-size-sm;
+    color: var(--ej-color-text-secondary, #475569);
+    margin: 0;
+  }
+
+  // Star rating.
+  &__stars {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__star {
+    cursor: pointer;
+    transition: transform 0.15s ease, color 0.15s ease;
+    color: var(--ej-color-border, #E2E8F0);
+
+    &:hover,
+    &--active,
+    &--selected {
+      color: var(--ej-color-warning, #F59E0B);
+      transform: scale(1.15);
+    }
+  }
+
+  // CES effort scale.
+  &__effort {
+    border: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+  }
+
+  &__effort-label {
+    font-size: $support-font-size-sm;
+    font-weight: 600;
+    color: var(--ej-color-text-primary, #1E293B);
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  &__effort-scale {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.375rem;
+  }
+
+  &__effort-option {
+    cursor: pointer;
+
+    &--selected .support-csat__effort-value {
+      background: var(--ej-color-corporate, #233D63);
+      color: #fff;
+      border-color: var(--ej-color-corporate, #233D63);
+    }
+  }
+
+  &__effort-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--ej-color-border, #E2E8F0);
+    font-size: $support-font-size-sm;
+    font-weight: 600;
+    color: var(--ej-color-text-secondary, #475569);
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--ej-color-corporate, #233D63);
+    }
+  }
+
+  &__effort-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--ej-color-text-muted, #94A3B8);
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  // Comment.
+  &__comment {
+    text-align: left;
+    margin-bottom: 1.25rem;
+  }
+
+  &__comment-label {
+    display: block;
+    font-size: $support-font-size-sm;
+    font-weight: 500;
+    color: var(--ej-color-text-secondary, #475569);
+    margin-bottom: 0.375rem;
+  }
+
+  &__comment-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--ej-color-border, #E2E8F0);
+    border-radius: 8px;
+    font-size: $support-font-size-sm;
+    font-family: $support-font-family;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-corporate, #233D63);
+    }
+  }
+
+  // Thank you state.
+  &__thanks {
+    padding: 2rem;
+
+    &-text {
+      font-size: $support-font-size-lg;
+      font-weight: 600;
+      color: var(--ej-color-success, #10B981);
+      margin: 0.75rem 0 0;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+id: spain_standard
+label: 'Spain Standard Business Hours'
+timezone: Europe/Madrid
+schedule:
+  monday:
+    open: '09:00'
+    close: '18:00'
+  tuesday:
+    open: '09:00'
+    close: '18:00'
+  wednesday:
+    open: '09:00'
+    close: '18:00'
+  thursday:
+    open: '09:00'
+    close: '18:00'
+  friday:
+    open: '09:00'
+    close: '18:00'
+  saturday:
+    closed: true
+  sunday:
+    closed: true
+holidays:
+  - { date: '2026-01-01', label: 'Año Nuevo' }
+  - { date: '2026-01-06', label: 'Epifanía del Señor' }
+  - { date: '2026-04-02', label: 'Jueves Santo' }
+  - { date: '2026-04-03', label: 'Viernes Santo' }
+  - { date: '2026-05-01', label: 'Fiesta del Trabajo' }
+  - { date: '2026-08-15', label: 'Asunción de la Virgen' }
+  - { date: '2026-10-12', label: 'Fiesta Nacional de España' }
+  - { date: '2026-11-02', label: 'Día de Todos los Santos (trasladado)' }
+  - { date: '2026-12-07', label: 'Día de la Constitución (trasladado)' }
+  - { date: '2026-12-08', label: 'Inmaculada Concepción' }
+  - { date: '2026-12-25', label: 'Natividad del Señor' }

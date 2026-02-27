@@ -1894,6 +1894,10 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
 
   if (!$has_layout_class) {
     $module_body_classes = [
+      // GAP-L5: IA Level 5 dashboards (specific routes before catch-all).
+      'jaraba_ai_agents.compliance_dashboard' => 'page-ai-compliance',
+      'jaraba_ai_agents.autonomous_agents_dashboard' => 'page-autonomous-agents',
+      'jaraba_ai_agents.causal_analytics_dashboard' => 'page-causal-analytics',
       'jaraba_agroconecta.' => 'page-agroconecta',
       'jaraba_lms.' => 'page-lms',
       'jaraba_mentoring.' => 'page-mentoring',
@@ -2281,6 +2285,21 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
         'critical_css',
       ];
     }
+  }
+
+  // =========================================================================
+  // BOTTOM NAV MOBILE — body class + library (FASE 5 Elevacion Clase Mundial)
+  // Solo para usuarios autenticados en el SaaS, no en meta-sites.
+  // El CSS de .bottom-nav ya existe en _mobile-components.scss:150-282.
+  // body.has-bottom-nav aplica padding-bottom compensatorio en mobile.
+  // =========================================================================
+  $is_logged_in = \Drupal::currentUser()->isAuthenticated();
+  $is_meta_site = in_array('meta-site', $variables['attributes']['class'] ?? []);
+  if ($is_logged_in && !$is_meta_site) {
+    $variables['attributes']['class'][] = 'has-bottom-nav';
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/bottom-nav';
+    // Quick-Start Overlay — primera visita (FASE 8 Elevacion Clase Mundial).
+    $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/quick-start';
   }
 }
 
@@ -4195,6 +4214,28 @@ function ecosistema_jaraba_theme_preprocess_page__403(&$variables): void {
 }
 
 /**
+ * Implements hook_preprocess_page().
+ *
+ * Inyecta header_megamenu: TRUE para el SaaS principal (cuando NO es meta-sitio).
+ * Los meta-sitios ya inyectan sus propios nav_items via MetaSiteResolverService
+ * y NO tendrán header_megamenu, por lo que usarán la navegación plana.
+ *
+ * @see _header-classic.html.twig — Usa ts.header_megamenu|default(false)
+ * @see docs/implementacion/20260227-Plan_Correccion_Navegacion_Ecosistema_v1.md §7.2
+ */
+function ecosistema_jaraba_theme_preprocess_page(array &$variables): void {
+  // Si NO es meta-sitio → estamos en el SaaS principal → activar megamenu.
+  // La variable 'meta_site' se establece en theme_preprocess_page() del módulo
+  // ecosistema_jaraba_core cuando MetaSiteResolverService detecta un meta-sitio.
+  if (empty($variables['meta_site'])) {
+    if (!isset($variables['theme_settings'])) {
+      $variables['theme_settings'] = [];
+    }
+    $variables['theme_settings']['header_megamenu'] = TRUE;
+  }
+}
+
+/**
  * Implements hook_page_attachments_alter().
  *
  * FIX-016: Attaches route-specific CSS libraries based on current route.
@@ -4219,6 +4260,10 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'jaraba_page_builder.landing' => ['ecosistema_jaraba_theme/route-landing'],
     'entity.page_content.canonical' => ['ecosistema_jaraba_theme/route-landing'],
     'empleabilidad.' => ['ecosistema_jaraba_theme/route-empleabilidad', 'ecosistema_jaraba_theme/bundle-employability-pages'],
+    // GAP-L5: Dashboard-specific CSS for IA Level 5 pages.
+    'jaraba_ai_agents.compliance_dashboard' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/route-ai-compliance'],
+    'jaraba_ai_agents.autonomous_agents_dashboard' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/route-autonomous-agents'],
+    'jaraba_ai_agents.causal_analytics_dashboard' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/route-causal-analytics'],
     'jaraba_ai_agents.' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'jaraba_copilot' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'jaraba_candidate.jobseeker' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],

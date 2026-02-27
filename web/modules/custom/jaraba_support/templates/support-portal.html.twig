@@ -1,0 +1,147 @@
+{#
+/**
+ * @file
+ * Template: Support portal — Main ticket list page.
+ *
+ * Variables (from SupportPortalController):
+ * - tickets: Array of ticket data with keys:
+ *   id, ticket_number, subject, status, priority, created, updated,
+ *   sla_status, assigned_agent, category, last_message_preview
+ * - stats: Array with keys:
+ *   total_tickets, open_tickets, pending_tickets, resolved_tickets,
+ *   avg_response_time, avg_resolution_time
+ * - can_create: Boolean — whether user can create new tickets
+ * - theme_settings: Array of theme configuration
+ *
+ * Directrices:
+ * - i18n: {% trans %} para todos los textos
+ * - Iconos: jaraba_icon() del sistema de iconos
+ * - CSS: BEM support-* con tokens var(--ej-*)
+ * - Zero-region: sin {% block content %}, HTML limpio con {% include %}
+ */
+#}
+
+{% set ts = theme_settings|default({}) %}
+
+<div class="support-portal">
+
+  {# =========================================================
+     S1 — HEADER: Title + Create button
+     ========================================================= #}
+  <header class="support-portal__header">
+    <div class="support-portal__header-text">
+      <h1 class="support-portal__title">
+        {{ jaraba_icon('ui', 'headphones', { variant: 'duotone', size: '28px' }) }}
+        {% trans %}Support Center{% endtrans %}
+      </h1>
+      <p class="support-portal__subtitle">
+        {% trans %}Manage your support tickets and track resolutions.{% endtrans %}
+      </p>
+    </div>
+
+    {% if can_create %}
+      <div class="support-portal__actions">
+        <button type="button"
+                class="support-portal__create-btn btn btn--primary"
+                data-support-action="create-ticket">
+          {{ jaraba_icon('ui', 'plus', { size: '16px' }) }}
+          {% trans %}Create Ticket{% endtrans %}
+        </button>
+      </div>
+    {% endif %}
+  </header>
+
+  {# =========================================================
+     S2 — STATS: KPI cards grid
+     ========================================================= #}
+  {% if stats %}
+    <section class="support-portal__stats" aria-label="{% trans %}Ticket statistics{% endtrans %}">
+      <div class="support-portal__stats-grid">
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Open'|t,
+          value: stats.open_tickets|default(0),
+          icon: 'inbox',
+          variant: 'info',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Pending'|t,
+          value: stats.pending_tickets|default(0),
+          icon: 'clock',
+          variant: 'warning',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Resolved'|t,
+          value: stats.resolved_tickets|default(0),
+          icon: 'check-circle',
+          variant: 'success',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Avg. Response'|t,
+          value: stats.avg_response_time|default('--'),
+          icon: 'zap',
+          variant: 'neutral',
+        } only %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# =========================================================
+     S3 — FILTERS: Quick filters for ticket status
+     ========================================================= #}
+  <nav class="support-portal__filters" aria-label="{% trans %}Filter tickets{% endtrans %}">
+    <button type="button" class="support-portal__filter support-portal__filter--active" data-filter="all">
+      {% trans %}All{% endtrans %}
+    </button>
+    <button type="button" class="support-portal__filter" data-filter="open">
+      {% trans %}Open{% endtrans %}
+    </button>
+    <button type="button" class="support-portal__filter" data-filter="pending">
+      {% trans %}Pending{% endtrans %}
+    </button>
+    <button type="button" class="support-portal__filter" data-filter="resolved">
+      {% trans %}Resolved{% endtrans %}
+    </button>
+    <button type="button" class="support-portal__filter" data-filter="closed">
+      {% trans %}Closed{% endtrans %}
+    </button>
+  </nav>
+
+  {# =========================================================
+     S4 — TICKET LIST: Cards for each ticket
+     ========================================================= #}
+  <section class="support-portal__tickets" aria-label="{% trans %}Your tickets{% endtrans %}">
+    {% if tickets is not empty %}
+      <div class="support-portal__ticket-list">
+        {% for ticket in tickets %}
+          {% include '@jaraba_support/partials/_support-ticket-card.html.twig' with {
+            ticket: ticket,
+          } only %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="support-portal__empty">
+        <div class="support-portal__empty-icon">
+          {{ jaraba_icon('ui', 'inbox', { variant: 'duotone', size: '48px' }) }}
+        </div>
+        <h3 class="support-portal__empty-title">
+          {% trans %}No tickets found{% endtrans %}
+        </h3>
+        <p class="support-portal__empty-text">
+          {% trans %}You don't have any support tickets yet. Create one if you need help.{% endtrans %}
+        </p>
+        {% if can_create %}
+          <button type="button"
+                  class="support-portal__empty-btn btn btn--primary"
+                  data-support-action="create-ticket">
+            {{ jaraba_icon('ui', 'plus', { size: '16px' }) }}
+            {% trans %}Create your first ticket{% endtrans %}
+          </button>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+
+</div>

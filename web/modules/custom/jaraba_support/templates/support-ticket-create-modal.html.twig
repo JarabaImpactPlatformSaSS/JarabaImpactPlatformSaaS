@@ -1,0 +1,153 @@
+{#
+/**
+ * @file
+ * Template: Create ticket form — Slide-panel modal.
+ *
+ * Variables (from SupportTicketController::createForm):
+ * - deflection_results: Array of KB articles found before creation, with keys:
+ *   id, title, excerpt, url, relevance_score
+ * - theme_settings: Array of theme configuration
+ *
+ * Directrices:
+ * - SLIDE-PANEL-RENDER-001: Rendered via renderPlain() for slide-panel
+ * - i18n: {% trans %} para todos los textos
+ * - Iconos: jaraba_icon()
+ * - CSS: BEM support-ticket-create-*
+ * - KB deflection shown before form to reduce ticket volume
+ */
+#}
+
+{% set ts = theme_settings|default({}) %}
+
+<div class="support-ticket-create">
+
+  {# =========================================================
+     S1 — MODAL HEADER
+     ========================================================= #}
+  <header class="support-ticket-create__header">
+    <h2 class="support-ticket-create__title">
+      {{ jaraba_icon('ui', 'plus-circle', { variant: 'duotone', size: '24px' }) }}
+      {% trans %}Create Support Ticket{% endtrans %}
+    </h2>
+    <p class="support-ticket-create__subtitle">
+      {% trans %}Describe your issue and we'll get back to you as soon as possible.{% endtrans %}
+    </p>
+  </header>
+
+  {# =========================================================
+     S2 — KB DEFLECTION: Show relevant articles before form
+     ========================================================= #}
+  <div class="support-ticket-create__deflection" data-support-deflection-container style="display: none;">
+    {% include '@jaraba_support/partials/_support-deflection-results.html.twig' with {
+      deflection_results: deflection_results|default([]),
+    } only %}
+  </div>
+
+  {# =========================================================
+     S3 — TICKET FORM
+     ========================================================= #}
+  <form class="support-ticket-create__form" data-support-create-form>
+
+    {# Subject #}
+    <div class="support-ticket-create__field">
+      <label for="support-subject" class="support-ticket-create__label">
+        {% trans %}Subject{% endtrans %}
+        <span class="support-ticket-create__required" aria-hidden="true">*</span>
+      </label>
+      <input type="text"
+             id="support-subject"
+             name="subject"
+             class="support-ticket-create__input"
+             placeholder="{{ 'Briefly describe your issue'|t }}"
+             required
+             maxlength="255"
+             data-support-deflection-trigger>
+    </div>
+
+    {# Category #}
+    <div class="support-ticket-create__field">
+      <label for="support-category" class="support-ticket-create__label">
+        {% trans %}Category{% endtrans %}
+      </label>
+      <select id="support-category"
+              name="category"
+              class="support-ticket-create__select">
+        <option value="">{{ '-- Select a category --'|t }}</option>
+        <option value="general">{{ 'General'|t }}</option>
+        <option value="billing">{{ 'Billing'|t }}</option>
+        <option value="technical">{{ 'Technical'|t }}</option>
+        <option value="account">{{ 'Account'|t }}</option>
+        <option value="feature_request">{{ 'Feature Request'|t }}</option>
+      </select>
+    </div>
+
+    {# Priority #}
+    <div class="support-ticket-create__field">
+      <label for="support-priority" class="support-ticket-create__label">
+        {% trans %}Priority{% endtrans %}
+      </label>
+      <select id="support-priority"
+              name="priority"
+              class="support-ticket-create__select">
+        <option value="low">{{ 'Low'|t }}</option>
+        <option value="medium" selected>{{ 'Medium'|t }}</option>
+        <option value="high">{{ 'High'|t }}</option>
+        <option value="urgent">{{ 'Urgent'|t }}</option>
+      </select>
+    </div>
+
+    {# Description #}
+    <div class="support-ticket-create__field">
+      <label for="support-description" class="support-ticket-create__label">
+        {% trans %}Description{% endtrans %}
+        <span class="support-ticket-create__required" aria-hidden="true">*</span>
+      </label>
+      <textarea id="support-description"
+                name="description"
+                class="support-ticket-create__textarea"
+                placeholder="{{ 'Provide details about your issue, including steps to reproduce if applicable.'|t }}"
+                rows="6"
+                required></textarea>
+    </div>
+
+    {# Attachments #}
+    <div class="support-ticket-create__field">
+      <label class="support-ticket-create__label">
+        {% trans %}Attachments{% endtrans %}
+      </label>
+      <div class="support-ticket-create__dropzone" data-support-dropzone>
+        <div class="support-ticket-create__dropzone-content">
+          {{ jaraba_icon('ui', 'upload-cloud', { variant: 'duotone', size: '32px' }) }}
+          <p class="support-ticket-create__dropzone-text">
+            {% trans %}Drag files here or click to browse{% endtrans %}
+          </p>
+          <p class="support-ticket-create__dropzone-hint">
+            {% trans %}Max 10MB per file. PNG, JPG, PDF, ZIP accepted.{% endtrans %}
+          </p>
+        </div>
+        <input type="file"
+               name="attachments[]"
+               class="support-ticket-create__file-input visually-hidden"
+               multiple
+               accept=".png,.jpg,.jpeg,.pdf,.zip,.txt,.doc,.docx">
+      </div>
+      <div class="support-ticket-create__file-list" data-support-file-list></div>
+    </div>
+
+    {# Submit #}
+    <div class="support-ticket-create__actions">
+      <button type="button"
+              class="btn btn--ghost"
+              data-support-action="cancel">
+        {% trans %}Cancel{% endtrans %}
+      </button>
+      <button type="submit"
+              class="btn btn--primary">
+        {{ jaraba_icon('ui', 'send', { size: '16px' }) }}
+        {% trans %}Submit Ticket{% endtrans %}
+      </button>
+    </div>
+
+  </form>
+
+</div>

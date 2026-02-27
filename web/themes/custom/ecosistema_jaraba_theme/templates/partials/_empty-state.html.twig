@@ -1,0 +1,65 @@
+{#
+ # @file
+ # Empty State — Placeholder informativo con CTA contextual.
+ #
+ # Muestra icono SVG + titulo + descripcion + boton de accion primario
+ # cuando una seccion del dashboard no tiene datos. Reduce abandono
+ # y guia al usuario hacia su primera accion.
+ #
+ # @param icon        string  Categoria del icono para jaraba_icon() (e.g., 'business')
+ # @param icon_name   string  Nombre del icono (e.g., 'rocket')
+ # @param title       string  Titulo traducido (usar |trans en el caller)
+ # @param description string  Descripcion traducida
+ # @param cta_label   string  Texto del boton principal (traducido)
+ # @param cta_url     string  URL del boton principal
+ # @param secondary_label string  Texto de la accion secundaria (opcional)
+ # @param secondary_url   string  URL de la accion secundaria (opcional)
+ #
+ # Uso:
+ #   {% include '@ecosistema_jaraba_theme/partials/_empty-state.html.twig' with {
+ #     icon: 'business',
+ #     icon_name: 'rocket',
+ #     title: 'Sin proyectos todavia'|trans,
+ #     description: 'Crea tu primer proyecto para comenzar.'|trans,
+ #     cta_label: 'Crear proyecto'|trans,
+ #     cta_url: '/node/add/project',
+ #   } %}
+ #
+ # Directivas: ICON-CONVENTION-001, ICON-DUOTONE-001, TWIG-XSS-001,
+ #             BEM-NAMING-001, DESIGN-TOKEN-FEDERATED-001, i18n
+ # Accesibilidad: WCAG 2.1 AA — role="status", aria-live, .visually-hidden
+ # Traduccion: |trans en variables del caller, {% trans %} en textos fijos
+ # CSS: _empty-state.scss (compilar con Dart Sass)
+ #}
+
+<div class="ej-empty-state" role="status" aria-live="polite">
+
+  {% if icon is defined and icon_name is defined %}
+    <div class="ej-empty-state__icon" aria-hidden="true">
+      {{ jaraba_icon(icon, icon_name, { variant: 'duotone', size: '64px' }) }}
+    </div>
+  {% endif %}
+
+  {% if title is defined %}
+    <h3 class="ej-empty-state__title">{{ title }}</h3>
+  {% endif %}
+
+  {% if description is defined %}
+    <p class="ej-empty-state__description">{{ description }}</p>
+  {% endif %}
+
+  {% if cta_label is defined and cta_url is defined %}
+    <div class="ej-empty-state__actions">
+      <a href="{{ cta_url }}" class="ej-empty-state__cta ej-btn ej-btn--primary">
+        {{ cta_label }}
+      </a>
+
+      {% if secondary_label is defined and secondary_url is defined %}
+        <a href="{{ secondary_url }}" class="ej-empty-state__secondary ej-btn ej-btn--outline">
+          {{ secondary_label }}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>

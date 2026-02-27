@@ -1,0 +1,109 @@
+/**
+ * @file
+ * Toast Notifications — Sistema global de notificaciones contextuales.
+ *
+ * Toasts flotantes con variantes de severidad (error, warning, success, info),
+ * boton "Reintentar" para error recovery, y auto-dismiss configurable.
+ * Complementa el slide-panel-toast existente con un sistema BEM independiente.
+ *
+ * DIRECTRICES:
+ * - DESIGN-TOKEN-FEDERATED-001: var(--ej-*) con fallback SCSS
+ * - BEM-NAMING-001: .ej-toast, .ej-toast__title, .ej-toast--error
+ * - COLOR-MIX-MIGRATION-001: Sin darken()/lighten()
+ * - Accesibilidad: role="alert", aria-live="assertive" (definido en JS)
+ * - Accesibilidad: prefers-reduced-motion respetado via _accessibility.scss
+ *
+ * COMPILACION:
+ * lando ssh -c "cd /app/web/themes/custom/ecosistema_jaraba_theme && \
+ *   npx sass scss/main.scss:css/main.css --style=compressed --no-source-map"
+ */
+
+// === CONTENEDOR GLOBAL ===
+.ej-toast-container {
+  position: fixed;
+  top: var(--ej-spacing-lg, 1.5rem);
+  right: var(--ej-spacing-lg, 1.5rem);
+  z-index: 1080; // Sobre modales (slide-panel: 1000) y tooltips (1070)
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  max-width: 420px;
+  pointer-events: none;
+
+  // Mobile: full-width
+  @media (max-width: 768px) {
+    left: var(--ej-spacing-sm, 0.5rem);
+    right: var(--ej-spacing-sm, 0.5rem);
+    max-width: none;
+  }
+}
+
+// === TOAST INDIVIDUAL ===
+.ej-toast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--ej-spacing-sm, 0.5rem);
+  padding: var(--ej-spacing-md, 1rem);
+  background: var(--ej-bg-card, #ffffff);
+  border-radius: var(--ej-border-radius, 10px);
+  box-shadow: var(--ej-shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.14));
+  border-left: 4px solid;
+  animation: ej-fadeInScale 200ms ease-out;
+  pointer-events: auto;
+
+  // --- Variantes por severidad ---
+
+  &--error {
+    border-left-color: var(--ej-color-danger, #EF4444);
+  }
+
+  &--warning {
+    border-left-color: var(--ej-color-warning, #F59E0B);
+  }
+
+  &--success {
+    border-left-color: var(--ej-color-success, #10B981);
+  }
+
+  &--info {
+    border-left-color: var(--ej-color-info, #1976D2);
+  }
+
+  // --- Elementos internos ---
+
+  &__title {
+    flex: 1;
+    font-family: var(--ej-font-family-heading, 'Outfit', sans-serif);
+    font-weight: 600;
+    color: var(--ej-text-primary, #334155);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+  }
+
+  &__message {
+    width: 100%;
+    margin: 0;
+    color: var(--ej-text-muted, #64748B);
+    font-size: var(--ej-font-size-sm, 0.875rem);
+    line-height: 1.5;
+  }
+
+  &__retry {
+    margin-top: var(--ej-spacing-xs, 0.25rem);
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    color: var(--ej-text-muted, #64748B);
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:hover {
+      color: var(--ej-text-primary, #334155);
+    }
+  }
+}

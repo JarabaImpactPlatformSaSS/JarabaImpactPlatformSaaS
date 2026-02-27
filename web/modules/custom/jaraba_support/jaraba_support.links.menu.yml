@@ -1,0 +1,21 @@
+# Admin menu links
+jaraba_support.admin:
+  title: 'Support Tickets'
+  description: 'Manage support tickets and customer issues.'
+  route_name: entity.support_ticket.collection
+  parent: system.admin_content
+  weight: 15
+
+jaraba_support.structure:
+  title: 'Support Tickets'
+  description: 'Configure support ticket entity fields and display.'
+  route_name: entity.support_ticket.settings
+  parent: system.admin_structure
+  weight: 15
+
+jaraba_support.config:
+  title: 'Support'
+  description: 'Configure support system: SLA policies, business hours, and general settings.'
+  route_name: jaraba_support.settings
+  parent: system.admin_config_content
+  weight: 15

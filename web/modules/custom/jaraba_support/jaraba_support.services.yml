@@ -1,0 +1,159 @@
+services:
+  # Logger
+  logger.channel.jaraba_support:
+    parent: logger.channel_base
+    arguments: ['jaraba_support']
+
+  # Core services
+  jaraba_support.ticket:
+    class: Drupal\jaraba_support\Service\TicketService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_support'
+      - '@database'
+      - '@?ecosistema_jaraba_core.tenant_context'
+      - '@event_dispatcher'
+
+  jaraba_support.ai_classification:
+    class: Drupal\jaraba_support\Service\TicketAiClassificationService
+    arguments:
+      - '@?ai.provider'
+      - '@logger.channel.jaraba_support'
+      - '@?jaraba_rag.qdrant_client'
+      - '@?jaraba_ai_agents.model_router'
+      - '@config.factory'
+
+  jaraba_support.ai_resolution:
+    class: Drupal\jaraba_support\Service\TicketAiResolutionService
+    arguments:
+      - '@?ai.provider'
+      - '@logger.channel.jaraba_support'
+      - '@?jaraba_rag.qdrant_client'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.observability'
+      - '@config.factory'
+
+  jaraba_support.sla_engine:
+    class: Drupal\jaraba_support\Service\SlaEngineService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+      - '@jaraba_support.business_hours'
+      - '@jaraba_support.notification'
+      - '@?jaraba_support.health_score'
+
+  jaraba_support.business_hours:
+    class: Drupal\jaraba_support\Service\BusinessHoursService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+
+  jaraba_support.routing:
+    class: Drupal\jaraba_support\Service\TicketRoutingService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_support'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
+  jaraba_support.attachment:
+    class: Drupal\jaraba_support\Service\AttachmentService
+    arguments:
+      - '@entity_type.manager'
+      - '@file_system'
+      - '@logger.channel.jaraba_support'
+      - '@?jaraba_billing.plan_resolver'
+
+  jaraba_support.attachment_scan:
+    class: Drupal\jaraba_support\Service\AttachmentScanService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+      - '@config.factory'
+
+  jaraba_support.attachment_url:
+    class: Drupal\jaraba_support\Service\AttachmentUrlService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+      - '@config.factory'
+
+  jaraba_support.notification:
+    class: Drupal\jaraba_support\Service\TicketNotificationService
+    arguments:
+      - '@logger.channel.jaraba_support'
+      - '@plugin.manager.mail'
+      - '@?ecosistema_jaraba_core.notification'
+
+  jaraba_support.summarization:
+    class: Drupal\jaraba_support\Service\TicketSummarizationService
+    arguments:
+      - '@?ai.provider'
+      - '@logger.channel.jaraba_support'
+      - '@jaraba_support.ticket'
+      - '@?jaraba_ai_agents.model_router'
+
+  jaraba_support.merge:
+    class: Drupal\jaraba_support\Service\TicketMergeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+      - '@jaraba_support.ticket'
+
+  jaraba_support.analytics:
+    class: Drupal\jaraba_support\Service\SupportAnalyticsService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_support'
+
+  jaraba_support.health_score:
+    class: Drupal\jaraba_support\Service\SupportHealthScoreService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_support'
+      - '@?ecosistema_jaraba_core.customer_success'
+
+  jaraba_support.csat:
+    class: Drupal\jaraba_support\Service\CsatSurveyService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_support'
+      - '@jaraba_support.notification'
+
+  jaraba_support.stream:
+    class: Drupal\jaraba_support\Service\TicketStreamService
+    arguments:
+      - '@database'
+      - '@logger.channel.jaraba_support'
+
+  jaraba_support.deflection:
+    class: Drupal\jaraba_support\Service\TicketDeflectionService
+    arguments:
+      - '@?jaraba_rag.qdrant_client'
+      - '@logger.channel.jaraba_support'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
+  jaraba_support.cron:
+    class: Drupal\jaraba_support\Service\SupportCronService
+    arguments:
+      - '@jaraba_support.sla_engine'
+      - '@jaraba_support.ticket'
+      - '@jaraba_support.notification'
+      - '@jaraba_support.attachment_scan'
+      - '@logger.channel.jaraba_support'
+
+  # Gen 2 Smart Agent
+  jaraba_support.smart_support_agent:
+    class: Drupal\jaraba_support\Agent\SupportAgentSmartAgent
+    arguments:
+      - '@?ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_support'
+      - '@?jaraba_ai_agents.tenant_brand_voice'
+      - '@?jaraba_ai_agents.observability'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?jaraba_ai_agents.tool_registry'
+      - '@?jaraba_ai_agents.provider_fallback'
+      - '@?jaraba_ai_agents.context_window_manager'

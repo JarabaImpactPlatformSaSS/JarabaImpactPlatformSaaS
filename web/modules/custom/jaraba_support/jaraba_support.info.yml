@@ -1,0 +1,21 @@
+name: 'Jaraba Support'
+type: module
+description: 'World-class support ticket system with AI proactive classification, SLA engine, and multi-channel communication.'
+package: Jaraba SaaS
+core_version_requirement: ^10 || ^11
+php: 8.2
+
+dependencies:
+  - drupal:text
+  - drupal:file
+  - drupal:user
+  - drupal:datetime
+  - drupal:views
+  - drupal:field_ui
+  - drupal:options
+  - ecosistema_jaraba_core:ecosistema_jaraba_core
+  - group:group
+  - jaraba_ai_agents:jaraba_ai_agents
+  - jaraba_rag:jaraba_rag
+
+configure: jaraba_support.settings

@@ -1,0 +1,18 @@
+# Action links (+ Add buttons)
+entity.support_ticket.add_form:
+  title: 'Add Support Ticket'
+  route_name: entity.support_ticket.add_form
+  appears_on:
+    - entity.support_ticket.collection
+
+entity.sla_policy.add_form:
+  title: 'Add SLA Policy'
+  route_name: entity.sla_policy.add_form
+  appears_on:
+    - jaraba_support.admin.sla_policies
+
+entity.business_hours_schedule.add_form:
+  title: 'Add Business Hours Schedule'
+  route_name: entity.business_hours_schedule.add_form
+  appears_on:
+    - jaraba_support.admin.business_hours

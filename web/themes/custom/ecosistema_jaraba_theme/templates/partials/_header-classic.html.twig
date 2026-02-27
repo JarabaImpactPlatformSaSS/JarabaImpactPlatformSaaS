@@ -18,9 +18,9 @@
 #}
 {% set ts = theme_settings|default({}) %}
 {% set show_auth = ts.header_show_auth|default(true) %}
-{% set use_megamenu = ts.header_megamenu|default(true) %}
+{% set use_megamenu = ts.header_megamenu|default(false) %}
 
-<header class="landing-header landing-header--classic header--mega" role="banner">
+<header class="landing-header landing-header--classic{{ use_megamenu ? ' header--mega' : '' }}" role="banner">
   <div class="landing-header__container header__container">
 
     {# ── Logo + Branding ── #}

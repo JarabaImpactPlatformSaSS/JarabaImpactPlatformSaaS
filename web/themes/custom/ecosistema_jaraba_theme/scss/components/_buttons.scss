@@ -17,8 +17,13 @@
     border-radius: var(--ej-btn-radius, 8px);
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 150ms ease, box-shadow 150ms ease, background 200ms ease, color 200ms ease, border-color 200ms ease, filter 200ms ease;
     text-decoration: none;
+
+    // Micro-interaction: click pulse
+    &:active:not(:disabled) {
+        transform: scale(0.97);
+    }
 
     &:disabled {
         opacity: 0.5;

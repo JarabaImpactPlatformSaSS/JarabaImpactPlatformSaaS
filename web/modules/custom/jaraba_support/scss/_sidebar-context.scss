@@ -1,0 +1,92 @@
+// ═══════════════════════════════════════════════════════════
+// Sidebar Context Panel
+// ═══════════════════════════════════════════════════════════
+
+@use 'variables' as *;
+
+.support-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 1rem;
+
+  &__card {
+    background: var(--ej-color-surface, #fff);
+    border-radius: $support-card-border-radius;
+    padding: $support-card-padding;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  &__card-title {
+    font-size: $support-font-size-sm;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ej-color-text-secondary, #475569);
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--ej-color-border, #E2E8F0);
+  }
+
+  &__field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--ej-color-border-light, #F1F5F9);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__field-label {
+    font-size: $support-font-size-sm;
+    color: var(--ej-color-text-secondary, #475569);
+  }
+
+  &__field-value {
+    font-size: $support-font-size-sm;
+    font-weight: 600;
+    color: var(--ej-color-text-primary, #1E293B);
+  }
+
+  // --- Actions ---
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--ej-color-border, #E2E8F0);
+    border-radius: 8px;
+    background: transparent;
+    font-size: $support-font-size-sm;
+    font-weight: 500;
+    color: var(--ej-color-text-primary, #1E293B);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: left;
+
+    &:hover {
+      background: var(--ej-color-surface-hover, #F8FAFC);
+      border-color: var(--ej-color-corporate, #233D63);
+    }
+
+    &--danger {
+      color: var(--ej-color-danger, #EF4444);
+
+      &:hover {
+        background: color-mix(in srgb, var(--ej-color-danger, #EF4444) 5%, transparent);
+        border-color: var(--ej-color-danger, #EF4444);
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+id: enterprise_high
+label: 'Enterprise - High'
+plan_tier: enterprise
+priority: high
+first_response_hours: 1
+resolution_hours: 8
+business_hours_only: true
+schedule: extended
+phone_support: true
+priority_queue: true
+escalation_after_hours: 4
+idle_timeout_hours: 48
+auto_close_hours: 168
+pause_on_pending: true
+active: true

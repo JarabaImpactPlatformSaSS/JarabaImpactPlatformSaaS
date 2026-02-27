@@ -91,5 +91,14 @@ function jaraba_ai_agents_theme(): array {
       ],
       'template' => 'autonomous-agents-dashboard',
     ],
+    // GAP-L5-H/I: Causal Analytics & Federated Insights Dashboard.
+    'causal_analytics_dashboard' => [
+      'variables' => [
+        'insights' => [],
+        'analyses' => [],
+        'k_anonymity_threshold' => 5,
+      ],
+      'template' => 'causal-analytics-dashboard',
+    ],
   ];
 }

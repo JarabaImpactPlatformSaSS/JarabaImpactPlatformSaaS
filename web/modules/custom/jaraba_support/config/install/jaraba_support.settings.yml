@@ -1,0 +1,9 @@
+default_vertical: platform
+ai_auto_classify: true
+ai_auto_resolve: true
+deflection_enabled: true
+max_files_per_ticket: 10
+virus_scanning_enabled: true
+clamav_socket: '/var/run/clamav/clamd.ctl'
+email_notifications: true
+csat_delay_hours: 24

@@ -1,0 +1,186 @@
+{#
+/**
+ * @file
+ * Template: Agent dashboard — Ticket queue and performance stats.
+ *
+ * Variables (from SupportAgentDashboardController):
+ * - tickets: Array of queued ticket data with keys:
+ *   id, ticket_number, subject, status, priority, created, updated,
+ *   sla_status, assigned_agent, category, requester, last_message_preview
+ * - stats: Array with keys:
+ *   total_queue, my_open, avg_first_response, avg_resolution,
+ *   csat_score, tickets_resolved_today, sla_compliance
+ * - saved_views: Array of saved filter views with keys:
+ *   id, label, filters, count
+ * - agent_metrics: Array with keys:
+ *   tickets_handled, avg_response_time, csat_avg, resolution_rate,
+ *   active_tickets, escalations
+ * - theme_settings: Array of theme configuration
+ *
+ * Directrices:
+ * - i18n: {% trans %} para todos los textos
+ * - Iconos: jaraba_icon()
+ * - CSS: BEM support-agent-dashboard-*
+ * - Zero-region: sin {% block content %}
+ */
+#}
+
+{% set ts = theme_settings|default({}) %}
+
+<div class="support-agent-dashboard">
+
+  {# =========================================================
+     S1 — HEADER: Dashboard title + quick actions
+     ========================================================= #}
+  <header class="support-agent-dashboard__header">
+    <div class="support-agent-dashboard__header-text">
+      <h1 class="support-agent-dashboard__title">
+        {{ jaraba_icon('ui', 'layout-dashboard', { variant: 'duotone', size: '28px' }) }}
+        {% trans %}Agent Dashboard{% endtrans %}
+      </h1>
+      <p class="support-agent-dashboard__subtitle">
+        {% trans %}Manage your ticket queue and track performance.{% endtrans %}
+      </p>
+    </div>
+
+    <div class="support-agent-dashboard__actions">
+      <button type="button"
+              class="btn btn--sm btn--outline"
+              data-support-action="refresh-queue">
+        {{ jaraba_icon('ui', 'refresh-cw', { size: '14px' }) }}
+        {% trans %}Refresh{% endtrans %}
+      </button>
+    </div>
+  </header>
+
+  {# =========================================================
+     S2 — KPI ROW: Agent performance metrics
+     ========================================================= #}
+  {% if agent_metrics %}
+    <section class="support-agent-dashboard__kpis" aria-label="{% trans %}Performance metrics{% endtrans %}">
+      <div class="support-agent-dashboard__kpi-grid">
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'My Open'|t,
+          value: stats.my_open|default(0),
+          icon: 'inbox',
+          variant: 'info',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Resolved Today'|t,
+          value: stats.tickets_resolved_today|default(0),
+          icon: 'check-circle',
+          variant: 'success',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'CSAT'|t,
+          value: agent_metrics.csat_avg|default('--') ~ '%',
+          icon: 'smile',
+          variant: 'success',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'SLA Compliance'|t,
+          value: stats.sla_compliance|default('--') ~ '%',
+          icon: 'shield',
+          variant: 'neutral',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Avg. Response'|t,
+          value: agent_metrics.avg_response_time|default('--'),
+          icon: 'zap',
+          variant: 'warning',
+        } only %}
+
+        {% include '@jaraba_support/partials/_support-analytics-kpi.html.twig' with {
+          label: 'Resolution Rate'|t,
+          value: agent_metrics.resolution_rate|default('--') ~ '%',
+          icon: 'trending-up',
+          variant: 'info',
+        } only %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# =========================================================
+     S3 — QUEUE LAYOUT: Saved views + ticket queue
+     ========================================================= #}
+  <div class="support-agent-dashboard__layout">
+
+    {# Saved Views sidebar #}
+    {% if saved_views is not empty %}
+      <nav class="support-agent-dashboard__views" aria-label="{% trans %}Saved views{% endtrans %}">
+        <h2 class="support-agent-dashboard__views-title">
+          {{ jaraba_icon('ui', 'bookmark', { size: '16px' }) }}
+          {% trans %}Views{% endtrans %}
+        </h2>
+        <ul class="support-agent-dashboard__views-list">
+          {% for view in saved_views %}
+            <li class="support-agent-dashboard__views-item">
+              <button type="button"
+                      class="support-agent-dashboard__views-btn"
+                      data-view-id="{{ view.id }}">
+                {{ view.label }}
+                <span class="support-agent-dashboard__views-count">{{ view.count }}</span>
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+
+    {# Ticket queue #}
+    <section class="support-agent-dashboard__queue" aria-label="{% trans %}Ticket queue{% endtrans %}">
+
+      {# Queue filters #}
+      <div class="support-agent-dashboard__queue-header">
+        <h2 class="support-agent-dashboard__queue-title">
+          {% trans %}Queue{% endtrans %}
+          <span class="support-agent-dashboard__queue-count">({{ stats.total_queue|default(0) }})</span>
+        </h2>
+
+        <div class="support-agent-dashboard__queue-filters">
+          <button type="button" class="support-agent-dashboard__filter support-agent-dashboard__filter--active" data-filter="all">
+            {% trans %}All{% endtrans %}
+          </button>
+          <button type="button" class="support-agent-dashboard__filter" data-filter="unassigned">
+            {% trans %}Unassigned{% endtrans %}
+          </button>
+          <button type="button" class="support-agent-dashboard__filter" data-filter="mine">
+            {% trans %}Mine{% endtrans %}
+          </button>
+          <button type="button" class="support-agent-dashboard__filter" data-filter="urgent">
+            {% trans %}Urgent{% endtrans %}
+          </button>
+          <button type="button" class="support-agent-dashboard__filter" data-filter="sla-breach">
+            {% trans %}SLA Breach{% endtrans %}
+          </button>
+        </div>
+      </div>
+
+      {# Queue items #}
+      {% if tickets is not empty %}
+        <div class="support-agent-dashboard__queue-list">
+          {% for ticket in tickets %}
+            {% include '@jaraba_support/partials/_support-agent-queue-item.html.twig' with {
+              ticket: ticket,
+            } only %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="support-agent-dashboard__queue-empty">
+          <div class="support-agent-dashboard__queue-empty-icon">
+            {{ jaraba_icon('ui', 'check-circle', { variant: 'duotone', size: '40px' }) }}
+          </div>
+          <p class="support-agent-dashboard__queue-empty-text">
+            {% trans %}No tickets in queue. Great job!{% endtrans %}
+          </p>
+        </div>
+      {% endif %}
+
+    </section>
+  </div>
+
+</div>

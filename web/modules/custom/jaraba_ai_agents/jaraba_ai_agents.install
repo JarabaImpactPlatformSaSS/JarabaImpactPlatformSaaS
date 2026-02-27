@@ -273,3 +273,52 @@ function jaraba_ai_agents_update_10007(&$sandbox): string {
     '@result' => implode('. ', $messages) ?: 'No entities needed installation.',
   ]);
 }
+
+/**
+ * GAP-L5-H/I: Install AggregatedInsight and CausalAnalysis entity schemas.
+ *
+ * Estructura: Crea 2 tablas nuevas:
+ *   - aggregated_insight: Insights federados cross-tenant con k-anonimidad.
+ *   - causal_analysis: Analisis causal via LLM premium tier.
+ *
+ * Logica: Patron DRUPAL-ENTUP-001 — Usa installEntityType() para cada entidad.
+ */
+function jaraba_ai_agents_update_10008(&$sandbox): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entities_to_install = [
+    'aggregated_insight' => 'AggregatedInsight',
+    'causal_analysis' => 'CausalAnalysis',
+  ];
+
+  $installed = [];
+  $errors = [];
+
+  foreach ($entities_to_install as $entity_type_id => $label) {
+    try {
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+      $entity_definition_update_manager->installEntityType($entity_type);
+      $installed[] = $label;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_ai_agents')->error(
+        'Error installing @entity entity: @message',
+        ['@entity' => $label, '@message' => $e->getMessage()]
+      );
+      $errors[] = $label . ': ' . $e->getMessage();
+    }
+  }
+
+  $messages = [];
+  if (!empty($installed)) {
+    $messages[] = 'Installed: ' . implode(', ', $installed);
+  }
+  if (!empty($errors)) {
+    $messages[] = 'Errors: ' . implode('; ', $errors);
+  }
+
+  return (string) t('GAP-L5-H/I: @result', [
+    '@result' => implode('. ', $messages) ?: 'No entities needed installation.',
+  ]);
+}

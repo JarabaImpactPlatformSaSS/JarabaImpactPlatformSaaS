@@ -1,0 +1,102 @@
+{#
+/**
+ * @file
+ * Parcial: Single message bubble in the ticket timeline.
+ *
+ * Styled differently based on author_role:
+ * - customer: Left-aligned, neutral background
+ * - agent: Right-aligned, primary brand color
+ * - ai: Right-aligned, subtle AI indicator with gradient accent
+ * - system: Centered, muted, smaller text (status changes, assignments)
+ *
+ * Internal notes have a distinct highlight (visible only to agents).
+ *
+ * Variables:
+ * - message: Array with keys:
+ *   id, author, author_role (customer|agent|ai|system), body,
+ *   created, is_internal_note, attachments
+ * - is_agent: Boolean
+ */
+#}
+
+{% set role = message.author_role|default('customer') %}
+{% set is_note = message.is_internal_note|default(false) %}
+
+{# System messages render as a centered event marker #}
+{% if role == 'system' %}
+
+  <div class="support-message support-message--system">
+    <span class="support-message__system-icon">
+      {{ jaraba_icon('ui', 'info', { size: '12px' }) }}
+    </span>
+    <span class="support-message__system-text">{{ message.body }}</span>
+    <time class="support-message__system-time" datetime="{{ message.created }}">
+      {{ message.created }}
+    </time>
+  </div>
+
+{% else %}
+
+  <div class="support-message support-message--{{ role }}{% if is_note %} support-message--internal-note{% endif %}"
+       data-message-id="{{ message.id }}">
+
+    {# Avatar + author #}
+    <div class="support-message__avatar">
+      {% if role == 'ai' %}
+        {{ jaraba_icon('ui', 'bot', { variant: 'duotone', size: '20px' }) }}
+      {% elseif role == 'agent' %}
+        {{ jaraba_icon('ui', 'headphones', { size: '20px' }) }}
+      {% else %}
+        {{ jaraba_icon('ui', 'user', { size: '20px' }) }}
+      {% endif %}
+    </div>
+
+    <div class="support-message__content">
+      {# Header: author name + timestamp #}
+      <div class="support-message__header">
+        <span class="support-message__author">
+          {{ message.author|default('Unknown'|t) }}
+          {% if role == 'ai' %}
+            <span class="support-message__ai-badge">{% trans %}AI{% endtrans %}</span>
+          {% endif %}
+        </span>
+
+        {% if is_note %}
+          <span class="support-message__note-badge">
+            {{ jaraba_icon('ui', 'lock', { size: '12px' }) }}
+            {% trans %}Internal note{% endtrans %}
+          </span>
+        {% endif %}
+
+        <time class="support-message__time" datetime="{{ message.created }}">
+          {{ message.created }}
+        </time>
+      </div>
+
+      {# Message body #}
+      <div class="support-message__body">
+        {{ message.body|raw }}
+      </div>
+
+      {# Attachments #}
+      {% if message.attachments is not empty %}
+        <div class="support-message__attachments">
+          {% for attachment in message.attachments %}
+            <a href="{{ attachment.url }}"
+               class="support-message__attachment"
+               target="_blank"
+               rel="noopener">
+              {{ jaraba_icon('ui', 'paperclip', { size: '12px' }) }}
+              <span class="support-message__attachment-name">{{ attachment.filename }}</span>
+              {% if attachment.size %}
+                <span class="support-message__attachment-size">({{ attachment.size }})</span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+{% endif %}

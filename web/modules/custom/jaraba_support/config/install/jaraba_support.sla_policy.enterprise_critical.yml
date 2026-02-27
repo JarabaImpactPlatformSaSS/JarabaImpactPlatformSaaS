@@ -1,0 +1,15 @@
+id: enterprise_critical
+label: 'Enterprise - Critical'
+plan_tier: enterprise
+priority: critical
+first_response_hours: 1
+resolution_hours: 4
+business_hours_only: false
+schedule: extended
+phone_support: true
+priority_queue: true
+escalation_after_hours: 2
+idle_timeout_hours: 48
+auto_close_hours: 168
+pause_on_pending: true
+active: true

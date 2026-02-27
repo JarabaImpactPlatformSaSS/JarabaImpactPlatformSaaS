@@ -1,0 +1,15 @@
+id: institutional_medium
+label: 'Institutional - Medium'
+plan_tier: institutional
+priority: medium
+first_response_hours: 2
+resolution_hours: 8
+business_hours_only: false
+schedule: twentyfour_seven
+phone_support: true
+priority_queue: true
+escalation_after_hours: 4
+idle_timeout_hours: 24
+auto_close_hours: 120
+pause_on_pending: true
+active: true

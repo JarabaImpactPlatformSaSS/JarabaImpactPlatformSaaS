@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * Parcial: SLA indicator — Countdown timer with visual status.
+ *
+ * Variables:
+ * - sla_status: Array with keys:
+ *   response_due, resolution_due, response_breached, resolution_breached,
+ *   time_remaining, percentage_elapsed
+ * - compact: Boolean — if true, render as inline mini-indicator
+ */
+#}
+
+{% set is_breached = sla_status.response_breached|default(false) or sla_status.resolution_breached|default(false) %}
+{% set pct = sla_status.percentage_elapsed|default(0) %}
+{% set state = is_breached ? 'breached' : (pct > 75 ? 'warning' : 'ok') %}
+
+{% if compact|default(false) %}
+
+  {# Compact mode — inline pill for ticket cards #}
+  <span class="support-sla support-sla--{{ state }} support-sla--compact">
+    {{ jaraba_icon('ui', is_breached ? 'alert-triangle' : 'clock', { size: '12px' }) }}
+    {% if is_breached %}
+      {% trans %}SLA Breached{% endtrans %}
+    {% else %}
+      {{ sla_status.time_remaining|default('--') }}
+    {% endif %}
+  </span>
+
+{% else %}
+
+  {# Full mode — sidebar panel with both response and resolution timers #}
+  <div class="support-sla support-sla--{{ state }}">
+
+    {# Response SLA #}
+    <div class="support-sla__row">
+      <span class="support-sla__label">{% trans %}First Response{% endtrans %}</span>
+      {% if sla_status.response_breached|default(false) %}
+        <span class="support-sla__value support-sla__value--breached">
+          {{ jaraba_icon('ui', 'x-circle', { size: '14px' }) }}
+          {% trans %}Breached{% endtrans %}
+        </span>
+      {% elseif sla_status.response_due %}
+        <span class="support-sla__value">
+          {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
+          {{ sla_status.response_due }}
+        </span>
+      {% else %}
+        <span class="support-sla__value support-sla__value--met">
+          {{ jaraba_icon('ui', 'check-circle', { size: '14px' }) }}
+          {% trans %}Met{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+
+    {# Resolution SLA #}
+    <div class="support-sla__row">
+      <span class="support-sla__label">{% trans %}Resolution{% endtrans %}</span>
+      {% if sla_status.resolution_breached|default(false) %}
+        <span class="support-sla__value support-sla__value--breached">
+          {{ jaraba_icon('ui', 'x-circle', { size: '14px' }) }}
+          {% trans %}Breached{% endtrans %}
+        </span>
+      {% elseif sla_status.resolution_due %}
+        <span class="support-sla__value">
+          {{ jaraba_icon('ui', 'clock', { size: '14px' }) }}
+          {{ sla_status.resolution_due }}
+        </span>
+      {% else %}
+        <span class="support-sla__value support-sla__value--met">
+          {{ jaraba_icon('ui', 'check-circle', { size: '14px' }) }}
+          {% trans %}Met{% endtrans %}
+        </span>
+      {% endif %}
+    </div>
+
+    {# Progress bar #}
+    {% if pct > 0 and not is_breached %}
+      <div class="support-sla__progress">
+        <div class="support-sla__progress-bar"
+             style="width: {{ pct > 100 ? 100 : pct }}%;"
+             aria-valuenow="{{ pct }}"
+             aria-valuemin="0"
+             aria-valuemax="100"></div>
+      </div>
+    {% endif %}
+
+  </div>
+
+{% endif %}

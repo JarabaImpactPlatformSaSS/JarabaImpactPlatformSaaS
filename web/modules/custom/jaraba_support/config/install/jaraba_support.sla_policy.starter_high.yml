@@ -1,0 +1,15 @@
+id: starter_high
+label: 'Starter - High'
+plan_tier: starter
+priority: high
+first_response_hours: 8
+resolution_hours: 48
+business_hours_only: true
+schedule: spain_standard
+phone_support: false
+priority_queue: false
+escalation_after_hours: 0
+idle_timeout_hours: 48
+auto_close_hours: 168
+pause_on_pending: true
+active: true
