@@ -4,7 +4,17 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-27
-**Versión:** 125.0.0 (Demo Vertical 100% Clase Mundial — 4 Sprints Implementados + Runtime Verification + 2 Reglas Nuevas)
+**Versión:** 126.0.0 (Capa Experiencial IA Nivel 5 — Self-Healing Real + Autonomous Tasks + 3 SCSS Dashboards)
+
+> **🧠 CAPA EXPERIENCIAL IA NIVEL 5 — SELF-HEALING REAL + AUTONOMOUS TASKS + 3 SCSS DASHBOARDS** (2026-02-27)
+> - **Contexto:** Auditoria revelo que 7/9 GAPs de IA Nivel 5 tenian backend scaffolding sin experiencia de usuario (SCSS sin compilar, libraries sin declarar, body classes ausentes, metodos stub). Implementacion completa de la capa experiencial que cierra la brecha entre "el codigo existe" y "el usuario lo experimenta". 47 tests pasan.
+> - **HAL-01 (3 SCSS Route Bundles):** `scss/routes/ai-compliance.scss` (4.8KB), `scss/routes/autonomous-agents.scss` (4.2KB), `scss/routes/causal-analytics.scss` (4.5KB). BEM naming, `var(--ej-*, $fallback)`, mobile-first con `@include respond-to()`, Dart Sass `@use` module system. 4 libraries declaradas en `.libraries.yml` (`route-ai-compliance`, `route-autonomous-agents`, `route-causal-analytics`, `bundle-ai-compliance` legacy alias).
+> - **HAL-02 (Theme Integration):** 3 body classes en `hook_preprocess_html()` (`page-ai-compliance`, `page-autonomous-agents`, `page-causal-analytics`) como rutas exactas antes del catch-all. 3 rutas especificas en `hook_page_attachments_alter()` para CSS dashboard-specific. 3 controllers con `#attached['library']`. Fix: `bundle-ai-compliance` referenciada en controller pero inexistente — creada.
+> - **HAL-03 (Self-Healing REAL):** 5 metodos `executeAuto*` de `AutoDiagnosticService` implementados con logica real via Drupal State API: `executeAutoDowngrade` (flag `tier_override.{tenant}` TTL 1h), `executeAutoRefreshPrompt` (rollback PromptTemplate `auto_generated=TRUE` a `original_text`), `executeAutoRotate` (flag `provider_rotated.{tenant}` TTL 30min), `executeAutoWarmCache` (queries frecuentes de observability → SemanticCache), `executeAutoThrottle` (flag `throttle.{tenant}` 10 req/min TTL 2h). 3 metodos publicos nuevos: `getTierOverride()`, `isProviderRotated()`, `getThrottleConfig()` con auto-expiry.
+> - **HAL-04 (Autonomous Tasks REAL):** 3 task methods de `AutonomousAgentService` con logica real: `taskContentCurator` (busca articulos low-views, gaps de publicacion 7+ dias, top performers para series), `taskKBMaintainer` (busca `tenant_knowledge_config` con 90+ dias sin actualizar), `taskChurnPrevention` (busca usuarios activos sin login 30-60 dias, clasifica riesgo medium/high).
+> - **HAL-05 (Partials):** 2 Twig partials: `_ai-health-indicator.html.twig` (score/label/badge con variantes healthy/warning/critical), `_causal-analysis-widget.html.twig` (widget embeddable con query/type/confidence/factors/recommendations). Ambos con `|t` i18n.
+> - **2 reglas nuevas:** SELF-HEALING-STATE-001 (P1), AUTONOMOUS-TASK-ENTITY-001 (P1). Regla de oro #79. Aprendizaje #147.
+> - **Cross-refs:** Directrices v97.0.0, Arquitectura IA L5 v3.0.0, Flujo v50.0.0. Plan: `docs/implementacion/2026-02-27_Plan_Implementacion_Capa_Experiencial_IA_Nivel5_v1.md`.
 
 > **🎯 DEMO VERTICAL 100% CLASE MUNDIAL — 4 SPRINTS IMPLEMENTADOS + RUNTIME VERIFICATION** (2026-02-27)
 > - **Contexto:** Implementacion completa de los 4 sprints del plan post-verificacion v3 para elevar el demo vertical PLG de 80% a 100% clase mundial. Incluye verificacion runtime end-to-end (CSS compilado, tablas DB, rutas, selectores JS, drupalSettings) que revelo y corrigio el gap critico entre "el codigo existe" y "el usuario lo experimenta".

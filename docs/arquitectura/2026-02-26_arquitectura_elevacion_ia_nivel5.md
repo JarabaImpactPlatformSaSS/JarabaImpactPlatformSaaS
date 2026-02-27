@@ -1,8 +1,8 @@
 # Arquitectura: Elevacion IA a Nivel 5/5 — Clase Mundial
 
 **Fecha:** 2026-02-26
-**Version:** 2.0.0 (+ 10 GAPs: Streaming Real, MCP Server, Native Tools, Tracing, Memoria)
-**Estado:** Implementado — Nivel 5/5 Completo
+**Version:** 3.0.0 (+ 10 GAPs + Capa Experiencial: Self-Healing Real, Autonomous Tasks, 3 SCSS Dashboards)
+**Estado:** Implementado — Nivel 5/5 Completo + Capa Experiencial
 **Referencia Plan:** `docs/implementacion/2026-02-26_Plan_Elevacion_IA_Nivel5_Clase_Mundial_v1.md`
 
 ---
@@ -432,14 +432,72 @@ mapping:
 
 ---
 
-## 7. Cross-References
+## 7. Capa Experiencial (v3.0.0)
+
+Auditoria revelo que 7/9 GAPs L5 tenian backend scaffolding sin experiencia de usuario. La capa experiencial cierra esta brecha.
+
+### 7.1 Self-Healing Real (AutoDiagnosticService)
+
+```
+[Anomaly Detected]
+    ↓
+[planRemediation()] → match anomaly_type → action
+    ↓
+[executeRemediation()]
+    ↓                              ↓
+[State API flag]               [Entity operations]
+    ↓                              ↓
+executeAutoDowngrade →         executeAutoRefreshPrompt →
+  state.set(tier_override.       entityTypeManager.getStorage(prompt_template)
+  {tenant}, {tier: fast,           .getQuery().condition(auto_generated, TRUE)
+  expires: now+3600})              → rollback to original_text
+    ↓                              ↓
+executeAutoRotate →            executeAutoWarmCache →
+  state.set(provider_rotated.    observability.getFrequentQueries()
+  {tenant}, {rotated: TRUE,        → semanticCache.set() for each
+  expires: now+1800})
+    ↓
+executeAutoThrottle →
+  state.set(throttle.{tenant},
+  {max_requests_per_minute: 10,
+  expires: now+7200})
+```
+
+**Consumidores:** Agentes llaman `getTierOverride()` antes de `ModelRouter::route()` y pasan resultado como `$options['force_tier']`. `isProviderRotated()` indica si usar fallback chain. `getThrottleConfig()` devuelve limites de rate.
+
+### 7.2 Autonomous Task Logic (AutonomousAgentService)
+
+| Task | Entity Queries | Datos Producidos |
+|------|---------------|------------------|
+| `taskContentCurator` | `content_article` con views_count < 10 (30d), gap publicacion 7d, top performers | suggestions: promote, schedule, expand |
+| `taskKBMaintainer` | `tenant_knowledge_config` con changed < 90d (`hasDefinition` check) | stale_entries: id, label, days_since_update |
+| `taskChurnPrevention` | `user` con access 30-60d ago, status=1 | at_risk_users: uid, days, risk_level |
+
+### 7.3 SCSS Route Bundles (Theme)
+
+```
+scss/routes/ai-compliance.scss     → css/routes/ai-compliance.css     (4.8KB)
+scss/routes/autonomous-agents.scss → css/routes/autonomous-agents.css (4.2KB)
+scss/routes/causal-analytics.scss  → css/routes/causal-analytics.css  (4.5KB)
+```
+
+**Library chain:** Controller `#attached` + `hook_page_attachments_alter()` (ruta exacta) + `hook_preprocess_html()` (body class).
+
+### 7.4 Partials Twig
+
+- `_ai-health-indicator.html.twig`: Score 0-100, variantes healthy/warning/critical, badge escalations.
+- `_causal-analysis-widget.html.twig`: Tarjeta embeddable con query, tipo, confidence, factores, recomendaciones.
+
+---
+
+## 8. Cross-References
 
 - Plan de implementacion: `docs/implementacion/2026-02-26_Plan_Elevacion_IA_Nivel5_Clase_Mundial_v1.md`
 - Remediacion previa (28 fixes): `docs/tecnicos/20260226-Plan_Remediacion_Integral_IA_SaaS_v1_Claude.md`
 - Copilot contextual: `docs/arquitectura/2026-01-26_arquitectura_copiloto_contextual.md`
 - Model routing config: `jaraba_ai_agents/config/install/jaraba_ai_agents.model_routing.yml`
 - Provider fallback config: `jaraba_ai_agents/config/install/jaraba_ai_agents.provider_fallback.yml`
-- Directrices v81.0.0, Flujo v36.0.0, Indice v106.0.0
-- Aprendizajes #129 (23 FIX items), #130 (auditoria post-implementacion), #133 (10 GAPs)
+- Directrices v97.0.0, Flujo v50.0.0, Indice v126.0.0
+- Aprendizajes #129 (23 FIX items), #130 (auditoria post-implementacion), #133 (10 GAPs), #147 (capa experiencial)
 - MCP spec: Protocol version 2025-11-25
 - Drupal AI module: `ChatInput::setChatTools()`, `ChatMessage::getTools()`
