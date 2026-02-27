@@ -9,7 +9,7 @@ services:
 
   jaraba_mentoring.stripe_connect:
     class: Drupal\jaraba_mentoring\Service\StripeConnectService
-    arguments: ['@jaraba_foc.stripe_connect', '@logger.channel.jaraba_mentoring']
+    arguments: ['@?jaraba_foc.stripe_connect', '@logger.channel.jaraba_mentoring']
 
   jaraba_mentoring.video_meeting:
     class: Drupal\jaraba_mentoring\Service\VideoMeetingService

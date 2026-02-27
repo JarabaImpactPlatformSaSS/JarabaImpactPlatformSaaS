@@ -39,7 +39,7 @@ class StripeConnectService
      *   Logger del módulo de mentoring.
      */
     public function __construct(
-        protected FocStripeConnect $focStripe,
+        protected ?FocStripeConnect $focStripe,
         protected LoggerInterface $logger,
     ) {
     }
@@ -62,6 +62,10 @@ class StripeConnectService
      */
     public function createConnectedAccount(string $email, string $country = 'ES'): ?array
     {
+        if (!$this->focStripe) {
+            $this->logger->warning('Stripe Connect no disponible: jaraba_foc no instalado.');
+            return NULL;
+        }
         try {
             $data = $this->focStripe->stripeRequest('POST', '/accounts', [
                 'type' => 'express',
@@ -102,6 +106,10 @@ class StripeConnectService
      */
     public function generateOnboardingLink(string $accountId, string $returnUrl, string $refreshUrl): ?string
     {
+        if (!$this->focStripe) {
+            $this->logger->warning('Stripe Connect no disponible: jaraba_foc no instalado.');
+            return NULL;
+        }
         try {
             $data = $this->focStripe->stripeRequest('POST', '/account_links', [
                 'account' => $accountId,
@@ -147,6 +155,10 @@ class StripeConnectService
         string $paymentMethod,
         array $metadata = []
     ): ?array {
+        if (!$this->focStripe) {
+            $this->logger->warning('Stripe Connect no disponible: jaraba_foc no instalado.');
+            return NULL;
+        }
         try {
             $data = $this->focStripe->stripeRequest('POST', '/payment_intents', [
                 'amount' => $amount,
@@ -206,6 +218,9 @@ class StripeConnectService
         float $applicationFeePercent,
         array $metadata = []
     ): array {
+        if (!$this->focStripe) {
+            throw new \RuntimeException('Stripe Connect no disponible: jaraba_foc no instalado.');
+        }
         $applicationFee = (int) round($amount * ($applicationFeePercent / 100));
 
         $data = $this->focStripe->stripeRequest('POST', '/payment_intents', [
@@ -245,6 +260,10 @@ class StripeConnectService
      */
     public function isOnboardingComplete(string $accountId): bool
     {
+        if (!$this->focStripe) {
+            $this->logger->warning('Stripe Connect no disponible: jaraba_foc no instalado.');
+            return FALSE;
+        }
         try {
             $status = $this->focStripe->getAccountStatus($accountId);
 
