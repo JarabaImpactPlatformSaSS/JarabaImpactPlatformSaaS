@@ -2457,6 +2457,20 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   }
 
   // =========================================================================
+  // MEGAMENU: Solo para SaaS principal (NO meta-sitios)
+  //
+  // Si $variables['meta_site'] es NULL, estamos en el SaaS principal →
+  // activar megamenu. Los meta-sitios ya inyectan sus nav_items via
+  // MetaSiteResolverService y NO tendrán header_megamenu.
+  //
+  // @see _header-classic.html.twig — Usa ts.header_megamenu|default(false)
+  // @see docs/implementacion/20260227-Plan_Correccion_Navegacion_Ecosistema_v1.md §7.2
+  // =========================================================================
+  if (empty($variables['meta_site'])) {
+    $variables['theme_settings']['header_megamenu'] = TRUE;
+  }
+
+  // =========================================================================
   // HOMEPAGE CONTENT - Datos dinámicos desde Page Builder
   // Inyecta datos de HomepageContent entity para partials de la homepage
   // =========================================================================
@@ -4213,27 +4227,6 @@ function ecosistema_jaraba_theme_preprocess_page__403(&$variables): void {
   $variables['support_url'] = '/ayuda';
 }
 
-/**
- * Implements hook_preprocess_page().
- *
- * Inyecta header_megamenu: TRUE para el SaaS principal (cuando NO es meta-sitio).
- * Los meta-sitios ya inyectan sus propios nav_items via MetaSiteResolverService
- * y NO tendrán header_megamenu, por lo que usarán la navegación plana.
- *
- * @see _header-classic.html.twig — Usa ts.header_megamenu|default(false)
- * @see docs/implementacion/20260227-Plan_Correccion_Navegacion_Ecosistema_v1.md §7.2
- */
-function ecosistema_jaraba_theme_preprocess_page(array &$variables): void {
-  // Si NO es meta-sitio → estamos en el SaaS principal → activar megamenu.
-  // La variable 'meta_site' se establece en theme_preprocess_page() del módulo
-  // ecosistema_jaraba_core cuando MetaSiteResolverService detecta un meta-sitio.
-  if (empty($variables['meta_site'])) {
-    if (!isset($variables['theme_settings'])) {
-      $variables['theme_settings'] = [];
-    }
-    $variables['theme_settings']['header_megamenu'] = TRUE;
-  }
-}
 
 /**
  * Implements hook_page_attachments_alter().

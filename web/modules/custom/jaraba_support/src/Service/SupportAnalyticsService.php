@@ -26,9 +26,9 @@ final class SupportAnalyticsService {
   public function getOverviewStats(array $filters = []): array {
     try {
       $total = $this->countTickets([], $filters);
-      $openStatuses = ['open', 'in_progress', 'escalated'];
+      $openStatuses = ['new', 'ai_handling', 'open', 'escalated', 'reopened'];
       $openCount = $this->countTickets(['status' => $openStatuses], $filters);
-      $pendingCount = $this->countTickets(['status' => ['pending_customer', 'pending_third_party', 'on_hold']], $filters);
+      $pendingCount = $this->countTickets(['status' => ['pending_customer', 'pending_internal']], $filters);
       $resolvedCount = $this->countTickets(['status' => ['resolved', 'closed']], $filters);
       $slaBreachedCount = $this->countTickets(['sla_breached' => 1], $filters);
       $todayResolved = $this->countTicketsResolvedToday($filters);
@@ -85,7 +85,7 @@ final class SupportAnalyticsService {
         default => '%Y-%m-%d',
       };
 
-      $query = $this->database->select('support_ticket', 't');
+      $query = $this->database->select('support_ticket_field_data', 't');
       $query->addExpression("DATE_FORMAT(FROM_UNIXTIME(t.created), :format)", 'period', [':format' => $dateFormat]);
       $query->addExpression('COUNT(*)', 'count');
       $this->applyFilters($query, $filters);
@@ -114,7 +114,7 @@ final class SupportAnalyticsService {
         $filters = ['assignee_uid' => $agentUid];
       }
 
-      $query = $this->database->select('support_ticket', 't');
+      $query = $this->database->select('support_ticket_field_data', 't');
       $query->addField('t', 'assignee_uid', 'agent_uid');
       $query->addExpression('COUNT(*)', 'tickets_handled');
       $query->addExpression("AVG(t.satisfaction_rating)", 'csat_avg');
@@ -160,7 +160,7 @@ final class SupportAnalyticsService {
    */
   public function getCategoryDistribution(array $filters = []): array {
     try {
-      $query = $this->database->select('support_ticket', 't');
+      $query = $this->database->select('support_ticket_field_data', 't');
       $query->addField('t', 'category');
       $query->addExpression('COUNT(*)', 'count');
       $query->condition('t.category', '', '<>');
@@ -180,7 +180,7 @@ final class SupportAnalyticsService {
    * Counts tickets matching conditions.
    */
   private function countTickets(array $conditions, array $filters = []): int {
-    $query = $this->database->select('support_ticket', 't');
+    $query = $this->database->select('support_ticket_field_data', 't');
     $query->addExpression('COUNT(*)', 'count');
 
     foreach ($conditions as $field => $value) {
@@ -201,7 +201,7 @@ final class SupportAnalyticsService {
    */
   private function countTicketsResolvedToday(array $filters): int {
     $todayStart = strtotime('today midnight');
-    $query = $this->database->select('support_ticket', 't');
+    $query = $this->database->select('support_ticket_field_data', 't');
     $query->addExpression('COUNT(*)', 'count');
     $query->condition('t.resolved_at', $todayStart, '>=');
     $this->applyFilters($query, $filters);
@@ -212,7 +212,7 @@ final class SupportAnalyticsService {
    * Gets average CSAT score.
    */
   private function getAverageCsat(array $filters): float {
-    $query = $this->database->select('support_ticket', 't');
+    $query = $this->database->select('support_ticket_field_data', 't');
     $query->addExpression('AVG(t.satisfaction_rating)', 'avg_csat');
     $query->condition('t.satisfaction_rating', 0, '>');
     $this->applyFilters($query, $filters);
@@ -223,7 +223,7 @@ final class SupportAnalyticsService {
    * Gets average first response time in hours.
    */
   private function getAverageResponseTime(array $filters): float {
-    $query = $this->database->select('support_ticket', 't');
+    $query = $this->database->select('support_ticket_field_data', 't');
     $query->addExpression('AVG(t.first_responded_at - t.created)', 'avg_seconds');
     $query->condition('t.first_responded_at', 0, '>');
     $this->applyFilters($query, $filters);

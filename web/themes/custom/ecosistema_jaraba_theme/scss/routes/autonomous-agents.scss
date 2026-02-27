@@ -1,10 +1,251 @@
 /**
  * @file
- * Route-specific CSS — Autonomous Agents Dashboard (GAP-L5-F/G).
+ * Route-specific CSS — Autonomous Agents & Self-Healing Dashboard (GAP-L5-F/G).
+ *
+ * BEM: .autonomous-agents-dashboard__*
+ * Design tokens: var(--ej-*) exclusivamente (FEDERATED-DESIGN-TOKENS).
+ * Mobile-first: breakpoints desde $ej-breakpoint-md (768px).
  *
  * Covers: /admin/config/ai/autonomous-agents
  * Compile: sass scss/routes/autonomous-agents.scss css/routes/autonomous-agents.css --style=compressed
  */
 @use '../variables' as *;
 
-@use 'autonomous-agents';
+// ============================================================
+// Dashboard Container
+// ============================================================
+.autonomous-agents-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $ej-spacing-xl $ej-spacing-md;
+
+  @include respond-to(md) {
+    padding: $ej-spacing-xl;
+  }
+}
+
+// ============================================================
+// Stats Grid
+// ============================================================
+.autonomous-agents-dashboard__stats {
+  margin-bottom: $ej-spacing-xl;
+}
+
+.autonomous-agents-dashboard__section-title {
+  font-family: var(--ej-font-headings, $ej-font-headings);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ej-color-headings, $ej-color-headings);
+  margin: 0 0 $ej-spacing-md;
+}
+
+.autonomous-agents-dashboard__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $ej-spacing-md;
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.autonomous-agents-dashboard__stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $ej-spacing-xs;
+  padding: 1.25rem;
+  background: var(--ej-bg-surface, $ej-bg-surface);
+  border-radius: var(--ej-card-radius, $ej-border-radius);
+  border: 1px solid var(--ej-card-border, $ej-border-color);
+  box-shadow: $ej-shadow-sm;
+  transition: transform $ej-transition-fast, box-shadow $ej-transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $ej-hover-shadow;
+  }
+
+  &--active {
+    border-color: $ej-color-success;
+    background: linear-gradient(135deg, #ecfdf5, var(--ej-bg-surface, $ej-bg-surface));
+  }
+
+  &--paused {
+    border-color: $ej-color-warning;
+    background: linear-gradient(135deg, #fffbeb, var(--ej-bg-surface, $ej-bg-surface));
+  }
+
+  &--escalated {
+    border-color: $ej-color-danger;
+    background: linear-gradient(135deg, #fef2f2, var(--ej-bg-surface, $ej-bg-surface));
+  }
+}
+
+.autonomous-agents-dashboard__stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ej-color-headings, $ej-color-headings);
+  line-height: 1;
+}
+
+.autonomous-agents-dashboard__stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ej-color-muted, $ej-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+// ============================================================
+// Sections
+// ============================================================
+.autonomous-agents-dashboard__section {
+  margin-bottom: $ej-spacing-xl;
+  padding: $ej-spacing-lg;
+  background: var(--ej-bg-surface, $ej-bg-surface);
+  border-radius: var(--ej-card-radius, $ej-border-radius);
+  box-shadow: $ej-shadow-sm;
+
+  &--escalated {
+    border-left: 4px solid $ej-color-danger;
+  }
+}
+
+// ============================================================
+// Tables
+// ============================================================
+.autonomous-agents-dashboard__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  overflow-x: auto;
+
+  th {
+    background: var(--ej-bg-body, $ej-bg-body);
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--ej-card-border, $ej-border-color);
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--ej-card-border, $ej-border-color);
+    color: var(--ej-color-body, $ej-color-body);
+  }
+
+  tbody tr {
+    transition: background $ej-transition-fast;
+
+    &:hover {
+      background: var(--ej-bg-body, $ej-bg-body);
+    }
+  }
+}
+
+// ============================================================
+// Severity & Outcome
+// ============================================================
+.autonomous-agents-dashboard__severity--critical {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.autonomous-agents-dashboard__severity--warning {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.autonomous-agents-dashboard__outcome--success {
+  color: #059669;
+  font-weight: 600;
+}
+
+.autonomous-agents-dashboard__outcome--partial {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.autonomous-agents-dashboard__outcome--failed {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.autonomous-agents-dashboard__failure-count {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+// ============================================================
+// Health Indicator (inline in dashboard)
+// ============================================================
+.ai-health-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $ej-spacing-sm;
+  padding: $ej-spacing-sm $ej-spacing-md;
+  border-radius: var(--ej-btn-radius, $ej-btn-radius);
+  font-size: 0.8125rem;
+  font-weight: 600;
+
+  &--healthy {
+    background: #ecfdf5;
+    color: #065f46;
+  }
+
+  &--warning {
+    background: #fffbeb;
+    color: #92400e;
+  }
+
+  &--critical {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+}
+
+.ai-health-indicator__score {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ai-health-indicator__label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ai-health-indicator__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: $ej-color-danger;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+// ============================================================
+// Empty State
+// ============================================================
+.autonomous-agents-dashboard__empty {
+  color: var(--ej-color-muted, $ej-color-neutral);
+  font-style: italic;
+  text-align: center;
+  padding: $ej-spacing-xl;
+}

@@ -196,7 +196,7 @@ final class SlaEngineService {
       $storage = $this->entityTypeManager->getStorage('support_ticket');
       $ids = $storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition('status', ['open', 'in_progress', 'escalated'], 'IN')
+        ->condition('status', ['new', 'ai_handling', 'open', 'pending_customer', 'pending_internal', 'escalated', 'reopened'], 'IN')
         ->condition('sla_breached', 0)
         ->condition('sla_resolution_due', 0, '>')
         ->range(0, 200)

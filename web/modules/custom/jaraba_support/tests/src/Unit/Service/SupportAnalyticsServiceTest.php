@@ -211,6 +211,43 @@ class SupportAnalyticsServiceTest extends UnitTestCase {
   }
 
   /**
+   * Tests that all queries use 'support_ticket_field_data' (translatable table).
+   *
+   * SupportTicket is translatable = TRUE, so fields live in the _field_data
+   * table, not the base table. Querying 'support_ticket' causes Column not found.
+   */
+  #[Test]
+  public function testQueriesUseFieldDataTable(): void {
+    $tablesUsed = [];
+
+    $statement = $this->createMock(StatementInterface::class);
+    $statement->method('fetchField')->willReturn('0');
+
+    $selectQuery = $this->createMock(SelectInterface::class);
+    $selectQuery->method('addExpression')->willReturnSelf();
+    $selectQuery->method('condition')->willReturnSelf();
+    $selectQuery->method('execute')->willReturn($statement);
+
+    $this->database->method('select')
+      ->willReturnCallback(function (string $table) use (&$tablesUsed, $selectQuery) {
+        $tablesUsed[] = $table;
+        return $selectQuery;
+      });
+
+    $this->service->getOverviewStats();
+
+    foreach ($tablesUsed as $i => $table) {
+      $this->assertSame(
+        'support_ticket_field_data',
+        $table,
+        "Query #{$i} uses wrong table '{$table}' — must use 'support_ticket_field_data' for translatable entity.",
+      );
+    }
+
+    $this->assertNotEmpty($tablesUsed, 'Expected at least one database query.');
+  }
+
+  /**
    * Tests getOverviewStats calculates SLA compliance correctly.
    *
    * With 10 total tickets and 2 SLA-breached tickets, SLA compliance

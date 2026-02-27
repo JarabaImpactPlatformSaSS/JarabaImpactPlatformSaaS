@@ -4,21 +4,21 @@
  * Parcial: Status badge — Renders a colored pill for ticket status.
  *
  * Variables:
- * - status: String (open|in_progress|pending_customer|pending_third_party|
- *           on_hold|escalated|resolved|closed|cancelled|merged)
+ * - status: String (new|ai_handling|open|pending_customer|pending_internal|
+ *           escalated|resolved|closed|reopened|merged)
  */
 #}
 
 {% set status_labels = {
+  'new': 'New'|t,
+  'ai_handling': 'AI Handling'|t,
   'open': 'Open'|t,
-  'in_progress': 'In Progress'|t,
   'pending_customer': 'Pending Customer'|t,
-  'pending_third_party': 'Pending 3rd Party'|t,
-  'on_hold': 'On Hold'|t,
+  'pending_internal': 'Pending Internal'|t,
   'escalated': 'Escalated'|t,
   'resolved': 'Resolved'|t,
   'closed': 'Closed'|t,
-  'cancelled': 'Cancelled'|t,
+  'reopened': 'Reopened'|t,
   'merged': 'Merged'|t,
 } %}
 

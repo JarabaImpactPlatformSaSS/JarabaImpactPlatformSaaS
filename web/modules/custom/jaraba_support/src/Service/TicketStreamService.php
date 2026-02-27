@@ -38,7 +38,7 @@ final class TicketStreamService {
   public function getEventsForAgent(int $agentUid, ?string $lastEventId = NULL): \Generator {
     try {
       // Get ticket IDs assigned to this agent (not closed/merged).
-      $assignedQuery = $this->database->select('support_ticket', 't')
+      $assignedQuery = $this->database->select('support_ticket_field_data', 't')
         ->fields('t', ['id'])
         ->condition('t.assignee_uid', $agentUid)
         ->condition('t.status', ['closed', 'merged'], 'NOT IN');

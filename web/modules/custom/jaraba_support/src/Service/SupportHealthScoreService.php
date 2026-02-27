@@ -57,7 +57,7 @@ final class SupportHealthScoreService {
 
       // --- a. Volume trend (0-20) ---
       // Last 30 days ticket count.
-      $recentCount = (int) $this->database->select('support_ticket', 't')
+      $recentCount = (int) $this->database->select('support_ticket_field_data', 't')
         ->condition('t.tenant_id', $tenantId)
         ->condition('t.created', $thirtyDaysAgo, '>=')
         ->countQuery()
@@ -65,7 +65,7 @@ final class SupportHealthScoreService {
         ->fetchField();
 
       // Previous 30 days ticket count (30-60 days ago).
-      $previousCount = (int) $this->database->select('support_ticket', 't')
+      $previousCount = (int) $this->database->select('support_ticket_field_data', 't')
         ->condition('t.tenant_id', $tenantId)
         ->condition('t.created', $sixtyDaysAgo, '>=')
         ->condition('t.created', $thirtyDaysAgo, '<')
@@ -103,7 +103,7 @@ final class SupportHealthScoreService {
       }
 
       // --- b. SLA compliance (0-20) ---
-      $totalTickets90d = (int) $this->database->select('support_ticket', 't')
+      $totalTickets90d = (int) $this->database->select('support_ticket_field_data', 't')
         ->condition('t.tenant_id', $tenantId)
         ->condition('t.created', $ninetyDaysAgo, '>=')
         ->countQuery()
@@ -112,7 +112,7 @@ final class SupportHealthScoreService {
 
       $slaScore = 20;
       if ($totalTickets90d > 0) {
-        $nonBreached = (int) $this->database->select('support_ticket', 't')
+        $nonBreached = (int) $this->database->select('support_ticket_field_data', 't')
           ->condition('t.tenant_id', $tenantId)
           ->condition('t.created', $ninetyDaysAgo, '>=')
           ->condition('t.sla_breached', 0)
@@ -139,7 +139,7 @@ final class SupportHealthScoreService {
       }
 
       // --- c. CSAT score (0-20) ---
-      $csatAvg = (float) $this->database->select('support_ticket', 't')
+      $csatAvg = (float) $this->database->select('support_ticket_field_data', 't')
         ->condition('t.tenant_id', $tenantId)
         ->condition('t.created', $ninetyDaysAgo, '>=')
         ->condition('t.satisfaction_rating', 0, '>')
@@ -168,7 +168,7 @@ final class SupportHealthScoreService {
       $escalationScore = 20;
       if ($totalTickets90d > 0) {
         $escalatedCount = (int) $this->database->select('ticket_event_log', 'e')
-          ->join('support_ticket', 't', 't.id = e.ticket_id')
+          ->join('support_ticket_field_data', 't', 't.id = e.ticket_id')
           ->condition('t.tenant_id', $tenantId)
           ->condition('t.created', $ninetyDaysAgo, '>=')
           ->condition('e.event_type', 'status_changed')
@@ -196,7 +196,7 @@ final class SupportHealthScoreService {
       }
 
       // --- e. Resolution speed (0-20) ---
-      $avgResolutionSeconds = (float) $this->database->select('support_ticket', 't')
+      $avgResolutionSeconds = (float) $this->database->select('support_ticket_field_data', 't')
         ->condition('t.tenant_id', $tenantId)
         ->condition('t.created', $ninetyDaysAgo, '>=')
         ->condition('t.resolved_at', 0, '>')

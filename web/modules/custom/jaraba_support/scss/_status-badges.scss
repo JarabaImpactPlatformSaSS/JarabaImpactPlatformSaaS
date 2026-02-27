@@ -56,6 +56,11 @@
     color: $support-status-resolved;
   }
 
+  &-reopened {
+    background: color-mix(in srgb, #{$support-status-open} 15%, transparent);
+    color: $support-status-open;
+  }
+
   &-closed,
   &-merged {
     background: color-mix(in srgb, #{$support-status-closed} 15%, transparent);

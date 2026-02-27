@@ -137,12 +137,13 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface 
     if (!$this->isNew() && $this->get('parent_ticket_id')->target_id) {
       $parent = $this->get('parent_ticket_id')->entity;
       if ($parent) {
-        $count = (int) \Drupal::database()
-          ->select('support_ticket', 'st')
+        $count = (int) \Drupal::entityTypeManager()
+          ->getStorage('support_ticket')
+          ->getQuery()
+          ->accessCheck(FALSE)
           ->condition('parent_ticket_id', $parent->id())
-          ->countQuery()
-          ->execute()
-          ->fetchField();
+          ->count()
+          ->execute();
         $parent->set('child_count', $count);
       }
     }
@@ -158,10 +159,13 @@ class SupportTicket extends ContentEntityBase implements SupportTicketInterface 
     $month = date('Ym');
     $pattern = $prefix . '-' . $month . '-%';
 
-    $query = \Drupal::database()->select('support_ticket', 'st')
-      ->condition('ticket_number', $pattern, 'LIKE');
-    $query->addExpression('COUNT(*)', 'count');
-    $count = (int) $query->execute()->fetchField();
+    $count = (int) \Drupal::entityTypeManager()
+      ->getStorage('support_ticket')
+      ->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('ticket_number', $pattern, 'LIKE')
+      ->count()
+      ->execute();
 
     return sprintf('%s-%s-%04d', $prefix, $month, $count + 1);
   }
