@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for jaraba_success_cases.
+ */
+
+/**
+ * Add hero_image field to SuccessCase entity.
+ */
+function jaraba_success_cases_update_10001() {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $field_storage = $entity_definition_manager->getFieldStorageDefinition('hero_image', 'success_case');
+
+  if (!$field_storage) {
+    $field_storage = \Drupal\Core\Field\BaseFieldDefinition::create('image')
+      ->setLabel(t('Photo'))
+      ->setDescription(t('Portrait or professional headshot of the person.'))
+      ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
+      ->setSetting('alt_field', TRUE)
+      ->setSetting('file_extensions', 'png jpg jpeg webp')
+      ->setSetting('max_filesize', '5 MB')
+      ->setDisplayOptions('form', [
+        'type' => 'image_image',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $entity_definition_manager->installFieldStorageDefinition(
+      'hero_image',
+      'success_case',
+      'jaraba_success_cases',
+      $field_storage
+    );
+
+    return t('Campo hero_image añadido a SuccessCase.');
+  }
+
+  return t('Campo hero_image ya existe.');
+}

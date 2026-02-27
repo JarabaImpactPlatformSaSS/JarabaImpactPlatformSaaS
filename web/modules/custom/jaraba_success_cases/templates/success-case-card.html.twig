@@ -18,11 +18,18 @@
 <article class="sc-card {{ case.featured ? 'sc-card--featured' : '' }}" 
          data-vertical="{{ case.vertical }}">
   
-  {# Avatar with initial letter fallback #}
+  {# Avatar with photo or initial letter fallback #}
   <div class="sc-card__avatar-wrap">
-    <div class="sc-card__avatar sc-card__avatar--placeholder" aria-hidden="true">
-      {{ case.name|first|upper }}
-    </div>
+    {% if case.image_url_card %}
+      <img class="sc-card__avatar sc-card__avatar--photo"
+           src="{{ case.image_url_card }}"
+           alt="{{ case.name }}"
+           loading="lazy" width="80" height="80">
+    {% else %}
+      <div class="sc-card__avatar sc-card__avatar--placeholder" aria-hidden="true">
+        {{ case.name|first|upper }}
+      </div>
+    {% endif %}
     {% if case.featured %}
       <span class="sc-card__badge sc-card__badge--featured" title="{% trans %}Destacado{% endtrans %}">⭐</span>
     {% endif %}

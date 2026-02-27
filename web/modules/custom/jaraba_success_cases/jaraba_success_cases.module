@@ -34,6 +34,7 @@ function jaraba_success_cases_theme(): array {
     'success_case_detail' => [
       'variables' => [
         'case' => [],
+        'related_cases' => [],
       ],
       'template' => 'success-case-detail',
     ],
@@ -108,5 +109,67 @@ function _jaraba_success_cases_hide_format_guidelines(array &$element): void {
     if (is_array($element[$key]) && !str_starts_with((string) $key, '#')) {
       _jaraba_success_cases_hide_format_guidelines($element[$key]);
     }
+  }
+}
+
+/**
+ * Implements template_preprocess_success_case().
+ *
+ * ENTITY-PREPROCESS-001: Preprocess para la entidad SuccessCase cuando se
+ * renderiza en modo vista estándar (entity view / Views). Extrae primitivos,
+ * decodifica métricas JSON y proporciona URLs de redes sociales.
+ *
+ * HAL-DEMO-V3-BACK-007: Añadido para cumplir ENTITY-PREPROCESS-001.
+ */
+function template_preprocess_success_case(array &$variables): void {
+  /** @var \Drupal\jaraba_success_cases\Entity\SuccessCase|null $entity */
+  $entity = $variables['elements']['#success_case'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $variables['success_case'] = $entity;
+
+  // Primitivos directos.
+  $variables['name'] = $entity->get('name')->value;
+  $variables['slug'] = $entity->get('slug')->value;
+  $variables['profession'] = $entity->get('profession')->value;
+  $variables['company'] = $entity->get('company')->value;
+  $variables['sector'] = $entity->get('sector')->value;
+  $variables['location'] = $entity->get('location')->value;
+  $variables['website'] = $entity->get('website')->value;
+  $variables['linkedin'] = $entity->get('linkedin')->value;
+  $variables['vertical'] = $entity->get('vertical')->value;
+  $variables['rating'] = (int) $entity->get('rating')->value;
+  $variables['featured'] = (bool) $entity->get('featured')->value;
+  $variables['quote_short'] = $entity->get('quote_short')->value;
+  $variables['quote_long'] = $entity->get('quote_long')->value;
+  $variables['program_name'] = $entity->get('program_name')->value;
+  $variables['program_funder'] = $entity->get('program_funder')->value;
+  $variables['program_year'] = $entity->get('program_year')->value;
+  $variables['meta_description'] = $entity->get('meta_description')->value;
+
+  // Narrativa (texto formateado).
+  $variables['challenge_before'] = $entity->get('challenge_before')->value;
+  $variables['solution_during'] = $entity->get('solution_during')->value;
+  $variables['result_after'] = $entity->get('result_after')->value;
+
+  // Métricas JSON decodificadas.
+  $metrics_raw = $entity->get('metrics_json')->value;
+  $variables['metrics'] = [];
+  if ($metrics_raw) {
+    $decoded = json_decode($metrics_raw, TRUE);
+    if (is_array($decoded)) {
+      $variables['metrics'] = $decoded;
+    }
+  }
+
+  // URL pública del caso.
+  $variables['case_url'] = '/caso-de-exito/' . ($variables['slug'] ?? '');
+
+  // Owner (autor).
+  $owner = $entity->getOwner();
+  if ($owner) {
+    $variables['author_name'] = $owner->getDisplayName();
   }
 }

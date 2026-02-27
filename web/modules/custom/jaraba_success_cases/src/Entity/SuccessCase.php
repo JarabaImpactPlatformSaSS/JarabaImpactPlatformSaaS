@@ -222,6 +222,28 @@ class SuccessCase extends ContentEntityBase implements EntityOwnerInterface, Ent
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
 
+        // =========================================================================
+        // Media
+        // =========================================================================
+
+        $fields['hero_image'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('Photo'))
+            ->setDescription(t('Portrait or professional headshot of the person.'))
+            ->setSetting('file_directory', 'success-cases/[date:custom:Y]')
+            ->setSetting('alt_field', TRUE)
+            ->setSetting('file_extensions', 'png jpg jpeg webp')
+            ->setSetting('max_filesize', '5 MB')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 5,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // =========================================================================
+        // Social & Links
+        // =========================================================================
+
         $fields['website'] = BaseFieldDefinition::create('uri')
             ->setLabel(t('Website'))
             ->setDescription(t('Personal or company website URL.'))

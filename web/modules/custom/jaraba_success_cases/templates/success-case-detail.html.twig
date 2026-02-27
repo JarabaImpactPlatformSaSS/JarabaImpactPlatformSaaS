@@ -42,9 +42,16 @@
     <div class="sc-detail__hero-content">
       {# Avatar #}
       <div class="sc-detail__avatar-container">
-        <div class="sc-detail__avatar sc-detail__avatar--placeholder" aria-hidden="true">
-          {{ case.name|first|upper }}
-        </div>
+        {% if case.image_url %}
+          <img class="sc-detail__avatar sc-detail__avatar--photo"
+               src="{{ case.image_url }}"
+               alt="{{ case.name }}"
+               loading="eager" width="110" height="110">
+        {% else %}
+          <div class="sc-detail__avatar sc-detail__avatar--placeholder" aria-hidden="true">
+            {{ case.name|first|upper }}
+          </div>
+        {% endif %}
         {% if case.featured %}
           <span class="sc-detail__featured-badge" title="{% trans %}Caso Destacado{% endtrans %}">
             {{ jaraba_icon('general', 'trophy', { variant: 'duotone', size: '20px', color: 'warning' }) }}

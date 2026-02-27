@@ -4,137 +4,89 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_success_cases\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\ecosistema_jaraba_core\Form\PremiumEntityFormBase;
 
 /**
  * Form handler for the Success Case entity add/edit forms.
  *
- * Organizes fields into logical fieldsets (Details, Narrative, Quotes,
- * Metrics, Program, SEO) for a clean admin editing experience.
- * Format guidelines are hidden per slide-panel pattern.
+ * HAL-DEMO-V3-BACK-007: Migrado de ContentEntityForm a PremiumEntityFormBase
+ * (PREMIUM-FORMS-PATTERN-001, Patrón D — Custom Logic con redirect).
+ *
+ * 6 secciones premium: Details, Narrative, Quotes, Metrics, Program, SEO.
+ * Fieldsets #type=details eliminados — PremiumEntityFormBase gestiona
+ * glass-cards, nav pills y secciones automáticamente.
  */
-class SuccessCaseForm extends ContentEntityForm
-{
+class SuccessCaseForm extends PremiumEntityFormBase {
 
-    /**
-     * {@inheritdoc}
-     */
-    public function form(array $form, FormStateInterface $form_state): array
-    {
-        $form = parent::form($form, $form_state);
+  /**
+   * {@inheritdoc}
+   */
+  protected function getSectionDefinitions(): array {
+    return [
+      'details' => [
+        'label' => $this->t('Personal Details'),
+        'icon' => ['category' => 'users', 'name' => 'user'],
+        'description' => $this->t('Core identity information for the success case protagonist.'),
+        'fields' => ['name', 'slug', 'hero_image', 'profession', 'company', 'sector', 'location', 'website', 'linkedin'],
+      ],
+      'narrative' => [
+        'label' => $this->t('History (Challenge → Solution → Result)'),
+        'icon' => ['category' => 'ui', 'name' => 'edit'],
+        'description' => $this->t('The narrative arc: what was the challenge, how was it solved, and what was achieved.'),
+        'fields' => ['challenge_before', 'solution_during', 'result_after'],
+      ],
+      'quotes' => [
+        'label' => $this->t('Testimonial Quotes'),
+        'icon' => ['category' => 'ui', 'name' => 'chat'],
+        'description' => $this->t('Direct quotes from the protagonist for cards and detail pages.'),
+        'fields' => ['quote_short', 'quote_long'],
+      ],
+      'metrics' => [
+        'label' => $this->t('Quantifiable Metrics'),
+        'icon' => ['category' => 'fiscal', 'name' => 'coins'],
+        'description' => $this->t('Key-value metrics and satisfaction rating.'),
+        'fields' => ['metrics_json', 'rating'],
+      ],
+      'program' => [
+        'label' => $this->t('Program / Vertical'),
+        'icon' => ['category' => 'ui', 'name' => 'link'],
+        'description' => $this->t('Program association and vertical classification.'),
+        'fields' => ['program_name', 'vertical', 'program_funder', 'program_year'],
+      ],
+      'seo_control' => [
+        'label' => $this->t('SEO & Display Control'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('SEO metadata, display weight, and publication status.'),
+        'fields' => ['meta_description', 'weight', 'featured', 'status'],
+      ],
+    ];
+  }
 
-        // --- Fieldset: Personal Details ---
-        $form['details'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Personal Details'),
-            '#open' => TRUE,
-            '#weight' => 0,
-        ];
-        $details_fields = ['name', 'slug', 'profession', 'company', 'sector', 'location', 'website', 'linkedin'];
-        foreach ($details_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['details'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFormIcon(): array {
+    return ['category' => 'ui', 'name' => 'star'];
+  }
 
-        // --- Fieldset: Narrative ---
-        $form['narrative'] = [
-            '#type' => 'details',
-            '#title' => $this->t('History (Challenge → Solution → Result)'),
-            '#open' => TRUE,
-            '#weight' => 10,
-        ];
-        $narrative_fields = ['challenge_before', 'solution_during', 'result_after'];
-        foreach ($narrative_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['narrative'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCharacterLimits(): array {
+    return [
+      'quote_short' => 150,
+      'meta_description' => 320,
+    ];
+  }
 
-        // --- Fieldset: Quotes ---
-        $form['quotes'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Testimonial Quotes'),
-            '#open' => FALSE,
-            '#weight' => 20,
-        ];
-        $quote_fields = ['quote_short', 'quote_long'];
-        foreach ($quote_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['quotes'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
-
-        // --- Fieldset: Metrics ---
-        $form['metrics'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Quantifiable Metrics'),
-            '#open' => FALSE,
-            '#weight' => 30,
-        ];
-        $metric_fields = ['metrics_json', 'rating'];
-        foreach ($metric_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['metrics'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
-
-        // --- Fieldset: Program ---
-        $form['program'] = [
-            '#type' => 'details',
-            '#title' => $this->t('Program / Vertical'),
-            '#open' => FALSE,
-            '#weight' => 40,
-        ];
-        $program_fields = ['program_name', 'vertical', 'program_funder', 'program_year'];
-        foreach ($program_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['program'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
-
-        // --- Fieldset: SEO & Control ---
-        $form['seo_control'] = [
-            '#type' => 'details',
-            '#title' => $this->t('SEO & Display Control'),
-            '#open' => FALSE,
-            '#weight' => 50,
-        ];
-        $seo_fields = ['meta_description', 'weight', 'featured', 'status'];
-        foreach ($seo_fields as $field_name) {
-            if (isset($form[$field_name])) {
-                $form['seo_control'][$field_name] = $form[$field_name];
-                unset($form[$field_name]);
-            }
-        }
-
-        return $form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function save(array $form, FormStateInterface $form_state): int
-    {
-        $result = parent::save($form, $form_state);
-
-        $entity = $this->getEntity();
-        $message_args = ['%label' => $entity->toLink()->toString()];
-
-        if ($result === SAVED_NEW) {
-            $this->messenger()->addStatus($this->t('Success case %label has been created.', $message_args));
-        } else {
-            $this->messenger()->addStatus($this->t('Success case %label has been updated.', $message_args));
-        }
-
-        $form_state->setRedirectUrl($entity->toUrl('collection'));
-        return $result;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): int {
+    $result = parent::save($form, $form_state);
+    $form_state->setRedirectUrl($this->getEntity()->toUrl('collection'));
+    return $result;
+  }
 
 }

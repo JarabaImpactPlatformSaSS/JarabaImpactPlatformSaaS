@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\image\Entity\ImageStyle;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -156,11 +157,15 @@ class SuccessCasesController extends ControllerBase
         $case = $storage->load(reset($ids));
         $data = $this->buildDetailData($case);
 
+        // Load related cases (same vertical, max 3, excluding current).
+        $relatedCards = $this->loadRelatedCases($case);
+
         return [
             '#theme' => 'success_case_detail',
             '#case' => $data,
+            '#related_cases' => $relatedCards,
             '#cache' => [
-                'tags' => ['success_case:' . $case->id()],
+                'tags' => ['success_case:' . $case->id(), 'success_case_list'],
             ],
             '#attached' => [
                 'library' => ['jaraba_success_cases/success-cases'],
@@ -225,6 +230,21 @@ class SuccessCasesController extends ControllerBase
             }
         }
 
+        // Resolve hero image URL.
+        $imageUrl = NULL;
+        $imageUrlCard = NULL;
+        if ($case->hasField('hero_image') && !$case->get('hero_image')->isEmpty()) {
+            /** @var \Drupal\file\FileInterface $file */
+            $file = $case->get('hero_image')->entity;
+            if ($file) {
+                $uri = $file->getFileUri();
+                $imageUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+                // Card thumbnail: use medium style if available.
+                $cardStyle = ImageStyle::load('medium');
+                $imageUrlCard = $cardStyle ? $cardStyle->buildUrl($uri) : $imageUrl;
+            }
+        }
+
         return [
             'id' => (int) $case->id(),
             'name' => $case->get('name')->value,
@@ -240,6 +260,8 @@ class SuccessCasesController extends ControllerBase
             'program_name' => $case->get('program_name')->value,
             'metrics' => $metrics,
             'url' => '/caso-de-exito/' . $case->get('slug')->value,
+            'image_url' => $imageUrl,
+            'image_url_card' => $imageUrlCard,
         ];
     }
 
@@ -313,6 +335,46 @@ class SuccessCasesController extends ControllerBase
         }
 
         return array_values($verticals);
+    }
+
+    /**
+     * Loads related success cases (same vertical, excluding current).
+     *
+     * @param \Drupal\jaraba_success_cases\Entity\SuccessCase $case
+     *   The current success case entity.
+     *
+     * @return array
+     *   Array of card data for related cases (max 3).
+     */
+    protected function loadRelatedCases($case): array
+    {
+        $vertical = $case->get('vertical')->value;
+        if (!$vertical) {
+            return [];
+        }
+
+        $storage = $this->entityTypeManager->getStorage('success_case');
+        $ids = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', 1)
+            ->condition('vertical', $vertical)
+            ->condition('id', $case->id(), '<>')
+            ->sort('featured', 'DESC')
+            ->sort('weight', 'ASC')
+            ->range(0, 3)
+            ->execute();
+
+        if (empty($ids)) {
+            return [];
+        }
+
+        $related = $storage->loadMultiple($ids);
+        $cards = [];
+        foreach ($related as $relatedCase) {
+            $cards[] = $this->buildCardData($relatedCase);
+        }
+
+        return $cards;
     }
 
 }
