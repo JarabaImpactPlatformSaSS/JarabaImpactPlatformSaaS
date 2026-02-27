@@ -1,0 +1,73 @@
+{#
+ # Item 18: Public review submission form template.
+ #
+ # Variables:
+ #   - vertical: string — canonical vertical name
+ #   - target_label: string — label of the entity being reviewed
+ #   - target_id: int — ID of the target entity
+ #   - review_entity_type: string — entity type of the review
+ #   - settings: object — tenant review settings
+ #}
+<div class="review-submit" data-review-type="{{ review_entity_type }}" data-target-id="{{ target_id }}">
+  <header class="review-submit__header">
+    <h2 class="review-submit__title">{{ 'Escribe tu resena'|t }}</h2>
+    {% if target_label %}
+      <p class="review-submit__subtitle">{{ 'Comparte tu experiencia sobre %target'|t({'%target': target_label}) }}</p>
+    {% endif %}
+  </header>
+
+  <form class="review-submit__form" data-review-submit-form>
+    {# Rating Section #}
+    <div class="review-submit__section review-submit__section--rating">
+      <label class="review-submit__label">{{ 'Valoracion'|t }}{% if settings.require_rating %} <span class="review-submit__required">*</span>{% endif %}</label>
+      <div class="review-submit__stars" data-star-rating>
+        {% for i in 1..5 %}
+          <button type="button" class="review-submit__star" data-star-value="{{ i }}" aria-label="{{ 'Valorar con @stars estrellas'|t({'@stars': i}) }}">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </button>
+        {% endfor %}
+        <input type="hidden" name="rating" value="0" data-rating-input>
+      </div>
+    </div>
+
+    {# Title Section #}
+    <div class="review-submit__section">
+      <label class="review-submit__label" for="review-title">{{ 'Titulo (opcional)'|t }}</label>
+      <input type="text" id="review-title" name="title" class="review-submit__input" maxlength="255" placeholder="{{ 'Resume tu experiencia en una frase'|t }}">
+    </div>
+
+    {# Body Section #}
+    <div class="review-submit__section">
+      <label class="review-submit__label" for="review-body">{{ 'Tu resena'|t }} <span class="review-submit__required">*</span></label>
+      <textarea id="review-body" name="body" class="review-submit__textarea" rows="5"
+                minlength="{{ settings.min_length }}"
+                maxlength="{{ settings.max_length }}"
+                placeholder="{{ 'Cuenta tu experiencia con detalle...'|t }}"
+                required></textarea>
+      <span class="review-submit__char-count" data-char-count>0/{{ settings.max_length }}</span>
+    </div>
+
+    {# Photos Section #}
+    {% if settings.allow_photos %}
+    <div class="review-submit__section">
+      <label class="review-submit__label">{{ 'Fotos (opcional)'|t }}</label>
+      <div class="review-submit__photo-upload">
+        <input type="file" name="photos[]" accept="image/*" multiple data-max-photos="{{ settings.max_photos }}" class="review-submit__file-input">
+        <p class="review-submit__photo-hint">{{ 'Maximo @count fotos'|t({'@count': settings.max_photos}) }}</p>
+      </div>
+      <div class="review-submit__photo-preview" data-photo-preview></div>
+    </div>
+    {% endif %}
+
+    {# Submit #}
+    <div class="review-submit__actions">
+      <button type="submit" class="review-submit__btn review-submit__btn--primary" data-review-submit-btn>
+        {{ 'Enviar resena'|t }}
+      </button>
+    </div>
+
+    <div class="review-submit__messages" data-review-messages></div>
+  </form>
+</div>
