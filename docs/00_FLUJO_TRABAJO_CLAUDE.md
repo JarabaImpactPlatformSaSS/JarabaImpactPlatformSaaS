@@ -17,6 +17,20 @@ Esto garantiza contexto completo antes de cualquier implementacion.
 
 ---
 
+## 1b. Protección de Documentos Maestros (DOC-GUARD-001)
+
+> **⚠️ P0 — NUNCA reescribir documentos maestros completos.**
+
+| Regla | Descripción |
+|-------|-------------|
+| **DOC-GUARD-001** | NUNCA usar Write/cat/heredoc para reemplazar un documento maestro (`00_*.md`). SIEMPRE usar Edit para modificar secciones específicas. |
+| **COMMIT-SCOPE-001** | Commits de documentos maestros SEPARADOS de commits de código. Máximo 1 doc maestro por commit. |
+| **DOC-LINECOUNT-001** | Verificar que el número de líneas NO disminuye >10% antes de commit. |
+
+**Contexto:** El 18-feb-2026 (commit `e4a80c1f`), un commit de 361 archivos reemplazó los 4 documentos maestros con stubs de 29-67 líneas, destruyendo 7.000 líneas de documentación acumulada. Estas reglas previenen que vuelva a ocurrir.
+
+---
+
 ## 2. Antes de Implementar
 
 - **Leer ficheros de referencia:** Antes de crear o modificar un modulo, revisar modulos existentes que usen el mismo patron (ej: jaraba_verifactu como patron canonico de zero-region)

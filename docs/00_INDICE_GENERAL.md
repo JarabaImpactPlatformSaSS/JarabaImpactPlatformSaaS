@@ -1203,14 +1203,17 @@
 3. [Lógica de Negocio](#3-lógica-de-negocio)
 4. [Planificación](#4-planificación)
 5. [Tareas](#5-tareas)
+5b. [Operaciones](#5b-operaciones)
 6. [Implementación](#6-implementación)
 7. [Documentos Técnicos](#7-documentos-técnicos)
 8. [Plantillas](#8-plantillas)
 9. [Assets](#9-assets)
+   - 9.1 [Inspiraciones Page Builder](#91-inspiraciones-page-builder)
+   - 9b. [Documentación de Usuario](#9b-documentación-de-usuario)
 10. [Estadísticas de Documentación](#10-estadísticas-de-documentación)
-
----
-
+- [Nivel de Madurez Arquitectónica](#nivel-de-madurez-arquitectónica)
+- [Resumen Plan Maestro v3.0](#resumen-plan-maestro-v30)
+15. [Registro de Cambios](#15-registro-de-cambios-hitos-recientes)
 
 ---
 
@@ -1218,12 +1221,11 @@
 
 | Documento | Descripción | Última Actualización |
 |-----------|-------------|---------------------|
-| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto - **v20.0.0** - 11 reglas AUDIT-* | 2026-02-13 (v20.0.0) |
-| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v19.0** - Madurez 4.5/5.0, sección 12 Estado Auditoría | 2026-02-13 (v19.0.0) |
-| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento - Índice general | 2026-02-13 (v30.0.0) |
-<!-- AUDIT-CONS-N13 / SPEC-N05: Indexed missing documents -->
-| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | FLUJO TRABAJO CLAUDE | 2026 |
-| [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | VERTICAL CUSTOMIZATION PATTERNS | 2026 |
+| [00_DIRECTRICES_PROYECTO.md](./00_DIRECTRICES_PROYECTO.md) | 📋 Directrices maestras del proyecto — **v88.0.0** — Reviews & Comments Clase Mundial | 2026-02-27 (v88.0.0) |
+| [00_DOCUMENTO_MAESTRO_ARQUITECTURA.md](./00_DOCUMENTO_MAESTRO_ARQUITECTURA.md) | 🏗️ **ARQUITECTURA v81.0.0** — Reviews & Comments Clase Mundial, Madurez 4.9/5.0 | 2026-02-27 (v81.0.0) |
+| [00_INDICE_GENERAL.md](./00_INDICE_GENERAL.md) | 📚 Este documento — Índice general — **v113.0.0** | 2026-02-27 (v113.0.0) |
+| [00_FLUJO_TRABAJO_CLAUDE.md](./00_FLUJO_TRABAJO_CLAUDE.md) | 🔄 Flujo de trabajo Claude — **v42.0.0** — Reviews & Comments Clase Mundial | 2026-02-27 (v42.0.0) |
+| [07_VERTICAL_CUSTOMIZATION_PATTERNS.md](./07_VERTICAL_CUSTOMIZATION_PATTERNS.md) | 🔀 Patrones de customización por vertical — **v2.2.0** — 10 verticales canónicos | 2026-02-23 (v2.2.0) |
 
 ---
 

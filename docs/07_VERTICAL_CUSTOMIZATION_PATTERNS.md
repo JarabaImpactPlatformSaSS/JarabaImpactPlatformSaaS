@@ -9,14 +9,20 @@ La plataforma Jaraba SaaS implementa un modelo **multi-vertical** donde cada ver
 
 ### 1.1 Verticales Activos en Producción
 
-| Vertical | Machine Name | Design Tokens | Preview Images (Page Builder) |
-|----------|-------------|---------------|------------------------------|
-| **AgroConecta** | `agroconecta` | `--ej-agro-*` | 11/11 ✅ (verde-dorado) |
-| **ComercioConecta** | `comercioconecta` | `--ej-comercio-*` | 11/11 ✅ (naranja-ámbar) |
-| **Empleabilidad** | `empleabilidad` | `--ej-empleo-*` | 11/11 ✅ (azul-teal) |
-| **Emprendimiento** | `emprendimiento` | `--ej-emprende-*` | 11/11 ✅ (púrpura-violeta) |
-| **ServiciosConecta** | `serviciosconecta` | `--ej-servicios-*` | 11/11 ✅ (teal-cyan) |
-| **JarabaLex** | `jarabalex` | `--ej-legal-*` | 11/11 ✅ (navy-dorado #1E3A5F + #C8A96E) |
+> **Fuente de verdad canónica:** `BaseAgent::VERTICALS` en `jaraba_ai_agents/src/Agent/BaseAgent.php` — 10 verticales.
+
+| Vertical | Machine Name | Design Tokens | Preview Images (Page Builder) | Estado |
+|----------|-------------|---------------|------------------------------|--------|
+| **AgroConecta** | `agroconecta` | `--ej-agro-*` | 11/11 ✅ (verde-dorado) | Producción |
+| **ComercioConecta** | `comercioconecta` | `--ej-comercio-*` | 11/11 ✅ (naranja-ámbar) | Producción |
+| **Empleabilidad** | `empleabilidad` | `--ej-empleo-*` | 11/11 ✅ (azul-teal) | Producción |
+| **Emprendimiento** | `emprendimiento` | `--ej-emprende-*` | 11/11 ✅ (púrpura-violeta) | Producción |
+| **ServiciosConecta** | `serviciosconecta` | `--ej-servicios-*` | 11/11 ✅ (teal-cyan) | Producción |
+| **JarabaLex** | `jarabalex` | `--ej-legal-*` | 11/11 ✅ (navy-dorado #1E3A5F + #C8A96E) | Producción |
+| **Andalucía +ei** | `andalucia_ei` | `--ej-*` (tokens federados core) | 11/11 ✅ (andalucia_ei-*.png/svg) | Producción |
+| **Content Hub** | `jaraba_content_hub` | `--ej-*` (tokens federados core) | N/A (no tiene bloques PB propios) | Producción |
+| **Formación** | `formacion` | `--ej-*` (tokens federados core) | N/A (usa bloques genéricos) | Planificado |
+| **Demo** | `demo` | `--ej-*` (tokens federados core) | N/A (sandbox de demostración) | Planificado |
 
 ```mermaid
 graph TD
@@ -27,19 +33,31 @@ graph TD
     V4[Vertical: Emprendimiento]
     V5[Vertical: ServiciosConecta]
     V6[Vertical: JarabaLex]
+    V7[Vertical: Andalucía +ei]
+    V8[Vertical: Content Hub]
+    V9[Vertical: Formación]
+    V10[Vertical: Demo]
     T1[Tenant: Cooperativa Aceites]
     T2[Tenant: Tienda Local]
     T3[Tenant: Despacho Jurídico]
-    
+    T4[Tenant: Programa Andalucía]
+    T5[Tenant: pepejaraba.com]
+
     Platform --> V1
     Platform --> V2
     Platform --> V3
     Platform --> V4
     Platform --> V5
     Platform --> V6
+    Platform --> V7
+    Platform --> V8
+    Platform --> V9
+    Platform --> V10
     V1 --> T1
     V2 --> T2
     V6 --> T3
+    V7 --> T4
+    V8 --> T5
 ```
 
 ## 2. Entidad Vertical
@@ -232,9 +250,36 @@ El modulo `jaraba_messaging` soporta conversaciones **contextualizadas por verti
 | `mentoring` | Emprendimiento | Mentorias entre mentores y emprendedores |
 | `job_application` | Empleabilidad | Comunicacion candidato-empresa sobre oferta |
 | `order` | AgroConecta / ComercioConecta | Consultas sobre pedidos y trazabilidad |
+| `program_support` | Andalucía +ei | Comunicacion participante-orientador del programa PIIL |
 | `general` | Todos | Conversaciones generales sin contexto especifico |
 
 Cada conversacion hereda el `tenant_id` y las claves de cifrado son per-tenant (Argon2id KDF). Los permisos y roles de participante (`owner`, `member`, `observer`) permiten control granular por vertical.
+
+### 7.2 Andalucía +ei — Vertical de Programa Institucional
+
+El vertical `andalucia_ei` implementa un modelo diferente al resto: es un **programa de emprendimiento aumentado con IA**, no un marketplace. Sus características específicas:
+
+| Componente | Descripción | Módulo |
+|------------|-------------|--------|
+| **Gestión de Participantes** | SolicitudEi entity, portal del participante, tracking horas | `jaraba_andalucia_ei` |
+| **Tracking Horas IA** | Contabilización automática de horas de orientación IA (0.25h/sesión, máx 4h/día) | `jaraba_andalucia_ei` |
+| **Fases PIIL** | Seguimiento de las fases del Programa PIIL (STO/SEPE) | `jaraba_andalucia_ei` |
+| **Formación** | Integración con LMS + SEPE Teleformación | `jaraba_lms` + `jaraba_sepe_teleformacion` |
+| **Mentoring** | Sesiones de mentoría con tracking de progreso | `jaraba_mentoring` |
+| **Copilot Contextual** | Copilot v2 con contexto de programa y participante | `jaraba_copilot_v2` |
+
+**Configuración:** `jaraba_andalucia_ei.settings.yml` — horas mínimas orientación (10h), formación (50h), horas por sesión IA (0.25h).
+
+### 7.3 Content Hub — Vertical de Marca Personal y Blog
+
+El vertical `jaraba_content_hub` gestiona el ecosistema de contenido editorial: blog, artículos, categorías, autores, comentarios. Usado por los meta-sitios (pepejaraba.com, jarabaimpact.com, plataformadeecosistemas.es).
+
+| Componente | Descripción | Módulo |
+|------------|-------------|--------|
+| **Blog** | Artículos, categorías, autores, RSS, SEO | `jaraba_content_hub` |
+| **Canvas Editor** | Editor visual GrapesJS para artículos | `jaraba_content_hub` (library: `jaraba_page_builder/grapesjs-canvas`) |
+| **Comentarios** | ContentComment entity con threading depth 3 | `jaraba_content_hub` |
+| **SEO** | OG tags, Twitter Cards, JSON-LD, BreadcrumbList | `jaraba_content_hub` (SeoService) |
 
 ## 8. Roadmap
 
@@ -243,8 +288,14 @@ Cada conversacion hereda el `tenant_id` y las claves de cifrado son per-tenant (
 | Features como config entity | ✅ Completado | - |
 | Agentes IA como config entity | ✅ Completado | - |
 | Mensajeria segura cross-vertical | ✅ Completado (jaraba_messaging) | - |
-| UI para theme_overrides | ⏸️ Planeado | Alta |
 | Herencia de features (Vertical → Plan) | ✅ Completado (PlanResolverService v2.1) | - |
+| Andalucía +ei vertical completo | ✅ Completado (jaraba_andalucia_ei) | - |
+| Content Hub como vertical | ✅ Completado (jaraba_content_hub) | - |
+| Design tokens propios para andalucia_ei | ⏸️ Planificado | Media |
+| Design tokens propios para formacion | ⏸️ Planificado | Media |
+| UI para theme_overrides | ⏸️ Planificado | Alta |
+| Vertical formacion independiente | ⏸️ Planificado | Media |
+| Vertical demo (sandbox) | ⏸️ Planificado | Baja |
 
 ---
 
@@ -252,6 +303,7 @@ Cada conversacion hereda el `tenant_id` y las claves de cifrado son per-tenant (
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-27 | **3.0.0** | **10 Verticales Canónicos:** Tabla actualizada de 6→10 verticales (se añaden andalucia_ei, jaraba_content_hub, formacion, demo). Diagrama Mermaid actualizado. Nuevas secciones 7.2 (Andalucía +ei) y 7.3 (Content Hub). context_type `program_support` para messaging. Referencia canónica a `BaseAgent::VERTICALS`. |
 | 2026-02-23 | **2.2.0** | **PlanResolverService v2.1:** Seccion 4.2 reescrita con patron PlanResolverService como fuente de verdad para features y limites por vertical+tier. Cascade PLAN-CASCADE-001 documentado (especifico→default→NULL). Roadmap: "Herencia de features" marcado como completado. |
 | 2026-02-20 | **2.1.0** | Seccion 7 nueva: Capacidades Cross-Vertical — documentacion de `jaraba_messaging` como servicio cross-vertical con context_type por vertical. Tabla de 6 context_types con casos de uso. Roadmap actualizado (messaging como completado). |
 | 2026-02-20 | 2.0.0 | Actualizacion con los 6 verticales activos en produccion. Tabla de design tokens y estado de preview images por vertical. |

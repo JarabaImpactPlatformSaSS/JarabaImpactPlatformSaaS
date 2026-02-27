@@ -2120,7 +2120,18 @@ Incluir siempre notas sobre:
 
 ## 12. Control de Versiones
 
-### 11.1 Versionado Semántico
+### 12.0 Protección de Documentos Maestros
+
+> **⚠️ REGLAS DE INTEGRIDAD DOCUMENTAL** — Estas reglas son de máxima prioridad (P0) y su incumplimiento ha causado pérdida catastrófica de documentación en el pasado (commit `e4a80c1f`, 18-feb-2026: 7.000 líneas perdidas en 4 documentos).
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **Edición incremental** | DOC-GUARD-001 | NUNCA reescribir un documento maestro (`00_*.md`, `07_*.md`) completo con la herramienta Write/cat/heredoc. SIEMPRE usar Edit para añadir/modificar secciones específicas. Si un documento tiene más de 100 líneas, está **PROHIBIDO** sobrescribirlo. | **P0** |
+| **Commits atómicos** | COMMIT-SCOPE-001 | Los commits que modifican documentos maestros (`00_*.md`) DEBEN ser commits separados de los que modifican código fuente. Máximo 1 documento maestro por commit para facilitar revisión y rollback. | **P0** |
+| **Verificación de líneas** | DOC-LINECOUNT-001 | Antes de hacer commit de un documento maestro, verificar que el número de líneas NO ha disminuido más de un 10% respecto a HEAD. Si ha disminuido, el commit debe ser rechazado y revisado manualmente. | **P0** |
+| **Umbrales mínimos** | DOC-THRESHOLD-001 | Los documentos maestros tienen umbrales mínimos de líneas que nunca deben violarse: DIRECTRICES ≥ 2.000, ARQUITECTURA ≥ 2.400, INDICE ≥ 2.000, FLUJO ≥ 700 líneas. | **P0** |
+
+### 12.1 Versionado Semántico
 ```
 MAJOR.MINOR.PATCH
 ```
