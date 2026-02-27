@@ -1,0 +1,12 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Empleabilidad routes.
+ *
+ * Covers: /empleo/*, jobseeker dashboard, CV builder.
+ * Compile: sass scss/routes/empleabilidad.scss css/routes/empleabilidad.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../jobseeker-dashboard';
+@use '../employability-pages';
+@use '../cv-builder';

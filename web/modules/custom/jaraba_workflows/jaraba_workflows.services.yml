@@ -1,0 +1,12 @@
+services:
+  jaraba_workflows.execution:
+    class: Drupal\jaraba_workflows\Service\WorkflowExecutionService
+    arguments:
+      - '@entity_type.manager'
+      - '@event_dispatcher'
+      - '@logger.channel.jaraba_workflows'
+      - '@?jaraba_ai_agents.observability'
+
+  logger.channel.jaraba_workflows:
+    parent: logger.channel_base
+    arguments: ['jaraba_workflows']

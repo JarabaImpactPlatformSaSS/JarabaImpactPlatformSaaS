@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Workflows.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_cron().
+ *
+ * Evaluates cron_schedule workflow rules.
+ */
+function jaraba_workflows_cron(): void {
+  if (\Drupal::hasService('jaraba_workflows.execution')) {
+    try {
+      \Drupal::service('jaraba_workflows.execution')->evaluate('cron_schedule', [
+        'timestamp' => \Drupal::time()->getRequestTime(),
+      ]);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_workflows')->warning(
+        'Workflow cron evaluation failed: @error',
+        ['@error' => $e->getMessage()]
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function jaraba_workflows_mail(string $key, array &$message, array $params): void {
+  if ($key === 'workflow_notification') {
+    $message['subject'] = $params['subject'] ?? 'Workflow Notification';
+    $message['body'][] = $params['body'] ?? '';
+  }
+}

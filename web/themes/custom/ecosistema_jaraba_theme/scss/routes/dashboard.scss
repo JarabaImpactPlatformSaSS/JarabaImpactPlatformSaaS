@@ -1,0 +1,18 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Dashboard routes.
+ *
+ * Covers: /tenant/dashboard, /tenant/analytics, admin dashboards.
+ * Compile: sass scss/routes/dashboard.scss css/routes/dashboard.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../ai-dashboard';
+@use '../agent-dashboard';
+@use '../analytics-dashboard';
+@use '../page-builder-dashboard';
+@use '../site-builder';
+@use '../retention-playbooks';
+@use '../components/analytics-dashboard' as analyticsComp;
+@use '../components/heatmap-dashboard';
+@use '../components/sidebar';

@@ -328,6 +328,162 @@ class SeoService {
   }
 
   /**
+   * Generates LocalBusiness JSON-LD schema (S4-03: HAL-AI-14).
+   *
+   * For Comercio Conecta merchants or any entity with business location data.
+   * Supports sub-types: LocalBusiness, Restaurant, Store, etc.
+   *
+   * @param array $business
+   *   Business data with keys:
+   *   - name: (string) Business name.
+   *   - description: (string) SEO description.
+   *   - type: (string) Schema type (default: 'LocalBusiness').
+   *   - address_street: (string) Street address.
+   *   - address_city: (string) City/locality.
+   *   - address_postal_code: (string) Postal code.
+   *   - address_region: (string) Province/region.
+   *   - address_country: (string) Country code (default: 'ES').
+   *   - phone: (string) Telephone.
+   *   - email: (string) Email.
+   *   - website: (string) Website URL.
+   *   - latitude: (float) Geo latitude.
+   *   - longitude: (float) Geo longitude.
+   *   - opening_hours: (array) Array of {day, opens, closes}.
+   *   - logo: (string) Logo URL.
+   *   - rating: (float) Average rating.
+   *   - review_count: (int) Total reviews.
+   *   - price_range: (string) Price range indicator (e.g., '$$').
+   *
+   * @return array
+   *   JSON-LD array ready for json_encode().
+   */
+  public function generateLocalBusinessJsonLd(array $business): array {
+    $schema = [
+      '@context' => 'https://schema.org',
+      '@type' => $business['type'] ?? 'LocalBusiness',
+      'name' => $business['name'] ?? '',
+    ];
+
+    if (!empty($business['description'])) {
+      $schema['description'] = $business['description'];
+    }
+
+    // Address.
+    $hasAddress = !empty($business['address_street']) || !empty($business['address_city']);
+    if ($hasAddress) {
+      $schema['address'] = [
+        '@type' => 'PostalAddress',
+      ];
+      if (!empty($business['address_street'])) {
+        $schema['address']['streetAddress'] = $business['address_street'];
+      }
+      if (!empty($business['address_city'])) {
+        $schema['address']['addressLocality'] = $business['address_city'];
+      }
+      if (!empty($business['address_region'])) {
+        $schema['address']['addressRegion'] = $business['address_region'];
+      }
+      if (!empty($business['address_postal_code'])) {
+        $schema['address']['postalCode'] = $business['address_postal_code'];
+      }
+      $schema['address']['addressCountry'] = $business['address_country'] ?? 'ES';
+    }
+
+    // Geo coordinates.
+    if (!empty($business['latitude']) && !empty($business['longitude'])) {
+      $schema['geo'] = [
+        '@type' => 'GeoCoordinates',
+        'latitude' => (float) $business['latitude'],
+        'longitude' => (float) $business['longitude'],
+      ];
+    }
+
+    // Contact.
+    if (!empty($business['phone'])) {
+      $schema['telephone'] = $business['phone'];
+    }
+    if (!empty($business['email'])) {
+      $schema['email'] = $business['email'];
+    }
+    if (!empty($business['website'])) {
+      $schema['url'] = $business['website'];
+    }
+
+    // Logo.
+    if (!empty($business['logo'])) {
+      $schema['logo'] = $business['logo'];
+    }
+
+    // Price range.
+    if (!empty($business['price_range'])) {
+      $schema['priceRange'] = $business['price_range'];
+    }
+
+    // Opening hours.
+    if (!empty($business['opening_hours']) && is_array($business['opening_hours'])) {
+      $hoursSpec = [];
+      foreach ($business['opening_hours'] as $hours) {
+        if (!empty($hours['day']) && !empty($hours['opens']) && !empty($hours['closes'])) {
+          $hoursSpec[] = [
+            '@type' => 'OpeningHoursSpecification',
+            'dayOfWeek' => $hours['day'],
+            'opens' => $hours['opens'],
+            'closes' => $hours['closes'],
+          ];
+        }
+      }
+      if (!empty($hoursSpec)) {
+        $schema['openingHoursSpecification'] = $hoursSpec;
+      }
+    }
+
+    // Aggregate rating.
+    if (!empty($business['rating']) && !empty($business['review_count'])) {
+      $schema['aggregateRating'] = [
+        '@type' => 'AggregateRating',
+        'ratingValue' => (float) $business['rating'],
+        'reviewCount' => (int) $business['review_count'],
+        'bestRating' => 5,
+        'worstRating' => 1,
+      ];
+    }
+
+    return $schema;
+  }
+
+  /**
+   * Generates geo meta tags for HTML head (S4-03: HAL-AI-14).
+   *
+   * @param float $latitude
+   *   The latitude.
+   * @param float $longitude
+   *   The longitude.
+   * @param string $region
+   *   The geo.region code (e.g., 'ES-AN' for Andalucia).
+   * @param string $placename
+   *   The geo.placename (e.g., 'Granada').
+   *
+   * @return array
+   *   Array of meta tag key-value pairs.
+   */
+  public function generateGeoMetaTags(float $latitude, float $longitude, string $region = '', string $placename = ''): array {
+    $tags = [];
+
+    if (!empty($region)) {
+      $tags['geo.region'] = $region;
+    }
+    if (!empty($placename)) {
+      $tags['geo.placename'] = $placename;
+    }
+    if ($latitude && $longitude) {
+      $tags['geo.position'] = "{$latitude};{$longitude}";
+      $tags['ICBM'] = "{$latitude}, {$longitude}";
+    }
+
+    return $tags;
+  }
+
+  /**
    * Analiza la calidad SEO de un articulo.
    *
    * Evalua multiples factores SEO y genera una puntuacion

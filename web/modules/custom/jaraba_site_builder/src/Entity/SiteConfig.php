@@ -468,6 +468,42 @@ class SiteConfig extends ContentEntityBase
             ])
             ->setDisplayConfigurable('form', TRUE);
 
+        // --- Banda Ecosistema (Navegacion Transversal) ---
+
+        $fields['ecosystem_footer_enabled'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Activar banda Ecosistema en footer'))
+            ->setDescription(t('Muestra la banda de navegacion del ecosistema en el footer.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 80,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        $fields['ecosystem_footer_links'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Enlaces del Ecosistema'))
+            ->setDescription(t('JSON array: [{"name":"Nombre","url":"https://...","label":"Descripcion","current":false}]'))
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => 81,
+                'settings' => [
+                    'rows' => 6,
+                ],
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // --- Visibilidad Auth en Header ---
+
+        $fields['header_show_auth'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Mostrar acciones de autenticacion en header'))
+            ->setDescription(t('Muestra login/registro/cuenta en el header. Desactivar para sitios tipo brochure.'))
+            ->setDefaultValue(TRUE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 65,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
         // --- Campos de sistema ---
 
         $fields['created'] = BaseFieldDefinition::create('created')
@@ -607,6 +643,37 @@ class SiteConfig extends ContentEntityBase
     {
         $text = $this->get('footer_copyright')->value ?? '© {year} Todos los derechos reservados.';
         return str_replace('{year}', date('Y'), $text);
+    }
+
+    // --- Getters para Ecosistema y Auth ---
+
+    /**
+     * Indica si la banda del ecosistema esta activada en el footer.
+     */
+    public function isEcosystemFooterEnabled(): bool
+    {
+        return (bool) ($this->get('ecosystem_footer_enabled')->value ?? FALSE);
+    }
+
+    /**
+     * Obtiene los enlaces del ecosistema como array.
+     */
+    public function getEcosystemFooterLinks(): array
+    {
+        $json = $this->get('ecosystem_footer_links')->value;
+        if (empty($json)) {
+            return [];
+        }
+        $links = json_decode($json, TRUE);
+        return is_array($links) ? $links : [];
+    }
+
+    /**
+     * Indica si se muestran las acciones de autenticacion en el header.
+     */
+    public function isHeaderShowAuth(): bool
+    {
+        return (bool) ($this->get('header_show_auth')->value ?? TRUE);
     }
 
 }

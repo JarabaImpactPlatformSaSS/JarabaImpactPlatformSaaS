@@ -1,0 +1,11 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Content Hub routes.
+ *
+ * Covers: /blog, /blog/*, article pages, category pages, author pages.
+ * Compile: sass scss/routes/content-hub.scss css/routes/content-hub.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../content-hub';
+@use '../components/reviews';

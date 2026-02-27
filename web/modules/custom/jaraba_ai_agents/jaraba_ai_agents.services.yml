@@ -80,7 +80,7 @@ services:
       - '@jaraba_ai_agents.observability'
       - '@?ecosistema_jaraba_core.unified_prompt_builder'
 
-  # Smart Marketing Agent (Gen 2 con Model Routing + Tools)
+  # Smart Marketing Agent (Gen 2 con Model Routing + Tools + Memory)
   jaraba_ai_agents.smart_marketing_agent:
     class: Drupal\jaraba_ai_agents\Agent\SmartMarketingAgent
     arguments:
@@ -94,6 +94,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
   # Storytelling Agent (FIX-035: migrated Gen 1 -> Gen 2 with Model Routing)
   jaraba_ai_agents.storytelling_agent:
@@ -109,6 +111,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
   # Customer Experience Agent (FIX-035: migrated Gen 1 -> Gen 2 with Model Routing)
   jaraba_ai_agents.customer_experience_agent:
@@ -124,6 +128,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
   # Support Agent (FIX-035: migrated Gen 1 -> Gen 2 with Model Routing)
   jaraba_ai_agents.support_agent:
@@ -139,6 +145,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
   # Producer Copilot Agent (AgroConecta - Gen 2 + Tools)
   jaraba_ai_agents.producer_copilot_agent:
@@ -154,6 +162,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
   # Sales Agent (AgroConecta - Gen 2 + Tools)
   jaraba_ai_agents.sales_agent:
@@ -169,6 +179,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
   # Merchant Copilot Agent (ComercioConecta - Gen 2 + Tools)
   jaraba_ai_agents.merchant_copilot_agent:
@@ -184,6 +196,8 @@ services:
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
       - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
 
 
   # ========================================
@@ -326,6 +340,16 @@ services:
   # ========================================
   # FIX-029-051 — Elevacion IA Nivel 5/5
   # ========================================
+
+  # S3-03: Proactive Insights orchestrator (cron-driven).
+  # Enqueues insight generation for all active tenants every 6 hours.
+  jaraba_ai_agents.proactive_insights:
+    class: Drupal\jaraba_ai_agents\Service\ProactiveInsightsService
+    arguments:
+      - '@entity_type.manager'
+      - '@queue'
+      - '@state'
+      - '@logger.channel.jaraba_ai_agents'
 
   # FIX-031: Provider Fallback Service (circuit breaker + fallback chains)
   jaraba_ai_agents.provider_fallback:

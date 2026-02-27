@@ -1,0 +1,8 @@
+name: 'Jaraba Workflows'
+type: module
+description: 'AI-powered workflow automation engine with trigger-based actions (S4-04).'
+core_version_requirement: ^10.3 || ^11
+package: 'Jaraba Platform'
+dependencies:
+  - drupal:system
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

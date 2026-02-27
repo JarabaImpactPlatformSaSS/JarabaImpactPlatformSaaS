@@ -129,6 +129,12 @@ services:
     tags:
       - { name: event_subscriber }
 
+  # HAL-AI-09: CSP headers for canvas editor security.
+  jaraba_page_builder.canvas_security:
+    class: Drupal\jaraba_page_builder\EventSubscriber\CanvasSecurityResponseSubscriber
+    tags:
+      - { name: event_subscriber }
+
   # Integracion con plataformas analytics externas (GA4, Search Console).
   # P2-04: Envia eventos a GA4 via Measurement Protocol y consulta Search Console.
   jaraba_page_builder.external_analytics:

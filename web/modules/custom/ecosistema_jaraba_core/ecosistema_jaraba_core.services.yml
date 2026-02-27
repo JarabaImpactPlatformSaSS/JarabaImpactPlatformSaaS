@@ -294,6 +294,17 @@ services:
   # Q2 2026: EXPANSION LOOPS (SPRINT 7-8)
   # ===========================================
 
+  # Feature Flag Service (HAL-AI-11): Runtime feature flags sin deploy.
+  # Soporta 5 scopes: global, vertical, tenant, plan, percentage.
+  # Uso: $featureFlags->isEnabled('ai_proactive_insights', $tenantId)
+  # Twig: {% if feature_flag('ai_proactive_insights') %}
+  ecosistema_jaraba_core.feature_flag:
+    class: Drupal\ecosistema_jaraba_core\Service\FeatureFlagService
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.ecosistema_jaraba_core'
+
   # Monitoreo de límites de uso
   # Integra con UpgradeTriggerService (F2) para resolver limites por
   # FreemiumVerticalLimit ConfigEntity y disparar triggers de upgrade.

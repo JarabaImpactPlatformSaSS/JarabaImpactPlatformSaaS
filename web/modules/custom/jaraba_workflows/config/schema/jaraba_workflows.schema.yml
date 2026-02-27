@@ -1,0 +1,55 @@
+jaraba_workflows.rule.*:
+  type: config_entity
+  label: 'Workflow Rule'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    status:
+      type: boolean
+      label: 'Enabled'
+    description:
+      type: text
+      label: 'Description'
+    trigger_type:
+      type: string
+      label: 'Trigger type'
+    trigger_config:
+      type: mapping
+      label: 'Trigger configuration'
+    conditions:
+      type: sequence
+      label: 'Conditions'
+      sequence:
+        type: mapping
+        mapping:
+          type:
+            type: string
+            label: 'Condition type'
+          config:
+            type: mapping
+            label: 'Condition config'
+    actions:
+      type: sequence
+      label: 'Actions'
+      sequence:
+        type: mapping
+        mapping:
+          type:
+            type: string
+            label: 'Action type'
+          config:
+            type: mapping
+            label: 'Action config'
+    tenant_id:
+      type: integer
+      label: 'Tenant ID'
+    weight:
+      type: integer
+      label: 'Weight'

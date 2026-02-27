@@ -1,0 +1,12 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Auth routes.
+ *
+ * Covers: /user/login, /user/register, /user/password, profile edit.
+ * Compile: sass scss/routes/auth.scss css/routes/auth.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../auth';
+@use '../user-pages';
+@use '../profile-edit';

@@ -1,0 +1,15 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Page Builder routes.
+ *
+ * Covers: /site-builder/*, GrapesJS canvas, template picker.
+ * Compile: sass scss/routes/page-builder.scss css/routes/page-builder.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../components/page-builder';
+@use '../components/grapesjs-canvas';
+@use '../components/template-picker';
+@use '../components/template-preview-premium';
+@use '../components/section-editor';
+@use '../components/media-browser';

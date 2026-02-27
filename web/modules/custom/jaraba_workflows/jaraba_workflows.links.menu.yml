@@ -1,0 +1,6 @@
+jaraba_workflows.admin:
+  title: 'Workflow Automation'
+  description: 'Configure AI-powered workflow automation rules.'
+  route_name: jaraba_workflows.admin
+  parent: system.admin_config_system
+  weight: 30

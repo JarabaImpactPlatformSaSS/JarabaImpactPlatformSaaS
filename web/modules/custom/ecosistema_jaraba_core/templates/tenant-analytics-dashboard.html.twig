@@ -1,0 +1,111 @@
+{#
+ # S2-04: Per-tenant analytics dashboard.
+ #
+ # Variables:
+ #   - tenant_name: string
+ #   - metrics: {sales_total, sales_average, mrr_current, mrr_growth, ai_tokens}
+ #   - sales_chart: {labels, data, total, average}
+ #   - mrr_chart: {labels, data, current, growth}
+ #   - customers_chart: {labels, datasets}
+ #   - top_products: [{name, revenue, quantity}]
+ #   - usage_limits: [{metric, current, limit, percentage, status}]
+ #}
+<div class="admin-premium tenant-analytics">
+
+  <header class="tenant-analytics__header">
+    <h1 class="tenant-analytics__title">{{ 'Analytics'|t }} — {{ tenant_name }}</h1>
+  </header>
+
+  {# Metric cards row #}
+  <div class="tenant-analytics__metrics">
+    {% include '@ecosistema_jaraba_theme/partials/_compliance-metric-card.html.twig' with {
+      label: 'Ventas (30d)'|t,
+      value: metrics.sales_total|default(0)|number_format(2, ',', '.') ~ ' €',
+      status: 'info',
+      trend: metrics.sales_average > 0 ? 'up' : 'stable',
+      icon_category: 'analytics',
+      icon_name: 'chart',
+    } only ignore missing %}
+
+    {% include '@ecosistema_jaraba_theme/partials/_compliance-metric-card.html.twig' with {
+      label: 'MRR'|t,
+      value: metrics.mrr_current|default(0)|number_format(2, ',', '.') ~ ' €',
+      status: metrics.mrr_growth > 0 ? 'ok' : 'warning',
+      trend: metrics.mrr_growth > 0 ? 'up' : (metrics.mrr_growth < 0 ? 'down' : 'stable'),
+      trend_value: metrics.mrr_growth|default(0) ~ '%',
+      icon_category: 'analytics',
+      icon_name: 'trending',
+    } only ignore missing %}
+
+    {% include '@ecosistema_jaraba_theme/partials/_compliance-metric-card.html.twig' with {
+      label: 'AI Tokens'|t,
+      value: metrics.ai_tokens|default(0)|number_format(0, ',', '.'),
+      status: 'info',
+      trend: 'stable',
+      icon_category: 'ai',
+      icon_name: 'brain',
+    } only ignore missing %}
+  </div>
+
+  {# Chart containers — populated by JS via API endpoints #}
+  <div class="tenant-analytics__charts">
+    <section class="tenant-analytics__chart-card">
+      <h2 class="tenant-analytics__chart-title">{{ 'Tendencia de ventas'|t }}</h2>
+      <canvas id="tenant-sales-chart" data-api="/api/v1/tenant/analytics/sales"></canvas>
+    </section>
+
+    <section class="tenant-analytics__chart-card">
+      <h2 class="tenant-analytics__chart-title">{{ 'MRR mensual'|t }}</h2>
+      <canvas id="tenant-mrr-chart" data-api="/api/v1/tenant/analytics/mrr"></canvas>
+    </section>
+
+    <section class="tenant-analytics__chart-card">
+      <h2 class="tenant-analytics__chart-title">{{ 'Clientes'|t }}</h2>
+      <canvas id="tenant-customers-chart" data-api="/api/v1/tenant/analytics/customers"></canvas>
+    </section>
+  </div>
+
+  {# Usage vs limits #}
+  {% if usage_limits is not empty %}
+  <section class="tenant-analytics__usage">
+    <h2 class="tenant-analytics__section-title">{{ 'Uso vs. Limites'|t }}</h2>
+    <div class="tenant-analytics__usage-grid">
+      {% for item in usage_limits %}
+        <div class="tenant-analytics__usage-item tenant-analytics__usage-item--{{ item.status|default('ok') }}">
+          <span class="tenant-analytics__usage-label">{{ item.metric|default('')|capitalize }}</span>
+          <div class="tenant-analytics__progress-bar">
+            <div class="tenant-analytics__progress-fill" style="width: {{ item.percentage|default(0)|clamp(0, 100) }}%"></div>
+          </div>
+          <span class="tenant-analytics__usage-value">{{ item.current|default(0) }} / {{ item.limit|default(0) }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Top products table #}
+  {% if top_products is not empty %}
+  <section class="tenant-analytics__products">
+    <h2 class="tenant-analytics__section-title">{{ 'Top Productos'|t }}</h2>
+    <table class="tenant-analytics__table">
+      <thead>
+        <tr>
+          <th>{{ 'Producto'|t }}</th>
+          <th>{{ 'Ingresos'|t }}</th>
+          <th>{{ 'Cantidad'|t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in top_products %}
+          <tr>
+            <td>{{ product.name|default('—') }}</td>
+            <td>{{ product.revenue|default(0)|number_format(2, ',', '.') }} €</td>
+            <td>{{ product.quantity|default(0) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+</div>

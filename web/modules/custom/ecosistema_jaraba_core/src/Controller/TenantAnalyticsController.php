@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\ecosistema_jaraba_core\Service\TenantAnalyticsService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\ecosistema_jaraba_core\Service\UsageLimitsService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -25,6 +26,7 @@ class TenantAnalyticsController extends ControllerBase
     public function __construct(
         protected TenantContextService $tenantContext,
         protected TenantAnalyticsService $analytics,
+        protected ?UsageLimitsService $usageLimits = NULL,
     ) {
     }
 
@@ -35,8 +37,85 @@ class TenantAnalyticsController extends ControllerBase
     {
         return new static(
             $container->get('ecosistema_jaraba_core.tenant_context'),
-            $container->get('ecosistema_jaraba_core.tenant_analytics')
+            $container->get('ecosistema_jaraba_core.tenant_analytics'),
+            $container->has('ecosistema_jaraba_core.usage_limits') ? $container->get('ecosistema_jaraba_core.usage_limits') : NULL
         );
+    }
+
+    /**
+     * Renders the per-tenant analytics HTML dashboard (S2-04).
+     *
+     * @return array
+     *   Render array.
+     */
+    public function analyticsPage(): array
+    {
+        $tenant = $this->tenantContext->getCurrentTenant();
+
+        if (!$tenant) {
+            return [
+                '#markup' => $this->t('No tenant context available.'),
+            ];
+        }
+
+        $tenantId = $tenant->id();
+
+        // Gather data from existing services.
+        $salesData = $this->analytics->getSalesTrend($tenantId, 30);
+        $mrrData = $this->analytics->getMrrTrend($tenantId, 6);
+        $customersData = $this->analytics->getCustomersTrend($tenantId, 28);
+        $topProducts = $this->analytics->getTopProducts($tenantId, 5);
+
+        // Usage vs limits.
+        $usage = [];
+        if ($this->usageLimits) {
+            try {
+                $usage = $this->usageLimits->checkAllLimits($tenantId);
+            }
+            catch (\Exception $e) {
+                // Non-critical.
+            }
+        }
+
+        // AI tokens consumed this month.
+        $aiTokens = 0;
+        if (\Drupal::hasService('jaraba_ai_agents.observability')) {
+            try {
+                $obs = \Drupal::service('jaraba_ai_agents.observability');
+                $stats = $obs->getStats($tenantId, 30);
+                $aiTokens = ($stats['total_input_tokens'] ?? 0) + ($stats['total_output_tokens'] ?? 0);
+            }
+            catch (\Exception $e) {
+                // Non-critical.
+            }
+        }
+
+        return [
+            '#theme' => 'tenant_analytics_dashboard',
+            '#tenant_name' => $tenant->label() ?? $this->t('Tenant'),
+            '#metrics' => [
+                'sales_total' => $salesData['total'] ?? 0,
+                'sales_average' => $salesData['average'] ?? 0,
+                'mrr_current' => $mrrData['current'] ?? 0,
+                'mrr_growth' => $mrrData['growth'] ?? 0,
+                'ai_tokens' => $aiTokens,
+            ],
+            '#sales_chart' => $salesData,
+            '#mrr_chart' => $mrrData,
+            '#customers_chart' => $customersData,
+            '#top_products' => $topProducts,
+            '#usage_limits' => $usage,
+            '#attached' => [
+                'library' => [
+                    'ecosistema_jaraba_core/tenant-dashboard',
+                ],
+                'drupalSettings' => [
+                    'tenantAnalytics' => [
+                        'apiBase' => '/api/v1/tenant/analytics',
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**

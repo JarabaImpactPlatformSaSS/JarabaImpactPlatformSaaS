@@ -1,0 +1,41 @@
+# S4-04: Workflow automation admin routes.
+
+jaraba_workflows.admin:
+  path: '/admin/config/ai/workflows'
+  defaults:
+    _entity_list: 'workflow_rule'
+    _title: 'Workflow Automation'
+  requirements:
+    _permission: 'administer workflow rules'
+  options:
+    _admin_route: TRUE
+
+jaraba_workflows.add:
+  path: '/admin/config/ai/workflows/add'
+  defaults:
+    _entity_form: 'workflow_rule.default'
+    _title: 'Add Workflow Rule'
+  requirements:
+    _permission: 'administer workflow rules'
+  options:
+    _admin_route: TRUE
+
+jaraba_workflows.edit:
+  path: '/admin/config/ai/workflows/{workflow_rule}'
+  defaults:
+    _entity_form: 'workflow_rule.default'
+    _title: 'Edit Workflow Rule'
+  requirements:
+    _permission: 'administer workflow rules'
+  options:
+    _admin_route: TRUE
+
+jaraba_workflows.delete:
+  path: '/admin/config/ai/workflows/{workflow_rule}/delete'
+  defaults:
+    _entity_form: 'workflow_rule.delete'
+    _title: 'Delete Workflow Rule'
+  requirements:
+    _permission: 'administer workflow rules'
+  options:
+    _admin_route: TRUE

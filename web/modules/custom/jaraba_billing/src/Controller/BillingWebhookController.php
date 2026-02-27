@@ -108,9 +108,11 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
         'invoice.paid' => $this->handleInvoicePaid($eventData),
         'invoice.payment_failed' => $this->handleInvoicePaymentFailed($eventData),
         'invoice.finalized' => $this->handleInvoiceFinalized($eventData),
+        'customer.subscription.created' => $this->handleSubscriptionCreated($eventData),
         'customer.subscription.updated' => $this->handleSubscriptionUpdated($eventData),
         'customer.subscription.deleted' => $this->handleSubscriptionDeleted($eventData),
         'customer.subscription.trial_will_end' => $this->handleTrialWillEnd($eventData),
+        'checkout.session.completed' => $this->handleCheckoutSessionCompleted($eventData),
         'payment_method.attached' => $this->handlePaymentMethodAttached($eventData),
         'payment_method.detached' => $this->handlePaymentMethodDetached($eventData),
         default => $this->handleUnknownEvent($eventType),
@@ -453,6 +455,180 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     }
 
     $this->billingLogger->info('Payment method desvinculado: @pm', ['@pm' => $pmId]);
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
+  }
+
+  /**
+   * Subscription created: auto-provision tenant if not yet provisioned (S2-03).
+   *
+   * Triggered when Stripe creates a subscription (e.g., via Checkout Session
+   * or API). If tenant_id is in metadata and already exists, activates it.
+   * If no tenant exists yet, delegates to TenantOnboardingService for
+   * automated provisioning.
+   *
+   * IDEMPOTENCY: Checks if tenant already exists before creating.
+   * AUDIT-PERF-002: Lock per customer to prevent duplicate provisioning.
+   */
+  protected function handleSubscriptionCreated(array $data): JsonResponse {
+    $subscriptionId = $data['id'] ?? '';
+    $status = $data['status'] ?? 'unknown';
+    $tenantId = (int) ($data['metadata']['tenant_id'] ?? 0);
+    $customerId = $data['customer'] ?? '';
+
+    $this->billingLogger->info('Subscription created: @id, status: @status, customer: @customer, tenant: @tenant', [
+      '@id' => $subscriptionId,
+      '@status' => $status,
+      '@customer' => $customerId,
+      '@tenant' => $tenantId,
+    ]);
+
+    // If tenant already exists, just activate/update.
+    if ($tenantId > 0) {
+      $lockId = 'jaraba_billing:provision_tenant:' . $tenantId;
+      if (!$this->lock->acquire($lockId, 30)) {
+        return new JsonResponse(['status' => 'retry', 'reason' => 'tenant locked'], 503);
+      }
+
+      try {
+        $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
+        if ($tenant instanceof TenantInterface) {
+          if ($status === 'active') {
+            $this->tenantSubscription->activateSubscription($tenant);
+          }
+          // Store Stripe IDs.
+          if ($tenant->hasField('stripe_subscription_id')) {
+            $tenant->set('stripe_subscription_id', $subscriptionId);
+          }
+          if ($customerId && $tenant->hasField('stripe_customer_id')) {
+            $tenant->set('stripe_customer_id', $customerId);
+          }
+          $tenant->save();
+        }
+      }
+      catch (\Exception $e) {
+        $this->billingLogger->error('Error activating tenant @id on subscription.created: @error', [
+          '@id' => $tenantId,
+          '@error' => $e->getMessage(),
+        ]);
+      }
+      finally {
+        $this->lock->release($lockId);
+      }
+    }
+
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
+  }
+
+  /**
+   * Checkout session completed: auto-provision new tenant (S2-03).
+   *
+   * This is the primary auto-provisioning entry point. When a new customer
+   * completes Stripe Checkout, this handler:
+   * 1. Extracts customer email and subscription from the session.
+   * 2. Checks if a tenant already exists for this customer (idempotency).
+   * 3. If not, delegates to TenantOnboardingService for full provisioning.
+   *
+   * Requires metadata in the Checkout Session:
+   * - plan_tier: The plan to assign (starter, professional, business, enterprise).
+   * - vertical: The vertical for the tenant.
+   *
+   * AUDIT-PERF-002: Lock per customer_email to prevent duplicate provisioning.
+   */
+  protected function handleCheckoutSessionCompleted(array $data): JsonResponse {
+    $sessionId = $data['id'] ?? '';
+    $customerEmail = $data['customer_details']['email'] ?? $data['customer_email'] ?? '';
+    $customerId = $data['customer'] ?? '';
+    $subscriptionId = $data['subscription'] ?? '';
+    $mode = $data['mode'] ?? '';
+    $metadata = $data['metadata'] ?? [];
+
+    // Only process subscription checkouts.
+    if ($mode !== 'subscription' || empty($subscriptionId)) {
+      $this->billingLogger->info('Checkout session @id ignored (mode: @mode).', [
+        '@id' => $sessionId,
+        '@mode' => $mode,
+      ]);
+      return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'ignored_mode'], 'meta' => ['timestamp' => time()]]);
+    }
+
+    $this->billingLogger->info('Auto-provision: checkout.session.completed @id for @email', [
+      '@id' => $sessionId,
+      '@email' => $customerEmail,
+    ]);
+
+    // Idempotency: check if tenant already exists for this Stripe customer.
+    if ($customerId) {
+      $lockId = 'jaraba_billing:provision_customer:' . md5($customerId);
+      if (!$this->lock->acquire($lockId, 60)) {
+        return new JsonResponse(['status' => 'retry', 'reason' => 'provisioning locked'], 503);
+      }
+
+      try {
+        $existingTenants = $this->entityTypeManager()
+          ->getStorage('tenant')
+          ->loadByProperties(['stripe_customer_id' => $customerId]);
+
+        if (!empty($existingTenants)) {
+          $tenant = reset($existingTenants);
+          $this->billingLogger->info('Tenant @id already exists for customer @customer, skipping provisioning.', [
+            '@id' => $tenant->id(),
+            '@customer' => $customerId,
+          ]);
+
+          // Still update subscription ID if needed.
+          if ($tenant->hasField('stripe_subscription_id') && empty($tenant->get('stripe_subscription_id')->value)) {
+            $tenant->set('stripe_subscription_id', $subscriptionId);
+            $tenant->save();
+          }
+
+          return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'already_provisioned', 'tenant_id' => $tenant->id()], 'meta' => ['timestamp' => time()]]);
+        }
+
+        // Auto-provision via TenantOnboardingService.
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_onboarding')) {
+          $onboarding = \Drupal::service('ecosistema_jaraba_core.tenant_onboarding');
+          $planTier = $metadata['plan_tier'] ?? 'starter';
+          $vertical = $metadata['vertical'] ?? 'demo';
+
+          $registrationData = [
+            'email' => $customerEmail,
+            'business_name' => $metadata['business_name'] ?? $customerEmail,
+            'vertical' => $vertical,
+            'plan' => $planTier,
+            'stripe_customer_id' => $customerId,
+            'stripe_subscription_id' => $subscriptionId,
+            'auto_provisioned' => TRUE,
+          ];
+
+          $result = $onboarding->processRegistration($registrationData);
+
+          if (!empty($result['tenant'])) {
+            // Complete onboarding with Stripe IDs.
+            $onboarding->completeOnboarding($result['tenant'], $customerId, $subscriptionId);
+
+            $this->billingLogger->info('Auto-provisioned tenant @id for @email (plan: @plan, vertical: @vertical).', [
+              '@id' => $result['tenant']->id(),
+              '@email' => $customerEmail,
+              '@plan' => $planTier,
+              '@vertical' => $vertical,
+            ]);
+          }
+        }
+        else {
+          $this->billingLogger->warning('TenantOnboardingService not available for auto-provisioning.');
+        }
+      }
+      catch (\Exception $e) {
+        $this->billingLogger->error('Auto-provisioning failed for @email: @error', [
+          '@email' => $customerEmail,
+          '@error' => $e->getMessage(),
+        ]);
+      }
+      finally {
+        $this->lock->release($lockId);
+      }
+    }
+
     return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
   }
 

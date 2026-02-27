@@ -18,6 +18,11 @@ class JarabaTwigExtension extends AbstractExtension
 {
 
     /**
+     * FeatureFlagService (lazy-loaded to avoid circular deps).
+     */
+    protected mixed $featureFlagService = NULL;
+
+    /**
      * Brand color palette - Official Jaraba colors.
      */
     public const COLORS = [
@@ -99,6 +104,7 @@ class JarabaTwigExtension extends AbstractExtension
             ]),
             new TwigFunction('jaraba_icon_path', [$this, 'getIconPath']),
             new TwigFunction('jaraba_color', [$this, 'getColor']),
+            new TwigFunction('feature_flag', [$this, 'isFeatureFlagEnabled']),
         ];
     }
 
@@ -114,6 +120,36 @@ class JarabaTwigExtension extends AbstractExtension
     public function getColor(string $name): string
     {
         return self::COLORS[$name] ?? self::COLORS['neutral'];
+    }
+
+    /**
+     * Checks if a feature flag is enabled (HAL-AI-11).
+     *
+     * Usage in Twig: {% if feature_flag('ai_proactive_insights') %}
+     *
+     * @param string $flagId
+     *   The feature flag machine name.
+     *
+     * @return bool
+     *   TRUE if the flag is enabled for the current context.
+     */
+    public function isFeatureFlagEnabled(string $flagId): bool
+    {
+        try {
+            if ($this->featureFlagService === NULL) {
+                if (\Drupal::hasService('ecosistema_jaraba_core.feature_flag')) {
+                    $this->featureFlagService = \Drupal::service('ecosistema_jaraba_core.feature_flag');
+                } else {
+                    $this->featureFlagService = FALSE;
+                }
+            }
+            if ($this->featureFlagService) {
+                return $this->featureFlagService->isEnabled($flagId);
+            }
+        } catch (\Exception $e) {
+            // Graceful degradation: flag not found = disabled.
+        }
+        return FALSE;
     }
 
     /**
@@ -139,6 +175,10 @@ class JarabaTwigExtension extends AbstractExtension
     {
         $variant = $options['variant'] ?? 'outline';
         $size = (string) ($options['size'] ?? '24px');
+        // Ensure numeric sizes get a 'px' suffix (templates often pass integers like 32).
+        if (is_numeric($size)) {
+            $size .= 'px';
+        }
         $class = $options['class'] ?? '';
         $colorInput = $options['color'] ?? '';
 

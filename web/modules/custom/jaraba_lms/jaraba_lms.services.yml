@@ -54,6 +54,27 @@ services:
   # AGENTES IA
   # ============================================================================
 
+  # Gen 2 Learning Path Agent (S3-04: HAL-AI-07).
+  # Replaces LearningTutorAgent with SmartBaseAgent + Model Routing + AI calls.
+  jaraba_lms.agent.learning_path:
+    class: Drupal\jaraba_lms\Agent\LearningPathAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_lms'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@jaraba_ai_agents.model_router'
+      - '@jaraba_lms.enrollment'
+      - '@jaraba_lms.course'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?jaraba_ai_agents.tool_registry'
+      - '@?jaraba_ai_agents.provider_fallback'
+      - '@?jaraba_ai_agents.context_window_manager'
+    calls:
+      - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+
+  # Legacy tutor agent (deprecated — use jaraba_lms.agent.learning_path).
   jaraba_lms.agent.learning_tutor:
     class: Drupal\jaraba_lms\Agent\LearningTutorAgent
     arguments:

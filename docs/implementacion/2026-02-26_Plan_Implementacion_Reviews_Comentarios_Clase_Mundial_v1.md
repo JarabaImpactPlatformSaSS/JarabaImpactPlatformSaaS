@@ -2,8 +2,9 @@
 
 **Fecha**: 2026-02-26
 **Módulos afectados**: `jaraba_comercio_conecta`, `jaraba_agroconecta_core`, `jaraba_servicios_conecta`, `jaraba_mentoring`, `ecosistema_jaraba_core`, `ecosistema_jaraba_theme`
-**Spec**: Auditoría Estratégica Calificaciones y Comentarios v1.0 (Doc análisis 2026-02-26)
+**Spec**: Auditoría Estratégica Calificaciones y Comentarios v2.0 (Doc análisis 2026-02-26, actualizado 2026-02-27)
 **Impacto**: Elevación de los 4 sistemas de reviews verticales a nivel clase mundial con infraestructura compartida, SEO Schema.org, frontend público premium, resúmenes IA y cumplimiento total de directrices
+**Estado global**: Fases 1-10 COMPLETADAS (2026-02-27). Fase 11 (Elevación Clase Mundial — 18 brechas) PENDIENTE.
 
 ---
 
@@ -2631,7 +2632,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 1: ReviewableEntityTrait + Armonización (10-14h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Crear `ReviewableEntityTrait` en `ecosistema_jaraba_core`.
@@ -2645,7 +2646,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 2: Nuevas Entidades (6-8h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Crear `CourseReview` entity, interface, access handler, form, list builder.
@@ -2656,7 +2657,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 3: Servicios Transversales (12-16h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Crear `ReviewModerationService`.
@@ -2670,7 +2671,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 4: Controladores + Rutas (6-8h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Crear `ReviewDisplayController` (frontend público).
@@ -2681,7 +2682,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 5: Frontend (Templates + SCSS + JS) (14-20h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Crear `page--reviews.html.twig`.
@@ -2698,7 +2699,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 6: GrapesJS Review Widget Block (4-6h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Crear plugin `reviews-block.js`.
@@ -2708,7 +2709,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 7: Schema.org + SEO (4-6h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Implementar `generateAggregateRating()`.
@@ -2718,7 +2719,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 8: Security Fixes (6-8h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Migrar `tenant_id` de taxonomy_term a group (2 update hooks).
@@ -2729,7 +2730,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 9: Cumplimiento de Directrices (4-6h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Verificar i18n completo en todos los archivos.
@@ -2741,7 +2742,7 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 
 ### Fase 10: Testing + QA (8-12h)
 
-**Estado**: PENDIENTE
+**Estado**: COMPLETADO (2026-02-27)
 
 **Tareas**:
 1. Unit tests para ReviewableEntityTrait.
@@ -2751,6 +2752,171 @@ Todas las entidades tienen los 5 links estándar: `canonical`, `add-form`, `edit
 5. Functional tests para rutas frontend.
 6. Functional tests para API endpoints.
 7. Manual testing con checklist (sección 18).
+
+### Fase 11: Elevación Clase Mundial — 18 Brechas (156-218h)
+
+**Estado**: PENDIENTE
+
+**Objetivo**: Elevar el sistema de Reviews & Comentarios del 55% actual al 80%+ de cobertura de features de clase mundial, cerrando las 18 brechas identificadas en la auditoría post-implementación v2.0.0.
+
+**Referencia**: `docs/analisis/2026-02-26_Auditoria_Sistemas_Calificaciones_Comentarios_Clase_Mundial_v1.md` sección 12.
+
+#### Sprint 11.1 — Table Stakes (46-64h)
+
+**Estado**: PENDIENTE
+
+**Tareas**:
+1. **B-01: Helpfulness Voting UI** (8-12h)
+   - Botones "útil/no útil" en review cards con conteo visible
+   - Algoritmo Wilson Lower Bound Score para ranking de reviews
+   - Endpoint API `POST /api/v1/reviews/{type}/{id}/vote` con CSRF
+   - Actualización de `helpful_count` en entidad via presave
+   - SCSS: botones inline con animación de feedback
+   - JS: fetch + optimistic update
+
+2. **B-02: Review Filtering/Sorting UI** (10-14h)
+   - Barra de filtros: por estrellas (1-5), con fotos, verificadas
+   - Ordenación: más recientes, más útiles, mejor valoración, peor valoración
+   - Server-side: query parameters en `ReviewDisplayController`
+   - Client-side: JS sorting sin reload para datasets pequeños (<100)
+   - Contadores por filtro (ej: "4 estrellas (23)")
+   - SCSS responsive mobile-first
+
+3. **B-03: Verified Purchase Badge** (6-8h)
+   - Lógica de verificación automática: cruzar `uid` del reviewer con transacciones/bookings del `target_entity`
+   - Badge SVG "Compra verificada" / "Cliente verificado" según vertical
+   - Template parcial `_verified-badge.html.twig`
+   - Presave hook: auto-set `verified_purchase` si existe transacción
+   - SCSS: badge inline con icono check
+
+4. **B-04: Response from Owner** (10-14h)
+   - Campo `owner_response` (string_long) + `owner_response_date` (datetime) en trait o entidad
+   - Formulario de respuesta en admin (slide-panel)
+   - Renderizado público: respuesta indentada bajo review card
+   - Notificación al reviewer cuando el propietario responde
+   - Permiso `respond to reviews` para propietarios/providers
+   - SCSS: estilo diferenciado con icono de propietario
+
+5. **B-05: Review Analytics Dashboard** (12-16h)
+   - Página admin `/admin/reports/reviews`
+   - Métricas: volumen total, rating promedio (trend 30/60/90 días), tasa de respuesta, distribución por sentiment
+   - Gráficos: rating trend line, distribución de estrellas bar chart, reviews por vertical pie chart
+   - Filtros: por vertical, por tenant, por período
+   - Exportación CSV
+   - SCSS: glassmorphism cards con design tokens
+
+#### Sprint 11.2 — Differentiators (54-76h)
+
+**Estado**: PENDIENTE
+
+**Tareas**:
+1. **B-06: Photo Gallery UI** (10-14h)
+   - Galería lightbox para fotos adjuntas en review detail
+   - Thumbnails en review cards (max 3 + "+N más")
+   - Upload con preview en formulario de review (drag & drop)
+   - Image styles: review_thumb (150x150), review_gallery (800x600)
+   - Lazy loading con IntersectionObserver
+   - SCSS: grid responsive + lightbox overlay
+
+2. **B-07: Fake Review Detection** (12-16h)
+   - Servicio `FakeReviewDetectionService` en jaraba_ai_agents
+   - Scoring via Haiku 4.5 (fast tier): análisis de patrones textuales, metadata
+   - Criterios: cuenta nueva + review extrema, reviews duplicadas, patrones de lenguaje sospechosos
+   - Flag automático si score > threshold (configurable por tenant)
+   - Dashboard de reviews flaggeadas para moderador
+   - Integración con ReviewModerationService
+
+3. **B-08: Review SEO Pages** (8-12h)
+   - Rutas `/reviews/{entity_type}/{slug}` con paginación SEO (rel=prev/next)
+   - Template `page--reviews-entity.html.twig` con AggregateRating JSON-LD
+   - Meta tags: title, description, canonical, OG
+   - Breadcrumb: Home > Vertical > Entidad > Reviews
+   - Sitemap integration
+
+4. **B-09: AI Sentiment Overlay** (6-8h)
+   - Indicadores visuales: emoji + etiqueta (Positivo/Neutro/Negativo)
+   - Cálculo via presave con Haiku 4.5 o regex fallback
+   - Campo `sentiment` (list_string: positive/neutral/negative)
+   - Filtro por sentiment en review list
+   - SCSS: color-coded badges (verde/gris/rojo)
+
+5. **B-10: Per-Tenant Review Config** (8-12h)
+   - ConfigEntity `ReviewTenantSettings` con: max_photos, moderation_policy (manual/auto/hybrid), auto_approve_threshold, invitation_template, review_guidelines_text
+   - Admin UI por tenant: `/admin/config/reviews/tenant/{group_id}`
+   - Integración con ReviewModerationService y ReviewInvitationService
+   - Default values para tenants sin config explícita
+
+6. **B-11: Review Notification System** (10-14h)
+   - Eventos: review_created, review_approved, review_responded, invitation_reminder
+   - Canal email: templates MJML por evento (4 templates)
+   - Canal in-app: integración con sistema de notificaciones existente
+   - Preferencias de notificación por usuario
+   - Cron para invitaciones recordatorio (7 días post-transacción)
+
+#### Sprint 11.3 — Consolidación (56-78h)
+
+**Estado**: PENDIENTE
+
+**Tareas**:
+1. **B-12: Auto-Translate Reviews** (6-8h)
+   - Integración con ModelRouterService (fast tier) para traducción ES↔EN↔PT-BR
+   - Campo `translated_body` (map) con traducciones por idioma
+   - Detección automática de idioma del review
+   - UI: toggle "Ver en [idioma]" en review card
+   - Cron batch para traducción diferida
+
+2. **B-13: Review Incentives / Gamification** (10-14h)
+   - Entidad `ReviewerBadge` con tipos: first_review, helpful_reviewer, top_reviewer, photo_reviewer
+   - Sistema de puntos: review=10pts, con foto=15pts, útil=5pts recibidos
+   - Leaderboard por vertical: `/reviews/top-reviewers`
+   - Badge display en review cards y perfil de usuario
+   - Cron mensual para recalcular rankings
+
+3. **B-14: Review Import/Export** (6-8h)
+   - Import CSV con mapping de columnas (rating, body, author_email, date, product_id)
+   - Validación y deduplicación por hash(email+target+date)
+   - Export CSV/JSON con filtros
+   - Drush command `jaraba:reviews:import` y `jaraba:reviews:export`
+   - Batch processing para imports grandes (>1000 reviews)
+
+4. **B-15: A/B Testing Review Layout** (8-12h)
+   - 3 variantes: expanded (default), compact (collapsed), photo-first
+   - Asignación por cookie/session (50/50 split configurable)
+   - Métricas: click-through rate, time on page, conversion
+   - Integración con analytics (event tracking)
+   - Admin toggle para activar/desactivar A/B test
+
+5. **B-16: Review Video Support** (12-16h)
+   - Campo `video` (file, max 60s, formatos mp4/webm)
+   - Upload con progress bar y preview thumbnail auto-generado
+   - Player inline en review card (lazy load, no autoplay)
+   - Moderación de video: review manual antes de publicar
+   - Image styles para thumbnail: review_video_thumb (320x180)
+
+6. **B-17: Review API Pública** (8-12h)
+   - Endpoints REST: `GET /api/v1/public/reviews/{type}/{id}` (paginado, filtrable)
+   - Autenticación: API key + rate limiting (100 req/min)
+   - Documentación OpenAPI/Swagger
+   - Permisos: `access review api`
+   - Response format: JSON con AggregateRating incluido
+
+7. **B-18: Review Webhooks** (6-8h)
+   - Eventos: review_created, review_approved, review_responded, rating_changed
+   - ConfigEntity `ReviewWebhookSubscription` con URL, eventos, secret
+   - Delivery: Queue worker con retry (3 intentos, backoff exponencial)
+   - Signature: HMAC-SHA256 del payload
+   - Admin UI: `/admin/config/reviews/webhooks`
+
+#### Estimación Fase 11
+
+| Sprint | Horas min | Horas max | Features |
+|--------|-----------|-----------|----------|
+| 11.1 Table Stakes | 46 | 64 | B-01 a B-05 |
+| 11.2 Differentiators | 54 | 76 | B-06 a B-11 |
+| 11.3 Consolidación | 56 | 78 | B-12 a B-18 |
+| **TOTAL** | **156** | **218** | **18 brechas** |
+
+---
 
 ### Extensión a 4 verticales adicionales (empleabilidad, emprendimiento, jarabalex, andalucia_ei)
 
@@ -2929,9 +3095,9 @@ curl -s https://jaraba-saas.lndo.site/es/comercio/test-merchant/reviews | grep -
 
 | Documento | Relación |
 |-----------|----------|
-| `docs/analisis/2026-02-26_Auditoria_Sistemas_Calificaciones_Comentarios_Clase_Mundial_v1.md` | Auditoría que origina este plan |
-| `docs/00_DIRECTRICES_PROYECTO.md` v87.0.0 | Directrices de cumplimiento obligatorio |
-| `docs/00_FLUJO_TRABAJO_CLAUDE.md` v41.0.0 | Flujo de trabajo y aprendizajes |
+| `docs/analisis/2026-02-26_Auditoria_Sistemas_Calificaciones_Comentarios_Clase_Mundial_v1.md` v2.0.0 | Auditoría que origina este plan (actualizada con estado post-implementación y 18 brechas) |
+| `docs/00_DIRECTRICES_PROYECTO.md` v89.0.0 | Directrices de cumplimiento obligatorio |
+| `docs/00_FLUJO_TRABAJO_CLAUDE.md` v43.0.0 | Flujo de trabajo y aprendizajes |
 | `docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md` | Arquitectura de theming (CSS vars, icons, SCSS) |
 | `docs/implementacion/2026-02-26_Blog_Clase_Mundial_Plan_Implementacion.md` | Plan de blog (patrón de referencia) |
 | `docs/implementacion/2026-02-26_Plan_Elevacion_IA_Nivel5_Clase_Mundial_v1.md` | Plan de IA (ReviewAiSummaryService usa ModelRouterService) |
@@ -2943,3 +3109,4 @@ curl -s https://jaraba-saas.lndo.site/es/comercio/test-merchant/reviews | grep -
 | Fecha | Versión | Cambio |
 |-------|---------|--------|
 | 2026-02-26 | 1.0.0 | Creación inicial del plan de implementación |
+| 2026-02-27 | 2.0.0 | Fases 1-10 marcadas COMPLETADO. Nueva Fase 11: Elevación Clase Mundial con 18 brechas (B-01 a B-18) en 3 sprints (Table Stakes, Differentiators, Consolidación). Auditoría post-implementación identifica 55% de cobertura vs 80% target. Estimación Fase 11: 156-218h adicionales. |

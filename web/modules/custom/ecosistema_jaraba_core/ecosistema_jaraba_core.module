@@ -77,6 +77,22 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
+    // S2-04: Per-tenant analytics dashboard
+    // Ruta: /tenant/analytics
+    'tenant_analytics_dashboard' => [
+      'variables' => [
+        'tenant_name' => '',
+        'metrics' => [],
+        'sales_chart' => [],
+        'mrr_chart' => [],
+        'customers_chart' => [],
+        'top_products' => [],
+        'usage_limits' => [],
+      ],
+      'template' => 'tenant-analytics-dashboard',
+      'path' => $path . '/templates',
+    ],
+
     // Swagger UI para documentación interactiva de la API
     // Ruta: /api/docs
     'api_docs' => [

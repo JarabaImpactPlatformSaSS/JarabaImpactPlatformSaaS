@@ -1,0 +1,14 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — AI features.
+ *
+ * Covers: command bar, inline AI, proactive insights, copilot, demo playground.
+ * Compile: sass scss/routes/ai-features.scss css/routes/ai-features.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../components/command-bar';
+@use '../components/inline-ai';
+@use '../components/proactive-insights';
+@use '../components/voice-input';
+@use '../components/demo-playground';

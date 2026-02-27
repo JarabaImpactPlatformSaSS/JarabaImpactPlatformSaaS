@@ -271,3 +271,66 @@ design-system:
       css/ecosistema-jaraba-theme.css: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
+
+# ============================================================================
+# S4-02: Route-Specific CSS Bundles (Code Splitting)
+# ============================================================================
+# Each bundle loads only the styles needed for its route group.
+# Attach via {{ attach_library('ecosistema_jaraba_theme/route-dashboard') }}
+# Build: sass scss/routes/{name}.scss css/routes/{name}.css --style=compressed
+
+route-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/dashboard.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+route-content-hub:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/content-hub.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+route-page-builder:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/page-builder.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+route-auth:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/auth.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+route-landing:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/landing.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+route-empleabilidad:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/empleabilidad.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+route-ai-features:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/ai-features.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling

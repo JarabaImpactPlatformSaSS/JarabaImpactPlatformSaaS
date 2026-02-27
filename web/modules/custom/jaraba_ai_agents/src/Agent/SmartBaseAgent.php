@@ -7,6 +7,7 @@ namespace Drupal\jaraba_ai_agents\Agent;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\ai\OperationType\Chat\Tools\ToolsInput;
+use Drupal\jaraba_agents\Service\AgentLongTermMemoryService;
 use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
 use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
@@ -71,6 +72,25 @@ abstract class SmartBaseAgent extends BaseAgent
     protected ?ContextWindowManager $contextWindowManager = NULL;
 
     /**
+     * Agent long-term memory service (S3-01).
+     *
+     * Optional: remembers context across sessions for personalized responses.
+     *
+     * @var \Drupal\jaraba_agents\Service\AgentLongTermMemoryService|null
+     */
+    protected ?AgentLongTermMemoryService $longTermMemory = NULL;
+
+    /**
+     * Active A/B experiment variant (S3-06).
+     *
+     * Set by applyPromptExperiment(), consumed in callAiApi().
+     * Contains: experiment_id, variant_id, system_prompt, temperature, model_tier.
+     *
+     * @var array|null
+     */
+    protected ?array $activeExperimentVariant = NULL;
+
+    /**
      * Sets the model router service.
      *
      * @param \Drupal\jaraba_ai_agents\Service\ModelRouterService $modelRouter
@@ -115,6 +135,17 @@ abstract class SmartBaseAgent extends BaseAgent
     }
 
     /**
+     * Sets the agent long-term memory service (S3-01: HAL-AI-04).
+     *
+     * @param \Drupal\jaraba_agents\Service\AgentLongTermMemoryService|null $longTermMemory
+     *   The memory service or NULL.
+     */
+    public function setLongTermMemory(?AgentLongTermMemoryService $longTermMemory): void
+    {
+        $this->longTermMemory = $longTermMemory;
+    }
+
+    /**
      * Calls the AI provider with intelligent model routing.
      *
      * FIX-001: Preserva el contrato completo de BaseAgent::callAiApi():
@@ -148,6 +179,24 @@ abstract class SmartBaseAgent extends BaseAgent
         try {
             // 1. System prompt COMPLETO (identidad + brand voice + unified context + vertical).
             $systemPrompt = $this->buildSystemPrompt($prompt);
+
+            // S3-01: Inject long-term memory context into system prompt.
+            $memoryPrompt = $this->buildMemoryContext($prompt);
+            if (!empty($memoryPrompt)) {
+                $systemPrompt .= "\n\n" . $memoryPrompt;
+            }
+
+            // S3-06: Apply A/B experiment variant's system prompt override.
+            if ($this->activeExperimentVariant && !empty($this->activeExperimentVariant['system_prompt'])) {
+                $systemPrompt = $this->activeExperimentVariant['system_prompt'];
+                // Override temperature/tier from variant if set.
+                if (isset($this->activeExperimentVariant['temperature'])) {
+                    $options['temperature'] = $this->activeExperimentVariant['temperature'];
+                }
+                if (!empty($this->activeExperimentVariant['model_tier'])) {
+                    $options['force_tier'] = $this->activeExperimentVariant['model_tier'];
+                }
+            }
 
             // FIX-029: Append tool documentation to system prompt if tools available.
             $toolDocs = $this->getToolDocumentation();
@@ -245,6 +294,16 @@ abstract class SmartBaseAgent extends BaseAgent
         // FIX-044: Mask PII in output.
         if ($success && isset($result['data']['text'])) {
             $result['data']['text'] = $this->maskOutputPii($result['data']['text']);
+        }
+
+        // S3-01: Remember interaction summary for long-term personalization.
+        if ($success && isset($result['data']['text'])) {
+            $this->rememberInteraction($prompt, $result['data']['text']);
+        }
+
+        // S3-06: Record A/B experiment result if variant was active.
+        if ($success && $this->activeExperimentVariant && isset($result['data']['text'])) {
+            $this->recordExperimentResult($prompt, $result['data']['text']);
         }
 
         return $result;
@@ -801,6 +860,124 @@ abstract class SmartBaseAgent extends BaseAgent
         }
 
         return $toolResult;
+    }
+
+    /**
+     * Builds memory context from long-term memory (S3-01: HAL-AI-04).
+     *
+     * Calls AgentLongTermMemoryService::buildMemoryPrompt() to retrieve
+     * relevant memories and format them as a system prompt section.
+     *
+     * @param string $currentPrompt
+     *   The current user prompt for semantic recall.
+     *
+     * @return string
+     *   Memory prompt section or empty string.
+     */
+    protected function buildMemoryContext(string $currentPrompt): string
+    {
+        if (!$this->longTermMemory) {
+            return '';
+        }
+
+        try {
+            return $this->longTermMemory->buildMemoryPrompt(
+                $this->getAgentId(),
+                $currentPrompt
+            );
+        } catch (\Exception $e) {
+            $this->logger->notice('Long-term memory recall failed: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+            return '';
+        }
+    }
+
+    /**
+     * Remembers a successful interaction for long-term context (S3-01).
+     *
+     * Stores an interaction summary in agent memory for future recall.
+     * Uses fire-and-forget pattern — failures are silently logged.
+     *
+     * @param string $prompt
+     *   The user prompt.
+     * @param string $response
+     *   The agent response text.
+     */
+    protected function rememberInteraction(string $prompt, string $response): void
+    {
+        if (!$this->longTermMemory) {
+            return;
+        }
+
+        try {
+            // Build a concise interaction summary (not the full response).
+            $summary = mb_substr($prompt, 0, 200);
+            if (mb_strlen($prompt) > 200) {
+                $summary .= '...';
+            }
+
+            $this->longTermMemory->remember(
+                $this->getAgentId(),
+                $summary,
+                [
+                    'type' => 'interaction_summary',
+                    'action' => $this->currentAction ?? 'general',
+                    'tenant_id' => $this->tenantId,
+                    'vertical' => $this->vertical,
+                ]
+            );
+        } catch (\Exception $e) {
+            // Non-critical: memory storage failure should never break agent.
+            $this->logger->notice('Long-term memory store failed: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Records the result of an A/B experiment execution (S3-06).
+     *
+     * Delegates to PromptExperimentService::recordResult() for quality
+     * evaluation and conversion tracking. Fire-and-forget pattern.
+     *
+     * @param string $prompt
+     *   The user prompt.
+     * @param string $response
+     *   The AI response text.
+     */
+    protected function recordExperimentResult(string $prompt, string $response): void
+    {
+        if (!$this->activeExperimentVariant) {
+            return;
+        }
+
+        if (!\Drupal::hasService('jaraba_ai_agents.prompt_experiment')) {
+            return;
+        }
+
+        try {
+            $experimentService = \Drupal::service('jaraba_ai_agents.prompt_experiment');
+            $experimentName = $this->getAgentId() . '_' . ($this->currentAction ?? 'general');
+
+            $experimentService->recordResult($experimentName, $prompt, $response, [
+                'agent_id' => $this->getAgentId(),
+                'variant_id' => $this->activeExperimentVariant['variant_id'] ?? NULL,
+                'experiment_id' => $this->activeExperimentVariant['experiment_id'] ?? NULL,
+                'tenant_id' => $this->tenantId,
+                'vertical' => $this->vertical,
+            ]);
+        }
+        catch (\Exception $e) {
+            // Non-critical — experiment recording failure should never break agent.
+            $this->logger->notice('A/B experiment result recording failed: @msg', [
+                '@msg' => $e->getMessage(),
+            ]);
+        }
+        finally {
+            // Reset variant after recording to prevent double-recording.
+            $this->activeExperimentVariant = NULL;
+        }
     }
 
     /**

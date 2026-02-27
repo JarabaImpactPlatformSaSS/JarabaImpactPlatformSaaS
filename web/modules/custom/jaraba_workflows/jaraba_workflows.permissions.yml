@@ -1,0 +1,8 @@
+administer workflow rules:
+  title: 'Administer workflow rules'
+  description: 'Create, edit, and delete workflow automation rules.'
+  restrict access: true
+
+view workflow rules:
+  title: 'View workflow rules'
+  description: 'View workflow automation rules and execution history.'

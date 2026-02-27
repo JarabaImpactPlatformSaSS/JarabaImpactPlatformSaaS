@@ -1,0 +1,23 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Landing / marketing routes.
+ *
+ * Covers: vertical meta-sites, landing pages, /planes, /contacto.
+ * Compile: sass scss/routes/landing.scss css/routes/landing.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../components/hero';
+@use '../components/hero-landing';
+@use '../components/landing-page';
+@use '../components/landing-sections';
+@use '../components/features';
+@use '../components/testimonials';
+@use '../components/product-demo';
+@use '../components/cross-pollination';
+@use '../components/lead-magnet';
+@use '../components/pricing-page';
+@use '../components/static-pages';
+@use '../components/contact-page';
+@use '../components/ped-metasite';
+@use '../components/ji-metasite';

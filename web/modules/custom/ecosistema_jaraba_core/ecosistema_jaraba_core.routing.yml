@@ -559,6 +559,17 @@ ecosistema_jaraba_core.api.tenant_analytics.products:
     _permission: 'view tenant analytics' # AUDIT-SEC-002
   methods: [GET]
 
+# S2-04: Per-tenant analytics HTML dashboard
+ecosistema_jaraba_core.tenant_analytics.page:
+  path: '/tenant/analytics'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\TenantAnalyticsController::analyticsPage'
+    _title: 'Analytics'
+  requirements:
+    _permission: 'view tenant analytics'
+  options:
+    _admin_route: FALSE
+
 # ---------------------------------------------------------------------------
 # TENANT SELF-SERVICE - CONFIGURACIÓN
 # ---------------------------------------------------------------------------

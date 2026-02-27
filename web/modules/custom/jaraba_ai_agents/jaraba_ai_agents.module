@@ -20,63 +20,20 @@ function jaraba_ai_agents_help(string $route_name): string {
 /**
  * Implements hook_cron().
  *
- * GAP-AUD-010: Enqueues proactive insight generation for active tenants.
- * Limited to one execution per day via state API.
+ * S3-03: Delegates proactive insight generation to ProactiveInsightsService.
+ * The service handles interval checks, tenant resolution, and enqueueing.
  */
 function jaraba_ai_agents_cron(): void {
-  $state = \Drupal::state();
-  $lastRun = (int) $state->get('proactive_insight_last_run', 0);
-  $today = strtotime('today midnight');
-
-  // Only run once per day.
-  if ($lastRun >= $today) {
-    return;
-  }
-
-  $state->set('proactive_insight_last_run', \Drupal::time()->getRequestTime());
-
-  // Get active admin users to generate insights for.
-  try {
-    $userStorage = \Drupal::entityTypeManager()->getStorage('user');
-    $adminUids = $userStorage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('status', 1)
-      ->condition('roles', 'administrator')
-      ->range(0, 50)
-      ->execute();
-
-    if (empty($adminUids)) {
-      return;
+  if (\Drupal::hasService('jaraba_ai_agents.proactive_insights')) {
+    try {
+      \Drupal::service('jaraba_ai_agents.proactive_insights')->runCron();
     }
-
-    /** @var \Drupal\Core\Queue\QueueInterface $queue */
-    $queue = \Drupal::queue('proactive_insight_engine');
-
-    foreach ($adminUids as $uid) {
-      $tenantId = 0;
-
-      // Resolve tenant for this user if service available.
-      try {
-        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-          // For cron, we can't resolve per-user tenant easily;
-          // the worker will handle tenant resolution.
-        }
-      }
-      catch (\Exception $e) {
-        // Continue without tenant.
-      }
-
-      $queue->createItem([
-        'tenant_id' => $tenantId,
-        'user_id' => (int) $uid,
-      ]);
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_ai_agents')->warning(
+        'Proactive insight cron failed: @error',
+        ['@error' => $e->getMessage()]
+      );
     }
-  }
-  catch (\Exception $e) {
-    \Drupal::logger('jaraba_ai_agents')->warning(
-      'Proactive insight cron failed: @error',
-      ['@error' => $e->getMessage()]
-    );
   }
 }
 

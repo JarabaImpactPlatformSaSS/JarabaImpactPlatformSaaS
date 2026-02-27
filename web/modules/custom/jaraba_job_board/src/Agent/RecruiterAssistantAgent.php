@@ -147,7 +147,7 @@ class RecruiterAssistantAgent
     }
 
     /**
-     * Screens candidates automatically.
+     * Screens candidates automatically using real application data (HAL-AI-08).
      */
     protected function screenCandidates(?int $jobId): array
     {
@@ -161,39 +161,105 @@ class RecruiterAssistantAgent
             ];
         }
 
+        // HAL-AI-08: Query real applications from ApplicationService.
+        $allApplications = $this->applicationService->getJobApplications($jobId, NULL);
+        $passed = 0;
+        $pendingReview = 0;
+        $rejected = 0;
+
+        foreach ($allApplications as $app) {
+            $status = $app->get('status')->value ?? 'pending';
+            $matchScore = (int) ($app->get('match_score')->value ?? 0);
+
+            if (in_array($status, ['accepted', 'interview', 'hired'], TRUE) || $matchScore >= 80) {
+                $passed++;
+            } elseif ($status === 'rejected') {
+                $rejected++;
+            } else {
+                $pendingReview++;
+            }
+        }
+
+        $total = count($allApplications);
+
         return [
             'success' => TRUE,
             'type' => 'screening_result',
             'title' => $this->t('Screening automático'),
             'summary' => [
-                'total' => 25,
-                'passed' => 12,
-                'pending_review' => 8,
-                'rejected' => 5,
+                'total' => $total,
+                'passed' => $passed,
+                'pending_review' => $pendingReview,
+                'rejected' => $rejected,
             ],
             'criteria_applied' => [
                 $this->t('Experiencia mínima requerida'),
                 $this->t('Habilidades técnicas clave'),
                 $this->t('Disponibilidad'),
             ],
-            'message' => $this->t('He filtrado 25 candidatos. 12 cumplen todos los requisitos, 8 requieren revisión manual y 5 no cumplen criterios mínimos.'),
+            'message' => $this->t('He filtrado @total candidatos. @passed cumplen todos los requisitos, @review requieren revisión manual y @rejected no cumplen criterios mínimos.', [
+                '@total' => $total,
+                '@passed' => $passed,
+                '@review' => $pendingReview,
+                '@rejected' => $rejected,
+            ]),
         ];
     }
 
     /**
-     * Ranks applicants by match score.
+     * Ranks applicants by match score using real data (HAL-AI-08).
      */
     protected function rankApplicants(?int $jobId): array
     {
+        if (!$jobId) {
+            return [
+                'success' => TRUE,
+                'type' => 'job_selection',
+                'title' => $this->t('Selecciona una oferta'),
+                'message' => $this->t('¿Para qué oferta quieres generar el ranking?'),
+                'input_required' => 'job_id',
+            ];
+        }
+
+        // HAL-AI-08: Query real applications sorted by match_score DESC.
+        $applications = $this->applicationService->getJobApplications($jobId, NULL);
+
+        $topCandidates = [];
+        $count = 0;
+        foreach ($applications as $app) {
+            if ($count >= 5) {
+                break;
+            }
+            $candidateId = (int) ($app->get('candidate_id')->target_id ?? $app->get('candidate_id')->value ?? 0);
+            $matchScore = (int) ($app->get('match_score')->value ?? 0);
+            $candidateName = $this->t('Candidato #@id', ['@id' => $candidateId]);
+
+            // Try to resolve candidate name.
+            try {
+                $candidate = \Drupal::entityTypeManager()->getStorage('user')->load($candidateId);
+                if ($candidate) {
+                    $displayName = $candidate->getDisplayName();
+                    if ($displayName) {
+                        $candidateName = $displayName;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Use fallback name.
+            }
+
+            $topCandidates[] = [
+                'name' => $candidateName,
+                'score' => $matchScore,
+                'highlight' => $this->t('Puntuación de match: @score%', ['@score' => $matchScore]),
+            ];
+            $count++;
+        }
+
         return [
             'success' => TRUE,
             'type' => 'ranking',
             'title' => $this->t('Ranking de candidatos'),
-            'top_candidates' => [
-                ['name' => 'María García', 'score' => 95, 'highlight' => $this->t('5 años en rol similar')],
-                ['name' => 'Carlos López', 'score' => 88, 'highlight' => $this->t('Certificaciones relevantes')],
-                ['name' => 'Ana Martínez', 'score' => 82, 'highlight' => $this->t('Excelentes referencias')],
-            ],
+            'top_candidates' => $topCandidates,
             'factors' => [
                 $this->t('Experiencia relevante (40%)'),
                 $this->t('Habilidades técnicas (30%)'),
@@ -272,24 +338,69 @@ class RecruiterAssistantAgent
     }
 
     /**
-     * Gets process analytics.
+     * Gets process analytics from real employer stats (HAL-AI-08).
      */
     protected function getProcessAnalytics(): array
     {
+        $employerId = (int) $this->currentUser->id();
+
+        // HAL-AI-08: Query real stats from ApplicationService.
+        $stats = $this->applicationService->getEmployerStats($employerId);
+        $activeJobs = $this->jobService->countActiveJobsByEmployer($employerId);
+        $pendingCount = $this->applicationService->countPendingApplications($employerId);
+
+        $totalApps = (int) ($stats['total_applications'] ?? 0);
+        $hiredCount = (int) ($stats['hired'] ?? 0);
+        $acceptanceRate = $totalApps > 0 ? round(($hiredCount / $totalApps) * 100) : 0;
+        $avgPerJob = $activeJobs > 0 ? round($totalApps / $activeJobs) : 0;
+
+        $metrics = [
+            [
+                'label' => $this->t('Ofertas activas'),
+                'value' => (string) $activeJobs,
+                'trend' => 'stable',
+                'change' => '',
+            ],
+            [
+                'label' => $this->t('Candidaturas pendientes'),
+                'value' => (string) $pendingCount,
+                'trend' => $pendingCount > 10 ? 'up' : 'stable',
+                'change' => '',
+            ],
+            [
+                'label' => $this->t('Tasa de contratación'),
+                'value' => $acceptanceRate . '%',
+                'trend' => $acceptanceRate >= 50 ? 'up' : 'down',
+                'change' => '',
+            ],
+            [
+                'label' => $this->t('Candidatos por oferta'),
+                'value' => (string) $avgPerJob,
+                'trend' => 'stable',
+                'change' => '',
+            ],
+        ];
+
+        $insights = [];
+        if ($pendingCount > 20) {
+            $insights[] = $this->t('Tienes @count candidaturas pendientes de revisión. Considera acelerar el proceso de screening.', ['@count' => $pendingCount]);
+        }
+        if ($acceptanceRate < 30 && $totalApps > 10) {
+            $insights[] = $this->t('Tu tasa de contratación es baja. Revisa las descripciones de tus ofertas para atraer candidatos más alineados.');
+        }
+        if ($activeJobs === 0) {
+            $insights[] = $this->t('No tienes ofertas activas. Publica una nueva oferta para empezar a recibir candidaturas.');
+        }
+        if (empty($insights)) {
+            $insights[] = $this->t('Tu proceso de selección funciona bien. Sigue así.');
+        }
+
         return [
             'success' => TRUE,
             'type' => 'analytics',
             'title' => $this->t('Análisis de tu proceso de selección'),
-            'metrics' => [
-                ['label' => $this->t('Tiempo medio de contratación'), 'value' => '23 días', 'trend' => 'down', 'change' => '-5 días'],
-                ['label' => $this->t('Tasa de aceptación de ofertas'), 'value' => '78%', 'trend' => 'up', 'change' => '+12%'],
-                ['label' => $this->t('Candidatos por oferta'), 'value' => '34', 'trend' => 'stable', 'change' => '0'],
-                ['label' => $this->t('Coste por contratación'), 'value' => '€850', 'trend' => 'down', 'change' => '-€150'],
-            ],
-            'insights' => [
-                $this->t('Tu tiempo de respuesta inicial es excelente (< 24h)'),
-                $this->t('Considera añadir una fase de screening telefónico para reducir entrevistas presenciales'),
-            ],
+            'metrics' => $metrics,
+            'insights' => $insights,
         ];
     }
 

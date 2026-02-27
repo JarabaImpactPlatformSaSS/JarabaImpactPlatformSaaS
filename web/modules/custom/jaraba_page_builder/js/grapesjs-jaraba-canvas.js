@@ -895,11 +895,12 @@
             // Enviar al iframe de preview via postMessage
             const iframe = document.querySelector('.canvas-editor__preview iframe');
             if (iframe && iframe.contentWindow) {
+                // HAL-AI-09: Restrict postMessage origin to same origin (not '*').
                 iframe.contentWindow.postMessage({
                     type: type === 'jaraba-header' ? 'JARABA_HEADER_CHANGE' : 'JARABA_FOOTER_CHANGE',
                     variant: attributes['header-type'] || attributes['footer-type'],
                     attributes: attributes,
-                }, '*');
+                }, window.location.origin);
             }
         }
 

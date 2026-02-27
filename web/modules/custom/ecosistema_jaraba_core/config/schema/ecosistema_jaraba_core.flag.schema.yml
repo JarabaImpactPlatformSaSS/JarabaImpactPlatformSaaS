@@ -1,0 +1,48 @@
+# Schema for FeatureFlag config entity (HAL-AI-11).
+ecosistema_jaraba_core.flag.*:
+  type: config_entity
+  label: 'Feature Flag'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Human-readable name'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: text
+      label: 'Description of what this flag controls'
+    enabled:
+      type: boolean
+      label: 'Whether the flag is enabled'
+    scope:
+      type: string
+      label: 'Scope: global, vertical, tenant, plan, percentage'
+    conditions:
+      type: mapping
+      label: 'Conditions for non-global scopes'
+      mapping:
+        plans:
+          type: sequence
+          label: 'Allowed plan tiers (for plan scope)'
+          sequence:
+            type: string
+            label: 'Plan tier ID'
+        tenant_ids:
+          type: sequence
+          label: 'Allowed tenant IDs (for tenant scope)'
+          sequence:
+            type: integer
+            label: 'Tenant ID'
+        verticals:
+          type: sequence
+          label: 'Allowed verticals (for vertical scope)'
+          sequence:
+            type: string
+            label: 'Vertical ID'
+        percentage:
+          type: integer
+          label: 'Rollout percentage 0-100 (for percentage scope)'
