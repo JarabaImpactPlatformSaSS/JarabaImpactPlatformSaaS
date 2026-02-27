@@ -199,7 +199,7 @@ class CopilotOrchestratorService
         if ($this->semanticCache) {
             try {
                 $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-                $semanticHit = $this->semanticCache->get($message, $tenantId, $mode);
+                $semanticHit = $this->semanticCache->get($message, $mode, $tenantId);
                 if ($semanticHit) {
                     $this->logger->debug('Copilot response served from semantic cache (mode=@mode)', [
                         '@mode' => $mode,
@@ -267,7 +267,7 @@ class CopilotOrchestratorService
                 if ($this->semanticCache) {
                     try {
                         $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-                        $this->semanticCache->set($message, $formattedResponse, $tenantId, $mode);
+                        $this->semanticCache->set($message, $formattedResponse['text'] ?? '', $mode, $tenantId);
                     }
                     catch (\Exception $e) {
                         $this->logger->notice('Semantic cache store failed: @error', ['@error' => $e->getMessage()]);

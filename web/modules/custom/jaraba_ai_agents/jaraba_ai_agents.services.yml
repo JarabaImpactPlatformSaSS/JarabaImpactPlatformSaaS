@@ -107,6 +107,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Storytelling Agent (FIX-035: migrated Gen 1 -> Gen 2 with Model Routing)
   jaraba_ai_agents.storytelling_agent:
@@ -124,6 +127,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Customer Experience Agent (FIX-035: migrated Gen 1 -> Gen 2 with Model Routing)
   jaraba_ai_agents.customer_experience_agent:
@@ -141,6 +147,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Support Agent (FIX-035: migrated Gen 1 -> Gen 2 with Model Routing)
   jaraba_ai_agents.support_agent:
@@ -158,6 +167,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Producer Copilot Agent (AgroConecta - Gen 2 + Tools)
   jaraba_ai_agents.producer_copilot_agent:
@@ -175,6 +187,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Sales Agent (AgroConecta - Gen 2 + Tools)
   jaraba_ai_agents.sales_agent:
@@ -192,6 +207,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Merchant Copilot Agent (ComercioConecta - Gen 2 + Tools)
   jaraba_ai_agents.merchant_copilot_agent:
@@ -209,6 +227,9 @@ services:
       - '@?jaraba_ai_agents.context_window_manager'
     calls:
       - [setLongTermMemory, ['@?jaraba_agents.long_term_memory']]
+      - [setVerifier, ['@?jaraba_ai_agents.verifier']]
+      - [setSelfReflection, ['@?jaraba_ai_agents.self_reflection']]
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
 
   # ========================================
@@ -423,4 +444,118 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_ai_agents'
       - '@?jaraba_ai_agents.model_router'
+
+  # ========================================
+  # GAP-L5 — Elevacion IA Nivel 5 Transformacional
+  # ========================================
+
+  # GAP-L5-A: Constitutional Guardrails — Immutable safety rules (mandatory, zero-cost)
+  jaraba_ai_agents.constitutional_guardrails:
+    class: Drupal\jaraba_ai_agents\Service\ConstitutionalGuardrailService
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+
+  # GAP-L5-B: Self-Improving Prompt Manager — Proposals with constitutional validation
+  jaraba_ai_agents.self_improving_prompt_manager:
+    class: Drupal\jaraba_ai_agents\Service\SelfImprovingPromptManager
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.constitutional_guardrails'
+      - '@logger.channel.jaraba_ai_agents'
+
+  # GAP-L5-A: Verifier Agent — Pre-delivery quality + constitutional verification
+  # Two-layer: constitutional (always, local) + LLM quality (fast tier, configurable mode)
+  jaraba_ai_agents.verifier:
+    class: Drupal\jaraba_ai_agents\Service\VerifierAgentService
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.model_router'
+      - '@jaraba_ai_agents.constitutional_guardrails'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.observability'
+
+  # GAP-L5-B: Self-Reflection — Post-execution quality evaluation (fast tier, non-blocking)
+  jaraba_ai_agents.self_reflection:
+    class: Drupal\jaraba_ai_agents\Service\AgentSelfReflectionService
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.self_improving_prompt_manager'
+      - '@?jaraba_ai_agents.observability'
+
+  # GAP-L5-C: AI Risk Classification — EU AI Act 4-tier classification (rule engine)
+  jaraba_ai_agents.risk_classification:
+    class: Drupal\jaraba_ai_agents\Service\AiRiskClassificationService
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+
+  # GAP-L5-C: AI Transparency — EU AI Act Art. 50 labels (zero-cost)
+  jaraba_ai_agents.transparency:
+    class: Drupal\jaraba_ai_agents\Service\AiTransparencyService
+
+  # GAP-L5-C: AI Audit Trail — Regulatory-grade append-only logging
+  jaraba_ai_agents.audit_trail:
+    class: Drupal\jaraba_ai_agents\Service\AiAuditTrailService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.risk_classification'
+      - '@logger.channel.jaraba_ai_agents'
+
+  # GAP-L5-C: AI Compliance Documentation — Auto-generation (optional LLM enrichment)
+  jaraba_ai_agents.compliance_documentation:
+    class: Drupal\jaraba_ai_agents\Service\AiComplianceDocumentationService
+    arguments:
+      - '@jaraba_ai_agents.risk_classification'
+      - '@jaraba_ai_agents.transparency'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?ai.provider'
+      - '@?jaraba_ai_agents.model_router'
+
+  # GAP-L5-D: Voice Pipeline — STT/TTS orchestration (feature-flagged)
+  jaraba_ai_agents.voice_pipeline:
+    class: Drupal\jaraba_ai_agents\Service\VoicePipelineService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?ai.provider'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.observability'
+
+  # GAP-L5-E: Browser Agent — Headless browser automation (feature-flagged)
+  jaraba_ai_agents.browser_agent:
+    class: Drupal\jaraba_ai_agents\Service\BrowserAgentService
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.observability'
+
+  # GAP-L5-E: Browser Tools (tagged for auto-registration in ToolRegistry)
+  jaraba_ai_agents.tool.web_scraping:
+    class: Drupal\jaraba_ai_agents\Tool\WebScrapingTool
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.browser_agent'
+    tags:
+      - { name: jaraba_ai_agents.tool }
+
+  jaraba_ai_agents.tool.form_filler:
+    class: Drupal\jaraba_ai_agents\Tool\FormFillerTool
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.browser_agent'
+    tags:
+      - { name: jaraba_ai_agents.tool }
+
+  jaraba_ai_agents.tool.screen_capture:
+    class: Drupal\jaraba_ai_agents\Tool\ScreenCaptureTool
+    arguments:
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.browser_agent'
+    tags:
+      - { name: jaraba_ai_agents.tool }
 

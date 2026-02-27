@@ -62,39 +62,41 @@ abstract class BaseAgent implements AgentInterface
      *
      * @var object
      */
-    protected object $aiProvider;
+    protected ?object $aiProvider = NULL;
 
     /**
      * La factoría de configuración.
      *
-     * @var \Drupal\Core\Config\ConfigFactoryInterface
+     * @var \Drupal\Core\Config\ConfigFactoryInterface|null
      */
-    protected ConfigFactoryInterface $configFactory;
+    protected ?ConfigFactoryInterface $configFactory = NULL;
 
     /**
      * El logger para registrar eventos y errores.
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface|null
      */
-    protected LoggerInterface $logger;
+    protected ?LoggerInterface $logger = NULL;
 
     /**
      * El servicio de Brand Voice por tenant.
      *
      * Proporciona prompts personalizados según la configuración del tenant.
      *
-     * @var \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService
+     * @var \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService|null
      */
-    protected TenantBrandVoiceService $brandVoice;
+    protected ?TenantBrandVoiceService $brandVoice = NULL;
 
     /**
      * El servicio de observabilidad IA.
      *
      * Registra métricas de uso, tokens y latencia para analytics.
+     * KERNEL-OPTIONAL-AI-001: Nullable for Kernel tests where jaraba_ai_agents
+     * services are not installed. Agents guard with null-check before calling.
      *
-     * @var \Drupal\jaraba_ai_agents\Service\AIObservabilityService
+     * @var \Drupal\jaraba_ai_agents\Service\AIObservabilityService|null
      */
-    protected AIObservabilityService $observability;
+    protected ?AIObservabilityService $observability = NULL;
 
     /**
      * Constructor de prompts unificados.
@@ -182,7 +184,7 @@ abstract class BaseAgent implements AgentInterface
      */
     protected function getBrandVoicePrompt(): string
     {
-        if (!$this->tenantId) {
+        if (!$this->tenantId || !$this->brandVoice) {
             return $this->getDefaultBrandVoice();
         }
         return $this->brandVoice->getPromptForTenant($this->tenantId);
@@ -349,7 +351,7 @@ abstract class BaseAgent implements AgentInterface
         // Calcular duración y registrar en observabilidad.
         $durationMs = (int) ((microtime(true) - $startTime) * 1000);
 
-        $this->observability->log([
+        $this->observability?->log([
             'agent_id' => $this->getAgentId(),
             'action' => $this->currentAction,
             'tier' => $tier,

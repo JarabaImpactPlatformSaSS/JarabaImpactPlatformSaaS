@@ -8,9 +8,11 @@ use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
 use Drupal\ai\OperationType\Chat\Tools\ToolsInput;
 use Drupal\jaraba_agents\Service\AgentLongTermMemoryService;
+use Drupal\jaraba_ai_agents\Service\AgentSelfReflectionService;
 use Drupal\jaraba_ai_agents\Service\ContextWindowManager;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
 use Drupal\jaraba_ai_agents\Service\ProviderFallbackService;
+use Drupal\jaraba_ai_agents\Service\VerifierAgentService;
 use Drupal\jaraba_ai_agents\Tool\ToolRegistry;
 
 /**
@@ -81,6 +83,33 @@ abstract class SmartBaseAgent extends BaseAgent
     protected ?AgentLongTermMemoryService $longTermMemory = NULL;
 
     /**
+     * Pre-delivery verifier agent (GAP-L5-A).
+     *
+     * Optional: verifies agent output quality and constitutional compliance
+     * before delivering to the user. Fail-open: verifier errors don't block.
+     *
+     * @var \Drupal\jaraba_ai_agents\Service\VerifierAgentService|null
+     */
+    protected ?VerifierAgentService $verifier = NULL;
+
+    /**
+     * Post-execution self-reflection service (GAP-L5-B).
+     *
+     * Optional: evaluates response quality post-delivery and proposes prompt
+     * improvements when quality drops below threshold. Non-blocking.
+     *
+     * @var \Drupal\jaraba_ai_agents\Service\AgentSelfReflectionService|null
+     */
+    protected ?AgentSelfReflectionService $selfReflection = NULL;
+
+    /**
+     * Cost alert service for real-time usage threshold enforcement.
+     *
+     * @var object|null
+     */
+    protected ?object $costAlertService = NULL;
+
+    /**
      * Active A/B experiment variant (S3-06).
      *
      * Set by applyPromptExperiment(), consumed in callAiApi().
@@ -146,6 +175,39 @@ abstract class SmartBaseAgent extends BaseAgent
     }
 
     /**
+     * Sets the pre-delivery verifier agent (GAP-L5-A).
+     *
+     * @param \Drupal\jaraba_ai_agents\Service\VerifierAgentService|null $verifier
+     *   The verifier service or NULL.
+     */
+    public function setVerifier(?VerifierAgentService $verifier): void
+    {
+        $this->verifier = $verifier;
+    }
+
+    /**
+     * Sets the post-execution self-reflection service (GAP-L5-B).
+     *
+     * @param \Drupal\jaraba_ai_agents\Service\AgentSelfReflectionService|null $selfReflection
+     *   The self-reflection service or NULL.
+     */
+    public function setSelfReflection(?AgentSelfReflectionService $selfReflection): void
+    {
+        $this->selfReflection = $selfReflection;
+    }
+
+    /**
+     * Sets the cost alert service for usage threshold enforcement.
+     *
+     * @param object|null $costAlertService
+     *   The cost alert service or NULL.
+     */
+    public function setCostAlertService(?object $costAlertService): void
+    {
+        $this->costAlertService = $costAlertService;
+    }
+
+    /**
      * Calls the AI provider with intelligent model routing.
      *
      * FIX-001: Preserva el contrato completo de BaseAgent::callAiApi():
@@ -167,6 +229,15 @@ abstract class SmartBaseAgent extends BaseAgent
      */
     protected function callAiApi(string $prompt, array $options = []): array
     {
+        // KERNEL-OPTIONAL-AI-001: Early return when AI provider unavailable.
+        if (!$this->aiProvider) {
+            return [
+                'success' => FALSE,
+                'data' => ['text' => ''],
+                'error' => 'AI provider not available',
+            ];
+        }
+
         $startTime = microtime(TRUE);
         $success = FALSE;
         $inputTokens = 0;
@@ -268,10 +339,10 @@ abstract class SmartBaseAgent extends BaseAgent
             ];
         }
 
-        // 4. Observabilidad OBLIGATORIA (siempre se registra, éxito o fallo).
+        // 4. Observabilidad (siempre se registra cuando el servicio está disponible).
         $durationMs = (int) ((microtime(TRUE) - $startTime) * 1000);
 
-        $logId = $this->observability->log([
+        $logId = $this->observability?->log([
             'agent_id' => $this->getAgentId(),
             'action' => $this->currentAction,
             'tier' => $tier,
@@ -284,6 +355,20 @@ abstract class SmartBaseAgent extends BaseAgent
             'duration_ms' => $durationMs,
             'success' => $success,
         ]);
+
+        // 5. Cost alert threshold enforcement (real-time).
+        if ($this->costAlertService && $this->tenantId) {
+            try {
+                $totalTokens = $inputTokens + $outputTokens;
+                $alertData = $this->costAlertService->checkThresholds($this->tenantId, $totalTokens);
+                if (!empty($alertData['threshold_reached'])) {
+                    $result['cost_alert'] = $alertData;
+                }
+            }
+            catch (\Exception $e) {
+                // Cost alert failure must not block agent execution.
+            }
+        }
 
         // FIX-032: Enqueue quality evaluation (sampling: 10% or 100% premium).
         if ($success && $logId) {
@@ -1013,6 +1098,15 @@ abstract class SmartBaseAgent extends BaseAgent
     /**
      * Executes an action with automatic routing context.
      *
+     * Pipeline: A/B experiment → doExecute() → Verifier (pre-delivery)
+     *           → Self-reflection (post-delivery, non-blocking).
+     *
+     * GAP-L5-A: VerifierAgentService evaluates output before delivery.
+     *           Constitutional layer always runs; LLM layer is configurable.
+     *           Fail-open: verifier errors pass through.
+     * GAP-L5-B: AgentSelfReflectionService evaluates quality post-delivery
+     *           and proposes prompt improvements when score < threshold.
+     *
      * @param string $action
      *   The action to execute.
      * @param array $context
@@ -1028,7 +1122,145 @@ abstract class SmartBaseAgent extends BaseAgent
         // FIX-049: A/B test prompt variant selection (optional).
         $this->applyPromptExperiment($action);
 
-        return $this->doExecute($action, $context);
+        $result = $this->doExecute($action, $context);
+
+        // GAP-L5-A: Pre-delivery verification (constitutional + LLM quality).
+        $result = $this->applyVerification($action, $result, $context);
+
+        // GAP-L5-B: Post-delivery self-reflection (non-blocking).
+        $this->applySelfReflection($action, $result, $context);
+
+        return $result;
+    }
+
+    /**
+     * Applies pre-delivery verification to the agent result (GAP-L5-A).
+     *
+     * Two layers: constitutional enforcement (always, local) + LLM quality
+     * check (configurable mode: all/sample/critical_only).
+     *
+     * Fail-open: if verifier itself fails, the original result passes through.
+     *
+     * @param string $action
+     *   The action executed.
+     * @param array $result
+     *   The agent execution result.
+     * @param array $context
+     *   Execution context.
+     *
+     * @return array
+     *   The result, potentially modified by the verifier.
+     */
+    protected function applyVerification(string $action, array $result, array $context): array
+    {
+        if (!$this->verifier) {
+            return $result;
+        }
+
+        if (!($result['success'] ?? FALSE) || empty($result['data']['text'] ?? '')) {
+            return $result;
+        }
+
+        try {
+            $userInput = $context['user_input'] ?? $context['prompt'] ?? '';
+            $verification = $this->verifier->verify(
+                $this->getAgentId(),
+                $action,
+                $userInput,
+                $result['data']['text'],
+                [
+                    'tenant_id' => $this->tenantId ?? '',
+                    'vertical' => $this->vertical ?? '',
+                ],
+            );
+
+            $result['verification'] = [
+                'verified' => $verification['verified'],
+                'passed' => $verification['passed'],
+                'score' => $verification['score'],
+                'verification_id' => $verification['verification_id'],
+            ];
+
+            // If verifier blocked the response, replace output with sanitized version.
+            if ($verification['verified'] && !$verification['passed']) {
+                $result['data']['text'] = $verification['output']
+                    ?? $this->getBlockedResponseFallback();
+                $result['blocked_by_verifier'] = TRUE;
+                $result['blocked_reason'] = $verification['blocked_reason'] ?? 'quality_check_failed';
+            }
+        }
+        catch (\Throwable $e) {
+            // Fail-open: verifier failure must not block response delivery.
+            $this->logger->warning('GAP-L5-A: Verification failed for @agent/@action: @error', [
+                '@agent' => $this->getAgentId(),
+                '@action' => $action,
+                '@error' => $e->getMessage(),
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Applies post-delivery self-reflection (GAP-L5-B).
+     *
+     * Non-blocking: evaluates agent quality and proposes prompt improvements.
+     * Failures in self-reflection MUST NOT affect response delivery.
+     *
+     * @param string $action
+     *   The action executed.
+     * @param array $result
+     *   The agent execution result.
+     * @param array $context
+     *   Execution context.
+     */
+    protected function applySelfReflection(string $action, array $result, array $context): void
+    {
+        if (!$this->selfReflection) {
+            return;
+        }
+
+        if (!($result['success'] ?? FALSE) || empty($result['data']['text'] ?? '')) {
+            return;
+        }
+
+        // Skip reflection for blocked responses — they need re-execution, not improvement.
+        if (!empty($result['blocked_by_verifier'])) {
+            return;
+        }
+
+        try {
+            $userInput = $context['user_input'] ?? $context['prompt'] ?? '';
+            $this->selfReflection->reflect(
+                $this->getAgentId(),
+                $action,
+                $userInput,
+                $result['data']['text'],
+                [
+                    'tenant_id' => $this->tenantId ?? '',
+                    'vertical' => $this->vertical ?? '',
+                ],
+            );
+        }
+        catch (\Throwable $e) {
+            // Non-blocking: self-reflection failure is silently logged.
+            $this->logger->notice('GAP-L5-B: Self-reflection failed for @agent/@action: @error', [
+                '@agent' => $this->getAgentId(),
+                '@action' => $action,
+                '@error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Returns a safe fallback text when the verifier blocks a response.
+     *
+     * @return string
+     *   Generic safe response.
+     */
+    protected function getBlockedResponseFallback(): string
+    {
+        return 'Lo siento, no puedo proporcionar esa respuesta en este momento. Por favor, reformula tu consulta o contacta con soporte.';
     }
 
     /**

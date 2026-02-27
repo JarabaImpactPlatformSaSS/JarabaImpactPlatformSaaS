@@ -57,6 +57,8 @@ services:
       - '@?entity_type.manager'
       - '@?current_user'
       - '@?jaraba_billing.tenant_metering'
+    calls:
+      - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
   # Writing Assistant Service
   jaraba_content_hub.writing_assistant:

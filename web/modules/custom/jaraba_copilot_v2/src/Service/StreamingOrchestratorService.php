@@ -55,7 +55,7 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
     if ($this->semanticCache) {
       try {
         $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
-        $semanticHit = $this->semanticCache->get($message, $tenantId, $mode);
+        $semanticHit = $this->semanticCache->get($message, $mode, $tenantId);
         if ($semanticHit) {
           $this->logger->debug('GAP-01/S5-04: Respuesta servida desde semantic cache (no-stream).');
           $semanticHit['cached'] = TRUE;
@@ -265,6 +265,17 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
 
     if ($this->cacheService) {
       $this->cacheService->set($originalMessage, $mode, $context, $formattedResponse);
+    }
+
+    // S5-04: Store in semantic cache for future fuzzy matching.
+    if ($this->semanticCache) {
+      try {
+        $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
+        $this->semanticCache->set($originalMessage, $fullText, $mode, $tenantId);
+      }
+      catch (\Exception $e) {
+        $this->logger->notice('Semantic cache store failed in streaming: @error', ['@error' => $e->getMessage()]);
+      }
     }
 
     // Evento done.

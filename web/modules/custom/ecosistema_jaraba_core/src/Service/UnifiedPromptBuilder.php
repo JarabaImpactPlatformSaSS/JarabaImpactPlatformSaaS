@@ -44,9 +44,9 @@ class UnifiedPromptBuilder
      */
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
-        protected SkillManager $skillManager,
-        protected TenantKnowledgeManager $knowledgeManager,
-        protected KnowledgeIndexerService $knowledgeIndexer,
+        protected ?SkillManager $skillManager,
+        protected ?TenantKnowledgeManager $knowledgeManager,
+        protected ?KnowledgeIndexerService $knowledgeIndexer,
         protected LoggerInterface $logger,
         protected readonly TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
         protected ?AIGuardrailsService $guardrails = NULL, // FIX-015: Guardrails para queries.
@@ -76,15 +76,19 @@ class UnifiedPromptBuilder
         $output = "<jaraba_context>\n";
 
         // 1. Skills (CÓMO actuar).
-        $skillsSection = $this->skillManager->generatePromptSection($context);
-        if (!empty($skillsSection)) {
-            $output .= $skillsSection . "\n";
+        if ($this->skillManager) {
+            $skillsSection = $this->skillManager->generatePromptSection($context);
+            if (!empty($skillsSection)) {
+                $output .= $skillsSection . "\n";
+            }
         }
 
         // 2. Business Context (QUÉ sabe el negocio).
-        $businessContext = $this->knowledgeManager->generatePromptContext();
-        if (!empty($businessContext)) {
-            $output .= $businessContext . "\n";
+        if ($this->knowledgeManager) {
+            $businessContext = $this->knowledgeManager->generatePromptContext();
+            if (!empty($businessContext)) {
+                $output .= $businessContext . "\n";
+            }
         }
 
         // 3. Correcciones aplicadas (prevención de errores).
@@ -198,7 +202,7 @@ class UnifiedPromptBuilder
             $tenantId = $this->getCurrentTenantId();
         }
 
-        if (!$tenantId) {
+        if (!$tenantId || !$this->knowledgeIndexer) {
             return '';
         }
 

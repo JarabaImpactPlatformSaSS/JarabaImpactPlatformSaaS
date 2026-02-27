@@ -352,6 +352,25 @@ services:
       - '@config.factory'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # FIX-051: Cost Alert — monitors AI token usage per tenant, alerts at 80%/95%
+  ecosistema_jaraba_core.cost_alert:
+    class: Drupal\ecosistema_jaraba_core\Service\CostAlertService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # Unified Prompt Builder — combines skills + tenant knowledge + RAG into XML prompt
+  ecosistema_jaraba_core.unified_prompt_builder:
+    class: Drupal\ecosistema_jaraba_core\Service\UnifiedPromptBuilder
+    arguments:
+      - '@entity_type.manager'
+      - '@?jaraba_skills.skill_manager'
+      - '@?jaraba_tenant_knowledge.manager'
+      - '@?jaraba_tenant_knowledge.indexer'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.ai_guardrails'
+
   # A/B Testing de prompts
   ecosistema_jaraba_core.ai_ab_testing:
     class: Drupal\ecosistema_jaraba_core\Service\AIPromptABTestingService
@@ -406,10 +425,13 @@ services:
 
   # S4-03: Feature gate ligero para sesiones demo anónimas.
   # Controla límites: sesiones/hora, mensajes IA, generaciones, productos.
+  # HAL-DEMO-V3-BACK-003: Añadido config.factory para leer demo_settings.
   ecosistema_jaraba_core.demo_feature_gate:
     class: Drupal\ecosistema_jaraba_core\Service\DemoFeatureGateService
     arguments:
       - '@database'
+      - '@logger.factory'
+      - '@config.factory'
 
   # S4-04: Journey progression para conversión demo → registro.
   # Evalúa nudges proactivos (first-value, story, session-expiring, actions).
@@ -417,6 +439,15 @@ services:
     class: Drupal\ecosistema_jaraba_core\Service\DemoJourneyProgressionService
     arguments:
       - '@database'
+
+  # HAL-DEMO-V3-BACK-005: EventSubscriber para analytics de sesiones demo.
+  # Escucha CREATED, VALUE_ACTION, CONVERSION, EXPIRED de DemoSessionEvent.
+  ecosistema_jaraba_core.demo_analytics_subscriber:
+    class: Drupal\ecosistema_jaraba_core\EventSubscriber\DemoAnalyticsEventSubscriber
+    arguments:
+      - '@logger.factory'
+    tags:
+      - { name: event_subscriber }
 
   # ===========================================
   # Q1 2027: REVERSE TRIAL MODEL (GAP P1)
@@ -551,9 +582,11 @@ services:
   # Q1 2027: TIME-TO-VALUE - SANDBOX TEMPORAL
   # ===========================================
 
-  # Servicio de sandbox temporal para demo sin registro
+  # @deprecated 1.x — Reemplazado por DemoInteractiveService + demo_sessions table.
+  # HAL-DEMO-V3-BACK-002: Mantener registro para backwards-compat pero no usar.
   ecosistema_jaraba_core.sandbox_tenant:
     class: Drupal\ecosistema_jaraba_core\Service\SandboxTenantService
+    deprecated: 'The "%service_id%" service is deprecated. Use ecosistema_jaraba_core.demo_interactive instead.'
     arguments:
       - '@entity_type.manager'
       - '@state'
