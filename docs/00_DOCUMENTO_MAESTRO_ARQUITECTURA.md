@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-27
-**Versión:** 85.0.0 (Sprint 5 IA Clase Mundial 100/100 — Gen2 Complete + SemanticCache + MultiModal + CWV + Locking)
+**Versión:** 87.0.0 (Demo Vertical PLG 100% Clase Mundial — Guided Tour + Storytelling AI + Progressive Disclosure + Runtime Verification)
 **Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -710,6 +710,55 @@ Integración unificada de soberanía legal y resiliencia técnica:
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│                      SOPORTE AL CLIENTE CLASE MUNDIAL                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_support (v1.0 — Omnichannel Support) ⭐                   │
+│   ├── Entidades (7+2): SupportTicket, TicketMessage, TicketAttachment, │
+│   │   TicketWatcher, TicketTag, TicketAiClassification,               │
+│   │   TicketAiResolution + SlaPolicy (Config), SupportSettings (Config)│
+│   ├── Servicios (18): TicketService (state machine), SlaEngineService  │
+│   │   (policy resolution + business hours + pause/resume),             │
+│   │   BusinessHoursService (timezone + holidays + walking),            │
+│   │   TicketRoutingService (multi-factor: skills/vertical/workload),   │
+│   │   AttachmentService (upload + MIME/size/double-ext security),      │
+│   │   AttachmentScanService (ClamAV + 4-layer heuristic fallback),    │
+│   │   AttachmentUrlService (HMAC SHA-256 signed URLs 1h),             │
+│   │   TicketNotificationService, TicketMergeService, CsatSurveyService│
+│   │   SupportHealthScoreService (5-component 0-100), TicketStreamSvc, │
+│   │   SupportCronService, SupportAnalyticsService,                     │
+│   │   TicketAiClassificationService, TicketAiResolutionService         │
+│   ├── AI: SupportAgentSmartAgent (Gen 2, 5 actions:                   │
+│   │   classify_ticket, suggest_response, summarize_thread,             │
+│   │   detect_sentiment, draft_resolution)                              │
+│   ├── API REST: SupportApiController (12+ endpoints)                  │
+│   │   ├── GET  /tickets (listing with filters)                        │
+│   │   ├── POST /tickets (create with auto-routing + SLA)              │
+│   │   ├── GET  /tickets/{id} (detail + viewers)                       │
+│   │   ├── PATCH /tickets/{id} (status transitions)                    │
+│   │   ├── POST /tickets/{id}/messages (add message)                   │
+│   │   ├── POST /tickets/{id}/attachments (upload + scan)              │
+│   │   ├── GET  /tickets/{id}/attachments (list + signed URLs)         │
+│   │   ├── POST /tickets/{id}/classify (AI classification)             │
+│   │   ├── POST /tickets/{id}/suggest (AI resolution)                  │
+│   │   ├── POST /tickets/search (LIKE query)                           │
+│   │   ├── POST /tickets/inbound-email (email→ticket)                  │
+│   │   └── GET  /attachments/download (HMAC signed)                    │
+│   ├── SSE: SupportStreamController (Server-Sent Events)               │
+│   │   └── GET  /support/stream (real-time ticket updates)             │
+│   ├── State Machine: open → in_progress → waiting_customer →          │
+│   │   resolved → closed + escalated (lateral transition)              │
+│   ├── SLA: {plan_tier}_{priority} policies, business hours,           │
+│   │   pause/resume with deadline extension, breach + warning           │
+│   ├── Cron: SLA processing, attachment scans, auto-close 7d,         │
+│   │   CSAT surveys, SSE event purge 24h                               │
+│   ├── Tables: support_ticket_events (SSE queue),                      │
+│   │   support_ticket_viewers (collision detection)                     │
+│   └── Tests: 22 unit tests / 111 assertions (3 files)                │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │                      COMUNICACION: MENSAJERIA SEGURA (IMPLEMENTED)     │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -1300,6 +1349,73 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │                                                                         │
 │   Dependencias: ecosistema_jaraba_core                                 │
 │   15 ficheros total                                                    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│              DEMO VERTICAL PLG (Product-Led Growth) ⭐                  │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 ecosistema_jaraba_core (Demo subsystem, ~4,000 LOC)               │
+│                                                                         │
+│   User Journey:                                                         │
+│   /demo → /demo/start/{profileId} → /demo/dashboard/{sessionId}       │
+│     ├── Guided Tour (4 pasos, auto-start)                              │
+│     ├── Magic Actions → /demo/ai/storytelling/{sessionId}              │
+│     ├── AI Playground → /demo/ai-playground                            │
+│     └── Progressive Disclosure → /demo/dashboard/{sessionId}           │
+│         └── Conversion Modal → /registro/{vertical}                    │
+│                                                                         │
+│   Controller: DemoController (~765 LOC)                                 │
+│   ├── demoLanding() — 10 perfiles demo con social proof               │
+│   ├── startDemo() — sesion DB + guided tour + dashboard inicial       │
+│   ├── demoDashboard() — progressive disclosure + nudges               │
+│   ├── demoAiStorytelling() — AI storytelling con StorytellingAgent    │
+│   ├── aiPlayground() — copilot publico embebido                       │
+│   ├── regenerateStory() — POST API regeneracion con feature gate      │
+│   ├── trackAction() — POST API tracking + TTFV                        │
+│   └── convertToReal() — POST API conversion flow                     │
+│                                                                         │
+│   Services:                                                             │
+│   ├── DemoInteractiveService (1,523 LOC)                               │
+│   │   ├── 10 perfiles demo (producer, winery, cheese, buyer...)       │
+│   │   ├── Metricas sinteticas por vertical                            │
+│   │   ├── Session management (demo_sessions table, SHA-256 IP)        │
+│   │   ├── Analytics aggregation (demo_analytics table, cron)          │
+│   │   └── getDemoStory() — 11 historias hardcoded por perfil          │
+│   ├── DemoFeatureGateService (149 LOC)                                 │
+│   │   ├── Features: page_builder_templates, story_generations         │
+│   │   └── Usage tracking por session                                  │
+│   ├── DemoJourneyProgressionService (319 LOC)                          │
+│   │   ├── Disclosure levels: basic → intermediate → advanced          │
+│   │   └── Nudge system (action-based progression)                     │
+│   └── GuidedTourService (user_completed_tours table)                   │
+│       ├── Tour definitions (demo_welcome: 4 steps)                    │
+│       └── getTourDriverJS() → JSON config para JS driver              │
+│                                                                         │
+│   JS Libraries (self-contained, zero external deps):                    │
+│   ├── demo-dashboard.js — chart, tracking, conversion, countdown      │
+│   ├── demo-guided-tour.js — overlay, spotlight, popovers, keyboard   │
+│   ├── demo-storytelling.js — regenerate fetch, copy, feedback         │
+│   └── demo-ai-playground.js — copilot chat, scenarios, typing        │
+│                                                                         │
+│   Templates (5 themes + 3 partials):                                    │
+│   ├── demo-landing.html.twig (profile cards)                          │
+│   ├── demo-dashboard.html.twig (initial, with tour steps)             │
+│   ├── demo-dashboard-view.html.twig (progressive disclosure)          │
+│   ├── demo-ai-storytelling.html.twig (story + regenerate)             │
+│   ├── demo-ai-playground.html.twig (chat + scenarios)                 │
+│   └── partials: _demo-chart, _demo-cta, _demo-convert-modal          │
+│                                                                         │
+│   DB Tables: demo_sessions, demo_analytics, user_completed_tours       │
+│   Tests: 24 unit tests, 84 assertions                                  │
+│   SCSS: _demo.scss (1,180 LOC) in ecosistema_jaraba_core              │
+│                                                                         │
+│   drupalSettings injection chain:                                       │
+│   ├── demo.sessionId, demo.salesHistory (dashboard)                   │
+│   ├── demoTour (from GuidedTourService::getTourDriverJS)              │
+│   ├── demoStorytelling.regenerateUrl (Url::fromRoute)                 │
+│   └── demoPlayground.copilotEndpoint (Url::fromRoute)                 │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -2533,13 +2649,15 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 48.0.0 | **Fecha:** 2026-02-18 | **Autor:** IA Asistente
+> **Versión:** 87.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente
 
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-27 | **87.0.0** | **Demo Vertical PLG 100% Clase Mundial — Guided Tour + Storytelling AI + Progressive Disclosure:** Nuevo ASCII box DEMO VERTICAL PLG. Subsistema demo en ecosistema_jaraba_core (~4,000 LOC): DemoController (765 LOC, 8 metodos: landing/start/dashboard/storytelling/playground/regenerate/track/convert), DemoInteractiveService (1,523 LOC, 10 perfiles, metricas sinteticas, session management demo_sessions table, analytics aggregation demo_analytics table, 11 historias por perfil), DemoFeatureGateService (149 LOC, usage tracking), DemoJourneyProgressionService (319 LOC, disclosure levels basic→intermediate→advanced, nudge system), GuidedTourService (demo_welcome 4 pasos, user_completed_tours table). 4 JS libraries self-contained (dashboard chart+tracking+conversion+countdown, guided-tour overlay+spotlight+popovers+keyboard, storytelling fetch+copy+feedback, ai-playground copilot+scenarios+typing). 5 templates + 3 partials DRY. drupalSettings injection chain: demo.sessionId + demoTour (GuidedTourService) + demoStorytelling.regenerateUrl (Url::fromRoute) + demoPlayground.copilotEndpoint (Url::fromRoute). User journey: /demo → profile select → dashboard (tour auto-start) → magic actions → storytelling (AI regenerate) → progressive disclosure → conversion modal → /registro/{vertical}. 24 unit tests, 84 assertions. SCSS _demo.scss 1,180 LOC compilado. 2 reglas nuevas en Directrices v96.0.0: SCSS-COMPILE-VERIFY-001, RUNTIME-VERIFY-001. Aprendizaje #146. |
+| 2026-02-27 | **86.0.0** | **jaraba_support Clase Mundial — Soporte Omnicanal + SLA Engine + AI Agent + SSE + HMAC Attachments:** Nuevo ASCII box SOPORTE AL CLIENTE CLASE MUNDIAL. Modulo `jaraba_support` implementado completo en 10 fases. Arquitectura: 7 Content Entities (SupportTicket con state machine 6 estados open→in_progress→waiting_customer→resolved→closed + escalated lateral, TicketMessage, TicketAttachment, TicketWatcher, TicketTag, TicketAiClassification, TicketAiResolution) + 2 Config Entities (SlaPolicy con id {plan_tier}_{priority}, SupportSettings). 18 servicios: TicketService (state machine con VALID_TRANSITIONS + first_responded_at tracking), SlaEngineService (attachSlaToTicket resolve policy → calculateDeadline con BusinessHoursService, processSlaCron check breached/warned), BusinessHoursService (loadSchedule desde ConfigEntity, isDayInSchedule timezone-aware, isHoliday, addBusinessHours minuto a minuto con max 365 iteraciones), TicketRoutingService (multi-factor scoring: skills +50, vertical +30, workload inversely proportional +20, experience bonus +15 para critical/high), AttachmentService (upload con FileSystemInterface::saveData, validation MIME/extension/size/double-extension 16 dangerous exts), AttachmentScanService (ClamAV nSCAN via unix socket + 4-layer heuristic fallback: dangerous ext, double-ext, suspicious content 8KB, MIME mismatch), AttachmentUrlService (HMAC SHA-256 signed URLs base64 JSON token 1h expiry, 3-tier auth admin/reporter/assignee, BinaryFileResponse con security headers), TicketNotificationService (5 metodos: created/newMessage/slaWarning/slaBreached escalation/resolved con CSAT link), TicketMergeService (transferencia mensajes/adjuntos/watchers con duplicate detection + system message), CsatSurveyService (schedule 1h delay, submit 1-5 clamp, low satisfaction warning), SupportHealthScoreService (5 componentes: volume trend, SLA compliance, CSAT, escalation rate, resolution speed, churn alert <40), TicketStreamService (DB-backed SSE con support_ticket_events, agent+watcher ticket merging, viewer registration), SupportCronService (5 tareas: SLA/scans/auto-close 7d/CSAT surveys/purge 24h), SupportAgentSmartAgent (Gen 2, 5 acciones fast/balanced/premium). SupportApiController 12+ endpoints REST. SupportStreamController SSE. hook_schema 2 tablas auxiliares + update_10001. 22 unit tests / 111 assertions. Aprendizaje #145. |
 | 2026-02-27 | **85.0.0** | **Sprint 5 IA Clase Mundial 100/100 — Gen2 Complete + SemanticCache + MultiModal + CWV + Locking:** Auditoria IA 30/30 completada (score 100/100). 11 agentes Gen 2 (0 Gen 1 remaining): SmartMarketing, Storytelling, CustomerExperience, Support, ProducerCopilot, Sales, MerchantCopilot, SmartEmployabilityCopilot, SmartLegalCopilot, SmartContentWriter + LearningPathAgent (jaraba_lms). Nuevos servicios: AgentBenchmarkService (golden datasets + AgentBenchmarkResult entity), PromptVersionService + PromptTemplate ConfigEntity (versioning + rollback), BrandVoiceProfile ContentEntity (per-tenant brand voice persistence), PersonalizationEngineService (6 source orchestration). SemanticCache integrado en CopilotOrchestrator (GET before LLM, SET after). MultiModalBridgeService COMPLETE: analyzeImage (GPT-4o Vision), transcribeAudio (Whisper), synthesizeSpeech (TTS-1/TTS-1-HD), generateImage (DALL-E 3). Page Builder concurrent edit locking: optimistic locking via `changed` + X-Entity-Changed, edit_lock_uid/edit_lock_expires fields, 3 API endpoints acquire/release/status, JS heartbeat. CWV: 7 CSS bundles (code splitting), cwv-tracking.js PerformanceObserver (LCP/CLS/INP/FCP/TTFB), fetchpriority="high" 10 hero templates, AVIF+WebP responsive images, responsive_image() Twig function. |
 | 2026-02-27 | **84.0.0** | **DOC-GUARD + Kernel Test Resilience + jaraba_workflows:** Nuevo ASCII box WORKFLOW AUTOMATION ENGINE en seccion 7.1. Modulo `jaraba_workflows` (S4-04) documentado: WorkflowRule entity (trigger-based actions), WorkflowExecutionService (event_dispatcher + observability opcional), 15 ficheros. Fix Kernel tests: servicios AI cross-module (`@ai.provider`, `@jaraba_ai_agents.*`) cambiados a `@?` (optional) en jaraba_content_hub + jaraba_lms para prevenir ServiceNotFoundException. ContentWriterAgent + ContentEmbeddingService con constructores nullable. Regla KERNEL-OPTIONAL-AI-001 en Directrices v91.0.0. DOC-GUARD-001: pre-commit hook + CI verification de umbrales de documentos maestros. Aprendizaje #142. |
 | 2026-02-27 | **81.0.0** | **Reviews & Comments Clase Mundial — Auditoría + Plan Consolidación 10 Verticales:** Nuevo ASCII box REVIEWS & COMMENTS CLASE MUNDIAL. Auditoría exhaustiva de 4 sistemas de calificaciones heterogéneos (comercio_review, review_agro, review_servicios, session_review) con 20 hallazgos: 4 seguridad (tenant_id apunta a taxonomy en vez de group, 2 entidades sin tenant_id), 5 bugs (campo $text indefinido, clase inexistente, entidad reading_history inexistente, hook_cron ausente, búsqueda pública ausente), 4 arquitectura (duplicación de código en 3 servicios, nomenclatura inconsistente status/state, Q&A sin respuesta de provider, lógica de negocio en controladores), 3 directrices (presave sin hasService, slug hardcoded, accessCheck ausente), 4 brechas clase mundial (sin Schema.org AggregateRating, sin frontend visual, sin moderación IA, sin invitaciones post-transacción). Plan de implementación con ReviewableEntityTrait (5 campos compartidos + helpers con fallback), 5 servicios transversales (moderation, aggregation, schema.org, invitation, AI summary), 2 entidades nuevas (course_review para LMS, content_comment para Content Hub threading), 6 Twig partials, 350+ líneas SCSS, star-rating.js widget, GrapesJS review-block plugin. Cobertura de 10 verticales canónicos: comercioconecta, agroconecta, serviciosconecta, mentoring, formacion, jaraba_content_hub + empleabilidad, emprendimiento, jarabalex, andalucia_ei (extensibles). 3 reglas nuevas: REVIEW-TRAIT-001, REVIEW-MODERATION-001, SCHEMA-AGGREGATE-001. Aprendizaje #140. |
@@ -2575,4 +2693,4 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 85.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente
+> **Versión:** 87.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente
