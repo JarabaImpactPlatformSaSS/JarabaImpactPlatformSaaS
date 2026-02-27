@@ -4205,26 +4205,32 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     return;
   }
 
-  // Map route name prefixes to theme libraries.
+  // Map route name prefixes to theme libraries (route CSS + extracted bundles).
+  // HAL-AI-12: Each route gets its route-specific CSS plus extracted bundle CSS.
   $routeLibraryMap = [
-    'ecosistema_jaraba_core.tenant_dashboard' => 'ecosistema_jaraba_theme/route-dashboard',
-    'ecosistema_jaraba_core.tenant_analytics' => 'ecosistema_jaraba_theme/route-dashboard',
-    'jaraba_content_hub.' => 'ecosistema_jaraba_theme/route-content-hub',
-    'entity.content_article.' => 'ecosistema_jaraba_theme/route-content-hub',
-    'jaraba_page_builder.' => 'ecosistema_jaraba_theme/route-page-builder',
-    'user.login' => 'ecosistema_jaraba_theme/route-auth',
-    'user.register' => 'ecosistema_jaraba_theme/route-auth',
-    'user.pass' => 'ecosistema_jaraba_theme/route-auth',
-    'jaraba_page_builder.landing' => 'ecosistema_jaraba_theme/route-landing',
-    'entity.page_content.canonical' => 'ecosistema_jaraba_theme/route-landing',
-    'empleabilidad.' => 'ecosistema_jaraba_theme/route-empleabilidad',
-    'jaraba_ai_agents.' => 'ecosistema_jaraba_theme/route-ai-features',
-    'jaraba_copilot' => 'ecosistema_jaraba_theme/route-ai-features',
+    'ecosistema_jaraba_core.tenant_dashboard' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
+    'ecosistema_jaraba_core.tenant_analytics' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
+    'jaraba_content_hub.' => ['ecosistema_jaraba_theme/route-content-hub', 'ecosistema_jaraba_theme/bundle-content-hub'],
+    'entity.content_article.' => ['ecosistema_jaraba_theme/route-content-hub', 'ecosistema_jaraba_theme/bundle-content-hub'],
+    'jaraba_page_builder.' => ['ecosistema_jaraba_theme/route-page-builder', 'ecosistema_jaraba_theme/bundle-page-builder-dashboard'],
+    'user.login' => ['ecosistema_jaraba_theme/route-auth', 'ecosistema_jaraba_theme/bundle-auth'],
+    'user.register' => ['ecosistema_jaraba_theme/route-auth', 'ecosistema_jaraba_theme/bundle-auth'],
+    'user.pass' => ['ecosistema_jaraba_theme/route-auth', 'ecosistema_jaraba_theme/bundle-auth'],
+    'jaraba_page_builder.landing' => ['ecosistema_jaraba_theme/route-landing'],
+    'entity.page_content.canonical' => ['ecosistema_jaraba_theme/route-landing'],
+    'empleabilidad.' => ['ecosistema_jaraba_theme/route-empleabilidad', 'ecosistema_jaraba_theme/bundle-employability-pages'],
+    'jaraba_ai_agents.' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
+    'jaraba_copilot' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
+    'jaraba_candidate.jobseeker' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
+    'jaraba_candidate.dashboard' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
+    'jaraba_agents.' => ['ecosistema_jaraba_theme/bundle-agent-dashboard'],
   ];
 
-  foreach ($routeLibraryMap as $prefix => $library) {
+  foreach ($routeLibraryMap as $prefix => $libraries) {
     if ($route === $prefix || str_starts_with($route, $prefix)) {
-      $attachments['#attached']['library'][] = $library;
+      foreach ($libraries as $library) {
+        $attachments['#attached']['library'][] = $library;
+      }
       break;
     }
   }

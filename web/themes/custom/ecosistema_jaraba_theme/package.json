@@ -6,10 +6,11 @@
         "build:css": "sass scss/main.scss css/ecosistema-jaraba-theme.css --style=compressed",
         "build:admin": "sass scss/admin-settings.scss css/admin-settings.css --style=compressed",
         "build:routes": "sass scss/routes/dashboard.scss css/routes/dashboard.css --style=compressed && sass scss/routes/content-hub.scss css/routes/content-hub.css --style=compressed && sass scss/routes/page-builder.scss css/routes/page-builder.css --style=compressed && sass scss/routes/auth.scss css/routes/auth.css --style=compressed && sass scss/routes/landing.scss css/routes/landing.css --style=compressed && sass scss/routes/empleabilidad.scss css/routes/empleabilidad.css --style=compressed && sass scss/routes/ai-features.scss css/routes/ai-features.css --style=compressed",
+        "build:bundles": "sass scss/bundles/ai-dashboard.scss css/bundles/ai-dashboard.css --style=compressed && sass scss/bundles/page-builder-dashboard.scss css/bundles/page-builder-dashboard.css --style=compressed && sass scss/bundles/content-hub.scss css/bundles/content-hub.css --style=compressed && sass scss/bundles/auth.scss css/bundles/auth.css --style=compressed && sass scss/bundles/employability-pages.scss css/bundles/employability-pages.css --style=compressed && sass scss/bundles/jobseeker-dashboard.scss css/bundles/jobseeker-dashboard.css --style=compressed && sass scss/bundles/agent-dashboard.scss css/bundles/agent-dashboard.css --style=compressed",
         "build:critical": "node scripts/generate-critical.js",
         "build:js": "node scripts/minify-js.js",
         "build:images": "node scripts/optimize-images.js",
-        "build": "npm run build:css && npm run build:admin && npm run build:routes && npm run build:js",
+        "build": "npm run build:css && npm run build:admin && npm run build:routes && npm run build:bundles && npm run build:js",
         "build:all": "npm run build && npm run build:images && npm run build:critical",
         "watch": "sass --watch scss/main.scss css/ecosistema-jaraba-theme.css"
     },

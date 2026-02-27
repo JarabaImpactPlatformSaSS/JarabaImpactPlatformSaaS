@@ -66,11 +66,11 @@
 @use 'features/back-to-top';
 @use 'features/promo-banner';
 
-// AI Dashboard
-@use 'ai-dashboard';
+// AI Dashboard — HAL-AI-12: moved to bundles/ai-dashboard.scss
+// @use 'ai-dashboard';
 
-// Content Hub - Blog & Articles
-@use 'content-hub';
+// Content Hub - Blog & Articles — HAL-AI-12: moved to bundles/content-hub.scss
+// @use 'content-hub';
 
 // Site Builder - Estructura del sitio frontend
 @use 'site-builder';
@@ -78,11 +78,11 @@
 // Global Components
 @use 'slide-panel';
 
-// Page Builder Dashboard
-@use 'page-builder-dashboard';
+// Page Builder Dashboard — HAL-AI-12: moved to bundles/page-builder-dashboard.scss
+// @use 'page-builder-dashboard';
 
-// Agent Dashboard - Phase 3 Agentic Economy
-@use 'agent-dashboard';
+// Agent Dashboard — HAL-AI-12: moved to bundles/agent-dashboard.scss
+// @use 'agent-dashboard';
 
 // Analytics Dashboard - Gap C
 @use 'components/analytics-dashboard';
@@ -96,17 +96,17 @@
 // Accessibility - WCAG 2.1 AA
 @use 'accessibility';
 
-// Auth Pages - Login, Register, Password
-@use 'auth';
+// Auth Pages — HAL-AI-12: moved to bundles/auth.scss
+// @use 'auth';
 
 // User Pages - Profile, Edit, Logout, Contact, Cancel
 @use 'user-pages';
 
-// Jobseeker Dashboard - Premium empleabilidad dashboard
-@use 'jobseeker-dashboard';
+// Jobseeker Dashboard — HAL-AI-12: moved to bundles/jobseeker-dashboard.scss
+// @use 'jobseeker-dashboard';
 
-// Employability Pages - Jobs, Applications, LMS catalog & dashboard
-@use 'employability-pages';
+// Employability Pages — HAL-AI-12: moved to bundles/employability-pages.scss
+// @use 'employability-pages';
 
 // Profile Edit & CV Builder - Premium form styling
 @use 'profile-edit';

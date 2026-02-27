@@ -360,13 +360,14 @@
 .header--mega .header__mega-panel {
     position: absolute;
     top: 100%;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 100vw;
+    max-width: 960px;
     background: var(--header-bg);
     box-shadow: var(--ej-shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.1));
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
     transition: all 0.2s ease;
 }
 
@@ -374,16 +375,16 @@
 .header--mega .header__menu-link[aria-expanded="true"]+.header__mega-panel {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 .header--mega .mega-panel__container {
-    padding: var(--ej-spacing-xl, 2rem) 0;
+    padding: var(--ej-spacing-xl, 2rem) var(--ej-spacing-lg, 1.5rem);
 }
 
 .header--mega .mega-panel__columns {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--ej-spacing-xl, 2rem);
 }
 

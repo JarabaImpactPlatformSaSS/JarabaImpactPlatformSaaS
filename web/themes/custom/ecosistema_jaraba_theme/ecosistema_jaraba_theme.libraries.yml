@@ -6,6 +6,63 @@ global-styling:
   dependencies:
     - core/drupal
 
+# HAL-AI-12: Route-specific CSS bundles (code splitting)
+bundle-ai-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/ai-dashboard.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+bundle-page-builder-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/page-builder-dashboard.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+bundle-content-hub:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/content-hub.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+bundle-auth:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/auth.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+bundle-employability-pages:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/employability-pages.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+bundle-jobseeker-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/jobseeker-dashboard.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+bundle-agent-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/bundles/agent-dashboard.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 icons:
   version: 1.0.0
   css:
