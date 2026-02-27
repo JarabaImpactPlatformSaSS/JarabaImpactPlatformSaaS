@@ -1,9 +1,9 @@
-# Aprendizaje #133 — Elevacion UX a Clase Mundial: 8 Fases Implementadas
+# Aprendizaje #150 — Elevacion UX a Clase Mundial: 8 Fases + Auditoria Directrices
 
 **Fecha:** 2026-02-27
-**Tipo:** Implementacion + Patron
+**Tipo:** Implementacion + Patron + Auditoria
 **Alcance:** Theme + Core Module + Notifications Module
-**Directrices base:** v93.0.0 | **Flujo:** v46.0.0
+**Directrices base:** v100.0.0 | **Flujo:** v53.0.0
 
 ---
 
@@ -126,3 +126,55 @@ Comando canonical: `lando ssh -c "cd /app/web/themes/custom/ecosistema_jaraba_th
 | `templates/page.html.twig` | 2 includes condicionales |
 | `EntitySearchCommandProvider.php` | Cross-entity search (3 tipos) |
 | `command-bar.js` | Recientes + agrupacion por categoria |
+
+## Auditoria Post-Implementacion
+
+### Violaciones Encontradas (6)
+
+| # | Directriz | Fichero | Linea | Fix |
+|---|-----------|---------|-------|-----|
+| V1 | ICON-COLOR-001 | `_empty-state.html.twig` | 39 | Anadido `color: icon_color\|default('naranja-impulso')` a `jaraba_icon()` |
+| V2 | ICON-COLOR-001 + DUOTONE-001 | `_bottom-nav.html.twig` | 41 | Anadido `variant: 'duotone', color: 'naranja-impulso'` |
+| V3 | DESIGN-TOKEN-FEDERATED-001 | `_notification-panel.scss` | 83 | `rgba(255,140,66,0.08)` → `var(--ej-color-primary-light, ...)` |
+| V4 | DESIGN-TOKEN-FEDERATED-001 | `_notification-panel.scss` | 123 | `#ffffff` → `var(--ej-text-on-primary, #ffffff)` |
+| V5 | DESIGN-TOKEN-FEDERATED-001 | `_notification-panel.scss` | 152 | `rgba(255,140,66,0.04)` → `var(--ej-color-primary-subtle, ...)` |
+| V6 | DESIGN-TOKEN-FEDERATED-001 | `_notification-panel.scss` | 111 | `20px` → `var(--ej-border-radius-pill, 20px)` |
+
+### Areas Verificadas Compliant (12)
+
+| Area | Estado | Notas |
+|------|--------|-------|
+| SCSS SSOT (no local `$ej-*`) | PASS | 0 variables locales en 5 SCSS satelite |
+| BEM-NAMING-001 | PASS | 63+ clases correctamente nombradas |
+| i18n Twig | PASS | `{% trans %}` / `\|trans` en 5 partials |
+| i18n JS | PASS | `Drupal.t()` en 4 JS files |
+| XSS Prevention | PASS | `textContent` only, never innerHTML para user data |
+| CSRF-JS-CACHE-001 | PASS | Token cacheado como Promise |
+| DRUPAL-BEHAVIORS-001 | PASS | 4 behaviors con `once()` |
+| MODAL-ACCESSIBILITY-001 | PASS | Focus trap + Esc + restore en quick-start |
+| COMPILED-CSS-NEVER-EDIT-001 | PASS | Solo SCSS editado |
+| Clean Frontend | PASS | Sin `page.content`, partials via `{% include %}` |
+| Theme Settings | PASS | 55+ CSS vars; componentes usan `var(--ej-*)` |
+| Material Icons JS | ACEPTADO | Patron establecido (command-bar.js), sin API JS para SVG |
+
+### Tokens CSS Nuevos Introducidos
+
+| Token | Uso | Fallback |
+|-------|-----|----------|
+| `--ej-text-on-primary` | Texto sobre fondos de color primario | `#ffffff` |
+| `--ej-color-primary-subtle` | Tinte muy sutil del primario (4% opacidad) | `rgba(255, 140, 66, 0.04)` |
+| `--ej-border-radius-pill` | Border radius forma pastilla para filtros | `20px` |
+
+### Patron: jaraba_icon() — Signature Real
+
+```
+jaraba_icon(string $category, string $name, array $options = [])
+```
+
+Opciones: `variant` (outline/duotone/filled), `color` (paleta Jaraba: naranja-impulso, azul-corporativo, verde-innovacion, white, neutral), `size` (CSS string o numero).
+
+**Regla aprendida:** SIEMPRE especificar `color` con nombre de paleta Jaraba. El default "current color" no es fiable cuando el SVG se renderiza como `<img>`.
+
+### Directriz Nueva: CSS-VAR-ALL-COLORS-001
+
+Todo valor visual en SCSS satelite DEBE estar envuelto en `var(--ej-*, fallback)`. NUNCA hex hardcodeado. Tokens custom usan fallback como valor por defecto hasta que se inyecten desde Theme Settings UI.

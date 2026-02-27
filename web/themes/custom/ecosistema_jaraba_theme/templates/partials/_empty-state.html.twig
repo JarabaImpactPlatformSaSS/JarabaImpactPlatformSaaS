@@ -8,6 +8,8 @@
  #
  # @param icon        string  Categoria del icono para jaraba_icon() (e.g., 'business')
  # @param icon_name   string  Nombre del icono (e.g., 'rocket')
+ # @param icon_color  string  Color del icono (paleta Jaraba: 'naranja-impulso', 'azul-corporativo',
+ #                            'verde-innovacion', 'white', 'neutral'). Default: 'naranja-impulso'
  # @param title       string  Titulo traducido (usar |trans en el caller)
  # @param description string  Descripcion traducida
  # @param cta_label   string  Texto del boton principal (traducido)
@@ -36,7 +38,7 @@
 
   {% if icon is defined and icon_name is defined %}
     <div class="ej-empty-state__icon" aria-hidden="true">
-      {{ jaraba_icon(icon, icon_name, { variant: 'duotone', size: '64px' }) }}
+      {{ jaraba_icon(icon, icon_name, { variant: 'duotone', color: icon_color|default('naranja-impulso'), size: '64px' }) }}
     </div>
   {% endif %}
 

@@ -56,11 +56,12 @@ class SupportHealthScoreServiceTest extends UnitTestCase {
     $countQuery->method('execute')->willReturn($statement);
 
     $selectQuery = $this->createMock(SelectInterface::class);
-    $selectQuery->method('addExpression')->willReturnSelf();
+    $selectQuery->method('addExpression')->willReturn('alias');
     $selectQuery->method('condition')->willReturnSelf();
+    $selectQuery->method('isNotNull')->willReturnSelf();
     $selectQuery->method('countQuery')->willReturn($countQuery);
     $selectQuery->method('execute')->willReturn($statement);
-    $selectQuery->method('join')->willReturnSelf();
+    $selectQuery->method('join')->willReturn('t');
 
     $this->database->method('select')
       ->willReturnCallback(function (string $table) use (&$tablesUsed, $selectQuery) {
@@ -114,11 +115,12 @@ class SupportHealthScoreServiceTest extends UnitTestCase {
     $countQuery->method('execute')->willReturn($statement);
 
     $selectQuery = $this->createMock(SelectInterface::class);
-    $selectQuery->method('addExpression')->willReturnSelf();
+    $selectQuery->method('addExpression')->willReturn('alias');
     $selectQuery->method('condition')->willReturnSelf();
+    $selectQuery->method('isNotNull')->willReturnSelf();
     $selectQuery->method('countQuery')->willReturn($countQuery);
     $selectQuery->method('execute')->willReturn($statement);
-    $selectQuery->method('join')->willReturnSelf();
+    $selectQuery->method('join')->willReturn('t');
 
     $this->database->method('select')->willReturn($selectQuery);
 

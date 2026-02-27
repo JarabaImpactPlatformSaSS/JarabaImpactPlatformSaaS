@@ -200,7 +200,8 @@ final class SupportAnalyticsService {
    * Counts tickets resolved today.
    */
   private function countTicketsResolvedToday(array $filters): int {
-    $todayStart = strtotime('today midnight');
+    // resolved_at is datetime (VARCHAR 'Y-m-d\TH:i:s'), not Unix timestamp.
+    $todayStart = (new \DateTime('today midnight'))->format('Y-m-d\TH:i:s');
     $query = $this->database->select('support_ticket_field_data', 't');
     $query->addExpression('COUNT(*)', 'count');
     $query->condition('t.resolved_at', $todayStart, '>=');
@@ -223,9 +224,10 @@ final class SupportAnalyticsService {
    * Gets average first response time in hours.
    */
   private function getAverageResponseTime(array $filters): float {
+    // first_responded_at is datetime (VARCHAR 'Y-m-d\TH:i:s'), created is Unix INT.
     $query = $this->database->select('support_ticket_field_data', 't');
-    $query->addExpression('AVG(t.first_responded_at - t.created)', 'avg_seconds');
-    $query->condition('t.first_responded_at', 0, '>');
+    $query->addExpression("AVG(UNIX_TIMESTAMP(REPLACE(t.first_responded_at, 'T', ' ')) - t.created)", 'avg_seconds');
+    $query->isNotNull('t.first_responded_at');
     $this->applyFilters($query, $filters);
     $avgSeconds = (float) ($query->execute()->fetchField() ?? 0);
     return $avgSeconds > 0 ? $avgSeconds / 3600 : 0;

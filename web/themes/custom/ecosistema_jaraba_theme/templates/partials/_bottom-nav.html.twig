@@ -38,7 +38,7 @@
          aria-label="{{ item.label }}"
          {% if item.route == active_bottom_nav %}aria-current="page"{% endif %}>
         <span class="bottom-nav__icon">
-          {{ jaraba_icon(item.icon_cat, item.icon_name, { size: '24px' }) }}
+          {{ jaraba_icon(item.icon_cat, item.icon_name, { variant: 'duotone', color: 'naranja-impulso', size: '24px' }) }}
         </span>
         <span class="bottom-nav__label">{{ item.label }}</span>
         {% if item.badge is defined and item.badge > 0 %}

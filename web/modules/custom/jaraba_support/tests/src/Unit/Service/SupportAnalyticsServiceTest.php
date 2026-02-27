@@ -164,8 +164,9 @@ class SupportAnalyticsServiceTest extends UnitTestCase {
     $statement->method('fetchField')->willReturn('10');
 
     $selectQuery = $this->createMock(SelectInterface::class);
-    $selectQuery->method('addExpression')->willReturnSelf();
+    $selectQuery->method('addExpression')->willReturn('alias');
     $selectQuery->method('condition')->willReturnSelf();
+    $selectQuery->method('isNotNull')->willReturnSelf();
     $selectQuery->method('execute')->willReturn($statement);
 
     $this->database->method('select')
@@ -277,8 +278,9 @@ class SupportAnalyticsServiceTest extends UnitTestCase {
       });
 
     $selectQuery = $this->createMock(SelectInterface::class);
-    $selectQuery->method('addExpression')->willReturnSelf();
+    $selectQuery->method('addExpression')->willReturn('alias');
     $selectQuery->method('condition')->willReturnSelf();
+    $selectQuery->method('isNotNull')->willReturnSelf();
     $selectQuery->method('execute')->willReturn($statement);
 
     $this->database->method('select')->willReturn($selectQuery);

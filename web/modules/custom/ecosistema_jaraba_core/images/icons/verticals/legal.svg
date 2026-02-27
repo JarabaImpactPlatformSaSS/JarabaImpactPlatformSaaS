@@ -1,16 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Base pedestal -->
+  <path d="M7 21h10"/>
+  <path d="M9.5 21v-1a2.5 2.5 0 0 1 5 0v1"/>
   <!-- Center pillar -->
-  <line x1="12" y1="4" x2="12" y2="20"/>
-  <!-- Base -->
-  <line x1="8" y1="20" x2="16" y2="20"/>
-  <!-- Beam -->
-  <line x1="5" y1="7" x2="19" y2="7"/>
-  <!-- Top ornament -->
-  <circle cx="12" cy="4" r="1.5"/>
-  <!-- Left pan -->
-  <polyline points="5,7 3,13 9,13 7,7"/>
-  <path d="M3 13a3 3 0 0 0 6 0"/>
-  <!-- Right pan -->
-  <polyline points="17,7 15,13 21,13 19,7"/>
-  <path d="M15 13a3 3 0 0 0 6 0"/>
+  <line x1="12" y1="3.5" x2="12" y2="18"/>
+  <!-- Top finial -->
+  <circle cx="12" cy="3" r="1"/>
+  <!-- Crossbeam -->
+  <path d="M4 7h16"/>
+  <!-- Left scale pan with chains -->
+  <path d="M4 7l-1 5"/>
+  <path d="M8 7l1 5"/>
+  <path d="M3 12h6"/>
+  <path d="M3 12c0 1.657 1.343 3 3 3s3-1.343 3-3"/>
+  <!-- Right scale pan with chains -->
+  <path d="M16 7l-1 5"/>
+  <path d="M20 7l1 5"/>
+  <path d="M15 12h6"/>
+  <path d="M15 12c0 1.657 1.343 3 3 3s3-1.343 3-3"/>
 </svg>

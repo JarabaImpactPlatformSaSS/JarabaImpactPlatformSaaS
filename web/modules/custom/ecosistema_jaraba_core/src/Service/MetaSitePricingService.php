@@ -59,7 +59,8 @@ class MetaSitePricingService
      *   - tier_key: string (e.g. 'starter')
      *   - label: string (e.g. 'Starter')
      *   - description: string
-     *   - features: string[] (feature machine names)
+     *   - features: string[] (human-readable feature labels)
+     *   - features_raw: string[] (machine names for programmatic checks)
      *   - limits: array (key => int)
      *   - is_recommended: bool (TRUE for 'professional')
      *   - stripe_price_monthly: string
@@ -83,11 +84,19 @@ class MetaSitePricingService
             $tierKey = $tier->getTierKey();
             $features = $this->planResolver->getFeatures($vertical, $tierKey);
 
+            $rawFeatures = $features ? $features->getFeatures() : [];
+
+            // Starter sin features explícitas → inyectar features base.
+            if (empty($rawFeatures) && $tierKey === 'starter') {
+                $rawFeatures = ['basic_profile', 'community', 'one_vertical', 'email_support'];
+            }
+
             $pricing[] = [
                 'tier_key' => $tierKey,
                 'label' => (string) $tier->label(),
                 'description' => (string) $tier->getDescription(),
-                'features' => $features ? $features->getFeatures() : [],
+                'features' => $this->formatFeatureLabels($rawFeatures),
+                'features_raw' => $rawFeatures,
                 'limits' => $features ? $features->getLimits() : [],
                 'is_recommended' => ($tierKey === 'professional'),
                 'stripe_price_monthly' => $tier->getStripePriceMonthly(),
@@ -126,7 +135,7 @@ class MetaSitePricingService
         return [
             'from_price' => (string) $this->t('0€/mes'),
             'from_label' => (string) $this->t('Empieza gratis'),
-            'features_highlights' => $highlights,
+            'features_highlights' => $this->formatFeatureLabels($highlights),
             'cta_url' => '/planes',
         ];
     }
@@ -192,6 +201,69 @@ class MetaSitePricingService
                 'stripe_price_yearly' => '',
             ],
         ];
+    }
+
+    /**
+     * Maps feature machine names to translated human-readable labels.
+     *
+     * Centraliza el mapeo de nombres técnicos → labels de UI para que tanto
+     * la página /planes como los previews de landing usen la misma fuente.
+     * Los machine names desconocidos se formatean automáticamente
+     * (ucfirst + guiones bajos → espacios).
+     *
+     * DIRECTRIZ: i18n — Todos los labels pasan por $this->t().
+     *
+     * @param string[] $machineNames
+     *   Machine names from SaasPlanFeatures config entity.
+     *
+     * @return string[]
+     *   Human-readable, translated labels.
+     */
+    protected function formatFeatureLabels(array $machineNames): array
+    {
+        $map = [
+            // Base / Starter.
+            'basic_profile' => $this->t('Perfil básico'),
+            'community' => $this->t('Acceso a la comunidad'),
+            'one_vertical' => $this->t('1 vertical incluida'),
+            'email_support' => $this->t('Soporte por email'),
+            // Platform features.
+            'seo_advanced' => $this->t('SEO Avanzado'),
+            'ab_testing' => $this->t('A/B Testing'),
+            'analytics' => $this->t('Analytics y reportes'),
+            'schema_org' => $this->t('Schema.org estructurado'),
+            'premium_blocks' => $this->t('Bloques premium'),
+            'api_access' => $this->t('Acceso a API'),
+            'white_label' => $this->t('Marca blanca'),
+            // Domain features.
+            'trazabilidad_basica' => $this->t('Trazabilidad básica'),
+            'trazabilidad_avanzada' => $this->t('Trazabilidad avanzada'),
+            'firma_digital' => $this->t('Firma digital'),
+            'qr_codes' => $this->t('QR verificables'),
+            'ai_assistant' => $this->t('Asistente de IA'),
+            'ai_agents' => $this->t('Agentes de IA'),
+            'webhooks' => $this->t('Webhooks'),
+            'custom_branding' => $this->t('Marca personalizada'),
+            'priority_support' => $this->t('Soporte prioritario'),
+            'export_data' => $this->t('Exportación de datos'),
+            'multi_user' => $this->t('Multi-usuario'),
+            'sso' => $this->t('Single Sign-On'),
+            'integrations' => $this->t('Integraciones externas'),
+            'copilot' => $this->t('Copiloto IA'),
+            'copilot_unlimited' => $this->t('Copiloto IA ilimitado'),
+            'legal_ai' => $this->t('Investigación legal IA'),
+            'marketplace' => $this->t('Marketplace incluido'),
+            'ecommerce' => $this->t('Tienda online'),
+        ];
+
+        $labels = [];
+        foreach ($machineNames as $name) {
+            $labels[] = isset($map[$name])
+                ? (string) $map[$name]
+                : ucfirst(str_replace('_', ' ', $name));
+        }
+
+        return $labels;
     }
 
 }

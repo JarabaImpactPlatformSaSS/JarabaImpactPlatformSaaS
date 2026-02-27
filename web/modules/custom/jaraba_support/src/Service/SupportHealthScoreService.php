@@ -139,13 +139,12 @@ final class SupportHealthScoreService {
       }
 
       // --- c. CSAT score (0-20) ---
-      $csatAvg = (float) $this->database->select('support_ticket_field_data', 't')
-        ->condition('t.tenant_id', $tenantId)
-        ->condition('t.created', $ninetyDaysAgo, '>=')
-        ->condition('t.satisfaction_rating', 0, '>')
-        ->addExpression('AVG(t.satisfaction_rating)', 'avg_csat')
-        ->execute()
-        ->fetchField();
+      $csatQuery = $this->database->select('support_ticket_field_data', 't');
+      $csatQuery->condition('t.tenant_id', $tenantId);
+      $csatQuery->condition('t.created', $ninetyDaysAgo, '>=');
+      $csatQuery->condition('t.satisfaction_rating', 0, '>');
+      $csatQuery->addExpression('AVG(t.satisfaction_rating)', 'avg_csat');
+      $csatAvg = (float) $csatQuery->execute()->fetchField();
 
       if ($csatAvg >= 4.5) {
         $csatScore = 20;
@@ -167,15 +166,14 @@ final class SupportHealthScoreService {
       // --- d. Escalation rate (0-20) ---
       $escalationScore = 20;
       if ($totalTickets90d > 0) {
-        $escalatedCount = (int) $this->database->select('ticket_event_log', 'e')
-          ->join('support_ticket_field_data', 't', 't.id = e.ticket_id')
-          ->condition('t.tenant_id', $tenantId)
-          ->condition('t.created', $ninetyDaysAgo, '>=')
-          ->condition('e.event_type', 'status_changed')
-          ->condition('e.new_value', 'escalated')
-          ->addExpression('COUNT(DISTINCT e.ticket_id)', 'cnt')
-          ->execute()
-          ->fetchField();
+        $escQuery = $this->database->select('ticket_event_log', 'e');
+        $escQuery->join('support_ticket_field_data', 't', 't.id = e.ticket_id');
+        $escQuery->condition('t.tenant_id', $tenantId);
+        $escQuery->condition('t.created', $ninetyDaysAgo, '>=');
+        $escQuery->condition('e.event_type', 'status_changed');
+        $escQuery->condition('e.new_value', 'escalated');
+        $escQuery->addExpression('COUNT(DISTINCT e.ticket_id)', 'cnt');
+        $escalatedCount = (int) $escQuery->execute()->fetchField();
 
         $escalationRate = $escalatedCount / $totalTickets90d;
         if ($escalationRate <= 0.05) {
@@ -196,13 +194,13 @@ final class SupportHealthScoreService {
       }
 
       // --- e. Resolution speed (0-20) ---
-      $avgResolutionSeconds = (float) $this->database->select('support_ticket_field_data', 't')
-        ->condition('t.tenant_id', $tenantId)
-        ->condition('t.created', $ninetyDaysAgo, '>=')
-        ->condition('t.resolved_at', 0, '>')
-        ->addExpression('AVG(t.resolved_at - t.created)', 'avg_resolution')
-        ->execute()
-        ->fetchField();
+      // resolved_at is datetime (VARCHAR 'Y-m-d\TH:i:s'), created is Unix INT.
+      $resQuery = $this->database->select('support_ticket_field_data', 't');
+      $resQuery->condition('t.tenant_id', $tenantId);
+      $resQuery->condition('t.created', $ninetyDaysAgo, '>=');
+      $resQuery->isNotNull('t.resolved_at');
+      $resQuery->addExpression("AVG(UNIX_TIMESTAMP(REPLACE(t.resolved_at, 'T', ' ')) - t.created)", 'avg_resolution');
+      $avgResolutionSeconds = (float) $resQuery->execute()->fetchField();
 
       if ($avgResolutionSeconds <= 0) {
         // No resolved tickets — neutral, give benefit of the doubt.
