@@ -47,6 +47,12 @@ $review-success: var(--ej-color-success, #10B981);
         &:hover {
             transform: scale(1.2);
         }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-primary, #556B2F);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
     }
 }
 
@@ -257,6 +263,11 @@ $review-success: var(--ej-color-success, #10B981);
             border-color: $review-primary;
             box-shadow: 0 0 0 3px color-mix(in srgb, var(--ej-color-agro, #556B2F) 12%, transparent);
         }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-primary, #556B2F);
+            outline-offset: 2px;
+        }
     }
 
     &__textarea {
@@ -288,6 +299,12 @@ $review-success: var(--ej-color-success, #10B981);
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-primary, #556B2F);
+            outline-offset: 2px;
+            border-radius: var(--ej-radius-sm, 8px);
         }
     }
 
@@ -351,5 +368,62 @@ $review-success: var(--ej-color-success, #10B981);
 
     .agro-review-form {
         padding: 16px;
+    }
+}
+
+// === Dark Mode ===
+.dark-mode {
+    .agro-review__response {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .agro-review__verified {
+        color: var(--ej-color-success, #10B981);
+    }
+
+    .agro-rating-bar__track {
+        background: rgba(255, 255, 255, 0.08);
+    }
+}
+
+// === Reduced Motion ===
+@media (prefers-reduced-motion: reduce) {
+    .agro-stars__star {
+        transition: none;
+    }
+
+    .agro-rating-bar__fill {
+        transition: none;
+    }
+
+    .agro-review-form__input,
+    .agro-review-form__textarea {
+        transition: none;
+    }
+
+    .agro-review-form__submit {
+        transition: none;
+    }
+
+    .agro-spinner {
+        animation: none;
+    }
+}
+
+// === Print ===
+@media print {
+    .agro-review-form,
+    .agro-reviews__loading,
+    .agro-spinner {
+        display: none;
+    }
+
+    .agro-review {
+        page-break-inside: avoid;
+    }
+
+    .agro-rating-summary {
+        box-shadow: none;
+        border: 1px solid #ccc;
     }
 }

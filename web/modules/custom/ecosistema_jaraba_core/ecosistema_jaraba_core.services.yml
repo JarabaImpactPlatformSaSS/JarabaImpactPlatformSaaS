@@ -1479,3 +1479,38 @@ services:
   ecosistema_jaraba_core.ab_test:
     class: Drupal\ecosistema_jaraba_core\Service\AbTestService
     arguments: ['@config.factory', '@current_user']
+
+  # ──────────────────────────────────────────────────────────────
+  # Reviews & Comments — Servicios Transversales (REV-PHASE3)
+  # ──────────────────────────────────────────────────────────────
+
+  ecosistema_jaraba_core.review_aggregation:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewAggregationService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@cache.default'
+
+  ecosistema_jaraba_core.review_moderation:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewModerationService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.review_aggregation'
+
+  ecosistema_jaraba_core.review_schema_org:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewSchemaOrgService
+    arguments:
+      - '@ecosistema_jaraba_core.review_aggregation'
+      - '@entity_type.manager'
+      - '@request_stack'
+
+  ecosistema_jaraba_core.review_invitation:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewInvitationService
+    arguments:
+      - '@entity_type.manager'
+      - '@queue'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@plugin.manager.mail'

@@ -61,6 +61,17 @@ function jaraba_mentoring_update_10001(): void {
  */
 function jaraba_mentoring_update_10002(): void {
   $schema = \Drupal::database()->schema();
+
+  // Actual DB column types — integers MUST NOT have prefix length.
+  $field_types = [
+    'status' => ['type' => 'varchar', 'length' => 255],
+    'is_available' => ['type' => 'int', 'size' => 'tiny'],
+    'average_rating' => ['type' => 'numeric', 'precision' => 3, 'scale' => 2],
+    'mentor_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'mentee_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'scheduled_start' => ['type' => 'varchar', 'length' => 20],
+  ];
+
   $indexes = [
     'mentor_profile' => [
       'idx_status_available' => ['status', 'is_available'],
@@ -83,11 +94,90 @@ function jaraba_mentoring_update_10002(): void {
         if (!$schema->indexExists($table, $name)) {
           $spec = [];
           foreach ($fields as $field) {
-            $spec[$field] = ['type' => 'varchar', 'length' => 255];
+            $spec[$field] = $field_types[$field] ?? ['type' => 'varchar', 'length' => 255];
           }
           $schema->addIndex($table, $name, $fields, ['fields' => $spec]);
         }
       }
     }
+  }
+}
+
+/**
+ * Elevate session_review to standard: add uid, title, tenant_id, changed, review_status, and trait fields.
+ *
+ * REV-S2: Add tenant_id (group).
+ * REV-D2: Add EntityChangedTrait (changed), EntityOwnerTrait (uid).
+ * REV-D4: Entity now has canonical/add-form/edit-form/delete-form links.
+ */
+function jaraba_mentoring_update_10003(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'session_review';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  $fields = [
+    'uid' => \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Owner'))
+      ->setSetting('target_type', 'user')
+      ->setDefaultValueCallback('\Drupal\user\EntityOwnerTrait::getDefaultEntityOwner')
+      ->setTargetEntityTypeId($entity_type_id),
+    'title' => \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setLabel(t('Titulo'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setTargetEntityTypeId($entity_type_id),
+    'tenant_id' => \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'group')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setTargetEntityTypeId($entity_type_id),
+    'review_status' => \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Estado de moderacion'))
+      ->setRequired(TRUE)
+      ->setDefaultValue('pending')
+      ->setSetting('allowed_values', [
+        'pending' => t('Pendiente'),
+        'approved' => t('Aprobada'),
+        'rejected' => t('Rechazada'),
+        'flagged' => t('Marcada'),
+      ])
+      ->setTargetEntityTypeId($entity_type_id),
+    'helpful_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Votos de utilidad'))
+      ->setDefaultValue(0)
+      ->setTargetEntityTypeId($entity_type_id),
+    'photos' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Fotos'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha de resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'changed' => \Drupal\Core\Field\BaseFieldDefinition::create('changed')
+      ->setLabel(t('Modificado'))
+      ->setTargetEntityTypeId($entity_type_id),
+  ];
+
+  foreach ($fields as $field_name => $definition) {
+    if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_mentoring', $definition);
+      \Drupal::logger('jaraba_mentoring')->info('Installed field @field on session_review.', [
+        '@field' => $field_name,
+      ]);
+    }
+  }
+
+  // Update the entity type definition to reflect new handlers/keys/links.
+  $entity_type = $update_manager->getEntityType($entity_type_id);
+  if ($entity_type) {
+    $update_manager->updateEntityType($entity_type);
+    \Drupal::logger('jaraba_mentoring')->info('Updated session_review entity type definition.');
   }
 }

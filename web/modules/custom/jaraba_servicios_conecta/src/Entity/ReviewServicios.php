@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\ecosistema_jaraba_core\Entity\ReviewableEntityTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -67,6 +68,7 @@ class ReviewServicios extends ContentEntityBase implements EntityChangedInterfac
 
   use EntityChangedTrait;
   use EntityOwnerTrait;
+  use ReviewableEntityTrait;
 
   /**
    * {@inheritdoc}
@@ -138,7 +140,22 @@ class ReviewServicios extends ContentEntityBase implements EntityChangedInterfac
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    // --- Estado de moderacion ---
+    // TENANT-BRIDGE-001: tenant_id como entity_reference a group (REV-S1 fix).
+    $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setDescription(t('Grupo/tenant al que pertenece esta resena.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'group')
+      ->setDisplayConfigurable('form', TRUE);
+
+    // Compra verificada.
+    $fields['verified_purchase'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Reserva verificada'))
+      ->setDescription(t('Indica si el autor completo la reserva evaluada.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- Estado de moderacion (REV-A2: anadir flagged) ---
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Estado'))
       ->setRequired(TRUE)
@@ -147,6 +164,7 @@ class ReviewServicios extends ContentEntityBase implements EntityChangedInterfac
         'pending' => t('Pendiente'),
         'approved' => t('Aprobada'),
         'rejected' => t('Rechazada'),
+        'flagged' => t('Marcada'),
       ])
       ->setDisplayOptions('form', ['weight' => 20])
       ->setDisplayConfigurable('form', TRUE)
@@ -167,6 +185,13 @@ class ReviewServicios extends ContentEntityBase implements EntityChangedInterfac
       ->setDisplayOptions('form', ['weight' => 31])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
+
+    // Campos del trait: helpful_count, photos, ai_summary, ai_summary_generated_at.
+    $traitFields = static::reviewableBaseFieldDefinitions();
+    $fields['helpful_count'] = $traitFields['helpful_count'];
+    $fields['photos'] = $traitFields['photos'];
+    $fields['ai_summary'] = $traitFields['ai_summary'];
+    $fields['ai_summary_generated_at'] = $traitFields['ai_summary_generated_at'];
 
     // --- Timestamps ---
     $fields['created'] = BaseFieldDefinition::create('created')

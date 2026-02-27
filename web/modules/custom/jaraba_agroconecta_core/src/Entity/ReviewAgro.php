@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\ecosistema_jaraba_core\Entity\ReviewableEntityTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -35,7 +36,7 @@ use Drupal\user\EntityOwnerTrait;
  *       "edit" = "Drupal\jaraba_agroconecta_core\Form\ReviewAgroForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
- *     "access" = "Drupal\jaraba_agroconecta_core\Entity\ReviewAgroAccessControlHandler",
+ *     "access" = "Drupal\jaraba_agroconecta_core\Access\ReviewAgroAccessControlHandler",
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
@@ -64,6 +65,7 @@ class ReviewAgro extends ContentEntityBase implements EntityChangedInterface, En
 
     use EntityChangedTrait;
     use EntityOwnerTrait;
+    use ReviewableEntityTrait;
 
     /**
      * Tipos de reseña.
@@ -88,12 +90,11 @@ class ReviewAgro extends ContentEntityBase implements EntityChangedInterface, En
         $fields = parent::baseFieldDefinitions($entity_type);
         $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-        // Tenant ID para multi-tenancy.
+        // TENANT-BRIDGE-001: tenant_id como entity_reference a group.
         $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
             ->setLabel(t('Tenant'))
-            ->setDescription(t('Marketplace donde se publicó la reseña.'))
-            ->setSetting('target_type', 'taxonomy_term')
-            ->setSetting('handler_settings', ['target_bundles' => ['tenants' => 'tenants']])
+            ->setDescription(t('Marketplace donde se publico la resena.'))
+            ->setSetting('target_type', 'group')
             ->setRequired(TRUE)
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', FALSE);
@@ -228,6 +229,14 @@ class ReviewAgro extends ContentEntityBase implements EntityChangedInterface, En
             ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', TRUE);
+
+        // Campos del trait: helpful_count, ai_summary, ai_summary_generated_at.
+        // photos y review_status no se anaden porque ya existen como state y la entidad no tiene photos.
+        $traitFields = static::reviewableBaseFieldDefinitions();
+        $fields['helpful_count'] = $traitFields['helpful_count'];
+        $fields['photos'] = $traitFields['photos'];
+        $fields['ai_summary'] = $traitFields['ai_summary'];
+        $fields['ai_summary_generated_at'] = $traitFields['ai_summary_generated_at'];
 
         // Campos de sistema.
         $fields['created'] = BaseFieldDefinition::create('created')

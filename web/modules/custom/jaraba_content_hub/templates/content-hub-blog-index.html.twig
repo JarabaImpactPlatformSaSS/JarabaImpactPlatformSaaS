@@ -11,6 +11,10 @@
  * - categories: Array de categorías con keys:
  *   id, name, slug, color, icon, count, url
  * - trending: Array de artículos trending con keys: id, title, url
+ * - current_category: Array with category data when filtering (or NULL)
+ *   keys: id, name, slug, description, color, icon, featured_image,
+ *   meta_title, meta_description
+ * - current_author: NULL (author pages use content-hub-author-page.html.twig)
  * - show_reading_time: Boolean
  * - pager: Array de paginación con keys:
  *   current_page, total_pages, total_articles, has_previous, has_next,
@@ -34,40 +38,89 @@
 <div class="blog-page">
 
   {# =========================================================
-     S1 — HERO: 2-column layout (text + visual element)
-     Inspired by AEI hero pattern with eyebrow + CTA
+     S1 — HERO: Context-aware (category filter vs main blog)
      ========================================================= #}
-  <section class="blog-hero blog-hero--premium" aria-label="{{ title }}">
-    <canvas id="blog-hero-particles" class="blog-hero__particles" aria-hidden="true"></canvas>
-    <div class="blog-hero__container">
-      <div class="blog-hero__text">
-        <span class="blog-hero__eyebrow">
-          {{ jaraba_icon('ui', 'book-open', { size: '14px' }) }}
-          {% trans %}Knowledge Hub{% endtrans %}
-        </span>
-        <h1 class="blog-hero__title">{{ title }}</h1>
-        <p class="blog-hero__subtitle">
-          {% trans %}Insights, strategies, and stories to power your growth. Expert content curated for impact-driven professionals.{% endtrans %}
-        </p>
-        <div class="blog-hero__actions">
-          <a href="#blog-articles" class="blog-hero__cta blog-hero__cta--primary">
-            {{ jaraba_icon('ui', 'arrow-down', { size: '16px' }) }}
-            {% trans %}Explore articles{% endtrans %}
+  {% if current_category %}
+    {# Category-filtered hero — shows category info with back link #}
+    <section class="blog-hero blog-hero--category" aria-label="{{ current_category.name }}">
+      <div class="blog-hero__container">
+        <div class="blog-hero__text">
+          <a href="{{ path('jaraba_content_hub.blog') }}" class="blog-hero__back-link">
+            {{ jaraba_icon('ui', 'arrow-left', { size: '14px' }) }}
+            {% trans %}All articles{% endtrans %}
           </a>
-          {% if categories is not empty %}
-            <a href="#blog-categories" class="blog-hero__cta blog-hero__cta--secondary">
-              {% trans %}Browse categories{% endtrans %}
-            </a>
+          <span class="blog-hero__eyebrow" style="color: {{ current_category.color|default('#233D63') }}">
+            {% if current_category.icon %}
+              {{ jaraba_icon('ui', current_category.icon, { size: '14px' }) }}
+            {% endif %}
+            {% trans %}Category{% endtrans %}
+          </span>
+          <h1 class="blog-hero__title">{{ current_category.name }}</h1>
+          {% if current_category.description %}
+            <p class="blog-hero__subtitle">{{ current_category.description }}</p>
           {% endif %}
+          <div class="blog-hero__meta-info">
+            <span class="blog-hero__count">
+              {{ jaraba_icon('ui', 'file-text', { size: '14px' }) }}
+              {{ stats.total_articles }}
+              {% trans %}articles{% endtrans %}
+            </span>
+          </div>
+        </div>
+        {% if current_category.featured_image %}
+          <div class="blog-hero__visual">
+            <img src="{{ current_category.featured_image }}"
+                 alt="{{ current_category.name }}"
+                 class="blog-hero__category-image"
+                 loading="eager">
+          </div>
+        {% else %}
+          <div class="blog-hero__visual" aria-hidden="true">
+            <div class="blog-hero__visual-circle" style="border-color: {{ current_category.color|default('#233D63') }}">
+              {% if current_category.icon %}
+                {{ jaraba_icon('ui', current_category.icon, { variant: 'duotone', size: '64px' }) }}
+              {% else %}
+                {{ jaraba_icon('ui', 'folder', { variant: 'duotone', size: '64px' }) }}
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  {% else %}
+    {# Default blog hero — full premium experience #}
+    <section class="blog-hero blog-hero--premium" aria-label="{{ title }}">
+      <canvas id="blog-hero-particles" class="blog-hero__particles" aria-hidden="true"></canvas>
+      <div class="blog-hero__container">
+        <div class="blog-hero__text">
+          <span class="blog-hero__eyebrow">
+            {{ jaraba_icon('ui', 'book-open', { size: '14px' }) }}
+            {% trans %}Knowledge Hub{% endtrans %}
+          </span>
+          <h1 class="blog-hero__title">{{ title }}</h1>
+          <p class="blog-hero__subtitle">
+            {% trans %}Insights, strategies, and stories to power your growth. Expert content curated for impact-driven professionals.{% endtrans %}
+          </p>
+          <div class="blog-hero__actions">
+            <a href="#blog-articles" class="blog-hero__cta blog-hero__cta--primary">
+              {{ jaraba_icon('ui', 'arrow-down', { size: '16px' }) }}
+              {% trans %}Explore articles{% endtrans %}
+            </a>
+            {% if categories is not empty %}
+              <a href="#blog-categories" class="blog-hero__cta blog-hero__cta--secondary">
+                {% trans %}Browse categories{% endtrans %}
+              </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="blog-hero__visual" aria-hidden="true">
+          <div class="blog-hero__visual-circle">
+            {{ jaraba_icon('ui', 'book-open', { variant: 'duotone', size: '64px' }) }}
+          </div>
         </div>
       </div>
-      <div class="blog-hero__visual" aria-hidden="true">
-        <div class="blog-hero__visual-circle">
-          {{ jaraba_icon('ui', 'book-open', { variant: 'duotone', size: '64px' }) }}
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  {% endif %}
 
   {# =========================================================
      S2 — STATS BAR: Credibilidad con números
@@ -129,9 +182,10 @@
   {% endif %}
 
   {# =========================================================
-     S4 — FEATURED ARTICLE: Spotlight para el primer artículo
+     S4 — FEATURED ARTICLE: Spotlight (solo en index principal)
+     En vistas filtradas por categoria se omite para mostrar grid
      ========================================================= #}
-  {% if articles is not empty %}
+  {% if articles is not empty and not current_category %}
     {% set featured = articles|first %}
     <section class="blog-featured animate-on-scroll" data-delay="100" aria-label="{% trans %}Featured article{% endtrans %}">
       <div class="container">
@@ -196,19 +250,26 @@
      ========================================================= #}
   <section id="blog-articles" class="blog-content">
     <div class="container">
-      {% if articles|length > 1 %}
+      {% set grid_articles = current_category ? articles : (articles|length > 1 ? articles|slice(1) : []) %}
+      {% if grid_articles is not empty %}
         <div class="blog-section-header animate-on-scroll" data-delay="100">
           <span class="blog-section-header__eyebrow">{% trans %}Latest{% endtrans %}</span>
-          <h2 class="blog-section-header__title">{% trans %}Recent articles{% endtrans %}</h2>
+          <h2 class="blog-section-header__title">
+            {% if current_category %}
+              {% trans %}Articles in {{ current_category.name }}{% endtrans %}
+            {% else %}
+              {% trans %}Recent articles{% endtrans %}
+            {% endif %}
+          </h2>
         </div>
       {% endif %}
 
       <div class="blog-grid">
-        {# --- Main: Articles grid (skip first = featured) --- #}
+        {# --- Main: Articles grid --- #}
         <div class="blog-grid__main">
-          {% if articles|length > 1 %}
+          {% if grid_articles is not empty %}
             <div class="articles-grid">
-              {% for article in articles|slice(1) %}
+              {% for article in grid_articles %}
                 <div class="animate-on-scroll" data-delay="{{ loop.index0 * 80 }}">
                   {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
                     article: article,

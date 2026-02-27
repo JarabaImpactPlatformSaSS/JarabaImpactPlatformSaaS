@@ -352,3 +352,94 @@ jaraba_lms.api.gamification.stats:
   requirements:
     _permission: 'view own enrollments'
   methods: [GET]
+
+# === Course Review API Routes (REV-PHASE4) ===
+
+jaraba_lms.api.reviews.list:
+  path: '/api/v1/cursos/reviews/{course_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\CourseReviewApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'view course reviews'
+    course_id: '\d+'
+
+jaraba_lms.api.reviews.stats:
+  path: '/api/v1/cursos/reviews/{course_id}/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\CourseReviewApiController::stats'
+  methods: [GET]
+  requirements:
+    _permission: 'view course reviews'
+    course_id: '\d+'
+
+jaraba_lms.api.reviews.create:
+  path: '/api/v1/cursos/reviews'
+  defaults:
+    _controller: '\Drupal\jaraba_lms\Controller\CourseReviewApiController::createReview'
+  methods: [POST]
+  requirements:
+    _permission: 'submit course reviews'
+    _csrf_request_header_token: 'TRUE'
+
+# Course Review Entity Routes
+
+entity.course_review.canonical:
+  path: '/admin/content/course-review/{course_review}'
+  defaults:
+    _entity_view: 'course_review.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'course_review.view'
+  options:
+    parameters:
+      course_review:
+        type: entity:course_review
+
+entity.course_review.collection:
+  path: '/admin/content/course-reviews'
+  defaults:
+    _entity_list: 'course_review'
+    _title: 'Resenas de Cursos'
+  requirements:
+    _permission: 'manage lms reviews'
+
+entity.course_review.add_form:
+  path: '/admin/content/course-review/add'
+  defaults:
+    _entity_form: 'course_review.add'
+    _title: 'Nueva Resena de Curso'
+  requirements:
+    _permission: 'manage lms reviews'
+
+entity.course_review.edit_form:
+  path: '/admin/content/course-review/{course_review}/edit'
+  defaults:
+    _entity_form: 'course_review.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _entity_access: 'course_review.update'
+  options:
+    parameters:
+      course_review:
+        type: entity:course_review
+
+entity.course_review.delete_form:
+  path: '/admin/content/course-review/{course_review}/delete'
+  defaults:
+    _entity_form: 'course_review.delete'
+    _title: 'Eliminar Resena de Curso'
+  requirements:
+    _entity_access: 'course_review.delete'
+  options:
+    parameters:
+      course_review:
+        type: entity:course_review
+
+entity.course_review.settings:
+  path: '/admin/structure/course-review/settings'
+  defaults:
+    _form: 'Drupal\jaraba_lms\Form\CourseReviewSettingsForm'
+    _title: 'Resenas de Cursos settings'
+  requirements:
+    _permission: 'administer lms'

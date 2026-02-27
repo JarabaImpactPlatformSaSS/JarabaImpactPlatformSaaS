@@ -83,13 +83,47 @@ interface ContentArticleInterface extends ContentEntityInterface, EntityChangedI
     public function getRenderedHtml(): string;
 
     /**
-     * Gets the tenant ID that owns this article.
+     * Gets the tenant ID (group entity) that owns this article.
+     *
+     * @return int|null
+     *   The group entity ID, or NULL if not set.
      */
-    public function getTenantId(): int;
+    public function getTenantId(): ?int;
 
     /**
-     * Sets the tenant ID that owns this article.
+     * Sets the tenant ID (group entity) that owns this article.
      */
-    public function setTenantId(int $tenantId): static;
+    public function setTenantId(?int $tenantId): static;
+
+    /**
+     * Checks if the article is featured.
+     */
+    public function isFeatured(): bool;
+
+    /**
+     * Gets the view count.
+     */
+    public function getViewsCount(): int;
+
+    /**
+     * Gets comma-separated tags.
+     */
+    public function getTags(): string;
+
+    /**
+     * Gets the schema.org type for structured data.
+     *
+     * @return string
+     *   One of: BlogPosting, Article, NewsArticle.
+     */
+    public function getSchemaType(): string;
+
+    /**
+     * Gets the canonical vertical for this article.
+     *
+     * @return string
+     *   One of VERTICAL-CANONICAL-001 values or empty string.
+     */
+    public function getVertical(): string;
 
 }

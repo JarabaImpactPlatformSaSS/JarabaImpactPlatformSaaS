@@ -339,3 +339,69 @@ entity.session_task.settings:
   requirements:
     _permission: 'manage sessions'
 
+# === Review API Routes (REV-PHASE4) ===
+
+jaraba_mentoring.api.reviews.list:
+  path: '/api/v1/mentoring/reviews/{session_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_mentoring\Controller\ReviewApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    session_id: '\d+'
+
+jaraba_mentoring.api.reviews.create:
+  path: '/api/v1/mentoring/reviews'
+  defaults:
+    _controller: '\Drupal\jaraba_mentoring\Controller\ReviewApiController::createReview'
+  methods: [POST]
+  requirements:
+    _permission: 'submit reviews'
+    _csrf_request_header_token: 'TRUE'
+
+# Session Review Entity CRUD Routes (REV-PHASE4)
+
+entity.session_review.canonical:
+  path: '/admin/content/session-reviews/{session_review}'
+  defaults:
+    _entity_view: 'session_review.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'session_review.view'
+  options:
+    parameters:
+      session_review:
+        type: entity:session_review
+
+entity.session_review.add_form:
+  path: '/admin/content/session-reviews/add'
+  defaults:
+    _entity_form: 'session_review.add'
+    _title: 'Nueva Resena de Sesion'
+  requirements:
+    _permission: 'manage sessions'
+
+entity.session_review.edit_form:
+  path: '/admin/content/session-reviews/{session_review}/edit'
+  defaults:
+    _entity_form: 'session_review.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _entity_access: 'session_review.update'
+  options:
+    parameters:
+      session_review:
+        type: entity:session_review
+
+entity.session_review.delete_form:
+  path: '/admin/content/session-reviews/{session_review}/delete'
+  defaults:
+    _entity_form: 'session_review.delete'
+    _title: 'Eliminar Resena de Sesion'
+  requirements:
+    _entity_access: 'session_review.delete'
+  options:
+    parameters:
+      session_review:
+        type: entity:session_review
+

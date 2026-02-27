@@ -55,3 +55,37 @@
   title: 'Administer AI generation logs'
   description: 'View and manage AI content generation logs.'
   restrict access: true
+
+# Content Author permissions
+'administer content authors':
+  title: 'Administer content authors'
+  description: 'Create, edit, and delete content author profiles.'
+  restrict access: true
+
+'view content authors':
+  title: 'View content authors'
+  description: 'View content author profiles.'
+
+# Scheduled publishing
+'schedule content articles':
+  title: 'Schedule articles'
+  description: 'Schedule articles for future publication.'
+
+# Comments
+'post comments':
+  title: 'Post comments'
+  description: 'Post comments on blog articles.'
+
+'moderate comments':
+  title: 'Moderate comments'
+  description: 'Approve, reject, and flag comments.'
+  restrict access: true
+
+'view comments':
+  title: 'View comments'
+  description: 'View approved comments on articles.'
+
+# Analytics
+'view content analytics':
+  title: 'View content analytics'
+  description: 'View content engagement analytics and statistics.'

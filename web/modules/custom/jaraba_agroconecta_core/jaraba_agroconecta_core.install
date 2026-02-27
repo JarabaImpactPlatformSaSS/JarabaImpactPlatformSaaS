@@ -97,3 +97,102 @@ function jaraba_agroconecta_core_update_10001(): void
         }
     }
 }
+
+/**
+ * Add helpful_count, photos, ai_summary, ai_summary_generated_at fields to review_agro.
+ */
+function jaraba_agroconecta_core_update_10002(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'review_agro';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  $fields = [
+    'helpful_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Votos de utilidad'))
+      ->setDefaultValue(0)
+      ->setTargetEntityTypeId($entity_type_id),
+    'photos' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Fotos'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha de resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+  ];
+
+  foreach ($fields as $field_name => $definition) {
+    if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_agroconecta_core', $definition);
+      \Drupal::logger('jaraba_agroconecta_core')->info('Installed field @field on @entity.', [
+        '@field' => $field_name,
+        '@entity' => $entity_type_id,
+      ]);
+    }
+  }
+}
+
+/**
+ * Migrate review_agro tenant_id from taxonomy_term to group (TENANT-BRIDGE-001).
+ */
+function jaraba_agroconecta_core_update_10003(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'review_agro';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  $field = $update_manager->getFieldStorageDefinition('tenant_id', $entity_type_id);
+  if ($field && $field->getSetting('target_type') !== 'group') {
+    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_bridge')) {
+      try {
+        $db = \Drupal::database();
+        $rows = $db->select('review_agro', 'ra')
+          ->fields('ra', ['id', 'tenant_id'])
+          ->condition('tenant_id', 0, '>')
+          ->execute()
+          ->fetchAllKeyed();
+
+        /** @var \Drupal\ecosistema_jaraba_core\Service\TenantBridgeService $bridge */
+        $bridge = \Drupal::service('ecosistema_jaraba_core.tenant_bridge');
+        foreach ($rows as $entityId => $termId) {
+          try {
+            $tenant = $bridge->loadTenant((int) $termId);
+            if ($tenant && $tenant->hasField('group_id') && !$tenant->get('group_id')->isEmpty()) {
+              $groupId = (int) $tenant->get('group_id')->target_id;
+              $db->update('review_agro')
+                ->fields(['tenant_id' => $groupId])
+                ->condition('id', $entityId)
+                ->execute();
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('jaraba_agroconecta_core')->warning('Could not migrate tenant_id for review @id: @error', [
+              '@id' => $entityId,
+              '@error' => $e->getMessage(),
+            ]);
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_agroconecta_core')->warning('Tenant migration skipped: @error', [
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'group')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setTargetEntityTypeId($entity_type_id);
+    $update_manager->updateFieldStorageDefinition($new_field);
+    \Drupal::logger('jaraba_agroconecta_core')->info('Migrated review_agro tenant_id to group reference.');
+  }
+}

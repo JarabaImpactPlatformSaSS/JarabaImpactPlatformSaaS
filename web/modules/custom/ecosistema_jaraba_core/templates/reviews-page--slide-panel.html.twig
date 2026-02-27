@@ -1,0 +1,71 @@
+{#
+ # Reviews Page — Slide Panel variant (no full page chrome).
+ #
+ # SLIDE-PANEL-RENDER-001: Rendered via renderPlain(), no BigPipe.
+ # Same variables as reviews-page.html.twig.
+ #
+ # REV-PHASE5: Variante slide-panel.
+ #}
+<div class="reviews-page reviews-page--slide-panel">
+  <div class="slide-panel__header">
+    <h2 class="slide-panel__title">
+      {{ 'Resenas de @name'|t({'@name': target_entity.label}) }}
+    </h2>
+  </div>
+
+  {# Compact rating summary #}
+  {% if stats.count > 0 %}
+    <div class="review-widget review-widget--compact">
+      <div class="review-widget__summary">
+        <div class="review-widget__overall">
+          <span class="review-widget__big-number">{{ stats.average|number_format(1) }}</span>
+          {% include '@ecosistema_jaraba_theme/partials/_star-rating-display.html.twig' with {
+            rating: stats.average,
+            count: stats.count,
+            size: 'md'
+          } only %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Reviews list #}
+  {% if reviews is not empty %}
+    <div class="reviews-page__list" role="list">
+      {% for review_entity in reviews %}
+        {% set review_data = {
+          id: review_entity.id,
+          author_name: review_entity.getOwner ? review_entity.getOwner.getDisplayName : ('Anonimo'|t),
+          author_avatar_url: null,
+          rating: review_entity.get('rating').value|default(review_entity.get('overall_rating').value|default(0)),
+          title: review_entity.get('title').value|default(null),
+          body: review_entity.get('comment').value|default(review_entity.get('review_text').value|default(review_entity.get('body').value|default(''))),
+          created: review_entity.get('created').value|date('c'),
+          verified_purchase: review_entity.hasField('verified_purchase') ? review_entity.get('verified_purchase').value : false,
+          helpful_count: review_entity.hasField('helpful_count') ? review_entity.get('helpful_count').value|default(0) : 0,
+          photos: [],
+          response: null,
+        } %}
+        <div role="listitem">
+          {% include '@ecosistema_jaraba_theme/partials/_review-card.html.twig' with {
+            review: review_data
+          } only %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Simple load-more for slide-panel #}
+    {% set total_pages = (stats.count / per_page)|round(0, 'ceil') %}
+    {% if current_page < (total_pages - 1) %}
+      <div class="reviews-page__load-more">
+        <button type="button" class="btn btn--outline js-reviews-load-more" data-next-page="{{ current_page + 1 }}">
+          {{ 'Cargar mas resenas'|t }}
+        </button>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="reviews-page__empty">
+      <p>{{ 'Aun no hay resenas.'|t }}</p>
+    </div>
+  {% endif %}
+</div>

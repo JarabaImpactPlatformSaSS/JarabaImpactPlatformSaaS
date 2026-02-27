@@ -170,3 +170,73 @@ function _jaraba_servicios_conecta_create_service_modalities(): void {
     $term->save();
   }
 }
+
+/**
+ * Add tenant_id, verified_purchase, helpful_count, photos, ai_summary fields to review_servicios.
+ *
+ * Also updates status allowed_values to include 'flagged' (REV-A2).
+ */
+function jaraba_servicios_conecta_update_10002(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'review_servicios';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  $fields = [
+    'tenant_id' => \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'group')
+      ->setDisplayConfigurable('form', TRUE)
+      ->setTargetEntityTypeId($entity_type_id),
+    'verified_purchase' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Reserva verificada'))
+      ->setDefaultValue(FALSE)
+      ->setTargetEntityTypeId($entity_type_id),
+    'helpful_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Votos de utilidad'))
+      ->setDefaultValue(0)
+      ->setTargetEntityTypeId($entity_type_id),
+    'photos' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Fotos'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha de resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+  ];
+
+  foreach ($fields as $field_name => $definition) {
+    if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_servicios_conecta', $definition);
+      \Drupal::logger('jaraba_servicios_conecta')->info('Installed field @field on @entity.', [
+        '@field' => $field_name,
+        '@entity' => $entity_type_id,
+      ]);
+    }
+  }
+
+  // Update status field to include 'flagged' value (REV-A2).
+  $status_field = $update_manager->getFieldStorageDefinition('status', $entity_type_id);
+  if ($status_field) {
+    $allowed_values = $status_field->getSetting('allowed_values') ?? [];
+    if (!isset($allowed_values['flagged'])) {
+      $allowed_values['flagged'] = t('Marcada');
+      $new_status = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+        ->setLabel(t('Estado'))
+        ->setRequired(TRUE)
+        ->setDefaultValue('pending')
+        ->setSetting('allowed_values', $allowed_values)
+        ->setDisplayOptions('form', ['weight' => 20])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE)
+        ->setTargetEntityTypeId($entity_type_id);
+      $update_manager->updateFieldStorageDefinition($new_status);
+      \Drupal::logger('jaraba_servicios_conecta')->info('Added flagged status to review_servicios.');
+    }
+  }
+}

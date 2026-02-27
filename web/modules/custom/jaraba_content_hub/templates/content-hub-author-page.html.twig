@@ -1,0 +1,197 @@
+{#
+/**
+ * @file
+ * Template: Author page — Premium world-class design.
+ *
+ * Variables (from BlogController::author):
+ * - author: Array with keys:
+ *   id, display_name, slug, bio, avatar, social_links, posts_count
+ * - articles: Array of article items (same as blog index)
+ * - show_reading_time: Boolean
+ * - pager: Pagination data
+ *
+ * Directrices aplicadas:
+ * - i18n: {% trans %} on all strings
+ * - URLs: path() for route generation
+ * - Icons: jaraba_icon() system
+ * - CSS: BEM with var(--ej-*) tokens
+ * - Accessibility: aria-labels, focus-visible, semantic HTML
+ * - Responsive: Mobile-first with srcset
+ */
+#}
+{{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+{{ attach_library('ecosistema_jaraba_theme/scroll-animations') }}
+
+<div class="author-page">
+
+  {# =========================================================
+     S1 — AUTHOR PROFILE HEADER
+     ========================================================= #}
+  <section class="author-profile" aria-label="{{ author.display_name }}">
+    <div class="author-profile__container">
+      <div class="author-profile__avatar-wrapper">
+        {% if author.avatar %}
+          <img src="{{ author.avatar }}"
+               alt="{{ author.display_name }}"
+               class="author-profile__avatar"
+               width="120" height="120" loading="eager">
+        {% else %}
+          <div class="author-profile__avatar author-profile__avatar--placeholder">
+            {{ jaraba_icon('ui', 'user', { variant: 'duotone', size: '48px' }) }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="author-profile__info">
+        <span class="author-profile__eyebrow">
+          {{ jaraba_icon('ui', 'pen-tool', { size: '14px' }) }}
+          {% trans %}Author{% endtrans %}
+        </span>
+        <h1 class="author-profile__name">{{ author.display_name }}</h1>
+
+        {% if author.bio %}
+          <p class="author-profile__bio">{{ author.bio }}</p>
+        {% endif %}
+
+        <div class="author-profile__meta">
+          <span class="author-profile__stat">
+            {{ jaraba_icon('ui', 'file-text', { size: '14px' }) }}
+            {{ author.posts_count }}
+            {% trans %}articles{% endtrans %}
+          </span>
+        </div>
+
+        {# Social links #}
+        {% if author.social_links is not empty %}
+          <div class="author-profile__social" aria-label="{% trans %}Social links{% endtrans %}">
+            {% if author.social_links.twitter is defined %}
+              <a href="{{ author.social_links.twitter }}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="author-profile__social-link"
+                 aria-label="Twitter">
+                {{ jaraba_icon('social', 'twitter', { size: '18px' }) }}
+              </a>
+            {% endif %}
+            {% if author.social_links.linkedin is defined %}
+              <a href="{{ author.social_links.linkedin }}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="author-profile__social-link"
+                 aria-label="LinkedIn">
+                {{ jaraba_icon('social', 'linkedin', { size: '18px' }) }}
+              </a>
+            {% endif %}
+            {% if author.social_links.github is defined %}
+              <a href="{{ author.social_links.github }}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="author-profile__social-link"
+                 aria-label="GitHub">
+                {{ jaraba_icon('social', 'github', { size: '18px' }) }}
+              </a>
+            {% endif %}
+            {% if author.social_links.website is defined %}
+              <a href="{{ author.social_links.website }}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="author-profile__social-link"
+                 aria-label="{% trans %}Website{% endtrans %}">
+                {{ jaraba_icon('ui', 'globe', { size: '18px' }) }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {# =========================================================
+     S2 — ARTICLES BY THIS AUTHOR
+     ========================================================= #}
+  <section class="author-articles" aria-label="{% trans %}Articles by {{ author.display_name }}{% endtrans %}">
+    <div class="container">
+      {% if articles is not empty %}
+        <div class="blog-section-header animate-on-scroll" data-delay="100">
+          <span class="blog-section-header__eyebrow">
+            {{ jaraba_icon('ui', 'book-open', { size: '14px' }) }}
+            {% trans %}Published work{% endtrans %}
+          </span>
+          <h2 class="blog-section-header__title">
+            {% trans %}Articles by {{ author.display_name }}{% endtrans %}
+          </h2>
+        </div>
+
+        <div class="articles-grid">
+          {% for article in articles %}
+            <div class="animate-on-scroll" data-delay="{{ loop.index0 * 80 }}">
+              {% include '@ecosistema_jaraba_theme/partials/_article-card.html.twig' with {
+                article: article,
+                show_reading_time: show_reading_time,
+                variant: 'standard'
+              } only %}
+            </div>
+          {% endfor %}
+        </div>
+
+        {# Pagination #}
+        {% if pager %}
+          <nav class="blog-pagination" aria-label="{% trans %}Pagination{% endtrans %}">
+            {% if pager.has_previous %}
+              <a href="{{ pager.previous_url }}" class="blog-pagination__link blog-pagination__link--prev"
+                 aria-label="{% trans %}Previous page{% endtrans %}">
+                {{ jaraba_icon('ui', 'chevron-left', { size: '16px' }) }}
+                {% trans %}Previous{% endtrans %}
+              </a>
+            {% endif %}
+
+            <ol class="blog-pagination__pages">
+              {% for page in pager.pages %}
+                <li>
+                  {% if page.is_current %}
+                    <span class="blog-pagination__link blog-pagination__link--current"
+                          aria-current="page">{{ page.number }}</span>
+                  {% else %}
+                    <a href="{{ page.url }}" class="blog-pagination__link">{{ page.number }}</a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ol>
+
+            {% if pager.has_next %}
+              <a href="{{ pager.next_url }}" class="blog-pagination__link blog-pagination__link--next"
+                 aria-label="{% trans %}Next page{% endtrans %}">
+                {% trans %}Next{% endtrans %}
+                {{ jaraba_icon('ui', 'chevron-right', { size: '16px' }) }}
+              </a>
+            {% endif %}
+          </nav>
+        {% endif %}
+
+      {% else %}
+        <div class="blog-empty">
+          <div class="blog-empty__visual" aria-hidden="true">
+            {{ jaraba_icon('ui', 'edit', { variant: 'duotone', size: '48px' }) }}
+          </div>
+          <h2 class="blog-empty__title">
+            {% trans %}No articles yet{% endtrans %}
+          </h2>
+          <p class="blog-empty__text">
+            {% trans %}This author hasn't published any articles yet. Check back soon!{% endtrans %}
+          </p>
+          <a href="{{ path('jaraba_content_hub.blog') }}" class="blog-empty__cta">
+            {{ jaraba_icon('ui', 'arrow-left', { size: '16px' }) }}
+            {% trans %}Back to blog{% endtrans %}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {# =========================================================
+     S3 — BACK TO BLOG LINK
+     ========================================================= #}
+  <div class="author-page__back container">
+    <a href="{{ path('jaraba_content_hub.blog') }}" class="author-page__back-link">
+      {{ jaraba_icon('ui', 'arrow-left', { size: '16px' }) }}
+      {% trans %}Back to all articles{% endtrans %}
+    </a>
+  </div>
+
+</div>

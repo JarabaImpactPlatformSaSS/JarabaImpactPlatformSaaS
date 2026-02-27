@@ -156,4 +156,66 @@ class CategoryService
             ->execute();
     }
 
+    /**
+     * Actualiza el campo posts_count de todas las categorias.
+     *
+     * Recalcula el conteo de articulos publicados por categoria
+     * y actualiza el campo cache posts_count en cada entidad.
+     * Diseniado para ejecutarse desde cron o manualmente.
+     *
+     * @return int
+     *   Numero de categorias actualizadas.
+     */
+    public function updatePostsCount(): int
+    {
+        $counts = $this->getArticleCountsByCategory();
+        $categories = $this->getAllCategories();
+        $updated = 0;
+
+        foreach ($categories as $category) {
+            $categoryId = (int) $category->id();
+            $newCount = $counts[$categoryId] ?? 0;
+            $currentCount = (int) ($category->get('posts_count')->value ?? 0);
+
+            if ($newCount !== $currentCount) {
+                $category->set('posts_count', $newCount);
+                try {
+                    $category->save();
+                    $updated++;
+                }
+                catch (\Exception $e) {
+                    $this->logger->error('Error updating posts_count for category @id: @error', [
+                        '@id' => $categoryId,
+                        '@error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Obtiene las categorias activas con al menos un articulo publicado.
+     *
+     * Util para filtros publicos donde categorias vacias no deben mostrarse.
+     *
+     * @return array
+     *   Array de entidades ContentCategory activas con articulos.
+     */
+    public function getActiveCategories(): array
+    {
+        $counts = $this->getArticleCountsByCategory();
+        $categories = $this->getAllCategories();
+
+        return array_filter($categories, function ($category) use ($counts) {
+            // Si tiene campo is_active, verificar.
+            if ($category->hasField('is_active') && !$category->get('is_active')->value) {
+                return FALSE;
+            }
+            // Solo incluir si tiene al menos 1 articulo.
+            return ($counts[(int) $category->id()] ?? 0) > 0;
+        });
+    }
+
 }

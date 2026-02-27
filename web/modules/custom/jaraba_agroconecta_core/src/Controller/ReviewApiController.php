@@ -33,6 +33,20 @@ class ReviewApiController extends ControllerBase implements ContainerInjectionIn
 {
 
     /**
+     * API-WHITELIST-001: Campos permitidos en POST de creacion de resena.
+     */
+    private const ALLOWED_CREATE_FIELDS = [
+      'target_entity_type',
+      'target_entity_id',
+      'rating',
+      'title',
+      'body',
+      'photos',
+      'verified_purchase',
+      'type',
+    ];
+
+    /**
      * Constructor del controlador.
      */
     public function __construct(
@@ -125,6 +139,14 @@ class ReviewApiController extends ControllerBase implements ContainerInjectionIn
 
         if (empty($data)) {
             return new JsonResponse(['error' => 'Cuerpo de la petición vacío.'], 400);
+        }
+
+        // API-WHITELIST-001: Rechazar campos no permitidos.
+        $rejected = array_diff(array_keys($data), self::ALLOWED_CREATE_FIELDS);
+        if (!empty($rejected)) {
+            return new JsonResponse([
+                'error' => 'Campos no permitidos: ' . implode(', ', $rejected),
+            ], 400);
         }
 
         // Validar campos requeridos.

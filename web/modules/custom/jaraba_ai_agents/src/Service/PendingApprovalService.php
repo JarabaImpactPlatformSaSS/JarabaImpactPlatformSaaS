@@ -140,10 +140,15 @@ class PendingApprovalService
         $approval->save();
 
         // Ejecutar la herramienta.
+        // HAL-AI-18: Mark context as pre_approved so ToolRegistry doesn't
+        // create another approval request (it has been approved by a human).
+        $executionContext = $approval->getContext();
+        $executionContext['pre_approved'] = TRUE;
+
         $result = $this->toolRegistry->execute(
             $approval->getToolId(),
             $approval->getParams(),
-            $approval->getContext()
+            $executionContext
         );
 
         $this->logger->info('Approval @id approved and executed: success=@success', [

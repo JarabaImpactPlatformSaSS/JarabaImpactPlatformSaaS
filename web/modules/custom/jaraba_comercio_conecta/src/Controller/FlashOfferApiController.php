@@ -242,7 +242,14 @@ class FlashOfferApiController extends ControllerBase {
    * Crea una resena.
    */
   public function createReview(Request $request): JsonResponse {
+    // API-WHITELIST-001: Campos permitidos.
+    $allowedFields = ['title', 'body', 'rating', 'entity_type_ref', 'entity_id_ref', 'photos', 'verified_purchase'];
     $body = json_decode($request->getContent(), TRUE) ?? [];
+
+    $rejected = array_diff(array_keys($body), $allowedFields);
+    if (!empty($rejected)) {
+      return new JsonResponse(['error' => $this->t('Campos no permitidos: @fields', ['@fields' => implode(', ', $rejected)])], 400);
+    }
 
     $required = ['title', 'body', 'rating', 'entity_type_ref', 'entity_id_ref'];
     foreach ($required as $field) {

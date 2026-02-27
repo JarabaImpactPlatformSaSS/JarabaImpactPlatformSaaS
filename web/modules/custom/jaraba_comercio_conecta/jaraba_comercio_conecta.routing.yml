@@ -579,6 +579,7 @@ jaraba_comercio_conecta.api.reviews.create:
   methods: [POST]
   requirements:
     _permission: 'submit comercio reviews'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_comercio_conecta.api.reviews.helpful:
   path: '/api/v1/comercio/reviews/{review_id}/helpful'
@@ -588,6 +589,7 @@ jaraba_comercio_conecta.api.reviews.helpful:
   requirements:
     _permission: 'access content'
     review_id: '\d+'
+    _csrf_request_header_token: 'TRUE'
 
 # --- API REST F9: Notifications ---
 

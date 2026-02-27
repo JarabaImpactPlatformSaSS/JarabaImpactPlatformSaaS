@@ -22,7 +22,7 @@ class ReputationMonitorService {
   protected const NEGATIVE_THRESHOLD = -0.4;
 
   public function __construct(
-    protected readonly PlatformPushService $pushService,
+    protected readonly ?PlatformPushService $pushService,
     protected readonly LoggerInterface $logger,
   ) {}
 
@@ -52,14 +52,16 @@ class ReputationMonitorService {
     
     $this->logger->warning($msg, ['tenant_id' => $tenantId]);
 
-    // Notificar al Editor Jefe / Admin del Tenant vía PWA.
-    // Asumimos UID 1 para demo, en producción se buscaría el rol 'editor_chief'.
-    $this->pushService->sendToUser(
-      1,
-      '🛡️ Riesgo de Marca Detectado',
-      $msg,
-      ['url' => $article->toUrl('edit-form')->toString()]
-    );
+    // Notificar al Editor Jefe / Admin del Tenant via PWA (si disponible).
+    // Asumimos UID 1 para demo, en produccion se buscaria el rol 'editor_chief'.
+    if ($this->pushService) {
+      $this->pushService->sendToUser(
+        1,
+        'Riesgo de Marca Detectado',
+        $msg,
+        ['url' => $article->toUrl('edit-form')->toString()]
+      );
+    }
   }
 
 }

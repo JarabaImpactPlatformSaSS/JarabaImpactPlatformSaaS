@@ -214,3 +214,218 @@ function jaraba_content_hub_update_10004(&$sandbox) {
 
   return t('GAP-AUD-017: tenant_id field not found or already installed for ContentCategory.');
 }
+
+/**
+ * Install new backported fields for ContentArticle.
+ *
+ * Adds tags, featured_image_alt, is_featured, views_count, schema_type,
+ * og_image, content_author, vertical, scheduled_at.
+ * Per DRUPAL-ENTUP-001: uses installFieldStorageDefinition().
+ */
+function jaraba_content_hub_update_10005(&$sandbox) {
+  $entity_type_id = 'content_article';
+  $fields_to_install = [
+    'tags', 'featured_image_alt', 'is_featured', 'views_count',
+    'schema_type', 'og_image', 'content_author', 'vertical', 'scheduled_at',
+  ];
+  return _jaraba_content_hub_install_fields($entity_type_id, $fields_to_install);
+}
+
+/**
+ * Install new fields for ContentCategory.
+ *
+ * Adds featured_image, meta_title, meta_description, is_active, posts_count.
+ */
+function jaraba_content_hub_update_10006(&$sandbox) {
+  $entity_type_id = 'content_category';
+  $fields_to_install = [
+    'featured_image', 'meta_title', 'meta_description', 'is_active', 'posts_count',
+  ];
+  return _jaraba_content_hub_install_fields($entity_type_id, $fields_to_install);
+}
+
+/**
+ * Migrate ContentArticle tenant_id from integer to entity_reference.
+ *
+ * TENANT-BRIDGE-001: Reads old integer values, drops the field,
+ * reinstalls as entity_reference to group, restores data as target_id.
+ */
+function jaraba_content_hub_update_10007(&$sandbox) {
+  return _jaraba_content_hub_migrate_tenant_field('content_article');
+}
+
+/**
+ * Migrate ContentCategory tenant_id from integer to entity_reference.
+ */
+function jaraba_content_hub_update_10008(&$sandbox) {
+  return _jaraba_content_hub_migrate_tenant_field('content_category');
+}
+
+/**
+ * Install ContentAuthor entity type schema.
+ */
+function jaraba_content_hub_update_10009(&$sandbox) {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entity_type = $entity_type_manager->getDefinition('content_author');
+  $entity_definition_update_manager->installEntityType($entity_type);
+
+  return t('Installed ContentAuthor entity type and all field storage definitions.');
+}
+
+/**
+ * Install ContentComment entity type schema.
+ *
+ * REV-PHASE2: Sistema de comentarios con threading para artículos.
+ * Entidad con ReviewableEntityTrait para moderación y social proof.
+ */
+function jaraba_content_hub_update_10010(&$sandbox) {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    $entity_type = $entity_type_manager->getDefinition('content_comment');
+    $entity_definition_update_manager->installEntityType($entity_type);
+    return t('Installed ContentComment entity type and all field storage definitions.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_content_hub')->error(
+      'Error installing ContentComment entity type: @message',
+      ['@message' => $e->getMessage()]
+    );
+    return t('Error installing ContentComment: @message', ['@message' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Helper: Install multiple fields for an entity type.
+ *
+ * @param string $entity_type_id
+ *   The entity type ID.
+ * @param array $fields_to_install
+ *   Array of field names to install.
+ *
+ * @return string
+ *   Result message.
+ */
+function _jaraba_content_hub_install_fields(string $entity_type_id, array $fields_to_install): string {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+
+  $installed = [];
+  foreach ($fields_to_install as $field_name) {
+    if (isset($field_definitions[$field_name])) {
+      try {
+        $entity_definition_update_manager->installFieldStorageDefinition(
+          $field_name,
+          $entity_type_id,
+          'jaraba_content_hub',
+          $field_definitions[$field_name]
+        );
+        $installed[] = $field_name;
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_content_hub')->error(
+          'Error installing field @field for @entity: @message',
+          ['@field' => $field_name, '@entity' => $entity_type_id, '@message' => $e->getMessage()]
+        );
+      }
+    }
+  }
+
+  if (!empty($installed)) {
+    return (string) t('Installed fields for @entity: @fields', [
+      '@entity' => $entity_type_id,
+      '@fields' => implode(', ', $installed),
+    ]);
+  }
+
+  return (string) t('No fields needed installation for @entity.', ['@entity' => $entity_type_id]);
+}
+
+/**
+ * Helper: Migrate tenant_id from integer to entity_reference.
+ *
+ * Strategy:
+ * 1. Read old integer values into memory.
+ * 2. Uninstall the old integer field storage.
+ * 3. Install new entity_reference field storage.
+ * 4. Restore values as target_id (only non-zero values).
+ *
+ * @param string $entity_type_id
+ *   The entity type ID.
+ *
+ * @return string
+ *   Result message.
+ */
+function _jaraba_content_hub_migrate_tenant_field(string $entity_type_id): string {
+  $database = \Drupal::database();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+
+  $data_table = $entity_type_id . '_field_data';
+
+  // 1. Read old integer values.
+  $old_values = [];
+  try {
+    if ($database->schema()->fieldExists($data_table, 'tenant_id')) {
+      $rows = $database->select($data_table, 't')
+        ->fields('t', ['id', 'tenant_id'])
+        ->condition('tenant_id', 0, '>')
+        ->execute();
+      foreach ($rows as $row) {
+        $old_values[$row->id] = (int) $row->tenant_id;
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_content_hub')->warning(
+      'Could not read old tenant_id values for @entity: @error',
+      ['@entity' => $entity_type_id, '@error' => $e->getMessage()]
+    );
+  }
+
+  // 2. Uninstall old field storage.
+  $existing_storage = $entity_definition_update_manager->getFieldStorageDefinition('tenant_id', $entity_type_id);
+  if ($existing_storage) {
+    $entity_definition_update_manager->uninstallFieldStorageDefinition($existing_storage);
+  }
+
+  // 3. Install new entity_reference field storage.
+  // Clear cached definitions to pick up the new definition from code.
+  \Drupal::service('entity_field.manager')->clearCachedFieldDefinitions();
+  $field_definitions = $entity_field_manager->getFieldStorageDefinitions($entity_type_id);
+  if (isset($field_definitions['tenant_id'])) {
+    $entity_definition_update_manager->installFieldStorageDefinition(
+      'tenant_id',
+      $entity_type_id,
+      'jaraba_content_hub',
+      $field_definitions['tenant_id']
+    );
+  }
+
+  // 4. Restore values as target_id.
+  $restored = 0;
+  foreach ($old_values as $id => $tenant_id) {
+    try {
+      $database->update($data_table)
+        ->fields(['tenant_id' => $tenant_id])
+        ->condition('id', $id)
+        ->execute();
+      $restored++;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_content_hub')->warning(
+        'Could not restore tenant_id for @entity @id: @error',
+        ['@entity' => $entity_type_id, '@id' => $id, '@error' => $e->getMessage()]
+      );
+    }
+  }
+
+  return (string) t('Migrated tenant_id to entity_reference for @entity. Restored @count values.', [
+    '@entity' => $entity_type_id,
+    '@count' => $restored,
+  ]);
+}

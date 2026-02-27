@@ -35,8 +35,20 @@ class ContentCategoryForm extends PremiumEntityFormBase {
       'appearance' => [
         'label' => $this->t('Appearance'),
         'icon' => ['category' => 'ui', 'name' => 'palette'],
-        'description' => $this->t('Color and icon for visual identification.'),
-        'fields' => ['color', 'icon'],
+        'description' => $this->t('Color, icon, and featured image.'),
+        'fields' => ['color', 'icon', 'featured_image'],
+      ],
+      'seo' => [
+        'label' => $this->t('SEO'),
+        'icon' => ['category' => 'analytics', 'name' => 'search'],
+        'description' => $this->t('Meta title and description for search engines.'),
+        'fields' => ['meta_title', 'meta_description'],
+      ],
+      'settings' => [
+        'label' => $this->t('Settings'),
+        'icon' => ['category' => 'ui', 'name' => 'settings'],
+        'description' => $this->t('Active status and tenant assignment.'),
+        'fields' => ['is_active', 'tenant_id'],
       ],
     ];
   }
@@ -65,6 +77,16 @@ class ContentCategoryForm extends PremiumEntityFormBase {
     }
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCharacterLimits(): array {
+    return [
+      'meta_title' => 70,
+      'meta_description' => 160,
+    ];
   }
 
   /**

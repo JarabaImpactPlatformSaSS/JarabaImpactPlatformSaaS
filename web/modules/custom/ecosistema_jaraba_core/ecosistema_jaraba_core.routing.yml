@@ -2134,3 +2134,71 @@ ecosistema_jaraba_core.api_analytics_event:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+# === Reviews Display — Frontend Routes (REV-PHASE4) ===
+
+ecosistema_jaraba_core.reviews.comercio:
+  path: '/comercio/{entity_id}/reviews'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPage'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPageTitle'
+    vertical: 'comercioconecta'
+    entity_type: 'merchant_profile'
+  requirements:
+    _permission: 'access content'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.agro:
+  path: '/agro/{entity_id}/reviews'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPage'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPageTitle'
+    vertical: 'agroconecta'
+    entity_type: 'producer_profile'
+  requirements:
+    _permission: 'access content'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.servicios:
+  path: '/servicios/{entity_id}/reviews'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPage'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPageTitle'
+    vertical: 'serviciosconecta'
+    entity_type: 'provider_profile'
+  requirements:
+    _permission: 'access content'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.formacion:
+  path: '/cursos/{entity_id}/reviews'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPage'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPageTitle'
+    vertical: 'formacion'
+    entity_type: 'lms_course'
+  requirements:
+    _permission: 'access content'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.mentoring:
+  path: '/mentoring/{entity_id}/review'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPage'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::reviewsPageTitle'
+    vertical: 'mentoring'
+    entity_type: 'mentoring_session'
+  requirements:
+    _permission: 'access content'
+    entity_id: '\d+'
+
+# REV-PHASE6: API de estadisticas de resenas para widget GrapesJS
+ecosistema_jaraba_core.api.v1.reviews.stats:
+  path: '/api/v1/reviews/stats/{target_entity_type}/{target_entity_id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewDisplayController::apiStats'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    target_entity_id: '\d+'
+    _csrf_request_header_token: 'TRUE'

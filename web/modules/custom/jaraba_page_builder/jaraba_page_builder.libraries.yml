@@ -345,6 +345,7 @@ grapesjs-canvas:
     js/grapesjs-jaraba-ai.js: { attributes: { defer: true } }
     js/grapesjs-jaraba-assets.js: { attributes: { defer: true } }
     js/grapesjs-jaraba-seo.js: { attributes: { defer: true } }
+    js/grapesjs-jaraba-reviews.js: { attributes: { defer: true } }
   dependencies:
     - core/drupal
     - core/drupalSettings

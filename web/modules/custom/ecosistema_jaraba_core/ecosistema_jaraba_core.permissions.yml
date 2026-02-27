@@ -242,3 +242,28 @@ administer freemium limits:
   title: 'Administrar Limites Freemium'
   description: 'Crear, editar y eliminar limites freemium por vertical, plan y feature del ecosistema SaaS'
   restrict access: TRUE
+
+# ===========================================
+# REVIEWS Y COMENTARIOS (Reviews Clase Mundial)
+# ===========================================
+
+submit reviews:
+  title: 'Enviar resenas'
+  description: 'Permite enviar resenas en cualquier vertical.'
+
+edit own reviews:
+  title: 'Editar resenas propias'
+  description: 'Permite editar las resenas que uno mismo ha enviado.'
+
+moderate reviews:
+  title: 'Moderar resenas'
+  description: 'Permite aprobar, rechazar o marcar resenas de cualquier vertical.'
+  restrict access: TRUE
+
+respond reviews:
+  title: 'Responder a resenas'
+  description: 'Permite anadir una respuesta oficial a las resenas.'
+
+view review analytics:
+  title: 'Ver analiticas de resenas'
+  description: 'Permite ver estadisticas y resumenes de resenas.'

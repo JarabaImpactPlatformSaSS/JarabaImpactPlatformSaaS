@@ -21,6 +21,7 @@ services:
   # Servicio Principal: Orquestador RAG
   # AI-11: Inyecta cache.default para caché de respuestas RAG.
   # ---------------------------------------------------------------------------
+  # HAL-AI-17: Guardrails MANDATORY in RAG pipeline (not optional).
   jaraba_rag.rag_service:
     class: Drupal\jaraba_rag\Service\JarabaRagService
     arguments:
@@ -33,7 +34,7 @@ services:
       - '@logger.factory'
       - '@config.factory'
       - '@cache.default'
-      - '@?ecosistema_jaraba_core.ai_guardrails'
+      - '@ecosistema_jaraba_core.ai_guardrails'
 
   # ---------------------------------------------------------------------------
   # Filtrado Multi-Tenant para RAG/Qdrant

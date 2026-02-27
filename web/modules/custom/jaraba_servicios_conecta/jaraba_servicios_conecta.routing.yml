@@ -202,3 +202,42 @@ jaraba_servicios_conecta.settings:
     _title: 'Configuracion ServiciosConecta'
   requirements:
     _permission: 'administer site configuration'
+
+# === Review API Routes (REV-PHASE4) ===
+
+jaraba_servicios_conecta.api.reviews.list:
+  path: '/api/v1/servicios/reviews/{provider_id}'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ReviewApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    provider_id: '\d+'
+
+jaraba_servicios_conecta.api.reviews.stats:
+  path: '/api/v1/servicios/reviews/{provider_id}/stats'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ReviewApiController::stats'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    provider_id: '\d+'
+
+jaraba_servicios_conecta.api.reviews.create:
+  path: '/api/v1/servicios/reviews'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ReviewApiController::createReview'
+  methods: [POST]
+  requirements:
+    _permission: 'submit reviews'
+    _csrf_request_header_token: 'TRUE'
+
+# Review Entity Routes
+
+entity.review_servicios.settings:
+  path: '/admin/structure/servicios-review/settings'
+  defaults:
+    _form: 'Drupal\jaraba_servicios_conecta\Form\ReviewServiciosSettingsForm'
+    _title: 'Resena Servicios settings'
+  requirements:
+    _permission: 'administer site configuration'

@@ -119,17 +119,67 @@ class ContentCategory extends ContentEntityBase
     }
 
     /**
-     * Gets the tenant ID that owns this category.
+     * Obtiene la imagen destacada de la categoría.
+     *
+     * @return \Drupal\file\FileInterface|null
+     *   La entidad File o NULL si no tiene imagen.
      */
-    public function getTenantId(): int
+    public function getFeaturedImage()
     {
-        return (int) ($this->get('tenant_id')->value ?? 0);
+        if ($this->get('featured_image')->isEmpty()) {
+            return NULL;
+        }
+        return $this->get('featured_image')->entity;
     }
 
     /**
-     * Sets the tenant ID that owns this category.
+     * Obtiene el meta título para SEO.
      */
-    public function setTenantId(int $tenantId): static
+    public function getMetaTitle(): string
+    {
+        return $this->get('meta_title')->value ?? '';
+    }
+
+    /**
+     * Obtiene la meta descripción para SEO.
+     */
+    public function getMetaDescription(): string
+    {
+        return $this->get('meta_description')->value ?? '';
+    }
+
+    /**
+     * Verifica si la categoría está activa.
+     */
+    public function isActive(): bool
+    {
+        return (bool) ($this->get('is_active')->value ?? TRUE);
+    }
+
+    /**
+     * Obtiene el conteo de artículos (cache).
+     */
+    public function getPostsCount(): int
+    {
+        return (int) ($this->get('posts_count')->value ?? 0);
+    }
+
+    /**
+     * Gets the tenant ID (group entity) that owns this category.
+     *
+     * @return int|null
+     *   The group entity ID, or NULL if not set.
+     */
+    public function getTenantId(): ?int
+    {
+        $target_id = $this->get('tenant_id')->target_id;
+        return $target_id !== NULL ? (int) $target_id : NULL;
+    }
+
+    /**
+     * Sets the tenant ID (group entity) that owns this category.
+     */
+    public function setTenantId(?int $tenantId): static
     {
         $this->set('tenant_id', $tenantId);
         return $this;
@@ -223,6 +273,64 @@ class ContentCategory extends ContentEntityBase
             ])
             ->setDisplayConfigurable('form', TRUE);
 
+        // =====================================================================
+        // CONSOLIDACIÓN: Campos nuevos para clase mundial.
+        // =====================================================================
+
+        // Imagen destacada de la categoría.
+        $fields['featured_image'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Imagen Destacada'))
+            ->setDescription(t('Imagen de cabecera para la página de categoría.'))
+            ->setSetting('target_type', 'file')
+            ->setSetting('handler', 'default')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 2,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Meta título para SEO de la página de categoría.
+        $fields['meta_title'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Meta Título'))
+            ->setDescription(t('Meta título SEO para la página de categoría (max 70 chars).'))
+            ->setTranslatable(TRUE)
+            ->setSetting('max_length', 70)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 3,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Meta descripción para SEO de la página de categoría.
+        $fields['meta_description'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Meta Descripción'))
+            ->setDescription(t('Meta descripción SEO para la página de categoría (max 160 chars).'))
+            ->setTranslatable(TRUE)
+            ->setSetting('max_length', 160)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 4,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Flag de categoría activa.
+        $fields['is_active'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Activa'))
+            ->setDescription(t('Indica si la categoría está activa y visible.'))
+            ->setDefaultValue(TRUE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 5,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Conteo de artículos (campo cache).
+        $fields['posts_count'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Artículos'))
+            ->setDescription(t('Número de artículos en esta categoría (campo cache).'))
+            ->setDefaultValue(0)
+            ->setDisplayConfigurable('view', TRUE);
+
         // Peso para ordenación.
         $fields['weight'] = BaseFieldDefinition::create('integer')
             ->setLabel(t('Peso'))
@@ -234,12 +342,16 @@ class ContentCategory extends ContentEntityBase
             ])
             ->setDisplayConfigurable('form', TRUE);
 
-        // GAP-AUD-017: Tenant ID para aislamiento multi-tenant.
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'))
-            ->setDescription(t('The tenant that owns this category.'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', ['type' => 'number', 'weight' => 90])
+        // TENANT-BRIDGE-001: Tenant como entity_reference a group.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('The group/tenant that owns this category.'))
+            ->setSetting('target_type', 'group')
+            ->setSetting('handler', 'default')
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete',
+                'weight' => 90,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', FALSE);
 

@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Default template for content_article entity.
+ *
+ * Base template that view-mode suggestions (--full, --teaser) override.
+ * Falls back to rendering all entity fields via 'content' variable.
+ *
+ * Variables:
+ * - content: All rendered fields of the entity.
+ * - article: Pre-processed data from template_preprocess_content_article().
+ * - attributes: HTML attributes for the containing element.
+ *
+ * @see template_preprocess_content_article()
+ */
+#}
+<article{{ attributes }}>
+  {{ content }}
+</article>

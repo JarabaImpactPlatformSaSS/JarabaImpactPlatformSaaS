@@ -87,3 +87,17 @@ view learning paths:
 administer learning paths:
   title: 'Administer learning paths'
   description: 'Create and manage learning paths'
+
+# --- Permisos de Reviews de Cursos ---
+manage lms reviews:
+  title: 'Manage LMS reviews'
+  description: 'Full CRUD and moderation of course reviews'
+  restrict access: true
+
+view course reviews:
+  title: 'View course reviews'
+  description: 'View approved course reviews'
+
+submit course reviews:
+  title: 'Submit course reviews'
+  description: 'Create new reviews for enrolled courses'

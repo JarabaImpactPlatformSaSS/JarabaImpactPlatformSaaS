@@ -11,6 +11,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_content_hub'
+      - '@database'
 
   # Category Service
   jaraba_content_hub.category_service:
@@ -24,6 +25,7 @@ services:
     class: Drupal\jaraba_content_hub\Service\SeoService
     arguments:
       - '@logger.channel.jaraba_content_hub'
+      - '@file_url_generator'
 
   # Content Writer AI Agent
   jaraba_content_hub.content_writer_agent:
@@ -101,3 +103,11 @@ services:
     arguments:
       - '@?jaraba_pwa.push'
       - '@logger.channel.jaraba_content_hub'
+
+  # RSS Feed Service
+  jaraba_content_hub.rss_service:
+    class: Drupal\jaraba_content_hub\Service\RssService
+    arguments:
+      - '@jaraba_content_hub.article_service'
+      - '@logger.channel.jaraba_content_hub'
+      - '@file_url_generator'

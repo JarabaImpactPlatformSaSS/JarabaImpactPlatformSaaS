@@ -616,3 +616,20 @@ function jaraba_lms_uninstall(): void {
   // Clean up any configuration
   \Drupal::configFactory()->getEditable('jaraba_lms.settings')->delete();
 }
+
+/**
+ * Install the course_review entity type.
+ */
+function jaraba_lms_update_10001(): void {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Only install if not already present.
+  if (!$update_manager->getEntityType('course_review')) {
+    $entity_type = $entity_type_manager->getDefinition('course_review');
+    if ($entity_type) {
+      $update_manager->installEntityType($entity_type);
+      \Drupal::logger('jaraba_lms')->info('Installed course_review entity type.');
+    }
+  }
+}

@@ -260,6 +260,7 @@ jaraba_content_hub.api.articles.update:
   methods: [PATCH]
   requirements:
     _permission: 'edit any content article'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_content_hub.api.articles.publish:
   path: '/api/v1/content/articles/{uuid}/publish'
@@ -442,4 +443,194 @@ jaraba_content_hub.api.newsletter.subscribe:
   requirements:
     _access: 'TRUE'
     _csrf_request_header_token: 'TRUE'
+
+# === Content Author Entity Routes ===
+
+entity.content_author.canonical:
+  path: '/blog/autor/{content_author}'
+  defaults:
+    _controller: '\Drupal\Core\Entity\Controller\EntityViewController::view'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'content_author.view'
+  options:
+    parameters:
+      content_author:
+        type: entity:content_author
+
+entity.content_author.collection:
+  path: '/admin/structure/content-hub/authors'
+  defaults:
+    _entity_list: 'content_author'
+    _title: 'Content Authors'
+  requirements:
+    _permission: 'administer content authors'
+
+entity.content_author.add_form:
+  path: '/admin/structure/content-hub/authors/add'
+  defaults:
+    _entity_form: 'content_author.add'
+    _title: 'Add Author'
+  requirements:
+    _permission: 'administer content authors'
+
+entity.content_author.edit_form:
+  path: '/admin/structure/content-hub/authors/{content_author}/edit'
+  defaults:
+    _entity_form: 'content_author.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _entity_access: 'content_author.update'
+  options:
+    parameters:
+      content_author:
+        type: entity:content_author
+
+entity.content_author.delete_form:
+  path: '/admin/structure/content-hub/authors/{content_author}/delete'
+  defaults:
+    _entity_form: 'content_author.delete'
+    _title: 'Delete Author'
+  requirements:
+    _entity_access: 'content_author.delete'
+  options:
+    parameters:
+      content_author:
+        type: entity:content_author
+
+entity.content_author.settings:
+  path: '/admin/structure/content-author/settings'
+  defaults:
+    _form: 'Drupal\jaraba_content_hub\Form\ContentAuthorSettingsForm'
+    _title: 'Content Author settings'
+  requirements:
+    _permission: 'administer content authors'
+
+# === Blog Public Routes (Consolidated) ===
+
+jaraba_content_hub.blog.category:
+  path: '/blog/categoria/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\BlogController::category'
+    _title_callback: '\Drupal\jaraba_content_hub\Controller\BlogController::categoryTitle'
+  requirements:
+    _permission: 'access content'
+
+jaraba_content_hub.blog.author:
+  path: '/blog/autor/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\BlogController::author'
+    _title_callback: '\Drupal\jaraba_content_hub\Controller\BlogController::authorTitle'
+  requirements:
+    _permission: 'access content'
+
+jaraba_content_hub.blog.rss:
+  path: '/blog/feed.xml'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\BlogController::rssFeed'
+  requirements:
+    _access: 'TRUE'
+
+# === Comment API Routes (REV-PHASE4) ===
+
+jaraba_content_hub.api.comments.list:
+  path: '/api/v1/content/articles/{article_id}/comments'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CommentApiController::list'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    article_id: '\d+'
+
+jaraba_content_hub.api.comments.create:
+  path: '/api/v1/content/articles/{article_id}/comments'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CommentApiController::createComment'
+  methods: [POST]
+  requirements:
+    _permission: 'post comments'
+    article_id: '\d+'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_content_hub.api.comments.moderate:
+  path: '/api/v1/content/comments/{comment_id}/moderate'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CommentApiController::moderate'
+  methods: [POST]
+  requirements:
+    _permission: 'moderate comments'
+    comment_id: '\d+'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_content_hub.api.comments.helpful:
+  path: '/api/v1/content/comments/{comment_id}/helpful'
+  defaults:
+    _controller: '\Drupal\jaraba_content_hub\Controller\CommentApiController::helpful'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    comment_id: '\d+'
+    _csrf_request_header_token: 'TRUE'
+
+# === Content Comment Entity Routes ===
+
+entity.content_comment.canonical:
+  path: '/admin/content/content-comment/{content_comment}'
+  defaults:
+    _entity_view: 'content_comment.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'content_comment.view'
+  options:
+    parameters:
+      content_comment:
+        type: entity:content_comment
+
+entity.content_comment.collection:
+  path: '/admin/content/content-comments'
+  defaults:
+    _entity_list: 'content_comment'
+    _title: 'Comentarios'
+  requirements:
+    _permission: 'moderate comments'
+
+entity.content_comment.add_form:
+  path: '/admin/content/content-comment/add'
+  defaults:
+    _entity_form: 'content_comment.add'
+    _title: 'Nuevo Comentario'
+  requirements:
+    _permission: 'administer content hub'
+
+entity.content_comment.edit_form:
+  path: '/admin/content/content-comment/{content_comment}/edit'
+  defaults:
+    _entity_form: 'content_comment.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _entity_access: 'content_comment.update'
+  options:
+    parameters:
+      content_comment:
+        type: entity:content_comment
+
+entity.content_comment.delete_form:
+  path: '/admin/content/content-comment/{content_comment}/delete'
+  defaults:
+    _entity_form: 'content_comment.delete'
+    _title: 'Eliminar Comentario'
+  requirements:
+    _entity_access: 'content_comment.delete'
+  options:
+    parameters:
+      content_comment:
+        type: entity:content_comment
+
+entity.content_comment.settings:
+  path: '/admin/structure/content-comment/settings'
+  defaults:
+    _form: 'Drupal\jaraba_content_hub\Form\ContentCommentSettingsForm'
+    _title: 'Configuracion de Comentarios'
+  requirements:
+    _permission: 'administer content hub'
 

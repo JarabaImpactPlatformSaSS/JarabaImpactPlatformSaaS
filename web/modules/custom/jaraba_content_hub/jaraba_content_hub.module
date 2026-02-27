@@ -24,8 +24,9 @@ use Drupal\image\Entity\ImageStyle;
 function jaraba_content_hub_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
   // Detectar formularios del Content Hub usando coincidencia parcial.
   // Esto captura: content_article_add_form, content_article_edit_form, etc.
-  $is_content_hub_form = str_contains($form_id, 'content_article') 
-    || str_contains($form_id, 'content_category');
+  $is_content_hub_form = str_contains($form_id, 'content_article')
+    || str_contains($form_id, 'content_category')
+    || str_contains($form_id, 'content_author');
 
   if ($is_content_hub_form) {
     // Ocultar recursivamente las guías de formato de todos los campos de texto.
@@ -91,6 +92,9 @@ function jaraba_content_hub_theme(): array {
     'content_category' => [
       'render element' => 'elements',
     ],
+    'content_author' => [
+      'render element' => 'elements',
+    ],
     'content_hub_blog_index' => [
       'template' => 'content-hub-blog-index',
       'variables' => [
@@ -98,6 +102,8 @@ function jaraba_content_hub_theme(): array {
         'articles' => [],
         'categories' => [],
         'trending' => [],
+        'current_category' => NULL,
+        'current_author' => NULL,
         'show_reading_time' => TRUE,
         'pager' => NULL,
         'stats' => [],
@@ -109,6 +115,15 @@ function jaraba_content_hub_theme(): array {
         'category' => [],
         'articles' => [],
         'show_reading_time' => TRUE,
+      ],
+    ],
+    'content_hub_author_page' => [
+      'template' => 'content-hub-author-page',
+      'variables' => [
+        'author' => [],
+        'articles' => [],
+        'show_reading_time' => TRUE,
+        'pager' => NULL,
       ],
     ],
     'content_hub_dashboard' => [
@@ -223,7 +238,7 @@ function jaraba_content_hub_content_article_presave(EntityInterface $entity): vo
       if (\Drupal::hasService('jaraba_content_hub.sentiment_engine')) {
         /** @var \Drupal\jaraba_content_hub\Service\SentimentEngineService $sentimentEngine */
         $sentimentEngine = \Drupal::service('jaraba_content_hub.sentiment_engine');
-        $analysis = $sentimentEngine->analyze($text);
+        $analysis = $sentimentEngine->analyze($textForAnalysis);
         $entity->set('sentiment_score', $analysis['score']);
         $entity->set('sentiment_label', $analysis['label']);
       }
@@ -251,23 +266,29 @@ function jaraba_content_hub_content_article_presave(EntityInterface $entity): vo
     }
   }
 
-  // 4. GAP-AUD-017: Auto-asignar tenant_id si está vacío (PRESAVE-RESILIENCE-001).
-  if ($entity->hasField('tenant_id') && (int) ($entity->get('tenant_id')->value ?? 0) === 0) {
-    try {
-      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
-        /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
-        $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
-        $currentTenant = $tenantContext->getCurrentTenant();
-        if ($currentTenant !== NULL) {
-          $entity->set('tenant_id', (int) $currentTenant->id());
+  // 4. TENANT-BRIDGE-001: Auto-asignar tenant_id si está vacío (PRESAVE-RESILIENCE-001).
+  // Dual-compatible: entity_reference usa target_id, integer usa value.
+  if ($entity->hasField('tenant_id')) {
+    $currentTenantValue = $entity->get('tenant_id')->target_id
+      ?? $entity->get('tenant_id')->value
+      ?? NULL;
+    if (empty($currentTenantValue) || (int) $currentTenantValue === 0) {
+      try {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+          /** @var \Drupal\ecosistema_jaraba_core\Service\TenantContextService $tenantContext */
+          $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+          $currentTenant = $tenantContext->getCurrentTenant();
+          if ($currentTenant !== NULL) {
+            $entity->set('tenant_id', (int) $currentTenant->id());
+          }
         }
       }
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('jaraba_content_hub')->warning(
-        'Tenant auto-assign failed for article @id: @error',
-        ['@id' => $entity->id() ?? 'new', '@error' => $e->getMessage()]
-      );
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_content_hub')->warning(
+          'Tenant auto-assign failed for article @id: @error',
+          ['@id' => $entity->id() ?? 'new', '@error' => $e->getMessage()]
+        );
+      }
     }
   }
 
@@ -428,34 +449,58 @@ function template_preprocess_content_article(array &$variables): void {
     }
   }
 
-  // Autor: nombre, bio y avatar desde la entidad User propietaria.
-  $owner = $entity->getOwner();
-  if ($owner) {
-    $article['author_name'] = $owner->getDisplayName();
-    $article['author_url'] = $owner->toUrl()->toString();
+  // Autor: preferir ContentAuthor si existe, fallback a User owner.
+  $contentAuthor = method_exists($entity, 'getContentAuthorEntity')
+    ? $entity->getContentAuthorEntity()
+    : NULL;
 
-    // Bio: campo field_bio o field_description si existe.
-    $bio = '';
-    foreach (['field_bio', 'field_description', 'field_about'] as $bio_field) {
-      if ($owner->hasField($bio_field) && !$owner->get($bio_field)->isEmpty()) {
-        $bio = $owner->get($bio_field)->value;
-        break;
-      }
-    }
-    $article['author_bio'] = $bio;
+  if ($contentAuthor && method_exists($contentAuthor, 'isActive') && $contentAuthor->isActive()) {
+    $article['author_name'] = $contentAuthor->getDisplayName();
+    $article['author_slug'] = $contentAuthor->getSlug();
+    $article['author_url'] = $contentAuthor->toUrl()->toString();
+    $article['author_bio'] = $contentAuthor->getBio();
+    $article['author_social'] = $contentAuthor->getSocialLinks();
 
-    // Avatar: campo user_picture o field_avatar.
+    // Avatar desde ContentAuthor.
     $avatar_url = '';
-    foreach (['user_picture', 'field_avatar', 'field_photo'] as $avatar_field) {
-      if ($owner->hasField($avatar_field) && !$owner->get($avatar_field)->isEmpty()) {
-        $avatar_file = $owner->get($avatar_field)->entity;
-        if ($avatar_file) {
-          $avatar_url = $file_url_generator->generateAbsoluteString($avatar_file->getFileUri());
-          break;
-        }
+    if ($contentAuthor->hasField('avatar') && !$contentAuthor->get('avatar')->isEmpty()) {
+      $avatar_file = $contentAuthor->get('avatar')->entity;
+      if ($avatar_file) {
+        $avatar_url = $file_url_generator->generateAbsoluteString($avatar_file->getFileUri());
       }
     }
     $article['author_avatar'] = $avatar_url;
+  }
+  else {
+    // Fallback: User owner (Drupal account).
+    $owner = $entity->getOwner();
+    if ($owner) {
+      $article['author_name'] = $owner->getDisplayName();
+      $article['author_url'] = $owner->toUrl()->toString();
+
+      // Bio: campo field_bio o field_description si existe.
+      $bio = '';
+      foreach (['field_bio', 'field_description', 'field_about'] as $bio_field) {
+        if ($owner->hasField($bio_field) && !$owner->get($bio_field)->isEmpty()) {
+          $bio = $owner->get($bio_field)->value;
+          break;
+        }
+      }
+      $article['author_bio'] = $bio;
+
+      // Avatar: campo user_picture o field_avatar.
+      $avatar_url = '';
+      foreach (['user_picture', 'field_avatar', 'field_photo'] as $avatar_field) {
+        if ($owner->hasField($avatar_field) && !$owner->get($avatar_field)->isEmpty()) {
+          $avatar_file = $owner->get($avatar_field)->entity;
+          if ($avatar_file) {
+            $avatar_url = $file_url_generator->generateAbsoluteString($avatar_file->getFileUri());
+            break;
+          }
+        }
+      }
+      $article['author_avatar'] = $avatar_url;
+    }
   }
 
   // GAP-AUD-006: Schema.org speakable JSON-LD for AI search engines.
@@ -585,6 +630,16 @@ function jaraba_content_hub_preprocess_html(array &$variables): void {
   if ($route_name === 'jaraba_content_hub.article.canvas_editor') {
     $variables['attributes']['class'][] = 'page-article-canvas-editor';
     $variables['attributes']['class'][] = 'page--canvas-editor';
+  }
+
+  // Body class para blog por categoría.
+  if ($route_name === 'jaraba_content_hub.blog.category') {
+    $variables['attributes']['class'][] = 'page-blog-category';
+  }
+
+  // Body class para blog por autor.
+  if ($route_name === 'jaraba_content_hub.blog.author') {
+    $variables['attributes']['class'][] = 'page-blog-author';
   }
 
   // --- SEO: Canonical, OG, Twitter Card, Schema.org JSON-LD ---
@@ -898,4 +953,142 @@ function _jaraba_content_hub_inject_seo_tags(array &$variables, string $route_na
       'content_hub_schema_json_ld',
     ];
   }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * B4 fix: Publica automáticamente artículos con scheduled_at en el pasado.
+ * Los artículos con status 'scheduled' y scheduled_at <= now() se publican.
+ */
+function jaraba_content_hub_cron(): void {
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('content_article');
+    $now = date('Y-m-d\TH:i:s');
+
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 'scheduled')
+      ->condition('scheduled_at', $now, '<=')
+      ->execute();
+
+    if (empty($ids)) {
+      return;
+    }
+
+    $articles = $storage->loadMultiple($ids);
+    $published = 0;
+    foreach ($articles as $article) {
+      $article->set('status', 'published');
+      $article->set('publish_date', $article->get('scheduled_at')->value);
+      $article->save();
+      $published++;
+    }
+
+    if ($published > 0) {
+      \Drupal::logger('jaraba_content_hub')->info(
+        'Cron: published @count scheduled articles.',
+        ['@count' => $published]
+      );
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_content_hub')->error(
+      'Cron: error publishing scheduled articles: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+
+  // Actualizar posts_count cache en categorias.
+  try {
+    if (\Drupal::hasService('jaraba_content_hub.category_service')) {
+      $updated = \Drupal::service('jaraba_content_hub.category_service')->updatePostsCount();
+      if ($updated > 0) {
+        \Drupal::logger('jaraba_content_hub')->info(
+          'Cron: updated posts_count for @count categories.',
+          ['@count' => $updated]
+        );
+      }
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_content_hub')->error(
+      'Cron: error updating category posts_count: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for content_author.
+ *
+ * Auto-assign tenant_id y genera slug desde display_name.
+ */
+function jaraba_content_hub_content_author_presave(EntityInterface $entity): void {
+  // Auto-assign tenant_id (PRESAVE-RESILIENCE-001).
+  if ($entity->hasField('tenant_id')) {
+    $currentTenantValue = $entity->get('tenant_id')->target_id ?? NULL;
+    if (empty($currentTenantValue)) {
+      try {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+          $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+          $currentTenant = $tenantContext->getCurrentTenant();
+          if ($currentTenant !== NULL) {
+            $entity->set('tenant_id', (int) $currentTenant->id());
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_content_hub')->warning(
+          'Tenant auto-assign failed for author @id: @error',
+          ['@id' => $entity->id() ?? 'new', '@error' => $e->getMessage()]
+        );
+      }
+    }
+  }
+
+  // Auto-generate slug from display_name.
+  if ($entity->hasField('slug') && $entity->get('slug')->isEmpty()) {
+    $name = $entity->get('display_name')->value ?? '';
+    if (!empty($name)) {
+      $slug = _jaraba_content_hub_slugify($name);
+      $entity->set('slug', $slug);
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_HOOK() for content_author.
+ *
+ * ENTITY-PREPROCESS-001: Extrae primitivas y genera URLs para templates.
+ */
+function template_preprocess_content_author(array &$variables): void {
+  /** @var \Drupal\jaraba_content_hub\Entity\ContentAuthor $entity */
+  $entity = $variables['elements']['#content_author'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $file_url_generator = \Drupal::service('file_url_generator');
+
+  $author = [
+    'id' => $entity->id(),
+    'display_name' => $entity->getDisplayName(),
+    'slug' => $entity->getSlug(),
+    'bio' => $entity->getBio(),
+    'is_active' => $entity->isActive(),
+    'posts_count' => $entity->getPostsCount(),
+    'social' => $entity->getSocialLinks(),
+    'url' => $entity->toUrl()->toString(),
+  ];
+
+  // Avatar.
+  if ($entity->hasField('avatar') && !$entity->get('avatar')->isEmpty()) {
+    $file = $entity->get('avatar')->entity;
+    if ($file) {
+      $author['avatar'] = $file_url_generator->generateAbsoluteString($file->getFileUri());
+    }
+  }
+
+  $variables['author'] = $author;
 }

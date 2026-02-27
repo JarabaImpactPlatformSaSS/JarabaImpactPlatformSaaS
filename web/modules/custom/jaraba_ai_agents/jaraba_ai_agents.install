@@ -79,14 +79,12 @@ function jaraba_ai_agents_update_10001(&$sandbox): string {
  * Creates the proactive_insight table with all base fields.
  */
 function jaraba_ai_agents_update_10002(&$sandbox): string {
-  // Entity type install is handled automatically by Drupal when the module
-  // defines the entity and entity_type.manager detects it on cache rebuild.
-  // We just need to trigger the entity type definition update.
+  $entity_type_manager = \Drupal::entityTypeManager();
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
 
   try {
-    // Apply any pending entity type updates.
-    $entity_definition_update_manager->applyUpdates();
+    $entity_type = $entity_type_manager->getDefinition('proactive_insight');
+    $entity_definition_update_manager->installEntityType($entity_type);
     return (string) t('GAP-AUD-010: ProactiveInsight entity schema installed.');
   }
   catch (\Exception $e) {
@@ -106,10 +104,12 @@ function jaraba_ai_agents_update_10002(&$sandbox): string {
  * Creates the a2a_task table with all base fields for A2A protocol.
  */
 function jaraba_ai_agents_update_10003(&$sandbox): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
 
   try {
-    $entity_definition_update_manager->applyUpdates();
+    $entity_type = $entity_type_manager->getDefinition('a2a_task');
+    $entity_definition_update_manager->installEntityType($entity_type);
     return (string) t('GAP-AUD-012: A2ATask entity schema installed.');
   }
   catch (\Exception $e) {

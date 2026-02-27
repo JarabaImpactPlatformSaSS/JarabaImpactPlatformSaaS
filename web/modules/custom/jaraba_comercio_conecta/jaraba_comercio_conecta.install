@@ -219,6 +219,26 @@ function jaraba_comercio_conecta_update_10002(): void {
 function jaraba_comercio_conecta_update_10003(): void {
   $schema = \Drupal::database()->schema();
 
+  // Actual DB column types — integers MUST NOT have prefix length.
+  $field_types = [
+    'merchant_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'status' => ['type' => 'varchar', 'length' => 255],
+    'tenant_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'created' => ['type' => 'int', 'not null' => TRUE],
+    'customer_uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'slug' => ['type' => 'varchar', 'length' => 128],
+    'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'is_active' => ['type' => 'int', 'size' => 'tiny'],
+    'order_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'suborder_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'product_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'entity_type_ref' => ['type' => 'varchar', 'length' => 64],
+    'entity_id_ref' => ['type' => 'int', 'not null' => TRUE],
+    'session_id' => ['type' => 'varchar', 'length' => 128],
+    'entity_type' => ['type' => 'varchar', 'length' => 64],
+    'entity_id' => ['type' => 'int', 'not null' => TRUE],
+  ];
+
   $indexes = [
     'product_retail' => [
       'idx_merchant_status' => ['merchant_id', 'status'],
@@ -237,7 +257,7 @@ function jaraba_comercio_conecta_update_10003(): void {
       'idx_status_created' => ['status', 'created'],
     ],
     'order_item_retail' => [
-      'idx_suborder_product' => ['suborder_id', 'product_id'],
+      'idx_order_product' => ['order_id', 'product_id'],
     ],
     'comercio_search_index' => [
       'idx_entity_ref' => ['entity_type_ref', 'entity_id_ref'],
@@ -248,7 +268,7 @@ function jaraba_comercio_conecta_update_10003(): void {
       'idx_status' => ['status'],
     ],
     'comercio_review' => [
-      'idx_entity_status' => ['entity_type', 'entity_id', 'status'],
+      'idx_entity_status' => ['entity_type_ref', 'entity_id_ref', 'status'],
     ],
   ];
 
@@ -261,15 +281,9 @@ function jaraba_comercio_conecta_update_10003(): void {
       if (!$schema->indexExists($table, $index_name)) {
         $spec = [];
         foreach ($columns as $col) {
-          $spec[] = ['field' => $col, 'length' => 191];
+          $spec[$col] = $field_types[$col] ?? ['type' => 'varchar', 'length' => 255];
         }
-        $schema->addIndex($table, $index_name, $spec, [
-          'fields' => array_combine($columns, array_fill(0, count($columns), [
-            'type' => 'varchar',
-            'length' => 255,
-            'not null' => FALSE,
-          ])),
-        ]);
+        $schema->addIndex($table, $index_name, $columns, ['fields' => $spec]);
         \Drupal::logger('jaraba_comercio_conecta')->info('Added index @idx on @table.', [
           '@idx' => $index_name,
           '@table' => $table,
@@ -300,5 +314,102 @@ function jaraba_comercio_conecta_update_10001(): void {
         'feature_date' => ['feature_key', 'usage_date'],
       ],
     ]);
+  }
+}
+
+/**
+ * Add ai_summary and ai_summary_generated_at fields to comercio_review.
+ */
+function jaraba_comercio_conecta_update_10004(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'comercio_review';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  $fields = [
+    'ai_summary' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Resumen IA'))
+      ->setDescription(t('Resumen generado automaticamente por IA.'))
+      ->setTargetEntityTypeId($entity_type_id),
+    'ai_summary_generated_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha de resumen IA'))
+      ->setTargetEntityTypeId($entity_type_id),
+  ];
+
+  foreach ($fields as $field_name => $definition) {
+    if (!$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+      $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_comercio_conecta', $definition);
+      \Drupal::logger('jaraba_comercio_conecta')->info('Installed field @field on @entity.', [
+        '@field' => $field_name,
+        '@entity' => $entity_type_id,
+      ]);
+    }
+  }
+}
+
+/**
+ * Migrate comercio_review tenant_id from taxonomy_term to group (TENANT-BRIDGE-001).
+ */
+function jaraba_comercio_conecta_update_10005(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'comercio_review';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  // Update field storage definition to point to group.
+  $field = $update_manager->getFieldStorageDefinition('tenant_id', $entity_type_id);
+  if ($field && $field->getSetting('target_type') !== 'group') {
+    // Migrate data: map taxonomy_term IDs to group IDs via TenantBridgeService.
+    if (\Drupal::hasService('ecosistema_jaraba_core.tenant_bridge')) {
+      try {
+        $db = \Drupal::database();
+        $rows = $db->select('comercio_review', 'cr')
+          ->fields('cr', ['id', 'tenant_id'])
+          ->condition('tenant_id', 0, '>')
+          ->execute()
+          ->fetchAllKeyed();
+
+        /** @var \Drupal\ecosistema_jaraba_core\Service\TenantBridgeService $bridge */
+        $bridge = \Drupal::service('ecosistema_jaraba_core.tenant_bridge');
+        foreach ($rows as $entityId => $termId) {
+          try {
+            $tenant = $bridge->loadTenant((int) $termId);
+            if ($tenant && $tenant->hasField('group_id') && !$tenant->get('group_id')->isEmpty()) {
+              $groupId = (int) $tenant->get('group_id')->target_id;
+              $db->update('comercio_review')
+                ->fields(['tenant_id' => $groupId])
+                ->condition('id', $entityId)
+                ->execute();
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('jaraba_comercio_conecta')->warning('Could not migrate tenant_id for review @id: @error', [
+              '@id' => $entityId,
+              '@error' => $e->getMessage(),
+            ]);
+          }
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('jaraba_comercio_conecta')->warning('Tenant migration skipped: @error', [
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    // Now update the field definition target_type.
+    $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Tenant'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'group')
+      ->setDisplayOptions('form', ['weight' => 0])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setTargetEntityTypeId($entity_type_id);
+    $update_manager->updateFieldStorageDefinition($new_field);
+    \Drupal::logger('jaraba_comercio_conecta')->info('Migrated comercio_review tenant_id to group reference.');
   }
 }

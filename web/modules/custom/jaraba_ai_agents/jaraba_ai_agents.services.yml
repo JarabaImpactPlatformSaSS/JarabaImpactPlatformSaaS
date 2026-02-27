@@ -191,10 +191,13 @@ services:
   # ========================================
 
   # Registro central de herramientas
+  # HAL-AI-01: Guardrails mandatory para sanitizar outputs de tools.
+  # HAL-AI-18: Approval gating via PendingApprovalService (lazy-loaded).
   jaraba_ai_agents.tool_registry:
     class: Drupal\jaraba_ai_agents\Tool\ToolRegistry
     arguments:
       - '@logger.channel.jaraba_ai_agents'
+      - '@ecosistema_jaraba_core.ai_guardrails'
 
   # SendEmailTool - Envío de emails
   jaraba_ai_agents.tool.send_email:
@@ -312,12 +315,13 @@ services:
     deprecated: 'The "%alias_id%" service is deprecated. Use "jaraba_legal_intelligence.legal_copilot_agent" directly. See FIX-016.'
 
   # GAP-AUD-011 + GAP-AUD-013: MultiModal Bridge — Voice + Vision AI
+  # HAL-AI-17: Guardrails MANDATORY for multimodal processing.
   jaraba_ai_agents.multimodal_bridge:
     class: Drupal\jaraba_ai_agents\Service\MultiModalBridgeService
     arguments:
       - '@logger.channel.jaraba_ai_agents'
       - '@?ai.provider'
-      - '@?ecosistema_jaraba_core.ai_guardrails'
+      - '@ecosistema_jaraba_core.ai_guardrails'
 
   # ========================================
   # FIX-029-051 — Elevacion IA Nivel 5/5
@@ -360,4 +364,13 @@ services:
       - '@?jaraba_agents.handoff_manager'
       - '@?jaraba_ai_agents.agent_collaboration'
       - '@logger.channel.jaraba_ai_agents'
+
+  # Reviews & Comments — AI Summary Service (REV-PHASE3)
+  jaraba_ai_agents.review_ai_summary:
+    class: Drupal\jaraba_ai_agents\Service\ReviewAiSummaryService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.model_router'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?ai.provider'
 

@@ -10,3 +10,9 @@ entity.content_category.add_form:
   route_name: entity.content_category.add_form
   appears_on:
     - entity.content_category.collection
+
+entity.content_author.add_form:
+  title: 'Add Author'
+  route_name: entity.content_author.add_form
+  appears_on:
+    - entity.content_author.collection

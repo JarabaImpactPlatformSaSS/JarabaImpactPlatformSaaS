@@ -2,7 +2,27 @@
 
 **Fecha de creacion:** 2026-02-18
 **Ultima actualizacion:** 2026-02-26
-**Version:** 41.0.0 (Meta-Sitios Multilingüe — i18n EN+PT-BR + Language Switcher + Hreflang Dinámico)
+**Version:** 42.0.0 (Reviews & Comments Clase Mundial — ReviewableEntityTrait + Schema.org AggregateRating + 10 Verticales)
+
+---
+## 1. Inicio de Sesion
+
+Al comenzar o reanudar una conversacion, leer en este orden:
+
+1. **DIRECTRICES** (`docs/00_DIRECTRICES_PROYECTO.md`) — Reglas, convenciones, principios de desarrollo
+2. **ARQUITECTURA** (`docs/00_DOCUMENTO_MAESTRO_ARQUITECTURA.md`) — Modulos, stack, modelo de datos
+3. **INDICE** (`docs/00_INDICE_GENERAL.md`) — Estado actual, ultimos cambios, aprendizajes recientes
+
+Esto garantiza contexto completo antes de cualquier implementacion.
+
+---
+
+## 2. Antes de Implementar
+
+- **Leer ficheros de referencia:** Antes de crear o modificar un modulo, revisar modulos existentes que usen el mismo patron (ej: jaraba_verifactu como patron canonico de zero-region)
+- **Plan mode para tareas complejas:** Usar plan mode cuando la tarea requiere multiples ficheros, decisiones arquitectonicas, o tiene ambiguedad
+- **Verificar aprendizajes previos:** Consultar `docs/tecnicos/aprendizajes/` para evitar repetir errores documentados
+- **Leer sibling agents/services:** Antes de implementar un servicio nuevo, leer al menos un servicio existente del mismo tipo (ej: MerchantCopilotAgent antes de LegalCopilotAgent, EmployabilityFeatureGateService antes de AgroConectaFeatureGateService)
 
 ---
 
@@ -539,6 +559,38 @@
   - Autenticado: acciones por modo (coach→Mi perfil, consultor→Mi dashboard, cfo→Panel financiero, landing_copilot→Explorar plataforma).
   - `formatResponse()` hace merge de sugerencias de texto + action buttons contextuales.
   - Ambas implementaciones (v1 `contextual-copilot.js` y v2 `copilot-chat-widget.js`) DEBEN soportar el formato dual.
+- **ReviewableEntityTrait para normalizar entidades heterogeneas (REVIEW-TRAIT-001):**
+  - Cuando multiples verticales implementan el mismo concepto (reviews, comments, ratings) con campos nombrados de forma diferente (status vs state vs review_status, reviewer_uid vs uid vs mentee_id), crear un PHP Trait que: (1) define `baseFieldDefinitions()` parcial con campos canonicos compartidos, (2) proporciona helpers con fallback (`getReviewStatusValue()` intenta review_status, luego status, luego state), (3) normaliza acceso sin romper retrocompatibilidad.
+  - El trait permite operaciones transversales (moderacion, agregacion, busqueda) sin conocer la implementacion interna de cada vertical.
+  - Patron de migracion: update hook que renombra campo (backup → uninstall old → install new → restore), no romper existentes.
+  - Helpers del trait DEBEN usar `$entity->hasField()` + `$entity->get($field)->value` con fallback a NULL, nunca asumir que el campo existe.
+- **Schema.org AggregateRating obligatorio para reviews (SCHEMA-AGGREGATE-001):**
+  - Toda pagina que muestre un resumen de ratings (producto, proveedor, mentor, curso) DEBE incluir JSON-LD `AggregateRating` en el `<head>`.
+  - Inyectar via `$build['#attached']['html_head'][]` en el controlador o preprocess, NUNCA hardcodear `<script type="application/ld+json">` en templates Twig.
+  - Campos obligatorios: `@type: AggregateRating`, `ratingValue` (decimal 1 cifra), `reviewCount`, `bestRating: 5`, `worstRating: 1`.
+  - Para reviews individuales visibles en la pagina, anidar `Review` con `author/Person`, `datePublished`, `reviewBody`, `reviewRating/Rating`.
+  - Verificar con Google Rich Results Test que el markup produce rich snippets validos.
+  - El servicio `ReviewSchemaOrgService` centraliza la generacion para todos los verticales.
+- **Moderacion centralizada de reviews (REVIEW-MODERATION-001):**
+  - Las reviews NUNCA se publican sin pasar por moderacion (status `pending` por defecto).
+  - `ReviewModerationService` centraliza: moderate(), autoApproveIfEligible() (5+ reviews aprobadas, rating >= 3.5), cola por tenant, bulk actions (max 50).
+  - Reviews con rating <= 2 SIEMPRE requieren revision manual aunque el autor sea elegible para auto-approve.
+  - El servicio acepta `$entity_type_id` para operar sobre cualquier entidad de review de cualquier vertical.
+- **Auditoria de sistemas heterogeneos cross-vertical:**
+  - Cuando la plataforma tiene N implementaciones del mismo concepto en diferentes verticales, la auditoria DEBE ser comparativa: tabla de campos, nomenclatura, tenant handling, access control, servicios, templates, rutas, Schema.org.
+  - Los hallazgos se clasifican en: S (seguridad), B (bugs), A (arquitectura), D (directrices), G (brechas clase mundial).
+  - El plan de consolidacion prioriza: (1) seguridad (tenant isolation), (2) trait transversal, (3) servicios compartidos, (4) frontend unificado, (5) Schema.org, (6) entidades nuevas.
+
+---
+## 4. Despues de Implementar
+
+Actualizar los 3 documentos maestros + crear aprendizaje:
+
+1. **DIRECTRICES:** Incrementar version en header + añadir entrada al changelog (seccion 14) + nuevas reglas si aplica (seccion 5.8.x)
+2. **ARQUITECTURA:** Incrementar version en header + actualizar modulos en seccion 7.1 si se añadieron modulos + tabla 12.3 si se elevo un vertical + changelog al final
+3. **INDICE:** Incrementar version en header + nuevo blockquote al inicio (debajo del header) + entrada en tabla Registro de Cambios
+4. **Aprendizaje:** Crear fichero en `docs/tecnicos/aprendizajes/YYYY-MM-DD_nombre_descriptivo.md` con formato estandar (tabla metadata, Patron Principal, Aprendizajes Clave con Situacion/Aprendizaje/Regla)
+5. **FLUJO TRABAJO:** Actualizar este documento si se descubren nuevos patrones de workflow reutilizables
 
 ---
 
@@ -607,6 +659,108 @@
 60. **Deploy checklist reproducible en docs/operaciones/:** Todo deploy a produccion DEBE tener un checklist documentado en `docs/operaciones/deploy_checklist_{proveedor}.md` con 7 secciones: pre-deploy (backup, tests, tag), stack (PHP, MariaDB, Redis, Composer), DNS (registros por dominio), SSL (Let's Encrypt auto-renewal), post-deploy (drush updatedb+config:import+cache:rebuild), verificacion (HTTP, funcionalidades, analytics), rollback. Un deploy sin checklist documentado es un deploy no reproducible. El primer deploy de un proveedor nuevo DEBE crear su checklist antes de ejecutar cualquier paso.
 61. **Traduccion batch de meta-sitios con AITranslationService:** Para traducir las PageContent de meta-sitios a multiples idiomas, usar un script drush que: (1) verifica idiomas configurados con `$languageManager->getLanguages()`, (2) carga todas las PageContent por tenant_id, (3) para cada pagina verifica `$entity->hasTranslation($lang)` para evitar duplicados, (4) crea traduccion nativa con `$entity->addTranslation($langcode)`, (5) traduce campos simples (title, meta_title, meta_description) con `AITranslationService::translateBatch()`, (6) traduce `canvas_data` parseando JSON GrapesJS y recorriendo components[].content recursivamente, (7) traduce `rendered_html` extrayendo nodos de texto con regex `/>([^<]+)</`, traduciendo en batch, reinsertando, (8) traduce `content_data` recorrriendo recursivamente el JSON con skip patterns (ID, URL, color, image, icon), (9) salva con `$page->save()`. Verificar invariante: IDs de campos que NO deben traducirse (uuid, template_id, tenant_id, layout_mode, status).
 62. **Variables de idioma dinamicas via preprocess_html para meta-sitios:** Las variables `available_languages` y `current_langcode` se inyectan en `preprocess_html()` solo cuando hay una PageContent en el route match (context meta-sitio). Usar `$page_content->getTranslationLanguages()` que retorna un array indexado por langcode con todas las traducciones creadas (incluyendo la original). Esto alimenta 2 consumidores: `_hreflang-meta.html.twig` (genera `<link rel="alternate">` solo para idiomas con traduccion real) y `_language-switcher.html.twig` (renderiza dropdown solo si hay >1 idioma). NUNCA hardcodear idiomas en templates — siempre derivar de las traducciones reales de la entidad.
+63. **Trait transversal para normalizar entidades heterogeneas:** Cuando multiples verticales implementan el mismo concepto (reviews, ratings, comments) con nombres de campos diferentes, crear un PHP Trait que defina campos canonicos compartidos y helpers con fallback (`hasField()` + getter encadenado). Esto permite servicios transversales (moderacion, agregacion, Schema.org) que operan sobre cualquier vertical sin conocer la implementacion interna. Patron: `ReviewableEntityTrait` con `getReviewStatusValue()` intenta review_status, status, state. Migracion gradual: update hooks para renombrar campos al nombre canonico.
+64. **Schema.org AggregateRating obligatorio en paginas de reviews:** Toda pagina que muestre un resumen de calificaciones (producto, proveedor, mentor, curso) DEBE inyectar JSON-LD `AggregateRating` via `#attached['html_head']` — NUNCA hardcodear en template Twig. Centralizar en `ReviewSchemaOrgService` para todos los verticales. Verificar con Google Rich Results Test.
+65. **Auditoria comparativa cross-vertical antes de consolidar:** Cuando la plataforma tiene N implementaciones del mismo concepto, auditar comparativamente: tabla de campos, nomenclatura, tenant handling, access control, servicios, templates, rutas, Schema.org. Clasificar hallazgos en S (seguridad), B (bugs), A (arquitectura), D (directrices), G (brechas). El plan prioriza: seguridad → trait → servicios compartidos → frontend → Schema.org → entidades nuevas.
+
+---
+
+## 6. Patron Elevacion Vertical a Clase Mundial
+
+Workflow reutilizable de 14 fases para elevar un vertical a clase mundial (probado con Empleabilidad, Emprendimiento, Andalucia+ei, JarabaLex, AgroConecta, ComercioConecta, ServiciosConecta):
+
+| Fase | Entregable | Ficheros clave |
+|------|-----------|----------------|
+| 0 | FeatureGateService + FreemiumVerticalLimit configs | `src/Service/{Vertical}FeatureGateService.php` + `config/install/*.yml` |
+| 1 | UpgradeTriggerService — milestones de conversion | `UpgradeTriggerService.php` (actualizar o crear) |
+| 2 | CopilotBridgeService — puente copilot + vertical | `src/Service/{Vertical}CopilotBridgeService.php` |
+| 3 | hook_preprocess_html — body classes del vertical | `{modulo}.module` |
+| 4 | Page template zero-region + Copilot FAB | `page--{vertical}.html.twig` |
+| 5 | SCSS compliance (BEM, color-mix, var(--ej-*)) | `scss/` + `package.json` |
+| 6 | Design token config vertical | `config/install/ecosistema_jaraba_core.design_token_config.vertical_{id}.yml` |
+| 7 | Email sequences MJML (5-6 templates) | `mjml/{vertical}/seq_*.mjml` |
+| 8 | CrossVerticalBridgeService | `src/Service/{Vertical}CrossVerticalBridgeService.php` |
+| 9 | JourneyProgressionService — reglas proactivas FAB | `src/Service/{Vertical}JourneyProgressionService.php` |
+| 10 | HealthScoreService — 5 dimensiones + 8 KPIs | `src/Service/{Vertical}HealthScoreService.php` |
+| 11 | ExperimentService — A/B testing eventos | `src/Service/{Vertical}ExperimentService.php` |
+| 12 | Avatar navigation + funnel analytics | `AvatarNavigationService.php` + `config/install/*.funnel_definition.*.yml` |
+| 13 | QA integral — PHP lint + audit agents paralelos | Todos los ficheros de las 12 fases anteriores |
+
+### Checklist rapido por fase
+
+- Cada servicio nuevo: `declare(strict_types=1)`, constructor DI readonly, canal de log dedicado
+- Cada FeatureGateService: `check()` retorna `FeatureGateResult`, `fire()` para eventos denied, 3 tipos features (CUMULATIVE/MONTHLY/BINARY)
+- Cada CopilotAgent: DEBE implementar todos los metodos de `AgentInterface` (execute, getAvailableActions, getAgentId, getLabel, getDescription)
+- Cada servicio: registrar en `{modulo}.services.yml` con argumentos que coincidan con el constructor
+- QA final: PHP lint en todos los ficheros, verificar interfaces completas, verificar service registration
+
+### Estrategia de paralelizacion (PARALLEL-ELEV-001)
+
+Al ejecutar elevacion vertical con agentes paralelos, agrupar por independencia de ficheros:
+
+| Grupo | Fases | Ficheros tocados |
+|-------|-------|-----------------|
+| A | 0 (solo) | FeatureGateService.php + config/install/*.yml |
+| B | 1-2 | UpgradeTriggerService.php + CopilotBridgeService.php |
+| C | 3-4 | .module + page--{vertical}.html.twig |
+| D | 5-6 | scss/*.scss + config/install/design_token*.yml |
+| E | 7-8 | mjml/*.mjml + CrossVerticalBridgeService.php |
+| F | 9-10-11 | Journey + Health + Experiment services |
+| G | 12 | AvatarNavigationService.php + config/install/funnel*.yml |
+| H | PB templates | templates/blocks/verticals/{vertical}/*.html.twig + config/install/pb*.yml |
+
+Ficheros compartidos (`services.yml`, `.module`, `.install`) se editan en el hilo principal tras completar agentes.
+
+---
+
+## 7. Patron Elevacion Page Builder Premium (PB-PREMIUM-001 + PB-BATCH-001)
+
+Workflow para elevar templates PB de un vertical a premium:
+
+1. **Dividir en lotes:** 3-4 templates por agente (ej: hero+features+stats+content / testimonials+pricing+faq+cta / gallery+map+social_proof)
+2. **Asignar YML al lote mas ligero:** El agente con menos templates actualiza los 11 YML configs
+3. **Patron premium por template:**
+   - `jaraba-block jaraba-block--premium` en `<section>`
+   - `data-effect="fade-up"` en section
+   - Staggered `data-delay="{{ loop.index0 * 100 }}"` en items iterados
+   - `jaraba_icon('category', 'name', { variant, size, color })` — NUNCA emojis HTML entities
+   - Schema.org donde aplique: FAQ → `<script type="application/ld+json">` FAQPage, map → LocalBusiness `itemscope`, social_proof → AggregateRating
+   - Funcionalidades especificas: lightbox (`data-lightbox`), counters (`data-counter`), pricing toggle, countdown timer, star ratings
+4. **Patron YML config:**
+   - `is_premium: true`
+   - `animation: fade-up`
+   - `plans_required: [starter, professional, enterprise]` (corregir duplicados)
+   - `fields_schema.properties` con array schemas para campos de listas
+
+---
+
+## 8. Patron Sprint Entidades Masivo (ENTITY-BATCH-001)
+
+Para verticales commerce con 20+ entidades nuevas (como ComercioConecta Sprint 2-3), extender el patron de elevacion con sprints de entidades adicionales:
+
+### Estrategia de paralelizacion por tipo de artefacto
+
+| Agente | Tipo | Artefactos |
+|--------|------|-----------|
+| A | Entidades | `src/Entity/*.php` — Content Entities con annotations, baseFieldDefinitions |
+| B | Access+Forms+ListBuilders | `src/Access/*Handler.php` + `src/Form/*Form.php` + `src/ListBuilder/*.php` |
+| C | Services | `src/Service/*Service.php` — logica de negocio |
+| D | Controllers+Templates | `src/Controller/*.php` + `templates/*.html.twig` |
+
+### Ficheros compartidos (post-agente, secuencial)
+
+1. `{modulo}.services.yml` — registrar todos los servicios nuevos
+2. `{modulo}.routing.yml` — registrar todas las rutas
+3. `{modulo}.permissions.yml` — registrar todos los permisos
+4. `{modulo}.links.task.yml` + `.links.menu.yml` — registrar admin tabs
+5. `{modulo}.module` — actualizar hook_theme() + hook_preprocess_html() + hook_cron()
+6. `{modulo}.install` — crear hook_update_NNNNN() para instalar schemas de nuevas entidades
+7. `{modulo}.libraries.yml` — registrar nuevas libraries JS/CSS
+8. `scss/main.scss` — @use nuevos partials SCSS
+
+### Regla ENTITY-BATCH-INSTALL-001
+
+Al anadir multiples entidades a un modulo existente, crear un unico `hook_update_NNNNN()` que itere sobre la lista de entity_type_ids, verifique existencia con `getEntityType()`, y solo instale si no existe.
 
 ---
 
@@ -614,6 +768,7 @@
 
 | Fecha | Version | Descripcion |
 |-------|---------|-------------|
+| 2026-02-27 | **42.0.0** | **Reviews & Comments Clase Mundial — ReviewableEntityTrait + Schema.org AggregateRating + 10 Verticales Workflow:** 4 patrones nuevos: ReviewableEntityTrait para normalizar entidades heterogeneas (5 campos compartidos + helpers con fallback hasField()+getter encadenado para nomenclatura inconsistente status/state/review_status, permite servicios transversales sin conocer implementacion interna), Schema.org AggregateRating obligatorio (JSON-LD via html_head no hardcoded en Twig, ReviewSchemaOrgService centralizado, campos ratingValue/reviewCount/bestRating/worstRating, Review nested con author/datePublished, verificar con Rich Results Test), moderacion centralizada (ReviewModerationService con moderate/autoApproveIfEligible/bulk/cola, reviews nunca publicadas sin moderacion, rating<=2 siempre manual), auditoria comparativa cross-vertical (tabla campos/nomenclatura/tenant/access/servicios/templates/rutas/Schema.org, clasificacion S/B/A/D/G, prioridad seguridad→trait→servicios→frontend→Schema.org→entidades nuevas). Auditoría de 4 sistemas heterogéneos con 20 hallazgos. Plan con cobertura 10 verticales canonicos. Reglas de oro #63 (trait transversal), #64 (Schema.org AggregateRating), #65 (auditoria comparativa cross-vertical). Aprendizaje #140. |
 | 2026-02-26 | **40.0.0** | **Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo Workflow:** 1 patrón nuevo: gestión de secretos en config/sync/ via $config overrides (YAML sanitizados con valores vacíos, settings.secrets.php con 14 getenv() → $config overrides para OAuth Google/LinkedIn/Microsoft + SMTP IONOS + reCAPTCHA v3 + Stripe, settings.php include chain, .env local gitignored + .env.example documentado, Lando env_file injection, git-filter-repo --blob-callback para limpieza de historial con Python subprocess para contraseñas con caracteres especiales $%[{}). Regla de oro #61 (gestión de secretos via $config overrides runtime-only). Aprendizaje #138. |
 | 2026-02-26 | **40.0.0** | **Meta-Sitios Multilingüe — i18n EN+PT-BR + Language Switcher + Hreflang Dinámico Workflow:** 2 patrones nuevos: traduccion batch de meta-sitios con AITranslationService (script drush que verifica idiomas configurados, carga PageContent por tenant_id, crea traducciones nativas con addTranslation(), traduce campos simples con translateBatch(), canvas_data con parsing GrapesJS recursive components[].content, rendered_html con regex text nodes batch, content_data con JSON recursive skip patterns para IDs/URLs/colores, path_alias con transliteracion + slugify, 46 traducciones creadas 0 errores), variables de idioma dinamicas via preprocess_html (available_languages + current_langcode inyectados desde getTranslationLanguages(), alimentan hreflang dinamico + language switcher condicional, NUNCA hardcodear idiomas en templates). 6 archivos nuevos: translate-metasite-pages.php, _language-switcher.html.twig, _language-switcher.scss, language-switcher.js, libreria en libraries.yml. 4 archivos modificados: _hreflang-meta.html.twig, _header-classic.html.twig, _header.html.twig, .theme. PT-BR: 12.038 traducciones Drupal importadas. Reglas de oro #61 (traduccion batch con AITranslationService), #62 (variables idioma dinamicas). Aprendizaje #139. |
 | 2026-02-26 | **39.0.0** | **REST APIs + A/B Backend + Deploy Stack (Sprints 5–7) Workflow:** 3 patrones nuevos: REST API publico con integracion opcional CRM/email (ContactApiController con Flood rate limit 5/min, validacion por campo, DB persistencia, `jaraba_crm.lead_service` + `hook_mail()` contact_notification/onboarding_* como servicios opcionales hasService()+try-catch, tabla analytics_events con UTM indexes auto-create), A/B testing server-side via hook_preprocess_page Layer 4 (inyeccion $variables['ab_variants'] desde ecosistema_jaraba_core.ab_tests YAML config, impression tracking, Twig cascada |default(), complementa frontend cookie-based metasite-experiments.js), deploy checklist reproducible (docs/operaciones/deploy_checklist_ionos.md con 7 secciones: pre-deploy+stack+DNS+SSL+post-deploy+verificacion+rollback). Reglas de oro #58 (REST APIs con CRM/email opcional), #59 (A/B backend Layer 4), #60 (deploy checklist reproducible). Aprendizaje #137. |

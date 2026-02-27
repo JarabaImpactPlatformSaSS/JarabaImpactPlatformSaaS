@@ -230,15 +230,70 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
     /**
      * {@inheritdoc}
      */
-    public function getTenantId(): int
+    public function isFeatured(): bool
     {
-        return (int) ($this->get('tenant_id')->value ?? 0);
+        return (bool) ($this->get('is_featured')->value ?? FALSE);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setTenantId(int $tenantId): static
+    public function getViewsCount(): int
+    {
+        return (int) ($this->get('views_count')->value ?? 0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTags(): string
+    {
+        return $this->get('tags')->value ?? '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSchemaType(): string
+    {
+        return $this->get('schema_type')->value ?? 'BlogPosting';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVertical(): string
+    {
+        return $this->get('vertical')->value ?? '';
+    }
+
+    /**
+     * Obtiene la entidad ContentAuthor referenciada.
+     *
+     * @return \Drupal\jaraba_content_hub\Entity\ContentAuthorInterface|null
+     *   La entidad ContentAuthor o NULL si no tiene una asignada.
+     */
+    public function getContentAuthorEntity(): ?ContentAuthorInterface
+    {
+        if ($this->get('content_author')->isEmpty()) {
+            return NULL;
+        }
+        return $this->get('content_author')->entity;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTenantId(): ?int
+    {
+        $target_id = $this->get('tenant_id')->target_id;
+        return $target_id !== NULL ? (int) $target_id : NULL;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setTenantId(?int $tenantId): static
     {
         $this->set('tenant_id', $tenantId);
         return $this;
@@ -473,6 +528,138 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
             ->setSetting('scale', 4)
             ->setDefaultValue(0);
 
+        // =====================================================================
+        // CONSOLIDACIÓN: Campos backporteados de jaraba_blog + clase mundial.
+        // =====================================================================
+
+        // Tags (comma-separated) para categorización flexible.
+        $fields['tags'] = BaseFieldDefinition::create('string_long')
+            ->setLabel(t('Tags'))
+            ->setDescription(t('Tags separados por comas para categorización flexible.'))
+            ->setTranslatable(TRUE)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textarea',
+                'weight' => -1,
+                'settings' => [
+                    'rows' => 2,
+                ],
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // Texto alternativo para la imagen destacada (accesibilidad/SEO).
+        $fields['featured_image_alt'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Alt Imagen Destacada'))
+            ->setDescription(t('Texto alternativo para la imagen destacada (accesibilidad y SEO).'))
+            ->setTranslatable(TRUE)
+            ->setSetting('max_length', 255)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => -2,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Flag de contenido destacado.
+        $fields['is_featured'] = BaseFieldDefinition::create('boolean')
+            ->setLabel(t('Destacado'))
+            ->setDescription(t('Indica si este artículo es contenido destacado.'))
+            ->setDefaultValue(FALSE)
+            ->setDisplayOptions('form', [
+                'type' => 'boolean_checkbox',
+                'weight' => 12,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Contador de visualizaciones.
+        $fields['views_count'] = BaseFieldDefinition::create('integer')
+            ->setLabel(t('Visualizaciones'))
+            ->setDescription(t('Número de visualizaciones del artículo.'))
+            ->setDefaultValue(0)
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'number_integer',
+                'weight' => 16,
+            ])
+            ->setDisplayConfigurable('view', TRUE);
+
+        // Tipo de Schema.org para datos estructurados.
+        $fields['schema_type'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Schema Type'))
+            ->setDescription(t('El tipo de Schema.org para datos estructurados SEO.'))
+            ->setDefaultValue('BlogPosting')
+            ->setSetting('allowed_values', [
+                'BlogPosting' => 'Blog Posting',
+                'Article' => 'Article',
+                'NewsArticle' => 'News Article',
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 22,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Imagen Open Graph (diferente de featured_image).
+        $fields['og_image'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Imagen Open Graph'))
+            ->setDescription(t('Imagen optimizada para redes sociales (1200x630).'))
+            ->setSetting('target_type', 'file')
+            ->setSetting('handler', 'default')
+            ->setDisplayOptions('form', [
+                'type' => 'image_image',
+                'weight' => 23,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Autor editorial (ContentAuthor entity).
+        $fields['content_author'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Autor Editorial'))
+            ->setDescription(t('El autor editorial del artículo (perfil público).'))
+            ->setSetting('target_type', 'content_author')
+            ->setSetting('handler', 'default')
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'entity_reference_label',
+                'weight' => -1,
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete',
+                'weight' => 13,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // Vertical canónica (VERTICAL-CANONICAL-001).
+        $fields['vertical'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Vertical'))
+            ->setDescription(t('La vertical canónica del ecosistema.'))
+            ->setSetting('allowed_values', [
+                'empleabilidad' => 'Empleabilidad',
+                'emprendimiento' => 'Emprendimiento',
+                'comercioconecta' => 'Comercio Conecta',
+                'agroconecta' => 'Agro Conecta',
+                'jarabalex' => 'JarabaLex',
+                'serviciosconecta' => 'Servicios Conecta',
+                'andalucia_ei' => 'Andalucía E.I.',
+                'jaraba_content_hub' => 'Content Hub',
+                'formacion' => 'Formación',
+                'demo' => 'Demo',
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => -1,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
+        // Fecha programada de publicación automática.
+        $fields['scheduled_at'] = BaseFieldDefinition::create('datetime')
+            ->setLabel(t('Publicación Programada'))
+            ->setDescription(t('Fecha/hora para auto-publicar via cron.'))
+            ->setDisplayOptions('form', [
+                'type' => 'datetime_default',
+                'weight' => 14,
+            ])
+            ->setDisplayConfigurable('form', TRUE);
+
         // Timestamps automáticos.
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Creado'))
@@ -530,12 +717,16 @@ class ContentArticle extends ContentEntityBase implements ContentArticleInterfac
             ->setDisplayConfigurable('form', FALSE)
             ->setDisplayConfigurable('view', FALSE);
 
-        // GAP-AUD-017: Tenant ID para aislamiento multi-tenant.
-        $fields['tenant_id'] = BaseFieldDefinition::create('integer')
-            ->setLabel(t('Tenant ID'))
-            ->setDescription(t('The tenant that owns this article.'))
-            ->setDefaultValue(0)
-            ->setDisplayOptions('form', ['type' => 'number', 'weight' => 90])
+        // TENANT-BRIDGE-001: Tenant como entity_reference a group.
+        $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Tenant'))
+            ->setDescription(t('The group/tenant that owns this article.'))
+            ->setSetting('target_type', 'group')
+            ->setSetting('handler', 'default')
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete',
+                'weight' => 90,
+            ])
             ->setDisplayConfigurable('form', TRUE)
             ->setDisplayConfigurable('view', FALSE);
 

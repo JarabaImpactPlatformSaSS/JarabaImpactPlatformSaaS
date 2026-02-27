@@ -94,6 +94,11 @@ class PageContentViewBuilder extends EntityViewBuilder
         // que son necesarios para los bloques interactivos y premium.
         $renderedHtml = $this->sanitizePageBuilderHtml($renderedHtml);
 
+        // REV-PHASE6: Reemplazar placeholders de review widget con datos en vivo.
+        if (str_contains($renderedHtml, 'data-jaraba-review-widget')) {
+            $renderedHtml = $this->processReviewWidgets($renderedHtml);
+        }
+
         if (!empty($renderedHtml)) {
             // Renderizar el HTML del canvas
             $build['content']['canvas_html'] = [
@@ -332,6 +337,155 @@ class PageContentViewBuilder extends EntityViewBuilder
         $css = preg_replace('/-moz-binding\s*:/i', '', $css);
 
         return $css;
+    }
+
+    /**
+     * Reemplaza placeholders de review widget con HTML renderizado server-side.
+     *
+     * REV-PHASE6: Detecta elementos con data-jaraba-review-widget, extrae
+     * data-entity-type y data-entity-id, y genera HTML de resumen de resenas
+     * usando ReviewAggregationService. PRESAVE-RESILIENCE-001 aplicado.
+     *
+     * @param string $html
+     *   HTML del canvas con posibles placeholders de review widget.
+     *
+     * @return string
+     *   HTML con widgets de resenas renderizados.
+     */
+    protected function processReviewWidgets(string $html): string
+    {
+        // Mapeo target entity type -> review entity type.
+        $targetToReviewMap = [
+            'merchant_profile' => 'comercio_review',
+            'producer_profile' => 'review_agro',
+            'provider_profile' => 'review_servicios',
+            'lms_course' => 'course_review',
+            'mentoring_session' => 'session_review',
+        ];
+
+        return preg_replace_callback(
+            '/<div[^>]*data-jaraba-review-widget[^>]*>.*?<\/div>/s',
+            function (array $matches) use ($targetToReviewMap): string {
+                $fullMatch = $matches[0];
+
+                // Extraer data-entity-type.
+                if (!preg_match('/data-entity-type="([^"]*)"/', $fullMatch, $typeMatch)) {
+                    return $fullMatch;
+                }
+                $entityType = $typeMatch[1];
+
+                // Extraer data-entity-id.
+                if (!preg_match('/data-entity-id="(\d+)"/', $fullMatch, $idMatch)) {
+                    return $fullMatch;
+                }
+                $entityId = (int) $idMatch[1];
+
+                if (empty($entityType) || $entityId <= 0) {
+                    return $fullMatch;
+                }
+
+                $reviewEntityType = $targetToReviewMap[$entityType] ?? NULL;
+                if ($reviewEntityType === NULL) {
+                    return $fullMatch;
+                }
+
+                // Extraer opciones adicionales.
+                $showSummary = TRUE;
+                if (preg_match('/data-show-summary="([^"]*)"/', $fullMatch, $sumMatch)) {
+                    $showSummary = $sumMatch[1] !== 'false';
+                }
+
+                // PRESAVE-RESILIENCE-001: servicio opcional, no romper si falla.
+                if (!\Drupal::hasService('ecosistema_jaraba_core.review_aggregation')) {
+                    return $fullMatch;
+                }
+
+                try {
+                    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewAggregationService $aggregation */
+                    $aggregation = \Drupal::service('ecosistema_jaraba_core.review_aggregation');
+                    $stats = $aggregation->getRatingStats($reviewEntityType, $entityType, $entityId);
+
+                    $average = (float) ($stats['average'] ?? 0);
+                    $count = (int) ($stats['count'] ?? 0);
+                    $distribution = $stats['distribution'] ?? [];
+
+                    return $this->buildReviewWidgetHtml($average, $count, $distribution, $showSummary);
+                }
+                catch (\Exception) {
+                    return $fullMatch;
+                }
+            },
+            $html
+        );
+    }
+
+    /**
+     * Genera HTML del widget de resenas para paginas publicas.
+     *
+     * REV-PHASE6: Renderizado server-side sin dependencia de JS.
+     *
+     * @param float $average
+     *   Promedio de rating (0-5).
+     * @param int $count
+     *   Numero total de resenas.
+     * @param array $distribution
+     *   Distribucion por estrellas: [1 => N, ..., 5 => N].
+     * @param bool $showSummary
+     *   Si se muestra el resumen con barras de distribucion.
+     *
+     * @return string
+     *   HTML del widget.
+     */
+    protected function buildReviewWidgetHtml(float $average, int $count, array $distribution, bool $showSummary): string
+    {
+        $avgFormatted = number_format($average, 1);
+
+        // Generar estrellas.
+        $stars = '';
+        for ($i = 1; $i <= 5; $i++) {
+            $stars .= $i <= round($average) ? '&#9733;' : '&#9734;';
+        }
+
+        $html = '<section class="review-widget" aria-label="' . htmlspecialchars((string) $this->t('Resenas'), ENT_QUOTES) . '">';
+
+        if ($count > 0) {
+            $html .= '<div class="review-widget__summary">';
+            $html .= '<div class="review-widget__overall">';
+            $html .= '<span class="review-widget__big-number">' . $avgFormatted . '</span>';
+            $html .= '<div class="star-rating-display star-rating-display--lg">';
+            $html .= '<span class="star-rating-display__stars" aria-label="' . $avgFormatted . ' ' . htmlspecialchars((string) $this->t('de 5'), ENT_QUOTES) . '">' . $stars . '</span>';
+            $html .= '<span class="star-rating-display__count">(' . $count . ')</span>';
+            $html .= '</div>';
+            $html .= '</div>';
+
+            if ($showSummary) {
+                $html .= '<div class="review-widget__distribution">';
+                for ($star = 5; $star >= 1; $star--) {
+                    $barCount = (int) ($distribution[$star] ?? 0);
+                    $barPct = $count > 0 ? round(($barCount / $count) * 100) : 0;
+
+                    $html .= '<div class="review-widget__bar">';
+                    $html .= '<span class="review-widget__bar-label">' . $star . ' &#9733;</span>';
+                    $html .= '<div class="review-widget__bar-track">';
+                    $html .= '<div class="review-widget__bar-fill" style="width: ' . $barPct . '%"></div>';
+                    $html .= '</div>';
+                    $html .= '<span class="review-widget__bar-count">' . $barCount . '</span>';
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+            }
+
+            $html .= '</div>';
+        }
+        else {
+            $html .= '<div class="review-widget__empty">';
+            $html .= '<p>' . htmlspecialchars((string) $this->t('Aun no hay resenas. Se el primero en opinar.'), ENT_QUOTES) . '</p>';
+            $html .= '</div>';
+        }
+
+        $html .= '</section>';
+
+        return $html;
     }
 
 }

@@ -7,6 +7,7 @@ namespace Drupal\jaraba_ai_agents\Tool;
 use Drupal\ai\OperationType\Chat\Tools\ToolsFunctionInput;
 use Drupal\ai\OperationType\Chat\Tools\ToolsInput;
 use Drupal\ai\OperationType\Chat\Tools\ToolsPropertyInput;
+use Drupal\ecosistema_jaraba_core\Service\AIGuardrailsService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -20,6 +21,15 @@ use Psr\Log\LoggerInterface;
  * PATRÓN:
  * Service Locator optimizado para herramientas IA. Las herramientas
  * se registran via services.yml con tag 'jaraba_ai_agents.tool'.
+ *
+ * SEGURIDAD (HAL-AI-01):
+ * Todos los outputs de herramientas pasan por AIGuardrailsService para:
+ * - sanitizeToolOutput(): Neutraliza prompt injection indirecto.
+ * - maskOutputPII(): Enmascara PII antes de retornar al LLM.
+ *
+ * APROBACION (HAL-AI-18):
+ * Herramientas con requiresApproval()=TRUE se validan contra
+ * PendingApprovalService antes de ejecutarse.
  */
 class ToolRegistry
 {
@@ -36,6 +46,7 @@ class ToolRegistry
      */
     public function __construct(
         protected LoggerInterface $logger,
+        protected ?AIGuardrailsService $guardrails = NULL,
     ) {
     }
 
@@ -49,6 +60,25 @@ class ToolRegistry
     {
         $this->tools[$tool->getId()] = $tool;
         $this->logger->debug('Tool registered: @id', ['@id' => $tool->getId()]);
+    }
+
+    /**
+     * Adds a tool service to the registry (called by CompilerPass).
+     *
+     * @param object $service
+     *   The tagged service object.
+     * @param string $serviceId
+     *   The service ID.
+     */
+    public function addToolService(object $service, string $serviceId): void
+    {
+        if ($service instanceof ToolInterface) {
+            $this->register($service);
+        } else {
+            $this->logger->warning('Service @id tagged as tool but does not implement ToolInterface.', [
+                '@id' => $serviceId,
+            ]);
+        }
     }
 
     /**
@@ -118,12 +148,15 @@ class ToolRegistry
     /**
      * Ejecuta una herramienta por ID.
      *
+     * HAL-AI-01: El output pasa por guardrails (sanitizeToolOutput + maskOutputPII).
+     * HAL-AI-18: Herramientas con requiresApproval() se bloquean hasta aprobación.
+     *
      * @param string $toolId
      *   ID de la herramienta.
      * @param array $params
      *   Parámetros de entrada.
      * @param array $context
-     *   Contexto de ejecución.
+     *   Contexto de ejecución (tenant_id, user_id, workflow_id, etc.).
      *
      * @return array
      *   Resultado de la ejecución.
@@ -149,6 +182,16 @@ class ToolRegistry
             ];
         }
 
+        // HAL-AI-18: Check approval requirement before execution.
+        // Skip if context signals pre-approval (e.g., PendingApprovalService::approve()
+        // or WorkflowExecutorService already checked).
+        if ($tool->requiresApproval() && empty($context['pre_approved'])) {
+            $approvalResult = $this->checkApproval($toolId, $params, $context);
+            if ($approvalResult !== NULL) {
+                return $approvalResult;
+            }
+        }
+
         // Ejecutar.
         try {
             $result = $tool->execute($params, $context);
@@ -156,7 +199,9 @@ class ToolRegistry
                 '@id' => $toolId,
                 '@success' => $result['success'] ? 'true' : 'false',
             ]);
-            return $result;
+
+            // HAL-AI-01: Sanitize tool output via guardrails.
+            return $this->sanitizeResult($result, $toolId);
         } catch (\Exception $e) {
             $this->logger->error('Tool @id failed: @error', [
                 '@id' => $toolId,
@@ -165,6 +210,124 @@ class ToolRegistry
             return [
                 'success' => FALSE,
                 'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Sanitizes a tool execution result via AIGuardrailsService (HAL-AI-01).
+     *
+     * Applies two layers of sanitization:
+     * 1. sanitizeToolOutput(): Neutralizes indirect prompt injection patterns.
+     * 2. maskOutputPII(): Masks PII (emails, DNIs, IBANs, etc.) in output.
+     *
+     * @param array $result
+     *   The raw tool execution result.
+     * @param string $toolId
+     *   The tool ID for logging context.
+     *
+     * @return array
+     *   The sanitized result.
+     */
+    protected function sanitizeResult(array $result, string $toolId): array
+    {
+        if (!$this->guardrails) {
+            return $result;
+        }
+
+        try {
+            // Sanitize string values recursively in the result.
+            $result = $this->sanitizeArrayValues($result);
+        } catch (\Exception $e) {
+            $this->logger->warning('Guardrails sanitization failed for tool @id: @error', [
+                '@id' => $toolId,
+                '@error' => $e->getMessage(),
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Recursively sanitizes string values in an array.
+     *
+     * @param array $data
+     *   Data to sanitize.
+     *
+     * @return array
+     *   Sanitized data.
+     */
+    protected function sanitizeArrayValues(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_string($value) && $key !== 'error') {
+                // sanitizeToolOutput neutralizes injection + masks PII.
+                $data[$key] = $this->guardrails->sanitizeToolOutput($value);
+            } elseif (is_array($value)) {
+                $data[$key] = $this->sanitizeArrayValues($value);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Checks approval requirement for a tool (HAL-AI-18).
+     *
+     * Consults PendingApprovalService to verify if the tool has been
+     * pre-approved. If not, creates an approval request and returns
+     * a pending response for the tool use loop to handle.
+     *
+     * @param string $toolId
+     *   The tool ID.
+     * @param array $params
+     *   Tool parameters.
+     * @param array $context
+     *   Execution context.
+     *
+     * @return array|null
+     *   Pending approval response, or NULL if approved/no service.
+     */
+    protected function checkApproval(string $toolId, array $params, array $context): ?array
+    {
+        // PendingApprovalService is resolved lazily to avoid circular dependency.
+        if (!\Drupal::hasService('jaraba_ai_agents.pending_approval')) {
+            $this->logger->warning('Tool @id requires approval but PendingApprovalService not available.', [
+                '@id' => $toolId,
+            ]);
+            return NULL;
+        }
+
+        try {
+            /** @var \Drupal\jaraba_ai_agents\Service\PendingApprovalService $approvalService */
+            $approvalService = \Drupal::service('jaraba_ai_agents.pending_approval');
+
+            // Check if there's already an approved request for this tool+params.
+            $workflowId = $context['workflow_id'] ?? 'direct_execution';
+            $stepId = $context['step_id'] ?? $toolId . '_' . md5(json_encode($params));
+
+            $approval = $approvalService->create($workflowId, $stepId, $toolId, $params, $context);
+
+            $this->logger->info('Tool @id requires approval. Created request @approval_id.', [
+                '@id' => $toolId,
+                '@approval_id' => $approval->id(),
+            ]);
+
+            return [
+                'success' => FALSE,
+                'pending_approval' => TRUE,
+                'approval_id' => $approval->id(),
+                'tool_id' => $toolId,
+                'message' => "Tool '{$toolId}' requires human approval before execution.",
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('Approval check failed for tool @id: @error', [
+                '@id' => $toolId,
+                '@error' => $e->getMessage(),
+            ]);
+            // Fail-safe: block execution if approval check fails.
+            return [
+                'success' => FALSE,
+                'error' => 'Approval system unavailable. Tool execution blocked for safety.',
             ];
         }
     }

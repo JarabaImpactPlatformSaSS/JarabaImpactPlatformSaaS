@@ -6,61 +6,82 @@ namespace Drupal\jaraba_servicios_conecta\Access;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Control de acceso para la entidad ReviewServicios.
+ * Control de acceso para review_servicios con verificacion de tenant.
  *
- * Estructura: Extiende EntityAccessControlHandler con logica
- *   de permisos por operacion y rol.
- *
- * Logica:
- *   - View: publico si status == 'approved', o admin con 'manage servicios reviews'.
- *   - Create: usuario autenticado con permiso 'submit servicios reviews'.
- *   - Update: profesional puede anadir respuesta ('respond servicios reviews'),
- *     admin puede cambiar estado ('manage servicios reviews').
- *   - Delete: solo admin con 'manage servicios reviews'.
+ * TENANT-ISOLATION-ACCESS-001: update/delete requieren mismo tenant.
  */
-class ReviewServiciosAccessControlHandler extends EntityAccessControlHandler {
+class ReviewServiciosAccessControlHandler extends EntityAccessControlHandler implements EntityHandlerInterface {
+
+  public function __construct(
+    EntityTypeInterface $entity_type,
+    protected readonly TenantContextService $tenantContext,
+  ) {
+    parent::__construct($entity_type);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type): static {
+    return new static(
+      $entity_type,
+      $container->get('ecosistema_jaraba_core.tenant_context'),
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
-    // Administradores con permiso de gestion tienen acceso completo.
     if ($account->hasPermission('manage servicios reviews')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    switch ($operation) {
-      case 'view':
-        // Las resenas aprobadas son publicas para quien tenga permiso de ver.
-        $status = $entity->get('status')->value;
-        if ($status === 'approved') {
-          return AccessResult::allowedIfHasPermission($account, 'view servicios reviews')
-            ->addCacheableDependency($entity);
-        }
-        // El autor puede ver su propia resena en cualquier estado.
-        if ((int) $entity->getOwnerId() === (int) $account->id() && $account->isAuthenticated()) {
-          return AccessResult::allowed()
-            ->addCacheableDependency($entity)
-            ->cachePerUser();
-        }
-        return AccessResult::neutral()->addCacheableDependency($entity);
-
-      case 'update':
-        // El profesional puede anadir respuesta.
-        if ($account->hasPermission('respond servicios reviews')) {
-          return AccessResult::allowed()->cachePerPermissions();
-        }
-        return AccessResult::neutral();
-
-      case 'delete':
-        // Solo admin (ya cubierto arriba).
-        return AccessResult::neutral();
+    // TENANT-ISOLATION-ACCESS-001.
+    if (in_array($operation, ['update', 'delete'], TRUE)) {
+      $tenantMismatch = $this->checkTenantIsolation($entity);
+      if ($tenantMismatch !== NULL) {
+        return $tenantMismatch;
+      }
     }
 
+    return match ($operation) {
+      'view' => $this->checkViewAccess($entity, $account),
+      'update' => $this->checkUpdateAccess($entity, $account),
+      'delete' => AccessResult::neutral()->cachePerPermissions(),
+      default => AccessResult::neutral(),
+    };
+  }
+
+  protected function checkViewAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
+    $status = $entity->hasField('status') ? $entity->get('status')->value : NULL;
+    if ($status === 'approved') {
+      return AccessResult::allowedIfHasPermission($account, 'view servicios reviews')
+        ->addCacheableDependency($entity);
+    }
+    if ((int) $entity->getOwnerId() === (int) $account->id() && $account->isAuthenticated()) {
+      return AccessResult::allowed()->cachePerUser()->addCacheableDependency($entity);
+    }
+    return AccessResult::neutral()->addCacheableDependency($entity);
+  }
+
+  protected function checkUpdateAccess(EntityInterface $entity, AccountInterface $account): AccessResult {
+    if ($account->hasPermission('respond servicios reviews')) {
+      return AccessResult::allowed()->cachePerPermissions();
+    }
+    if ((int) $entity->getOwnerId() === (int) $account->id()) {
+      return AccessResult::allowedIfHasPermission($account, 'edit own reviews')
+        ->cachePerUser()
+        ->addCacheableDependency($entity);
+    }
     return AccessResult::neutral();
   }
 
@@ -70,8 +91,39 @@ class ReviewServiciosAccessControlHandler extends EntityAccessControlHandler {
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL): AccessResult {
     return AccessResult::allowedIfHasPermissions($account, [
       'manage servicios reviews',
-      'submit servicios reviews',
+      'submit reviews',
     ], 'OR');
+  }
+
+  /**
+   * Verifica aislamiento de tenant (TENANT-ISOLATION-ACCESS-001).
+   */
+  protected function checkTenantIsolation(EntityInterface $entity): ?AccessResult {
+    if (!$entity->hasField('tenant_id') || $entity->get('tenant_id')->isEmpty()) {
+      return NULL;
+    }
+    $entityGroupId = (int) $entity->get('tenant_id')->target_id;
+    if ($entityGroupId === 0) {
+      return NULL;
+    }
+    try {
+      $currentTenant = $this->tenantContext->getCurrentTenant();
+      if ($currentTenant === NULL) {
+        return NULL;
+      }
+      $currentGroupId = $currentTenant->hasField('group_id')
+        ? (int) $currentTenant->get('group_id')->target_id
+        : (int) $currentTenant->id();
+      if ($currentGroupId > 0 && $entityGroupId !== $currentGroupId) {
+        return AccessResult::forbidden('Tenant mismatch.')
+          ->addCacheableDependency($entity)
+          ->cachePerUser();
+      }
+    }
+    catch (\Exception) {
+      return NULL;
+    }
+    return NULL;
   }
 
 }

@@ -49,6 +49,34 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     // API DOCUMENTATION (Q1 2027)
     // =========================================================================
     
+    // =========================================================================
+    // REV-PHASE5: Reviews page render theme
+    // =========================================================================
+    'reviews_page' => [
+      'variables' => [
+        'target_entity' => NULL,
+        'vertical' => NULL,
+        'stats' => [],
+        'reviews' => [],
+        'current_page' => 0,
+        'per_page' => 10,
+      ],
+      'template' => 'reviews-page',
+      'path' => $path . '/templates',
+    ],
+    'reviews_page__slide_panel' => [
+      'variables' => [
+        'target_entity' => NULL,
+        'vertical' => NULL,
+        'stats' => [],
+        'reviews' => [],
+        'current_page' => 0,
+        'per_page' => 10,
+      ],
+      'template' => 'reviews-page--slide-panel',
+      'path' => $path . '/templates',
+    ],
+
     // Swagger UI para documentación interactiva de la API
     // Ruta: /api/docs
     'api_docs' => [
@@ -2231,6 +2259,95 @@ function ecosistema_jaraba_core_page_attachments_alter(array &$attachments) {
       'ecosistema_jaraba_premium_structure_styles',
     ];
   }
+
+  // ---------------------------------------------------------------------------
+  // REV-PHASE7: Schema.org AggregateRating + Review[] JSON-LD
+  // ---------------------------------------------------------------------------
+  // Inyectar JSON-LD en paginas canonicas de entidades reviewables.
+  _ecosistema_jaraba_core_inject_review_schema($attachments);
+}
+
+/**
+ * Inyecta Schema.org AggregateRating + Review[] JSON-LD en el <head>.
+ *
+ * REV-PHASE7: Centralizado para todas las verticales reviewables.
+ * Solo se ejecuta en rutas canonicas de entidades con resenas.
+ * PRESAVE-RESILIENCE-001: No rompe si el servicio no existe.
+ *
+ * @param array &$attachments
+ *   Render array de page attachments.
+ */
+function _ecosistema_jaraba_core_inject_review_schema(array &$attachments): void {
+  // Mapeo de route_name a [review_entity_type, target_entity_type, route_param].
+  $routeSchemaMap = [
+    'entity.merchant_profile.canonical' => ['comercio_review', 'merchant_profile', 'merchant_profile'],
+    'entity.producer_profile.canonical' => ['review_agro', 'producer_profile', 'producer_profile'],
+    'entity.provider_profile.canonical' => ['review_servicios', 'provider_profile', 'provider_profile'],
+    'entity.lms_course.canonical' => ['course_review', 'lms_course', 'lms_course'],
+    'entity.mentoring_session.canonical' => ['session_review', 'mentoring_session', 'mentoring_session'],
+  ];
+
+  $routeMatch = \Drupal::routeMatch();
+  $routeName = $routeMatch->getRouteName();
+
+  if (!$routeName || !isset($routeSchemaMap[$routeName])) {
+    return;
+  }
+
+  [$reviewEntityType, $targetEntityType, $routeParam] = $routeSchemaMap[$routeName];
+
+  // Obtener la entidad del route parameter.
+  $entity = $routeMatch->getParameter($routeParam);
+  if (!$entity || !($entity instanceof \Drupal\Core\Entity\EntityInterface)) {
+    return;
+  }
+
+  // PRESAVE-RESILIENCE-001: servicio opcional.
+  if (!\Drupal::hasService('ecosistema_jaraba_core.review_schema_org')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewSchemaOrgService $schemaService */
+    $schemaService = \Drupal::service('ecosistema_jaraba_core.review_schema_org');
+
+    // Generar AggregateRating.
+    $aggregateRating = $schemaService->generateAggregateRating(
+      $reviewEntityType,
+      $targetEntityType,
+      (int) $entity->id()
+    );
+
+    // Sin resenas aprobadas: no inyectar nada.
+    if ($aggregateRating === NULL) {
+      return;
+    }
+
+    // Generar lista de resenas (ultimas 5).
+    $reviews = $schemaService->generateReviewList(
+      $reviewEntityType,
+      $targetEntityType,
+      (int) $entity->id(),
+      5
+    );
+
+    // Ensamblar JSON-LD completo.
+    $jsonLd = $schemaService->buildProductJsonLd($entity, $aggregateRating, $reviews);
+
+    // Inyectar en <head>.
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+      ],
+      'review_aggregate_json_ld',
+    ];
+  }
+  catch (\Exception $e) {
+    // Non-blocking: schema generation failure should not break the page.
+  }
 }
 
 /**
@@ -2841,6 +2958,9 @@ HTML;
  * F2 — Doc 183 §4: first_sale trigger (42% expected conversion).
  */
 function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
+  // REV-PHASE3: Recalcular agregacion de ratings para entidades de resena.
+  _ecosistema_jaraba_core_review_aggregation_trigger($entity);
+
   // Guard: Only process commerce_order entities.
   if ($entity->getEntityTypeId() !== 'commerce_order') {
     return;
@@ -3165,4 +3285,55 @@ function ecosistema_jaraba_core_preprocess_page(array &$variables): void {
   }
 
   $variables['ab_variants'] = $variants;
+}
+
+/**
+ * Implements hook_entity_insert() for review entities.
+ *
+ * REV-PHASE3: Recalcula agregacion de ratings al crear una resena aprobada.
+ * Sigue PRESAVE-RESILIENCE-001 — nunca falla el guardado por servicios opcionales.
+ */
+function ecosistema_jaraba_core_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  _ecosistema_jaraba_core_review_aggregation_trigger($entity);
+}
+
+/**
+ * Trigger review aggregation recalculation for review entities.
+ *
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_review_aggregation_trigger(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $reviewEntityTypes = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+  ];
+
+  if (!in_array($entity->getEntityTypeId(), $reviewEntityTypes, TRUE)) {
+    return;
+  }
+
+  if (!\Drupal::hasService('ecosistema_jaraba_core.review_aggregation')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewAggregationService $aggregation */
+    $aggregation = \Drupal::service('ecosistema_jaraba_core.review_aggregation');
+    $aggregation->recalculateForReviewEntity($entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'Review aggregation failed for @type @id: @msg',
+      [
+        '@type' => $entity->getEntityTypeId(),
+        '@id' => $entity->id(),
+        '@msg' => $e->getMessage(),
+      ]
+    );
+  }
 }

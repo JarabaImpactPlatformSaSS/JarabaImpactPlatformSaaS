@@ -126,7 +126,11 @@ class ContentArticleAccessControlHandler extends EntityAccessControlHandler
         if (!$entity->hasField('tenant_id')) {
             return NULL;
         }
-        $entityTenantId = (int) $entity->get('tenant_id')->value;
+        $entityTenantId = $entity->get('tenant_id')->target_id;
+        if ($entityTenantId === NULL) {
+            return NULL;
+        }
+        $entityTenantId = (int) $entityTenantId;
         if ($entityTenantId === 0) {
             return NULL;
         }

@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\ecosistema_jaraba_core\Entity\ReviewableEntityTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -55,6 +56,7 @@ class ReviewRetail extends ContentEntityBase implements EntityChangedInterface, 
 
   use EntityChangedTrait;
   use EntityOwnerTrait;
+  use ReviewableEntityTrait;
 
   /**
    * {@inheritdoc}
@@ -63,10 +65,11 @@ class ReviewRetail extends ContentEntityBase implements EntityChangedInterface, 
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
+    // TENANT-BRIDGE-001: tenant_id como entity_reference a group.
     $fields['tenant_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Tenant'))
       ->setRequired(TRUE)
-      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('target_type', 'group')
       ->setDisplayOptions('form', ['weight' => 0])
       ->setDisplayConfigurable('form', TRUE);
 
@@ -145,6 +148,11 @@ class ReviewRetail extends ContentEntityBase implements EntityChangedInterface, 
       ->setLabel(t('Compra verificada'))
       ->setDefaultValue(FALSE)
       ->setDisplayConfigurable('view', TRUE);
+
+    // Campos del trait: solo ai_summary y ai_summary_generated_at (los demas ya existen).
+    $traitFields = static::reviewableBaseFieldDefinitions();
+    $fields['ai_summary'] = $traitFields['ai_summary'];
+    $fields['ai_summary_generated_at'] = $traitFields['ai_summary_generated_at'];
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));

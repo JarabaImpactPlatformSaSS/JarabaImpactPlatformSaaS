@@ -116,6 +116,21 @@ class ReActLoopService
                     'tool' => $toolId,
                     'result' => $toolResult,
                 ];
+
+                // HAL-AI-18: If tool requires approval, stop the loop early
+                // and inform the caller that human approval is needed.
+                if (!empty($toolResult['pending_approval'])) {
+                    $steps[] = $step;
+                    return [
+                        'success' => FALSE,
+                        'pending_approval' => TRUE,
+                        'approval_id' => $toolResult['approval_id'] ?? NULL,
+                        'final_answer' => "Tool '{$toolId}' requires human approval before execution.",
+                        'steps' => $steps,
+                        'total_steps' => $stepNumber,
+                        'tools_used' => array_unique($toolsUsed),
+                    ];
+                }
             }
 
             $steps[] = $step;

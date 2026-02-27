@@ -15,10 +15,14 @@
     var _csrfToken = null;
     function getCsrfToken() {
         if (_csrfToken) return Promise.resolve(_csrfToken);
-        return fetch('/session/token')
+        // ROUTE-LANGPREFIX-001: Use Drupal.url() to respect language prefix.
+        return fetch(Drupal.url('/session/token'))
             .then(function (r) { return r.text(); })
             .then(function (token) { _csrfToken = token; return token; });
     }
+
+    // Reduced motion preference.
+    var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /**
      * Genera HTML de estrellas según rating.
@@ -115,7 +119,8 @@
                 var targetId = container.dataset.agroTargetId;
                 if (!targetType || !targetId) return;
 
-                fetch('/api/v1/agro/reviews/stats?target_type=' + targetType + '&target_id=' + targetId)
+                // ROUTE-LANGPREFIX-001: Use Drupal.url() to respect language prefix.
+                fetch(Drupal.url('/api/v1/agro/reviews/stats') + '?target_type=' + targetType + '&target_id=' + targetId)
                     .then(function (r) { return r.json(); })
                     .then(function (resp) {
                         if (resp.data) {
@@ -137,7 +142,8 @@
 
                 container.innerHTML = '<div class="agro-reviews__loading"><span class="agro-spinner"></span> ' + Drupal.t('Cargando reseñas...') + '</div>';
 
-                fetch('/api/v1/agro/reviews?target_type=' + targetType + '&target_id=' + targetId + '&limit=' + limit)
+                // ROUTE-LANGPREFIX-001: Use Drupal.url() to respect language prefix.
+                fetch(Drupal.url('/api/v1/agro/reviews') + '?target_type=' + targetType + '&target_id=' + targetId + '&limit=' + limit)
                     .then(function (r) { return r.json(); })
                     .then(function (resp) {
                         if (!resp.data || resp.data.length === 0) {
@@ -172,7 +178,17 @@
                 var starsContainer = form.querySelector('.agro-stars--interactive');
 
                 if (starsContainer) {
-                    var stars = starsContainer.querySelectorAll('.agro-stars__star');
+                    var stars = Array.from(starsContainer.querySelectorAll('.agro-stars__star'));
+
+                    function updateAriaStars() {
+                        stars.forEach(function (s) {
+                            var sv = parseInt(s.dataset.value, 10);
+                            s.classList.toggle('agro-stars__star--filled', sv <= selectedRating);
+                            s.classList.toggle('agro-stars__star--empty', sv > selectedRating);
+                            s.setAttribute('aria-checked', sv <= selectedRating ? 'true' : 'false');
+                        });
+                    }
+
                     stars.forEach(function (star) {
                         // Hover.
                         star.addEventListener('mouseenter', function () {
@@ -188,16 +204,48 @@
                         star.addEventListener('click', function () {
                             selectedRating = parseInt(this.dataset.value, 10);
                             form.querySelector('[name="rating"]').value = selectedRating;
+                            // WCAG: Update ARIA state and focus management.
+                            stars.forEach(function (s) { s.setAttribute('tabindex', '-1'); });
+                            this.setAttribute('tabindex', '0');
+                            updateAriaStars();
                         });
+                    });
+
+                    // WCAG: Keyboard navigation (ArrowLeft/Right, Enter/Space).
+                    starsContainer.addEventListener('keydown', function (e) {
+                        var target = e.target.closest('.agro-stars__star');
+                        if (!target) return;
+                        var idx = stars.indexOf(target);
+
+                        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            var next = Math.min(idx + 1, stars.length - 1);
+                            stars.forEach(function (s) { s.setAttribute('tabindex', '-1'); });
+                            stars[next].setAttribute('tabindex', '0');
+                            stars[next].focus();
+                            selectedRating = next + 1;
+                            form.querySelector('[name="rating"]').value = selectedRating;
+                            updateAriaStars();
+                        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            var prev = Math.max(idx - 1, 0);
+                            stars.forEach(function (s) { s.setAttribute('tabindex', '-1'); });
+                            stars[prev].setAttribute('tabindex', '0');
+                            stars[prev].focus();
+                            selectedRating = prev + 1;
+                            form.querySelector('[name="rating"]').value = selectedRating;
+                            updateAriaStars();
+                        } else if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            selectedRating = parseInt(target.dataset.value, 10);
+                            form.querySelector('[name="rating"]').value = selectedRating;
+                            updateAriaStars();
+                        }
                     });
 
                     // Mouse leave: restore.
                     starsContainer.addEventListener('mouseleave', function () {
-                        stars.forEach(function (s) {
-                            var sv = parseInt(s.dataset.value, 10);
-                            s.classList.toggle('agro-stars__star--filled', sv <= selectedRating);
-                            s.classList.toggle('agro-stars__star--empty', sv > selectedRating);
-                        });
+                        updateAriaStars();
                     });
                 }
 
@@ -225,7 +273,8 @@
                     };
 
                     getCsrfToken().then(function (token) {
-                        return fetch('/api/v1/agro/reviews', {
+                        // ROUTE-LANGPREFIX-001: Use Drupal.url() to respect language prefix.
+                        return fetch(Drupal.url('/api/v1/agro/reviews'), {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -256,17 +305,19 @@
                 });
             });
 
-            // === Animaciones de entrada ===
-            var reviewCards = once('review-animate', '.agro-review, .agro-rating-summary', context);
-            reviewCards.forEach(function (card, index) {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(10px)';
-                setTimeout(function () {
-                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 50);
-            });
+            // === Animaciones de entrada (respeta prefers-reduced-motion) ===
+            if (!prefersReducedMotion) {
+                var reviewCards = once('review-animate', '.agro-review, .agro-rating-summary', context);
+                reviewCards.forEach(function (card, index) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(10px)';
+                    setTimeout(function () {
+                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 50);
+                });
+            }
         }
     };
 
