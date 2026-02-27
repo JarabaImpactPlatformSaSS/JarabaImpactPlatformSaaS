@@ -1,0 +1,175 @@
+// =============================================================================
+// Success Cases — List Page (Hero + Filters + Grid + Pager)
+// =============================================================================
+@use 'sass:color';
+@use 'variables' as *;
+
+// --- Hero ---
+.sc-hero {
+    background: linear-gradient(135deg, var(--ej-color-corporate, $azul-corporativo), color.scale($azul-corporativo, $lightness: 20%));
+    padding: 4rem 1.5rem 3rem;
+    text-align: center;
+    color: #fff;
+
+    &__container {
+        max-width: $sc-container-max;
+        margin-inline: auto;
+    }
+
+    &__title {
+        font-family: $sc-font;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin: 0 0 0.75rem;
+        letter-spacing: -0.02em;
+    }
+
+    &__subtitle {
+        font-family: $sc-font;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        opacity: 0.85;
+        margin: 0;
+        max-width: 600px;
+        margin-inline: auto;
+    }
+}
+
+// --- Filters ---
+.sc-filters {
+    background: var(--ej-bg-surface, #fff);
+    border-bottom: 1px solid var(--ej-border-color, #e5e7eb);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    &__container {
+        max-width: $sc-container-max;
+        margin-inline: auto;
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    &__btn {
+        font-family: $sc-font;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 100px;
+        text-decoration: none;
+        white-space: nowrap;
+        color: var(--ej-text-muted, $ej-color-neutral);
+        background: var(--ej-bg-body, #f8fafc);
+        border: 1px solid var(--ej-border-color, #e5e7eb);
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: var(--ej-color-corporate, $azul-corporativo);
+            border-color: var(--ej-color-corporate, $azul-corporativo);
+            background: color.scale($azul-corporativo, $lightness: 92%);
+        }
+
+        &--active {
+            color: #fff;
+            background: var(--ej-color-corporate, $azul-corporativo);
+            border-color: var(--ej-color-corporate, $azul-corporativo);
+        }
+    }
+}
+
+// --- Grid ---
+.sc-grid {
+    padding: 2rem 1.5rem;
+
+    &__container {
+        max-width: $sc-container-max;
+        margin-inline: auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+
+        @media (max-width: 767px) {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+// --- Pager ---
+.sc-pager {
+    padding: 1.5rem;
+    max-width: $sc-container-max;
+    margin-inline: auto;
+
+    .pager {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pager__item a,
+    .pager__item span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 0.5rem;
+        border-radius: 8px;
+        font-family: $sc-font;
+        font-size: 0.875rem;
+        text-decoration: none;
+        color: var(--ej-text-primary, #1f2937);
+        background: var(--ej-bg-surface, #fff);
+        border: 1px solid var(--ej-border-color, #e5e7eb);
+        transition: all 0.2s ease;
+    }
+
+    .pager__item a:hover {
+        background: color.scale($azul-corporativo, $lightness: 92%);
+        border-color: var(--ej-color-corporate, $azul-corporativo);
+    }
+
+    .pager__item--active span {
+        background: var(--ej-color-corporate, $azul-corporativo);
+        color: #fff;
+        border-color: var(--ej-color-corporate, $azul-corporativo);
+    }
+}
+
+// --- Empty State ---
+.sc-empty {
+    padding: 4rem 1.5rem;
+
+    &__container {
+        max-width: 480px;
+        margin-inline: auto;
+        text-align: center;
+    }
+
+    &__text {
+        font-family: $sc-font;
+        color: var(--ej-text-muted, $ej-color-neutral);
+        margin: 1rem 0;
+    }
+
+    &__link {
+        font-family: $sc-font;
+        color: var(--ej-color-corporate, $azul-corporativo);
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

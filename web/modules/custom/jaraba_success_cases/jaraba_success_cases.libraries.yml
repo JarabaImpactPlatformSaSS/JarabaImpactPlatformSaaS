@@ -1,0 +1,10 @@
+success-cases:
+  css:
+    component:
+      css/jaraba-success-cases.css: {}
+  js:
+    js/success-cases.js: {}
+  dependencies:
+    - core/once
+    - core/drupal
+    - ecosistema_jaraba_core/global

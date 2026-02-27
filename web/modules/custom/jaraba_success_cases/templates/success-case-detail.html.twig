@@ -1,0 +1,226 @@
+{# 
+/**
+ * @file
+ * Template for the Success Case detail page.
+ *
+ * Shows the full narrative (Challenge → Solution → Result),
+ * metrics, quotes, and optional video embed.
+ *
+ * Available variables (flat primitives from Controller):
+ * - case.name, case.profession, case.company, case.sector, case.location
+ * - case.vertical, case.program_name, case.program_funder, case.program_year
+ * - case.challenge_before, case.solution_during, case.result_after
+ * - case.quote_short, case.quote_long
+ * - case.metrics (JSON decoded array)
+ * - case.rating, case.featured
+ * - case.website, case.linkedin
+ * - case.meta_description
+ *
+ * Route: /caso-de-exito/{slug}
+ *
+ * @ingroup jaraba_success_cases
+ */
+#}
+
+{# Breadcrumb #}
+<nav class="sc-detail__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+  <a href="{{ path('jaraba_success_cases.list') }}">{% trans %}Casos de Éxito{% endtrans %}</a>
+  <span aria-hidden="true">›</span>
+  <span>{{ case.name }}</span>
+</nav>
+
+<article class="sc-detail" itemscope itemtype="https://schema.org/Review">
+
+  {# Hero Header #}
+  <header class="sc-detail__header">
+    <div class="sc-detail__header-content">
+      <div class="sc-detail__avatar sc-detail__avatar--placeholder">
+        {{ case.name|first|upper }}
+      </div>
+      <div class="sc-detail__header-info">
+        <h1 class="sc-detail__name" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <span itemprop="name">{{ case.name }}</span>
+        </h1>
+        {% if case.profession %}
+          <p class="sc-detail__profession" itemprop="jobTitle">{{ case.profession }}</p>
+        {% endif %}
+        {% if case.company %}
+          <p class="sc-detail__company">
+            {{ jaraba_icon('business', 'building', { size: '16px', color: 'corporate' }) }}
+            {{ case.company }}
+          </p>
+        {% endif %}
+        {% if case.location %}
+          <p class="sc-detail__location">
+            {{ jaraba_icon('ui', 'map-pin', { size: '16px', color: 'neutral' }) }}
+            {{ case.location }}
+          </p>
+        {% endif %}
+
+        {# Vertical + Program badges #}
+        <div class="sc-detail__badges">
+          {% if case.vertical %}
+            <span class="sc-badge sc-badge--{{ case.vertical }}">{{ case.vertical|replace({'_': ' '})|capitalize }}</span>
+          {% endif %}
+          {% if case.program_name %}
+            <span class="sc-badge sc-badge--program">{{ case.program_name }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {# Narrative Sections #}
+  <div class="sc-detail__narrative">
+
+    {# Challenge (Before) #}
+    {% if case.challenge_before %}
+      <section class="sc-section sc-section--challenge">
+        <div class="sc-section__icon">
+          {{ jaraba_icon('business', 'target', { variant: 'duotone', size: '32px', color: 'danger' }) }}
+        </div>
+        <div class="sc-section__content">
+          <h2 class="sc-section__title">{% trans %}El Reto{% endtrans %}</h2>
+          <div class="sc-section__body">{{ case.challenge_before|raw }}</div>
+        </div>
+      </section>
+    {% endif %}
+
+    {# Solution (During) #}
+    {% if case.solution_during %}
+      <section class="sc-section sc-section--solution">
+        <div class="sc-section__icon">
+          {{ jaraba_icon('ai', 'brain', { variant: 'duotone', size: '32px', color: 'innovation' }) }}
+        </div>
+        <div class="sc-section__content">
+          <h2 class="sc-section__title">{% trans %}La Solución{% endtrans %}</h2>
+          <div class="sc-section__body">{{ case.solution_during|raw }}</div>
+        </div>
+      </section>
+    {% endif %}
+
+    {# Result (After) #}
+    {% if case.result_after %}
+      <section class="sc-section sc-section--result">
+        <div class="sc-section__icon">
+          {{ jaraba_icon('analytics', 'chart-up', { variant: 'duotone', size: '32px', color: 'success' }) }}
+        </div>
+        <div class="sc-section__content">
+          <h2 class="sc-section__title">{% trans %}El Resultado{% endtrans %}</h2>
+          <div class="sc-section__body">{{ case.result_after|raw }}</div>
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+  {# Metrics Bar #}
+  {% if case.metrics %}
+    <section class="sc-metrics" aria-label="{% trans %}Métricas de impacto{% endtrans %}">
+      <h2 class="sc-metrics__title">{% trans %}Impacto en números{% endtrans %}</h2>
+      <div class="sc-metrics__grid">
+        {% for key, value in case.metrics %}
+          <div class="sc-metrics__item">
+            <span class="sc-metrics__value" data-counter="{{ value }}">{{ value }}</span>
+            <span class="sc-metrics__label">{{ key|replace({'_': ' '})|capitalize }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Long Quote #}
+  {% if case.quote_long %}
+    <section class="sc-quote" itemprop="reviewBody">
+      <div class="sc-quote__mark" aria-hidden="true">"</div>
+      <blockquote class="sc-quote__text">
+        {{ case.quote_long }}
+      </blockquote>
+      <cite class="sc-quote__author">
+        — {{ case.name }}{% if case.profession %}, {{ case.profession }}{% endif %}
+      </cite>
+    </section>
+  {% elseif case.quote_short %}
+    <section class="sc-quote" itemprop="reviewBody">
+      <div class="sc-quote__mark" aria-hidden="true">"</div>
+      <blockquote class="sc-quote__text">
+        {{ case.quote_short }}
+      </blockquote>
+      <cite class="sc-quote__author">
+        — {{ case.name }}{% if case.profession %}, {{ case.profession }}{% endif %}
+      </cite>
+    </section>
+  {% endif %}
+
+  {# Program Context #}
+  {% if case.program_funder or case.program_year %}
+    <aside class="sc-program">
+      <h3 class="sc-program__title">{% trans %}Contexto del programa{% endtrans %}</h3>
+      <div class="sc-program__grid">
+        {% if case.program_name %}
+          <div class="sc-program__item">
+            <span class="sc-program__label">{% trans %}Programa{% endtrans %}</span>
+            <span class="sc-program__value">{{ case.program_name }}</span>
+          </div>
+        {% endif %}
+        {% if case.program_funder %}
+          <div class="sc-program__item">
+            <span class="sc-program__label">{% trans %}Financiador{% endtrans %}</span>
+            <span class="sc-program__value">{{ case.program_funder }}</span>
+          </div>
+        {% endif %}
+        {% if case.program_year %}
+          <div class="sc-program__item">
+            <span class="sc-program__label">{% trans %}Año{% endtrans %}</span>
+            <span class="sc-program__value">{{ case.program_year }}</span>
+          </div>
+        {% endif %}
+      </div>
+    </aside>
+  {% endif %}
+
+  {# Links #}
+  {% if case.website or case.linkedin %}
+    <footer class="sc-detail__footer">
+      {% if case.website %}
+        <a href="{{ case.website }}" target="_blank" rel="noopener" class="sc-detail__link">
+          {{ jaraba_icon('ui', 'external-link', { size: '16px' }) }}
+          {% trans %}Visitar web{% endtrans %}
+        </a>
+      {% endif %}
+      {% if case.linkedin %}
+        <a href="{{ case.linkedin }}" target="_blank" rel="noopener" class="sc-detail__link sc-detail__link--linkedin">
+          {{ jaraba_icon('ui', 'linkedin', { size: '16px' }) }}
+          LinkedIn
+        </a>
+      {% endif %}
+    </footer>
+  {% endif %}
+
+  {# Back link #}
+  <div class="sc-detail__back">
+    <a href="{{ path('jaraba_success_cases.list') }}" class="sc-detail__back-link">
+      {{ jaraba_icon('ui', 'chevron-left', { size: '16px' }) }}
+      {% trans %}Volver a todos los casos{% endtrans %}
+    </a>
+  </div>
+
+  {# Schema.org JSON-LD #}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "author": {
+      "@type": "Person",
+      "name": "{{ case.name|e('js') }}"
+      {% if case.profession %}, "jobTitle": "{{ case.profession|e('js') }}"{% endif %}
+      {% if case.location %}, "address": "{{ case.location|e('js') }}"{% endif %}
+    },
+    "reviewBody": "{{ (case.quote_long ?? case.quote_short ?? '')|e('js') }}"
+    {% if case.rating %}, "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": "{{ case.rating }}",
+      "bestRating": "5"
+    }{% endif %}
+  }
+  </script>
+</article>

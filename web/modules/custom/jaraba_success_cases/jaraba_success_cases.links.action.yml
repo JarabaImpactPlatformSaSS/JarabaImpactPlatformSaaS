@@ -1,0 +1,6 @@
+# Add button on the collection page
+entity.success_case.add_form:
+  title: 'Añadir Caso de Éxito'
+  route_name: entity.success_case.add_form
+  appears_on:
+    - entity.success_case.collection

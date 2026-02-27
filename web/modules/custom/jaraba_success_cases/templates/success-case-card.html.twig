@@ -1,0 +1,94 @@
+{# 
+/**
+ * @file
+ * Template for the Success Case card partial.
+ *
+ * Reusable card displayed in the list grid and in PB blocks.
+ * Uses premium glassmorphism + hover 3D lift effect.
+ *
+ * Available variables (flat primitives from Controller):
+ * - case.id, case.name, case.slug, case.profession, case.company
+ * - case.sector, case.location, case.vertical, case.quote_short
+ * - case.rating, case.featured, case.program_name, case.metrics, case.url
+ *
+ * @ingroup jaraba_success_cases
+ */
+#}
+
+<article class="sc-card {{ case.featured ? 'sc-card--featured' : '' }}" 
+         data-vertical="{{ case.vertical }}">
+  
+  {# Avatar with initial letter fallback #}
+  <div class="sc-card__avatar-wrap">
+    <div class="sc-card__avatar sc-card__avatar--placeholder" aria-hidden="true">
+      {{ case.name|first|upper }}
+    </div>
+    {% if case.featured %}
+      <span class="sc-card__badge sc-card__badge--featured" title="{% trans %}Destacado{% endtrans %}">⭐</span>
+    {% endif %}
+  </div>
+
+  {# Content #}
+  <div class="sc-card__body">
+    <h3 class="sc-card__name">
+      <a href="{{ case.url }}" class="sc-card__link">{{ case.name }}</a>
+    </h3>
+
+    {% if case.profession %}
+      <p class="sc-card__profession">{{ case.profession }}</p>
+    {% endif %}
+
+    {% if case.company %}
+      <p class="sc-card__company">{{ case.company }}</p>
+    {% endif %}
+
+    {# Rating stars #}
+    {% if case.rating %}
+      <div class="sc-card__rating" aria-label="{{ case.rating }} {% trans %}de 5 estrellas{% endtrans %}">
+        {% for i in 1..5 %}
+          <span class="sc-star {{ i <= case.rating ? 'sc-star--filled' : '' }}">
+            {{ jaraba_icon('ui', 'star', { variant: i <= case.rating ? 'filled' : 'outline', size: '14px', color: i <= case.rating ? 'warning' : 'muted' }) }}
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Short quote #}
+    {% if case.quote_short %}
+      <blockquote class="sc-card__quote">
+        "{{ case.quote_short }}"
+      </blockquote>
+    {% endif %}
+
+    {# Vertical badge #}
+    {% if case.vertical %}
+      <span class="sc-card__vertical sc-card__vertical--{{ case.vertical }}">
+        {{ case.vertical|replace({'_': ' '})|capitalize }}
+      </span>
+    {% endif %}
+
+    {# Key metrics preview (first 2) #}
+    {% if case.metrics %}
+      <div class="sc-card__metrics">
+        {% set counter = 0 %}
+        {% for key, value in case.metrics %}
+          {% if counter < 2 %}
+            <div class="sc-card__metric">
+              <span class="sc-card__metric-value">{{ value }}</span>
+              <span class="sc-card__metric-label">{{ key|replace({'_': ' '})|capitalize }}</span>
+            </div>
+            {% set counter = counter + 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {# CTA #}
+  <footer class="sc-card__footer">
+    <a href="{{ case.url }}" class="sc-card__cta">
+      {% trans %}Ver caso completo{% endtrans %}
+      {{ jaraba_icon('ui', 'chevron-right', { size: '16px' }) }}
+    </a>
+  </footer>
+</article>

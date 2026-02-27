@@ -1,0 +1,73 @@
+{# page--success-cases.html.twig - Zero Region Policy #}
+{#
+/**
+ * @file
+ * Page template for Success Cases frontend pages.
+ *
+ * Uses {{ clean_content }} to render ONLY the controller output,
+ * without any Drupal block regions (FABs, admin tabs, etc.).
+ *
+ * Routes covered: jaraba_success_cases.list, jaraba_success_cases.detail
+ *
+ * ⚠️ Body classes are added via hook_preprocess_html() in the .module file,
+ *    NOT via attributes.addClass() here (which doesn't work for <body>).
+ *
+ * @see frontend-page-pattern.md
+ * @see .agent/workflows/slide-panel-modales.md
+ * @ingroup jaraba_success_cases
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('jaraba_success_cases/success_cases') }}
+{{ attach_library('ecosistema_jaraba_theme/slide-panel') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({}),
+    avatar_nav: avatar_nav|default(null)
+  } %}
+
+  <main id="main-content" class="success-cases-main">
+    {# System messages (status, warning, error) #}
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    {# Controller output — NO inherited blocks #}
+    <div class="success-cases-wrapper">
+      {{ clean_content }}
+    </div>
+  </main>
+
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# Slide-panel for CRUD modals (create/edit without leaving the page) #}
+  {% include '@ecosistema_jaraba_theme/partials/_slide-panel.html.twig' ignore missing %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>

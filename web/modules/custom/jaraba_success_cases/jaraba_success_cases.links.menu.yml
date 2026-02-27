@@ -1,0 +1,7 @@
+# Structure menu — for Field UI integration
+entity.success_case.settings:
+  title: 'Success Cases'
+  description: 'Configure success case entity fields and display.'
+  route_name: entity.success_case.settings
+  parent: system.admin_structure
+  weight: 25

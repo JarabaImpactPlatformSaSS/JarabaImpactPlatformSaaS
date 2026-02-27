@@ -1,0 +1,9 @@
+// =============================================================================
+// Success Cases — Main Entry Point
+// =============================================================================
+// Dart Sass module system — each partial has its own @use declarations.
+// Compiled via: npx sass scss/main.scss css/jaraba-success-cases.css --style=compressed
+
+@use 'list';
+@use 'card';
+@use 'detail';

@@ -1,0 +1,50 @@
+// =============================================================================
+// Success Cases — SCSS Variables (aligned to Paleta Oficial Jaraba)
+// =============================================================================
+// Uses official brand palette variable names from the SCSS workflow.
+// All runtime values use CSS Custom Properties (injectable from Drupal UI).
+// @see docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md
+// @see .agent/workflows/scss-estilos.md §Paleta de Colores de Marca
+
+// ---------------------------------------------------------------------------
+// Official Jaraba Brand Palette (SCSS fallbacks)
+// ---------------------------------------------------------------------------
+$azul-profundo: #003366;
+$azul-verdoso: #2B7A78;
+$azul-corporativo: #233D63;
+$naranja-impulso: #FF8C42;
+$verde-innovacion: #00A9A5;
+$verde-oliva: #556B2F;
+$verde-oliva-oscuro: #3E4E23;
+
+// ---------------------------------------------------------------------------
+// UI Extended Colors (SCSS fallbacks)
+// ---------------------------------------------------------------------------
+$ej-color-success: #10B981;
+$ej-color-danger: #EF4444;
+$ej-color-warning: #F59E0B;
+$ej-color-neutral: #64748B;
+$ej-color-secondary: #7C3AED;
+$ej-color-primary-ui: #2563EB;
+
+// ---------------------------------------------------------------------------
+// Layout
+// ---------------------------------------------------------------------------
+$sc-container-max: 1200px;
+$sc-card-radius: 16px;
+$sc-section-gap: 3rem;
+
+// ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+$sc-font: var(--ej-font-family, 'Outfit', sans-serif);
+
+// ---------------------------------------------------------------------------
+// Vertical Badge Colors (per-vertical)
+// ---------------------------------------------------------------------------
+$sc-vertical-emprendimiento: $naranja-impulso;
+$sc-vertical-empleabilidad: $verde-innovacion;
+$sc-vertical-pymes: $azul-corporativo;
+$sc-vertical-agroconecta: $verde-oliva;
+$sc-vertical-comercioconecta: $ej-color-secondary;
+$sc-vertical-serviciosconecta: $ej-color-primary-ui;

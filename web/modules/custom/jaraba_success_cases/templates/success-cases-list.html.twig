@@ -1,0 +1,65 @@
+{# 
+/**
+ * @file
+ * Template for the Success Cases list page.
+ *
+ * Available variables:
+ * - cases: Array of success case card data (flat primitives).
+ * - verticals: Array of {value, label} for filter dropdown.
+ * - current_vertical: Currently selected vertical filter (or null).
+ * - pager: Drupal pager render array.
+ *
+ * Route: /casos-de-exito
+ * Page template: page--success-cases.html.twig (Zero Region Policy)
+ *
+ * @ingroup jaraba_success_cases
+ */
+#}
+
+<section class="sc-hero">
+  <div class="sc-hero__container">
+    <h1 class="sc-hero__title">{% trans %}Casos de Éxito{% endtrans %}</h1>
+    <p class="sc-hero__subtitle">{% trans %}Historias reales de transformación profesional y empresarial{% endtrans %}</p>
+  </div>
+</section>
+
+{% if verticals is not empty %}
+  <nav class="sc-filters" aria-label="{% trans %}Filtrar por vertical{% endtrans %}">
+    <div class="sc-filters__container">
+      <a href="{{ path('jaraba_success_cases.list') }}" 
+         class="sc-filters__btn {{ current_vertical is null ? 'sc-filters__btn--active' : '' }}">
+        {% trans %}Todos{% endtrans %}
+      </a>
+      {% for v in verticals %}
+        <a href="{{ path('jaraba_success_cases.list', {vertical: v.value}) }}" 
+           class="sc-filters__btn {{ current_vertical == v.value ? 'sc-filters__btn--active' : '' }}">
+          {{ v.label }}
+        </a>
+      {% endfor %}
+    </div>
+  </nav>
+{% endif %}
+
+{% if cases is not empty %}
+  <section class="sc-grid" aria-label="{% trans %}Casos de éxito{% endtrans %}">
+    <div class="sc-grid__container">
+      {% for case in cases %}
+        {% include '@jaraba_success_cases/success-case-card.html.twig' with { 'case': case } only %}
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if pager %}
+    <div class="sc-pager">
+      {{ pager }}
+    </div>
+  {% endif %}
+{% else %}
+  <section class="sc-empty">
+    <div class="sc-empty__container">
+      {{ jaraba_icon('ui', 'search', { size: '48px', color: 'neutral' }) }}
+      <p class="sc-empty__text">{% trans %}No hay casos de éxito disponibles para este filtro.{% endtrans %}</p>
+      <a href="{{ path('jaraba_success_cases.list') }}" class="sc-empty__link">{% trans %}Ver todos los casos{% endtrans %}</a>
+    </div>
+  </section>
+{% endif %}

@@ -1,0 +1,44 @@
+# =============================================================================
+# Admin routes
+# =============================================================================
+
+entity.success_case.settings:
+  path: '/admin/structure/success-case'
+  defaults:
+    _form: '\Drupal\jaraba_success_cases\Form\SuccessCaseSettingsForm'
+    _title: 'Success Case Settings'
+  requirements:
+    _permission: 'administer success cases'
+
+# =============================================================================
+# Frontend routes
+# =============================================================================
+
+jaraba_success_cases.list:
+  path: '/casos-de-exito'
+  defaults:
+    _controller: '\Drupal\jaraba_success_cases\Controller\SuccessCasesController::list'
+    _title: 'Casos de Éxito'
+  requirements:
+    _permission: 'view published success cases'
+
+jaraba_success_cases.detail:
+  path: '/caso-de-exito/{slug}'
+  defaults:
+    _controller: '\Drupal\jaraba_success_cases\Controller\SuccessCasesController::detail'
+    _title: 'Caso de Éxito'
+  requirements:
+    _permission: 'view published success cases'
+
+# =============================================================================
+# API route (for GrapesJS Page Builder integration)
+# =============================================================================
+
+jaraba_success_cases.api.list:
+  path: '/api/success-cases'
+  defaults:
+    _controller: '\Drupal\jaraba_success_cases\Controller\SuccessCasesController::apiList'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE

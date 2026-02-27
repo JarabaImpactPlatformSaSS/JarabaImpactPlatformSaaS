@@ -1,0 +1,13 @@
+name: 'Jaraba Success Cases'
+type: module
+description: 'Gestión centralizada de Casos de Éxito para los 4 meta-sitios del ecosistema Jaraba.'
+core_version_requirement: ^10 || ^11
+package: 'Jaraba Ecosystem'
+dependencies:
+  - drupal:system
+  - drupal:user
+  - drupal:file
+  - drupal:media
+  - drupal:field_ui
+  - drupal:views
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

@@ -1,0 +1,13 @@
+administer success cases:
+  title: 'Administer Success Cases'
+  description: 'Allows full CRUD operations on success case entities.'
+  restrict access: true
+
+view published success cases:
+  title: 'View published success cases'
+  description: 'Allows viewing published success case entities on the frontend.'
+
+view unpublished success cases:
+  title: 'View unpublished success cases'
+  description: 'Allows viewing unpublished (draft) success case entities.'
+  restrict access: true

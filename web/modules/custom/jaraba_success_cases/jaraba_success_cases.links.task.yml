@@ -1,0 +1,6 @@
+# Content tab — appears alongside Content, Blocks, Comments in /admin/content
+entity.success_case.collection:
+  title: 'Casos de Éxito'
+  route_name: entity.success_case.collection
+  base_route: system.admin_content
+  weight: 25
