@@ -122,3 +122,154 @@ function jaraba_ai_agents_update_10003(&$sandbox): string {
     ]);
   }
 }
+
+/**
+ * GAP-L5-A/B: Install VerificationResult and PromptImprovement entity schemas.
+ *
+ * Estructura: Crea 2 tablas nuevas:
+ *   - verification_result: Resultados de verificacion pre-entrega (append-only).
+ *   - prompt_improvement: Propuestas de mejora de prompts con audit trail.
+ *
+ * Logica: Patron DRUPAL-ENTUP-001 — Usa installEntityType() para cada entidad.
+ *         Las entidades estan declaradas en Entity/VerificationResult.php y
+ *         Entity/PromptImprovement.php con sus respectivas baseFieldDefinitions().
+ */
+function jaraba_ai_agents_update_10004(&$sandbox): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entities_to_install = [
+    'verification_result' => 'VerificationResult',
+    'prompt_improvement' => 'PromptImprovement',
+  ];
+
+  $installed = [];
+  $errors = [];
+
+  foreach ($entities_to_install as $entity_type_id => $label) {
+    try {
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+      $entity_definition_update_manager->installEntityType($entity_type);
+      $installed[] = $label;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_ai_agents')->error(
+        'Error installing @entity entity: @message',
+        ['@entity' => $label, '@message' => $e->getMessage()]
+      );
+      $errors[] = $label . ': ' . $e->getMessage();
+    }
+  }
+
+  $messages = [];
+  if (!empty($installed)) {
+    $messages[] = 'Installed: ' . implode(', ', $installed);
+  }
+  if (!empty($errors)) {
+    $messages[] = 'Errors: ' . implode('; ', $errors);
+  }
+
+  return (string) t('GAP-L5-A/B: @result', [
+    '@result' => implode('. ', $messages) ?: 'No entities needed installation.',
+  ]);
+}
+
+/**
+ * GAP-L5-C: Install AiAuditEntry entity schema.
+ *
+ * Creates the ai_audit_entry table for regulatory-grade append-only audit trail.
+ * EU AI Act Art. 12 (Record-keeping) — minimum 5-year retention.
+ */
+function jaraba_ai_agents_update_10005(&$sandbox): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    $entity_type = $entity_type_manager->getDefinition('ai_audit_entry');
+    $entity_definition_update_manager->installEntityType($entity_type);
+    return (string) t('GAP-L5-C: AiAuditEntry entity schema installed.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_ai_agents')->error(
+      'Error installing AiAuditEntry entity: @message',
+      ['@message' => $e->getMessage()]
+    );
+    return (string) t('GAP-L5-C: AiAuditEntry install error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * GAP-L5-E: Install BrowserTask entity schema.
+ *
+ * Creates the browser_task table for headless browser automation audit trail.
+ */
+function jaraba_ai_agents_update_10006(&$sandbox): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    $entity_type = $entity_type_manager->getDefinition('browser_task');
+    $entity_definition_update_manager->installEntityType($entity_type);
+    return (string) t('GAP-L5-E: BrowserTask entity schema installed.');
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_ai_agents')->error(
+      'Error installing BrowserTask entity: @message',
+      ['@message' => $e->getMessage()]
+    );
+    return (string) t('GAP-L5-E: BrowserTask install error: @msg', [
+      '@msg' => $e->getMessage(),
+    ]);
+  }
+}
+
+/**
+ * GAP-L5-F/G: Install AutonomousSession and RemediationLog entity schemas.
+ *
+ * Estructura: Crea 2 tablas nuevas:
+ *   - autonomous_session: Sesiones de agentes autonomos con heartbeat.
+ *   - remediation_log: Registro append-only de auto-remediaciones.
+ *
+ * Logica: Patron DRUPAL-ENTUP-001 — Usa installEntityType() para cada entidad.
+ */
+function jaraba_ai_agents_update_10007(&$sandbox): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $entities_to_install = [
+    'autonomous_session' => 'AutonomousSession',
+    'remediation_log' => 'RemediationLog',
+  ];
+
+  $installed = [];
+  $errors = [];
+
+  foreach ($entities_to_install as $entity_type_id => $label) {
+    try {
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+      $entity_definition_update_manager->installEntityType($entity_type);
+      $installed[] = $label;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_ai_agents')->error(
+        'Error installing @entity entity: @message',
+        ['@entity' => $label, '@message' => $e->getMessage()]
+      );
+      $errors[] = $label . ': ' . $e->getMessage();
+    }
+  }
+
+  $messages = [];
+  if (!empty($installed)) {
+    $messages[] = 'Installed: ' . implode(', ', $installed);
+  }
+  if (!empty($errors)) {
+    $messages[] = 'Errors: ' . implode('; ', $errors);
+  }
+
+  return (string) t('GAP-L5-F/G: @result', [
+    '@result' => implode('. ', $messages) ?: 'No entities needed installation.',
+  ]);
+}

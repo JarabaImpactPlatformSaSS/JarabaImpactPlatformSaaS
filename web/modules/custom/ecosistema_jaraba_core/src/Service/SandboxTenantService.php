@@ -310,9 +310,10 @@ class SandboxTenantService
                 'Error creating account from sandbox @id: @error',
                 ['@id' => $sandboxId, '@error' => $e->getMessage()]
             );
+            // HAL-DEMO-V3-SEC-004: Mensaje genérico — no exponer detalles internos.
             return [
                 'success' => FALSE,
-                'error' => 'Failed to create account: ' . $e->getMessage(),
+                'error' => 'An error occurred during account creation. Please try again.',
             ];
         }
 

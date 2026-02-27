@@ -511,6 +511,47 @@ class DemoInteractiveService
     }
 
     /**
+     * HAL-DEMO-V3-I18N-003: Cadenas literales para extracción PO.
+     *
+     * Los extractores PO (potx, drush locale:export) solo detectan llamadas
+     * a $this->t() con string literals, no con variables. Este método declara
+     * todas las cadenas de los perfiles demo para que sean extraíbles.
+     *
+     * @return array
+     *   Array de TranslatableMarkup (no usado en runtime, solo para PO).
+     *
+     * @codeCoverageIgnore
+     */
+    protected function getTranslatableStrings(): array {
+        return [
+            // Profile names.
+            $this->t('Productor de Aceite'),
+            $this->t('Bodega de Vinos'),
+            $this->t('Quesería Artesanal'),
+            $this->t('Comprador'),
+            $this->t('Buscador de Empleo'),
+            $this->t('Startup / Emprendedor'),
+            $this->t('Despacho de Abogados'),
+            $this->t('Profesional de Servicios'),
+            $this->t('Empresa de Impacto Social'),
+            $this->t('Creador de Contenido'),
+            $this->t('Academia de Formación'),
+            // Profile descriptions.
+            $this->t('Experimenta cómo sería gestionar tu cooperativa de aceite de oliva'),
+            $this->t('Descubre cómo digitalizar tu bodega y llegar a más clientes'),
+            $this->t('Visualiza el potencial de tu quesería en el marketplace'),
+            $this->t('Explora el marketplace como cliente final'),
+            $this->t('Descubre cómo encontrar tu próximo empleo con IA'),
+            $this->t('Gestiona y lanza tu startup con herramientas inteligentes'),
+            $this->t('Digitaliza tu despacho legal con IA y gestión avanzada'),
+            $this->t('Conecta con clientes y gestiona tus servicios profesionales'),
+            $this->t('Mide y comunica el impacto social de tu organización'),
+            $this->t('Publica y gestiona tu blog o portal de contenidos'),
+            $this->t('Crea y vende cursos online con tu propia plataforma'),
+        ];
+    }
+
+    /**
      * Genera datos completos para una sesión de demo.
      *
      * @param string $profileId

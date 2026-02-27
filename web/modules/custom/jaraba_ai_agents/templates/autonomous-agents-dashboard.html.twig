@@ -1,0 +1,149 @@
+{#
+ # GAP-L5-F/G: Autonomous Agents & Self-Healing Dashboard.
+ #
+ # ZERO-REGION-POLICY: Template limpia, sin regions de Drupal.
+ # ICON-CONVENTION-001: jaraba_icon() via PHP, nunca emojis.
+ #
+ # Variables:
+ #   - stats: { total, active, paused, completed, escalated, failed, total_cost, total_heartbeats }
+ #   - active_sessions: [ { id, agent_type, status, execution_count, total_cost, cost_ceiling, ... } ]
+ #   - escalated_sessions: [ { id, agent_type, escalation_reason, total_cost, ... } ]
+ #   - recent_remediations: [ { id, anomaly_type, action, outcome, severity, ... } ]
+ #   - agent_types: { machine_name: label }
+ #}
+
+<div class="autonomous-agents-dashboard">
+
+  {# Stats Overview #}
+  <div class="autonomous-agents-dashboard__stats">
+    <h2 class="autonomous-agents-dashboard__section-title">{{ 'Autonomous Agents Overview'|t }}</h2>
+    <div class="autonomous-agents-dashboard__stats-grid">
+      <div class="autonomous-agents-dashboard__stat-card">
+        <span class="autonomous-agents-dashboard__stat-value">{{ stats.total }}</span>
+        <span class="autonomous-agents-dashboard__stat-label">{{ 'Total Sessions'|t }}</span>
+      </div>
+      <div class="autonomous-agents-dashboard__stat-card autonomous-agents-dashboard__stat-card--active">
+        <span class="autonomous-agents-dashboard__stat-value">{{ stats.active }}</span>
+        <span class="autonomous-agents-dashboard__stat-label">{{ 'Active'|t }}</span>
+      </div>
+      <div class="autonomous-agents-dashboard__stat-card autonomous-agents-dashboard__stat-card--paused">
+        <span class="autonomous-agents-dashboard__stat-value">{{ stats.paused }}</span>
+        <span class="autonomous-agents-dashboard__stat-label">{{ 'Paused'|t }}</span>
+      </div>
+      <div class="autonomous-agents-dashboard__stat-card autonomous-agents-dashboard__stat-card--escalated">
+        <span class="autonomous-agents-dashboard__stat-value">{{ stats.escalated }}</span>
+        <span class="autonomous-agents-dashboard__stat-label">{{ 'Escalated'|t }}</span>
+      </div>
+      <div class="autonomous-agents-dashboard__stat-card">
+        <span class="autonomous-agents-dashboard__stat-value">{{ stats.total_heartbeats }}</span>
+        <span class="autonomous-agents-dashboard__stat-label">{{ 'Total Heartbeats'|t }}</span>
+      </div>
+      <div class="autonomous-agents-dashboard__stat-card">
+        <span class="autonomous-agents-dashboard__stat-value">${{ stats.total_cost }}</span>
+        <span class="autonomous-agents-dashboard__stat-label">{{ 'Total Cost'|t }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# Active Sessions #}
+  <div class="autonomous-agents-dashboard__section">
+    <h2 class="autonomous-agents-dashboard__section-title">{{ 'Active Sessions'|t }}</h2>
+    {% if active_sessions|length > 0 %}
+      <table class="autonomous-agents-dashboard__table">
+        <thead>
+          <tr>
+            <th>{{ 'ID'|t }}</th>
+            <th>{{ 'Agent Type'|t }}</th>
+            <th>{{ 'Heartbeats'|t }}</th>
+            <th>{{ 'Cost / Ceiling'|t }}</th>
+            <th>{{ 'Failures'|t }}</th>
+            <th>{{ 'Tenant'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in active_sessions %}
+            <tr>
+              <td>{{ session.id }}</td>
+              <td>{{ agent_types[session.agent_type] ?? session.agent_type }}</td>
+              <td>{{ session.execution_count }}</td>
+              <td>${{ session.total_cost }} / ${{ session.cost_ceiling }}</td>
+              <td class="{{ session.consecutive_failures > 0 ? 'autonomous-agents-dashboard__failure-count' : '' }}">
+                {{ session.consecutive_failures }}
+              </td>
+              <td>{{ session.tenant_id }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="autonomous-agents-dashboard__empty">{{ 'No active autonomous sessions.'|t }}</p>
+    {% endif %}
+  </div>
+
+  {# Escalated Sessions #}
+  {% if escalated_sessions|length > 0 %}
+    <div class="autonomous-agents-dashboard__section autonomous-agents-dashboard__section--escalated">
+      <h2 class="autonomous-agents-dashboard__section-title">{{ 'Escalated Sessions'|t }}</h2>
+      <table class="autonomous-agents-dashboard__table">
+        <thead>
+          <tr>
+            <th>{{ 'ID'|t }}</th>
+            <th>{{ 'Agent Type'|t }}</th>
+            <th>{{ 'Reason'|t }}</th>
+            <th>{{ 'Cost'|t }}</th>
+            <th>{{ 'Tenant'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in escalated_sessions %}
+            <tr>
+              <td>{{ session.id }}</td>
+              <td>{{ agent_types[session.agent_type] ?? session.agent_type }}</td>
+              <td>{{ session.escalation_reason }}</td>
+              <td>${{ session.total_cost }}</td>
+              <td>{{ session.tenant_id }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  {# Self-Healing: Recent Remediations #}
+  <div class="autonomous-agents-dashboard__section">
+    <h2 class="autonomous-agents-dashboard__section-title">{{ 'Self-Healing: Recent Remediations'|t }}</h2>
+    {% if recent_remediations|length > 0 %}
+      <table class="autonomous-agents-dashboard__table">
+        <thead>
+          <tr>
+            <th>{{ 'Anomaly'|t }}</th>
+            <th>{{ 'Severity'|t }}</th>
+            <th>{{ 'Action'|t }}</th>
+            <th>{{ 'Detected'|t }}</th>
+            <th>{{ 'Threshold'|t }}</th>
+            <th>{{ 'Outcome'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for remediation in recent_remediations %}
+            <tr>
+              <td>{{ remediation.anomaly_type }}</td>
+              <td class="autonomous-agents-dashboard__severity--{{ remediation.severity }}">
+                {{ remediation.severity }}
+              </td>
+              <td>{{ remediation.action }}</td>
+              <td>{{ remediation.detected_value }}</td>
+              <td>{{ remediation.threshold_value }}</td>
+              <td class="autonomous-agents-dashboard__outcome--{{ remediation.outcome }}">
+                {{ remediation.outcome }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="autonomous-agents-dashboard__empty">{{ 'No recent remediations. System healthy.'|t }}</p>
+    {% endif %}
+  </div>
+
+</div>

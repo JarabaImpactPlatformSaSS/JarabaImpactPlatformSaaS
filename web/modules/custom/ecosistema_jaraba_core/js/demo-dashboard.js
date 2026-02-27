@@ -298,22 +298,15 @@
       });
     }
 
-    // Si Chart.js ya está cargado (por otra librería), usarlo directamente.
+    // HAL-DEMO-V3-FRONT-004: Chart.js cargado via ecosistema_jaraba_core/chartjs
+    // con SRI hash — ya no se necesita lazy-load manual sin integridad.
     if (typeof Chart !== 'undefined') {
       renderChart();
-      return;
     }
-
-    // Carga dinámica desde CDN.
-    var script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
-    script.crossOrigin = 'anonymous';
-    script.onload = renderChart;
-    script.onerror = function () {
+    else {
       canvas.parentElement.innerHTML = '<p style="text-align:center;color:#999">' +
         Drupal.t('No se pudo cargar el gráfico.') + '</p>';
-    };
-    document.head.appendChild(script);
+    }
   }
 
 })(Drupal, drupalSettings, once);

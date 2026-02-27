@@ -15,7 +15,7 @@
  */
 #}
 
-<div class="demo-storytelling" data-demo-storytelling>
+<div class="demo-storytelling" data-demo-storytelling data-session-id="{{ session.session_id }}">
   {# Banner de Demo #}
   <div class="demo-banner">
     <a href="{{ path('ecosistema_jaraba_core.demo_dashboard', { sessionId: session.session_id }) }}"
@@ -51,6 +51,7 @@
         {{ 'Copiar'|t }}
       </button>
     </div>
+    <div class="demo-story-card__feedback" data-story-feedback aria-live="polite"></div>
   </div>
 
   {# Info Box #}

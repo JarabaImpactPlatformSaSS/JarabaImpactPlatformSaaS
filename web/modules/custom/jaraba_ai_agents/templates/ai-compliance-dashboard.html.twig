@@ -1,0 +1,129 @@
+{#
+/**
+ * @file
+ * Template for the AI Compliance Dashboard (GAP-L5-C).
+ *
+ * Variables:
+ * - risk_matrix: Risk classification matrix per agent.
+ * - risk_assessments: Active risk assessment entities.
+ * - high_risk_actions: List of high-risk action names.
+ * - limited_risk_actions: List of limited-risk action names.
+ * - eu_ai_act_deadline: EU AI Act enforcement deadline.
+ */
+#}
+<div class="ai-compliance-dashboard">
+
+  <header class="ai-compliance-dashboard__header">
+    <h1 class="ai-compliance-dashboard__title">{{ 'EU AI Act Compliance Dashboard'|t }}</h1>
+    <p class="ai-compliance-dashboard__subtitle">
+      {{ 'Regulation (EU) 2024/1689 — Enforcement deadline:'|t }}
+      <strong>{{ eu_ai_act_deadline }}</strong>
+    </p>
+  </header>
+
+  {# Risk Classification Matrix #}
+  <section class="ai-compliance-dashboard__section">
+    <h2 class="ai-compliance-dashboard__section-title">{{ 'Risk Classification Matrix'|t }}</h2>
+
+    {% if risk_matrix %}
+      <div class="ai-compliance-dashboard__matrix">
+        <table class="ai-compliance-dashboard__table">
+          <thead>
+            <tr>
+              <th>{{ 'Agent'|t }}</th>
+              <th>{{ 'Highest Risk'|t }}</th>
+              <th>{{ 'Actions'|t }}</th>
+              <th>{{ 'High Risk'|t }}</th>
+              <th>{{ 'Documentation'|t }}</th>
+              <th>{{ 'Human Oversight'|t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agent_id, agent in risk_matrix %}
+              <tr class="ai-compliance-dashboard__row ai-compliance-dashboard__row--{{ agent.highest_risk }}">
+                <td class="ai-compliance-dashboard__agent-id">{{ agent_id }}</td>
+                <td>
+                  <span class="ai-compliance-dashboard__risk-badge ai-compliance-dashboard__risk-badge--{{ agent.highest_risk }}">
+                    {{ agent.highest_risk|upper }}
+                  </span>
+                </td>
+                <td>{{ agent.action_count }}</td>
+                <td>{{ agent.high_risk_count }}</td>
+                <td>
+                  {% if agent.highest_risk == 'high' %}
+                    <span class="ai-compliance-dashboard__status ai-compliance-dashboard__status--required">{{ 'Required'|t }}</span>
+                  {% else %}
+                    <span class="ai-compliance-dashboard__status ai-compliance-dashboard__status--not-required">{{ 'N/A'|t }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if agent.highest_risk == 'high' %}
+                    <span class="ai-compliance-dashboard__status ai-compliance-dashboard__status--required">{{ 'Required'|t }}</span>
+                  {% else %}
+                    <span class="ai-compliance-dashboard__status ai-compliance-dashboard__status--not-required">{{ 'N/A'|t }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="ai-compliance-dashboard__empty">{{ 'No agents registered for classification.'|t }}</p>
+    {% endif %}
+  </section>
+
+  {# Risk Assessments #}
+  <section class="ai-compliance-dashboard__section">
+    <h2 class="ai-compliance-dashboard__section-title">{{ 'Risk Assessments'|t }}</h2>
+
+    {% if risk_assessments %}
+      <div class="ai-compliance-dashboard__assessments">
+        {% for assessment in risk_assessments %}
+          <div class="ai-compliance-dashboard__assessment ai-compliance-dashboard__assessment--{{ assessment.risk_level }}">
+            <h3 class="ai-compliance-dashboard__assessment-title">{{ assessment.label }}</h3>
+            <div class="ai-compliance-dashboard__assessment-meta">
+              <span class="ai-compliance-dashboard__risk-badge ai-compliance-dashboard__risk-badge--{{ assessment.risk_level }}">
+                {{ assessment.risk_level|upper }}
+              </span>
+              <span>{{ 'Agent:'|t }} {{ assessment.agent_id }}</span>
+              <span>{{ 'Status:'|t }} {{ assessment.status }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="ai-compliance-dashboard__empty">{{ 'No risk assessments created yet.'|t }}</p>
+    {% endif %}
+  </section>
+
+  {# Action Classification Reference #}
+  <section class="ai-compliance-dashboard__section">
+    <h2 class="ai-compliance-dashboard__section-title">{{ 'Action Classification Reference'|t }}</h2>
+
+    <div class="ai-compliance-dashboard__reference">
+      <div class="ai-compliance-dashboard__reference-column">
+        <h3 class="ai-compliance-dashboard__reference-title ai-compliance-dashboard__reference-title--high">
+          {{ 'High Risk Actions'|t }}
+        </h3>
+        <ul class="ai-compliance-dashboard__reference-list">
+          {% for action in high_risk_actions %}
+            <li>{{ action }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="ai-compliance-dashboard__reference-column">
+        <h3 class="ai-compliance-dashboard__reference-title ai-compliance-dashboard__reference-title--limited">
+          {{ 'Limited Risk Actions'|t }}
+        </h3>
+        <ul class="ai-compliance-dashboard__reference-list">
+          {% for action in limited_risk_actions %}
+            <li>{{ action }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>

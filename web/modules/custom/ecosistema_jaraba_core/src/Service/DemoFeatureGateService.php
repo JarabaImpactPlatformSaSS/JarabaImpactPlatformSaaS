@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
@@ -24,9 +25,9 @@ class DemoFeatureGateService
 {
 
     /**
-     * Límites específicos de la experiencia demo.
+     * Límites por defecto (fallback si config no disponible).
      */
-    protected const DEMO_LIMITS = [
+    protected const DEFAULT_LIMITS = [
         'demo_sessions_per_hour' => 5,
         'ai_messages_per_session' => 10,
         'story_generations_per_session' => 3,
@@ -35,11 +36,32 @@ class DemoFeatureGateService
 
     /**
      * Constructor.
+     *
+     * HAL-DEMO-V3-BACK-003: Añadido ConfigFactoryInterface para leer
+     * ecosistema_jaraba_core.demo_settings en vez de constantes hardcoded.
      */
     public function __construct(
         protected Connection $database,
         protected ?LoggerChannelFactoryInterface $loggerFactory = NULL,
+        protected ?ConfigFactoryInterface $configFactory = NULL,
     ) {
+    }
+
+    /**
+     * Obtiene los límites efectivos desde config o fallback a defaults.
+     *
+     * HAL-DEMO-V3-BACK-003 + HAL-DEMO-V3-CONF-001: Consume
+     * ecosistema_jaraba_core.demo_settings.feature_limits.
+     */
+    protected function getEffectiveLimits(): array {
+        if ($this->configFactory) {
+            $config = $this->configFactory->get('ecosistema_jaraba_core.demo_settings');
+            $configLimits = $config->get('feature_limits');
+            if (is_array($configLimits) && !empty($configLimits)) {
+                return $configLimits + self::DEFAULT_LIMITS;
+            }
+        }
+        return self::DEFAULT_LIMITS;
     }
 
     /**
@@ -55,7 +77,8 @@ class DemoFeatureGateService
      */
     public function check(string $sessionId, string $feature): array
     {
-        $limit = self::DEMO_LIMITS[$feature] ?? NULL;
+        $limits = $this->getEffectiveLimits();
+        $limit = $limits[$feature] ?? NULL;
         if ($limit === NULL) {
             // S8-02: Log warning para features desconocidas.
             $this->loggerFactory?->get('demo_feature_gate')->warning(
@@ -86,6 +109,10 @@ class DemoFeatureGateService
      */
     public function recordUsage(string $sessionId, string $feature): void
     {
+        // HAL-DEMO-V3-BACK-004: Transacción para evitar race condition
+        // en SELECT→decode→increment→UPDATE. Si dos requests concurrentes
+        // leen el mismo valor, una perdería su incremento.
+        $transaction = $this->database->startTransaction();
         try {
             $row = $this->database->select('demo_sessions', 'ds')
                 ->fields('ds', ['session_data'])
@@ -106,6 +133,7 @@ class DemoFeatureGateService
                 ->execute();
         }
         catch (\Exception $e) {
+            $transaction->rollBack();
             // Silencioso — el feature gate no debe bloquear la UX.
         }
     }
@@ -142,7 +170,7 @@ class DemoFeatureGateService
      */
     public function getLimits(): array
     {
-        return self::DEMO_LIMITS;
+        return $this->getEffectiveLimits();
     }
 
 }

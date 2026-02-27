@@ -1,0 +1,82 @@
+{#
+ # GAP-L5-H/I: Causal Analytics & Federated Insights Dashboard.
+ #
+ # ZERO-REGION-POLICY: Template limpia, sin regions de Drupal.
+ # ICON-CONVENTION-001: jaraba_icon() via PHP, nunca emojis.
+ #
+ # Variables:
+ #   - insights: [ { id, type, title, summary, contributing_tenants, confidence_score, ... } ]
+ #   - analyses: [ { id, query, query_type, summary, confidence_score, cost, ... } ]
+ #   - k_anonymity_threshold: int (minimum tenants for insight publication)
+ #}
+
+<div class="causal-analytics-dashboard">
+
+  {# Federated Insights Section #}
+  <div class="causal-analytics-dashboard__section">
+    <h2 class="causal-analytics-dashboard__section-title">{{ 'Federated Insights'|t }}</h2>
+    <p class="causal-analytics-dashboard__description">
+      {{ 'Cross-tenant anonymized insights with k-anonymity guarantee (min @k tenants).'|t({'@k': k_anonymity_threshold}) }}
+    </p>
+
+    {% if insights|length > 0 %}
+      <div class="causal-analytics-dashboard__insights-grid">
+        {% for insight in insights %}
+          <div class="causal-analytics-dashboard__insight-card {{ not insight.meets_k_anonymity ? 'causal-analytics-dashboard__insight-card--warning' : '' }}">
+            <div class="causal-analytics-dashboard__insight-header">
+              <span class="causal-analytics-dashboard__insight-type">{{ insight.type }}</span>
+              <span class="causal-analytics-dashboard__insight-vertical">{{ insight.vertical }}</span>
+            </div>
+            <h3 class="causal-analytics-dashboard__insight-title">{{ insight.title }}</h3>
+            <p class="causal-analytics-dashboard__insight-summary">{{ insight.summary }}</p>
+            <div class="causal-analytics-dashboard__insight-meta">
+              <span>{{ 'Tenants: @count'|t({'@count': insight.contributing_tenants}) }}</span>
+              <span>{{ 'Confidence: @score'|t({'@score': insight.confidence_score}) }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="causal-analytics-dashboard__empty">
+        {{ 'No federated insights yet. Insights are generated when at least @k tenants opt in.'|t({'@k': k_anonymity_threshold}) }}
+      </p>
+    {% endif %}
+  </div>
+
+  {# Causal Analyses Section #}
+  <div class="causal-analytics-dashboard__section">
+    <h2 class="causal-analytics-dashboard__section-title">{{ 'Recent Causal Analyses'|t }}</h2>
+
+    {% if analyses|length > 0 %}
+      <table class="causal-analytics-dashboard__table">
+        <thead>
+          <tr>
+            <th>{{ 'Query'|t }}</th>
+            <th>{{ 'Type'|t }}</th>
+            <th>{{ 'Summary'|t }}</th>
+            <th>{{ 'Confidence'|t }}</th>
+            <th>{{ 'Factors'|t }}</th>
+            <th>{{ 'Actions'|t }}</th>
+            <th>{{ 'Cost'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for analysis in analyses %}
+            <tr>
+              <td class="causal-analytics-dashboard__query-cell">{{ analysis.query|length > 80 ? analysis.query[:80] ~ '...' : analysis.query }}</td>
+              <td>{{ analysis.query_type }}</td>
+              <td>{{ analysis.summary|length > 100 ? analysis.summary[:100] ~ '...' : analysis.summary }}</td>
+              <td>{{ analysis.confidence_score }}</td>
+              <td>{{ analysis.factors_count }}</td>
+              <td>{{ analysis.recommendations_count }}</td>
+              <td>${{ analysis.cost }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="causal-analytics-dashboard__empty">{{ 'No causal analyses performed yet.'|t }}</p>
+    {% endif %}
+  </div>
+
+</div>

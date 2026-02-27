@@ -22,3 +22,58 @@ entity.pending_approval.settings_tab:
   title: 'Settings'
   route_name: entity.pending_approval.settings
   base_route: entity.pending_approval.settings
+
+entity.verification_result.collection:
+  title: 'Verification Results'
+  route_name: entity.verification_result.collection
+  base_route: system.admin_content
+
+entity.verification_result.settings_tab:
+  title: 'Settings'
+  route_name: entity.verification_result.settings
+  base_route: entity.verification_result.settings
+
+entity.prompt_improvement.collection:
+  title: 'Prompt Improvements'
+  route_name: entity.prompt_improvement.collection
+  base_route: system.admin_content
+
+entity.prompt_improvement.settings_tab:
+  title: 'Settings'
+  route_name: entity.prompt_improvement.settings
+  base_route: entity.prompt_improvement.settings
+
+entity.ai_audit_entry.collection:
+  title: 'AI Audit Trail'
+  route_name: entity.ai_audit_entry.collection
+  base_route: system.admin_content
+
+entity.ai_audit_entry.settings_tab:
+  title: 'Settings'
+  route_name: entity.ai_audit_entry.settings
+  base_route: entity.ai_audit_entry.settings
+
+entity.browser_task.collection:
+  title: 'Browser Tasks'
+  route_name: entity.browser_task.collection
+  base_route: system.admin_content
+
+entity.autonomous_session.collection:
+  title: 'Autonomous Sessions'
+  route_name: entity.autonomous_session.collection
+  base_route: system.admin_content
+
+entity.autonomous_session.settings_tab:
+  title: 'Settings'
+  route_name: entity.autonomous_session.settings
+  base_route: entity.autonomous_session.settings
+
+entity.remediation_log.collection:
+  title: 'Remediation Logs'
+  route_name: entity.remediation_log.collection
+  base_route: system.admin_content
+
+entity.remediation_log.settings_tab:
+  title: 'Settings'
+  route_name: entity.remediation_log.settings
+  base_route: entity.remediation_log.settings

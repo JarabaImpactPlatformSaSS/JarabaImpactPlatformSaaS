@@ -14,3 +14,22 @@ manage tenant brand voice:
 manage prompt experiments:
   title: 'Manage Prompt Experiments'
   description: 'Create and manage A/B testing experiments for AI prompts.'
+
+view verification results:
+  title: 'View Verification Results'
+  description: 'View AI agent verification results and audit trail.'
+
+manage prompt improvements:
+  title: 'Manage Prompt Improvements'
+  description: 'Review, apply, and rollback self-improving prompt proposals.'
+  restrict access: true
+
+configure ai safety:
+  title: 'Configure AI Safety'
+  description: 'Configure constitutional guardrails, verifier mode, and self-reflection settings.'
+  restrict access: true
+
+manage autonomous agents:
+  title: 'Manage Autonomous Agents'
+  description: 'Create, activate, pause, and monitor autonomous agent sessions.'
+  restrict access: true

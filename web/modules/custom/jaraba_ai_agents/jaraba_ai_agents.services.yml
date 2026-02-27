@@ -559,3 +559,25 @@ services:
     tags:
       - { name: jaraba_ai_agents.tool }
 
+  # GAP-L5-G: Auto-Diagnostic Service — Self-healing with anomaly detection
+  jaraba_ai_agents.auto_diagnostic:
+    class: Drupal\jaraba_ai_agents\Service\AutoDiagnosticService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.observability'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.provider_fallback'
+      - '@?jaraba_copilot_v2.semantic_cache'
+
+  # GAP-L5-F: Autonomous Agent Service — Heartbeat-driven autonomous sessions
+  jaraba_ai_agents.autonomous_agent:
+    class: Drupal\jaraba_ai_agents\Service\AutonomousAgentService
+    arguments:
+      - '@entity_type.manager'
+      - '@queue'
+      - '@state'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.auto_diagnostic'
+      - '@?jaraba_ai_agents.observability'
+

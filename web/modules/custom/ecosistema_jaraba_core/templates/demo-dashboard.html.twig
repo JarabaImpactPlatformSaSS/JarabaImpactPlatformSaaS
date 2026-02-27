@@ -1,17 +1,23 @@
 {#
 /**
  * @file
- * Template para el dashboard de demo interactiva.
+ * Template para el dashboard INICIAL de demo interactiva.
+ *
+ * HAL-DEMO-V3-BACK-006: Este template se usa en la ruta demo_dashboard
+ * (paso inicial, antes de progressive disclosure). Las métricas se renderizan
+ * con claves nombradas (products_count, revenue_last_month, etc.).
+ *
+ * Para el dashboard con sesión activa y progressive disclosure,
+ * ver demo-dashboard-view.html.twig (usa partials compartidos).
  *
  * Variables:
  * - session_id: ID de la sesión de demo.
  * - profile: Perfil de demo seleccionado (id, name, icon_category, icon_name, vertical).
  * - tenant_name: Nombre simulado del tenant.
- * - metrics: Métricas simuladas.
+ * - metrics: Métricas simuladas (claves nombradas: products_count, etc.).
  * - products: Productos sintéticos.
  * - sales_history: Historial de ventas para gráficos.
  * - magic_actions: Acciones de "Magic Moment".
- * - tour: Datos del tour guiado.
  *
  * S2-02: Reescrito sin CSS/JS inline. CSS en _demo.scss, JS en behavior.
  * ICON-EMOJI-001: jaraba_icon() en lugar de emojis Unicode.
@@ -44,7 +50,7 @@
   </div>
 
   {# Magic Moment Actions #}
-  <section class="demo-magic-moment">
+  <section class="demo-magic-moment" data-tour-step="demo-magic-moment">
     <h2 class="demo-section-title">
       {{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '24px' }) }}
       {{ 'Tu Primer Paso'|t }}
@@ -58,7 +64,8 @@
         {% endif %}
         <a href="{{ action_url }}"
            class="demo-magic-action-card {{ action.highlight ? 'demo-magic-action-card--highlighted' : '' }}"
-           data-action="{{ action.id }}">
+           data-action="{{ action.id }}"
+           aria-label="{{ action.label }}: {{ action.description }}">
           <div class="demo-magic-action-card__icon">
             {{ jaraba_icon(action.icon_category, action.icon_name, { size: '24px', variant: 'duotone' }) }}
           </div>
@@ -76,7 +83,7 @@
   </section>
 
   {# Métricas Simuladas #}
-  <section id="metrics">
+  <section id="metrics" data-tour-step="demo-metrics">
     <h2 class="demo-section-title">
       {{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }}
       {{ 'Tus Métricas'|t }}
@@ -127,17 +134,8 @@
     </div>
   </section>
 
-  {# Gráfico de Ventas #}
-  <section class="demo-chart-section">
-    <h2 class="demo-section-title">
-      {{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}
-      {{ 'Tendencia de Ventas'|t }}
-    </h2>
-    <div class="demo-chart-container">
-      {# S5-07: Canvas accesible con role y aria-label. #}
-      <canvas id="salesChart" height="300" role="img" aria-label="{{ 'Gráfico de tendencia de ventas mensuales'|t }}"></canvas>
-    </div>
-  </section>
+  {# S6-05: Gráfico via partial compartido (DRY). #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
 
   {# Productos (solo para vendedores) #}
   {% if products %}
@@ -169,50 +167,9 @@
     </section>
   {% endif %}
 
-  {# CTA Final #}
-  <section class="demo-cta-convert">
-    <h2 class="demo-cta-convert__text">{{ '¿Te gusta lo que ves?'|t }}</h2>
-    <p>{{ 'Convierte esta demo en tu cuenta real y mantén todos estos datos.'|t }}</p>
-    <button class="demo-cta-convert__btn" data-demo-convert-open type="button">
-      {{ 'Crear Mi Cuenta Real'|t }} &rarr;
-    </button>
-  </section>
+  {# S6-05: CTA via partial compartido (DRY). #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-cta.html.twig' with { vertical: profile.vertical|default('agroconecta') } only %}
 </div>
 
-{# S5-05: Modal de Conversión — ARIA compliant (role, aria-modal, aria-labelledby, focus trap). #}
-<div class="demo-convert-modal"
-     data-demo-convert-modal
-     role="dialog"
-     aria-modal="true"
-     aria-labelledby="demo-convert-modal-title"
-     aria-hidden="true">
-  <div class="demo-convert-modal__overlay" data-demo-convert-close></div>
-  <div class="demo-convert-modal__content">
-    <h3 class="demo-convert-modal__title" id="demo-convert-modal-title">
-      {{ jaraba_icon('business', 'achievement', { size: '24px', color: 'naranja-impulso' }) }}
-      {{ '¡Convierte tu Demo!'|t }}
-    </h3>
-    <p>{{ 'Introduce tu email para crear tu cuenta real:'|t }}</p>
-    <form data-demo-convert-form>
-      {# S5-06: Label accesible para el input de email. #}
-      <label for="demo-convert-email" class="visually-hidden">{{ 'Tu dirección de email'|t }}</label>
-      <input type="email"
-             id="demo-convert-email"
-             class="demo-convert-modal__input"
-             data-demo-convert-email
-             placeholder="{{ 'tu@email.com'|t }}"
-             autocomplete="email"
-             required>
-      <button type="submit" class="demo-convert-modal__submit" data-demo-convert-submit>
-        {{ 'Crear Cuenta'|t }}
-      </button>
-      {# S5-10: Zona de feedback de errores. #}
-      <div class="demo-convert-modal__feedback" data-demo-convert-feedback role="alert" aria-live="assertive"></div>
-    </form>
-    {# S5-16: Close button con aria-label descriptivo. #}
-    <button class="demo-convert-modal__close"
-            data-demo-convert-close
-            type="button"
-            aria-label="{{ 'Cerrar diálogo de conversión'|t }}">&times;</button>
-  </div>
-</div>
+{# S5-05: Modal de Conversión — extraído a partial reutilizable. #}
+{% include '@ecosistema_jaraba_core/partials/_demo-convert-modal.html.twig' %}

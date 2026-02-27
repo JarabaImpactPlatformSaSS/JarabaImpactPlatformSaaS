@@ -398,6 +398,145 @@ entity.a2a_task.collection:
   requirements:
     _permission: 'administer ai agents'
 
+# GAP-L5-D: Voice Copilot API routes.
+jaraba_ai_agents.api.voice.capabilities:
+  path: '/api/v1/voice/capabilities'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\VoiceCopilotController::capabilities'
+  methods: [GET]
+  requirements:
+    _permission: 'use ai agents'
+
+jaraba_ai_agents.api.voice.transcribe:
+  path: '/api/v1/voice/transcribe'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\VoiceCopilotController::transcribe'
+  methods: [POST]
+  requirements:
+    _permission: 'use ai agents'
+    _csrf_request_header_token: 'TRUE'
+
+jaraba_ai_agents.api.voice.synthesize:
+  path: '/api/v1/voice/synthesize'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\VoiceCopilotController::synthesize'
+  methods: [POST]
+  requirements:
+    _permission: 'use ai agents'
+    _csrf_request_header_token: 'TRUE'
+
+# GAP-L5-E: Browser Tasks entity routes.
+entity.browser_task.collection:
+  path: '/admin/content/ai/browser-tasks'
+  defaults:
+    _entity_list: 'browser_task'
+    _title: 'Browser Tasks'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-C: AI Compliance Dashboard.
+jaraba_ai_agents.compliance_dashboard:
+  path: '/admin/config/ai/compliance'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AiComplianceDashboardController::dashboard'
+    _title: 'AI Compliance Dashboard'
+  requirements:
+    _permission: 'configure ai safety'
+
+# GAP-L5-C: AI Audit Trail entity routes.
+entity.ai_audit_entry.collection:
+  path: '/admin/content/ai/audit-trail'
+  defaults:
+    _entity_list: 'ai_audit_entry'
+    _title: 'AI Audit Trail'
+  requirements:
+    _permission: 'administer ai agents'
+
+entity.ai_audit_entry.settings:
+  path: '/admin/structure/ai-audit-entry/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\AiAuditEntrySettingsForm'
+    _title: 'AI Audit Entry settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-A: Verification Results entity routes.
+entity.verification_result.collection:
+  path: '/admin/content/ai/verifications'
+  defaults:
+    _entity_list: 'verification_result'
+    _title: 'Verification Results'
+  requirements:
+    _permission: 'view verification results'
+
+entity.verification_result.settings:
+  path: '/admin/structure/verification-result/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\VerificationResultSettingsForm'
+    _title: 'Verification Result settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-B: Prompt Improvements entity routes.
+entity.prompt_improvement.collection:
+  path: '/admin/content/ai/prompt-improvements'
+  defaults:
+    _entity_list: 'prompt_improvement'
+    _title: 'Prompt Improvements'
+  requirements:
+    _permission: 'manage prompt improvements'
+
+entity.prompt_improvement.settings:
+  path: '/admin/structure/prompt-improvement/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\PromptImprovementSettingsForm'
+    _title: 'Prompt Improvement settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-F: Autonomous Agents Dashboard.
+jaraba_ai_agents.autonomous_agents_dashboard:
+  path: '/admin/config/ai/autonomous-agents'
+  defaults:
+    _controller: '\Drupal\jaraba_ai_agents\Controller\AutonomousAgentDashboardController::dashboard'
+    _title: 'Autonomous Agents Dashboard'
+  requirements:
+    _permission: 'manage autonomous agents'
+
+# GAP-L5-F: Autonomous Sessions entity routes.
+entity.autonomous_session.collection:
+  path: '/admin/content/ai/autonomous-sessions'
+  defaults:
+    _entity_list: 'autonomous_session'
+    _title: 'Autonomous Sessions'
+  requirements:
+    _permission: 'manage autonomous agents'
+
+entity.autonomous_session.settings:
+  path: '/admin/structure/autonomous-session/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\AutonomousSessionSettingsForm'
+    _title: 'Autonomous Session settings'
+  requirements:
+    _permission: 'administer ai agents'
+
+# GAP-L5-G: Remediation Log entity routes.
+entity.remediation_log.collection:
+  path: '/admin/content/ai/remediations'
+  defaults:
+    _entity_list: 'remediation_log'
+    _title: 'Remediation Logs'
+  requirements:
+    _permission: 'administer ai agents'
+
+entity.remediation_log.settings:
+  path: '/admin/structure/remediation-log/settings'
+  defaults:
+    _form: 'Drupal\jaraba_ai_agents\Form\RemediationLogSettingsForm'
+    _title: 'Remediation Log settings'
+  requirements:
+    _permission: 'administer ai agents'
+
 # GAP-AUD-024: Per-tenant AI cost attribution.
 jaraba_ai_agents.api.observability.cost_attribution:
   path: '/api/v1/ai/observability/cost-attribution'

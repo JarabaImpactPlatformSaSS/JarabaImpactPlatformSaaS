@@ -202,6 +202,7 @@ demo-dashboard:
     - core/drupal
     - core/drupalSettings
     - core/once
+    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE CHARTS (ALIAS PARA DEMO)
@@ -213,6 +214,21 @@ charts:
   dependencies:
     - core/drupal
     - ecosistema_jaraba_core/chartjs
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE DEMO GUIDED TOUR
+# ---------------------------------------------------------------------------
+# Tour guiado ligero (sin dependencia externa) para onboarding demo.
+# Lee config de drupalSettings.demoTour (GuidedTourService::getTourDriverJS).
+
+demo-guided-tour:
+  version: 1.x
+  js:
+    js/demo-guided-tour.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE DEMO STORYTELLING
@@ -228,6 +244,7 @@ demo-storytelling:
     js/demo-storytelling.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - core/once
 
 # ---------------------------------------------------------------------------

@@ -35,6 +35,19 @@ function jaraba_ai_agents_cron(): void {
       );
     }
   }
+
+  // GAP-L5-F: Enqueue autonomous agent heartbeats.
+  if (\Drupal::hasService('jaraba_ai_agents.autonomous_agent')) {
+    try {
+      \Drupal::service('jaraba_ai_agents.autonomous_agent')->enqueueHeartbeats();
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('jaraba_ai_agents')->warning(
+        'Autonomous agent heartbeat enqueue failed: @error',
+        ['@error' => $e->getMessage()]
+      );
+    }
+  }
 }
 
 /**
@@ -55,6 +68,28 @@ function jaraba_ai_agents_theme(): array {
         'usage_trend' => [],
       ],
       'template' => 'jaraba-ai-dashboard',
+    ],
+    // GAP-L5-C: AI Compliance Dashboard.
+    'ai_compliance_dashboard' => [
+      'variables' => [
+        'risk_matrix' => [],
+        'risk_assessments' => [],
+        'high_risk_actions' => [],
+        'limited_risk_actions' => [],
+        'eu_ai_act_deadline' => '',
+      ],
+      'template' => 'ai-compliance-dashboard',
+    ],
+    // GAP-L5-F/G: Autonomous Agents & Self-Healing Dashboard.
+    'autonomous_agents_dashboard' => [
+      'variables' => [
+        'stats' => [],
+        'active_sessions' => [],
+        'escalated_sessions' => [],
+        'recent_remediations' => [],
+        'agent_types' => [],
+      ],
+      'template' => 'autonomous-agents-dashboard',
     ],
   ];
 }

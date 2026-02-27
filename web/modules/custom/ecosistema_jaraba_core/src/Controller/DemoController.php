@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Flood\FloodInterface;
 use Drupal\Core\Url;
@@ -36,7 +37,10 @@ class DemoController extends ControllerBase
 {
 
     /**
-     * Rate limits por endpoint (peticiones/minuto por IP).
+     * Rate limits por defecto (fallback si config no disponible).
+     *
+     * HAL-DEMO-V3-BACK-003: Los valores efectivos se leen desde
+     * ecosistema_jaraba_core.demo_settings.rate_limits.
      */
     protected const RATE_LIMIT_START = 10;
     protected const RATE_LIMIT_TRACK = 30;
@@ -60,6 +64,13 @@ class DemoController extends ControllerBase
     /**
      * Constructor.
      */
+    /**
+     * Límites de rate limiting efectivos (leídos desde config).
+     *
+     * @var array{start: int, track: int, session: int, convert: int}
+     */
+    protected array $rateLimits;
+
     public function __construct(
         protected DemoInteractiveService $demoService,
         protected GuidedTourService $tourService,
@@ -68,7 +79,22 @@ class DemoController extends ControllerBase
         protected DemoJourneyProgressionService $journeyProgression,
         protected ?AbTestService $abTestService = NULL,
         protected ?StorytellingAgent $storytellingAgent = NULL,
+        ?ConfigFactoryInterface $configFactory = NULL,
     ) {
+        // HAL-DEMO-V3-BACK-003: Leer rate limits desde config con fallback.
+        $defaults = [
+            'start' => self::RATE_LIMIT_START,
+            'track' => self::RATE_LIMIT_TRACK,
+            'session' => self::RATE_LIMIT_SESSION,
+            'convert' => self::RATE_LIMIT_CONVERT,
+        ];
+        if ($configFactory) {
+            $configLimits = $configFactory->get('ecosistema_jaraba_core.demo_settings')->get('rate_limits');
+            $this->rateLimits = is_array($configLimits) ? $configLimits + $defaults : $defaults;
+        }
+        else {
+            $this->rateLimits = $defaults;
+        }
     }
 
     /**
@@ -84,6 +110,7 @@ class DemoController extends ControllerBase
             $container->get('ecosistema_jaraba_core.demo_journey_progression'),
             $container->has('ecosistema_jaraba_core.ab_test') ? $container->get('ecosistema_jaraba_core.ab_test') : NULL,
             $container->has('jaraba_ai_agents.storytelling_agent') ? $container->get('jaraba_ai_agents.storytelling_agent') : NULL,
+            $container->get('config.factory'),
         );
     }
 
@@ -159,7 +186,7 @@ class DemoController extends ControllerBase
         // S1-01: Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_start',
-            self::RATE_LIMIT_START,
+            $this->rateLimits['start'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {
@@ -215,16 +242,17 @@ class DemoController extends ControllerBase
             '#products' => $demoData['products'],
             '#sales_history' => $demoData['sales_history'],
             '#magic_actions' => $demoData['magic_moment_actions'],
-            '#tour' => $tour ? $this->tourService->getTourDriverJS($tour) : NULL,
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/demo-dashboard',
+                    'ecosistema_jaraba_core/demo-guided-tour',
                 ],
                 'drupalSettings' => [
                     'demo' => [
                         'sessionId' => $sessionId,
                         'salesHistory' => $demoData['sales_history'],
                     ],
+                    'demoTour' => $tour ? json_decode($this->tourService->getTourDriverJS($tour), TRUE) : NULL,
                 ],
             ],
             '#cache' => [
@@ -245,7 +273,7 @@ class DemoController extends ControllerBase
         // S1-01: Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_track',
-            self::RATE_LIMIT_TRACK,
+            $this->rateLimits['track'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {
@@ -326,7 +354,7 @@ class DemoController extends ControllerBase
         // S1-01: Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_session',
-            self::RATE_LIMIT_SESSION,
+            $this->rateLimits['session'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {
@@ -375,7 +403,7 @@ class DemoController extends ControllerBase
         // S1-01: Rate limiting estricto (endpoint sensible).
         $rateLimited = $this->checkRateLimit(
             'demo_convert',
-            self::RATE_LIMIT_CONVERT,
+            $this->rateLimits['convert'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {
@@ -427,7 +455,7 @@ class DemoController extends ControllerBase
         // S1-01: Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_dashboard',
-            self::RATE_LIMIT_SESSION,
+            $this->rateLimits['session'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {
@@ -542,7 +570,7 @@ class DemoController extends ControllerBase
         // S1-01: Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_storytelling',
-            self::RATE_LIMIT_START,
+            $this->rateLimits['start'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {
@@ -631,8 +659,109 @@ class DemoController extends ControllerBase
             '#ai_generated' => $isAiGenerated,
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/demo-storytelling'],
+                'drupalSettings' => [
+                    'demoStorytelling' => [
+                        'regenerateUrl' => Url::fromRoute(
+                            'ecosistema_jaraba_core.demo_api_regenerate_story',
+                            ['sessionId' => $sessionId],
+                        )->toString(),
+                    ],
+                ],
             ],
         ];
+    }
+
+    /**
+     * API: Regenerar historia de storytelling (POST → JSON).
+     *
+     * Reutiliza la lógica de generación de demoAiStorytelling() pero
+     * devuelve JSON para el fetch del frontend.
+     *
+     * Rate limit: 10 req/min por IP.
+     * Feature gate: story_generations_per_session.
+     * CSRF: obligatorio via routing.yml.
+     */
+    public function regenerateStory(Request $request, string $sessionId): JsonResponse
+    {
+        // Rate limiting.
+        $rateLimited = $this->checkRateLimit(
+            'demo_storytelling',
+            $this->rateLimits['start'],
+            $request->getClientIp() ?? 'unknown',
+        );
+        if ($rateLimited) {
+            return $rateLimited;
+        }
+
+        // Validar session_id.
+        if (!$this->isValidSessionId($sessionId)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('ID de sesión inválido.'),
+            ], 400);
+        }
+
+        $session = $this->demoService->getDemoSession($sessionId);
+        if (!$session) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('La sesión de demo ha expirado.'),
+            ], 410);
+        }
+
+        // Feature gate.
+        $storyGate = $this->featureGate->check($sessionId, 'story_generations_per_session');
+        if (!$storyGate['allowed']) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Has alcanzado el límite de generaciones. Crea tu cuenta para acceso ilimitado.'),
+                'limit_reached' => TRUE,
+                'remaining' => 0,
+            ], 429);
+        }
+        $this->featureGate->recordUsage($sessionId, 'story_generations_per_session');
+
+        // Registrar acción de valor.
+        $this->demoService->trackDemoAction($sessionId, 'generate_story');
+
+        // Generar historia — IA real con fallback a hardcoded.
+        $profile = $session['profile'];
+        $tenantName = $session['tenant_name'];
+        $story = NULL;
+        $isAiGenerated = FALSE;
+
+        if ($this->storytellingAgent) {
+            try {
+                $result = $this->storytellingAgent->execute('brand_story', [
+                    'brand_name' => $tenantName,
+                    'vertical' => $profile['vertical'] ?? 'agroconecta',
+                    'founding_context' => $profile['description'] ?? '',
+                    'values' => (string) $this->t('Innovación, sostenibilidad, comunidad'),
+                ]);
+
+                if (!empty($result['success']) && !empty($result['content'])) {
+                    $story = Xss::filter($result['content']);
+                    $isAiGenerated = TRUE;
+                }
+            }
+            catch (\Exception $e) {
+                $this->getLogger('demo_controller')->warning(
+                    'Storytelling regeneration failed for session @session: @error',
+                    ['@session' => $sessionId, '@error' => $e->getMessage()]
+                );
+            }
+        }
+
+        if (!$story) {
+            $story = $this->demoService->getDemoStory($profile['id'], $tenantName);
+        }
+
+        return new JsonResponse([
+            'success' => TRUE,
+            'story' => $story,
+            'ai_generated' => $isAiGenerated,
+            'remaining' => max(0, $storyGate['remaining'] - 1),
+        ]);
     }
 
     /**
@@ -647,7 +776,7 @@ class DemoController extends ControllerBase
         // Rate limiting.
         $rateLimited = $this->checkRateLimit(
             'demo_track',
-            self::RATE_LIMIT_TRACK,
+            $this->rateLimits['track'],
             $request->getClientIp() ?? 'unknown',
         );
         if ($rateLimited) {

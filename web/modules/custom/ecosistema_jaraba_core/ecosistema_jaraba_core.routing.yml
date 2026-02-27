@@ -738,6 +738,17 @@ ecosistema_jaraba_core.demo_storytelling:
     _access: 'TRUE'
     sessionId: '[a-zA-Z0-9_-]+'
 
+# API: Regenerar historia storytelling (POST, CSRF obligatorio)
+ecosistema_jaraba_core.demo_api_regenerate_story:
+  path: '/api/v1/demo/{sessionId}/regenerate-story'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::regenerateStory'
+  requirements:
+    _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    sessionId: '[a-zA-Z0-9_-]+'
+  methods: [POST]
+
 # API: Track demo action (CSRF obligatorio — S1-03)
 ecosistema_jaraba_core.demo_api_track:
   path: '/api/v1/demo/track'

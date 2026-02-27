@@ -1,17 +1,22 @@
 {#
 /**
  * @file
- * Template para la vista de dashboard de demo con sesión activa.
+ * Template para el dashboard con SESIÓN ACTIVA y progressive disclosure.
+ *
+ * HAL-DEMO-V3-BACK-006: Este template se usa en la ruta demo_dashboard_view
+ * (sesión activa, con progressive disclosure y countdown timer).
+ * Las métricas se renderizan via partial _demo-metrics.html.twig (genérico).
+ *
+ * Para el dashboard inicial (sin progressive disclosure),
+ * ver demo-dashboard.html.twig (métricas con claves nombradas).
  *
  * Variables:
  * - session: Array completo de datos de sesión (session_id, profile, tenant_name,
  *   metrics, products, sales_history, magic_moment_actions, etc.).
+ * - disclosure: Datos de progressive disclosure (unlocked, level, next_actions_needed).
  *
  * S2-04: Template dedicado — antes usaba el mismo template que demo_dashboard
  * pero con variables incompatibles, resultando en una página vacía.
- *
- * Reutiliza la misma estructura visual que demo-dashboard.html.twig
- * pero extrae las variables del array session.
  */
 #}
 
@@ -70,7 +75,8 @@
           {% endif %}
           <a href="{{ action_url }}"
              class="demo-magic-action-card {{ action.highlight ? 'demo-magic-action-card--highlighted' : '' }}"
-             data-action="{{ action.id }}">
+             data-action="{{ action.id }}"
+             aria-label="{{ action.label }}: {{ action.description }}">
             <div class="demo-magic-action-card__icon">
               {{ jaraba_icon(action.icon_category|default('navigation'), action.icon_name|default('arrow'), { size: '24px', variant: 'duotone' }) }}
             </div>
@@ -105,3 +111,6 @@
     {% include '@ecosistema_jaraba_core/partials/_demo-cta.html.twig' with { vertical: profile.vertical|default('agroconecta') } only %}
   {% endif %}
 </div>
+
+{# HAL-DEMO-V3-FRONT-003: Modal de conversión — antes ausente en dashboard-view. #}
+{% include '@ecosistema_jaraba_core/partials/_demo-convert-modal.html.twig' %}

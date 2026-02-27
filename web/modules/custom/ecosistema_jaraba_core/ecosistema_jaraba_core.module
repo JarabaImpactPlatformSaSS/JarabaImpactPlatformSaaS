@@ -1550,20 +1550,11 @@ function ecosistema_jaraba_core_cron() {
     }
   }
 
-  // 8. S1-05: Limpieza de sandboxes expirados (State API legacy).
-  if (\Drupal::hasService('ecosistema_jaraba_core.sandbox_tenant')) {
-    try {
-      /** @var \Drupal\ecosistema_jaraba_core\Service\SandboxTenantService $sandboxService */
-      $sandboxService = \Drupal::service('ecosistema_jaraba_core.sandbox_tenant');
-      $sandboxService->cleanupExpiredSandboxes();
-    }
-    catch (\Exception $e) {
-      \Drupal::logger('sandbox_tenant')->error(
-        'Error limpiando sandboxes expirados: @message',
-        ['@message' => $e->getMessage()]
-      );
-    }
-  }
+  // 8. S1-05: Limpieza de sandboxes expirados — ELIMINADO.
+  // HAL-DEMO-V3-BACK-002: SandboxTenantService está @deprecated desde 1.x.
+  // La limpieza de sesiones demo ahora se gestiona via demo_sessions table
+  // en DemoInteractiveService. El servicio sandbox_tenant se mantiene
+  // registrado para backwards-compat pero no se invoca en cron.
 
   // 9. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
   _ecosistema_jaraba_core_cron_extended();
