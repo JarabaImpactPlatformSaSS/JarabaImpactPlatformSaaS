@@ -111,6 +111,15 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # S5-09 (HAL-AI-20): Motor de personalización unificado.
+  # Orquesta 6 servicios de recomendación dispersos en módulos verticales
+  # para ofrecer una API única de recomendaciones cross-vertical.
+  ecosistema_jaraba_core.personalization_engine:
+    class: Drupal\ecosistema_jaraba_core\Service\PersonalizationEngineService
+    arguments:
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.tenant_context'
+
 
   # ===========================================
   # SERVICIOS DE TRAZABILIDAD Y FIRMA DIGITAL

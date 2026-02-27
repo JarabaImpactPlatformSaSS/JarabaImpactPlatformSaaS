@@ -5,13 +5,15 @@ services:
     parent: logger.channel_base
     arguments: ['jaraba_ai_agents']
 
-  # Servicio de Brand Voice por tenant
+  # Servicio de Brand Voice por tenant (S5-06: HAL-AI-30 entity-backed)
   jaraba_ai_agents.tenant_brand_voice:
     class: Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService
     arguments:
       - '@config.factory'
       - '@group.membership_loader'
       - '@current_user'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
 
   # Model Router - Routing inteligente por complejidad
   jaraba_ai_agents.model_router:
@@ -58,6 +60,15 @@ services:
       - '@jaraba_ai_agents.observability'
       - '@logger.channel.jaraba_ai_agents'
       - '@entity_type.manager'
+
+  # S5-02: Agent Benchmark Service — automated evaluation with golden test cases
+  jaraba_ai_agents.agent_benchmark:
+    class: Drupal\jaraba_ai_agents\Service\AgentBenchmarkService
+    arguments:
+      - '@entity_type.manager'
+      - '@jaraba_ai_agents.quality_evaluator'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.observability'
 
   # Orquestador de agentes
   jaraba_ai_agents.orchestrator:
@@ -304,6 +315,13 @@ services:
       - '@entity_type.manager'
       - '@jaraba_ai_agents.quality_evaluator'
       - '@jaraba_ai_agents.observability'
+      - '@logger.channel.jaraba_ai_agents'
+
+  # S5-03: Prompt Version Service — versioned templates with rollback
+  jaraba_ai_agents.prompt_version:
+    class: Drupal\jaraba_ai_agents\Service\PromptVersionService
+    arguments:
+      - '@entity_type.manager'
       - '@logger.channel.jaraba_ai_agents'
 
   # JarabaLex Copilot Agent — DEPRECATED (FIX-016)

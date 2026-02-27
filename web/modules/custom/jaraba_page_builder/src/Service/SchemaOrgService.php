@@ -668,6 +668,224 @@ class SchemaOrgService
     }
 
     /**
+     * Genera schema VideoObject para contenidos con video embebido (S5-08).
+     *
+     * @param array $video
+     *   Datos del video: name, description, thumbnailUrl, uploadDate,
+     *   duration (ISO 8601), contentUrl, embedUrl.
+     * @param array $tenant
+     *   Datos del tenant: name, url.
+     *
+     * @return string
+     *   JSON-LD valido para VideoObject.
+     *
+     * @see https://schema.org/VideoObject
+     */
+    public function generateVideoObjectSchema(array $video, array $tenant = []): string
+    {
+        if (empty($video['name'])) {
+            return '';
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'VideoObject',
+            'name' => strip_tags($video['name']),
+            'description' => strip_tags($video['description'] ?? ''),
+            'uploadDate' => $video['uploadDate'] ?? date('c'),
+        ];
+
+        if (!empty($video['thumbnailUrl'])) {
+            $schema['thumbnailUrl'] = $video['thumbnailUrl'];
+        }
+
+        if (!empty($video['duration'])) {
+            $schema['duration'] = $video['duration'];
+        }
+
+        if (!empty($video['contentUrl'])) {
+            $schema['contentUrl'] = $video['contentUrl'];
+        }
+
+        if (!empty($video['embedUrl'])) {
+            $schema['embedUrl'] = $video['embedUrl'];
+        }
+
+        if (!empty($tenant['name'])) {
+            $schema['publisher'] = [
+                '@type' => 'Organization',
+                'name' => $tenant['name'],
+            ];
+            if (!empty($tenant['url'])) {
+                $schema['publisher']['url'] = $tenant['url'];
+            }
+            if (!empty($tenant['logo'])) {
+                $schema['publisher']['logo'] = [
+                    '@type' => 'ImageObject',
+                    'url' => $tenant['logo'],
+                ];
+            }
+        }
+
+        return Json::encode($schema);
+    }
+
+    /**
+     * Genera schema Event para eventos y webinars (S5-08).
+     *
+     * @param array $event
+     *   Datos del evento: name, description, startDate, endDate,
+     *   location (name, address), image, url, offers (price, currency, url).
+     * @param array $tenant
+     *   Datos del organizador: name, url.
+     *
+     * @return string
+     *   JSON-LD valido para Event.
+     *
+     * @see https://schema.org/Event
+     */
+    public function generateEventSchema(array $event, array $tenant = []): string
+    {
+        if (empty($event['name']) || empty($event['startDate'])) {
+            return '';
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Event',
+            'name' => strip_tags($event['name']),
+            'startDate' => $event['startDate'],
+            'eventStatus' => 'https://schema.org/EventScheduled',
+        ];
+
+        if (!empty($event['description'])) {
+            $schema['description'] = strip_tags($event['description']);
+        }
+
+        if (!empty($event['endDate'])) {
+            $schema['endDate'] = $event['endDate'];
+        }
+
+        if (!empty($event['image'])) {
+            $schema['image'] = $event['image'];
+        }
+
+        if (!empty($event['url'])) {
+            $schema['url'] = $event['url'];
+        }
+
+        // Location: physical or online.
+        if (!empty($event['location'])) {
+            $loc = $event['location'];
+            if (!empty($loc['url']) && empty($loc['address'])) {
+                // Online event.
+                $schema['eventAttendanceMode'] = 'https://schema.org/OnlineEventAttendanceMode';
+                $schema['location'] = [
+                    '@type' => 'VirtualLocation',
+                    'url' => $loc['url'],
+                ];
+            }
+            else {
+                // Physical event.
+                $schema['eventAttendanceMode'] = 'https://schema.org/OfflineEventAttendanceMode';
+                $schema['location'] = [
+                    '@type' => 'Place',
+                    'name' => $loc['name'] ?? '',
+                ];
+                if (!empty($loc['address'])) {
+                    $schema['location']['address'] = [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => $loc['address']['street'] ?? '',
+                        'addressLocality' => $loc['address']['city'] ?? '',
+                        'addressRegion' => $loc['address']['region'] ?? '',
+                        'postalCode' => $loc['address']['postalCode'] ?? '',
+                        'addressCountry' => $loc['address']['country'] ?? 'ES',
+                    ];
+                }
+            }
+        }
+
+        // Offers (tickets).
+        if (!empty($event['offers'])) {
+            $schema['offers'] = [
+                '@type' => 'Offer',
+                'price' => (string) ($event['offers']['price'] ?? '0'),
+                'priceCurrency' => $event['offers']['currency'] ?? 'EUR',
+                'availability' => 'https://schema.org/InStock',
+            ];
+            if (!empty($event['offers']['url'])) {
+                $schema['offers']['url'] = $event['offers']['url'];
+            }
+            if (!empty($event['offers']['validFrom'])) {
+                $schema['offers']['validFrom'] = $event['offers']['validFrom'];
+            }
+        }
+
+        // Organizer.
+        if (!empty($tenant['name'])) {
+            $schema['organizer'] = [
+                '@type' => 'Organization',
+                'name' => $tenant['name'],
+            ];
+            if (!empty($tenant['url'])) {
+                $schema['organizer']['url'] = $tenant['url'];
+            }
+        }
+
+        return Json::encode($schema);
+    }
+
+    /**
+     * Genera schema AggregateRating para entidades con reviews (S5-08).
+     *
+     * @param array $rating
+     *   Datos de la calificacion: ratingValue, reviewCount, bestRating,
+     *   worstRating.
+     * @param array $itemReviewed
+     *   Datos del item: type (Product, Course, LocalBusiness, etc.),
+     *   name, url, image.
+     *
+     * @return string
+     *   JSON-LD valido para schema con AggregateRating.
+     *
+     * @see https://schema.org/AggregateRating
+     */
+    public function generateAggregateRatingSchema(array $rating, array $itemReviewed = []): string
+    {
+        if (empty($rating['ratingValue']) || empty($rating['reviewCount'])) {
+            return '';
+        }
+
+        $itemType = $itemReviewed['type'] ?? 'Product';
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => $itemType,
+            'name' => strip_tags($itemReviewed['name'] ?? ''),
+            'aggregateRating' => [
+                '@type' => 'AggregateRating',
+                'ratingValue' => (string) $rating['ratingValue'],
+                'reviewCount' => (string) $rating['reviewCount'],
+                'bestRating' => (string) ($rating['bestRating'] ?? '5'),
+                'worstRating' => (string) ($rating['worstRating'] ?? '1'),
+            ],
+        ];
+
+        if (!empty($itemReviewed['url'])) {
+            $schema['url'] = $itemReviewed['url'];
+        }
+
+        if (!empty($itemReviewed['image'])) {
+            $schema['image'] = $itemReviewed['image'];
+        }
+
+        if (!empty($itemReviewed['description'])) {
+            $schema['description'] = strip_tags($itemReviewed['description']);
+        }
+
+        return Json::encode($schema);
+    }
+
+    /**
      * Envuelve JSON-LD en script tag para insertar en HTML.
      *
      * @param string $jsonLd

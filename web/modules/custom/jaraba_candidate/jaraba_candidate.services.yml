@@ -62,7 +62,7 @@ services:
       - '@current_user'
 
   # Copilot IA de empleabilidad con 6 modos (Spec 20260120b S10)
-  # Extiende BaseAgent: usa @ai.provider, tenant_brand_voice, observability
+  # Gen 1 — deprecated, delegating to Smart Gen 2 agent
   jaraba_candidate.agent.employability_copilot:
     class: Drupal\jaraba_candidate\Agent\EmployabilityCopilotAgent
     arguments:
@@ -72,6 +72,21 @@ services:
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
       - '@ecosistema_jaraba_core.unified_prompt_builder'
+
+  # S5-01: Smart Gen 2 agent — model routing, memory, observability, brand voice
+  jaraba_candidate.agent.smart_employability_copilot:
+    class: Drupal\jaraba_candidate\Agent\SmartEmployabilityCopilotAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@jaraba_ai_agents.model_router'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?jaraba_ai_agents.tool_registry'
+      - '@?jaraba_ai_agents.provider_fallback'
+      - '@?jaraba_ai_agents.context_window_manager'
 
   # ============================================================================
   # SERVICIO DE INSIGHTS DE COPILOT (AUTOAPRENDIZAJE IA)

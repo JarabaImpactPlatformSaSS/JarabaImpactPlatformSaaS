@@ -51,7 +51,25 @@ class StreamingOrchestratorService extends CopilotOrchestratorService {
    *   Generator que yield-ea chunks de respuesta.
    */
   public function streamChat(string $message, array $context, string $mode): \Generator {
-    // 1. Check cache (respuestas cacheadas no necesitan streaming).
+    // S5-04: Check semantic cache first (fuzzy matching via Qdrant).
+    if ($this->semanticCache) {
+      try {
+        $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
+        $semanticHit = $this->semanticCache->get($message, $tenantId, $mode);
+        if ($semanticHit) {
+          $this->logger->debug('GAP-01/S5-04: Respuesta servida desde semantic cache (no-stream).');
+          $semanticHit['cached'] = TRUE;
+          $semanticHit['cache_type'] = 'semantic';
+          yield ['type' => 'cached', 'response' => $semanticHit];
+          return;
+        }
+      }
+      catch (\Exception $e) {
+        $this->logger->notice('Semantic cache lookup failed in streaming: @error', ['@error' => $e->getMessage()]);
+      }
+    }
+
+    // 1. Check exact cache (respuestas cacheadas no necesitan streaming).
     if ($this->cacheService) {
       $cachedResponse = $this->cacheService->get($message, $mode, $context);
       if ($cachedResponse) {

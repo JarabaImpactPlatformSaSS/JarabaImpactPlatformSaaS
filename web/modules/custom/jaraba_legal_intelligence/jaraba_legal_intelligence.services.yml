@@ -79,7 +79,8 @@ services:
       - '@logger.channel.jaraba_legal_intelligence'
       - '@ecosistema_jaraba_core.jarabalex_feature_gate'
 
-  # === COPILOT AGENT: Agente dedicado JarabaLex (6 modos) ===
+  # === COPILOT AGENT: Agente dedicado JarabaLex (8 modos) ===
+  # Gen 1 — deprecated, kept for backwards compatibility
   jaraba_legal_intelligence.legal_copilot_agent:
     class: Drupal\jaraba_legal_intelligence\Agent\LegalCopilotAgent
     arguments:
@@ -89,6 +90,21 @@ services:
       - '@jaraba_ai_agents.tenant_brand_voice'
       - '@jaraba_ai_agents.observability'
       - '@ecosistema_jaraba_core.unified_prompt_builder'
+
+  # S5-01: Smart Gen 2 agent — model routing, memory, tools, brand voice
+  jaraba_legal_intelligence.smart_legal_copilot_agent:
+    class: Drupal\jaraba_legal_intelligence\Agent\SmartLegalCopilotAgent
+    arguments:
+      - '@ai.provider'
+      - '@config.factory'
+      - '@logger.channel.jaraba_legal_intelligence'
+      - '@jaraba_ai_agents.tenant_brand_voice'
+      - '@jaraba_ai_agents.observability'
+      - '@jaraba_ai_agents.model_router'
+      - '@?ecosistema_jaraba_core.unified_prompt_builder'
+      - '@?jaraba_ai_agents.tool_registry'
+      - '@?jaraba_ai_agents.provider_fallback'
+      - '@?jaraba_ai_agents.context_window_manager'
 
   # === MERGE & RANK: Fusion de resultados nacionales + UE ===
   jaraba_legal_intelligence.merge_rank:

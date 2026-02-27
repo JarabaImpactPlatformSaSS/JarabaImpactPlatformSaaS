@@ -180,3 +180,46 @@ jaraba_ai_agents.model_routing:
               label: 'Applicable use cases'
               sequence:
                 type: string
+
+jaraba_ai_agents.prompt_template.*:
+  type: config_entity
+  label: 'Prompt Template'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    agent_id:
+      type: string
+      label: 'Agent ID'
+    version:
+      type: string
+      label: 'Version'
+    system_prompt:
+      type: text
+      label: 'System Prompt'
+    temperature:
+      type: float
+      label: 'Temperature'
+    model_tier:
+      type: string
+      label: 'Model Tier'
+    variables:
+      type: sequence
+      label: 'Variables'
+      sequence:
+        type: string
+    is_active:
+      type: boolean
+      label: 'Is Active'
+    created:
+      type: integer
+      label: 'Created'
+    updated:
+      type: integer
+      label: 'Updated'

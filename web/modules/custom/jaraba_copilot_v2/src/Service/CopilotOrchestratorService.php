@@ -142,6 +142,11 @@ class CopilotOrchestratorService
     protected ?TenantContextService $tenantContext = NULL;
 
     /**
+     * S5-04: Semantic cache for fuzzy response matching via Qdrant.
+     */
+    protected ?SemanticCacheService $semanticCache = NULL;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -156,6 +161,7 @@ class CopilotOrchestratorService
         ?EntrepreneurContextService $entrepreneurContext = NULL,
         ?SelfDiscoveryContextService $selfDiscoveryContext = NULL,
         TenantContextService $tenantContext, // AUDIT-CONS-N10: Proper DI for tenant context.
+        ?SemanticCacheService $semanticCache = NULL, // S5-04: HAL-AI-25.
     ) {
         $this->tenantContext = $tenantContext; // AUDIT-CONS-N10: Proper DI for tenant context.
         $this->aiProvider = $aiProvider;
@@ -168,6 +174,7 @@ class CopilotOrchestratorService
         $this->cacheService = $cacheService;
         $this->entrepreneurContext = $entrepreneurContext;
         $this->selfDiscoveryContext = $selfDiscoveryContext;
+        $this->semanticCache = $semanticCache;
     }
 
     /**
@@ -186,7 +193,29 @@ class CopilotOrchestratorService
     public function chat(string $message, array $context, string $mode): array
     {
         // ================================================================
-        // CHECK CACHE FIRST (reduces AI costs)
+        // S5-04: SEMANTIC CACHE — fuzzy matching via Qdrant embeddings.
+        // Checks before exact cache for semantically similar past queries.
+        // ================================================================
+        if ($this->semanticCache) {
+            try {
+                $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
+                $semanticHit = $this->semanticCache->get($message, $tenantId, $mode);
+                if ($semanticHit) {
+                    $this->logger->debug('Copilot response served from semantic cache (mode=@mode)', [
+                        '@mode' => $mode,
+                    ]);
+                    $semanticHit['cached'] = TRUE;
+                    $semanticHit['cache_type'] = 'semantic';
+                    return $semanticHit;
+                }
+            }
+            catch (\Exception $e) {
+                $this->logger->notice('Semantic cache lookup failed: @error', ['@error' => $e->getMessage()]);
+            }
+        }
+
+        // ================================================================
+        // CHECK EXACT CACHE (reduces AI costs)
         // ================================================================
         if ($this->cacheService) {
             $cachedResponse = $this->cacheService->get($message, $mode, $context);
@@ -226,10 +255,23 @@ class CopilotOrchestratorService
                 $this->resetCircuitBreaker($providerId);
 
                 // ================================================================
-                // STORE IN CACHE (for future identical requests)
+                // STORE IN EXACT CACHE (for future identical requests)
                 // ================================================================
                 if ($this->cacheService) {
                     $this->cacheService->set($message, $mode, $context, $formattedResponse);
+                }
+
+                // ================================================================
+                // S5-04: STORE IN SEMANTIC CACHE (for future similar requests)
+                // ================================================================
+                if ($this->semanticCache) {
+                    try {
+                        $tenantId = $this->tenantContext ? (string) ($this->tenantContext->getCurrentTenantId() ?? '0') : '0';
+                        $this->semanticCache->set($message, $formattedResponse, $tenantId, $mode);
+                    }
+                    catch (\Exception $e) {
+                        $this->logger->notice('Semantic cache store failed: @error', ['@error' => $e->getMessage()]);
+                    }
                 }
 
                 return $formattedResponse;
