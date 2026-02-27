@@ -261,7 +261,85 @@
   {% endif %}
 
   {# ═══════════════════════════════════════════════════════════════
-     LINKS + CTA — Footer actions
+     SHARE BUTTONS — G3
+     ═══════════════════════════════════════════════════════════════ #}
+  {% set share_url = url('jaraba_success_cases.detail', {slug: case.slug})|render %}
+  {% set share_text = case.name ~ ' — ' ~ ('Caso de Éxito'|t) %}
+  <div class="sc-detail__share">
+    <span class="sc-detail__share-label">{% trans %}Share{% endtrans %}:</span>
+
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url|url_encode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="sc-detail__share-btn sc-detail__share-btn--linkedin"
+       aria-label="{% trans %}Share on LinkedIn{% endtrans %}">
+      {{ jaraba_icon('social', 'linkedin', { size: '18px' }) }}
+    </a>
+
+    <a href="https://twitter.com/intent/tweet?url={{ share_url|url_encode }}&text={{ share_text|url_encode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="sc-detail__share-btn sc-detail__share-btn--twitter"
+       aria-label="{% trans %}Share on Twitter{% endtrans %}">
+      {{ jaraba_icon('social', 'twitter', { size: '18px' }) }}
+    </a>
+
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|url_encode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="sc-detail__share-btn sc-detail__share-btn--facebook"
+       aria-label="{% trans %}Share on Facebook{% endtrans %}">
+      {{ jaraba_icon('social', 'facebook', { size: '18px' }) }}
+    </a>
+
+    <a href="https://api.whatsapp.com/send?text={{ share_text|url_encode }}%20{{ share_url|url_encode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="sc-detail__share-btn sc-detail__share-btn--whatsapp"
+       aria-label="{% trans %}Share on WhatsApp{% endtrans %}">
+      {{ jaraba_icon('social', 'whatsapp', { size: '18px' }) }}
+    </a>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════════
+     CONVERSION CTA — G4
+     ═══════════════════════════════════════════════════════════════ #}
+  <section class="sc-cta" aria-label="{% trans %}Call to action{% endtrans %}">
+    <div class="sc-cta__content">
+      <h2 class="sc-cta__title">{% trans %}Want results like these?{% endtrans %}</h2>
+      <p class="sc-cta__text">{% trans %}Discover how we can help you transform your business or career with our ecosystem of digital tools and programmes.{% endtrans %}</p>
+      <div class="sc-cta__buttons">
+        <a href="/demo" class="sc-cta__btn sc-cta__btn--primary">
+          {{ jaraba_icon('ui', 'play', { size: '16px' }) }}
+          {% trans %}Try the Demo{% endtrans %}
+        </a>
+        <a href="/contacto" class="sc-cta__btn sc-cta__btn--secondary">
+          {{ jaraba_icon('ui', 'chat', { size: '16px' }) }}
+          {% trans %}Contact Us{% endtrans %}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════
+     RELATED CASES — G5
+     ═══════════════════════════════════════════════════════════════ #}
+  {% if related_cases is not empty %}
+    <section class="sc-related" aria-label="{% trans %}Related success cases{% endtrans %}">
+      <h2 class="sc-related__title">
+        {% trans %}More stories in{% endtrans %}
+        {% if case.vertical %}
+          {{ case.vertical|replace({'_': ' '})|capitalize }}
+        {% else %}
+          {% trans %}our ecosystem{% endtrans %}
+        {% endif %}
+      </h2>
+      <div class="sc-related__grid">
+        {% for related in related_cases %}
+          {% include '@jaraba_success_cases/success-case-card.html.twig' with { 'case': related } only %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════
+     LINKS — Footer actions
      ═══════════════════════════════════════════════════════════════ #}
   <footer class="sc-detail__actions">
     {% if case.website or case.linkedin %}
@@ -269,7 +347,7 @@
         {% if case.website %}
           <a href="{{ case.website }}" target="_blank" rel="noopener" class="sc-detail__link sc-detail__link--primary">
             {{ jaraba_icon('general', 'globe', { size: '16px' }) }}
-            {% trans %}Visitar web{% endtrans %}
+            {% trans %}Visit website{% endtrans %}
           </a>
         {% endif %}
         {% if case.linkedin %}
@@ -283,26 +361,36 @@
 
     <a href="{{ path('jaraba_success_cases.list') }}" class="sc-detail__back-link">
       {{ jaraba_icon('ui', 'chevron-left', { size: '16px' }) }}
-      {% trans %}Ver todos los Casos de Éxito{% endtrans %}
+      {% trans %}View all Success Stories{% endtrans %}
     </a>
   </footer>
 
-  {# Schema.org JSON-LD #}
+  {# Schema.org JSON-LD — G6: Article (not Review) #}
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Review",
+    "@type": "Article",
+    "headline": "{{ case.name|e('js') }} — {{ 'Caso de Éxito'|t|e('js') }}",
     "author": {
       "@type": "Person",
       "name": "{{ case.name|e('js') }}"
       {% if case.profession %}, "jobTitle": "{{ case.profession|e('js') }}"{% endif %}
       {% if case.location %}, "address": "{{ case.location|e('js') }}"{% endif %}
     },
-    "reviewBody": "{{ (case.quote_long ?? case.quote_short ?? '')|e('js') }}"
-    {% if case.rating %}, "reviewRating": {
-      "@type": "Rating",
-      "ratingValue": "{{ case.rating }}",
-      "bestRating": "5"
+    "description": "{{ (case.meta_description ?? case.quote_short ?? '')|e('js') }}"
+    {% if case.image_url %}, "image": "{{ case.image_url|e('js') }}"{% endif %}
+    {% if case.vertical %}, "about": "{{ case.vertical|replace({'_': ' '})|capitalize|e('js') }}"{% endif %}
+    {% if case.program_name %}, "isPartOf": {
+      "@type": "CreativeWork",
+      "name": "{{ case.program_name|e('js') }}"
+    }{% endif %}
+    {% if case.rating %}, "review": {
+      "@type": "Review",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "{{ case.rating }}",
+        "bestRating": "5"
+      }
     }{% endif %}
   }
   </script>

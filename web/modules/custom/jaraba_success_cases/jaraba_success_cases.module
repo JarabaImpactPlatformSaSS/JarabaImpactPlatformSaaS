@@ -113,6 +113,83 @@ function _jaraba_success_cases_hide_format_guidelines(array &$element): void {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Injects Open Graph and Twitter Card meta tags for success case detail pages.
+ */
+function jaraba_success_cases_page_attachments_alter(array &$attachments): void {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name !== 'jaraba_success_cases.detail') {
+    return;
+  }
+
+  $slug = \Drupal::routeMatch()->getParameter('slug');
+  if (!$slug) {
+    return;
+  }
+
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('success_case');
+    $ids = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('slug', $slug)
+      ->condition('status', 1)
+      ->range(0, 1)
+      ->execute();
+
+    if (empty($ids)) {
+      return;
+    }
+
+    $case = $storage->load(reset($ids));
+    if (!$case) {
+      return;
+    }
+
+    $title = $case->get('name')->value . ' — ' . t('Caso de Éxito');
+    $description = $case->get('meta_description')->value
+      ?: $case->get('quote_short')->value
+      ?: t('Descubre cómo @name transformó su negocio con el ecosistema Jaraba.', ['@name' => $case->get('name')->value]);
+    $url = \Drupal::request()->getSchemeAndHttpHost() . '/caso-de-exito/' . $slug;
+
+    // Resolve image URL if available.
+    $imageUrl = '';
+    if ($case->hasField('hero_image') && !$case->get('hero_image')->isEmpty()) {
+      $file = $case->get('hero_image')->entity;
+      if ($file) {
+        $imageUrl = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+      }
+    }
+
+    $meta = [
+      ['property' => 'og:type', 'content' => 'article'],
+      ['property' => 'og:title', 'content' => $title],
+      ['property' => 'og:description', 'content' => $description],
+      ['property' => 'og:url', 'content' => $url],
+      ['name' => 'twitter:card', 'content' => $imageUrl ? 'summary_large_image' : 'summary'],
+      ['name' => 'twitter:title', 'content' => $title],
+      ['name' => 'twitter:description', 'content' => $description],
+    ];
+
+    if ($imageUrl) {
+      $meta[] = ['property' => 'og:image', 'content' => $imageUrl];
+      $meta[] = ['name' => 'twitter:image', 'content' => $imageUrl];
+    }
+
+    foreach ($meta as $i => $attrs) {
+      $tag = [
+        '#tag' => 'meta',
+        '#attributes' => $attrs,
+      ];
+      $attachments['#attached']['html_head'][] = [$tag, 'sc_meta_' . $i];
+    }
+  }
+  catch (\Exception) {
+    // Never break page rendering for meta tags.
+  }
+}
+
+/**
  * Implements template_preprocess_success_case().
  *
  * ENTITY-PREPROCESS-001: Preprocess para la entidad SuccessCase cuando se

@@ -705,6 +705,151 @@
     }
 }
 
+// =============================================================================
+// SHARE BUTTONS — G3
+// =============================================================================
+.sc-detail__share {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 2rem;
+}
+
+.sc-detail__share-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ej-color-text-secondary, #64748b);
+}
+
+.sc-detail__share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ej-color-surface-secondary, #f1f5f9);
+    color: var(--ej-color-text-secondary, #64748b);
+    transition: all 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    &--linkedin:hover {
+        background: #0077b5;
+        color: #fff;
+    }
+
+    &--twitter:hover {
+        background: #1da1f2;
+        color: #fff;
+    }
+
+    &--facebook:hover {
+        background: #1877f2;
+        color: #fff;
+    }
+
+    &--whatsapp:hover {
+        background: #25d366;
+        color: #fff;
+    }
+}
+
+// =============================================================================
+// CONVERSION CTA — G4
+// =============================================================================
+.sc-cta {
+    margin-top: 3rem;
+    border-radius: $sc-card-radius;
+    background: linear-gradient(135deg, var(--ej-color-corporate, $azul-corporativo), color.scale($azul-corporativo, $lightness: -15%));
+    padding: 3rem 2rem;
+    text-align: center;
+    color: #fff;
+}
+
+.sc-cta__title {
+    font-family: $sc-font;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    margin: 0 0 0.75rem;
+}
+
+.sc-cta__text {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+}
+
+.sc-cta__buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sc-cta__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &--primary {
+        background: #fff;
+        color: var(--ej-color-corporate, $azul-corporativo);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    &--secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+    }
+}
+
+// =============================================================================
+// RELATED CASES — G5
+// =============================================================================
+.sc-related {
+    margin-top: 3rem;
+}
+
+.sc-related__title {
+    font-family: $sc-font;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--ej-color-text-primary, #1e293b);
+}
+
+.sc-related__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
     .sc-journey__dot,
