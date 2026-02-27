@@ -4031,6 +4031,14 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   if ($route_str === 'jaraba_legal_calendar.dashboard') {
     $suggestions[] = 'page__legal_calendar';
   }
+
+  // =========================================================================
+  // REVIEWS PAGE — REV-PHASE5: Template full-width para paginas de resenas
+  // Rutas ecosistema_jaraba_core.reviews.* usan page--reviews.html.twig
+  // =========================================================================
+  if (str_starts_with($route_str, 'ecosistema_jaraba_core.reviews.')) {
+    $suggestions[] = 'page__reviews';
+  }
 }
 
 

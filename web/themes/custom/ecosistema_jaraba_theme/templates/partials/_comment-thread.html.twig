@@ -1,0 +1,64 @@
+{#
+ # Comment Thread for Content Hub articles.
+ #
+ # Variables:
+ # - comments: array of comment objects (nested with children)
+ # - article_id: int
+ # - can_comment: boolean
+ # - comment_form_url: string
+ #
+ # REV-PHASE5: Hilo de comentarios con threading.
+ #}
+<section class="comment-thread" aria-label="{{ 'Comentarios'|t }}">
+  <div class="comment-thread__header">
+    <h3 class="comment-thread__title">
+      <span aria-hidden="true">💬</span>
+      {{ 'Comentarios'|t }}
+      {% if comments|length > 0 %}
+        <span class="comment-thread__count">({{ comments|length }})</span>
+      {% endif %}
+    </h3>
+
+    {% if can_comment and comment_form_url %}
+      <a href="{{ comment_form_url }}" class="btn btn--outline comment-thread__add js-slide-panel-trigger">
+        {{ 'Anadir comentario'|t }}
+      </a>
+    {% endif %}
+  </div>
+
+  {% if comments|length > 0 %}
+    <div class="comment-thread__list">
+      {% for comment in comments %}
+        {{ _self.render_comment(comment) }}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="comment-thread__empty">
+      <p>{{ 'Aun no hay comentarios. Se el primero en comentar.'|t }}</p>
+    </div>
+  {% endif %}
+</section>
+
+{% macro render_comment(comment) %}
+  <div class="comment-thread__item{% if comment.children|length > 0 %} comment-thread__item--has-replies{% endif %}" id="comment-{{ comment.id }}">
+    <div class="comment-thread__meta">
+      <span class="comment-thread__author">{{ comment.author_name }}</span>
+      <time class="comment-thread__date" datetime="{{ comment.created }}">{{ comment.created|date('d/m/Y H:i') }}</time>
+    </div>
+    <div class="comment-thread__body">{{ comment.body }}</div>
+
+    {% if comment.children is defined and comment.children|length > 0 %}
+      <div class="comment-thread__replies">
+        {% for reply in comment.children %}
+          <div class="comment-thread__item comment-thread__item--reply" id="comment-{{ reply.id }}">
+            <div class="comment-thread__meta">
+              <span class="comment-thread__author">{{ reply.author_name }}</span>
+              <time class="comment-thread__date" datetime="{{ reply.created }}">{{ reply.created|date('d/m/Y H:i') }}</time>
+            </div>
+            <div class="comment-thread__body">{{ reply.body }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}

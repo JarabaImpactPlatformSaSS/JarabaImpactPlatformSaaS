@@ -3,6 +3,7 @@
  * GAP-AUD-023: Design System Documentation page styles.
  */
 
+@use 'sass:color';
 @use '../variables' as *;
 
 .ds-page {
@@ -114,7 +115,7 @@
   align-items: baseline;
   gap: $ej-spacing-md;
   padding: $ej-spacing-sm 0;
-  border-bottom: 1px solid lighten($ej-border-color, 4%);
+  border-bottom: 1px solid color.adjust($ej-border-color, $lightness: 4%);
 
   &__label {
     flex-shrink: 0;

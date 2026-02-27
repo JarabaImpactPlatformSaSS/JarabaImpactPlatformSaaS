@@ -3646,3 +3646,250 @@ body.page-article-canvas-editor {
         padding-top: 0;
     }
 }
+
+// ===============================================
+// === BLOG HERO — CATEGORY VARIANT ===
+// ===============================================
+
+.blog-hero--category {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    padding: $ej-spacing-xl 0;
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+
+    .blog-hero__container {
+        max-width: 1200px;
+        margin-inline: auto;
+        padding-inline: $ej-spacing-lg;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $ej-spacing-xl;
+    }
+
+    .blog-hero__back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+        font-size: 0.875rem;
+        color: var(--ej-color-primary, $ej-color-primary);
+        text-decoration: none;
+        margin-bottom: $ej-spacing-sm;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+            outline-offset: 2px;
+            border-radius: $ej-border-radius;
+        }
+    }
+
+    .blog-hero__meta-info {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-md;
+        margin-top: $ej-spacing-sm;
+        font-size: 0.875rem;
+        color: var(--ej-color-muted, $ej-color-muted);
+    }
+
+    .blog-hero__count {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+    }
+
+    .blog-hero__category-image {
+        max-width: 280px;
+        border-radius: var(--ej-border-radius, $ej-border-radius);
+        object-fit: cover;
+    }
+
+    @media (max-width: 767px) {
+        .blog-hero__container {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .blog-hero__category-image {
+            max-width: 200px;
+        }
+    }
+}
+
+// ===============================================
+// === AUTHOR PAGE ===
+// ===============================================
+
+.author-page {
+    background: var(--ej-bg-body, $ej-bg-body);
+    min-height: 100vh;
+
+    &__back {
+        padding: $ej-spacing-xl 0 $ej-spacing-xl * 2;
+    }
+
+    &__back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+        color: var(--ej-color-primary, $ej-color-primary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+            outline-offset: 2px;
+            border-radius: $ej-border-radius;
+        }
+    }
+}
+
+.author-profile {
+    background: var(--ej-bg-surface, $ej-bg-surface);
+    padding: $ej-spacing-xl * 2 0;
+    border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+
+    &__container {
+        max-width: 800px;
+        margin-inline: auto;
+        padding-inline: $ej-spacing-lg;
+        display: flex;
+        align-items: flex-start;
+        gap: $ej-spacing-xl;
+    }
+
+    &__avatar-wrapper {
+        flex-shrink: 0;
+    }
+
+    &__avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--ej-border-color, $ej-border-color);
+
+        &--placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--ej-bg-body, $ej-bg-body);
+            color: var(--ej-color-muted, $ej-color-muted);
+        }
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ej-color-primary, $ej-color-primary);
+        margin-bottom: $ej-spacing-xs;
+    }
+
+    &__name {
+        font-family: var(--ej-font-headings, $ej-font-headings);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ej-color-headings, $ej-color-headings);
+        margin: 0 0 $ej-spacing-sm;
+        line-height: 1.2;
+    }
+
+    &__bio {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--ej-color-body, $ej-color-body);
+        margin: 0 0 $ej-spacing-md;
+    }
+
+    &__meta {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-md;
+        margin-bottom: $ej-spacing-md;
+    }
+
+    &__stat {
+        display: inline-flex;
+        align-items: center;
+        gap: $ej-spacing-xs;
+        font-size: 0.875rem;
+        color: var(--ej-color-muted, $ej-color-muted);
+    }
+
+    &__social {
+        display: flex;
+        align-items: center;
+        gap: $ej-spacing-sm;
+    }
+
+    &__social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--ej-bg-body, $ej-bg-body);
+        color: var(--ej-color-muted, $ej-color-muted);
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: var(--ej-color-primary, $ej-color-primary);
+            color: #fff;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+            outline-offset: 2px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        &__container {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        &__name {
+            font-size: 1.5rem;
+        }
+
+        &__meta,
+        &__social {
+            justify-content: center;
+        }
+    }
+}
+
+.author-articles {
+    padding: $ej-spacing-xl * 2 0;
+}
+
+// Print styles for author page
+@media print {
+    .author-profile__social,
+    .author-page__back {
+        display: none;
+    }
+}

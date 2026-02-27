@@ -1,0 +1,592 @@
+/**
+ * @file
+ * Reviews & Comments SCSS — Federated Design Tokens.
+ *
+ * BEM methodology with .review-* namespace.
+ * Mobile-first. Consumes CSS custom properties with SCSS fallbacks.
+ *
+ * REV-PHASE5: Estilos del sistema de resenas y comentarios.
+ */
+
+@use 'sass:color';
+@use '../variables' as *;
+
+// ===============================================
+// === STAR RATING (read-only display) ===
+// ===============================================
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &--sm { font-size: 0.8rem; }
+  &--md { font-size: 1rem; }
+  &--lg { font-size: 1.25rem; }
+
+  &__stars {
+    display: inline-flex;
+    color: var(--ej-review-stars-color, $ej-color-warning);
+  }
+
+  &__star {
+    &--half {
+      opacity: 0.6;
+    }
+    &--empty {
+      opacity: 0.3;
+    }
+  }
+
+  &__value {
+    font-weight: 700;
+    margin-left: 0.25rem;
+  }
+
+  &__count {
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-size: 0.85em;
+  }
+}
+
+// ===============================================
+// === STAR RATING INPUT (interactive) ===
+// ===============================================
+
+.star-rating-input {
+  &__stars {
+    display: inline-flex;
+    gap: 0.125rem;
+  }
+
+  &__star {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    padding: 0.125rem;
+    transition: color 0.15s ease, transform 0.1s ease;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &--active {
+      color: var(--ej-review-stars-color, $ej-color-warning);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  &__text {
+    font-size: 0.85rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin-left: 0.5rem;
+  }
+}
+
+// ===============================================
+// === REVIEW WIDGET (inline summary) ===
+// ===============================================
+
+.review-widget {
+  margin: $ej-spacing-lg 0;
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-md;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  &__overall {
+    text-align: center;
+    flex-shrink: 0;
+
+    @media (min-width: 768px) {
+      min-width: 160px;
+    }
+  }
+
+  &__big-number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ej-color-text, $ej-color-text);
+  }
+
+  &__distribution {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__bar-label {
+    width: 40px;
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    flex-shrink: 0;
+  }
+
+  &__bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--ej-bg-muted, rgba(0, 0, 0, 0.06));
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    background: var(--ej-review-stars-color, $ej-color-warning);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  &__bar-count {
+    width: 30px;
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $ej-spacing-xl 0;
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-style: italic;
+  }
+
+  &__see-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--ej-color-impulse, $ej-color-impulse);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: $ej-spacing-sm;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  &__submit {
+    display: inline-flex;
+    margin-top: $ej-spacing-md;
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  &__recent {
+    margin-top: $ej-spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-md;
+  }
+}
+
+// ===============================================
+// === REVIEW CARD (individual review) ===
+// ===============================================
+
+.review-card {
+  background: var(--ej-bg-card, $ej-bg-card);
+  border: 1px solid var(--ej-border-color, $ej-border-color);
+  border-radius: $ej-radius-md;
+  padding: $ej-spacing-md;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $ej-spacing-sm;
+  }
+
+  &__author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ej-color-primary, $ej-color-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+  }
+
+  &__author-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: block;
+  }
+
+  &__date {
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    display: block;
+  }
+
+  &__badge {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: $ej-radius-sm;
+
+    &--verified {
+      background: rgba($ej-color-success, 0.1);
+      color: $ej-color-success;
+      font-weight: 600;
+    }
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: $ej-spacing-xs 0;
+  }
+
+  &__body {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--ej-color-text, $ej-color-text);
+  }
+
+  &__photos {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    margin-top: $ej-spacing-sm;
+    padding-bottom: $ej-spacing-xs;
+  }
+
+  &__photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: $ej-radius-sm;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: $ej-spacing-sm;
+    margin-top: $ej-spacing-sm;
+  }
+
+  &__helpful {
+    background: none;
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-radius-sm;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--ej-color-muted, $ej-color-muted);
+    transition: color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      color: var(--ej-color-primary, $ej-color-primary);
+      border-color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+      border-radius: $ej-radius-sm;
+    }
+  }
+
+  &__response {
+    margin-top: $ej-spacing-sm;
+    padding: $ej-spacing-sm $ej-spacing-md;
+    border-left: 3px solid var(--ej-color-corporate, $ej-color-corporate);
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 0 $ej-radius-sm $ej-radius-sm 0;
+  }
+
+  &__response-header {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+
+    strong {
+      color: var(--ej-color-corporate, $ej-color-corporate);
+    }
+
+    time {
+      color: var(--ej-color-muted, $ej-color-muted);
+      margin-left: 0.5rem;
+    }
+  }
+
+  &__response-body {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+}
+
+// ===============================================
+// === REVIEW SUMMARY (AI-generated) ===
+// ===============================================
+
+.review-summary {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: $ej-radius-md;
+  padding: $ej-spacing-md;
+  margin: $ej-spacing-md 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--ej-color-impulse, $ej-color-impulse);
+  }
+
+  &__text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--ej-color-text, $ej-color-text);
+    margin: 0;
+  }
+}
+
+// ===============================================
+// === COMMENT THREAD ===
+// ===============================================
+
+.comment-thread {
+  margin: $ej-spacing-xl 0;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $ej-spacing-md;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  &__count {
+    font-weight: 400;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $ej-spacing-md;
+  }
+
+  &__item {
+    padding: $ej-spacing-md;
+    background: var(--ej-bg-card, $ej-bg-card);
+    border: 1px solid var(--ej-border-color, $ej-border-color);
+    border-radius: $ej-radius-md;
+
+    &--reply {
+      margin-left: 0;
+      border: none;
+      border-bottom: 1px solid var(--ej-border-color, $ej-border-color);
+      border-radius: 0;
+      padding: $ej-spacing-sm 0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__author {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  &__date {
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__body {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  &__replies {
+    margin-top: $ej-spacing-sm;
+    padding-left: $ej-spacing-md;
+    border-left: 2px solid var(--ej-border-color, $ej-border-color);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $ej-spacing-lg 0;
+    color: var(--ej-color-muted, $ej-color-muted);
+    font-style: italic;
+  }
+
+  &__add {
+    flex-shrink: 0;
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+}
+
+// ===============================================
+// === REVIEWS PAGE ===
+// ===============================================
+
+.reviews-page {
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: $ej-spacing-lg;
+  }
+
+  &__pagination a:focus-visible {
+    outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  &__load-more .btn:focus-visible {
+    outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// ===============================================
+// === DARK MODE ===
+// ===============================================
+
+.dark-mode {
+  .review-card {
+    &__badge--verified {
+      background: rgba($ej-color-success, 0.15);
+    }
+
+    &__response {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    &__avatar--placeholder {
+      background: var(--ej-color-primary, $ej-color-impulse);
+    }
+  }
+
+  .review-widget__bar-track {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .review-summary {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .comment-thread__replies {
+    border-left-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// ===============================================
+// === REDUCED MOTION ===
+// ===============================================
+
+@media (prefers-reduced-motion: reduce) {
+  .review-widget__bar-fill {
+    transition: none;
+  }
+
+  .review-card__helpful {
+    transition: none;
+  }
+
+  .star-rating-input__star {
+    transition: none;
+  }
+}
+
+// ===============================================
+// === PRINT ===
+// ===============================================
+
+@media print {
+  .review-card__helpful,
+  .review-widget__submit,
+  .comment-thread__add,
+  .star-rating-input,
+  .js-reviews-load-more,
+  .agro-review-form {
+    display: none;
+  }
+
+  .review-card {
+    page-break-inside: avoid;
+    border: 1px solid #ccc;
+  }
+
+  .comment-thread__item {
+    page-break-inside: avoid;
+  }
+}

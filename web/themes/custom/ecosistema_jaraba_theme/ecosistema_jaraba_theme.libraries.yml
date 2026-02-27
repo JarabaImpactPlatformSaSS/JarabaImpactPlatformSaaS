@@ -254,6 +254,15 @@ metasite-experiments:
     - core/drupalSettings
     - core/once
 
+# REV-PHASE5: Reviews & Comments — Star Rating Input
+star-rating:
+  version: 1.0.0
+  js:
+    js/star-rating.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 # GAP-AUD-023: Design System Documentation page
 design-system:
   version: 1.0.0

@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-26
-**Versión:** 80.0.0 (Meta-Sitios Multilingüe — i18n EN+PT-BR + Language Switcher + Hreflang Dinámico)
+**Versión:** 81.0.0 (Reviews & Comments Clase Mundial — Auditoría + Plan Consolidación 10 Verticales)
 **Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 25 Gaps Implementados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -711,6 +711,62 @@ Integración unificada de soberanía legal y resiliencia técnica:
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
+│              REVIEWS & COMMENTS CLASE MUNDIAL (10 VERTICALES) ⭐       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   AUDITORIA: 20 hallazgos (4 seguridad + 5 bugs + 4 arquitectura      │
+│              + 3 directrices + 4 brechas clase mundial)                │
+│                                                                         │
+│   4 ENTIDADES EXISTENTES (heterogeneas):                               │
+│   ├── comercio_review (ComercioConecta): 14 campos, tenant→taxonomy   │
+│   ├── review_agro (AgroConecta): 14 campos, tenant→taxonomy, TYPE_*   │
+│   ├── review_servicios (ServiciosConecta): 12 campos, SIN tenant_id   │
+│   └── session_review (Mentoring): 11 campos, SIN tenant_id            │
+│                                                                         │
+│   2 ENTIDADES NUEVAS PLANIFICADAS:                                     │
+│   ├── course_review (LMS/Formacion): rating + completion_pct          │
+│   └── content_comment (Content Hub): threading parent_id + depth 3    │
+│                                                                         │
+│   TRAIT TRANSVERSAL: ReviewableEntityTrait                              │
+│   ├── 5 campos compartidos: review_status, helpful_count, photos,     │
+│   │   ai_summary, ai_summary_generated_at                             │
+│   ├── Helpers con fallback: getReviewStatusValue() (status/state),    │
+│   │   getAuthorId() (reviewer_uid/uid/mentee_id)                      │
+│   └── Se aplica a las 6 entidades para normalizar acceso              │
+│                                                                         │
+│   5 SERVICIOS TRANSVERSALES:                                           │
+│   ├── ReviewModerationService: cola moderacion, auto-approve, bulk    │
+│   ├── ReviewAggregationService: AggregateRating + cache + invalidate  │
+│   ├── ReviewSchemaOrgService: JSON-LD AggregateRating + Review        │
+│   ├── ReviewInvitationService: email post-transaccion, rate limit     │
+│   └── ReviewAiSummaryService: resumen IA por batch cron               │
+│                                                                         │
+│   FRONTEND:                                                             │
+│   ├── _star-rating.html.twig: SVG stars con half-fill, WCAG aria     │
+│   ├── _review-card.html.twig: card reutilizable con helpful/report   │
+│   ├── _review-form.html.twig: slide-panel star widget interactivo    │
+│   ├── _review-summary.html.twig: AggregateRating + distribution bar  │
+│   ├── star-rating.js: 0.5 step, keyboard nav, CSRF submit            │
+│   ├── SCSS: 350+ lineas BEM, dark mode, reduced-motion               │
+│   └── GrapesJS: review-block plugin (summary + form embed)           │
+│                                                                         │
+│   REMEDIACION SEGURIDAD:                                               │
+│   ├── REV-S1/S2: tenant_id taxonomy→group (entity_reference)         │
+│   ├── REV-S3/S4: +tenant_id en ReviewServicios y SessionReview       │
+│   ├── Access handlers: EntityHandlerInterface DI + isSameTenant()    │
+│   └── CSRF + API-WHITELIST-001 en todos los endpoints                │
+│                                                                         │
+│   SCHEMA.ORG: AggregateRating + Review JSON-LD (Rich Snippets)       │
+│                                                                         │
+│   Reglas: REVIEW-TRAIT-001, REVIEW-MODERATION-001,                    │
+│           SCHEMA-AGGREGATE-001 (P0/P1)                                │
+│   Docs:                                                                │
+│   ├── Auditoria: Auditoria_Sistemas_Calificaciones_Comentarios_v1.md │
+│   └── Plan: Plan_Implementacion_Reviews_Comentarios_v1.md            │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
 │                      PREMIUM ENTITY FORMS: 237 FORMULARIOS ⭐          │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
@@ -757,6 +813,7 @@ Integración unificada de soberanía legal y resiliencia técnica:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-27 | **81.0.0** | **Reviews & Comments Clase Mundial — Auditoría + Plan Consolidación 10 Verticales:** Nuevo ASCII box REVIEWS & COMMENTS CLASE MUNDIAL. Auditoría exhaustiva de 4 sistemas de calificaciones heterogéneos (comercio_review, review_agro, review_servicios, session_review) con 20 hallazgos: 4 seguridad (tenant_id apunta a taxonomy en vez de group, 2 entidades sin tenant_id), 5 bugs (campo $text indefinido, clase inexistente, entidad reading_history inexistente, hook_cron ausente, búsqueda pública ausente), 4 arquitectura (duplicación de código en 3 servicios, nomenclatura inconsistente status/state, Q&A sin respuesta de provider, lógica de negocio en controladores), 3 directrices (presave sin hasService, slug hardcoded, accessCheck ausente), 4 brechas clase mundial (sin Schema.org AggregateRating, sin frontend visual, sin moderación IA, sin invitaciones post-transacción). Plan de implementación con ReviewableEntityTrait (5 campos compartidos + helpers con fallback), 5 servicios transversales (moderation, aggregation, schema.org, invitation, AI summary), 2 entidades nuevas (course_review para LMS, content_comment para Content Hub threading), 6 Twig partials, 350+ líneas SCSS, star-rating.js widget, GrapesJS review-block plugin. Cobertura de 10 verticales canónicos: comercioconecta, agroconecta, serviciosconecta, mentoring, formacion, jaraba_content_hub + empleabilidad, emprendimiento, jarabalex, andalucia_ei (extensibles). 3 reglas nuevas: REVIEW-TRAIT-001, REVIEW-MODERATION-001, SCHEMA-AGGREGATE-001. Aprendizaje #140. |
 | 2026-02-26 | **79.0.0** | **Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo:** Nuevo ASCII box GESTIÓN DE SECRETOS. Arquitectura de 3 capas: (1) config/sync/ con YAML sanitizados (valores vacíos para campos sensibles), (2) config/deploy/settings.secrets.php con 14 $config overrides desde getenv() (OAuth Google/LinkedIn/Microsoft, SMTP IONOS, reCAPTCHA v3, Stripe), (3) variables de entorno (.env local gitignored + Lando env_file injection, panel hosting producción). Flujo config:import/export seguro: YAML vacíos → BD → $config override runtime-only → export nunca expone secretos. Limpieza historial git con git-filter-repo --blob-callback (10 secretos eliminados de 459 commits, force push). 1 regla nueva: SECRET-MGMT-001 (P0). Aprendizaje #138. |
 | 2026-02-26 | **78.0.0** | **Meta-Sitios Analytics Stack — GTM/GA4 + A/B Testing + i18n Hreflang + Heatmap:** Nuevo bloque arquitectonico "META-SITES ANALYTICS STACK (4 CAPAS)": (1) Conversion Tracking con 6 behaviors dataLayer, (2) A/B Testing frontend con cookies y DOM manipulation, (3) Heatmap con jaraba_heatmap/tracker, (4) GTM/GA4 con Consent Mode v2 GDPR. SEO internacional con hreflang ES/EN/x-default. PWA preexistente verificada. 4 librerias condicionadas con meta_site. 5 reglas nuevas en Directrices v83.0.0. |
 | 2026-02-26 | **77.0.0** | **Auditoria IA Clase Mundial — 25 Gaps hacia Paridad con Lideres del Mercado:** Nuevo ASCII box AUDITORIA IA CLASE MUNDIAL. 25 gaps auditados contra Salesforce Agentforce, HubSpot Breeze, Shopify Sidekick, Intercom Fin. 7 refinamiento (Onboarding AI, Pricing Metering, Demo Playground, Dashboard GEO, llms.txt MCP, Schema.org GEO, Dark Mode AI) + 16 nuevos (Command Bar Cmd+K con CommandRegistryService tagged services, Inline AI con SmartBaseAgent fast tier + sparkle buttons, Proactive Intelligence ContentEntity + QueueWorker cron, Voice AI Web Speech API client-side, A2A Protocol extending MCP JSON-RPC 2.0 con Agent Card /.well-known/agent.json, Vision/Multimodal MultiModalBridgeService implementacion, 40+ unit + 15+ kernel + 7 prompt regression tests, Blog slugs ParamConverter + ContentArticle tenant_id, 5 vertical AI: SkillInferenceService + AdaptiveLearningService AI activation + DemandForecastingService + GrapesJS AI Writer + ServiceMatchingService Qdrant wiring, Design System ComponentDocumentationController) + 2 infraestructura (Cost Attribution AIObservability→TenantMetering, Horizontal Scaling Redis worker pool). 4 sprints, 320-440h. Plan: `docs/implementacion/2026-02-26_Plan_Implementacion_Auditoria_IA_Clase_Mundial_v1.md`. Aprendizaje #134. |
@@ -787,4 +844,4 @@ Integración unificada de soberanía legal y resiliencia técnica:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 79.0.0 | **Fecha:** 2026-02-26 | **Autor:** IA Asistente
+> **Versión:** 81.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente

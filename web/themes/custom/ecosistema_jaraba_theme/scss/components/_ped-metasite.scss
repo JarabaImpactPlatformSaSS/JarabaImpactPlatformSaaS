@@ -5,12 +5,14 @@
 // OBJETIVO: Máxima conversión + posicionamiento corporativo premium
 // DIRECTRICES: SSOT design tokens, BEM, glassmorphism, dark mode, mobile-first
 
+@use 'sass:color';
+
 // ─── Variables locales PED ──────────────────────────────────────────
 $ped-azul: #233D63;
 $ped-azul-light: #2d4f7e;
 $ped-dorado: #C5A55A;
 $ped-dorado-light: #dcc07a;
-$ped-gradient: linear-gradient(135deg, $ped-azul 0%, darken($ped-azul, 8%) 50%, #1a2d4a 100%);
+$ped-gradient: linear-gradient(135deg, $ped-azul 0%, color.adjust($ped-azul, $lightness: -8%) 50%, #1a2d4a 100%);
 $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 100%);
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -379,7 +381,7 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
     font-weight: 600;
     color: $ped-dorado;
 
-    .ped-audiencia__card:hover & { color: darken($ped-dorado, 10%); }
+    .ped-audiencia__card:hover & { color: color.adjust($ped-dorado, $lightness: -10%); }
   }
 
   // Color accents per audience
@@ -565,10 +567,10 @@ $ped-gradient-gold: linear-gradient(135deg, $ped-dorado 0%, $ped-dorado-light 10
 
   // Footer PED
   .landing-footer {
-    background: darken($ped-azul, 5%);
+    background: color.adjust($ped-azul, $lightness: -5%);
     color: rgba(255, 255, 255, 0.7);
 
     a { color: $ped-dorado; }
-    a:hover { color: lighten($ped-dorado, 15%); }
+    a:hover { color: color.adjust($ped-dorado, $lightness: 15%); }
   }
 }

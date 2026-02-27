@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-26
-**Versión:** 87.0.0 (Meta-Sitios Multilingüe — i18n EN+PT-BR con AITranslationService + Language Switcher)
+**Versión:** 88.0.0 (Reviews & Comments Clase Mundial — ReviewableEntityTrait + Schema.org AggregateRating + Moderación)
 
 ---
 
@@ -27,14 +27,1646 @@
 15. [Registro de Cambios](#15-registro-de-cambios)
 
 ---
+## 1. Información General del Proyecto
+
+### 1.1 Nombre del Proyecto
+**JarabaImpactPlatformSaaS**
+
+### 1.2 Descripción
+Plataforma SaaS de impacto desarrollada por Jaraba que permite la gestión de ecosistemas de productores locales con capacidades de e-commerce, trazabilidad, certificación digital y asistencia mediante agentes de IA.
+
+### 1.3 Visión
+Crear una plataforma tecnológica que empodere a productores locales, facilitando su acceso al mercado digital con herramientas de trazabilidad, certificación y marketing inteligente.
+
+### 1.4 Módulos Principales
+- **Gestión de Tenants**: Organizaciones cliente que utilizan la plataforma
+- **E-commerce**: Drupal Commerce 3.x nativo con Stripe Connect (split payments)
+- **Trazabilidad**: Seguimiento de productos desde origen
+- **Certificación Digital**: Firma electrónica con FNMT/AutoFirma
+- **Agentes IA**: Asistentes inteligentes para marketing, storytelling, experiencia de cliente
+- **JarabaLex** ⭐: Vertical independiente de inteligencia juridica profesional (✅ Elevado):
+  - `jaraba_legal_intelligence`: Busqueda semantica IA, alertas inteligentes, citaciones cruzadas
+  - `jaraba_legal_cases` ✅ (FASE A1): 4 Content Entities (ClientCase, CaseActivity, ClientInquiry, InquiryTriage), 4 Services, 3 Controllers, 11 API REST endpoints, 2 zero-region templates, 47 ficheros
+  - `jaraba_legal_calendar` ✅ (FASE A2): Content Entity LegalDeadline, DeadlineCalculatorService (LEC 130.2 agosto inhabil, fines de semana), HearingService, CalendarDashboardController, 2 zero-region templates
+  - `jaraba_legal_billing` ✅ (FASE B1): Content Entities (LegalTimeEntry, LegalInvoice, LegalExpense), TimeTrackingService, LegalInvoicingService, LegalBillingDashboardController, cronometro JS
+  - `jaraba_legal_vault` ✅ (FASE B2): Content Entities (VaultDocument, VaultAccessLog), VaultStorageService (hash chain SHA-256), VaultAuditLogService (append-only), VaultDashboardController
+  - `jaraba_legal_lexnet` ✅ (FASE B3): Content Entity LexnetNotification, LexnetSyncService, LexnetProcessingService, LexnetDashboardController, integracion API LexNET
+  - `jaraba_legal_templates` ✅ (FASE C1): Content Entity LegalTemplate, TemplateManagerService (merge fields), TemplateEditorController, GrapesJS 11 bloques legales
+  - Config entities: vertical, 3 features, 3 SaaS plans, 9 FreemiumVerticalLimit
+  - Theme: page--legal.html.twig, page--legal-cases.html.twig, page--legal-case-detail.html.twig, page--jarabalex.html.twig, CSS custom properties --ej-legal-*
+  - Diagnostico Lead Magnet: LegalLandingController (6 areas legales, analisis basado en reglas), legal-diagnostico.html.twig + JS + SCSS
+  - JarabaLexCopilotAgent: 6 modos (legal_search, legal_analysis, legal_alerts, case_assistant, document_drafter, legal_advisor) con deteccion por keywords
+  - Tests: 15 ficheros PHPUnit (5 Unit ecosistema + 4 agent/journey/kernel + 6 modulos satelite), 53 PHP lint OK
+  - Billing: 3 entradas FEATURE_ADDON_MAP (legal_search, legal_alerts, legal_citations)
+- **Theming**: Personalización visual por Tenant
+- **Page Builder**: Constructor visual GrapesJS (~202 bloques, 24 categorias, Template Registry SSoT v5.0, Feature Flags, IA Asistente integrada, Template Marketplace, Multi-Page Editor, SEO Assistant, Responsive Preview 8 viewports, IconRegistry SVG 17 iconos, Publish endpoint + SEO URLs, Font Outfit unificado, SCSS pipeline Docker NVM, Bloques Verticales 55 templates (5 verticales x 11 tipos) con _pb-sections.scss (570 LOC, 5 esquemas color, 11 layouts responsive), AgroConecta 11 templates premium (jaraba_icon, data-effect, schema.org, FAQ JSON-LD, LocalBusiness microdata))
+- **AgroConecta** ⭐: Marketplace agroalimentario multi-vendor (3 modulos, ✅ Elevado Clase Mundial):
+  - `jaraba_agroconecta_core` ✅: 20 Content Entities, 6 Controllers, 18 Services, 15 Forms
+    - Fases 1-3: Commerce Core + Orders + Producer/Customer Portal
+    - Sprint AC6-1: QR Dashboard (QrService, qr-dashboard.js)
+    - Sprint AC6-2: Partner Document Hub B2B (magic link auth, 17 API endpoints, audit log)
+    - Fase 9: Producer Copilot (DemandForecasterService, MarketSpyService, CopilotConversationInterface)
+    - Fase 10: Sales Agent (CrossSellEngine, CartRecoveryService, WhatsAppApiService, SalesAgentService)
+    - Elevacion Clase Mundial: AgroConectaCopilotBridgeService, 12 FreemiumVerticalLimit, 8 UpgradeTrigger types
+  - `ecosistema_jaraba_core` (servicios transversales AgroConecta): AgroConectaFeatureGateService, AgroConectaEmailSequenceService (6 MJML), AgroConectaCrossVerticalBridgeService, AgroConectaJourneyProgressionService (10 reglas), AgroConectaHealthScoreService (5 dim + 8 KPIs), AgroConectaExperimentService (4 A/B tests)
+  - `jaraba_agroconecta_traceability` 📋: Trazabilidad hash-anchoring, QR dinamico, certificados
+  - `jaraba_agroconecta_ai` ✅: Producer Copilot + Sales Agent completados en jaraba_agroconecta_core + jaraba_ai_agents (SalesAgent, MerchantCopilotAgent)
+  - Page Builder: 11 templates premium (jaraba_icon, data-effect, schema.org microdata, FAQ JSON-LD, LocalBusiness)
+  - SCSS: 16 ficheros, 95 rgba()→color-mix(), design token vertical nature_green
+- **ServiciosConecta** ⭐: Marketplace de servicios profesionales (1 modulo, Clase Mundial ✅):
+  - `jaraba_servicios_conecta` ✅: 6 Content Entities, 3 Controllers, 5 Services, 2 Taxonomias
+    - Fase 1: Marketplace + Provider Portal + Booking Engine
+    - Entidades: ProviderProfile, ServiceOffering, Booking, AvailabilitySlot, ServicePackage, ReviewServicios
+    - Frontend: 6 SCSS partials (Dart Sass @use, color-mix, var(--ej-*)), 8 Twig templates + 6 partials, BEM
+    - Elevacion Clase Mundial: 14 fases (F0-F13), 26/26 paridad, bug fix releaseSlot(), SCSS compliance
+  - `ecosistema_jaraba_core` (servicios transversales ServiciosConecta): ServiciosConectaFeatureGateService, ServiciosConectaEmailSequenceService (6 MJML), ServiciosConectaCrossVerticalBridgeService (4 bridges), ServiciosConectaJourneyProgressionService (10 reglas), ServiciosConectaHealthScoreService (5 dim + 8 KPIs), ServiciosConectaExperimentService (3 A/B), ServiciosConectaCopilotAgent (6 modos), ServiciosConectaCopilotBridgeService
+  - Page Builder: 15 templates (11 existentes corregidos emojis→jaraba_icon + 4 premium: booking_widget, provider_spotlight, trust_badges, case_studies)
+  - SCSS: 6 ficheros migrados, 5 colores Tailwind→var(--ej-*), rgba()→color-mix(), design token vertical serviciosconecta
+  - SaaS Plans: Free (3 svc/10 book) → Starter 29 EUR (10/50) → Profesional 79 EUR (ilimitado) → Enterprise
+- **ComercioConecta** ⭐: Marketplace de comercio de proximidad multi-vendor (1 modulo, ✅ Elevado Clase Mundial):
+  - `jaraba_comercio_conecta` ✅: 42 Content Entities, 9 Controllers, 25 Services, 37 Forms, 42 Access Handlers, 23 List Builders
+    - Sprint 1 (F1-F5, F13-F18): Infraestructura elevacion — 11 entidades base (ProductRetail, ProductVariationRetail, StockLocation, MerchantProfile + 7 F1 configs), FeatureGate, UpgradeTrigger, body classes, zero-region, SCSS compliance, design token, CopilotBridge, 6 MJML emails, CrossVertical, Journey+HealthScore, Experiment, 11 PB premium templates, avatar nav
+    - Sprint 2 F6 (Orders+Checkout+Payments): 9 entidades (OrderRetail, OrderItemRetail, SuborderRetail, Cart, CartItem, ReturnRequest, CouponRetail, CouponRedemption, AbandonedCart), Stripe Connect split, IVA 21%, comision 10%
+    - Sprint 2 F7 (Portales): 3 entidades (CustomerProfile, Wishlist, WishlistItem), Merchant Portal (pedidos+pagos+config), Customer Portal (dashboard+pedidos+favoritos)
+    - Sprint 2 F8 (Search+SEO): 5 entidades (SearchIndex, SearchSynonym, SearchLog, LocalBusinessProfile, NapEntry), Haversine geo, Schema.org LocalBusiness
+    - Sprint 2 F9 (Engagement): 11 entidades (FlashOffer, FlashOfferClaim, QrCodeRetail, QrScanEvent, QrLeadCapture, ReviewRetail, QuestionAnswer, NotificationTemplate, NotificationLog, NotificationPreference, PushSubscription)
+    - Sprint 3 F10a (Shipping): 4 entidades (ShipmentRetail, ShippingMethodRetail, ShippingZone, CarrierConfig), ClickCollectService
+    - Sprint 3 F10b (POS): 3 entidades (PosConnection, PosSync, PosConflict), sync bidireccional TPV
+    - Sprint 3 F10c (Admin): 3 entidades (ModerationQueue, IncidentTicket, PayoutRecord), moderacion + incidencias
+    - Sprint 3 F10d (Analytics): ComercioAnalyticsService (KPIs marketplace), MerchantAnalyticsService (analytics por comerciante)
+    - Frontend: 17 templates Twig, 5 JS (checkout, customer-portal, merchant-portal, search, marketplace), 12 SCSS partials, 60+ rutas, 30+ permisos, 19 admin tabs
+  - `ecosistema_jaraba_core` (servicios transversales ComercioConecta): ComercioConectaFeatureGateService, ComercioConectaEmailSequenceService (6 MJML), ComercioConectaCrossVerticalBridgeService (4 bridges), ComercioConectaJourneyProgressionService (8 reglas), ComercioConectaHealthScoreService (5 dim + 8 KPIs), ComercioConectaExperimentService (4 A/B), ComercioConectaCopilotBridgeService
+  - Page Builder: 11 templates premium (jaraba_icon, data-effect, schema.org, FAQ JSON-LD, LocalBusiness microdata)
+  - SCSS: 12 ficheros, design token vertical comercio_conecta, color-mix(), var(--ej-*)
+  - SaaS Plans: Free (5 prod/10 orders) → Starter (50/100) → Profesional (ilimitado) → Enterprise
+- **Security & Compliance** ⭐: Dashboard cumplimiento normativo (G115-1 ✅):
+  - `AuditLog` entity inmutable + `AuditLogService` centralizado
+  - `ComplianceDashboardController` en `/admin/seguridad`: 25+ controles, 4 frameworks (SOC 2, ISO 27001, ENS, GDPR)
+  - Frontend: compliance-dashboard.css/js, template Twig, auto-refresh 30s
+- **Advanced Analytics** ⭐: Cohort Analysis + Funnel Tracking (✅):
+  - `jaraba_analytics`: 8 Content Entities (CohortDefinition, FunnelDefinition, AnalyticsEvent, AnalyticsDaily, AnalyticsDashboard, CustomReport, DashboardWidget, ScheduledReport) <!-- AUDIT-SPEC-N02 -->
+  - 2 Services (CohortAnalysisService, FunnelTrackingService), 2 API Controllers REST
+  - Frontend: templates Twig, JS interactivo, heatmap retención, visualización funnel
+- **Billing SaaS** ⭐: Ciclo completo Stripe Billing (✅ Clase Mundial):
+  - `jaraba_billing`: 5 Content Entities (BillingInvoice, BillingUsageRecord, BillingPaymentMethod, BillingCustomer, TenantAddon)
+  - 13 Servicios: PlanValidator, TenantSubscriptionService, TenantMeteringService, PricingRuleEngine, ReverseTrialService, ExpansionRevenueService, ImpactCreditService, SyntheticCfoService, StripeCustomerService, StripeSubscriptionService, StripeInvoiceService, DunningService, FeatureAccessService
+  - 4 Controllers: BillingWebhookController (10 eventos Stripe), BillingApiController (13 endpoints), UsageBillingApiController (7 endpoints), AddonApiController (6 endpoints)
+  - 26 endpoints REST API: suscripciones, facturas, uso, add-ons, portal Stripe, metodos de pago
+  - Dunning 6 pasos (spec 134 §6), Feature Access plan+addons (spec 158 §6.1)
+  - Catálogo Stripe: 6 productos × 4 tiers × 2 intervalos = 48 precios con lookup_keys
+  - Comisiones marketplace: agroconecta 8%, comercioconecta 6%, serviciosconecta 10%, enterprise 3%
+- **AI Skills Verticales** ⭐: 30 skills predefinidas con contenido experto (✅ Seedado):
+  - Seed script: `scripts/seed_vertical_skills.php` (1,647 LOC, idempotente)
+  - 7 empleabilidad + 7 emprendimiento + 6 agroconecta + 5 comercioconecta + 5 serviciosconecta
+  - Contenido especializado mercado español (Markdown: Propósito/Input/Proceso/Output/Restricciones/Ejemplos/Validación)
+- **Monitoring Stack** ⭐: Observabilidad completa (✅ Configurado):
+  - Docker Compose standalone: `monitoring/docker-compose.monitoring.yml`
+  - Prometheus (9090) + Grafana (3001) + Loki (3100) + Promtail + AlertManager (9093)
+  - 14 reglas de alertas (ServiceDown, HighErrorRate, QdrantDiskFull, StripeWebhookFailures, etc.)
+  - Routing: critical→Slack #jaraba-critical + email, warning→Slack #jaraba-alerts
+- **Go-Live Procedures** ⭐: Runbook ejecutable (✅ Completado):
+  - `scripts/golive/01_preflight_checks.sh`: 24 validaciones pre-lanzamiento
+  - `scripts/golive/02_validation_suite.sh`: Smoke tests por vertical
+  - `scripts/golive/03_rollback.sh`: Rollback automatizado 7 pasos
+  - `docs/tecnicos/GO_LIVE_RUNBOOK.md`: 6 fases, RACI matrix, criterios Go/No-Go
+- **Security CI + GDPR** ⭐: Automatización seguridad (✅ Completado):
+  - `.github/workflows/security-scan.yml`: Daily cron (Trivy + OWASP ZAP + composer/npm audit)
+  - `GdprCommands.php`: `drush gdpr:export` (Art.15), `drush gdpr:anonymize` (Art.17), `drush gdpr:report`
+  - `SECURITY_INCIDENT_RESPONSE_PLAYBOOK.md`: SEV1-4, AEPD 72h, templates comunicación
+- **Email Templates MJML** ⭐: 46 plantillas transaccionales (✅ Completado):
+  - `jaraba_email/templates/mjml/`: auth/ (5), billing/ (7), marketplace/ (6), empleabilidad/ (10), emprendimiento/ (11), andalucia_ei/ (6) + base.mjml
+  - `TemplateLoaderService`: template_id → MJML → compilación via MjmlCompilerService
+  - Empleabilidad sequences (Fase 6): seq_onboarding_welcome, seq_engagement_reactivation, seq_upsell_starter, seq_interview_prep, seq_post_hire
+  - Emprendimiento sequences (Paridad v2): seq_onboarding_founder, seq_canvas_abandonment, seq_upsell_starter, seq_mvp_celebration, seq_post_funding
+- **Avatar Detection + Navegacion Contextual + Empleabilidad UI** ⭐: Flujo completo end-to-end con navegacion por avatar (✅ Activado):
+  - `ecosistema_jaraba_core`: AvatarDetectionService (cascada 4 niveles: Domain→Path/UTM→Group→Rol) + **AvatarNavigationService** (navegacion contextual 10 avatares, resolucion segura URLs, active state highlight)
+  - `ecosistema_jaraba_theme`: _avatar-nav.html.twig (bottom nav mobile + barra horizontal desktop), _avatar-nav.scss (BEM mobile-first), body class `.has-avatar-nav`, Theme Setting `enable_avatar_nav`
+  - `jaraba_job_board`: EmployabilityMenuService (patron original, 1 vertical) — generalizado por AvatarNavigationService (10 avatares)
+  - `jaraba_diagnostic`: EmployabilityDiagnostic entity (14 campos, 5 perfiles). EmployabilityScoringService (LinkedIn 40%/CV 35%/Estrategia 25%). Wizard 3 pasos + templates Twig + JS
+  - `jaraba_candidate`: EmployabilityCopilotAgent (6 modos: Profile Coach, Job Advisor, Interview Prep, Learning Guide, Application Helper, FAQ). Extiende BaseAgent con @ai.provider
+  - `jaraba_copilot_v2`: EmprendimientoCopilotAgent (6 modos: business_strategist, financial_advisor, customer_discovery_coach, pitch_trainer, ecosystem_connector, faq). Extiende BaseAgent
+  - Hooks ECA: hook_user_insert (JourneyState discovery), hook_entity_insert(employability_diagnostic) (rol candidate, LMS enrollment)
+  - CV PDF Export: dompdf v2.0.8, CvBuilderService::convertHtmlToPdf() con Design Tokens
+  - Frontend: modal-system.js + 4 partials Twig (_application-pipeline, _job-card, _gamification-stats, _profile-completeness) + _avatar-nav.html.twig (navegacion contextual global)
+- **Empleabilidad Clase Mundial** ⭐: Elevación completa 10/10 fases (✅ Clase Mundial):
+  - `ecosistema_jaraba_core`: EmployabilityFeatureGateService (3 features × 3 planes), FeatureGateResult ValueObject, EmployabilityEmailSequenceService (5 secuencias SEQ_EMP_001-005), EmployabilityCrossVerticalBridgeService (4 bridges), EmployabilityJourneyProgressionService (7 reglas proactivas), EmployabilityHealthScoreService (5 dimensiones + 8 KPIs)
+  - `ecosistema_jaraba_theme`: page--empleabilidad.html.twig (zero-region + Copilot FAB), hook_preprocess_page__empleabilidad(), body classes unificadas
+  - `jaraba_candidate`: modal-actions library, agent-fab.js (proactive polling 5min), CopilotApiController proactive endpoint, ApplicationService + CvBuilderService feature gating
+  - `jaraba_job_board`: CRM pipeline sync (7 estados), UpgradeTrigger status_change/first_milestone, email enrollment interview+hired
+  - `jaraba_diagnostic`: email enrollment SEQ_EMP_001 post-diagnóstico
+  - `jaraba_self_discovery`: modal-actions library, hook_page_attachments_alter()
+  - Plan: `docs/implementacion/2026-02-15_Plan_Elevacion_Clase_Mundial_Vertical_Empleabilidad_v1.md`
+- **Testing Enhancement** ⭐: k6 + BackstopJS + CI coverage (✅ Completado):
+  - `tests/performance/load_test.js`: smoke/load/stress scenarios, p95 < 500ms
+- **Marketing AI Stack** ⭐: 9 módulos nativos al 100% (✅ Clase Mundial):
+  - `jaraba_crm`: CRM Pipeline completo + B2B Sales Flow — 5 Content Entities (Company, Contact, Opportunity +5 BANT fields, Activity, PipelineStage), CrmApiController (24 endpoints), CrmForecastingService, PipelineStageService (8 etapas B2B: Lead→MQL→SQL→Demo→Proposal→Negotiation→Won→Lost), SalesPlaybookService (match expression stage+BANT→next action), PipelineKanbanController. BANT qualification (Budget/Authority/Need/Timeline, score 0-4 computado en preSave). Directriz #20 YAML allowed values. 10 unit tests
+  - `jaraba_email`: Email Marketing AI — 5 Content Entities (EmailCampaign, EmailList, EmailSequence, EmailTemplate, EmailSequenceStep), EmailApiController (17 endpoints), EmailWebhookController (SendGrid HMAC), SendGridClientService, SequenceManagerService, EmailAIService. 30 plantillas MJML (auth/5, billing/7, marketplace/6, empleabilidad/5, emprendimiento/6 + base). 12 unit tests
+  - `jaraba_ab_testing`: A/B Testing Engine — 4 Content Entities (Experiment, ExperimentVariant, ExperimentExposure, ExperimentResult), ABTestingApiController, ExposureTrackingService, ResultCalculationService, StatisticalEngineService, VariantAssignmentService, ExperimentOrchestratorService (auto-winner batch c/6h). hook_cron auto-winner + hook_mail notificaciones. 17 unit tests
+  - `jaraba_pixels`: Pixel Manager CAPI — 4 Content Entities (TrackingPixel, TrackingEvent, ConsentRecord, PixelCredential), PixelDispatcherService, ConsentManagementService, CredentialManagerService, RedisQueueService, BatchProcessorService, PixelHealthCheckService (monitoreo proactivo 48h threshold). hook_mail alertas health. 11 unit tests
+  - `jaraba_heatmap`: Heatmaps Nativos — 4 tablas DB (events, aggregated, scroll_depth, screenshots), HeatmapEventProcessor QueueWorker, HeatmapScreenshotService (wkhtmltoimage), HeatmapAggregatorService (anomaly detection drop 50%/spike 200%), HeatmapDashboardController (Canvas 2D Zero Region). hook_cron (agregación diaria + limpieza semanal + detección anomalías). 24 unit tests
+  - `jaraba_events`: Marketing Events — 3 Content Entities (MarketingEvent, EventRegistration, EventLandingPage), EventApiController, EventRegistrationService, EventAnalyticsService, EventLandingService, EventCertificateService. 3 unit tests
+  - `jaraba_social`: AI Social Manager — 3 Content Entities (SocialAccount, SocialPost, SocialPostVariant), SocialPostService, SocialAccountService, SocialCalendarService, SocialAnalyticsService, MakeComIntegrationService. 3 unit tests
+  - `jaraba_referral`: Programa Referidos — 3 Content Entities (ReferralProgram, ReferralCode, ReferralReward), ReferralApiController (9 endpoints), RewardProcessingService, LeaderboardService, ReferralTrackingService, ReferralManagerService. 3 unit tests
+  - `jaraba_ads`: Ads Multi-Platform — 5 Content Entities (AdsAccount, AdsCampaignSync, AdsMetricsDaily, AdsAudienceSync, AdsConversionEvent), AdsOAuthController, AdsWebhookController, MetaAdsClientService, GoogleAdsClientService, AdsAudienceSyncService, ConversionTrackingService, AdsSyncService. 6 unit tests
+  - **Total**: ~150+ archivos PHP, 50 unit test files (~200+ test methods), 9 routing.yml, 9 services.yml, 3 page templates Twig
+  - **Cross-módulo**: FeatureAccessService cubre 9 módulos, hook_preprocess_html para todas las rutas frontend
+  - `tests/visual/backstop.json`: 10 páginas × 3 viewports (phone/tablet/desktop)
+  - CI: 80% coverage threshold enforcement en GitHub Actions
+- **Platform Services v3** ⭐: 10 módulos dedicados transversales (✅ Clase Mundial):
+  - `jaraba_agent_flows` ✅ (nuevo): 3 Content Entities (AgentFlow, AgentFlowExecution, AgentFlowStepLog), 5 Services (Execution, Trigger, Validator, Metrics, Template), 2 Controllers (Dashboard, API). 38 archivos
+  - `jaraba_pwa` ✅ (nuevo): 2 Content Entities (PushSubscription, PendingSyncAction), 5 Services (PlatformPush, PwaSync, Manifest, OfflineData, CacheStrategy), 2 Controllers (Pwa, API). Service Worker avanzado. 32 archivos
+  - `jaraba_onboarding` ✅ (nuevo): 2 Content Entities (OnboardingTemplate, UserOnboardingProgress), 5 Services (Orchestrator, Gamification, Checklist, ContextualHelp, Analytics), 2 Controllers (Dashboard, API). 34 archivos
+  - `jaraba_usage_billing` ✅ (nuevo): 3 Content Entities (UsageEvent, UsageAggregate, PricingRule), 5 Services (Ingestion, Aggregator, Pricing, StripeSync, Alert), QueueWorker, 2 Controllers. 36 archivos
+  - `jaraba_integrations` ✅ (extendido): +4 Services (RateLimiter, AppApproval, ConnectorSdk, MarketplaceSearch), +5 Controllers (Marketplace, DeveloperPortal, ConnectorInstall, AppSubmission, OAuthCallback). 66 archivos total
+  - `jaraba_customer_success` ✅ (extendido): +5 Controllers (NpsSurvey, NpsApi, HealthDetail, ChurnMatrix, ExpansionPipeline), +10 Templates, +5 JS, +5 SCSS. 65 archivos total
+  - `jaraba_tenant_knowledge` ✅ (extendido): +3 Entities (KbArticle, KbCategory, KbVideo), +3 Services (SemanticSearch, ArticleManager, KbAnalytics), Help Center público. 91 archivos total
+  - `jaraba_security_compliance` ✅ (nuevo, migración): 3 Entities (AuditLog migrada, ComplianceAssessment, SecurityPolicy), 4 Services (PolicyEnforcer, ComplianceTracker, DataRetention, AuditLog), SOC 2 readiness. 40 archivos
+  - `jaraba_analytics` ✅ (extendido): 8 Entities total (CohortDefinition, FunnelDefinition, AnalyticsEvent, AnalyticsDaily, AnalyticsDashboard, CustomReport, DashboardWidget, ScheduledReport), +3 Services (DashboardManager, ReportScheduler, DataService), Dashboard Builder drag-drop. 86 archivos total <!-- AUDIT-SPEC-N02 -->
+  - `jaraba_whitelabel` ✅ (nuevo, migración): 4 Entities (WhitelabelConfig, CustomDomain, WhitelabelEmailTemplate, WhitelabelReseller), 5 Services (ConfigResolver, DomainManager, EmailRenderer, ResellerManager, BrandedPdf), EventSubscriber (domain resolution). 54 archivos
+  - **Total**: 542 archivos, 32 Content Entities, 42+ Services, 25+ Controllers, ~60 Templates Twig, ~30 JS files, ~25 CSS files, 22 unit test files
+- **Credentials System** ⭐: Open Badge 3.0 completo + Stackable + Cross-Vertical (✅ Clase Mundial): <!-- AUDIT-SPEC-N09: 8 entities total (6 core + 2 cross-vertical) -->
+  - `jaraba_credentials` ✅: 6 Content Entities core (IssuerProfile, CredentialTemplate, IssuedCredential, RevocationEntry, CredentialStack, UserStackProgress), 11 Services (CryptographyService Ed25519, OpenBadgeBuilder JSON-LD, CredentialIssuer, CredentialVerifier, QrCodeGenerator, RevocationService, StackEvaluationService, StackProgressTracker, AccessibilityAuditService, LmsIntegration, PdfGenerator), 3 Controllers (CredentialsApi, StacksApi, Verify). 45+ archivos
+  - `jaraba_credentials_emprendimiento` ✅ (submódulo): 15 credential template YAMLs (12 badges + 3 diplomas progresivos), 3 Services (EmprendimientoCredentialService 15 tipos, ExpertiseService 5 niveles, JourneyTracker 6 fases), 1 Controller API, 1 EventSubscriber. 29 archivos
+  - `jaraba_credentials_cross_vertical` ✅ (submódulo): 2 Content Entities (CrossVerticalRule, CrossVerticalProgress), 2 Services (CrossVerticalEvaluator, VerticalActivityTracker), rareza visual (common/rare/epic/legendary), cron diario. 22 archivos
+  - **WCAG 2.1 AA**: focus-visible, prefers-reduced-motion, keyboard navigation, ARIA completo en todos los templates
+  - **Patrón**: Hooks nativos (NO ECA YAML), anti-recursión via evidence JSON, State API para rate limiting cron
+  - **Total**: 115 archivos, 8 Content Entities, 16 Services, 20 API endpoints, 5 Twig templates, 4 SCSS, 4 JS
+- **AI Agents Elevación Clase Mundial (F11)** ⭐: Brand Voice Training + Prompt A/B + MultiModal (✅ Completado):
+  - `jaraba_ai_agents` (extendido): +3 Services (BrandVoiceTrainerService, PromptExperimentService, MultiModalBridgeService), +3 Controllers (BrandVoiceTrainerApiController, PromptExperimentApiController, MultiModalApiController), +8 rutas API, +1 permiso
+  - BrandVoiceTrainerService: Qdrant collection `jaraba_brand_voice` (1536 dims), feedback loop (approve/reject/edit), alineación coseno, refinamiento LLM
+  - PromptExperimentService: experiment_type='prompt_variant', integrado con jaraba_ab_testing (StatisticalEngineService + QualityEvaluatorService auto-conversion score>=0.7)
+  - MultiModal Preparation: PHP interfaces (MultiModalInputInterface, MultiModalOutputInterface), exception custom, bridge stub para futuro Whisper/ElevenLabs/DALL-E
+  - `ai_provider_google_gemini` ✅: Proveedor Google AI Studio (Gemini API) para módulo ai:ai. Configuración via Key module <!-- AUDIT-SPEC-N01 -->
+- **Scaling Infrastructure (F10)** ⭐: Backup per-tenant + k6 + Prometheus (✅ Completado):
+  - `scripts/restore_tenant.sh`: 4 comandos (backup/restore/list/tables), auto-descubre 159+ tablas con tenant_id via INFORMATION_SCHEMA
+  - `tests/performance/multi_tenant_load_test.js`: k6, 4 escenarios, 7 custom metrics, tenant isolation check, breakpoint 100 VUs
+  - `monitoring/prometheus/rules/scaling_alerts.yml`: 10 alert rules + 5 recording rules para 3 fases escalado horizontal
+  - `docs/arquitectura/scaling-horizontal-guide.md`: 3 fases (Single Server ≤50 → Separated DB ≤200 → Load Balanced 1000+)
+- **Lenis Integration Premium (F12)** ⭐: Smooth scroll landing pages (✅ Completado):
+  - Lenis v1.3.17 CDN (jsDelivr), `lenis-scroll.js` (Drupal.behaviors, once(), prefers-reduced-motion, admin exclusion)
+  - Attach: homepage template + hook_preprocess_html landing pages verticales
+- **Interactive Content AI-Powered** ⭐: 6 tipos de contenido interactivo con IA (✅ Clase Mundial):
+  - `jaraba_interactive` ✅: 6 plugins (QuestionSet, InteractiveVideo, CoursePresentation, BranchingScenario, DragAndDrop, Essay), Plugin Manager, Scorer, XApiEmitter, ContentGenerator
+    - Plugin System: @InteractiveType annotation, InteractiveTypeBase, InteractiveTypeInterface (getSchema/validate/render/calculateScore/getXapiVerbs)
+    - Editor Visual: EditorController (zero-region), content-editor.js orquestador, 6 sub-editors JS por tipo, preview-engine.js (iframe)
+    - 6 endpoints CRUD REST: /api/v1/interactive/content (store/update/destroy/duplicate/list/updateStatus)
+    - EventSubscribers: CompletionSubscriber (XP + certificaciones), XapiSubscriber (sentencias xAPI por tipo)
+    - Frontend: 5 JS players, 5 Twig templates, SCSS tipos + editor
+    - Tests: 9 PHPUnit files (6 plugins + manager + scorer + subscriber), 100+ test methods
+- **Training Purchase System** ⭐: Flujo completo de compra formativa (✅ Completado):
+  - `jaraba_training` (extendido): PurchaseService (validacion→Stripe PaymentIntent→enrollment→certificacion)
+    - Tipos: certification_consultant, certification_entity, regional_franchise → UserCertification auto
+    - Fallback: Stripe no configurado → pago pendiente manual
+    - Tests: PurchaseServiceTest (10 tests, reflection protected methods)
+- **pepejaraba.com Tenant** ⭐: Meta-sitio marca personal provisionado (✅ Completado):
+  - Seed script: `scripts/seed_pepejaraba.php` (766 LOC, idempotente)
+  - Entities: Vertical (Marca Personal) + SaasPlan (Personal Brand Premium) + Tenant + 7 PageContent + SiteMenu + 6 SiteMenuItems
+  - Config: domain.record.pepejaraba_com.yml + design_token_config.pepejaraba_tenant.yml
+  - Colores marca: #FF8C42 (naranja) + #00A9A5 (teal) + #233D63 (corporate). Tipografia: Montserrat/Roboto
+  - Infra: Nginx vhost (SSL Let's Encrypt), trusted_host_patterns, Lando proxy
+- **Insights Hub** ⭐: Monitoreo técnico unificado (✅ Nuevo módulo):
+  - `jaraba_insights_hub` ✅: 6 Content Entities (SearchConsoleConnection, SearchConsoleData, WebVitalsMetric, InsightsErrorLog, UptimeCheck, UptimeIncident), 6 Services, 6 Controllers, 1 Form
+    - Search Console: OAuth2 + API sync diario
+    - Core Web Vitals: RUM tracker JS + WebVitalsAggregatorService
+    - Error Tracking: JS + PHP error handlers + deduplicación por hash
+    - Uptime Monitor: Health endpoints + alertas email
+    - Dashboard: /insights con 4 tabs (SEO | Performance | Errors | Uptime)
+    - Frontend: Zero-Region page template, SCSS BEM + var(--ej-*), JS Canvas dashboard
+- **Legal Knowledge** ⭐: Base normativa RAG para emprendedores (✅ Nuevo módulo):
+  - `jaraba_legal_knowledge` ✅: 4 Content Entities (LegalNorm, LegalChunk, LegalQueryLog, NormChangeAlert), 10 Services, 3 Controllers, 2 Forms, 2 QueueWorkers
+    - API BOE: BoeApiClient + LegalIngestionService pipeline
+    - RAG Pipeline: LegalRagService (query → Qdrant → Claude → citas BOE)
+    - Chunking: LegalChunkingService (~500 tokens por artículo/sección)
+    - Embeddings: LegalEmbeddingService (OpenAI text-embedding-3-small)
+    - Alertas: LegalAlertService + NormChangeAlert entity
+    - Calculadoras: TaxCalculatorService (IRPF/IVA)
+    - Frontend: /legal + /legal/calculadoras, Zero-Region page template
+- **Funding Intelligence v2** ⭐: Gestion integral de financiacion publica (✅ Refactorizado N2):
+  - `jaraba_funding` ✅: 3 Content Entities (FundingOpportunity, FundingApplication, TechnicalReport), 5 Services, 2 Controllers, 17 rutas
+    - ApplicationManagerService: Ciclo de vida solicitudes (draft→submitted→approved→rejected)
+    - BudgetAnalyzerService: Analisis presupuestario y partidas elegibles
+    - ImpactCalculatorService: Calculo indicadores impacto social/economico
+    - OpportunityTrackerService: Seguimiento convocatorias y plazos
+    - ReportGeneratorService: Generacion informes tecnicos y justificaciones
+    - Frontend: /funding Zero-Region page template, 3 partials (opportunity-card, application-status, report-card)
+    - 3 Access handlers + 3 ListBuilders + 4 Forms (entity CRUD + settings)
+
+- **Multi-Region Operations** ⭐: Expansion multi-pais EU con compliance fiscal (✅ Nuevo modulo N2):
+  - `jaraba_multiregion` ✅: 4 Content Entities (TenantRegion, TaxRule, CurrencyRate, ViesValidation), 5 Services, 1 Controller, 14 rutas
+    - RegionManagerService: Gestion regiones por tenant (EU/LATAM/global)
+    - TaxCalculatorService: Calculo IVA/IGIC por pais con reglas especiales
+    - CurrencyConverterService: Conversion divisas con rates actualizables
+    - ViesValidatorService: Validacion NIF intracomunitario via VIES
+    - RegionalComplianceService: Verificacion cumplimiento normativo regional
+    - 4 Access handlers + 4 ListBuilders + 5 Forms (4 entity + 1 settings)
+
+- **Institutional Programs FSE/FUNDAE** ⭐: Gestion programas institucionales y justificaciones (✅ Nuevo modulo N2):
+  - `jaraba_institutional` ✅: 3 Content Entities (InstitutionalProgram, ProgramParticipant, StoFicha), 5 Services, 2 Controllers, 14 rutas
+    - ProgramManagerService: CRUD y ciclo de vida programas institucionales
+    - ParticipantTrackerService: Seguimiento participantes y asistencia
+    - FseReporterService: Generacion informes FSE (Fondo Social Europeo)
+    - FundaeReporterService: Informes FUNDAE (Formacion para el Empleo)
+    - StoFichaGeneratorService: Generacion fichas STO/PIIL automatizadas
+    - Frontend: /institutional Zero-Region page, 3 partials (program-card, participant-row, ficha-card)
+    - 3 Access handlers + 3 ListBuilders + 4 Forms (3 entity + 1 settings)
+
+- **AI Autonomous Agents** ⭐: Agentes IA autonomos con orquestacion multi-agente (✅ Nuevo modulo N2):
+  - `jaraba_agents` ✅: 5 Content Entities (AutonomousAgent, AgentExecution, AgentApproval, AgentConversation, AgentHandoff append-only), 12 Services, 2 Controllers, 22 rutas
+    - Nucleo: AgentOrchestratorService, EnrollmentAgentService, PlanningAgentService, SupportAgentService
+    - Guardrails: GuardrailsEnforcerService, ApprovalManagerService, AgentMetricsCollectorService
+    - Multi-agente FASE 3B: AgentRouterService (intent routing), HandoffManagerService, SharedMemoryService (JSON key-value), ConversationManagerService (lifecycle), AgentObserverService (traces + metrics)
+    - Autonomia L0-L4: informativo → sugerencia → semi-autonomo → supervisado → autonomo completo
+    - Frontend: /agents Zero-Region page, 3 partials (agent-card, approval-card, execution-row)
+    - 5 Access handlers + 5 ListBuilders + 6 Forms (5 entity + 1 settings)
+
+- **Predictive Analytics** ⭐: Inteligencia predictiva y prevencion de churn (✅ Nuevo modulo N2):
+  - `jaraba_predictive` ✅: 3 Content Entities (ChurnPrediction append-only, LeadScore, Forecast append-only), 7 Services, 2 Controllers, 13 rutas
+    - ChurnPredictorService: Prediccion abandono con scoring multi-factor
+    - LeadScorerService: Puntuacion leads por comportamiento y perfil
+    - ForecastEngineService: Proyecciones revenue y crecimiento
+    - AnomalyDetectorService: Deteccion anomalias en metricas de negocio
+    - PredictionBridgeService: Puente PHP→Python para modelos ML (proc_open JSON stdin/stdout)
+    - FeatureStoreService: Almacen de features para modelos predictivos
+    - RetentionWorkflowService: Workflows automaticos de retencion
+    - Frontend: /predictions Zero-Region page, 3 partials (churn-prediction-card, lead-score-card, forecast-card)
+    - 3 Access handlers + 3 ListBuilders + 1 Settings Form
+    - 6 SVG icons (prediction, churn-risk, lead-score + duotone variants)
+
+- **Tenant Export + Daily Backup** ⭐: Exportación self-service datos tenant + backup automatizado (✅ Nuevo módulo):
+  - `jaraba_tenant_export` ✅: 1 Content Entity (TenantExportRecord), 2 Services, 2 Controllers, 2 QueueWorkers
+    - TenantDataCollectorService: 6 grupos datos (core, analytics, knowledge, operational, vertical, files)
+    - TenantExportService: ZIP async via Queue API, rate limiting, StreamedResponse, SHA-256
+    - QueueWorkers: TenantExportWorker (55s, 3 retries) + TenantExportCleanupWorker (30s)
+    - API REST: 6 endpoints /api/v1/tenant-export/* (request, status, download, cancel, history, sections)
+    - Frontend: /tenant/export Zero-Region page + 6 partials Twig + JS dashboard polling
+    - daily-backup.yml: GitHub Actions cron 03:00 UTC, rotación inteligente, Slack alertas
+    - Drush: tenant-export:backup, tenant-export:cleanup, tenant-export:status
+    - Tests: 8 suites (3 Unit + 3 Kernel + 2 Functional)
+    - Compliance: GDPR Art. 20 (portabilidad datos), backup diario independiente de deploys
+
+- **Stack Compliance Legal N1** ⭐: 3 módulos compliance + panel unificado (✅ Implementado):
+  - `jaraba_privacy` ✅: GDPR DPA + LOPD-GDD. 5 Content Entities, 5 Services, 10 API endpoints, 8 SCSS partials, 3 JS behaviors, 4 unit tests
+  - `jaraba_legal` ✅: Legal Terms SaaS. 6 Content Entities, 5 Services + LegalApiController (12 endpoints: ToS 3, SLA 2, AUP 2, Offboarding 3, Whistleblower 2), 8 SCSS partials, 3 JS behaviors, 4 unit tests
+  - `jaraba_dr` ✅: Disaster Recovery. 3 Content Entities, 5 Services, 8 API endpoints, 8 SCSS partials, 3 JS behaviors, 4 unit tests
+  - `ecosistema_jaraba_core` (extendido): ComplianceAggregatorService (9 KPIs cross-module, score 0-100, grade A-F, alertas critico/warning) + CompliancePanelController (`/admin/jaraba/compliance`, AJAX auto-refresh 60s, API `/api/v1/compliance/overview`)
+  - 3 zero-region page templates (page--privacy, page--legal-compliance, page--dr-status)
+  - 24 SCSS partials (8 por módulo), 36 SVG compliance icons
+  - Nivel N1 Foundation: GDPR DPA + Legal Terms + DR. Auditoría: 12.5% → 95%+
+
+- **Admin Center Premium** ⭐: Panel unificado Super Admin — Spec f104, 7 FASEs (✅ Completado):
+  - `ecosistema_jaraba_core` (extendido): Shell layout sidebar 260px + topbar + Command Palette (Cmd+K)
+    - F1: Dashboard KPI scorecards (MRR, ARR, Tenants, MAU, Churn, Health) + quick links + activity feed
+    - F2: Gestión de Tenants (DataTable server-side, slide-panel 360, impersonation, export CSV)
+    - F3: Gestión de Usuarios (DataTable, slide-panel 360, force logout, cross-tenant search)
+    - F4: Centro Financiero (SaaS metrics MRR/ARR/Churn/NRR, tenant analytics, health badges)
+    - F5: Alertas y Playbooks (FocAlert dashboard, severity filters, CsPlaybook grid, auto-execute)
+    - F6: Analytics y Logs (Chart.js trends, AI telemetry, AuditLog + watchdog combined viewer)
+    - F7: Configuración Global (Settings 4-tab: General/Planes/Integraciones/API Keys) + Dark Mode + a11y
+  - 5 Services: AdminCenterAggregatorService, AdminCenterFinanceService, AdminCenterAlertService, AdminCenterAnalyticsService, AdminCenterSettingsService
+  - DI Opcional: `~` NULL en services.yml + `EcosistemaJarabaCoreServiceProvider::register()` (jaraba_foc, jaraba_customer_success condicionales)
+  - 30+ API endpoints REST: tenants (6), users (5), finance (2), alerts (6), analytics (3), logs (1), settings (8)
+  - Frontend: 10 templates Twig, 10 JS initializers (Drupal.behaviors + once()), 10 SCSS partials + dark mode
+  - Ruta base: `/admin/jaraba/center/*` con `_admin_route: FALSE` (usa tema frontend)
+
+### 1.5 Idioma de Documentación
+- **Documentación**: Español
+- **Comentarios de código**: Español (suficientemente descriptivos para que cualquier diseñador o desarrollador pueda entender)
+- **Nombres de variables/funciones**: Inglés (convención técnica)
+
+---
 
 ## 2. Stack Tecnológico
 
-### 2.1 Backend & Core
-- **Lenguaje:** PHP 8.4 (requerido para compatibilidad con Drupal 11).
-- **Framework:** Drupal 11.
-- **Motor de BD:** MariaDB 10.11+.
-- **Caché & Pub/Sub:** Redis 7.4.
+### 2.1 Backend y CMS
+
+| Tecnología | Versión | Propósito |
+|------------|---------|----------|
+| **Drupal** | 11.x | CMS principal, gestión de contenido y entidades |
+| **PHP** | 8.4+ | Lenguaje backend |
+| **MySQL/MariaDB** | 8.0+ / 10.5+ | Base de datos |
+| **Redis** | 7.x | Cache backend (render, page, copilot_responses) |
+| **Composer** | 2.x | Gestión de dependencias PHP |
+
+### 2.2 Frontend
+
+| Tecnología | Propósito |
+|------------|----------|
+| **Twig** | Motor de plantillas Drupal |
+| **CSS/SCSS** | Estilos con variables dinámicas por sede |
+| **JavaScript (ES6+)** | Interactividad y agentes IA |
+| **Tema personalizado** | `ecosistema_jaraba_theme` con 70+ opciones UI, Lenis smooth scroll (F12) |
+
+#### 2.2.1 Flujo de Trabajo SCSS
+
+> **⚠️ IMPORTANTE**: En este proyecto usamos **archivos SCSS** que se compilan a CSS.
+> **NUNCA** edites directamente los archivos `.css` en `/css/`. Siempre edita los `.scss` en `/scss/`.
+
+**Estructura de archivos SCSS por módulo:**
+
+```
+scss/
+├── _variables.scss     # Variables SCSS (colores, fuentes, etc.)
+├── _mixins.scss        # Mixins reutilizables
+├── _injectable.scss    # CSS custom properties (runtime)
+├── _components.scss    # Componentes base
+├── _onboarding.scss    # Estilos de onboarding
+├── _tenant-dashboard.scss  # Dashboard del Tenant
+└── main.scss          # Archivo principal que importa todos
+```
+
+**Comando de compilación:**
+
+```bash
+# Desde el directorio del módulo (ej: ecosistema_jaraba_core)
+npx sass scss/main.scss:css/ecosistema-jaraba-core.css --style=compressed
+
+# Para desarrollo con watch:
+npx sass scss/main.scss:css/ecosistema-jaraba-core.css --watch
+```
+
+**Reglas:**
+- Crear archivos parciales con prefijo `_` (ej: `_tenant-dashboard.scss`)
+- Importar parciales en `main.scss` con `@use 'nombre-sin-guion-bajo'`
+- Usar variables definidas en `_variables.scss`
+- Compilar antes de commitear cambios de estilos
+- **Usar Dart Sass moderno**: `color.adjust()` en lugar de `darken()`/`lighten()` deprecados
+
+> **📚 ARQUITECTURA THEMING**
+> 
+> El proyecto implementa el patrón **"Federated Design Tokens"** para SCSS:
+> - **SSOT**: `ecosistema_jaraba_core/scss/_variables.scss` + `_injectable.scss`
+> - **Módulos satélite**: Solo consumen CSS Custom Properties `var(--ej-*)`
+> - **17 módulos con package.json**: Compilación estandarizada (core, agroconecta, candidate, comercio, credentials, foc, funding, i18n, insights_hub, interactive, legal_knowledge, page_builder, self_discovery, servicios, site_builder, social, tenant_knowledge)
+> - **Documento maestro**: [docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md](./arquitectura/2026-02-05_arquitectura_theming_saas_master.md)
+
+#### 2.2.2 Plantillas Twig Limpias (Sin Regiones)
+
+> **⚠️ PATRÓN CRÍTICO**: Para páginas que requieren control total del layout (landings, homepages, páginas de producto).
+
+**Ubicación:** `web/themes/custom/ecosistema_jaraba_theme/templates/`
+
+**Plantillas disponibles:**
+
+| Plantilla | Ruta | Propósito |
+|-----------|------|-----------|
+| `page--front.html.twig` | `/` | Homepage / Landing page |
+| `page--content-hub.html.twig` | `/content-hub` | Dashboard editor |
+| `page--dashboard.html.twig` | `/employer`, `/jobseeker`, etc. | Dashboards de verticales |
+| `page--vertical-landing.html.twig` | `/empleo`, `/talento`, etc. | Landing pages de verticales |
+| `page--crm.html.twig` | `/crm` | Dashboard CRM full-width |
+| `page--eventos.html.twig` | `/eventos` | Dashboard eventos marketing full-width |
+| `page--experimentos.html.twig` | `/experimentos` | Dashboard A/B Testing full-width |
+| `page--referidos.html.twig` | `/referidos` | Dashboard programa referidos full-width |
+| `page--ads.html.twig` | `/ads` | Dashboard campañas publicitarias full-width |
+| `page--social.html.twig` | `/social` | Dashboard social media full-width |
+| `page--pixels.html.twig` | `/pixels` | Dashboard gestión píxeles full-width |
+| `page--insights.html.twig` | `/insights` | Dashboard Insights Hub full-width |
+| `page--legal.html.twig` | `/legal` | Dashboard Legal Knowledge full-width |
+| `page--funding.html.twig` | `/funding` | Dashboard Funding Intelligence full-width |
+
+**Cuándo usar:**
+- ✅ Landings de marketing con secciones hero, features, CTA
+- ✅ Dashboards frontend para usuarios autenticados
+- ✅ Páginas de producto con diseño custom
+- ✅ Portales de entrada (login, onboarding)
+- ❌ Páginas administrativas (usar layout estándar con regiones)
+
+**Estructura de plantilla limpia (HTML COMPLETO):**
+
+```twig
+{#
+ * page--{route}.html.twig - Página frontend sin regiones Drupal.
+ *
+ * PROPÓSITO: Renderizar página full-width sin sidebar ni elementos de admin.
+ * PATRÓN: HTML completo con {% include %} de parciales reutilizables.
+ #}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+
+{{ attach_library('ecosistema_jaraba_theme/global') }}
+{{ attach_library('ecosistema_jaraba_theme/content-hub') }}
+
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+<head>
+  <head-placeholder token="{{ placeholder_token }}">
+  <title>{{ head_title|safe_join(' | ') }}</title>
+  <css-placeholder token="{{ placeholder_token }}">
+  <js-placeholder token="{{ placeholder_token }}">
+</head>
+
+<body{{ attributes.addClass('page-content-hub', 'dashboard-page') }}>
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    {% trans %}Skip to main content{% endtrans %}
+  </a>
+
+  {# HEADER - Partial reutilizable #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    logged_in: logged_in,
+    theme_settings: theme_settings|default({})
+  } %}
+
+  {# MAIN - Full-width #}
+  <main id="main-content" class="dashboard-main">
+    <div class="dashboard-wrapper">
+      {{ page.content }}
+    </div>
+  </main>
+
+  {# FOOTER - Partial reutilizable #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    site_name: site_name,
+    logo: logo|default(''),
+    theme_settings: theme_settings|default({})
+  } %}
+
+  <js-bottom-placeholder token="{{ placeholder_token }}">
+</body>
+</html>
+```
+
+> **Referencia completa**: [docs/tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md](./tecnicos/aprendizajes/2026-01-29_frontend_pages_pattern.md)
+
+
+**Cómo activar para una ruta:**
+1. Crear `page--RUTA.html.twig` en el tema
+2. Implementar `hook_theme_suggestions_page_alter()` si es ruta dinámica
+3. Limpiar caché: `drush cr`
+
+**Ejemplo hook en .theme:**
+
+```php
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ */
+function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  // Páginas de landing sin regiones
+  $route = \Drupal::routeMatch()->getRouteName();
+  if (str_starts_with($route, 'ecosistema_jaraba_core.landing')) {
+    $suggestions[] = 'page__clean';
+  }
+}
+```
+
+> **⚠️ LECCIÓN CRÍTICA: Clases del Body**
+> 
+> Las clases añadidas con `attributes.addClass()` en templates Twig **NO funcionan para el `<body>`**.
+> Drupal renderiza el `<body>` en `html.html.twig`, no en `page.html.twig`.
+> 
+> **Siempre usar `hook_preprocess_html()`** para añadir clases al body:
+> 
+> ```php
+> function ecosistema_jaraba_theme_preprocess_html(&$variables) {
+>   $route = \Drupal::routeMatch()->getRouteName();
+>   
+>   if ($route === 'mi_modulo.mi_ruta') {
+>     $variables['attributes']['class'][] = 'page-mi-ruta';
+>     $variables['attributes']['class'][] = 'dashboard-page';
+>   }
+> }
+> ```
+> 
+> **Referencia**: [2026-01-29_site_builder_frontend_fullwidth.md](./tecnicos/aprendizajes/2026-01-29_site_builder_frontend_fullwidth.md)
+
+
+#### 2.2.3 Include Twig Global para Componentes Persistentes
+
+> **⚠️ PATRÓN CRÍTICO**: Para componentes que aparecen en **todas** las páginas con detección de contexto automática.
+
+**Problema que resuelve:** Evitar configuración dispersa de bloques en BD para FABs, banners de cookies, feedback widgets, etc.
+
+**Ubicación del partial:** `web/themes/custom/ecosistema_jaraba_theme/templates/partials/_componente.html.twig`
+
+**Cuándo usar:**
+- ✅ FABs (Floating Action Buttons) como copilotos IA
+- ✅ Banners de cookies/GDPR
+- ✅ Widgets de feedback
+- ✅ Cualquier UX global con contextualización por usuario/ruta
+- ❌ Componentes específicos de una sola página (usar parciales locales)
+
+**Arquitectura:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  page.html.twig (o page--*.html.twig)                       │
+│                                                              │
+│  {% if componente_context %}                                 │
+│    {% include '@tema/partials/_componente.html.twig'         │
+│       with { context: componente_context } only %}          │
+│  {% endif %}                                                 │
+│                                                              │
+│            ▲                                                 │
+│            │                                                 │
+│  ┌─────────┴─────────────────────────────────────────────┐  │
+│  │  hook_preprocess_page()                               │  │
+│  │  $variables['componente_context'] = $service->get()   │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Ejemplo: Copiloto Contextual FAB**
+
+1. **Servicio de Contexto:**
+```php
+// CopilotContextService.php - Detecta avatar, tenant, vertical
+public function getContext(): array {
+    return [
+        'avatar' => $this->detectAvatar(),     // por roles del usuario
+        'user_name' => $this->getUserName(),   // personalización
+        'vertical' => $this->detectVertical(), // por tenant o ruta
+    ];
+}
+```
+
+2. **Hook en .theme:**
+```php
+function tema_preprocess_page(&$variables) {
+    $variables['copilot_context'] = NULL;
+    
+    // No mostrar en admin
+    if (!\Drupal::service('router.admin_context')->isAdminRoute()) {
+        $variables['copilot_context'] = \Drupal::service('modulo.copilot_context')->getContext();
+    }
+}
+```
+
+3. **Include en page.html.twig:**
+```twig
+{# Después del footer, antes de cerrar .page-wrapper #}
+{% if copilot_context %}
+  {% include '@tema/partials/_copilot-fab.html.twig' 
+     with { context: copilot_context } only %}
+{% endif %}
+```
+
+**Ventajas sobre Bloques Drupal:**
+| Aspecto | Bloques BD | Include Global |
+|---------|------------|----------------|
+| Configuración | Dispersa en cada bloque | Un único punto |
+| Contextualización | Manual por bloque | Automática por servicio |
+| Mantenibilidad | Difícil auditar | Fácil de auditar |
+| Consistencia | Puede variar | Garantizada |
+
+**Referencia:** [Arquitectura Copiloto Contextual](./arquitectura/2026-01-26_arquitectura_copiloto_contextual.md)
+
+### 2.3 Integraciones Externas
+
+> **Evolución v2.0 (Enero 2026)**: Arquitectura AI-First Commerce reemplazando Ecwid
+> Ver: [Documento Técnico Maestro v2](./tecnicos/20260110e-Documento_Tecnico_Maestro_v2_Claude.md)
+
+| Servicio | Propósito |
+|----------|----------|
+| **Drupal Commerce 3.x** | E-commerce nativo con Server-Side Rendering (GEO-optimizado) |
+| **Stripe Connect** | Split payments automáticos plataforma/tenant |
+| **Make.com** | Hub de integración (Facebook, Instagram, TikTok, Pinterest, Google) |
+| **FNMT / AutoFirma** | Certificados digitales y firma electrónica |
+| **APIs de IA** | OpenAI, Anthropic, Google - generación de Answer Capsules |
+
+#### 2.3.1 Estrategia GEO (Generative Engine Optimization)
+
+> **PRINCIPIO RECTOR**: "La primera plataforma de comercio diseñada para que la IA venda tus productos"
+
+La arquitectura Commerce 3.x proporciona Server-Side Rendering que permite:
+- **Answer Capsules**: Primeros 150 caracteres optimizados para extracción por LLMs
+- **Schema.org completo**: JSON-LD para Product, Offer, FAQ, Organization
+- **Indexación 100%**: Todo el contenido visible para GPTBot, PerplexityBot, ClaudeBot
+
+#### 2.3.2 Knowledge Base AI-Nativa (RAG + Qdrant)
+
+> **Módulo**: `jaraba_rag` | **Estado**: ✅ Operativo (v5.1, 2026-01-11)
+> Ver: [Guía Técnica KB RAG](./tecnicos/20260111-Guia_Tecnica_KB_RAG_Qdrant.md)
+
+| Componente | Descripción |
+|------------|-------------|
+| **Qdrant** | Base de datos vectorial para embeddings (1536D, OpenAI) |
+| **Arquitectura Dual** | Lando (`http://qdrant:6333`) + IONOS Cloud (HTTPS) |
+| **Colección** | `jaraba_kb` - Knowledge Base multi-tenant |
+| **Indexación** | Automática via `hook_entity_insert/update/delete` |
+
+**Servicios Core:**
+- `KbIndexerService`: Extrae contenido, chunking, embeddings, upsert
+- `QdrantDirectClient`: Cliente HTTP directo para API Qdrant
+- `TenantContextService`: Filtros multi-tenant para búsquedas
+
+**Fallbacks Robustos (Lección Aprendida v5.1):**
+```php
+// ❌ No funciona si config devuelve ""
+$value = $config->get('key') ?? 'default';
+
+// ✅ Funciona con null Y ""
+$value = $config->get('key') ?: 'default';
+```
+
+**Rutas Admin:**
+- `/admin/config/jaraba/rag` - Configuración general
+- Ver logs: `/admin/reports/dblog?type[]=jaraba_rag`
+
+#### 2.3.3 FAQ Bot Contextual (G114-4)
+
+> **Módulo**: `jaraba_tenant_knowledge` | **Estado**: ✅ Operativo (2026-02-11)
+
+Widget chat público integrado en `/ayuda` que responde preguntas de clientes finales usando **exclusivamente** la KB del tenant (FAQs + Políticas) indexada en Qdrant. Escalación automática cuando no puede responder.
+
+| Componente | Descripción |
+|------------|-------------|
+| **FaqBotService** | Orquestación: embedding → Qdrant search → LLM grounded → escalación |
+| **FaqBotApiController** | API pública `POST /api/v1/help/chat` + feedback |
+| **Similarity 3-tier** | ≥0.75 grounded, 0.55–0.75 baja confianza, <0.55 escalación |
+| **Rate Limiting** | Flood API: 10 req/min/IP |
+| **LLM** | claude-3-haiku con failover multi-proveedor |
+| **Frontend** | FAB widget + panel chat (faq-bot.js + _faq-bot.scss) |
+
+**Diferencia con jaraba_copilot_v2:** El copiloto v2 es para emprendedores (5 modos creativos, normative RAG). El FAQ Bot es para **clientes finales** del tenant — respuestas estrictamente grounded en la KB, sin conocimiento general.
+
+### 2.4 Centro de Operaciones Financieras (FOC)
+
+> **Módulo**: `jaraba_foc` | **Estado**: ✅ Operativo
+> Ver: [Documento Técnico FOC v2](./tecnicos/20260113d-FOC_Documento_Tecnico_Definitivo_v2_Claude.md)
+
+| Componente | Descripción |
+|------------|-------------|
+| **Modelo Económico** | Triple Motor: Institucional (30%), Mercado Privado (40%), Licencias (30%) |
+| **Stripe Connect** | Destination Charges con split automático (Application Fee) |
+| **Entidades Inmutables** | `financial_transaction`, `cost_allocation`, `foc_metric_snapshot` |
+| **ETL Automatizado** | Webhooks Stripe + ActiveCampaign + Make.com |
+
+> [!IMPORTANT]
+> **Consolidación Billing completada (v7.0.0):** El módulo `jaraba_billing` ahora centraliza
+> todo el ciclo de billing SaaS (5 entidades, 13 servicios, 26 endpoints REST, DunningService,
+> FeatureAccessService). El FOC mantiene su rol de operaciones financieras (transacciones
+> inmutables, métricas SaaS, `StripeConnectService` como transporte HTTP). La duplicación
+> con servicios de core se eliminó: billing usa `jaraba_foc.stripe_connect` como dependencia.
+
+**Métricas SaaS 2.0 Implementadas:**
+
+| Categoría | Métricas |
+|-----------|----------|
+| **Salud y Crecimiento** | MRR, ARR, Gross Margin, ARPU, Rule of 40 |
+| **Retención** | NRR (>100%), GRR (85-95%), Logo Churn (<5%), Revenue Churn (<4.67%) |
+| **Unit Economics** | CAC, LTV, LTV:CAC (≥3:1), CAC Payback (<12 meses), Magic Number (>0.75) |
+| **Modelo Híbrido** | Grant Burn Rate, GMV, Application Fee Rate, Tenant Margin |
+
+**Arquitectura Técnica:**
+
+```php
+// Entidad inmutable (append-only) - Libro mayor contable
+// ❌ NO permite edit/delete - Solo compensaciones
+/**
+ * @ContentEntityType(
+ *   id = "financial_transaction",
+ *   label = @Translation("Transacción Financiera"),
+ *   handlers = {
+ *     "views_data" = "Drupal\\views\\EntityViewsData",
+ *   },
+ *   base_table = "financial_transaction",
+ * )
+ */
+class FinancialTransaction extends ContentEntityBase {
+    // amount: Decimal(10,4) - NUNCA usar float para dinero
+    // timestamp: DateTime UTC - Sin conflictos timezone
+    // external_id: String - Evita duplicados, permite auditoría
+}
+```
+
+**Stripe Connect - Destination Charges:**
+
+```
+Cliente paga €100 → Stripe retiene €3.20 (fees)
+                  → Plataforma recibe €5.00 (application_fee 5%)
+                  → Vendedor recibe €91.80
+
+✅ Plataforma NO es Merchant of Record
+✅ Solo tributa por comisiones, no GMV
+✅ Riesgo financiero mínimo
+```
+
+### 2.5 Desarrollo Local
+
+| Herramienta | Propósito |
+|-------------|----------|
+| **Lando** | Entorno de desarrollo local containerizado |
+| **Drush** | CLI para administración Drupal |
+| **WSL2 + Ubuntu** | Subsistema Linux en Windows |
+
+### 2.6 Servicios Core Q1-Q4 2026
+
+> **Estado**: ✅ Implementados (2026-01-14)
+> **Módulo**: `ecosistema_jaraba_core`
+
+| Quarter | Sprint | Servicio | Función |
+|---------|--------|----------|---------|
+| **Q1** | 1-4 | `AlertingService` | Notificaciones Slack/Teams via webhooks |
+| **Q1** | 1-4 | `MarketplaceRecommendationService` | Recomendaciones cross-tenant |
+| **Q1** | 1-4 | `TenantCollaborationService` | Partnerships, mensajería, bundles |
+| **Q2** | 5-6 | `UserIntentClassifierService` | Clasificación intención usuario |
+| **Q2** | 5-6 | `TimeToFirstValueService` | Métricas TTFV y análisis |
+| **Q2** | 5-6 | `GuidedTourService` | Tours contextuales |
+| **Q2** | 5-6 | `InAppMessagingService` | Mensajería adaptativa |
+| **Q2** | 7-8 | `UsageLimitsService` | Monitoreo límites y upgrades |
+| **Q2** | 7-8 | `ReferralProgramService` | Programa de referidos |
+| **Q2** | 7-8 | `PricingRecommendationService` | Sugerencias de plan |
+| **Q3** | 9-10 | `AIGuardrailsService` | Validación prompts, PII |
+| **Q3** | 9-10 | `AIPromptABTestingService` | Experimentos A/B |
+| **Q3** | 11-12 | `SelfHealingService` | Runbooks automatizados |
+| **Q4** | 13-14 | `TenantMeteringService` | Metering usage-based |
+| **Q4** | 13-14 | `AIValueDashboardService` | ROI de IA, insights |
+| **Q4** | 15-16 | `AIOpsService` | Predicción incidentes |
+
+**Total: 17 servicios**
+
+### 2.7 Servicios Q1 2027 - Gap Implementation
+
+> **Estado**: ✅ Implementados (2026-01-15)
+> **Auditoría**: Multi-Disciplinaria SaaS
+
+| Categoría | Servicio | Función |
+|-----------|----------|---------|
+| **PLG 2.0** | `ReverseTrialService` | Reverse Trial 14d + downgrade automático |
+| **PLG 2.0** | `SandboxTenantService` | Demo pre-registro temporal (24h) |
+| **AI Agent** | `AgentAutonomyService` | 4 niveles autonomía (Suggest→Silent) |
+| **AI Agent** | `ContextualCopilotService` | Copilot contextual embebido |
+| **AI Agent** | `MicroAutomationService` | Auto-tagging, smart sorting |
+| **FinOps** | `AICostOptimizationService` | Token budgets, model routing |
+| **Revenue** | `ExpansionRevenueService` | PQA scoring, NRR tracking |
+| **GEO** | `VideoGeoService` | Video Schema.org, YouTube SEO |
+| **GEO** | `MultilingualGeoService` | hreflang, Answer Capsules |
+
+**API REST Q1 2027:**
+- `ApiController` - OpenAPI 3.0, Swagger UI, endpoints `/api/v1/*`
+- `CopilotController` - Endpoints `/api/copilot/*`
+- `SandboxController` - Endpoints `/api/sandbox/*`
+
+**Mobile PWA:**
+- `manifest.json` - Web App Manifest con iconos y shortcuts
+- `sw.js` - Service Worker offline-first, push notifications
+- `offline.html` - Página offline elegante
+
+**Total: 12 nuevos servicios + 3 controllers + PWA**
+
+### 2.8 Servicios Q1 2026 - Cierre de Gaps Empleabilidad
+
+> **Estado**: ✅ Completado (2026-01-17)
+> **Auditoría**: 100% servicios PHP implementados
+
+| Fase | Servicio | Estado | Función |
+|------|----------|--------|----------|
+| **Fase 1** | `CopilotInsightsService` | ✅ | Autoaprendizaje IA - Tracking intents y escucha usuarios |
+| **Fase 1** | `CopilotConversation` Entity | ✅ | Persistencia de conversaciones copilots |
+| **Fase 1** | `CopilotMessage` Entity | ✅ | Mensajes con intent, entidades, feedback |
+| **Fase 1** | `CopilotInsightsDashboard` | ✅ | Dashboard Admin `/admin/insights/copilot` |
+| **Fase 2** | `EmbeddingService` | ✅ | Pipeline embeddings para jobs/candidates |
+| **Fase 2** | `MatchingService` | ✅ | Matching híbrido rules + Qdrant |
+| **Fase 3** | `OpenBadgeService` | ✅ | Credenciales Open Badges 3.0 (→ `jaraba_credentials` v2.0: 8 entities, 16 services, 2 submódulos) |
+| **Fase 3** | `GamificationService` | ✅ | XP, rachas (10 niveles), leaderboard |
+| **Fase 4** | `RecommendationService` | ✅ | Collaborative Filtering + Hybrid ML |
+
+**Best Practices Implementadas (2026-01-17):**
+
+| Práctica | Servicio | Estado |
+|----------|----------|--------|
+| **Feedback Loop** | `recordMatchFeedback()`, `getRecommendationsWithFeedback()` | ✅ |
+| **Rate Limiting** | `RateLimiterService` (sliding window) | ✅ |
+| **Telemetría** | `EmbeddingTelemetryService` (latencia, costos, cache hits) | ✅ |
+| **Unit Tests** | `RecommendationServiceTest`, `RateLimiterServiceTest` | ✅ |
+
+**Automatizaciones ECA (Hooks Nativos) - Implementado 2026-01-17:**
+
+| Flujo | Servicio | Estado |
+|-------|----------|--------|
+| **Auto-Enrollment** | `DiagnosticEnrollmentService` (perfil → learning path) | ✅ |
+| **Badge Automático** | `jaraba_lms_entity_update()` → `OpenBadgeService` | ✅ |
+| **XP Automático** | `jaraba_lms_entity_insert()` → `GamificationService` | ✅ |
+| **Notif. Candidaturas** | `ApplicationNotificationService` (email queue) | ✅ |
+| **Créditos Impacto** | `ImpactCreditService` (+20 apply, +500 hired) | ✅ |
+| **Job Alerts** | `JobAlertMatchingService` (matching + company follow) | ✅ |
+| **Web Push** | `WebPushService` (VAPID, sin FCM) | ✅ |
+| **Cron Digest** | `jaraba_job_board_cron()` (9:00 AM diario) | ✅ |
+| **Embedding Auto** | `jaraba_matching_entity_insert/update()` | ✅ |
+
+**Gaps Cerrados (2026-01-17):**
+
+| Gap | Solución Implementada |
+|-----|----------------------|
+| ~~Triggers ECA~~ | Hooks nativos de Drupal (no depende de módulo ECA) |
+| ~~i18n Completa~~ | Revisar en próxima iteración (bajo impacto) |
+
+**Dashboard de Insights:**
+- Top 10 preguntas frecuentes de usuarios
+- Intents más comunes (job_search, cv_help, interview_prep)
+- Tasa de resolución y queries sin resolver
+- Tendencias semanales por copilot tipo
+
+**APIs Autoaprendizaje:**
+- `POST /api/v1/copilot/conversations` - Crear conversación
+- `POST /api/v1/copilot/messages` - Registrar mensaje
+- `POST /api/v1/copilot/messages/{id}/feedback` - Feedback útil/no útil
+- `GET /api/v1/insights/copilot/summary` - Resumen admin
+
+### 2.9 Servicios Q1 2026 - Vertical Emprendimiento Digital
+
+> **Estado**: ✅ Implementado — Clase Mundial (Specs 20260121a-e 100% cerradas + Gaps cerrados)
+> **Módulo**: `jaraba_copilot_v2` (22 API endpoints, 21 servicios, 3 frontend pages, widget chat SSE, triggers BD, métricas P50/P99) <!-- AUDIT-SPEC-N08: servicios actualizado de 14 a 21 -->
+> **Programa**: Andalucía +ei v2.0
+
+**Entregables Copiloto v2 (✅ 100% Implementado — Specs 20260121 + Gaps cerrados):**
+
+| Componente | Archivo/Ubicación | Estado |
+|------------|-------------------|--------|
+| **Prompt Maestro** | `copilot_prompt_master_v2.md` | ✅ |
+| **Catálogo Experimentos** | `experiment_library_catalog.json` (44 exp) | ✅ |
+| **Schema Perfil** | `entrepreneur_profile.schema.json` | ✅ |
+| **OpenAPI** | `openapi_copiloto_v2.yaml` | ✅ |
+| **Módulo Drupal completo** | `web/modules/custom/jaraba_copilot_v2/` | ✅ |
+| **22 API Endpoints REST** | HypothesisApi, ExperimentApi, BmcApi, EntrepreneurApi, History, Knowledge | ✅ |
+| **21 Servicios Producción** | HypothesisPrioritization, BmcValidation, LearningCard, ModeDetector (BD+fallback), CopilotOrchestrator (métricas), ClaudeApi, CopilotCache, EntrepreneurContext, NormativeRAG, TestCardGenerator, VPC, PivotDetector, etc. | ✅ | <!-- AUDIT-SPEC-N08 -->
+| **5 Access Handlers + ListBuilders** | EntrepreneurProfile, Hypothesis, Experiment, Learning, FieldExit | ✅ |
+| **BMC Dashboard Frontend** | `/emprendimiento/bmc` — Grid 5×3 bloques, semáforos, Impact Points | ✅ |
+| **Hypothesis Manager Frontend** | `/emprendimiento/hipotesis` — CRUD modal, filtros, ICE Score | ✅ |
+| **Experiment Lifecycle Frontend** | `/emprendimiento/experimentos/gestion` — Test→Start→Learning Card | ✅ |
+| **Widget Chat SSE** | `copilot-chat-widget.js` + `CopilotStreamController` — Streaming Alpine.js, indicador modo | ✅ |
+| **Triggers BD Configurables** | `copilot_mode_triggers` tabla + `ModeTriggersAdminForm` — 175 triggers, admin UI, cache 1h | ✅ |
+| **Milestones Persistentes** | `entrepreneur_milestone` tabla — Registro hitos con puntos y entidad relacionada | ✅ |
+| **Métricas P50/P99** | `getMetricsSummary()` — Latencia, fallback rate, costes diarios por proveedor | ✅ |
+| **7 Unit Test Suites** | PHPUnit 11 — ICE, semáforos, controllers, constants, ModeDetectorDb, reflection tests | ✅ |
+
+**5 Modos del Copiloto:**
+
+| Modo | Trigger | Comportamiento |
+|------|---------|----------------|
+| 🧠 **Coach Emocional** | miedo, bloqueo, impostor | Valida emoción → Kit Primeros Auxilios |
+| 🔧 **Consultor Táctico** | cómo hago, paso a paso | Instrucciones clic a clic |
+| 🥊 **Sparring Partner** | qué te parece, feedback | Actúa como cliente escéptico |
+| 💰 **CFO Sintético** | precio, cobrar, rentable | Calculadora de la Verdad |
+| 😈 **Abogado del Diablo** | estoy seguro, funcionará | Desafía hipótesis |
+
+**Patrón de Desbloqueo Progresivo UX:**
+
+> **Principio Rector**: El emprendedor ve **exactamente lo que necesita cuando lo necesita**.
+> La plataforma "crece" con él a lo largo de las 12 semanas del programa.
+
+```php
+// FeatureUnlockService.php
+const UNLOCK_MAP = [
+    0 => ['dime_test', 'profile_basic'],                    // Semana 0
+    1 => ['copilot_coach', 'pills_1_3', 'kit_emocional'],   // Semanas 1-3
+    4 => ['canvas_vpc', 'canvas_bmc', 'experiments_discovery'], // Semanas 4-6
+    7 => ['copilot_cfo', 'calculadora_precio', 'test_card'],   // Semanas 7-9
+    10 => ['mentoring_marketplace', 'calendar_sessions'],    // Semanas 10-11
+    12 => ['experiments_commitment', 'demo_day', 'certificado'] // Semana 12
+];
+```
+
+**Mapa de Desbloqueo por Semana:**
+
+| Semana | Funcionalidades Desbloqueadas |
+|--------|------------------------------|
+| **0** | DIME + Clasificación Carril + Perfil Básico |
+| **1-3** | Copiloto Coach + Píldoras 1-3 + Kit Emocional |
+| **4-6** | +Canvas VPC/BMC + Experimentos DISCOVERY |
+| **7-9** | +Copiloto CFO/Devil + Calculadora + Dashboard Validación |
+| **10-11** | +Mentores + Calendario + Círculos Responsabilidad |
+| **12** | +Demo Day + Certificado + Club Alumni |
+
+**Módulos Vertical Emprendimiento:**
+
+| Módulo | Estado | Descripción |
+|--------|--------|-------------|
+| `jaraba_business_tools` | ✅ Implementado | BMC 9 bloques, Drag-Drop, PDF Export, CanvasAiService |
+| `jaraba_mentoring` | ✅ Implementado | Perfiles mentor, sesiones, Stripe Connect, 7 ECA hooks |
+| `jaraba_paths` | ✅ Implementado | Itinerarios digitalización, hitos |
+| `jaraba_groups` | ✅ Implementado | Círculos Responsabilidad, discusiones |
+| `jaraba_copilot_v2` | ✅ Implementado (Clase Mundial) | Copiloto IA 7 modos, 22 API endpoints REST, 5 Content Entities (Access Handlers + ListBuilders), 14+ servicios (HypothesisPrioritization ICE, BmcValidation semáforos, LearningCard, TestCardGenerator, ModeDetector **175 triggers BD+fallback** con cache 1h, PivotDetector, ContentGrounding, VPC, BusinessPatternDetector, **CopilotOrchestrator multi-proveedor optimizado** Gemini Flash para consultor/landing), 3 páginas frontend + **widget chat SSE** (Alpine.js streaming, indicador modo), Impact Points gamification + **milestones persistentes** (`entrepreneur_milestone`), FeatureUnlockService desbloqueo 12 semanas, **7 suites unit tests** (64 tests, 184 assertions), **métricas P50/P99** latencia+fallback+costes, **Self-Discovery context injection** (SelfDiscoveryContextService como 10o arg nullable) |
+| `jaraba_self_discovery` | ✅ Implementado | Herramientas autoconocimiento: Rueda de Vida (LifeWheelAssessment), Timeline (LifeTimeline, Phase 2/3 Forms), RIASEC (**InterestProfile** Content Entity, 6 scores), Fortalezas VIA (**StrengthAssessment** Content Entity, 24 fortalezas). 4 servicios dedicados (LifeWheelService, TimelineAnalysisService, RiasecService, StrengthAnalysisService). SelfDiscoveryContextService (agregador para Copilot). 5 unit test files. Admin navigation completa |
+
+**Métricas de Éxito UX:**
+
+| Métrica | Target |
+|---------|--------|
+| Time-to-First-Value | < 5 min |
+| Feature Discovery Rate | > 80% |
+| Drop-off semanal | < 5% |
+| Program Completion | > 85% |
+
+> **Ver**: [Plan de Implementación v3.1](file:///C:/Users/Pepe%20Jaraba/.gemini/antigravity/brain/c37dc4ca-dbac-4120-89a6-989c53614650/implementation_plan.md)
+
+### 2.10 Vertical JarabaLex — Inteligencia Juridica Profesional
+
+> **Modulo**: `jaraba_legal_intelligence` | **Estado**: ✅ Vertical Independiente
+> **Package**: JarabaLex (antes Jaraba ServiciosConecta)
+
+Hub de inteligencia juridica profesional con busqueda semantica IA sobre fuentes nacionales (ES) y europeas (UE/CEDH). Compite con Aranzadi/La Ley en el mercado de bases de datos juridicas.
+
+| Componente | Descripcion |
+|-----------|-------------|
+| **Vertical seed** | `ecosistema_jaraba_core.vertical.jarabalex.yml` — 3 features, 1 AI agent |
+| **Features** | legal_search (busqueda semantica), legal_alerts (alertas), legal_citations (citaciones) |
+| **SaaS Plans** | Starter (49 EUR/mes), Pro (99 EUR/mes), Enterprise (199 EUR/mes) |
+| **FreemiumVerticalLimit** | 9 configs (3 plans x 3 feature_keys: searches, alerts, bookmarks) |
+| **Theme** | page--legal.html.twig (zero-region + Copilot FAB legal_copilot) |
+| **Design Tokens** | CSS custom properties --ej-legal-* (primary #1E3A5F, accent #C8A96E) |
+| **Billing** | FEATURE_ADDON_MAP: legal_search, legal_alerts, legal_citations → jaraba_legal_intelligence |
+
+### 2.11 AI Orchestration (Arquitectura Multiproveedor)
+
+> **Módulo**: Drupal AI (`ai`) | **Estado**: ✅ Configurado
+> **Proveedores**: Anthropic (Claude) + OpenAI (GPT-4)
+
+**Principio Rector: NUNCA implementar clientes HTTP directos a APIs de IA.**
+
+El proyecto usa el **módulo AI de Drupal** (`@ai.provider`) como capa de abstracción para todos los LLMs. Esto proporciona:
+
+| Beneficio | Descripción |
+|-----------|-------------|
+| **Gestión centralizada** | Claves API en módulo Key, config en `/admin/config/ai` |
+| **Failover automático** | Si Claude falla → GPT-4 → Error graceful |
+| **Moderación integrada** | Filtros de contenido pre-configurados |
+| **FinOps** | Tracking de tokens/costos por proveedor |
+
+**Configuración de Moderación (Recomendada):**
+
+| Proveedor | Moderación | Justificación |
+|-----------|------------|---------------|
+| **Anthropic** | "No Moderation Needed" | Claude 3.x tiene filtros internos robustos |
+| **OpenAI** | "Enable OpenAI Moderation" | Añade capa extra para contenido sensible |
+
+> [!IMPORTANT]
+> **Lección Aprendida (2026-01-21)**: El `ClaudeApiService` original duplicaba funcionalidad existente en `@ai.provider`. 
+> Refactorizado a `CopilotOrchestratorService` que usa la abstracción del módulo AI.
+
+**Patrón Correcto de Integración:**
+
+```php
+// ✅ CORRECTO: Usar módulo AI de Drupal
+use Drupal\ai\AiProviderPluginManager;
+
+class CopilotOrchestratorService {
+    
+    public function __construct(
+        private AiProviderPluginManager $aiProvider,
+    ) {}
+    
+    public function chat(string $message, string $mode): array {
+        $provider = $this->getProviderForMode($mode);
+        $llm = $this->aiProvider->createInstance($provider);
+        
+        return $llm->chat([
+            ['role' => 'user', 'content' => $message]
+        ], $this->getModelForMode($mode));
+    }
+}
+```
+
+```php
+// ❌ INCORRECTO: Cliente HTTP directo
+$response = $this->httpClient->request('POST', 'https://api.anthropic.com/v1/messages', [
+    'headers' => ['x-api-key' => $apiKey],
+    'json' => $payload,
+]);
+```
+
+**Especialización por Modo del Copiloto (Actualizado 2026-02-12):**
+
+| Modo | Proveedor Primario | Modelo | Razón |
+|------|-------------------|--------|-------|
+| Coach Emocional | Anthropic | claude-sonnet-4-5-20250929 | Empatía superior |
+| Consultor Táctico | **Google Gemini** | **gemini-2.5-flash** | **Alto volumen (~40% tráfico), coste-eficiente** |
+| Sparring Partner | Anthropic | claude-sonnet-4-5-20250929 | Calidad feedback |
+| CFO Sintético | OpenAI | gpt-4o | Mejor en cálculos |
+| Fiscal/Laboral | Anthropic | claude-sonnet-4-5-20250929 | RAG + Grounding |
+| Devil | Anthropic | claude-sonnet-4-5-20250929 | Desafío hipótesis |
+| Landing Copilot | **Google Gemini** | **gemini-2.5-flash** | **Alto volumen landing, coste-eficiente** |
+| Detección modo | Anthropic | claude-haiku-4-5-20251001 | Económico, baja latencia |
+
+> **Optimización coste (2026-02-12):** Consultor y Landing usan Gemini Flash como proveedor primario (~55% ahorro en costes API). Claude se mantiene como fallback y como primario para modos que requieren empatía (coach, sparring, fiscal/laboral).
+
+> **Ver**: [Plan AI Multiproveedor](file:///C:/Users/Pepe%20Jaraba/.gemini/antigravity/brain/c37dc4ca-dbac-4120-89a6-989c53614650/implementation_plan_ai_multiprovider.md)
+
+---
+
+
+### 2.12 Entornos de Desarrollo
+
+### 6.1 Entornos Disponibles
+
+| Entorno | URL | Base de Datos | Propósito |
+|---------|-----|---------------|----------|
+| **Local** | `*.lndo.site` | Lando containers | Desarrollo activo |
+| **Staging** | TBD | Copia de producción | Pruebas pre-release |
+| **Producción** | TBD | Producción | Usuarios finales |
+
+### 6.2 Configuración Lando
+
+El proyecto utiliza Lando para desarrollo local. Sitios disponibles:
+
+| Sitio | URL Local |
+|-------|----------|
+| Principal | `plataformadeecosistemas.lndo.site` |
+| AgroConecta | `jarabaagroconecta.lndo.site` |
+| PepeJaraba | `pepejaraba.lndo.site` |
+
+### 6.3 Comandos Útiles
+
+```bash
+# Iniciar entorno
+lando start
+
+# Acceder a Drush
+lando drush cr                    # Limpiar caché
+lando drush @agroconecta cr       # Alias específico
+
+# Exportar/importar config (sync en config/sync/ — git-tracked)
+lando drush cex -y        # Exporta a config/sync/ (raíz del proyecto)
+lando drush cim -y        # Importa desde config/sync/
+lando drush config:status # Verificar diferencias config vs BD
+
+# Base de datos
+lando db-export backup.sql
+lando db-import backup.sql
+```
+
+### 6.4 Config Sync (Git-Tracked)
+
+> **IMPORTANTE**: El config sync de Drupal vive en `config/sync/` en la raíz del proyecto (NO en `web/sites/default/files/`).
+
+| Propiedad | Valor |
+|-----------|-------|
+| **Directorio** | `config/sync/` (raíz del repositorio) |
+| **Override** | `$settings['config_sync_directory'] = '../config/sync'` en `settings.jaraba_rag.php` |
+| **Archivos** | 589 YML + traducciones `language/en/` y `language/es/` |
+| **Entidades Key** | `qdrant_api`, `openai_api`, `anthropic_api`, `google_gemini_api_key` |
+
+**Flujo estándar Drupal:**
+1. Cambiar config en local (admin UI o código)
+2. `lando drush cex -y` → exporta a `config/sync/`
+3. `git add config/sync/ && git commit` → trackear cambios
+4. `git push` → deploy automático a IONOS
+5. Pipeline ejecuta `drush config:import -y` → aplica cambios en producción
+
+**Reglas:**
+- **NUNCA** editar archivos YML en `config/sync/` manualmente. Siempre exportar con `drush cex`.
+- El pipeline incluye sincronización de UUID (`system.site.uuid`) como prerequisito de `config:import`.
+- Las entidades Key con `key_provider: config` contienen API keys reales. Aceptable en repo privado; migrar a `key_provider: env` como mejora futura.
+
+### 6.5 Monitoring Stack
+
+> **Directorio:** `monitoring/` | **Estado:** ✅ Configurado (2026-02-12)
+
+Stack de observabilidad standalone (Docker Compose independiente de Lando):
+
+| Componente | Puerto | Función |
+|------------|--------|---------|
+| **Prometheus** | 9090 | Scraping métricas cada 15s (drupal, mysql, qdrant, node, loki) |
+| **Grafana** | 3001 | Dashboards visuales + alertas |
+| **Loki** | 3100 | Agregación de logs (720h retención) |
+| **Promtail** | — | Recolector (drupal, php-fpm, webserver, system logs) |
+| **AlertManager** | 9093 | Routing alertas por severidad |
+
+**Comandos:**
+```bash
+# Iniciar monitoring stack
+cd monitoring && docker compose -f docker-compose.monitoring.yml up -d
+
+# Verificar servicios
+docker compose -f docker-compose.monitoring.yml ps
+```
+
+**Reglas:**
+- **MONITORING-001**: Toda alerta `critical` debe tener 2+ canales de notificación (Slack + email)
+- Las alertas se definen en `monitoring/prometheus/rules/jaraba_alerts.yml` (14 reglas)
+- Routing: critical → Slack #jaraba-critical + email, warning → Slack #jaraba-alerts
+
+### 6.6 Go-Live Procedures
+
+> **Directorio:** `scripts/golive/` | **Runbook:** `docs/tecnicos/GO_LIVE_RUNBOOK.md`
+
+| Script | Función |
+|--------|---------|
+| `01_preflight_checks.sh` | 24 validaciones pre-lanzamiento (PHP, MariaDB, Redis, Qdrant, Stripe, SSL, DNS, módulos, permisos, config) |
+| `02_validation_suite.sh` | Smoke tests por vertical, API validation, CSRF checks |
+| `03_rollback.sh` | Rollback automatizado 7 pasos con notificaciones Slack |
+
+**Reglas:**
+- **GOLIVE-001**: Todo script shell generado debe pasar `bash -n` (syntax check) antes de commit
+- Los scripts deben ejecutarse en orden secuencial (01 → 02 → 03 solo si falla deploy)
+
+### 6.7 Security CI
+
+> **Fichero:** `.github/workflows/security-scan.yml` | **Estado:** ✅ Configurado
+
+- Ejecución: daily cron 02:00 UTC
+- Scans: Composer audit → npm audit → Trivy FS → OWASP ZAP baseline
+- Output: SARIF upload a GitHub Security tab
+- Notificación: Slack en vulnerabilidades CRITICAL/HIGH
+
+**GDPR Drush Commands:**
+```bash
+lando drush gdpr:export {uid}     # Art. 15 — Exporta datos personales (JSON)
+lando drush gdpr:anonymize {uid}  # Art. 17 — Anonimiza datos (hash replace)
+lando drush gdpr:report           # Informe compliance general
+```
+
+**Regla SECURITY-001:** CI de seguridad requiere mínimo `composer audit` + dependency scan (Trivy).
+
+---
+
+## 3. Arquitectura Multi-tenant
+
+> **Decisión Arquitectónica**: Single-Instance + Group Module (NO multisite)
+> 
+> Ver análisis en [Documento Técnico Maestro](./tecnicos/20260109e-DOCUMENTO_TECNICO_MAESTRO_SaaS_CONSOLIDADO_Claude.md)
+
+### 3.1 Jerarquía del Ecosistema
+
+```mermaid
+graph TB
+    subgraph "Jaraba Impact Platform"
+        PLAT[Plataforma SaaS<br/>Single-Instance Drupal 11]
+        
+        PLAT --> V1[Vertical: AgroConecta]
+        PLAT --> V2[Vertical: FormaTech]
+        PLAT --> V3[Vertical: TurismoLocal]
+        
+        V1 --> T1[Tenant: Cooperativa Jaén]
+        V1 --> T2[Tenant: D.O. La Mancha]
+        
+        T1 --> P1[Productores]
+        T1 --> TH1[Tema Visual]
+    end
+```
+
+### 3.2 Módulos de Multi-Tenancy
+
+| Módulo | Función |
+|--------|---------|
+| **Group** | Aislamiento lógico de contenido por Tenant |
+| **Domain Access** | URLs personalizadas por Tenant/Vertical |
+| **Group Content** | Asociar entidades (nodos, usuarios) a grupos |
+
+### 3.3 Entidades Core (Content Entities)
+
+| Entidad | Descripción | Relaciones |
+|---------|-------------|------------|
+| **Vertical** | Segmento de negocio (Agro, Formación, Turismo) | Contiene Tenants |
+| **Tenant** | Inquilino/cliente (antes "Sede") | Pertenece a Vertical, contiene Productores |
+| **Plan SaaS** | Límites y features | Referenciado por Tenant |
+
+### 3.4 Aislamiento de Datos
+
+| Aspecto | Estrategia |
+|---------|------------|
+| **Base de datos** | Única (Single-Instance), aislamiento por Group |
+| **Contenido** | Group Content: nodos pertenecen a un Group |
+| **Usuarios** | Group Membership: roles por grupo |
+| **Archivos** | Público/privado con control de acceso por Group |
+| **Búsqueda** | Search API con filtros de Group para efecto red |
+
+### 3.5 Directrices de Filtrado Multi-Tenant (Sprint Inmediato 2026-02-12)
+
+| Directriz | Descripcion | Prioridad |
+|-----------|-------------|-----------|
+| **TENANT-001: Filtro obligatorio en queries** | Todo entity query o database query que devuelva datos de usuario/contenido DEBE incluir filtro por tenant. Para entidades con campo `tenant_id`: `->condition('tenant_id', $tenantId)`. Para queries DB directas: JOIN a `group_relationship_field_data` filtrando por `gid` + `plugin_id = 'group_membership'` | P0 |
+| **TENANT-002: TenantContextService unico** | Todo controlador o servicio que necesite contexto de tenant DEBE inyectar `ecosistema_jaraba_core.tenant_context` (TenantContextService). NUNCA resolver tenant via queries ad-hoc | P0 |
+| **ENTITY-REF-001: target_type especifico** | Campos entity_reference DEBEN usar el target_type mas especifico disponible (ej. `lms_course` en vez de `node`). NUNCA usar `node` como fallback generico | P1 |
+| **BILLING-001: Sincronizar copias** | Cambios en servicios duplicados entre `jaraba_billing` y `ecosistema_jaraba_core` (ImpactCreditService, ExpansionRevenueService) DEBEN aplicarse en ambas copias simultaneamente | P1 |
+
+### 3.6 Ventajas de Single-Instance + Group
+
+| Ventaja | Descripción |
+|---------|-------------|
+| **Efecto Red** | Queries cruzadas entre Tenants (matching talento ↔ empresas) |
+| **Mantenimiento** | 1 actualización de core para toda la plataforma |
+| **Escalabilidad** | Horizontal, sin límite de Tenants |
+| **Datos compartidos** | Taxonomías, usuarios, catálogos entre Verticales |
+
+### 3.7 Configuración por Nivel
+
+| Nivel | Qué se configura | Quién configura |
+|-------|------------------|-----------------|
+| **Plataforma** | Módulos core, APIs, agentes IA base | Desarrollo |
+| **Vertical** | Tipos de contenido, taxonomías, tema base | Admin Vertical |
+| **Tenant** | Logo, colores, credenciales Ecwid, límites | Admin Tenant |
+
+---
+
+## 4. Seguridad y Permisos
+
+### 4.1 Roles de Usuario
+
+| Rol | Permisos Principales |
+|-----|----------------------|
+| **Administrador** | Acceso completo, gestión de sedes, configuración global |
+| **Gestor de Sede** | Administrar productores y productos de su sede |
+| **Productor** | Gestionar su tienda, productos, pedidos |
+| **Cliente** | Navegar, comprar, ver historial |
+| **Anónimo** | Navegación pública limitada |
+
+### 4.2 Políticas de Acceso a APIs
+
+| API | Autenticación | Notas |
+|-----|---------------|-------|
+| Drupal REST | Sesión cookie + CSRF token | Usuarios autenticados |
+| Ecwid | Token de tienda | Almacenado en config Drupal |
+| Agentes IA | API Key por proveedor | Variables de entorno |
+| AutoFirma | Certificado cliente | FNMT o similar |
+
+### 4.3 Manejo de Credenciales
+
+> **⚠️ IMPORTANTE**: Nunca commitear credenciales al repositorio.
+
+- **Desarrollo**: Archivo `settings.local.php` (excluido de git)
+- **Producción**: Variables de entorno del servidor
+- **APIs externas**: Configuración Drupal encriptada o env vars
+
+### 4.4 Validación de Datos
+
+- Toda entrada de usuario debe validarse en backend
+- Usar Form API de Drupal con validadores
+- Sanitizar salidas con `check_plain()` / `Html::escape()`
+- Prevenir XSS, CSRF, SQL Injection
+
+### 4.5 Seguridad de Endpoints AI/LLM (Directriz 2026-02-06)
+
+> **Referencia:** [Auditoría Profunda SaaS Multidimensional](./tecnicos/auditorias/20260206-Auditoria_Profunda_SaaS_Multidimensional_v1_Claude.md) - Hallazgos SEC-01, AI-01, AI-02, BE-02
+
+| Directriz | Descripción | Prioridad |
+|-----------|-------------|-----------|
+| **Rate Limiting Obligatorio** | Todo endpoint que invoque LLM/embedding DEBE tener rate limiting por tenant y por usuario. Recomendado: 100 req/hora RAG, 50 req/hora Copilot | P0 |
+| **Sanitización de Prompts** | Toda interpolación de datos en system prompts (nombre tenant, vertical, contexto) DEBE sanitizarse contra whitelist. Los inputs a LLMs requieren la misma rigurosidad que inputs SQL | P0 |
+| **Circuit Breaker LLM** | El sistema DEBE implementar circuit breaker para proveedores LLM: skip proveedor por 5 min tras 5 fallos consecutivos. Evita 3x costes durante caídas | P0 |
+| **Claves API en Env Vars** | Toda clave API (Stripe, OpenAI, Anthropic, Gemini) DEBE almacenarse en variables de entorno. NUNCA en configuración de Drupal exportable | P0 |
+| **Aislamiento Qdrant Multi-Tenant** | Filtros de tenant en Qdrant DEBEN usar `must` (AND), NUNCA `should` (OR) para tenant_id. Verificar aislamiento en TODAS las capas: DB, vector store, cache, API | P0 |
+| **Context Window Management** | Todo prompt del sistema DEBE respetar un MAX_CONTEXT_TOKENS configurable. Truncar con resumen cuando el contexto excede el límite | P1 |
+| **Autenticación Qdrant** | El servicio Qdrant DEBE tener autenticación por API key habilitada. Acceso sin autenticación prohibido incluso en desarrollo | P1 |
+
+### 4.6 Seguridad de Webhooks (Directriz 2026-02-06)
+
+| Directriz | Descripción |
+|-----------|-------------|
+| **HMAC Obligatorio** | Todo webhook custom DEBE implementar verificación de firma HMAC. La validación de token opcional NO es aceptable |
+| **APIs Públicas** | Todo endpoint `/api/v1/*` DEBE requerir autenticación (`_user_is_logged_in` o API key). `_access: 'TRUE'` prohibido en endpoints que devuelven datos de tenant |
+| **Parámetros de Ruta** | Toda ruta con parámetros dinámicos DEBE incluir restricciones regex (ej: `profileId: '[a-z_]+'`) |
+| **Mensajes de Error** | NUNCA exponer mensajes de excepción internos al usuario. Logging detallado + mensajes genéricos al frontend |
+
+### 4.7 Seguridad y Consistencia Post-Auditoría Integral (2026-02-13)
+
+> **Referencia:** [Auditoría Integral Estado SaaS v1](./tecnicos/auditorias/20260213-Auditoria_Integral_Estado_SaaS_v1_Claude.md) — 65 hallazgos (7 Críticos, 20 Altos, 26 Medios, 12 Bajos)
+
+#### 4.7.1 Reglas de Seguridad
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **HMAC en TODOS los webhooks** | AUDIT-SEC-001 | Todo webhook (Stripe, WhatsApp, externo) DEBE implementar verificación HMAC con `hash_equals()`. La validación de token en query string NO es aceptable como único mecanismo | P0 |
+| **`_permission` en rutas sensibles** | AUDIT-SEC-002 | Toda ruta que acceda a datos de tenant o realice operaciones CRUD DEBE usar `_permission: 'administer {module}'` o permiso granular. `_user_is_logged_in` es insuficiente para rutas sensibles | P0 |
+| **Sanitización server-side para `\|raw`** | AUDIT-SEC-003 | Todo uso de `\|raw` en templates Twig DEBE ir precedido de sanitización server-side con `Xss::filterAdmin()` o `Html::escape()`. `\|raw` sin sanitización previa está prohibido | P0 |
+| **Validación secrets CI obligatoria** | AUDIT-SEC-N17 | Todo workflow de GitHub Actions que use secrets para URLs o credenciales DEBE incluir un paso de validación previo que falle con mensaje claro si el secret no está configurado. Nunca pasar secrets vacíos a herramientas externas (ZAP, Trivy, deploy) | P1 |
+| **Dependabot remediación proactiva** | AUDIT-SEC-N18 | Las alertas Dependabot critical/high DEBEN resolverse en <48h. Para dependencias transitivas bloqueadas por upstream, usar `overrides` en package.json. Para `web/core/yarn.lock` (Drupal upstream), dismiss con razón documentada | P1 |
+
+#### 4.7.2 Reglas de Rendimiento
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **Índices DB obligatorios** | AUDIT-PERF-001 | Toda Content Entity DEBE definir índices en `baseFieldDefinitions()` para `tenant_id` + campos usados en consultas frecuentes (status, created, type). Entidades sin índices custom son inaceptables en producción | P0 |
+| **LockBackendInterface financiero** | AUDIT-PERF-002 | Toda operación financiera (cobros Stripe, ajuste créditos, facturación) DEBE adquirir lock exclusivo via `LockBackendInterface` con key format `{operation}:{tenant_id}:{entity_id}` y timeout configurable | P0 |
+| **Queue async para APIs externas** | AUDIT-PERF-003 | Publicaciones a redes sociales, envío de webhooks salientes, y llamadas a APIs externas que no requieran respuesta inmediata DEBEN ejecutarse via `QueueWorker`. Llamadas síncronas que bloqueen al usuario están prohibidas | P0 |
+
+#### 4.7.3 Reglas de Consistencia
+
+| Directriz | ID | Descripción | Prioridad |
+|-----------|-----|-------------|-----------|
+| **AccessControlHandler obligatorio** | AUDIT-CONS-001 | Toda Content Entity DEBE tener un `AccessControlHandler` declarado en su anotación `@ContentEntityType`. Entidades sin control de acceso explícito son una vulnerabilidad de seguridad | P0 |
+| **Servicios canónicos únicos** | AUDIT-CONS-002 | Cada responsabilidad del sistema DEBE tener un único servicio canónico. Duplicados (ej: `TenantContextService` en múltiples módulos, `ImpactCreditService` duplicado) DEBEN eliminarse consolidando en el módulo propietario | P0 |
+| **API response envelope estándar** | AUDIT-CONS-003 | Todas las respuestas API DEBEN usar el envelope estándar: `{success: bool, data: mixed, error: string\|null, message: string\|null}`. Los 28 patrones de respuesta diferentes identificados DEBEN consolidarse | P1 |
+| **Prefijo API versionado** | AUDIT-CONS-004 | Todas las rutas API DEBEN usar el prefijo `/api/v1/`. Rutas sin versionado (76 identificadas) DEBEN migrarse antes de exponer la API a terceros | P1 |
+| **tenant_id como entity_reference** | AUDIT-CONS-005 | El campo `tenant_id` DEBE ser `entity_reference` apuntando a la entidad Tenant, NUNCA un campo `integer`. Las 6 entidades con tenant_id integer DEBEN migrarse | P0 |
+
+---
+
+## 5. Principios de Desarrollo
+
+> **⚠️ DIRECTRIZ CRÍTICA**: Toda configuración de negocio debe ser editable desde la interfaz de Drupal mediante **Content Entities con campos configurables**. **NO se permiten valores hardcodeados en el código** para configuraciones que puedan variar entre sedes, planes o a lo largo del tiempo.
+
+### 5.1 Entidades de Contenido (Content Entities)
+
+El proyecto utiliza **Content Entities** de Drupal para configuraciones de negocio porque permiten:
+
+| Capacidad | Beneficio |
+|-----------|-----------|
+| **Field UI** | Añadir/quitar campos desde UI sin código |
+| **Views** | Crear listados, filtros, exportaciones |
+| **Bundles** | Tipos diferentes con campos distintos |
+| **Revisiones** | Historial de cambios automático |
+| **Entity API** | CRUD estándar, hooks, eventos |
+| **Entity Reference** | Relaciones entre entidades |
+
+### 5.2 Cuándo Usar Cada Tipo de Entidad
+
+| Tipo | Uso | Ejemplo | Views? | Field UI? |
+|------|-----|---------|--------|-----------|
+| **Content Entity** | Datos de negocio editables | `SaasPlan`, `Sede`, `Productor` | ✅ | ✅ |
+| **Config Entity** | Configuración técnica exportable | Features, AI Agents, permisos | ❌ | ❌ |
+| **State API** | Estado temporal del sistema | Tokens, cachés | ❌ | ❌ |
+| **Settings** | Config por entorno | Credenciales BD, API keys | ❌ | ❌ |
+
+> **⚠️ IMPORTANTE**: Para datos de negocio que necesitan listados, filtros o ser referenciados, usar **siempre Content Entity**.
+
+### 5.3 Config Entities del Proyecto
+
+Además de Content Entities, el proyecto utiliza **Config Entities** para configuraciones administrativas zero-code:
+
+| Entidad | ID | Admin URL | Propósito |
+|---------|----|-----------|-----------|
+| **Feature** | `feature` | `/admin/structure/features` | Funcionalidades habilitables por Vertical |
+| **AIAgent** | `ai_agent` | `/admin/structure/ai-agents` | Registro de agentes IA disponibles |
+
+Estas Config Entities permiten:
+- Añadir/deshabilitar features sin código
+- Gestionar agentes IA desde la UI
+- Referenciar desde Vertical via `entity_reference`
+
+### 5.3 Regla: No Hardcodear Configuraciones
+
+```php
+// ❌ INCORRECTO: Límites hardcodeados
+public function validateProducer($sede) {
+    if ($sede->getProducerCount() >= 10) {  // ¡NO! Límite fijo
+        throw new Exception("Límite alcanzado");
+    }
+}
+
+// ✅ CORRECTO: Límites desde Content Entity (SaasPlan)
+public function validateProducer($sede) {
+    // Cargar plan como Content Entity con campos configurables
+    $plan = $sede->get('plan')->entity;  // Entity Reference
+    $maxProductores = $plan->get('field_max_productores')->value;
+    
+    if ($sede->getProducerCount() >= $maxProductores) {
+        throw new Exception("Límite del plan alcanzado");
+    }
+}
+```
+
+### 5.4 Configuraciones que DEBEN ser Content Entities
+
+| Entidad | Campos UI Configurables | Integración Views |
+|---------|------------------------|-------------------|
+| **SaasPlan** | Max productores, storage, features, precio | Lista de planes, comparativa |
+| **Sede** | Nombre, dominio, plan (ref), tema, logo | Listado de sedes, filtros |
+| **Productor** | Nombre, email, sede (ref), tienda Ecwid | Productores por sede |
+| **Producto** | Nombre, precio, productor (ref), stock | Catálogo, filtros, busqueda |
+| **Lote** | Código, origen, fecha, producto (ref) | Trazabilidad, historial |
+| **Certificado** | Tipo, lote (ref), validez, firma | Certificados emitidos |
+| **Prompt IA** | Nombre, agente, texto, variables | Gestión de prompts |
+
+### 5.5 Beneficios del Enfoque Content Entity
+
+1. **Field UI**: Administradores añaden campos sin desarrollo
+2. **Views**: Listados potentes sin código custom
+3. **Exportación**: Views Data Export para CSV/Excel
+4. **Búsqueda**: Integración con Search API
+5. **REST/JSON:API**: Exposición automática como API
+6. **Revisiones**: Historial de cambios para auditoría
+7. **Traducciones**: Soporte multilenguaje nativo
+
+
+### 5.6 Implementación de Content Entities
+
+#### Definición de Content Entity (ejemplo: SaasPlan)
+
+```php
+<?php
+
+namespace Drupal\ecosistema_jaraba_core\Entity;
+
+use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Define la entidad de contenido para Planes SaaS.
+ *
+ * PROPÓSITO:
+ * Permite definir planes de suscripción con límites y features
+ * configurables desde la UI de Drupal con Field UI y Views.
+ *
+ * BENEFICIOS CONTENT ENTITY:
+ * - Campos configurables desde UI
+ * - Integración nativa con Views
+ * - Entity Reference para relaciones
+ * - Revisiones para historial
+ *
+ * @ContentEntityType(
+ *   id = "saas_plan",
+ *   label = @Translation("Plan SaaS"),
+ *   label_collection = @Translation("Planes SaaS"),
+ *   handlers = {
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\ecosistema_jaraba_core\SaasPlanListBuilder",
+ *     "form" = {
+ *       "default" = "Drupal\ecosistema_jaraba_core\Form\SaasPlanForm",
+ *       "add" = "Drupal\ecosistema_jaraba_core\Form\SaasPlanForm",
+ *       "edit" = "Drupal\ecosistema_jaraba_core\Form\SaasPlanForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
+ *     },
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "route_provider" = {
+ *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
+ *     },
+ *   },
+ *   base_table = "saas_plan",
+ *   admin_permission = "administer saas plans",
+ *   fieldable = TRUE,
+ *   entity_keys = {
+ *     "id" = "id",
+ *     "label" = "name",
+ *     "uuid" = "uuid",
+ *   },
+ *   links = {
+ *     "collection" = "/admin/structure/saas-plan",
+ *     "add-form" = "/admin/structure/saas-plan/add",
+ *     "canonical" = "/admin/structure/saas-plan/{saas_plan}",
+ *     "edit-form" = "/admin/structure/saas-plan/{saas_plan}/edit",
+ *     "delete-form" = "/admin/structure/saas-plan/{saas_plan}/delete",
+ *   },
+ *   field_ui_base_route = "entity.saas_plan.collection",
+ * )
+ */
+class SaasPlan extends ContentEntityBase implements SaasPlanInterface {
+
+  /**
+   * Define campos base de la entidad.
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields = parent::baseFieldDefinitions($entity_type);
+
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Nombre del Plan'))
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', ['weight' => 0]);
+
+    $fields['max_productores'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Máximo de Productores'))
+      ->setDescription(t('-1 para ilimitado'))
+      ->setDefaultValue(10)
+      ->setDisplayOptions('view', ['weight' => 1])
+      ->setDisplayOptions('form', ['weight' => 1])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['max_storage_gb'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Almacenamiento Máximo (GB)'))
+      ->setDefaultValue(5)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Campos adicionales se pueden añadir desde Field UI
+    return $fields;
+  }
+}
+```
+
+#### Uso en Servicios con Content Entity
+
+```php
+/**
+ * Servicio que valida límites usando Content Entities.
+ *
+ * LÓGICA:
+ * Carga el plan como Content Entity y accede a los campos
+ * configurables para obtener los límites.
+ */
+class PlanValidatorService {
+
+  /**
+   * Verifica si la sede puede añadir más productores.
+   */
+  public function canAddProducer(SedeInterface $sede): bool {
+    // Obtener plan via Entity Reference en la Sede
+    $plan = $sede->get('field_plan')->entity;
+
+    if (!$plan) {
+      return FALSE;
+    }
+
+    // Acceder a campo configurable (Field UI)
+    $maxProductores = (int) $plan->get('max_productores')->value;
+
+    // -1 significa ilimitado
+    if ($maxProductores === -1) {
+      return TRUE;
+    }
+
+    $currentCount = $this->countProducers($sede);
+    return $currentCount < $maxProductores;
+  }
+}
+```
+
+### 5.7 Checklist para Nuevas Features
+
+Antes de implementar cualquier feature, verificar:
+
+- [ ] ¿Es Content Entity para permitir Field UI?
+- [ ] ¿Tiene handler `views_data` para integración Views?
+- [ ] ¿Los campos son configurables desde UI?
+- [ ] ¿Las relaciones usan Entity Reference?
+- [ ] ¿Tiene revisiones habilitadas si necesita historial?
+
+Si la respuesta a cualquiera es "No" y debería ser "Sí", **refactorizar antes de continuar**.
+
+### 5.8 Reglas Técnicas Descubiertas (2026-02-12)
+
+#### 5.8.1 Reglas Drupal 11 / PHP 8.4
+
+| Regla | ID | Descripción |
+|-------|----|-------------|
+| **PHP 8.4 Property Redeclaration** | DRUPAL11-001 | En PHP 8.4, las clases hijas NO pueden redeclarar propiedades tipadas heredadas de la clase padre (ej: `protected EntityTypeManagerInterface $entityTypeManager` en ControllerBase). Solución: NO usar promoted constructor params para propiedades heredadas; asignar manualmente `$this->entityTypeManager = $param;` en el constructor. **Propiedades afectadas en ControllerBase**: `$entityTypeManager`, `$entityFormBuilder`, `$currentUser`, `$languageManager`, `$moduleHandler`, `$configFactory` |
+| **Drupal 11 applyUpdates() Removal** | DRUPAL11-002 | `EntityDefinitionUpdateManager::applyUpdates()` fue eliminado en Drupal 11. Para instalar nuevas entidades, usar `$updateManager->installEntityType($entityType)` por cada entidad individual |
+| **Logger Channel Factory** | SERVICE-001 | Todo módulo que use `@logger.channel.{module}` en services.yml DEBE declarar el logger channel en el mismo fichero: `logger.channel.{module}: { class: ..., factory: logger.factory:get, arguments: ['{module}'] }` |
+| **EntityOwnerInterface** | ENTITY-001 | Toda Content Entity que use `EntityOwnerTrait` DEBE declarar `implements EntityOwnerInterface` y `EntityChangedInterface` en la clase. El trait por sí solo NO satisface la interfaz requerida por Drupal |
+| **Dart Sass @use Scoping** | SCSS-001 | Dart Sass `@use` crea scope aislado. Cada parcial SCSS que necesite variables del módulo DEBE incluir `@use '../variables' as *;` al inicio del fichero. NO se heredan del fichero padre que lo importa |
+
+#### 5.8.2 Reglas API y Controllers (2026-02-12 — Copilot v2 Gaps Closure)
+
+| Regla | ID | Descripción |
+|-------|----|-------------|
+| **API POST naming** | API-NAMING-001 | Nunca usar `create()` como nombre de método API en controllers Drupal — colisiona con `ContainerInjectionInterface::create()`. Usar `store()` para POST de creación (convención RESTful) |
+| **Triggers BD con fallback** | COPILOT-DB-001 | Al migrar configuración hardcodeada a BD, mantener siempre el const original como fallback. Patrón: cache → BD query → const PHP |
+| **Unit vs Kernel tests** | KERNEL-TEST-001 | Usar KernelTestBase SOLO cuando el test necesita BD/entidades/DI completa. Para reflection, constantes, y servicios instanciables con `new`, usar TestCase |
+| **Kernel test module deps** | KERNEL-DEP-001 | Kernel tests DEBEN incluir TODOS los modulos que proveen field types usados por las entidades: `options` (list_string), `datetime` (datetime), `flexible_permissions` + `group` (entity_reference a group), `file` (entity_reference a file). KernelTestBase NO resuelve info.yml dependencies |
+| **Synthetic services** | KERNEL-SYNTH-001 | Para dependencias de modulos no cargados, registrar servicios como synthetic en `register(ContainerBuilder $container)` y setear mocks tipados en `setUp()`. Patron: `$container->register('service_id')->setSynthetic(TRUE)` + `$this->container->set('service_id', $this->createMock(Class::class))` |
+| **Synthetic cascade** | KERNEL-SYNTH-002 | Al anadir nuevas dependencias `@service` a un `.services.yml`, actualizar TODOS los Kernel tests del modulo en el MISMO commit. El compilador DI valida el modulo entero, no servicios individuales — omitir uno causa cascada de fallos CI. Extraer lista completa con `grep -oP "'@\K[^'@?][^']*" MODULO.services.yml` |
+| **Entity reference targets** | KERNEL-EREF-001 | Los campos entity_reference REQUIEREN que la entidad target exista — Drupal descarta silenciosamente las referencias a entidades inexistentes en save(). Tests que verifican entity_reference DEBEN crear la entidad target primero |
+| **Timestamp tolerance** | KERNEL-TIME-001 | Assertions de timestamps (`time()`) en tests DEBEN incluir tolerancia de ±1 segundo (`time() - 1`) para evitar flaky tests por race conditions en CI |
+| **SSE con POST** | SSE-001 | `EventSource` solo soporta GET. Para SSE con POST (enviar datos), usar `fetch()` + `ReadableStream` en el frontend |
+| **Tablas custom para logs** | MILESTONE-001 | Para registros append-only de alto volumen (milestones, audit logs), preferir tablas custom vía `hook_update_N()` sobre Content Entities |
+| **Métricas con State API** | METRICS-001 | Para métricas temporales (latencia diaria), usar State API con claves fechadas (`ai_latency_YYYY-MM-DD`). Limitar muestras por día (max 1000) |
+| **Routing multi-proveedor** | PROVIDER-001 | Rutear modos de alto volumen a Gemini Flash (coste-eficiente). Mantener Claude/GPT-4o para modos que requieren calidad superior (empatía, cálculo). Actualizar model IDs cada sprint |
+
+#### 5.8.3 Reglas Post-Auditoría Integral (2026-02-13)
+
+> **Referencia:** [Plan Remediación Auditoría Integral v1](./implementacion/20260213-Plan_Remediacion_Auditoria_Integral_v1.md)
+
+| Regla | ID | Dimensión | Descripción | Prioridad |
+|-------|----|-----------|-------------|-----------|
+| **HMAC en webhooks** | AUDIT-SEC-001 | Seguridad | HMAC obligatorio en TODOS los webhooks con `hash_equals()` | P0 |
+| **Permisos granulares** | AUDIT-SEC-002 | Seguridad | `_permission` en rutas sensibles, no solo `_user_is_logged_in` | P0 |
+| **Sanitización `\|raw`** | AUDIT-SEC-003 | Seguridad | Sanitización server-side antes de `\|raw` en Twig | P0 |
+| **Índices DB** | AUDIT-PERF-001 | Rendimiento | Índices obligatorios en tenant_id + campos frecuentes en toda Content Entity | P0 |
+| **Lock financiero** | AUDIT-PERF-002 | Rendimiento | `LockBackendInterface` para operaciones financieras concurrentes | P0 |
+| **Queue async** | AUDIT-PERF-003 | Rendimiento | APIs externas síncronas → `QueueWorker` async | P0 |
+| **AccessControlHandler** | AUDIT-CONS-001 | Consistencia | Obligatorio en TODA Content Entity | P0 |
+| **Servicio canónico único** | AUDIT-CONS-002 | Consistencia | Eliminar servicios duplicados (una responsabilidad = un servicio) | P0 |
+| **API envelope estándar** | AUDIT-CONS-003 | Consistencia | `{success, data, error, message}` en todas las respuestas API | P1 |
+| **API versioning** | AUDIT-CONS-004 | Consistencia | Todas las rutas API con prefijo `/api/v1/` | P1 |
+| **tenant_id entity_reference** | AUDIT-CONS-005 | Consistencia | tenant_id DEBE ser entity_reference, NUNCA integer | P0 |
+| **Validación secrets CI** | AUDIT-SEC-N17 | Seguridad CI | Validar secrets antes de usar en workflows (fail-fast con mensaje claro) | P1 |
+| **Dependabot proactivo** | AUDIT-SEC-N18 | Seguridad CI | Critical/high <48h. `overrides` para transitivas. Dismiss documentado para upstream | P1 |
+
+#### 5.8.4 Reglas Zero-Region Templates (2026-02-16)
+
+> **Referencia:** Aprendizaje #88 — Error 500 en /tenant/export resuelto
+
+| Regla | ID | Descripcion | Prioridad |
+|-------|----|-------------|-----------|
+| **Variables via preprocess, NO controller** | ZERO-REGION-001 | En paginas zero-region (que NO renderizan `{{ page.content }}`), TODAS las variables de template y drupalSettings DEBEN inyectarse via `hook_preprocess_page()`, NUNCA via render array del controller. El controller DEBE retornar solo `['#type' => 'markup', '#markup' => '']` | P0 |
+| **No entity objects como keys** | ZERO-REGION-002 | NUNCA pasar entity objects como non-`#` keys en render arrays (ej: `'tenant' => $entity`). Drupal trata non-`#` keys como child render elements que deben ser arrays. Esto causa `InvalidArgumentException: "X" is an invalid render array key` | P0 |
+| **drupalSettings via preprocess** | ZERO-REGION-003 | En templates zero-region, `#attached` del controller NO se procesa porque Drupal no renderiza `page.content`. Usar `$variables['#attached']['drupalSettings']` en `hook_preprocess_page()` | P0 |
+
+#### 5.8.5 Reglas JarabaLex / Legal Intelligence (2026-02-16)
+
+| Regla | ID | Descripcion | Prioridad |
+|-------|----|-------------|-----------|
+| **Disclaimer + citas verificables** | LEGAL-RAG-001 | Toda respuesta del copiloto legal basada en resoluciones DEBE incluir un disclaimer legal y citas verificables (ECLI, referencia BOE, numero CELEX). Nunca inventar resoluciones ni datos normativos. Aplicable a LegalCopilotAgent y LegalCopilotBridgeService | P0 |
+| **FeatureGate en servicios con limites** | LEGAL-GATE-001 | Todo servicio que ejecute una operacion con limite de plan (busquedas, alertas, citas, digest, API) DEBE inyectar `JarabaLexFeatureGateService`, llamar `check()` antes de ejecutar, y llamar `fire()` del `UpgradeTriggerService` cuando el resultado sea denegado. Patron: check → denied → fireDeniedTrigger | P0 |
+| **Body classes via hook_preprocess_html** | LEGAL-BODY-001 | Las body classes de rutas legales SIEMPRE se inyectan via `hook_preprocess_html()` en el `.module`, NUNCA con `attributes.addClass()` en el template Twig. El template solo usa `{{ attributes }}` | P0 |
+
+#### 5.8.6 Reglas Content Entities y Modulos (2026-02-16)
+
+> **Referencia:** Aprendizaje #90 — FASE A1 jaraba_legal_cases
+
+| Regla | ID | Descripcion | Prioridad |
+|-------|----|-------------|-----------|
+| **Numeros auto-generados en preSave()** | ENTITY-AUTONUMBER-001 | Numeros auto-generados de entidades (EXP-YYYY-NNNN, CON-YYYY-NNNN) SIEMPRE en `preSave()` del entity class, nunca en hooks externos. Usar query `STARTS_WITH` + regex para secuencia, con `accessCheck(FALSE)`. Guard: solo si `isNew()` y campo vacio | P1 |
+| **Entidades append-only** | ENTITY-APPEND-001 | Entidades append-only (actividad, audit log): solo form handler `default` (sin edit/delete), `AccessResult::forbidden()` en update/delete excepto admin, sin `EntityChangedInterface`. Para alto volumen considerar tablas custom (MILESTONE-001) | P1 |
+| **Template suggestions especificas** | THEME-SUGGEST-001 | Al crear zero-region templates para un modulo: (1) Registrar prefijo en `$ecosistema_prefixes` (baja prioridad, fallback a page__dashboard), (2) Anadir `if ($route_str === ...)` por cada template custom (alta prioridad). Drupal evalua sugerencias de ultima a primera | P1 |
+| **Compilacion SCSS host vs Docker** | SCSS-BUILD-001 | Preferir compilacion SCSS desde el host (WSL2/NVM) cuando Docker no tiene Node. Comando: `npm install --save-dev sass && npx sass scss/main.scss css/output.css --style=compressed --no-source-map`. Resultado compilado comiteado en `css/` | P2 |
+| **Install idempotente taxonomias** | INSTALL-TAXONOMY-001 | `hook_install()` que crea vocabularios y terminos DEBE ser idempotente: verificar existencia del vocabulario, crearlo si falta, verificar terminos existentes antes de crear nuevos | P1 |
+| **FKs entity_reference vs integer** | ENTITY-FK-001 | FKs a entidades del mismo modulo: `entity_reference` con `target_type`. FKs a entidades opcionales cross-module: `integer`. Nunca integer para `tenant_id` (siempre entity_reference a taxonomy_term o group) | P1 |
+
+#### 5.8.7 Reglas Elevacion Vertical + Page Builder Premium (2026-02-17)
+
+> **Referencia:** Aprendizaje #91 — Plan Elevacion AgroConecta Clase Mundial v1
+
+| Regla | ID | Descripcion | Prioridad |
+|-------|----|-------------|-----------|
+| **Agentes paralelos en elevacion** | PARALLEL-ELEV-001 | Al ejecutar elevacion vertical, agrupar fases por independencia de ficheros y lanzar agentes paralelos. Ficheros compartidos (services.yml, .module, .install) se editan en el hilo principal tras completar los agentes. QA (FASE 13) siempre al final con agentes de verificacion paralelos | P2 |
+| **Migracion rgba→color-mix a escala** | SCSS-COLORMIX-001 | Para migrar rgba() a color-mix(): (1) crear tabla mapeo rgba→token CSS antes de editar, (2) patron `color-mix(in srgb, {token} {pct}%, transparent)`, (3) verificar con grep que 0 rgba() quedan, (4) incluir box-shadow y border | P1 |
+| **Patron premium Page Builder** | PB-PREMIUM-001 | Al elevar templates PB a premium: (a) `jaraba-block jaraba-block--premium` en section, (b) `data-effect="fade-up"` + staggered `data-delay` en items iterados, (c) `jaraba_icon()` en lugar de emojis, (d) schema.org JSON-LD donde aplique (FAQPage, LocalBusiness, AggregateRating), (e) YML con `is_premium:true` + `animation:fade-up` + `plans_required: [starter, professional, enterprise]` | P1 |
+| **FeatureGate 3 tipos features** | FEATUREGATE-TYPES-001 | FeatureGateService debe clasificar features en CUMULATIVE (count entities), MONTHLY (track usage table por YYYY-MM), o BINARY (plan check only). Cada tipo tiene logica `check()` diferente. `recordUsage()` solo para MONTHLY. `getCommissionRate()` con rates por plan (free=15%, starter=10%, pro=5%) | P1 |
+| **QA paralelo elevacion** | QA-PARALLEL-001 | QA integral de elevacion vertical: 2 agentes paralelos (PHP lint + template/pattern audit). Verificar: 0 emojis HTML entities, 0 rgba(), 0 is_premium:false, todos los servicios registrados en .services.yml. Descartar falsos positivos de grep multi-linea | P2 |
+| **Lotes paralelos PB** | PB-BATCH-001 | Al elevar N templates PB, dividir en lotes de 3-4 templates por agente. Asignar actualizacion de YML configs al lote mas ligero. Cada YML: `is_premium:true`, `animation:fade-up`, `plans_required` corregido, `fields_schema` con array schemas | P2 |
 
 ---
 
@@ -135,6 +1767,409 @@
 | **Deploy Checklist en docs/operaciones/** | DEPLOY-CHECKLIST-001 | Todo deploy a producción DEBE estar documentado con un checklist en `docs/operaciones/deploy_checklist_{proveedor}.md`. El checklist DEBE incluir secciones: (1) Pre-deploy (backup DB, tag release, validar tests), (2) Stack requerido (versiones PHP, MariaDB, Redis, Composer), (3) DNS (registros A/CNAME por dominio), (4) SSL (proveedor, auto-renewal), (5) Post-deploy (drush updatedb, config:import, cache:rebuild), (6) Verificación (HTTP status, funcionalidades críticas, analytics), (7) Rollback (pasos para revertir). Un deploy sin checklist documentado es un deploy no reproducible. | P1 |
 | **Traducción Batch de Meta-Sitios con IA** | I18N-METASITE-001 | Las traducciones de PageContent para meta-sitios DEBEN crearse via `AITranslationService::translateBatch()` usando script drush (`scripts/i18n/translate-metasite-pages.php`). Cada PageContent tiene `translatable = TRUE` con campos traducibles: title, content_data, canvas_data, rendered_html, path_alias, meta_title, meta_description, sections. Para `canvas_data` (GrapesJS JSON), el script DEBE parsear el JSON, extraer textos de components[].content y attributes (alt, title, placeholder), traducir en batch, y re-ensamblar. Para `content_data` (JSON plano), recorrer recursivamente saltando campos de tipo ID/URL/color/image. Los `path_alias` traducidos se transliteran y slugifican. Usar `$entity->addTranslation($langcode)` nativo de Drupal content_translation. Verificar con `$entity->hasTranslation()` para evitar duplicados. Configurar idiomas previamente con `drush language:add`. | P0 |
 | **Language Switcher en Headers de Meta-Sitios** | LANG-SWITCHER-001 | Los meta-sitios con múltiples idiomas DEBEN mostrar un selector de idioma en el header. El componente `_language-switcher.html.twig` se renderiza solo cuando `available_languages\|length > 1`. Las variables `available_languages` (array de langcodes) y `current_langcode` se inyectan desde `preprocess_html()` usando `$page_content->getTranslationLanguages()`. El dropdown usa banderas emoji (🇪🇸🇬🇧🇧🇷) + nombre + código ISO. El hreflang en `_hreflang-meta.html.twig` DEBE ser dinámico: iterar sobre `available_languages` en vez de hardcodear ES+EN. La librería `language-switcher` JS se adjunta condicionalmente en `_header.html.twig` con `{% if available_languages\|length > 1 %}`. | P1 |
+| **Trait Transversal para Entidades de Review** | REVIEW-TRAIT-001 | Toda entidad de calificación/review (comercio_review, review_agro, review_servicios, session_review, course_review) DEBE usar `ReviewableEntityTrait` para los 5 campos compartidos: `review_status` (list_string: pending/approved/rejected/flagged), `helpful_count` (integer), `photos` (string_long JSON), `ai_summary` (text_long), `ai_summary_generated_at` (datetime). El trait proporciona helpers con fallback para campos heterogéneos entre verticales: `getReviewStatusValue()` lee `review_status` o `status` o `state`, `getAuthorId()` lee `reviewer_uid` o `uid` o `mentee_id`. Los verticales que usen nombres propios (ej. `state` en review_agro) DEBEN migrar al nombre canónico `review_status` via update hook. | P1 |
+| **Moderación de Reviews con Cola** | REVIEW-MODERATION-001 | El servicio `ReviewModerationService` DEBE centralizar la moderación de reviews de todos los verticales. Funcionalidades obligatorias: (1) `moderate($entity_type, $entity_id, $new_status, $reason)` con permisos por vertical, (2) `autoApproveIfEligible()` para usuarios con 5+ reviews aprobadas y rating promedio >= 3.5, (3) cola de moderación consultable por tenant con filtros por status/vertical/fecha, (4) bulk actions (approve/reject 50 max por batch), (5) notificación al autor cuando cambia el status. Las reviews NUNCA se publican sin pasar por moderación (status `pending` por defecto). Los reviews con rating <= 2 DEBEN marcarse para revisión manual aunque el usuario sea elegible para auto-approve. | P0 |
+| **Schema.org AggregateRating en Reviews** | SCHEMA-AGGREGATE-001 | Toda página que muestre un resumen de calificaciones DEBE incluir Schema.org `AggregateRating` como JSON-LD en `<head>`. El `ReviewSchemaOrgService` genera el markup con campos obligatorios: `@type`, `ratingValue` (decimal 1 cifra), `reviewCount`, `bestRating` (5), `worstRating` (1). Para reviews individuales visibles, incluir `Review` nested con `author`, `datePublished`, `reviewBody`, `reviewRating`. El JSON-LD se inyecta via `#attached['html_head']` en el controlador o preprocess, NUNCA hardcodeado en templates Twig. Verificar con Google Rich Results Test que el markup es válido. Aplicable a: productos (comercioconecta), productores (agroconecta), proveedores (serviciosconecta), mentores (mentoring), cursos (formacion). | P0 |
+
+---
+
+## 7. Estructura de Documentación
+
+### 7.1 Ubicación Principal
+```
+/docs/
+```
+
+### 7.2 Subcarpetas y Propósitos
+
+| Carpeta | Propósito | Contenido Típico |
+|---------|-----------|------------------|
+| `arquitectura/` | Estructura técnica del sistema | Diagramas de componentes, APIs, base de datos, infraestructura, patrones de diseño |
+| `logica/` | Reglas de negocio y flujos | Flujos de usuario, reglas de validación, procesos de negocio, casos de uso |
+| `planificacion/` | Gestión de planes y roadmaps | Cronogramas, sprints, milestones, estimaciones, prioridades |
+| `tareas/` | Seguimiento de trabajo | Definiciones de tareas, estados, asignaciones, progreso |
+| `implementacion/` | Guías de desarrollo | Guías de instalación, configuración, despliegue, tutoriales técnicos |
+| `tecnicos/` | Documentos externos | Especificaciones técnicas proporcionadas por stakeholders |
+| `assets/` | Recursos visuales | Imágenes, diagramas, mockups, logos, capturas de pantalla |
+| `plantillas/` | Plantillas de documentos | Plantillas estándar para cada tipo de documento |
+
+### 7.3 Documentos Raíz
+- `00_DIRECTRICES_PROYECTO.md` - **Este documento** (directrices maestras)
+- `00_INDICE_GENERAL.md` - Índice navegable de toda la documentación
+
+---
+
+## 8. Convenciones de Nomenclatura
+
+### 8.1 Formato de Nombre de Archivo
+```
+YYYY-MM-DD_HHmm_nombre-descriptivo.md
+```
+
+### 8.2 Componentes del Nombre
+
+| Componente | Descripción | Ejemplo |
+|------------|-------------|---------|
+| `YYYY` | Año (4 dígitos) | 2026 |
+| `MM` | Mes (2 dígitos) | 01 |
+| `DD` | Día (2 dígitos) | 09 |
+| `HHmm` | Hora y minutos (24h) | 1528 |
+| `nombre-descriptivo` | Nombre en minúsculas con guiones | arquitectura-modulos-core |
+
+### 8.3 Ejemplos Válidos
+```
+2026-01-09_1528_arquitectura-sistema-multisite.md
+2026-01-09_1530_logica-flujo-autenticacion.md
+2026-01-10_0900_planificacion-sprint-01.md
+2026-01-10_1000_tarea-implementar-api-usuarios.md
+```
+
+### 8.4 Excepciones
+- Documentos raíz (`00_DIRECTRICES_PROYECTO.md`, `00_INDICE_GENERAL.md`)
+- Plantillas (prefijo `plantilla_`)
+
+---
+
+## 9. Formato de Documentos
+
+### 8.1 Estructura Obligatoria
+Todo documento debe contener:
+
+```markdown
+# Título del Documento
+
+**Fecha de creación:** YYYY-MM-DD HH:mm  
+**Última actualización:** YYYY-MM-DD HH:mm  
+**Autor:** [Nombre o "IA Asistente"]  
+**Versión:** X.Y.Z  
+
+---
+
+## 📑 Tabla de Contenidos (TOC)
+
+1. [Sección 1](#sección-1)
+2. [Sección 2](#sección-2)
+...
+
+---
+
+## Sección 1
+[Contenido]
+
+## Sección 2
+[Contenido]
+
+---
+
+## Registro de Cambios
+| Fecha | Versión | Descripción |
+|-------|---------|-------------|
+| YYYY-MM-DD | X.Y.Z | Descripción del cambio |
+```
+
+### 8.2 Reglas de TOC
+- Toda sección principal (H2) debe aparecer en el TOC
+- Los enlaces deben ser navegables (formato anchor)
+- Usar numeración correlativa
+
+### 8.3 Formato Markdown
+- Usar GitHub Flavored Markdown
+- Tablas para datos estructurados
+- Bloques de código con sintaxis highlighting
+- Diagramas Mermaid cuando sea apropiado
+
+---
+
+## 10. Flujo de Trabajo de Documentación
+
+### 9.1 Creación de Nuevo Documento
+1. Determinar la subcarpeta apropiada
+2. Generar nombre con fecha/hora actual
+3. Copiar plantilla correspondiente
+4. Completar contenido
+5. Actualizar `00_INDICE_GENERAL.md`
+
+### 9.2 Actualización de Documento Existente
+1. Modificar contenido necesario
+2. Actualizar "Última actualización"
+3. Incrementar versión según semántica
+4. Añadir entrada al Registro de Cambios
+5. Actualizar índice si cambia el título
+
+### 9.3 Eliminación de Documento
+1. Mover a carpeta `/docs/_archivo/` (no eliminar físicamente)
+2. Actualizar `00_INDICE_GENERAL.md`
+3. Documentar razón de archivo
+
+---
+
+## 11. Estándares de Código y Comentarios
+
+> **⚠️ DIRECTRIZ CRÍTICA**: Los comentarios de código son fundamentales para la mantenibilidad del proyecto. Deben permitir que cualquier diseñador o programador entienda perfectamente y al completo la estructura, lógica y sintaxis para futuros desarrollos o escalados.
+
+### 10.1 Idioma de Comentarios
+**Español** - Todos los comentarios de código deben estar en español, siendo suficientemente descriptivos y completos.
+
+### 10.2 Requisitos Obligatorios de Comentarios
+
+Los comentarios deben cubrir **tres dimensiones esenciales**:
+
+#### 10.2.1 Estructura
+- **Organización del código**: Explicar cómo está organizado el archivo/módulo/clase
+- **Relaciones entre componentes**: Documentar dependencias y conexiones
+- **Patrones utilizados**: Identificar patrones de diseño aplicados
+- **Jerarquía**: Describir la relación padre-hijo entre clases/componentes
+
+#### 10.2.2 Lógica
+- **Propósito**: ¿Por qué existe este código? ¿Qué problema resuelve?
+- **Flujo de ejecución**: ¿Cómo fluyen los datos a través del código?
+- **Reglas de negocio**: ¿Qué reglas de negocio implementa?
+- **Decisiones**: ¿Por qué se eligió esta aproximación sobre otras alternativas?
+- **Casos especiales**: Documentar edge cases y su manejo
+
+#### 10.2.3 Sintaxis
+- **Parámetros**: Explicar cada parámetro con su tipo y propósito
+- **Retornos**: Documentar qué devuelve y en qué formato
+- **Excepciones**: Listar posibles errores y cuándo ocurren
+- **Tipos complejos**: Explicar estructuras de datos no obvias
+
+### 10.3 Nivel de Detalle Requerido
+
+| Elemento | Nivel Mínimo de Documentación |
+|----------|------------------------------|
+| **Archivos/Módulos** | Descripción general, propósito, dependencias principales |
+| **Clases** | Responsabilidad, relaciones, estado que mantiene |
+| **Métodos públicos** | Propósito, parámetros, retorno, excepciones, ejemplo de uso |
+| **Métodos privados** | Propósito y lógica interna |
+| **Variables de clase** | Propósito y valores esperados |
+| **Bloques complejos** | Explicación paso a paso de la lógica |
+| **Condicionales críticos** | Por qué existe la condición y qué casos maneja |
+| **Bucles** | Qué itera, condición de salida, transformaciones |
+
+### 10.4 Ejemplos de Comentarios Adecuados
+
+#### Ejemplo 1: Encabezado de Clase
+```php
+<?php
+
+/**
+ * GESTOR DE PRODUCTORES - ProducerManager
+ * 
+ * ESTRUCTURA:
+ * Esta clase actúa como servicio central para la gestión de productores
+ * en el ecosistema AgroConecta. Depende de SedeManager para validar
+ * ubicaciones y de EcwidService para la integración con e-commerce.
+ * 
+ * LÓGICA DE NEGOCIO:
+ * - Cada productor pertenece a exactamente una Sede
+ * - Las Sedes tienen límites de productores según el plan SaaS
+ * - Al crear un productor, automáticamente se crea su tienda en Ecwid
+ * 
+ * RELACIONES:
+ * - ProducerManager -> SedeManager (dependencia)
+ * - ProducerManager -> EcwidService (dependencia)
+ * - ProducerManager <- ProducerController (usado por)
+ * 
+ * @package Drupal\agroconecta_core\Service
+ * @see SedeManager Para gestión de sedes
+ * @see EcwidService Para integración con e-commerce
+ */
+class ProducerManager {
+```
+
+#### Ejemplo 2: Método con Documentación Completa
+```php
+/**
+ * Registra un nuevo productor en el ecosistema.
+ * 
+ * PROPÓSITO:
+ * Este método es el punto de entrada principal para crear nuevos
+ * productores. Orquesta la validación, creación en Ecwid, y
+ * persistencia en la base de datos local.
+ * 
+ * FLUJO DE EJECUCIÓN:
+ * 1. Valida que la sede existe y tiene capacidad
+ * 2. Verifica que el email no esté registrado
+ * 3. Crea la tienda en Ecwid via API
+ * 4. Persiste el productor en Drupal
+ * 5. Envía email de bienvenida
+ * 
+ * REGLAS DE NEGOCIO:
+ * - El email debe ser único en todo el ecosistema
+ * - La sede debe tener slots disponibles según su plan
+ * - El productor hereda la configuración de la sede
+ * 
+ * @param array $producerData Datos del productor:
+ *   - 'name' (string): Nombre completo del productor
+ *   - 'email' (string): Email único para login
+ *   - 'sede_id' (int): ID de la sede a la que pertenece
+ *   - 'phone' (string, opcional): Teléfono de contacto
+ * 
+ * @return ProducerEntity El productor creado con su tienda asociada
+ * 
+ * @throws InvalidSedeException Si la sede no existe o está inactiva
+ * @throws SedeCapacityException Si la sede alcanzó su límite de productores
+ * @throws DuplicateEmailException Si el email ya está registrado
+ * @throws EcwidApiException Si falla la creación de tienda en Ecwid
+ */
+public function registerProducer(array $producerData): ProducerEntity {
+    // ═══════════════════════════════════════════════════════════════
+    // PASO 1: VALIDACIÓN DE SEDE
+    // Verificamos que la sede exista y tenga capacidad disponible.
+    // Esto es crítico porque cada plan SaaS define un límite máximo.
+    // ═══════════════════════════════════════════════════════════════
+    $sede = $this->sedeManager->getById($producerData['sede_id']);
+    
+    if (!$sede) {
+        // La sede no existe - esto puede ocurrir si se manipuló el formulario
+        throw new InvalidSedeException(
+            "La sede con ID {$producerData['sede_id']} no existe"
+        );
+    }
+    
+    // Verificamos capacidad según el plan contratado
+    // Planes: básico=10, profesional=50, enterprise=ilimitado
+    if (!$sede->hasCapacity()) {
+        throw new SedeCapacityException(
+            "La sede '{$sede->getName()}' alcanzó su límite de productores"
+        );
+    }
+    
+    // ═══════════════════════════════════════════════════════════════
+    // PASO 2: VALIDACIÓN DE EMAIL ÚNICO
+    // El email es el identificador principal del productor en todo
+    // el ecosistema, no puede repetirse entre sedes.
+    // ═══════════════════════════════════════════════════════════════
+    if ($this->emailExists($producerData['email'])) {
+        throw new DuplicateEmailException(
+            "El email {$producerData['email']} ya está registrado"
+        );
+    }
+    
+    // ... continúa implementación
+}
+```
+
+#### Ejemplo 3: Lógica Compleja con Explicación
+```javascript
+/**
+ * Calcula el precio final aplicando descuentos escalonados.
+ * 
+ * LÓGICA DE DESCUENTOS (definida por negocio):
+ * - 0-99€: Sin descuento
+ * - 100-299€: 5% de descuento
+ * - 300-499€: 10% de descuento  
+ * - 500€+: 15% de descuento
+ * 
+ * NOTA: Los descuentos NO son acumulativos, se aplica el tramo correspondiente.
+ */
+function calculateFinalPrice(subtotal) {
+    // Definimos los tramos de descuento como array de objetos
+    // Ordenados de mayor a menor para encontrar el primer match
+    const discountTiers = [
+        { minAmount: 500, discount: 0.15 },  // 15% para compras >= 500€
+        { minAmount: 300, discount: 0.10 },  // 10% para compras >= 300€
+        { minAmount: 100, discount: 0.05 },  // 5% para compras >= 100€
+        { minAmount: 0,   discount: 0.00 },  // Sin descuento por defecto
+    ];
+    
+    // Buscamos el primer tramo donde el subtotal sea >= minAmount
+    // Al estar ordenados de mayor a menor, el primer match es el correcto
+    const applicableTier = discountTiers.find(tier => subtotal >= tier.minAmount);
+    
+    // Calculamos el descuento y lo restamos del subtotal
+    const discountAmount = subtotal * applicableTier.discount;
+    
+    return subtotal - discountAmount;
+}
+```
+
+### 10.5 Anti-patrones de Comentarios (Evitar)
+
+```php
+// ❌ INCORRECTO: Comentario que repite el código
+$count = $count + 1; // Incrementa count en 1
+
+// ❌ INCORRECTO: Comentario vago
+$result = processData($input); // Procesa los datos
+
+// ❌ INCORRECTO: Comentario desactualizado
+// Envía email al administrador (NOTA: ya no se usa email, ahora es Slack)
+$this->sendNotification($message);
+
+// ✅ CORRECTO: Explica el por qué
+// Incrementamos el contador de reintentos para implementar backoff exponencial
+// Esto evita saturar el API externo cuando hay errores temporales
+$retryCount++;
+
+// ✅ CORRECTO: Documenta decisión de diseño
+// Usamos procesamiento síncrono aquí en lugar de cola porque
+// el usuario necesita feedback inmediato del resultado
+$result = $this->processImmediately($input);
+```
+
+### 10.6 Comentarios para Escalabilidad
+
+Incluir siempre notas sobre:
+- **Puntos de extensión**: Dónde y cómo añadir nueva funcionalidad
+- **Limitaciones conocidas**: Qué no soporta actualmente y por qué
+- **Dependencias de configuración**: Qué cambios de config afectan el código
+- **Consideraciones de rendimiento**: Advertencias sobre volúmenes grandes
+
+---
+
+## 12. Control de Versiones
+
+### 11.1 Versionado Semántico
+```
+MAJOR.MINOR.PATCH
+```
+
+| Tipo | Cuándo incrementar |
+|------|-------------------|
+| MAJOR | Cambios incompatibles o reestructuración completa |
+| MINOR | Nueva funcionalidad o sección importante |
+| PATCH | Correcciones, clarificaciones, actualizaciones menores |
+
+### 11.2 Nomenclatura con Fecha/Hora
+La fecha/hora en el nombre del archivo actúa como:
+- Identificador único
+- Registro histórico automático
+- Facilidad para ordenar cronológicamente
+
+---
+
+## 13. Procedimientos de Actualización
+
+### 12.1 Al Inicio de Cada Conversación
+El asistente IA debe:
+1. Leer este documento (`00_DIRECTRICES_PROYECTO.md`)
+2. Revisar `00_INDICE_GENERAL.md` para estado actual
+3. Verificar documentos relevantes a la tarea
+
+### 12.2 Durante el Desarrollo
+- Actualizar documentación en paralelo con cambios de código
+- Mantener índice sincronizado
+- Documentar decisiones arquitectónicas importantes
+
+### 12.3 Al Finalizar Tareas
+- Verificar que documentación refleja estado actual
+- Actualizar versiones de documentos modificados
+- Confirmar integridad del índice
+
+---
+
+## 14. Glosario de Términos
+
+| Término | Definición |
+|---------|------------|
+| **Sede** | Entidad organizativa que agrupa productores en una ubicación geográfica |
+| **Productor** | Usuario que vende productos a través de la plataforma |
+| **Ecosistema** | Conjunto de sedes y productores bajo una marca paraguas |
+| **TOC** | Table of Contents - Tabla de Contenidos |
+| **SaaS** | Software as a Service - Modelo de distribución de software |
+
+*Este glosario se expandirá conforme se documente el proyecto.*
 
 ---
 
@@ -142,6 +2177,7 @@
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-27 | **88.0.0** | **Reviews & Comments Clase Mundial — ReviewableEntityTrait + Schema.org AggregateRating + Moderación:** 3 reglas nuevas: REVIEW-TRAIT-001 (P1, trait transversal ReviewableEntityTrait con 5 campos compartidos + helpers con fallback para nomenclatura heterogénea entre verticales, getReviewStatusValue lee review_status/status/state, getAuthorId lee reviewer_uid/uid/mentee_id, aplicable a 6 entidades de review), REVIEW-MODERATION-001 (P0, ReviewModerationService centralizado con moderate/autoApproveIfEligible/bulk actions/cola por tenant, reviews nunca publicadas sin moderación, rating<=2 siempre revisión manual), SCHEMA-AGGREGATE-001 (P0, ReviewSchemaOrgService genera JSON-LD AggregateRating + Review para Google Rich Snippets, campos obligatorios ratingValue/reviewCount/bestRating/worstRating, inyección via html_head no hardcoded en Twig, aplicable a 5 verticales). Auditoría de 4 sistemas heterogéneos con 20 hallazgos (4 seguridad, 5 bugs, 4 arquitectura, 3 directrices, 4 brechas). Plan de consolidación con cobertura de 10 verticales canónicos. Aprendizaje #140. |
 | 2026-02-26 | **87.0.0** | **Meta-Sitios Multilingüe — i18n EN+PT-BR con AITranslationService + Language Switcher:** 2 reglas nuevas: I18N-METASITE-001 (P0, traduccion batch de PageContent via AITranslationService con script drush, manejo de canvas_data GrapesJS JSON+HTML, content_data recursivo, path_alias transliterado, 46 traducciones creadas para 3 tenants), LANG-SWITCHER-001 (P1, language switcher dropdown glassmorphism en header con banderas emoji, variables available_languages/current_langcode inyectadas desde preprocess_html via getTranslationLanguages(), hreflang dinamico, libreria JS condicional). 6 archivos nuevos: translate-metasite-pages.php, _language-switcher.html.twig, _language-switcher.scss, language-switcher.js, libreria en libraries.yml. 4 archivos modificados: _hreflang-meta.html.twig (dinamico), _header-classic.html.twig (integracion), _header.html.twig (attach condicional), ecosistema_jaraba_theme.theme (preprocess). PT-BR anadido (12.038 traducciones Drupal importadas). Aprendizaje #139. |
 | 2026-02-26 | **86.0.0** | **Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo:** 1 regla nueva: SECRET-MGMT-001 (P0, los ficheros config/sync/ NUNCA contienen secretos reales — valores vacíos en git, $config overrides en runtime via config/deploy/settings.secrets.php desde getenv()). Auditoria completa: 5 ficheros con secretos detectados (social_auth_google, social_auth_linkedin, social_auth_microsoft, symfony_mailer smtp_ionos, recaptcha_v3). Sanitizados todos los YAML (valores vacíos). Creado settings.secrets.php con 14 $config overrides (OAuth Google/LinkedIn/Microsoft, SMTP IONOS, reCAPTCHA v3, Stripe). settings.php actualizado con include. .env.example con 12 variables nuevas. Historial git limpiado con git-filter-repo --blob-callback (10 secretos eliminados de 459 commits, force push). Credenciales compartidas configuradas en .env local (gitignored). Aprendizaje #138. |
 | 2026-02-26 | **85.0.0** | **REST APIs + A/B Backend + Deploy Stack (Sprints 5–7):** 3 reglas nuevas: REST-PUBLIC-API-001 (P0, endpoints REST públicos con Flood API rate limiting 5/min, validación por campo, integración CRM+email opcionales con hasService()+try-catch), AB-BACKEND-PREPROCESS-001 (P1, A/B testing server-side via hook_preprocess_page Layer 4 injection, config YAML, $variables['ab_variants'], impression tracking, Twig default cascading), DEPLOY-CHECKLIST-001 (P1, checklist obligatorio en docs/operaciones/ con 7 secciones: pre-deploy, stack, DNS, SSL, post-deploy, verificación, rollback). ContactApiController POST /api/v1/public/contact con DB+CRM+MJML notificación. AnalyticsEventController POST /api/v1/analytics/event con UTM indexes. 4 A/B tests backend activos con hook_preprocess_page(). Deploy checklist IONOS. Aprendizaje #137. |

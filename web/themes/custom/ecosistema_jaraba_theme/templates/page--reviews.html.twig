@@ -1,0 +1,20 @@
+{#
+ # Reviews Page Template.
+ #
+ # Full-width layout for review listing pages.
+ # Used when route contains '.reviews_page'.
+ #
+ # Variables:
+ # - page: Standard page render array
+ #
+ # REV-PHASE5: Pagina de resenas.
+ #}
+{% extends '@ecosistema_jaraba_theme/layout/page.html.twig' %}
+
+{% block content %}
+  <div class="reviews-page">
+    <div class="reviews-page__container">
+      {{ page.content }}
+    </div>
+  </div>
+{% endblock %}

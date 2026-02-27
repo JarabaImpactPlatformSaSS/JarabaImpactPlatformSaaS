@@ -1,9 +1,11 @@
 name: 'Jaraba Blog'
 type: module
-description: 'Blog nativo per-tenant con RSS, Schema.org, autores y compartir social.'
+description: 'DEPRECATED — Use jaraba_content_hub instead. Blog functionality consolidated into Content Hub module.'
 package: 'Jaraba SaaS'
 core_version_requirement: ^10 || ^11
 php: 8.2
+lifecycle: deprecated
+lifecycle_link: 'https://github.com/jaraba/jaraba-saas/issues/blog-deprecation'
 dependencies:
   - drupal:text
   - drupal:file

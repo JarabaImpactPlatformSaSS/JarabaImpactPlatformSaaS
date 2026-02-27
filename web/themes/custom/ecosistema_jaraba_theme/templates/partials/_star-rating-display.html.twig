@@ -1,0 +1,32 @@
+{#
+ # Star Rating Display (read-only).
+ #
+ # Variables:
+ # - rating: float (0-5)
+ # - count: int (number of reviews)
+ # - size: 'sm'|'md'|'lg' (default 'md')
+ # - show_count: boolean (default TRUE)
+ #
+ # REV-PHASE5: Partial de estrellas de valoracion.
+ #}
+{% set size = size|default('md') %}
+{% set show_count = show_count is defined ? show_count : true %}
+{% set rating_rounded = rating|round(1) %}
+
+<div class="star-rating star-rating--{{ size }}" aria-label="{{ 'Valoracion: @rating de 5'|t({'@rating': rating_rounded}) }}">
+  <span class="star-rating__stars" aria-hidden="true">
+    {% for i in 1..5 %}
+      {% if i <= rating|round(0, 'floor') %}
+        <span class="star-rating__star star-rating__star--full">★</span>
+      {% elseif i - 0.5 <= rating %}
+        <span class="star-rating__star star-rating__star--half">★</span>
+      {% else %}
+        <span class="star-rating__star star-rating__star--empty">☆</span>
+      {% endif %}
+    {% endfor %}
+  </span>
+  <span class="star-rating__value">{{ rating_rounded }}</span>
+  {% if show_count and count is defined and count > 0 %}
+    <span class="star-rating__count">({{ count }} {{ count == 1 ? 'resena'|t : 'resenas'|t }})</span>
+  {% endif %}
+</div>

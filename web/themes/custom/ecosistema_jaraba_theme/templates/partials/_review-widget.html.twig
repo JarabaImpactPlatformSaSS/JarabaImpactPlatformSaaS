@@ -1,0 +1,71 @@
+{#
+ # Review Widget — Inline summary + recent reviews.
+ #
+ # Variables:
+ # - rating_stats: { average, count, distribution: {1: N, ..., 5: N} }
+ # - recent_reviews: array of review render data
+ # - ai_summary: string|null
+ # - reviews_url: string (URL to full reviews page)
+ # - can_submit: boolean
+ # - submit_url: string
+ #
+ # REV-PHASE5: Widget de resenas para paginas de detalle.
+ #}
+<section class="review-widget" aria-label="{{ 'Resenas'|t }}">
+  {% if rating_stats.count > 0 %}
+    <div class="review-widget__summary">
+      <div class="review-widget__overall">
+        <span class="review-widget__big-number">{{ rating_stats.average|number_format(1) }}</span>
+        {% include '@ecosistema_jaraba_theme/partials/_star-rating-display.html.twig' with {
+          rating: rating_stats.average,
+          count: rating_stats.count,
+          size: 'lg'
+        } only %}
+      </div>
+
+      <div class="review-widget__distribution">
+        {% for star in 5..1 %}
+          {% set bar_count = rating_stats.distribution[star]|default(0) %}
+          {% set bar_pct = rating_stats.count > 0 ? (bar_count / rating_stats.count * 100)|round : 0 %}
+          <div class="review-widget__bar">
+            <span class="review-widget__bar-label">{{ star }} ★</span>
+            <div class="review-widget__bar-track">
+              <div class="review-widget__bar-fill" style="width: {{ bar_pct }}%"></div>
+            </div>
+            <span class="review-widget__bar-count">{{ bar_count }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if ai_summary %}
+      {% include '@ecosistema_jaraba_theme/partials/_review-summary.html.twig' with {
+        summary: ai_summary
+      } only %}
+    {% endif %}
+
+    <div class="review-widget__recent">
+      {% for review in recent_reviews %}
+        {% include '@ecosistema_jaraba_theme/partials/_review-card.html.twig' with {
+          review: review
+        } only %}
+      {% endfor %}
+    </div>
+
+    {% if reviews_url %}
+      <a href="{{ reviews_url }}" class="review-widget__see-all">
+        {{ 'Ver todas las resenas'|t }} →
+      </a>
+    {% endif %}
+  {% else %}
+    <div class="review-widget__empty">
+      <p>{{ 'Aun no hay resenas. Se el primero en opinar.'|t }}</p>
+    </div>
+  {% endif %}
+
+  {% if can_submit and submit_url %}
+    <a href="{{ submit_url }}" class="review-widget__submit btn btn--primary">
+      {{ 'Escribir resena'|t }}
+    </a>
+  {% endif %}
+</section>

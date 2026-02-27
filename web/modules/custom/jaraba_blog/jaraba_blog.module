@@ -2,10 +2,21 @@
 
 /**
  * @file
- * Modulo Blog Nativo per-tenant.
+ * DEPRECATED — Modulo Blog Nativo per-tenant.
  *
- * Proporciona un sistema de blog completo con RSS,
- * Schema.org, autores y compartir social.
+ * Este modulo esta deprecado. Toda la funcionalidad de blog ha sido
+ * consolidada en jaraba_content_hub (ContentArticle, ContentCategory,
+ * ContentAuthor). Usar jaraba_content_hub en su lugar.
+ *
+ * Para migrar datos existentes:
+ *   lando drush scr scripts/migrate-blog-to-content-hub.php
+ *
+ * Para desinstalar despues de migrar:
+ *   lando drush pm:uninstall jaraba_blog
+ *
+ * @see docs/implementacion/2026-02-26_Blog_Clase_Mundial_Plan_Implementacion.md
+ * @deprecated in jaraba_saas:1.0.0 and will be removed in jaraba_saas:2.0.0.
+ *   Use jaraba_content_hub instead.
  */
 
 declare(strict_types=1);
@@ -17,7 +28,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
  */
 function jaraba_blog_help(string $route_name, RouteMatchInterface $route_match): string {
   if ($route_name === 'help.page.jaraba_blog') {
-    return '<p>' . t('Blog nativo per-tenant con RSS, Schema.org, autores y compartir social.') . '</p>';
+    return '<p>' . t('DEPRECATED: This module is deprecated. Use jaraba_content_hub instead. Run "lando drush scr scripts/migrate-blog-to-content-hub.php" to migrate data.') . '</p>';
   }
   return '';
 }

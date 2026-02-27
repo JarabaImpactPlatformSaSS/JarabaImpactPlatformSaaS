@@ -175,6 +175,18 @@ function _jaraba_business_tools_create_template(array $data): void {
  */
 function jaraba_business_tools_update_10002(): void {
   $schema = \Drupal::database()->schema();
+
+  // Field type map: actual DB column types for correct index creation.
+  // Integer columns MUST NOT have prefix length (causes MySQL error 1089).
+  $field_types = [
+    'user_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'status' => ['type' => 'varchar', 'length' => 255],
+    'sector' => ['type' => 'varchar', 'length' => 255],
+    'created' => ['type' => 'int', 'not null' => TRUE],
+    'canvas_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+    'result_status' => ['type' => 'varchar', 'length' => 255],
+  ];
+
   $indexes = [
     'business_model_canvas' => [
       'idx_user_status' => ['user_id', 'status'],
@@ -196,7 +208,7 @@ function jaraba_business_tools_update_10002(): void {
         if (!$schema->indexExists($table, $name)) {
           $spec = [];
           foreach ($fields as $field) {
-            $spec[$field] = ['type' => 'varchar', 'length' => 255];
+            $spec[$field] = $field_types[$field] ?? ['type' => 'varchar', 'length' => 255];
           }
           $schema->addIndex($table, $name, $fields, ['fields' => $spec]);
         }
