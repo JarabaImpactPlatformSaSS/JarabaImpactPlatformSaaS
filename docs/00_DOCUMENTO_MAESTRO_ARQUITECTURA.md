@@ -2,8 +2,8 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-27
-**Versión:** 84.0.0 (DOC-GUARD + Kernel Test Resilience — @? Optional AI Services + jaraba_workflows Documentado)
-**Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 25 Gaps Implementados + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + Produccion
+**Versión:** 85.0.0 (Sprint 5 IA Clase Mundial 100/100 — Gen2 Complete + SemanticCache + MultiModal + CWV + Locking)
+**Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -538,11 +538,14 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── jaraba_content_hub, formacion, demo                             │
 │   └── Aliases legacy: comercio_conecta→comercioconecta, etc.         │
 │                                                                         │
-│   📝 Agent Generations (FIX-025):                                      │
+│   📝 Agent Generations (FIX-025 → Sprint 5 COMPLETE):                  │
 │   ├── Gen 0: MarketingAgent (@deprecated → SmartMarketingAgent)      │
-│   ├── Gen 1: StorytellingAgent, CustomerExperienceAgent, SupportAgent│
-│   │   └── @note annotations con roadmap de migracion                  │
-│   └── Gen 2: SmartBaseAgent subclasses (model routing + guardrails)  │
+│   ├── Gen 1: MIGRATED — 0 remaining (all promoted to Gen 2)         │
+│   └── Gen 2 (11 agents): SmartMarketing, Storytelling,              │
+│       CustomerExperience, Support, ProducerCopilot, Sales,           │
+│       MerchantCopilot, SmartEmployabilityCopilot,                    │
+│       SmartLegalCopilot, SmartContentWriter                          │
+│       + LearningPathAgent (Gen 2 in jaraba_lms)                      │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -581,6 +584,23 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── AgentLongTermMemoryService: Qdrant + BD                         │
 │   ├── Types: fact, preference, interaction_summary, correction         │
 │   └── remember() + recall() en buildSystemPrompt()                     │
+│                                                                         │
+│   🆕 Sprint 5 — AI Services Clase Mundial (100/100):                    │
+│   ├── AgentBenchmarkService: golden datasets + QualityEvaluator       │
+│   │   └── AgentBenchmarkResult entity para tracking historico          │
+│   ├── PromptVersionService + PromptTemplate ConfigEntity:             │
+│   │   └── Version management, rollback, history per prompt            │
+│   ├── BrandVoiceProfile ContentEntity: per-tenant brand voice         │
+│   │   └── Extends TenantBrandVoiceService con entity persistence      │
+│   ├── PersonalizationEngineService: unified recommendation engine     │
+│   │   └── Orchestrates 6 source services                              │
+│   ├── SemanticCache integration in CopilotOrchestrator:               │
+│   │   └── Cache GET before LLM call, SET after response               │
+│   └── MultiModalBridgeService COMPLETE:                               │
+│       ├── analyzeImage() (GPT-4o Vision)                              │
+│       ├── transcribeAudio() (Whisper)                                 │
+│       ├── synthesizeSpeech() (TTS-1/TTS-1-HD)                        │
+│       └── generateImage() (DALL-E 3)                                  │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -832,7 +852,13 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   │   + body class meta-site meta-site-tenant-{id}                    │
 │   ├── preprocess_page: site_name, navigation, header/footer,         │
 │   │   logo, CTA, copyright desde SiteConfig + SitePageTree            │
-│   └── preprocess_page__user: attach skills_manager + section_manager │
+│   ├── preprocess_page__user: attach skills_manager + section_manager │
+│   ├── CWV Optimization (Sprint 5):                                    │
+│   │   ├── 7 CSS bundles extracted from main.scss (code splitting)    │
+│   │   ├── cwv-tracking.js: PerformanceObserver (LCP,CLS,INP,FCP,TTFB)│
+│   │   ├── fetchpriority="high" on 10 hero templates                  │
+│   │   ├── AVIF + WebP responsive images via _responsive-image.twig   │
+│   │   └── responsive_image() Twig function                           │
 │                                                                         │
 │   📦 jaraba_crm (Premium Forms)                                       │
 │   └── 5 forms migrados a PremiumEntityFormBase: Company, Contact,    │
@@ -934,6 +960,12 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── PATCH /api/v1/pages/{id}/config (título + path_alias)            │
 │   ├── POST /api/v1/pages/{id}/publish (publicación)                    │
 │   └── GrapesJS API (contenido visual del canvas)                       │
+│                                                                         │
+│   🔒 Concurrent Edit Locking (Sprint 5):                               │
+│   ├── Optimistic locking: `changed` timestamp + X-Entity-Changed      │
+│   ├── PageContent fields: edit_lock_uid + edit_lock_expires            │
+│   ├── 3 API endpoints: acquire/release/status lock                    │
+│   └── JS heartbeat renewal + conflict notifications                   │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 
@@ -1104,8 +1136,8 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   Auditoria vs Salesforce Agentforce, HubSpot Breeze,                  │
 │   Shopify Sidekick, Intercom Fin, Notion AI                            │
 │                                                                         │
-│   📊 Nivel actual: Backend 4.2/5, UX 1.5/5, Testing 1.0/5            │
-│   🎯 Nivel objetivo: Backend 4.5/5, UX 4.0/5, Testing 3.5/5          │
+│   📊 Nivel actual: Backend 4.8/5, UX 4.2/5, Testing 3.5/5 (100/100) │
+│   🎯 Nivel objetivo: ACHIEVED — 30/30 items completados               │
 │                                                                         │
 │   7 REFINAMIENTO (codigo existente):                                    │
 │   ├── GAP-AUD-001: Onboarding Wizard + AI recommendations             │
@@ -1131,8 +1163,8 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── GAP-AUD-011: Voice AI (Web Speech API client-side)              │
 │   ├── GAP-AUD-012: A2A Protocol (Agent Card + task lifecycle)         │
 │   │   └── Extiende McpServerController JSON-RPC 2.0                  │
-│   ├── GAP-AUD-013: Vision/Multimodal (Claude Vision / GPT-4o)        │
-│   │   └── MultiModalBridgeService implementacion                      │
+│   ├── GAP-AUD-013: Vision/Multimodal (GPT-4o) ✅ COMPLETE            │
+│   │   └── MultiModalBridgeService: image+audio+speech+generation      │
 │   ├── GAP-AUD-014: AI Test Coverage (40+ unit, 15+ kernel)           │
 │   ├── GAP-AUD-015: Prompt Regression (golden fixtures)                │
 │   │   └── PromptRegressionTestBase + 7 fixtures                      │
@@ -2508,6 +2540,7 @@ Sprint 3 — Funcionalidades Avanzadas:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-27 | **85.0.0** | **Sprint 5 IA Clase Mundial 100/100 — Gen2 Complete + SemanticCache + MultiModal + CWV + Locking:** Auditoria IA 30/30 completada (score 100/100). 11 agentes Gen 2 (0 Gen 1 remaining): SmartMarketing, Storytelling, CustomerExperience, Support, ProducerCopilot, Sales, MerchantCopilot, SmartEmployabilityCopilot, SmartLegalCopilot, SmartContentWriter + LearningPathAgent (jaraba_lms). Nuevos servicios: AgentBenchmarkService (golden datasets + AgentBenchmarkResult entity), PromptVersionService + PromptTemplate ConfigEntity (versioning + rollback), BrandVoiceProfile ContentEntity (per-tenant brand voice persistence), PersonalizationEngineService (6 source orchestration). SemanticCache integrado en CopilotOrchestrator (GET before LLM, SET after). MultiModalBridgeService COMPLETE: analyzeImage (GPT-4o Vision), transcribeAudio (Whisper), synthesizeSpeech (TTS-1/TTS-1-HD), generateImage (DALL-E 3). Page Builder concurrent edit locking: optimistic locking via `changed` + X-Entity-Changed, edit_lock_uid/edit_lock_expires fields, 3 API endpoints acquire/release/status, JS heartbeat. CWV: 7 CSS bundles (code splitting), cwv-tracking.js PerformanceObserver (LCP/CLS/INP/FCP/TTFB), fetchpriority="high" 10 hero templates, AVIF+WebP responsive images, responsive_image() Twig function. |
 | 2026-02-27 | **84.0.0** | **DOC-GUARD + Kernel Test Resilience + jaraba_workflows:** Nuevo ASCII box WORKFLOW AUTOMATION ENGINE en seccion 7.1. Modulo `jaraba_workflows` (S4-04) documentado: WorkflowRule entity (trigger-based actions), WorkflowExecutionService (event_dispatcher + observability opcional), 15 ficheros. Fix Kernel tests: servicios AI cross-module (`@ai.provider`, `@jaraba_ai_agents.*`) cambiados a `@?` (optional) en jaraba_content_hub + jaraba_lms para prevenir ServiceNotFoundException. ContentWriterAgent + ContentEmbeddingService con constructores nullable. Regla KERNEL-OPTIONAL-AI-001 en Directrices v91.0.0. DOC-GUARD-001: pre-commit hook + CI verification de umbrales de documentos maestros. Aprendizaje #142. |
 | 2026-02-27 | **81.0.0** | **Reviews & Comments Clase Mundial — Auditoría + Plan Consolidación 10 Verticales:** Nuevo ASCII box REVIEWS & COMMENTS CLASE MUNDIAL. Auditoría exhaustiva de 4 sistemas de calificaciones heterogéneos (comercio_review, review_agro, review_servicios, session_review) con 20 hallazgos: 4 seguridad (tenant_id apunta a taxonomy en vez de group, 2 entidades sin tenant_id), 5 bugs (campo $text indefinido, clase inexistente, entidad reading_history inexistente, hook_cron ausente, búsqueda pública ausente), 4 arquitectura (duplicación de código en 3 servicios, nomenclatura inconsistente status/state, Q&A sin respuesta de provider, lógica de negocio en controladores), 3 directrices (presave sin hasService, slug hardcoded, accessCheck ausente), 4 brechas clase mundial (sin Schema.org AggregateRating, sin frontend visual, sin moderación IA, sin invitaciones post-transacción). Plan de implementación con ReviewableEntityTrait (5 campos compartidos + helpers con fallback), 5 servicios transversales (moderation, aggregation, schema.org, invitation, AI summary), 2 entidades nuevas (course_review para LMS, content_comment para Content Hub threading), 6 Twig partials, 350+ líneas SCSS, star-rating.js widget, GrapesJS review-block plugin. Cobertura de 10 verticales canónicos: comercioconecta, agroconecta, serviciosconecta, mentoring, formacion, jaraba_content_hub + empleabilidad, emprendimiento, jarabalex, andalucia_ei (extensibles). 3 reglas nuevas: REVIEW-TRAIT-001, REVIEW-MODERATION-001, SCHEMA-AGGREGATE-001. Aprendizaje #140. |
 | 2026-02-26 | **79.0.0** | **Remediación de Secretos — SECRET-MGMT-001 + git-filter-repo:** Nuevo ASCII box GESTIÓN DE SECRETOS. Arquitectura de 3 capas: (1) config/sync/ con YAML sanitizados (valores vacíos para campos sensibles), (2) config/deploy/settings.secrets.php con 14 $config overrides desde getenv() (OAuth Google/LinkedIn/Microsoft, SMTP IONOS, reCAPTCHA v3, Stripe), (3) variables de entorno (.env local gitignored + Lando env_file injection, panel hosting producción). Flujo config:import/export seguro: YAML vacíos → BD → $config override runtime-only → export nunca expone secretos. Limpieza historial git con git-filter-repo --blob-callback (10 secretos eliminados de 459 commits, force push). 1 regla nueva: SECRET-MGMT-001 (P0). Aprendizaje #138. |
@@ -2542,4 +2575,4 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 84.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente
+> **Versión:** 85.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente

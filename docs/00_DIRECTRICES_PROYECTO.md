@@ -4,7 +4,7 @@
 
 **Fecha de creación:** 2026-01-09 15:28  
 **Última actualización:** 2026-02-27
-**Versión:** 93.0.0 (Navegación Transversal Ecosistema — ECOSYSTEM-FOOTER-001 + HEADER-AUTH-VISIBILITY-001 + SCHEMA-DYNAMIC-METASITE-001)
+**Versión:** 94.0.0 (Sprint 5 IA Clase Mundial 100/100 — 11 Gen2 Agents + SemanticCache + MultiModal Complete + CWV + Locking)
 
 ---
 
@@ -191,11 +191,21 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - **WCAG 2.1 AA**: focus-visible, prefers-reduced-motion, keyboard navigation, ARIA completo en todos los templates
   - **Patrón**: Hooks nativos (NO ECA YAML), anti-recursión via evidence JSON, State API para rate limiting cron
   - **Total**: 115 archivos, 8 Content Entities, 16 Services, 20 API endpoints, 5 Twig templates, 4 SCSS, 4 JS
-- **AI Agents Elevación Clase Mundial (F11)** ⭐: Brand Voice Training + Prompt A/B + MultiModal (✅ Completado):
-  - `jaraba_ai_agents` (extendido): +3 Services (BrandVoiceTrainerService, PromptExperimentService, MultiModalBridgeService), +3 Controllers (BrandVoiceTrainerApiController, PromptExperimentApiController, MultiModalApiController), +8 rutas API, +1 permiso
-  - BrandVoiceTrainerService: Qdrant collection `jaraba_brand_voice` (1536 dims), feedback loop (approve/reject/edit), alineación coseno, refinamiento LLM
-  - PromptExperimentService: experiment_type='prompt_variant', integrado con jaraba_ab_testing (StatisticalEngineService + QualityEvaluatorService auto-conversion score>=0.7)
-  - MultiModal Preparation: PHP interfaces (MultiModalInputInterface, MultiModalOutputInterface), exception custom, bridge stub para futuro Whisper/ElevenLabs/DALL-E
+- **AI Agents Elevación Clase Mundial (F11)** ⭐: 11 Gen2 Agents + SemanticCache + MultiModal + CWV + Locking (✅ 100/100):
+  - `jaraba_ai_agents` (extendido): +3 Services Sprint 4 (BrandVoiceTrainerService, PromptExperimentService, MultiModalBridgeService), +3 Controllers, +8 rutas API
+  - **Sprint 5 — 15 items resueltos (100/100):**
+    - 11 Agentes Gen 2 completos: SmartMarketing, Storytelling, CustomerExperience, Support, ProducerCopilot, Sales, MerchantCopilot, SmartEmployabilityCopilot, SmartLegalCopilot, SmartContentWriter, LearningPathAgent (0 Gen 1 restantes)
+    - AgentBenchmarkService + AgentBenchmarkResult entity (LLM-as-Judge automated eval)
+    - PromptVersionService + PromptTemplate ConfigEntity (versionado + rollback)
+    - BrandVoiceProfile ContentEntity (per-tenant, migrado desde config)
+    - PersonalizationEngineService (orquesta 6 recommendation services)
+    - SemanticCache integrado en CopilotOrchestrator (get→miss→set)
+    - MultiModalBridgeService COMPLETO: analyzeImage, transcribeAudio, synthesizeSpeech, generateImage (4/4 real)
+    - CWV tracking: cwv-tracking.js (PerformanceObserver LCP/CLS/INP/FCP/TTFB + dataLayer)
+    - fetchpriority="high" en 10 hero templates + responsive_image() Twig function (AVIF+WebP)
+    - CSS code splitting: 7 bundles route-specific + hook_page_attachments_alter()
+    - Schema.org 11 tipos: +VideoObject, +Event, +AggregateRating
+    - Concurrent edit locking: edit_lock_uid/expires + X-Entity-Changed + 409 Conflict + JS heartbeat
   - `ai_provider_google_gemini` ✅: Proveedor Google AI Studio (Gemini API) para módulo ai:ai. Configuración via Key module <!-- AUDIT-SPEC-N01 -->
 - **Scaling Infrastructure (F10)** ⭐: Backup per-tenant + k6 + Prometheus (✅ Completado):
   - `scripts/restore_tenant.sh`: 4 comandos (backup/restore/list/tables), auto-descubre 159+ tablas con tenant_id via INFORMATION_SCHEMA
