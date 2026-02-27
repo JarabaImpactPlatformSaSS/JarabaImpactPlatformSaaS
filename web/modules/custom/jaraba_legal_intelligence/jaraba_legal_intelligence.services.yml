@@ -95,12 +95,12 @@ services:
   jaraba_legal_intelligence.smart_legal_copilot_agent:
     class: Drupal\jaraba_legal_intelligence\Agent\SmartLegalCopilotAgent
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'
-      - '@jaraba_ai_agents.tenant_brand_voice'
-      - '@jaraba_ai_agents.observability'
-      - '@jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.tenant_brand_voice'
+      - '@?jaraba_ai_agents.observability'
+      - '@?jaraba_ai_agents.model_router'
       - '@?ecosistema_jaraba_core.unified_prompt_builder'
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'

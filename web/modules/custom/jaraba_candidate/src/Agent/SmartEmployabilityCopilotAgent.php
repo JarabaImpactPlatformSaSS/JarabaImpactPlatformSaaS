@@ -114,19 +114,23 @@ class SmartEmployabilityCopilotAgent extends SmartBaseAgent {
      * Constructs a SmartEmployabilityCopilotAgent.
      */
     public function __construct(
-        AiProviderPluginManager $aiProvider,
+        ?AiProviderPluginManager $aiProvider,
         ConfigFactoryInterface $configFactory,
         LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
-        ModelRouterService $modelRouter,
+        ?TenantBrandVoiceService $brandVoice,
+        ?AIObservabilityService $observability,
+        ?ModelRouterService $modelRouter = NULL,
         ?UnifiedPromptBuilder $promptBuilder = NULL,
         ?ToolRegistry $toolRegistry = NULL,
         ?ProviderFallbackService $providerFallback = NULL,
         ?ContextWindowManager $contextWindowManager = NULL,
     ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
-        $this->setModelRouter($modelRouter);
+        if ($aiProvider && $brandVoice && $observability) {
+            parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability, $promptBuilder);
+        }
+        if ($modelRouter) {
+            $this->setModelRouter($modelRouter);
+        }
         $this->setToolRegistry($toolRegistry);
         $this->setProviderFallback($providerFallback);
         $this->setContextWindowManager($contextWindowManager);

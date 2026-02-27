@@ -44,12 +44,12 @@ services:
   jaraba_content_hub.smart_content_writer_agent:
     class: Drupal\jaraba_content_hub\Agent\SmartContentWriterAgent
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@config.factory'
       - '@logger.channel.jaraba_content_hub'
-      - '@jaraba_ai_agents.tenant_brand_voice'
-      - '@jaraba_ai_agents.observability'
-      - '@jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.tenant_brand_voice'
+      - '@?jaraba_ai_agents.observability'
+      - '@?jaraba_ai_agents.model_router'
       - '@?ecosistema_jaraba_core.unified_prompt_builder'
       - '@?jaraba_ai_agents.tool_registry'
       - '@?jaraba_ai_agents.provider_fallback'
