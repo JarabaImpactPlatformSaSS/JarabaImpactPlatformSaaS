@@ -71,6 +71,8 @@
       <img src="{{ file_url(post.get('featured_image').entity.getFileUri()) }}"
            alt="{{ post.get('featured_image_alt').value|default(post.getTitle()) }}"
            loading="eager"
+           fetchpriority="high"
+           decoding="async"
            itemprop="image" />
     </figure>
   {% endif %}

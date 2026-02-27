@@ -1,10 +1,11 @@
 {# 
 /**
  * @file
- * Template for the Success Case detail page.
+ * Template for the Success Case detail page — World-Class Edition.
  *
- * Shows the full narrative (Challenge → Solution → Result),
- * metrics, quotes, and optional video embed.
+ * Narrative structure: Challenge → Solution → Result
+ * with visual timeline, gradient hero header, animated metrics,
+ * premium quote section, and rich Schema.org structured data.
  *
  * Available variables (flat primitives from Controller):
  * - case.name, case.profession, case.company, case.sector, case.location
@@ -25,184 +26,259 @@
 {# Breadcrumb #}
 <nav class="sc-detail__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
   <a href="{{ path('jaraba_success_cases.list') }}">{% trans %}Casos de Éxito{% endtrans %}</a>
-  <span aria-hidden="true">›</span>
+  <span aria-hidden="true">
+    {{ jaraba_icon('ui', 'chevron-right', { size: '12px', color: 'muted' }) }}
+  </span>
   <span>{{ case.name }}</span>
 </nav>
 
 <article class="sc-detail" itemscope itemtype="https://schema.org/Review">
 
-  {# Hero Header #}
-  <header class="sc-detail__header">
-    <div class="sc-detail__header-content">
-      <div class="sc-detail__avatar sc-detail__avatar--placeholder">
-        {{ case.name|first|upper }}
+  {# ═══════════════════════════════════════════════════════════════
+     HERO HEADER — Gradient background, large avatar, identity info
+     ═══════════════════════════════════════════════════════════════ #}
+  <header class="sc-detail__hero">
+    <div class="sc-detail__hero-bg"></div>
+    <div class="sc-detail__hero-content">
+      {# Avatar #}
+      <div class="sc-detail__avatar-container">
+        <div class="sc-detail__avatar sc-detail__avatar--placeholder" aria-hidden="true">
+          {{ case.name|first|upper }}
+        </div>
+        {% if case.featured %}
+          <span class="sc-detail__featured-badge" title="{% trans %}Caso Destacado{% endtrans %}">
+            {{ jaraba_icon('general', 'trophy', { variant: 'duotone', size: '20px', color: 'warning' }) }}
+          </span>
+        {% endif %}
       </div>
-      <div class="sc-detail__header-info">
+
+      {# Identity #}
+      <div class="sc-detail__identity">
         <h1 class="sc-detail__name" itemprop="author" itemscope itemtype="https://schema.org/Person">
           <span itemprop="name">{{ case.name }}</span>
         </h1>
         {% if case.profession %}
           <p class="sc-detail__profession" itemprop="jobTitle">{{ case.profession }}</p>
         {% endif %}
-        {% if case.company %}
-          <p class="sc-detail__company">
-            {{ jaraba_icon('business', 'building', { size: '16px', color: 'corporate' }) }}
-            {{ case.company }}
-          </p>
-        {% endif %}
-        {% if case.location %}
-          <p class="sc-detail__location">
-            {{ jaraba_icon('ui', 'map-pin', { size: '16px', color: 'neutral' }) }}
-            {{ case.location }}
-          </p>
-        {% endif %}
 
-        {# Vertical + Program badges #}
-        <div class="sc-detail__badges">
-          {% if case.vertical %}
-            <span class="sc-badge sc-badge--{{ case.vertical }}">{{ case.vertical|replace({'_': ' '})|capitalize }}</span>
+        <div class="sc-detail__meta-row">
+          {% if case.company %}
+            <span class="sc-detail__meta-item">
+              {{ jaraba_icon('business', 'building', { size: '14px', color: 'impulse' }) }}
+              <span>{{ case.company }}</span>
+              {% if case.sector %}
+                <span class="sc-detail__meta-separator">·</span>
+                <span>{{ case.sector }}</span>
+              {% endif %}
+            </span>
           {% endif %}
-          {% if case.program_name %}
-            <span class="sc-badge sc-badge--program">{{ case.program_name }}</span>
+          {% if case.location %}
+            <span class="sc-detail__meta-item">
+              {{ jaraba_icon('general', 'map-pin', { size: '14px', color: 'muted' }) }}
+              <span>{{ case.location }}</span>
+            </span>
           {% endif %}
         </div>
+
+        {# Badges #}
+        <div class="sc-detail__badges">
+          {% if case.vertical %}
+            <span class="sc-badge sc-badge--{{ case.vertical }}">
+              {{ case.vertical|replace({'_': ' '})|capitalize }}
+            </span>
+          {% endif %}
+          {% if case.program_name %}
+            <span class="sc-badge sc-badge--program">
+              {{ jaraba_icon('general', 'book-open', { size: '12px' }) }}
+              {{ case.program_name }}
+            </span>
+          {% endif %}
+        </div>
+
+        {# Rating #}
+        {% if case.rating %}
+          <div class="sc-detail__rating" aria-label="{{ case.rating }} {% trans %}de 5 estrellas{% endtrans %}">
+            {% for i in 1..5 %}
+              <span class="sc-star {{ i <= case.rating ? 'sc-star--filled' : '' }}">
+                {{ jaraba_icon('general', 'star', { variant: i <= case.rating ? 'duotone' : 'outline', size: '18px', color: i <= case.rating ? 'warning' : 'muted' }) }}
+              </span>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
     </div>
   </header>
 
-  {# Narrative Sections #}
-  <div class="sc-detail__narrative">
+  {# ═══════════════════════════════════════════════════════════════
+     TRANSFORMATION JOURNEY — Visual timeline with 3 premium sections
+     ═══════════════════════════════════════════════════════════════ #}
+  <section class="sc-journey" aria-label="{% trans %}Recorrido de transformación{% endtrans %}">
+    <h2 class="sc-journey__surtitle">{% trans %}Recorrido de Transformación{% endtrans %}</h2>
 
-    {# Challenge (Before) #}
-    {% if case.challenge_before %}
-      <section class="sc-section sc-section--challenge">
-        <div class="sc-section__icon">
-          {{ jaraba_icon('business', 'target', { variant: 'duotone', size: '32px', color: 'danger' }) }}
-        </div>
-        <div class="sc-section__content">
-          <h2 class="sc-section__title">{% trans %}El Reto{% endtrans %}</h2>
-          <div class="sc-section__body">{{ case.challenge_before|raw }}</div>
-        </div>
-      </section>
-    {% endif %}
+    <div class="sc-journey__timeline">
 
-    {# Solution (During) #}
-    {% if case.solution_during %}
-      <section class="sc-section sc-section--solution">
-        <div class="sc-section__icon">
-          {{ jaraba_icon('ai', 'brain', { variant: 'duotone', size: '32px', color: 'innovation' }) }}
+      {# ─── El Reto ─── #}
+      {% if case.challenge_before %}
+        <div class="sc-journey__step sc-journey__step--challenge">
+          <div class="sc-journey__connector">
+            <div class="sc-journey__dot sc-journey__dot--challenge">
+              {{ jaraba_icon('business', 'mountain-peak', { variant: 'duotone', size: '24px', color: 'danger' }) }}
+            </div>
+          </div>
+          <div class="sc-journey__card">
+            <span class="sc-journey__step-number">01</span>
+            <h3 class="sc-journey__title">{% trans %}El Reto{% endtrans %}</h3>
+            <p class="sc-journey__subtitle">{% trans %}La situación antes del programa{% endtrans %}</p>
+            <div class="sc-journey__body">{{ case.challenge_before|raw }}</div>
+          </div>
         </div>
-        <div class="sc-section__content">
-          <h2 class="sc-section__title">{% trans %}La Solución{% endtrans %}</h2>
-          <div class="sc-section__body">{{ case.solution_during|raw }}</div>
-        </div>
-      </section>
-    {% endif %}
+      {% endif %}
 
-    {# Result (After) #}
-    {% if case.result_after %}
-      <section class="sc-section sc-section--result">
-        <div class="sc-section__icon">
-          {{ jaraba_icon('analytics', 'chart-up', { variant: 'duotone', size: '32px', color: 'success' }) }}
+      {# ─── La Solución ─── #}
+      {% if case.solution_during %}
+        <div class="sc-journey__step sc-journey__step--solution">
+          <div class="sc-journey__connector">
+            <div class="sc-journey__dot sc-journey__dot--solution">
+              {{ jaraba_icon('business', 'lightbulb-spark', { variant: 'duotone', size: '24px', color: 'innovation' }) }}
+            </div>
+          </div>
+          <div class="sc-journey__card">
+            <span class="sc-journey__step-number">02</span>
+            <h3 class="sc-journey__title">{% trans %}La Solución{% endtrans %}</h3>
+            <p class="sc-journey__subtitle">{% trans %}Cómo lo conseguimos juntos{% endtrans %}</p>
+            <div class="sc-journey__body">{{ case.solution_during|raw }}</div>
+          </div>
         </div>
-        <div class="sc-section__content">
-          <h2 class="sc-section__title">{% trans %}El Resultado{% endtrans %}</h2>
-          <div class="sc-section__body">{{ case.result_after|raw }}</div>
-        </div>
-      </section>
-    {% endif %}
-  </div>
+      {% endif %}
 
-  {# Metrics Bar #}
+      {# ─── El Resultado ─── #}
+      {% if case.result_after %}
+        <div class="sc-journey__step sc-journey__step--result">
+          <div class="sc-journey__connector">
+            <div class="sc-journey__dot sc-journey__dot--result">
+              {{ jaraba_icon('business', 'rocket-launch', { variant: 'duotone', size: '24px', color: 'success' }) }}
+            </div>
+          </div>
+          <div class="sc-journey__card">
+            <span class="sc-journey__step-number">03</span>
+            <h3 class="sc-journey__title">{% trans %}El Resultado{% endtrans %}</h3>
+            <p class="sc-journey__subtitle">{% trans %}Impacto real y medible{% endtrans %}</p>
+            <div class="sc-journey__body">{{ case.result_after|raw }}</div>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════
+     IMPACT METRICS — Animated counter bar with gradient background
+     ═══════════════════════════════════════════════════════════════ #}
   {% if case.metrics %}
-    <section class="sc-metrics" aria-label="{% trans %}Métricas de impacto{% endtrans %}">
-      <h2 class="sc-metrics__title">{% trans %}Impacto en números{% endtrans %}</h2>
-      <div class="sc-metrics__grid">
+    <section class="sc-impact" aria-label="{% trans %}Métricas de impacto{% endtrans %}">
+      <div class="sc-impact__header">
+        {{ jaraba_icon('analytics', 'chart', { variant: 'duotone', size: '28px', color: 'white' }) }}
+        <h2 class="sc-impact__title">{% trans %}Impacto en Números{% endtrans %}</h2>
+      </div>
+      <div class="sc-impact__grid">
         {% for key, value in case.metrics %}
-          <div class="sc-metrics__item">
-            <span class="sc-metrics__value" data-counter="{{ value }}">{{ value }}</span>
-            <span class="sc-metrics__label">{{ key|replace({'_': ' '})|capitalize }}</span>
+          <div class="sc-impact__card">
+            <span class="sc-impact__value" data-counter="{{ value }}">{{ value }}</span>
+            <span class="sc-impact__label">{{ key|replace({'_': ' '})|capitalize }}</span>
           </div>
         {% endfor %}
       </div>
     </section>
   {% endif %}
 
-  {# Long Quote #}
-  {% if case.quote_long %}
-    <section class="sc-quote" itemprop="reviewBody">
-      <div class="sc-quote__mark" aria-hidden="true">"</div>
-      <blockquote class="sc-quote__text">
-        {{ case.quote_long }}
+  {# ═══════════════════════════════════════════════════════════════
+     TESTIMONIAL QUOTE — Large premium quote block
+     ═══════════════════════════════════════════════════════════════ #}
+  {% set quote_text = case.quote_long ?? case.quote_short ?? null %}
+  {% if quote_text %}
+    <section class="sc-testimonial" itemprop="reviewBody">
+      <div class="sc-testimonial__decoration" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 8H6v12h8l-4 12h4l4-12V8zm16 0H22v12h8l-4 12h4l4-12V8z" fill="currentColor"/>
+        </svg>
+      </div>
+      <blockquote class="sc-testimonial__text">
+        {{ quote_text }}
       </blockquote>
-      <cite class="sc-quote__author">
-        — {{ case.name }}{% if case.profession %}, {{ case.profession }}{% endif %}
-      </cite>
-    </section>
-  {% elseif case.quote_short %}
-    <section class="sc-quote" itemprop="reviewBody">
-      <div class="sc-quote__mark" aria-hidden="true">"</div>
-      <blockquote class="sc-quote__text">
-        {{ case.quote_short }}
-      </blockquote>
-      <cite class="sc-quote__author">
-        — {{ case.name }}{% if case.profession %}, {{ case.profession }}{% endif %}
+      <cite class="sc-testimonial__author">
+        <span class="sc-testimonial__author-avatar" aria-hidden="true">
+          {{ case.name|first|upper }}
+        </span>
+        <span class="sc-testimonial__author-info">
+          <strong>{{ case.name }}</strong>
+          {% if case.profession %}
+            <span>{{ case.profession }}</span>
+          {% endif %}
+        </span>
       </cite>
     </section>
   {% endif %}
 
-  {# Program Context #}
+  {# ═══════════════════════════════════════════════════════════════
+     PROGRAM CONTEXT — Contextual info card
+     ═══════════════════════════════════════════════════════════════ #}
   {% if case.program_funder or case.program_year %}
-    <aside class="sc-program">
-      <h3 class="sc-program__title">{% trans %}Contexto del programa{% endtrans %}</h3>
-      <div class="sc-program__grid">
-        {% if case.program_name %}
-          <div class="sc-program__item">
-            <span class="sc-program__label">{% trans %}Programa{% endtrans %}</span>
-            <span class="sc-program__value">{{ case.program_name }}</span>
-          </div>
-        {% endif %}
-        {% if case.program_funder %}
-          <div class="sc-program__item">
-            <span class="sc-program__label">{% trans %}Financiador{% endtrans %}</span>
-            <span class="sc-program__value">{{ case.program_funder }}</span>
-          </div>
-        {% endif %}
-        {% if case.program_year %}
-          <div class="sc-program__item">
-            <span class="sc-program__label">{% trans %}Año{% endtrans %}</span>
-            <span class="sc-program__value">{{ case.program_year }}</span>
-          </div>
-        {% endif %}
+    <aside class="sc-context">
+      <div class="sc-context__icon">
+        {{ jaraba_icon('general', 'book-open', { variant: 'duotone', size: '24px', color: 'corporate' }) }}
+      </div>
+      <div class="sc-context__content">
+        <h3 class="sc-context__title">{% trans %}Contexto del Programa{% endtrans %}</h3>
+        <div class="sc-context__chips">
+          {% if case.program_name %}
+            <span class="sc-context__chip">
+              {{ jaraba_icon('general', 'book-open', { size: '14px' }) }}
+              {{ case.program_name }}
+            </span>
+          {% endif %}
+          {% if case.program_funder %}
+            <span class="sc-context__chip">
+              {{ jaraba_icon('business', 'building', { size: '14px' }) }}
+              {{ case.program_funder }}
+            </span>
+          {% endif %}
+          {% if case.program_year %}
+            <span class="sc-context__chip">
+              {{ jaraba_icon('actions', 'clock', { size: '14px' }) }}
+              {{ case.program_year }}
+            </span>
+          {% endif %}
+        </div>
       </div>
     </aside>
   {% endif %}
 
-  {# Links #}
-  {% if case.website or case.linkedin %}
-    <footer class="sc-detail__footer">
-      {% if case.website %}
-        <a href="{{ case.website }}" target="_blank" rel="noopener" class="sc-detail__link">
-          {{ jaraba_icon('ui', 'external-link', { size: '16px' }) }}
-          {% trans %}Visitar web{% endtrans %}
-        </a>
-      {% endif %}
-      {% if case.linkedin %}
-        <a href="{{ case.linkedin }}" target="_blank" rel="noopener" class="sc-detail__link sc-detail__link--linkedin">
-          {{ jaraba_icon('ui', 'linkedin', { size: '16px' }) }}
-          LinkedIn
-        </a>
-      {% endif %}
-    </footer>
-  {% endif %}
+  {# ═══════════════════════════════════════════════════════════════
+     LINKS + CTA — Footer actions
+     ═══════════════════════════════════════════════════════════════ #}
+  <footer class="sc-detail__actions">
+    {% if case.website or case.linkedin %}
+      <div class="sc-detail__links">
+        {% if case.website %}
+          <a href="{{ case.website }}" target="_blank" rel="noopener" class="sc-detail__link sc-detail__link--primary">
+            {{ jaraba_icon('general', 'globe', { size: '16px' }) }}
+            {% trans %}Visitar web{% endtrans %}
+          </a>
+        {% endif %}
+        {% if case.linkedin %}
+          <a href="{{ case.linkedin }}" target="_blank" rel="noopener" class="sc-detail__link sc-detail__link--linkedin">
+            {{ jaraba_icon('ui', 'briefcase', { size: '16px' }) }}
+            LinkedIn
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
 
-  {# Back link #}
-  <div class="sc-detail__back">
     <a href="{{ path('jaraba_success_cases.list') }}" class="sc-detail__back-link">
       {{ jaraba_icon('ui', 'chevron-left', { size: '16px' }) }}
-      {% trans %}Volver a todos los casos{% endtrans %}
+      {% trans %}Ver todos los Casos de Éxito{% endtrans %}
     </a>
-  </div>
+  </footer>
 
   {# Schema.org JSON-LD #}
   <script type="application/ld+json">

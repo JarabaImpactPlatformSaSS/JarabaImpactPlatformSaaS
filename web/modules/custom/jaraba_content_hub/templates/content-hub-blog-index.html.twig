@@ -72,7 +72,9 @@
             <img src="{{ current_category.featured_image }}"
                  alt="{{ current_category.name }}"
                  class="blog-hero__category-image"
-                 loading="eager">
+                 loading="eager"
+                 fetchpriority="high"
+                 decoding="async">
           </div>
         {% else %}
           <div class="blog-hero__visual" aria-hidden="true">

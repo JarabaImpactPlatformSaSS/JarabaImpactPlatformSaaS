@@ -20,7 +20,7 @@ jaraba_success_cases.list:
     _controller: '\Drupal\jaraba_success_cases\Controller\SuccessCasesController::list'
     _title: 'Casos de Éxito'
   requirements:
-    _permission: 'view published success cases'
+    _access: 'TRUE'
 
 jaraba_success_cases.detail:
   path: '/caso-de-exito/{slug}'
@@ -28,7 +28,7 @@ jaraba_success_cases.detail:
     _controller: '\Drupal\jaraba_success_cases\Controller\SuccessCasesController::detail'
     _title: 'Caso de Éxito'
   requirements:
-    _permission: 'view published success cases'
+    _access: 'TRUE'
 
 # =============================================================================
 # API route (for GrapesJS Page Builder integration)

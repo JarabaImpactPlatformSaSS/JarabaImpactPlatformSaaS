@@ -487,3 +487,49 @@ function jaraba_page_builder_update_9007(&$sandbox) {
     '@updated' => $updated,
   ]);
 }
+
+/**
+ * HAL-AI-27: Add edit_lock_uid and edit_lock_expires fields to page_content.
+ *
+ * These fields enable optimistic concurrent edit locking for the Canvas Editor.
+ * They are NOT revisionable (transient session state, not content).
+ */
+function jaraba_page_builder_update_9008(&$sandbox) {
+  $entity_type_id = 'page_content';
+  $definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // edit_lock_uid — entity_reference to user.
+  $edit_lock_uid = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Editor actual'))
+    ->setDescription(t('Usuario que está editando actualmente esta página.'))
+    ->setSetting('target_type', 'user')
+    ->setRevisionable(FALSE)
+    ->setTranslatable(FALSE)
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE);
+
+  $definition_manager->installFieldStorageDefinition(
+    'edit_lock_uid',
+    $entity_type_id,
+    'jaraba_page_builder',
+    $edit_lock_uid
+  );
+
+  // edit_lock_expires — timestamp.
+  $edit_lock_expires = \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+    ->setLabel(t('Expiración del bloqueo'))
+    ->setDescription(t('Timestamp de expiración del bloqueo de edición.'))
+    ->setRevisionable(FALSE)
+    ->setTranslatable(FALSE)
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE);
+
+  $definition_manager->installFieldStorageDefinition(
+    'edit_lock_expires',
+    $entity_type_id,
+    'jaraba_page_builder',
+    $edit_lock_expires
+  );
+
+  return t('Added edit_lock_uid and edit_lock_expires fields to page_content for optimistic locking (HAL-AI-27).');
+}

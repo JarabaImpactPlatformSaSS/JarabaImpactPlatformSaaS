@@ -294,6 +294,11 @@
             this.autoSaveDelay = 5000; // 5 segundos
             this.isDirty = false;
 
+            // ── HAL-AI-27: Optimistic locking state ──
+            this.entityChanged = null; // Last known entity `changed` timestamp
+            this.lockHeartbeatInterval = null;
+            this.lockAcquired = false;
+
             this.init();
         }
 
@@ -669,12 +674,19 @@
             this.editor.StorageManager.add('jaraba-rest', {
                 async store(data) {
                     try {
+                        const headers = {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
+                        };
+
+                        // HAL-AI-27: Send last known entity changed timestamp for conflict detection.
+                        if (self.entityChanged !== null) {
+                            headers['X-Entity-Changed'] = String(self.entityChanged);
+                        }
+
                         const response = await fetch(`/api/v1/pages/${self.pageId}/canvas`, {
                             method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
-                            },
+                            headers,
                             body: JSON.stringify({
                                 components: data.components,
                                 styles: data.styles,
@@ -683,15 +695,38 @@
                             }),
                         });
 
+                        // HAL-AI-27: Handle 409 Conflict (another user saved).
+                        if (response.status === 409) {
+                            const conflict = await response.json();
+                            self.showConflictNotification(conflict);
+                            throw new Error('conflict');
+                        }
+
+                        // HAL-AI-27: Handle 423 Locked (another user holds the lock).
+                        if (response.status === 423) {
+                            const lockInfo = await response.json();
+                            self.showLockedNotification(lockInfo);
+                            throw new Error('locked');
+                        }
+
                         if (!response.ok) throw new Error('Error al guardar');
+
+                        const result = await response.json();
+
+                        // HAL-AI-27: Update local entity_changed from server response.
+                        if (result.entity_changed) {
+                            self.entityChanged = result.entity_changed;
+                        }
 
                         self.isDirty = false;
                         Drupal.announce(Drupal.t('Cambios guardados'));
 
                         return data;
                     } catch (error) {
-                        console.error('Error guardando canvas:', error);
-                        Drupal.announce(Drupal.t('Error al guardar. Reintentando...'));
+                        if (error.message !== 'conflict' && error.message !== 'locked') {
+                            console.error('Error guardando canvas:', error);
+                            Drupal.announce(Drupal.t('Error al guardar. Reintentando...'));
+                        }
                         throw error;
                     }
                 },
@@ -701,7 +736,14 @@
                         const response = await fetch(`/api/v1/pages/${self.pageId}/canvas`);
                         if (!response.ok) throw new Error('Error al cargar');
 
-                        return await response.json();
+                        const data = await response.json();
+
+                        // HAL-AI-27: Initialize entity_changed from load response.
+                        if (data.entity_changed) {
+                            self.entityChanged = data.entity_changed;
+                        }
+
+                        return data;
                     } catch (error) {
                         console.error('Error cargando canvas:', error);
                         return {};
@@ -711,6 +753,9 @@
 
             // Activar storage custom
             this.editor.StorageManager.setCurrent('jaraba-rest');
+
+            // HAL-AI-27: Acquire lock and start heartbeat on init.
+            this.acquireEditLock();
         }
 
         /**
@@ -753,6 +798,21 @@
          */
         setupEventListeners() {
             const self = this;
+
+            // HAL-AI-27: Release edit lock on page unload (best-effort via keepalive).
+            window.addEventListener('beforeunload', () => {
+                if (self.lockAcquired && self.pageId) {
+                    // Use fetch with keepalive to ensure the request completes
+                    // even as the page is unloading.
+                    fetch(`/api/v1/pages/${self.pageId}/canvas/lock`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
+                        },
+                        keepalive: true,
+                    }).catch(() => {});
+                }
+            });
 
             // Cuando el canvas esté listo, inyectar estilos del tema
             this.editor.on('canvas:frame:load', ({ window }) => {
@@ -1428,6 +1488,177 @@
             }, 1600);
         }
 
+        // =====================================================================
+        // HAL-AI-27: Optimistic Concurrent Edit Locking
+        // =====================================================================
+
+        /**
+         * Acquires an edit lock for the current user.
+         * On success, starts a heartbeat to renew the lock every 2 minutes.
+         */
+        async acquireEditLock() {
+            if (!this.pageId) return;
+
+            try {
+                const response = await fetch(`/api/v1/pages/${this.pageId}/canvas/lock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
+                    },
+                });
+
+                if (response.status === 423) {
+                    const lockInfo = await response.json();
+                    this.showLockedNotification(lockInfo);
+                    this.lockAcquired = false;
+                    return;
+                }
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.lockAcquired = true;
+
+                    // Initialize entity_changed from lock response.
+                    if (data.entity_changed) {
+                        this.entityChanged = data.entity_changed;
+                    }
+
+                    console.log('[Jaraba Canvas] Edit lock acquired.');
+
+                    // Start heartbeat: renew lock every 2 minutes (120s).
+                    this.startLockHeartbeat();
+                }
+            } catch (error) {
+                console.error('[Jaraba Canvas] Error acquiring edit lock:', error);
+            }
+        }
+
+        /**
+         * Starts a heartbeat interval that renews the lock every 2 minutes.
+         */
+        startLockHeartbeat() {
+            // Clear any existing heartbeat.
+            if (this.lockHeartbeatInterval) {
+                clearInterval(this.lockHeartbeatInterval);
+            }
+
+            this.lockHeartbeatInterval = setInterval(async () => {
+                if (!this.pageId || !this.lockAcquired) return;
+
+                try {
+                    const response = await fetch(`/api/v1/pages/${this.pageId}/canvas/lock`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
+                        },
+                    });
+
+                    if (response.ok) {
+                        console.log('[Jaraba Canvas] Lock renewed.');
+                    } else if (response.status === 423) {
+                        // Another user took over (lock expired and was re-acquired).
+                        const lockInfo = await response.json();
+                        this.lockAcquired = false;
+                        this.showLockedNotification(lockInfo);
+                        clearInterval(this.lockHeartbeatInterval);
+                    }
+                } catch (error) {
+                    console.warn('[Jaraba Canvas] Lock heartbeat failed:', error);
+                }
+            }, 120000); // 2 minutes
+        }
+
+        /**
+         * Releases the edit lock when the editor closes.
+         */
+        async releaseEditLock() {
+            if (!this.pageId || !this.lockAcquired) return;
+
+            try {
+                // Use sendBeacon for reliability during page unload.
+                // Fall back to fetch for programmatic calls.
+                const url = `/api/v1/pages/${this.pageId}/canvas/lock`;
+                await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-Token': drupalSettings.jarabaCanvas?.csrfToken || '',
+                    },
+                    keepalive: true,
+                });
+
+                this.lockAcquired = false;
+                console.log('[Jaraba Canvas] Edit lock released.');
+            } catch (error) {
+                console.warn('[Jaraba Canvas] Error releasing edit lock:', error);
+            }
+        }
+
+        /**
+         * Shows a conflict notification when another user has saved changes.
+         *
+         * @param {Object} conflict - Conflict details from the server.
+         */
+        showConflictNotification(conflict) {
+            const message = conflict.message || 'La página fue modificada por otro usuario.';
+            console.warn('[Jaraba Canvas] Save conflict:', message);
+
+            // Remove any existing conflict notification.
+            const existing = document.querySelector('.jaraba-canvas-conflict-notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'jaraba-canvas-conflict-notification';
+            notification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:100000;background:#dc2626;color:#fff;padding:16px 24px;border-radius:8px;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;max-width:600px;';
+            notification.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L1 18h18L10 2z" fill="#fff" opacity=".2"/><path d="M10 7v4m0 3h.01" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <div>
+                    <strong>Conflicto de edicion</strong><br>
+                    ${message}<br>
+                    <button onclick="location.reload()" style="margin-top:8px;padding:4px 12px;background:#fff;color:#dc2626;border:none;border-radius:4px;cursor:pointer;font-weight:600;">Recargar pagina</button>
+                    <button onclick="this.closest('.jaraba-canvas-conflict-notification').remove()" style="margin-top:8px;margin-left:8px;padding:4px 12px;background:transparent;color:#fff;border:1px solid #fff;border-radius:4px;cursor:pointer;">Cerrar</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-dismiss after 15 seconds.
+            setTimeout(() => notification.remove(), 15000);
+        }
+
+        /**
+         * Shows a locked notification when another user holds the edit lock.
+         *
+         * @param {Object} lockInfo - Lock details from the server.
+         */
+        showLockedNotification(lockInfo) {
+            const lockedBy = lockInfo.locked_by_name || `Usuario #${lockInfo.locked_by}`;
+            const message = lockInfo.message || `La pagina esta siendo editada por ${lockedBy}.`;
+            console.warn('[Jaraba Canvas] Page locked:', message);
+
+            // Remove any existing lock notification.
+            const existing = document.querySelector('.jaraba-canvas-lock-notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'jaraba-canvas-lock-notification';
+            notification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:100000;background:#f59e0b;color:#1f2937;padding:16px 24px;border-radius:8px;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;max-width:600px;';
+            notification.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="9" width="14" height="9" rx="2" stroke="#1f2937" stroke-width="1.5"/><path d="M7 9V6a3 3 0 016 0v3" stroke="#1f2937" stroke-width="1.5"/></svg>
+                <div>
+                    <strong>Pagina bloqueada</strong><br>
+                    ${message}<br>
+                    <small>Los cambios que realices podrian perderse. Espera a que el otro usuario termine.</small>
+                    <br>
+                    <button onclick="this.closest('.jaraba-canvas-lock-notification').remove()" style="margin-top:8px;padding:4px 12px;background:#1f2937;color:#fff;border:none;border-radius:4px;cursor:pointer;">Entendido</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-dismiss after 20 seconds.
+            setTimeout(() => notification.remove(), 20000);
+        }
+
         /**
          * Destruye el editor y limpia recursos.
          */
@@ -1435,6 +1666,14 @@
             if (this.autoSaveTimeout) {
                 clearTimeout(this.autoSaveTimeout);
             }
+
+            // HAL-AI-27: Stop lock heartbeat and release lock.
+            if (this.lockHeartbeatInterval) {
+                clearInterval(this.lockHeartbeatInterval);
+                this.lockHeartbeatInterval = null;
+            }
+            this.releaseEditLock();
+
             if (this.editor) {
                 this.editor.destroy();
             }

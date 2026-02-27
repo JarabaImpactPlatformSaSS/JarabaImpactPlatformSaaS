@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Lightbulb with spark: represents the solution/idea -->
+  <!-- Bulb -->
+  <path d="M9 18h6"/>
+  <path d="M10 22h4"/>
+  <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>
+  <!-- Spark rays -->
+  <path d="M12 6v2"/>
+  <path d="M9.17 8.17l1.42 1.42"/>
+  <path d="M14.83 8.17l-1.42 1.42"/>
+</svg>

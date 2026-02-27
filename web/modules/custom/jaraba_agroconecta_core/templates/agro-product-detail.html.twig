@@ -19,7 +19,9 @@
       <img class="agro-product-detail__image"
            src="{{ file_url(product.image.entity.fileuri) }}"
            alt="{{ product.name.value }}"
-           loading="eager">
+           loading="eager"
+           fetchpriority="high"
+           decoding="async">
     {% else %}
       <div class="agro-product-detail__image agro-product-detail__image--placeholder"></div>
     {% endif %}

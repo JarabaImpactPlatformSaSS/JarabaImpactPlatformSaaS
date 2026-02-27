@@ -70,10 +70,12 @@
             <source src="{{ content.media_url }}" type="video/mp4">
           </video>
         {% else %}
-          <img src="{{ content.media_url }}" 
+          <img src="{{ content.media_url }}"
                alt="{{ content.title }}"
                class="jaraba-split-hero__image"
-               loading="eager">
+               loading="eager"
+               fetchpriority="high"
+               decoding="async">
         {% endif %}
       </div>
       

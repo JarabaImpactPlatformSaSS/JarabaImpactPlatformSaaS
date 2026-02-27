@@ -7,6 +7,7 @@ namespace Drupal\jaraba_page_builder\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\jaraba_page_builder\Entity\PageTemplate;
+use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CanvasApiController extends ControllerBase
 {
+
+    /**
+     * Lock duration in seconds (5 minutes).
+     */
+    protected const LOCK_DURATION = 300;
 
     /**
      * {@inheritdoc}
@@ -67,6 +73,7 @@ class CanvasApiController extends ControllerBase
                 'styles' => $canvasData['styles'] ?? [],
                 'html' => $canvasData['html'] ?? '',
                 'css' => $canvasData['css'] ?? '',
+                'entity_changed' => (int) $page_content->getChangedTime(),
             ]);
 
         } catch (\Exception $e) {
@@ -98,6 +105,25 @@ class CanvasApiController extends ControllerBase
     public function saveCanvas(ContentEntityInterface $page_content, Request $request): JsonResponse
     {
         try {
+            // ── Optimistic locking: verify X-Entity-Changed header ──
+            $clientChanged = $request->headers->get('X-Entity-Changed');
+            if ($clientChanged !== NULL && $clientChanged !== '') {
+                $currentChanged = (int) $page_content->getChangedTime();
+                if ((int) $clientChanged !== $currentChanged) {
+                    // Entity was modified by someone else since the client last loaded it.
+                    $lockUid = $page_content->hasField('edit_lock_uid')
+                        ? ($page_content->get('edit_lock_uid')->target_id ?? NULL)
+                        : NULL;
+
+                    return new JsonResponse([
+                        'error' => 'conflict',
+                        'message' => 'La página fue modificada por otro usuario. Recarga para ver los cambios.',
+                        'current_editor' => $lockUid,
+                        'entity_changed' => $currentChanged,
+                    ], Response::HTTP_CONFLICT);
+                }
+            }
+
             // Parsear JSON del body.
             $data = json_decode($request->getContent(), TRUE);
 
@@ -128,6 +154,15 @@ class CanvasApiController extends ControllerBase
                 $page_content->set('rendered_html', $this->sanitizeHtml($data['html']));
             }
 
+            // ── Update edit lock to current user on successful save ──
+            $currentUid = (int) \Drupal::currentUser()->id();
+            if ($page_content->hasField('edit_lock_uid')) {
+                $page_content->set('edit_lock_uid', $currentUid);
+            }
+            if ($page_content->hasField('edit_lock_expires')) {
+                $page_content->set('edit_lock_expires', \Drupal::time()->getRequestTime() + self::LOCK_DURATION);
+            }
+
             // Guardar con nueva revisión (si la entidad lo soporta).
             if (method_exists($page_content, 'setNewRevision')) {
                 $page_content->setNewRevision(TRUE);
@@ -143,6 +178,7 @@ class CanvasApiController extends ControllerBase
                 'success' => TRUE,
                 'message' => 'Canvas guardado correctamente',
                 'revision_id' => $page_content->getRevisionId(),
+                'entity_changed' => (int) $page_content->getChangedTime(),
             ]);
 
         } catch (\Exception $e) {
@@ -200,6 +236,197 @@ class CanvasApiController extends ControllerBase
 
             return new JsonResponse(
                 ['error' => 'Error al listar bloques'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /**
+     * POST /api/v1/pages/{page_content}/canvas/lock
+     *
+     * Acquires an edit lock for the current user.
+     * Returns the current entity `changed` timestamp for the client to track.
+     * If already locked by another user and not expired, returns 423 Locked.
+     *
+     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+     *   The page entity.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The HTTP request.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Lock acquisition result.
+     */
+    public function acquireLock(ContentEntityInterface $page_content, Request $request): JsonResponse
+    {
+        try {
+            $currentUid = (int) \Drupal::currentUser()->id();
+            $now = \Drupal::time()->getRequestTime();
+
+            // Check existing lock.
+            $lockUid = $page_content->hasField('edit_lock_uid')
+                ? (int) ($page_content->get('edit_lock_uid')->target_id ?? 0)
+                : 0;
+            $lockExpires = $page_content->hasField('edit_lock_expires')
+                ? (int) ($page_content->get('edit_lock_expires')->value ?? 0)
+                : 0;
+
+            // If locked by another user and not expired, deny.
+            if ($lockUid > 0 && $lockUid !== $currentUid && $lockExpires > $now) {
+                $lockUser = User::load($lockUid);
+                $lockUserName = $lockUser ? $lockUser->getDisplayName() : "UID $lockUid";
+
+                return new JsonResponse([
+                    'error' => 'locked',
+                    'message' => "La página está siendo editada por $lockUserName.",
+                    'locked_by' => $lockUid,
+                    'locked_by_name' => $lockUserName,
+                    'lock_expires' => $lockExpires,
+                    'entity_changed' => (int) $page_content->getChangedTime(),
+                ], 423);
+            }
+
+            // Acquire or renew lock.
+            if ($page_content->hasField('edit_lock_uid')) {
+                $page_content->set('edit_lock_uid', $currentUid);
+            }
+            if ($page_content->hasField('edit_lock_expires')) {
+                $page_content->set('edit_lock_expires', $now + self::LOCK_DURATION);
+            }
+
+            // Save without creating a new revision (lock is transient state).
+            $page_content->setSyncing(TRUE);
+            $page_content->save();
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'message' => 'Bloqueo adquirido',
+                'locked_by' => $currentUid,
+                'lock_expires' => $now + self::LOCK_DURATION,
+                'entity_changed' => (int) $page_content->getChangedTime(),
+            ]);
+
+        } catch (\Exception $e) {
+            $this->getLogger('jaraba_page_builder')->error(
+                'Error acquiring lock for page @id: @error',
+                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+            );
+
+            return new JsonResponse(
+                ['error' => 'Error al adquirir bloqueo: ' . $e->getMessage()],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /**
+     * DELETE /api/v1/pages/{page_content}/canvas/lock
+     *
+     * Releases the edit lock. Only the lock owner or an admin can release.
+     *
+     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+     *   The page entity.
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The HTTP request.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Lock release result.
+     */
+    public function releaseLock(ContentEntityInterface $page_content, Request $request): JsonResponse
+    {
+        try {
+            $currentUid = (int) \Drupal::currentUser()->id();
+            $isAdmin = \Drupal::currentUser()->hasPermission('administer page builder');
+
+            $lockUid = $page_content->hasField('edit_lock_uid')
+                ? (int) ($page_content->get('edit_lock_uid')->target_id ?? 0)
+                : 0;
+
+            // Only the lock owner or admin can release.
+            if ($lockUid > 0 && $lockUid !== $currentUid && !$isAdmin) {
+                return new JsonResponse([
+                    'error' => 'forbidden',
+                    'message' => 'Solo el usuario que bloqueó la página o un administrador puede liberar el bloqueo.',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            // Clear lock fields.
+            if ($page_content->hasField('edit_lock_uid')) {
+                $page_content->set('edit_lock_uid', NULL);
+            }
+            if ($page_content->hasField('edit_lock_expires')) {
+                $page_content->set('edit_lock_expires', NULL);
+            }
+
+            // Save without creating a new revision.
+            $page_content->setSyncing(TRUE);
+            $page_content->save();
+
+            return new JsonResponse([
+                'success' => TRUE,
+                'message' => 'Bloqueo liberado',
+            ]);
+
+        } catch (\Exception $e) {
+            $this->getLogger('jaraba_page_builder')->error(
+                'Error releasing lock for page @id: @error',
+                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+            );
+
+            return new JsonResponse(
+                ['error' => 'Error al liberar bloqueo: ' . $e->getMessage()],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /**
+     * GET /api/v1/pages/{page_content}/canvas/lock
+     *
+     * Returns the current lock status for the page.
+     *
+     * @param \Drupal\Core\Entity\ContentEntityInterface $page_content
+     *   The page entity.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   Lock status information.
+     */
+    public function getLockStatus(ContentEntityInterface $page_content): JsonResponse
+    {
+        try {
+            $now = \Drupal::time()->getRequestTime();
+
+            $lockUid = $page_content->hasField('edit_lock_uid')
+                ? (int) ($page_content->get('edit_lock_uid')->target_id ?? 0)
+                : 0;
+            $lockExpires = $page_content->hasField('edit_lock_expires')
+                ? (int) ($page_content->get('edit_lock_expires')->value ?? 0)
+                : 0;
+
+            $isLocked = $lockUid > 0 && $lockExpires > $now;
+
+            $response = [
+                'is_locked' => $isLocked,
+                'locked_by' => $isLocked ? $lockUid : NULL,
+                'locked_by_name' => NULL,
+                'lock_expires' => $isLocked ? $lockExpires : NULL,
+                'entity_changed' => (int) $page_content->getChangedTime(),
+            ];
+
+            if ($isLocked) {
+                $lockUser = User::load($lockUid);
+                $response['locked_by_name'] = $lockUser ? $lockUser->getDisplayName() : "UID $lockUid";
+            }
+
+            return new JsonResponse($response);
+
+        } catch (\Exception $e) {
+            $this->getLogger('jaraba_page_builder')->error(
+                'Error getting lock status for page @id: @error',
+                ['@id' => $page_content->id(), '@error' => $e->getMessage()]
+            );
+
+            return new JsonResponse(
+                ['error' => 'Error al obtener estado del bloqueo'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }

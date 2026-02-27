@@ -17,7 +17,9 @@
       <div class="servicios-provider-detail__cover">
         <img src="{{ file_url(provider.cover_image.entity.fileuri) }}"
              alt="{{ provider.display_name.value }}"
-             loading="eager" />
+             loading="eager"
+             fetchpriority="high"
+             decoding="async" />
       </div>
     {% endif %}
 

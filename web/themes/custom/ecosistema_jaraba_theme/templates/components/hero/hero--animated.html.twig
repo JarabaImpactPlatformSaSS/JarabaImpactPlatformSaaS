@@ -74,7 +74,7 @@
       {% if image %}
         <div class="hero__media animate-fade-left" data-delay="300">
           <div class="hero__image-wrapper">
-            <img src="{{ image }}" alt="{{ title }}" class="hero__image" loading="eager" />
+            <img src="{{ image }}" alt="{{ title }}" class="hero__image" loading="eager" fetchpriority="high" decoding="async" />
             
             {# Elementos flotantes decorativos #}
             {% if floating_elements %}

@@ -56,7 +56,7 @@
             
             {% if slide.image %}
               <div class="hero__media">
-                <img src="{{ slide.image }}" alt="{{ slide.title }}" class="hero__image" loading="lazy" />
+                <img src="{{ slide.image }}" alt="{{ slide.title }}" class="hero__image" loading="{{ loop.first ? 'eager' : 'lazy' }}" {{ loop.first ? 'fetchpriority="high"' }} decoding="async" />
               </div>
             {% endif %}
           </div>

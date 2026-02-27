@@ -467,6 +467,31 @@ class PageContent extends ContentEntityBase implements PageContentInterface
             ->setDisplayConfigurable('view', FALSE);
 
 
+        // =====================================================================
+        // OPTIMISTIC LOCKING (HAL-AI-27)
+        // Transient fields for concurrent edit protection. NOT revisionable
+        // because they represent ephemeral session state, not content.
+        // =====================================================================
+
+        // User currently holding the edit lock.
+        $fields['edit_lock_uid'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Editor actual'))
+            ->setDescription(t('Usuario que está editando actualmente esta página.'))
+            ->setSetting('target_type', 'user')
+            ->setRevisionable(FALSE)
+            ->setTranslatable(FALSE)
+            ->setDisplayConfigurable('form', FALSE)
+            ->setDisplayConfigurable('view', FALSE);
+
+        // Timestamp when the edit lock expires (5 minutes from acquisition).
+        $fields['edit_lock_expires'] = BaseFieldDefinition::create('timestamp')
+            ->setLabel(t('Expiración del bloqueo'))
+            ->setDescription(t('Timestamp de expiración del bloqueo de edición.'))
+            ->setRevisionable(FALSE)
+            ->setTranslatable(FALSE)
+            ->setDisplayConfigurable('form', FALSE)
+            ->setDisplayConfigurable('view', FALSE);
+
         // Timestamps.
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Creado'))

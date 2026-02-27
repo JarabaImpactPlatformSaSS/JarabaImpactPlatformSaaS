@@ -391,3 +391,11 @@ route-ai-features:
       css/routes/ai-features.css: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
+
+# HAL-AI-10: Core Web Vitals tracking (LCP, CLS, INP, FCP, TTFB)
+cwv-tracking:
+  version: 1.0.0
+  js:
+    js/cwv-tracking.js: {}
+  dependencies:
+    - core/drupal

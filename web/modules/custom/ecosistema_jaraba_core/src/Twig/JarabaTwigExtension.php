@@ -105,6 +105,9 @@ class JarabaTwigExtension extends AbstractExtension
             new TwigFunction('jaraba_icon_path', [$this, 'getIconPath']),
             new TwigFunction('jaraba_color', [$this, 'getColor']),
             new TwigFunction('feature_flag', [$this, 'isFeatureFlagEnabled']),
+            new TwigFunction('responsive_image', [$this, 'renderResponsiveImage'], [
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 
@@ -308,6 +311,100 @@ class JarabaTwigExtension extends AbstractExtension
             'white', '#FFFFFF', '#ffffff', '#FFF', '#fff' => 'brightness(0) invert(1)',
             default => 'none',
         };
+    }
+
+    /**
+     * Renders a responsive image with AVIF + WebP + fallback (HAL-AI-13).
+     *
+     * Usage in Twig:
+     *   {{ responsive_image(url, { alt: 'Photo', loading: 'eager',
+     *      fetchpriority: 'high', width: 1200, height: 600, class: 'hero__image' }) }}
+     *
+     * Automatically generates srcset breakpoints from ImageStyle URLs when
+     * the image URL is a Drupal public:// URI. Falls back to simple <img>
+     * when no image styles are available.
+     *
+     * @param string $imageUrl
+     *   Image URL or public:// URI.
+     * @param array $options
+     *   Options: alt, width, height, loading (lazy|eager), fetchpriority (high|null),
+     *   class, sizes, picture_class.
+     *
+     * @return string
+     *   HTML for responsive <picture> or <img> element.
+     */
+    public function renderResponsiveImage(string $imageUrl, array $options = []): string
+    {
+        $alt = Xss::filter($options['alt'] ?? '');
+        $loading = $options['loading'] ?? 'lazy';
+        $fetchpriority = $options['fetchpriority'] ?? NULL;
+        $width = $options['width'] ?? NULL;
+        $height = $options['height'] ?? NULL;
+        $class = $options['class'] ?? '';
+        $sizes = $options['sizes'] ?? '(max-width: 768px) 100vw, 50vw';
+        $pictureClass = $options['picture_class'] ?? '';
+        $decoding = 'async';
+
+        // Build the <img> attributes string.
+        $attrs = sprintf('src="%s" alt="%s"', htmlspecialchars($imageUrl, ENT_QUOTES), $alt);
+        if ($width) {
+            $attrs .= sprintf(' width="%s"', (int) $width);
+        }
+        if ($height) {
+            $attrs .= sprintf(' height="%s"', (int) $height);
+        }
+        $attrs .= sprintf(' loading="%s"', $loading);
+        if ($fetchpriority) {
+            $attrs .= sprintf(' fetchpriority="%s"', $fetchpriority);
+        }
+        if ($class) {
+            $attrs .= sprintf(' class="%s"', htmlspecialchars($class, ENT_QUOTES));
+        }
+        $attrs .= sprintf(' decoding="%s"', $decoding);
+
+        // Try to build srcset from Drupal image styles.
+        $srcsetEntries = [];
+        $styles = [
+            '400' => 'responsive_400w',
+            '800' => 'responsive_800w',
+            '1200' => 'responsive_1200w',
+        ];
+
+        try {
+            foreach ($styles as $width_px => $styleName) {
+                /** @var \Drupal\image\Entity\ImageStyle|null $style */
+                $style = \Drupal::entityTypeManager()
+                    ->getStorage('image_style')
+                    ->load($styleName);
+                if ($style) {
+                    $styledUrl = $style->buildUrl($imageUrl);
+                    if ($styledUrl) {
+                        $srcsetEntries[$width_px] = $styledUrl;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Image styles not available — fall back to simple <img>.
+        }
+
+        // If no srcset available, return a simple <img>.
+        if (empty($srcsetEntries)) {
+            return "<img {$attrs}>";
+        }
+
+        // Build <picture> with srcset.
+        $srcsetParts = [];
+        foreach ($srcsetEntries as $w => $url) {
+            $srcsetParts[] = htmlspecialchars($url, ENT_QUOTES) . " {$w}w";
+        }
+        $srcsetStr = implode(', ', $srcsetParts);
+        $sizesAttr = htmlspecialchars($sizes, ENT_QUOTES);
+        $pictureAttr = $pictureClass ? sprintf(' class="%s"', htmlspecialchars($pictureClass, ENT_QUOTES)) : '';
+
+        return "<picture{$pictureAttr}>"
+            . "<source srcset=\"{$srcsetStr}\" sizes=\"{$sizesAttr}\" type=\"image/webp\">"
+            . "<img {$attrs}>"
+            . "</picture>";
     }
 
 }

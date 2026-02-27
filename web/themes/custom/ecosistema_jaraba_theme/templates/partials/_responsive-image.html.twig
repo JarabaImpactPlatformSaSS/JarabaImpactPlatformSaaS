@@ -1,11 +1,14 @@
 {#
-  Responsive Image Partial (HAL-AI-10 / S4-01: Core Web Vitals).
+  Responsive Image Partial (HAL-AI-10/13: Core Web Vitals + AVIF).
 
-  Generates <picture> with WebP srcset, fallback <img>, fetchpriority,
-  loading=lazy, and explicit width/height for CLS prevention.
+  Generates <picture> with AVIF + WebP srcset, fallback <img>, fetchpriority,
+  loading=lazy/eager, and explicit width/height for CLS prevention.
 
   Variables:
     - image_url: (string) Base image URL (Drupal file URI or public URL).
+    - image_avif_400: (string|null) AVIF 400w variant URL.
+    - image_avif_800: (string|null) AVIF 800w variant URL.
+    - image_avif_1200: (string|null) AVIF 1200w variant URL.
     - image_webp_400: (string|null) WebP 400w variant URL.
     - image_webp_800: (string|null) WebP 800w variant URL.
     - image_webp_1200: (string|null) WebP 1200w variant URL.
@@ -20,12 +23,21 @@
 #}
 {% set sizes_attr = sizes|default('(max-width: 768px) 100vw, 50vw') %}
 {% set loading_attr = loading|default('lazy') %}
+{% set has_avif = image_avif_400 or image_avif_800 or image_avif_1200 %}
+{% set has_webp = image_webp_400 or image_webp_800 or image_webp_1200 %}
 
-{% if image_webp_400 or image_webp_800 or image_webp_1200 %}
+{% if has_avif or has_webp %}
 <picture{% if picture_class %} class="{{ picture_class }}"{% endif %}>
+    {% if has_avif %}
+    <source srcset="{% if image_avif_400 %}{{ image_avif_400 }} 400w{% endif %}{% if image_avif_800 %}{% if image_avif_400 %}, {% endif %}{{ image_avif_800 }} 800w{% endif %}{% if image_avif_1200 %}{% if image_avif_400 or image_avif_800 %}, {% endif %}{{ image_avif_1200 }} 1200w{% endif %}"
+            sizes="{{ sizes_attr }}"
+            type="image/avif">
+    {% endif %}
+    {% if has_webp %}
     <source srcset="{% if image_webp_400 %}{{ image_webp_400 }} 400w{% endif %}{% if image_webp_800 %}{% if image_webp_400 %}, {% endif %}{{ image_webp_800 }} 800w{% endif %}{% if image_webp_1200 %}{% if image_webp_400 or image_webp_800 %}, {% endif %}{{ image_webp_1200 }} 1200w{% endif %}"
             sizes="{{ sizes_attr }}"
             type="image/webp">
+    {% endif %}
     <img src="{{ image_url }}"
          alt="{{ alt|default('')}}"
          {% if width %}width="{{ width }}"{% endif %}

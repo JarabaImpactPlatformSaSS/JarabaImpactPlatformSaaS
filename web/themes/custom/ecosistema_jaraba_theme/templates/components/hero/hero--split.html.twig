@@ -63,7 +63,7 @@
           <source src="{{ video }}" type="video/mp4" />
         </video>
       {% elseif image %}
-        <img src="{{ image }}" alt="{{ image_alt|default(title) }}" class="hero__image" />
+        <img src="{{ image }}" alt="{{ image_alt|default(title) }}" class="hero__image" loading="eager" fetchpriority="high" decoding="async" />
       {% endif %}
 
       {% if floating_card %}

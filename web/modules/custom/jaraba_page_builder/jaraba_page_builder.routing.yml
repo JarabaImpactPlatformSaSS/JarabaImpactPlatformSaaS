@@ -727,6 +727,61 @@ jaraba_page_builder.api.canvas_save:
       page_content:
         type: entity:page_content
 
+# ============================================================
+# CANVAS EDIT LOCK API (HAL-AI-27 — Optimistic Concurrent Locking)
+# Prevents two users from overwriting each other's canvas work.
+# ============================================================
+
+# Acquire or renew an edit lock
+jaraba_page_builder.api.canvas_lock_acquire:
+  path: '/api/v1/pages/{page_content}/canvas/lock'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasApiController::acquireLock'
+  methods: [POST]
+  requirements:
+    _permission: 'edit page builder content'
+    _csrf_request_header_token: 'TRUE'
+    page_content: \d+
+  options:
+
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Release an edit lock
+jaraba_page_builder.api.canvas_lock_release:
+  path: '/api/v1/pages/{page_content}/canvas/lock'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasApiController::releaseLock'
+  methods: [DELETE]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      page_content:
+        type: entity:page_content
+
+# Get lock status
+jaraba_page_builder.api.canvas_lock_status:
+  path: '/api/v1/pages/{page_content}/canvas/lock'
+  defaults:
+    _controller: '\Drupal\jaraba_page_builder\Controller\CanvasApiController::getLockStatus'
+  methods: [GET]
+  requirements:
+    _permission: 'edit page builder content'
+    page_content: \d+
+  options:
+    _auth: ['cookie', 'basic_auth']
+    no_cache: TRUE
+    parameters:
+      page_content:
+        type: entity:page_content
+
 # Listar bloques disponibles para GrapesJS
 jaraba_page_builder.api.canvas_blocks:
   path: '/api/v1/page-builder/blocks'

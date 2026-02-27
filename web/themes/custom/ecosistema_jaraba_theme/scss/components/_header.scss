@@ -360,22 +360,24 @@
 .header--mega .header__mega-panel {
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;
-    max-width: 960px;
+    right: auto;
+    left: -200px;
+    width: 840px;
     background: var(--header-bg);
     box-shadow: var(--ej-shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.1));
+    border-radius: 0 0 var(--ej-border-radius-lg, 16px) var(--ej-border-radius-lg, 16px);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s ease;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    z-index: 100;
 }
 
 .header--mega .has-mega-menu:hover .header__mega-panel,
 .header--mega .header__menu-link[aria-expanded="true"]+.header__mega-panel {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
 }
 
 .header--mega .mega-panel__container {
