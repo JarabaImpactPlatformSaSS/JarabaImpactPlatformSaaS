@@ -22,7 +22,8 @@ use Symfony\Component\HttpFoundation\Request;
  * {success, data, error} (CONS-N08). All paths include /api/v1/ (CONS-N07).
  * Tenant validation on every request (CONS-N10).
  */
-class MobileApiController extends ControllerBase {
+class MobileApiController extends ControllerBase
+{
 
   /**
    * Constructs a MobileApiController.
@@ -43,13 +44,16 @@ class MobileApiController extends ControllerBase {
     protected readonly PushSenderService $pushSender,
     protected readonly DeepLinkResolverService $deepLinkResolver,
     protected readonly TenantContextService $tenantContext,
-    protected readonly AccountProxyInterface $currentUser,
-  ) {}
+    AccountProxyInterface $currentUser,
+  ) {
+    $this->currentUser = $currentUser;
+  }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static {
+  public static function create(ContainerInterface $container): static
+  {
     return new static(
       $container->get('jaraba_mobile.device_registry'),
       $container->get('jaraba_mobile.push_sender'),
@@ -73,7 +77,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response with device data.
    */
-  public function registerDevice(Request $request): JsonResponse {
+  public function registerDevice(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -116,8 +121,7 @@ class MobileApiController extends ControllerBase {
           'is_active' => TRUE,
         ],
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to register device.'],
@@ -138,7 +142,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response.
    */
-  public function unregisterDevice(Request $request): JsonResponse {
+  public function unregisterDevice(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -167,8 +172,7 @@ class MobileApiController extends ControllerBase {
         'success' => TRUE,
         'data' => ['unregistered' => TRUE],
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to unregister device.'],
@@ -189,7 +193,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response.
    */
-  public function updateToken(Request $request): JsonResponse {
+  public function updateToken(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -218,8 +223,7 @@ class MobileApiController extends ControllerBase {
         'success' => TRUE,
         'data' => ['token_updated' => TRUE],
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to update token.'],
@@ -235,7 +239,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response with device list.
    */
-  public function listDevices(): JsonResponse {
+  public function listDevices(): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -262,8 +267,7 @@ class MobileApiController extends ControllerBase {
         'success' => TRUE,
         'data' => $data,
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to retrieve devices.'],
@@ -285,7 +289,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response with notification data.
    */
-  public function sendPush(Request $request): JsonResponse {
+  public function sendPush(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -321,8 +326,7 @@ class MobileApiController extends ControllerBase {
           'channel' => $notification->get('channel')->value,
         ],
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to send notification.'],
@@ -344,7 +348,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response with notification results.
    */
-  public function sendBatchPush(Request $request): JsonResponse {
+  public function sendBatchPush(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -395,8 +400,7 @@ class MobileApiController extends ControllerBase {
           'notifications' => $results,
         ],
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to send batch notifications.'],
@@ -416,7 +420,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response with paginated notification history.
    */
-  public function pushHistory(Request $request): JsonResponse {
+  public function pushHistory(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -482,8 +487,7 @@ class MobileApiController extends ControllerBase {
           ],
         ],
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to retrieve push history.'],
@@ -504,7 +508,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   The JSON response with resolved link data.
    */
-  public function resolveDeepLink(Request $request): JsonResponse {
+  public function resolveDeepLink(Request $request): JsonResponse
+  {
     $tenantCheck = $this->validateTenant();
     if ($tenantCheck !== NULL) {
       return $tenantCheck;
@@ -526,8 +531,7 @@ class MobileApiController extends ControllerBase {
         'success' => TRUE,
         'data' => $resolved,
       ]);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return new JsonResponse([
         'success' => FALSE,
         'error' => ['message' => 'Failed to resolve deep link.'],
@@ -541,7 +545,8 @@ class MobileApiController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse|null
    *   Error response if tenant is not resolved, NULL if valid.
    */
-  protected function validateTenant(): ?JsonResponse {
+  protected function validateTenant(): ?JsonResponse
+  {
     $tenantId = (int) $this->tenantContext->getCurrentTenantId();
     if ($tenantId <= 0) {
       return new JsonResponse([

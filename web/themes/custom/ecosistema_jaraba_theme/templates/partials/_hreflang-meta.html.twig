@@ -11,10 +11,13 @@
  * - i18n: soporte multilingüe
  */
 #}
-{% set current_path = path('<current>') %}
-{% set base_url = (url('<front>', {}, {absolute: true}) ~ '')|trim('/') %}
+{% set current_path = path('<current>')|default('/') %}
+{% set base_url_raw = url('<front>', {}, {absolute: true})|render|default('') %}
+{% set base_url = base_url_raw|trim('/') %}
 
 {# ES es el idioma principal (x-default) #}
+{% if base_url %}
 <link rel="alternate" hreflang="es" href="{{ base_url }}/es{{ current_path }}" />
 <link rel="alternate" hreflang="en" href="{{ base_url }}/en{{ current_path }}" />
 <link rel="alternate" hreflang="x-default" href="{{ base_url }}/es{{ current_path }}" />
+{% endif %}
