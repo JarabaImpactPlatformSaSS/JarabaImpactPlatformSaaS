@@ -12,26 +12,31 @@
  */
 #}
 
-{% set items = pain_points|default([]) %}
+{% set section = pain_points|default({}) %}
+{% set section_title = section.title|default('Te suena esto?'|t) %}
+{% set items = section.items|default(section|default([])) %}
 
 {% if items|length > 0 %}
 <section class="landing-pain-points" aria-labelledby="pain-points-title">
   <div class="landing-pain-points__container">
     <h2 id="pain-points-title" class="landing-pain-points__title">
-      {% trans %}Te suena esto?{% endtrans %}
+      {{ section_title }}
     </h2>
 
     <div class="landing-pain-points__grid">
       {% for item in items %}
         <div class="landing-pain-point">
-          <span class="landing-pain-point__icon" aria-hidden="true">
-            {{ jaraba_icon(item.icon.category|default('ui'), item.icon.name|default('alert-circle'), {
-              variant: 'duotone',
-              color: color|default('impulse'),
-              size: 32
-            }) }}
-          </span>
-          <p class="landing-pain-point__text">{{ item.text }}</p>
+          {% if item.icon is defined %}
+            <span class="landing-pain-point__icon" aria-hidden="true">
+              {{ jaraba_icon(item.icon.category|default('ui'), item.icon.name|default('alert-circle'), {
+                variant: 'duotone',
+                color: color|default('impulse'),
+                size: '32px'
+              }) }}
+            </span>
+          {% endif %}
+          <h3 class="landing-pain-point__title">{{ item.title }}</h3>
+          <p class="landing-pain-point__description">{{ item.description|default(item.text|default('')) }}</p>
         </div>
       {% endfor %}
     </div>

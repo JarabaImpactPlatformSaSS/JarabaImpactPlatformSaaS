@@ -474,6 +474,62 @@ function ecosistema_jaraba_core_schema() {
     ],
   ];
 
+  // ---------------------------------------------------------------------------
+  // Tabla: demo_sessions (S1-04)
+  // ---------------------------------------------------------------------------
+  // Almacena sesiones de demo interactiva con almacenamiento individual por fila
+  // en lugar del blob único de State API. Permite limpieza eficiente por cron
+  // e indexación por perfil/IP para analytics.
+  $schema['demo_sessions'] = [
+    'description' => 'Sesiones de demo interactiva con TTL y tracking de acciones.',
+    'fields' => [
+      'session_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'ID único de sesión (demo_ + 16 hex).',
+      ],
+      'profile_id' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'ID del perfil de demo (producer, winery, etc.).',
+      ],
+      'client_ip' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'IP del cliente (IPv4 o IPv6).',
+      ],
+      'session_data' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'Datos de sesión serializados en JSON.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp Unix de creación.',
+      ],
+      'expires' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Timestamp Unix de expiración.',
+      ],
+    ],
+    'primary key' => ['session_id'],
+    'indexes' => [
+      'expires' => ['expires'],
+      'profile_id' => ['profile_id'],
+      'client_ip' => ['client_ip'],
+      'created' => ['created'],
+    ],
+  ];
+
   return $schema;
 }
 
@@ -1766,4 +1822,189 @@ function ecosistema_jaraba_core_update_9019(): string {
   );
 
   return "Precios Configurables v2.1: {$result}";
+}
+
+/**
+ * B-01/B-07/B-09: Add sentiment, authenticity_score, not_helpful_count, wilson_score fields.
+ *
+ * Also creates review_helpful_votes tracking table.
+ */
+function ecosistema_jaraba_core_update_9020(): string {
+  $entity_types = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+    'content_comment',
+  ];
+
+  $definition_manager = \Drupal::entityDefinitionUpdateManager();
+  $fields_added = 0;
+
+  $new_fields = [
+    'sentiment' => [
+      'type' => 'list_string',
+      'label' => 'Sentimiento',
+      'settings' => [
+        'allowed_values' => [
+          'positive' => 'Positivo',
+          'neutral' => 'Neutro',
+          'negative' => 'Negativo',
+        ],
+      ],
+    ],
+    'authenticity_score' => [
+      'type' => 'float',
+      'label' => 'Score de autenticidad',
+      'default_value' => [['value' => 0.0]],
+    ],
+    'not_helpful_count' => [
+      'type' => 'integer',
+      'label' => 'Votos de no utilidad',
+      'default_value' => [['value' => 0]],
+    ],
+    'wilson_score' => [
+      'type' => 'float',
+      'label' => 'Wilson Score',
+      'default_value' => [['value' => 0.0]],
+    ],
+  ];
+
+  foreach ($entity_types as $entity_type_id) {
+    try {
+      $entity_type = $definition_manager->getEntityType($entity_type_id);
+      if ($entity_type === NULL) {
+        continue;
+      }
+
+      foreach ($new_fields as $field_name => $field_info) {
+        $existing = $definition_manager->getFieldStorageDefinition($field_name, $entity_type_id);
+        if ($existing !== NULL) {
+          continue;
+        }
+
+        $field = \Drupal\Core\Field\BaseFieldDefinition::create($field_info['type'])
+          ->setLabel($field_info['label'])
+          ->setDisplayConfigurable('view', TRUE);
+
+        if (isset($field_info['settings'])) {
+          foreach ($field_info['settings'] as $key => $value) {
+            $field->setSetting($key, $value);
+          }
+        }
+
+        if (isset($field_info['default_value'])) {
+          $field->setDefaultValue($field_info['default_value'][0]['value']);
+        }
+
+        $definition_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'ecosistema_jaraba_core', $field);
+        $fields_added++;
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('ecosistema_jaraba_core')->warning(
+        'Could not add fields to @type: @msg',
+        ['@type' => $entity_type_id, '@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // Create review_helpful_votes table.
+  if (\Drupal::hasService('ecosistema_jaraba_core.review_helpfulness')) {
+    try {
+      \Drupal::service('ecosistema_jaraba_core.review_helpfulness')->ensureTable();
+    }
+    catch (\Exception) {
+      // Will be created on first use.
+    }
+  }
+
+  return "B-01/B-07/B-09: {$fields_added} fields added across review entities. Vote tracking table created.";
+}
+
+/**
+ * B-13/B-15/B-18: Create gamification, A/B testing, and webhook tables.
+ */
+function ecosistema_jaraba_core_update_9021(): string {
+  $tables_created = 0;
+
+  // B-13: Gamification tables.
+  if (\Drupal::hasService('ecosistema_jaraba_core.review_gamification')) {
+    try {
+      $gamification = \Drupal::service('ecosistema_jaraba_core.review_gamification');
+      // Force table creation by calling getUserPoints (triggers ensureTable).
+      $gamification->getUserPoints(0);
+      $tables_created += 2;
+    }
+    catch (\Exception) {}
+  }
+
+  // B-15: A/B testing table.
+  if (\Drupal::hasService('ecosistema_jaraba_core.review_ab_test')) {
+    try {
+      $abTest = \Drupal::service('ecosistema_jaraba_core.review_ab_test');
+      $abTest->getResults();
+      $tables_created++;
+    }
+    catch (\Exception) {}
+  }
+
+  // B-18: Webhook tables.
+  if (\Drupal::hasService('ecosistema_jaraba_core.review_webhook')) {
+    try {
+      $webhook = \Drupal::service('ecosistema_jaraba_core.review_webhook');
+      $webhook->getWebhooks();
+      $tables_created++;
+    }
+    catch (\Exception) {}
+  }
+
+  return "B-13/B-15/B-18: {$tables_created} tables created (gamification, A/B testing, webhooks).";
+}
+
+/**
+ * S1-04: Crear tabla demo_sessions para migración desde State API.
+ *
+ * Migra el almacenamiento de sesiones de demo de un blob único en State
+ * (key_value) a una tabla dedicada con filas individuales por sesión.
+ * Esto elimina el vector DoS de inflar una key en State con sesiones ilimitadas.
+ */
+function ecosistema_jaraba_core_update_9022(): string {
+  $schema = ecosistema_jaraba_core_schema();
+  $database = \Drupal::database();
+
+  if (!$database->schema()->tableExists('demo_sessions')) {
+    $database->schema()->createTable('demo_sessions', $schema['demo_sessions']);
+
+    // Migrar sesiones activas desde State API (si existen).
+    $state = \Drupal::state();
+    $oldSessions = $state->get('demo_sessions', []);
+    $now = time();
+    $migrated = 0;
+
+    foreach ($oldSessions as $sessionId => $sessionData) {
+      // Solo migrar sesiones no expiradas.
+      if (($sessionData['expires'] ?? 0) > $now) {
+        $database->insert('demo_sessions')
+          ->fields([
+            'session_id' => $sessionId,
+            'profile_id' => $sessionData['profile_id'] ?? 'unknown',
+            'client_ip' => '',
+            'session_data' => json_encode($sessionData, JSON_UNESCAPED_UNICODE),
+            'created' => $sessionData['created'] ?? $now,
+            'expires' => $sessionData['expires'] ?? $now + 3600,
+          ])
+          ->execute();
+        $migrated++;
+      }
+    }
+
+    // Eliminar datos antiguos de State API.
+    $state->delete('demo_sessions');
+
+    return "S1-04: Tabla demo_sessions creada. {$migrated} sesiones migradas desde State API.";
+  }
+
+  return 'S1-04: Tabla demo_sessions ya existía.';
 }

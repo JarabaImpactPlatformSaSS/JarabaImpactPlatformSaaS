@@ -196,9 +196,12 @@ demo-dashboard:
   css:
     theme:
       css/ecosistema-jaraba-core.css: {}
+  js:
+    js/demo-dashboard.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
+    - core/once
     - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
@@ -222,8 +225,29 @@ demo-storytelling:
   css:
     theme:
       css/ecosistema-jaraba-core.css: {}
+  js:
+    js/demo-storytelling.js: {}
   dependencies:
     - core/drupal
+    - core/once
+
+# ---------------------------------------------------------------------------
+# BIBLIOTECA DE DEMO AI PLAYGROUND (Q1 2027 — S1-06)
+# ---------------------------------------------------------------------------
+# Página pública de AI Playground con escenarios interactivos.
+# Consumida por DemoController::aiPlayground().
+
+demo-ai-playground:
+  version: 1.x
+  css:
+    theme:
+      css/ecosistema-jaraba-core.css: {}
+  js:
+    js/demo-ai-playground.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE CONTEXTUAL AI COPILOT (Q1 2027)
@@ -649,3 +673,22 @@ fiscal-styles:
       css/ecosistema-jaraba-core.css: {}
   dependencies:
     - core/drupal
+
+# B-01/B-02/B-06: Review interactions (voting, filtering, photo gallery)
+review-interactions:
+  version: 1.x
+  js:
+    js/review-interactions.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+# B-05: Review analytics dashboard
+review-analytics:
+  version: 1.x
+  js:
+    js/review-analytics.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_core/chartjs

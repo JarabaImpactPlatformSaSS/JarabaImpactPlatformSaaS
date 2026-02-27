@@ -117,6 +117,38 @@ class GuidedTourService
                 ],
             ],
         ],
+        // S3-06: Tour para la demo interactiva con data-tour-step selectors.
+        'demo_welcome' => [
+            'id' => 'demo_welcome',
+            'name' => 'Bienvenida a la Demo',
+            'target_intent' => 'demo',
+            'steps' => [
+                [
+                    'target' => '[data-tour-step="demo-metrics"]',
+                    'title' => 'Tus Métricas',
+                    'content' => 'Aquí puedes ver las métricas clave de tu negocio de un vistazo.',
+                    'position' => 'bottom',
+                ],
+                [
+                    'target' => '[data-tour-step="demo-magic-moment"]',
+                    'title' => 'Tu Primer Paso',
+                    'content' => 'Estas acciones rápidas te ayudan a descubrir el valor de la plataforma.',
+                    'position' => 'bottom',
+                ],
+                [
+                    'target' => '[data-tour-step="demo-chart"]',
+                    'title' => 'Tendencia de Ventas',
+                    'content' => 'Visualiza la evolución de tus ingresos con gráficos interactivos.',
+                    'position' => 'top',
+                ],
+                [
+                    'target' => '[data-tour-step="demo-convert"]',
+                    'title' => '¿Te gusta lo que ves?',
+                    'content' => 'Convierte esta demo en tu cuenta real y accede a todas las funcionalidades.',
+                    'position' => 'top',
+                ],
+            ],
+        ],
     ];
 
     /**

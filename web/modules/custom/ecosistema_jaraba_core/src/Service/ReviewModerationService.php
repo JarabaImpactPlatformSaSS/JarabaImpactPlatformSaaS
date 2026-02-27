@@ -227,14 +227,41 @@ class ReviewModerationService {
    * @return bool
    *   TRUE si fue exitoso.
    */
-  public function flagReview(string $entityTypeId, int $entityId, string $reason): bool {
+  public function flagReview(string $entityTypeId, int $entityId, string $reason, int $reporterUid = 0): bool {
     $result = $this->moderate($entityTypeId, $entityId, self::STATUS_FLAGGED);
 
     if ($result) {
-      $this->logger->info('Review @type @id flagged. Reason: @reason', [
+      // Persist flag metadata on the entity.
+      try {
+        $storage = $this->entityTypeManager->getStorage($entityTypeId);
+        $entity = $storage->load($entityId);
+        if ($entity !== NULL) {
+          if ($entity->hasField('flag_reason')) {
+            $entity->set('flag_reason', mb_substr($reason, 0, 255));
+          }
+          if ($entity->hasField('flag_reporter_uid') && $reporterUid > 0) {
+            $entity->set('flag_reporter_uid', $reporterUid);
+          }
+          if ($entity->hasField('flag_count')) {
+            $currentCount = (int) ($entity->get('flag_count')->value ?? 0);
+            $entity->set('flag_count', $currentCount + 1);
+          }
+          $entity->save();
+        }
+      }
+      catch (\Exception $e) {
+        $this->logger->warning('Could not persist flag metadata for @type @id: @msg', [
+          '@type' => $entityTypeId,
+          '@id' => $entityId,
+          '@msg' => $e->getMessage(),
+        ]);
+      }
+
+      $this->logger->info('Review @type @id flagged. Reason: @reason (reporter: @uid)', [
         '@type' => $entityTypeId,
         '@id' => $entityId,
         '@reason' => $reason,
+        '@uid' => $reporterUid,
       ]);
     }
 

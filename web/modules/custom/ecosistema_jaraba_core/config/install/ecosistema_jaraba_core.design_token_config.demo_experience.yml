@@ -1,0 +1,11 @@
+langcode: es
+status: true
+dependencies: {}
+id: demo_experience
+label: 'Demo Experience Design Tokens'
+scope: feature
+color_tokens: '{"primary":"#FF8C42","secondary":"#00A9A5","accent":"#233D63","background":"#F8FAFC","surface":"#FFFFFF","text":"#1F2937","demo-highlight":"#FFF3E0","demo-success":"#E8F5E9"}'
+typography_tokens: '{"font-family":"Outfit, Arial, Helvetica, sans-serif","heading-weight":"700","body-size":"1rem","heading-size-xl":"2.5rem"}'
+spacing_tokens: '{"section-gap":"4rem","card-padding":"1.5rem","grid-gap":"1.5rem","container-max":"1200px"}'
+effect_tokens: '{"glass-bg":"rgba(255, 255, 255, 0.95)","glass-blur":"10px","shadow-card":"0 4px 24px rgba(0, 0, 0, 0.04)","shadow-hover":"0 8px 32px rgba(0, 0, 0, 0.08)","gradient-demo":"linear-gradient(135deg, #FF8C42, #00A9A5)","gradient-cta":"linear-gradient(135deg, #233D63 0%, #00A9A5 100%)","border-radius":"12px","transition":"all 0.2s ease"}'
+component_variants: '{"header":"sticky_glass","card":"elevated","hero":"gradient","cta":"gradient_impulse"}'

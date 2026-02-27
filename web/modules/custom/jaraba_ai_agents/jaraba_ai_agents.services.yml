@@ -398,3 +398,11 @@ services:
       - '@logger.channel.jaraba_ai_agents'
       - '@?ai.provider'
 
+  # B-07: Fake Review Detection
+  jaraba_ai_agents.fake_review_detection:
+    class: Drupal\jaraba_ai_agents\Service\FakeReviewDetectionService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_ai_agents'
+      - '@?jaraba_ai_agents.model_router'
+

@@ -239,6 +239,22 @@ class ReActLoopServiceTest extends TestCase {
   }
 
   /**
+   * Tests parseStepResponse with truncated/malformed JSON falls back gracefully.
+   */
+  public function testParseStepResponseMalformedJson(): void {
+    $method = new \ReflectionMethod(ReActLoopService::class, 'parseStepResponse');
+    $method->setAccessible(TRUE);
+
+    // Truncated JSON — incomplete object.
+    $text = '{"thought":"analyzing","action":"search","action_input":{"q":"te';
+    $result = $method->invoke($this->service, $text);
+
+    // Should fall back to FINISH since it can't parse.
+    $this->assertSame('FINISH', $result['action']);
+    $this->assertNotEmpty($result['final_answer']);
+  }
+
+  /**
    * Tests parseStepResponse normalizes lowercase "finish" to "FINISH".
    */
   public function testParseStepResponseFinishNormalization(): void {

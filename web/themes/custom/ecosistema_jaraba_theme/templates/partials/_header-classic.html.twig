@@ -37,18 +37,22 @@
 
     {# Acciones Usuario (visible en desktop) #}
     <div class="landing-header__actions">
-      {% if logged_in %}
-        <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
-        <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
-      {% else %}
-        <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
-        {% if not theme_settings.enable_header_cta %}
-          <a href="/user/register" class="btn-primary btn-primary--glow">
-            {% trans %}Empezar gratis{% endtrans %}
-          </a>
+      {# Auth actions: ocultar en sitios brochure via header_show_auth #}
+      {% set show_auth = (theme_settings.header_show_auth is defined) ? theme_settings.header_show_auth : true %}
+      {% if show_auth %}
+        {% if logged_in %}
+          <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
+          <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
+        {% else %}
+          <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
+          {% if not theme_settings.enable_header_cta %}
+            <a href="/user/register" class="btn-primary btn-primary--glow">
+              {% trans %}Empezar gratis{% endtrans %}
+            </a>
+          {% endif %}
         {% endif %}
       {% endif %}
-      {# CTA configurable — visible siempre (logueado y anónimo) #}
+      {# CTA configurable — visible siempre (independiente de show_auth) #}
       {% if theme_settings.enable_header_cta %}
         <a href="{{ theme_settings.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
           {{ theme_settings.header_cta_text|default('Empezar gratis'|t) }}

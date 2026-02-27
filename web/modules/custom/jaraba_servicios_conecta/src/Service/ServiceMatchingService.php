@@ -156,7 +156,7 @@ class ServiceMatchingService
         }
 
         if (method_exists($this->qdrantClient, 'vectorSearch')) {
-            $results = $this->qdrantClient->vectorSearch('service_providers', $embedding, 50);
+            $results = $this->qdrantClient->vectorSearch($embedding, [], 50, 0.7, 'service_providers');
             return array_map(fn($r) => array_merge(
                 $r['payload'] ?? [],
                 ['semantic_score' => $r['score'] ?? 0]

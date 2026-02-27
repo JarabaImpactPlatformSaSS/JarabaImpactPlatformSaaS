@@ -70,7 +70,7 @@ class SepeSeguimientoCalculator
     {
         // Obtener progreso del enrollment.
         $enrollment = $this->entityTypeManager
-            ->getStorage('enrollment')
+            ->getStorage('lms_enrollment')
             ->load($enrollment_id);
 
         if ($enrollment && $enrollment->hasField('progress_percent')) {

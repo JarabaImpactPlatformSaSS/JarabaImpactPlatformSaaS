@@ -2399,6 +2399,37 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
           $file_url_generator = \Drupal::service('file_url_generator');
           $variables['logo'] = $file_url_generator->generateAbsoluteString($logoFile->getFileUri());
         }
+
+        // --- HEADER AUTH VISIBILITY ---
+        // Ocultar login/register/account en sitios brochure (pepejaraba, PED).
+        $variables['theme_settings']['header_show_auth'] = $tenantConfig->isHeaderShowAuth();
+
+        // --- ECOSYSTEM FOOTER BAND ---
+        // Banda de navegacion transversal entre los dominios del ecosistema.
+        if ($tenantConfig->isEcosystemFooterEnabled()) {
+          $variables['theme_settings']['ecosystem_footer_enabled'] = TRUE;
+          $variables['theme_settings']['ecosystem_footer_links'] = $tenantConfig->getEcosystemFooterLinks();
+        }
+        else {
+          $variables['theme_settings']['ecosystem_footer_enabled'] = FALSE;
+        }
+
+        // --- SCHEMA.ORG TYPE ---
+        // Person para pepejaraba (marca personal), Organization para el resto.
+        $schemaType = 'Organization';
+        if ($metaSite['group_id'] == 5) {
+          $schemaType = 'Person';
+        }
+        $variables['meta_site']['schema_type'] = $schemaType;
+
+        // Canonical URL: dominio de produccion del tenant.
+        $tenantEntity = $tenantConfig->get('tenant_id')->entity ?? NULL;
+        if ($tenantEntity) {
+          $tenantDomain = $tenantEntity->get('domain')->value ?? NULL;
+          if ($tenantDomain) {
+            $variables['meta_site']['canonical_url'] = 'https://' . $tenantDomain;
+          }
+        }
       }
     }
   }
@@ -3485,6 +3516,24 @@ function ecosistema_jaraba_theme_theme_suggestions_page_alter(array &$suggestion
   }
 
   // =========================================================================
+  // DEMO — Template específico para landing y experiencia de demo
+  // S3-01: Zero Region Policy con wrapper dedicado para páginas demo.
+  // Sobreescribe page__dashboard con template que incluye clases CSS
+  // específicas para la demo (page-wrapper--demo, demo-main, demo-wrapper).
+  // Template: page--demo.html.twig
+  // =========================================================================
+  $demo_routes = [
+    'ecosistema_jaraba_core.demo_landing',
+    'ecosistema_jaraba_core.demo_start',
+    'ecosistema_jaraba_core.demo_dashboard',
+    'ecosistema_jaraba_core.demo_storytelling',
+    'ecosistema_jaraba_core.demo_ai_playground',
+  ];
+  if (in_array($route, $demo_routes, TRUE)) {
+    $suggestions[] = 'page__demo';
+  }
+
+  // =========================================================================
   // VERTICAL EMPLEABILIDAD — Template específico con Copilot FAB
   // Plan Elevación Empleabilidad v1 — Fase 1
   //
@@ -4143,4 +4192,40 @@ function ecosistema_jaraba_theme_preprocess_page__403(&$variables): void {
   $variables['register_url'] = '/user/register';
   $variables['home_url'] = '/';
   $variables['support_url'] = '/ayuda';
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * FIX-016: Attaches route-specific CSS libraries based on current route.
+ */
+function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if (!$route) {
+    return;
+  }
+
+  // Map route name prefixes to theme libraries.
+  $routeLibraryMap = [
+    'ecosistema_jaraba_core.tenant_dashboard' => 'ecosistema_jaraba_theme/route-dashboard',
+    'ecosistema_jaraba_core.tenant_analytics' => 'ecosistema_jaraba_theme/route-dashboard',
+    'jaraba_content_hub.' => 'ecosistema_jaraba_theme/route-content-hub',
+    'entity.content_article.' => 'ecosistema_jaraba_theme/route-content-hub',
+    'jaraba_page_builder.' => 'ecosistema_jaraba_theme/route-page-builder',
+    'user.login' => 'ecosistema_jaraba_theme/route-auth',
+    'user.register' => 'ecosistema_jaraba_theme/route-auth',
+    'user.pass' => 'ecosistema_jaraba_theme/route-auth',
+    'jaraba_page_builder.landing' => 'ecosistema_jaraba_theme/route-landing',
+    'entity.page_content.canonical' => 'ecosistema_jaraba_theme/route-landing',
+    'empleabilidad.' => 'ecosistema_jaraba_theme/route-empleabilidad',
+    'jaraba_ai_agents.' => 'ecosistema_jaraba_theme/route-ai-features',
+    'jaraba_copilot' => 'ecosistema_jaraba_theme/route-ai-features',
+  ];
+
+  foreach ($routeLibraryMap as $prefix => $library) {
+    if ($route === $prefix || str_starts_with($route, $prefix)) {
+      $attachments['#attached']['library'][] = $library;
+      break;
+    }
+  }
 }

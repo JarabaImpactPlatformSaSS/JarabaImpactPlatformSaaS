@@ -1,0 +1,58 @@
+ecosistema_jaraba_core.review_tenant_settings.*:
+  type: config_entity
+  label: 'Review Tenant Settings'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    tenant_id:
+      type: integer
+      label: 'Tenant ID'
+    auto_approve:
+      type: boolean
+      label: 'Auto-approve reviews'
+    moderation_enabled:
+      type: boolean
+      label: 'Enable moderation'
+    min_review_length:
+      type: integer
+      label: 'Minimum review length'
+    max_review_length:
+      type: integer
+      label: 'Maximum review length'
+    require_rating:
+      type: boolean
+      label: 'Require rating'
+    allow_photos:
+      type: boolean
+      label: 'Allow photos'
+    max_photos:
+      type: integer
+      label: 'Maximum photos'
+    notify_owner_new_review:
+      type: boolean
+      label: 'Notify owner new review'
+    notify_author_approved:
+      type: boolean
+      label: 'Notify author approved'
+    notify_author_responded:
+      type: boolean
+      label: 'Notify author responded'
+    fake_detection_enabled:
+      type: boolean
+      label: 'Fake detection enabled'
+    sentiment_analysis_enabled:
+      type: boolean
+      label: 'Sentiment analysis enabled'
+    response_enabled:
+      type: boolean
+      label: 'Owner responses enabled'
+    helpfulness_voting_enabled:
+      type: boolean
+      label: 'Helpfulness voting enabled'
+    reviews_per_page:
+      type: integer
+      label: 'Reviews per page'

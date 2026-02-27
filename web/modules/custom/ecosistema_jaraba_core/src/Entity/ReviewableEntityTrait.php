@@ -86,6 +86,75 @@ trait ReviewableEntityTrait {
       ->setDescription(new TranslatableMarkup('Timestamp de la ultima generacion del resumen IA.'))
       ->setDisplayConfigurable('view', TRUE);
 
+    // B-09: AI Sentiment Overlay.
+    $fields['sentiment'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(new TranslatableMarkup('Sentimiento'))
+      ->setDescription(new TranslatableMarkup('Sentimiento detectado automaticamente.'))
+      ->setSetting('allowed_values', [
+        'positive' => new TranslatableMarkup('Positivo'),
+        'neutral' => new TranslatableMarkup('Neutro'),
+        'negative' => new TranslatableMarkup('Negativo'),
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    // B-07: Fake Review Detection score.
+    $fields['authenticity_score'] = BaseFieldDefinition::create('float')
+      ->setLabel(new TranslatableMarkup('Score de autenticidad'))
+      ->setDescription(new TranslatableMarkup('Score de deteccion de resena falsa (0=genuina, 1=sospechosa).'))
+      ->setDefaultValue(0.0)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // B-01: Not-helpful count (complement of helpful_count).
+    $fields['not_helpful_count'] = BaseFieldDefinition::create('integer')
+      ->setLabel(new TranslatableMarkup('Votos de no utilidad'))
+      ->setDescription(new TranslatableMarkup('Numero de usuarios que marcaron esta resena como no util.'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // B-01: Wilson Lower Bound score for ranking.
+    $fields['wilson_score'] = BaseFieldDefinition::create('float')
+      ->setLabel(new TranslatableMarkup('Wilson Score'))
+      ->setDescription(new TranslatableMarkup('Wilson Lower Bound score para ranking de utilidad.'))
+      ->setDefaultValue(0.0)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Item 14: Flag/report fields.
+    $fields['flag_reason'] = BaseFieldDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Razon de reporte'))
+      ->setDescription(new TranslatableMarkup('Razon proporcionada al reportar la resena.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['flag_reporter_uid'] = BaseFieldDefinition::create('integer')
+      ->setLabel(new TranslatableMarkup('UID del reportante'))
+      ->setDescription(new TranslatableMarkup('ID del ultimo usuario que reporto la resena.'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['flag_count'] = BaseFieldDefinition::create('integer')
+      ->setLabel(new TranslatableMarkup('Numero de reportes'))
+      ->setDescription(new TranslatableMarkup('Veces que esta resena ha sido reportada.'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Item 20: Owner response field.
+    $fields['owner_response'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(new TranslatableMarkup('Respuesta del propietario'))
+      ->setDescription(new TranslatableMarkup('Respuesta del propietario de la entidad target a la resena.'))
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['owner_response_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(new TranslatableMarkup('Fecha de respuesta'))
+      ->setDescription(new TranslatableMarkup('Timestamp de la respuesta del propietario.'))
+      ->setDisplayConfigurable('view', TRUE);
+
+    // Item 20: Verified purchase flag.
+    $fields['verified_purchase'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(new TranslatableMarkup('Compra verificada'))
+      ->setDescription(new TranslatableMarkup('Indica si la resena proviene de una compra/transaccion verificada.'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('view', TRUE);
+
     return $fields;
   }
 

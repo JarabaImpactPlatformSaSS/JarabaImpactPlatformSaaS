@@ -196,7 +196,7 @@ class DiagnosticEnrollmentService
     {
         try {
             // Verificar si ya existe enrollment
-            $storage = $this->entityTypeManager->getStorage('enrollment');
+            $storage = $this->entityTypeManager->getStorage('lms_enrollment');
             $existing = $storage->loadByProperties([
                 'user_id' => $userId,
                 'course_id' => $courseId,

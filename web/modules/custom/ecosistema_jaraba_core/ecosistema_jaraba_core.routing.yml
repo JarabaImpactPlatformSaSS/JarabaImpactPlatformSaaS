@@ -738,13 +738,14 @@ ecosistema_jaraba_core.demo_storytelling:
     _access: 'TRUE'
     sessionId: '[a-zA-Z0-9_-]+'
 
-# API: Track demo action
+# API: Track demo action (CSRF obligatorio — S1-03)
 ecosistema_jaraba_core.demo_api_track:
   path: '/api/v1/demo/track'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::trackAction'
   requirements:
     _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # API: Get session data
@@ -757,13 +758,14 @@ ecosistema_jaraba_core.demo_api_session:
     sessionId: '[a-zA-Z0-9_-]+'
   methods: [GET]
 
-# API: Convert demo to real account
+# API: Convert demo to real account (CSRF obligatorio — S1-03)
 ecosistema_jaraba_core.demo_api_convert:
   path: '/api/v1/demo/convert'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::convertToReal'
   requirements:
     _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # GAP-AUD-008: Command Bar search API
@@ -913,13 +915,14 @@ ecosistema_jaraba_core.api.copilot.autocomplete:
 # SANDBOX API - TIME-TO-VALUE < 60s (Q1 2027)
 # ===========================================================================
 
-# Crear nuevo sandbox temporal
+# Crear nuevo sandbox temporal (CSRF obligatorio — S1-03)
 ecosistema_jaraba_core.api.sandbox.create:
   path: '/api/v1/sandbox/create'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::createSandbox'
   requirements:
     _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # Obtener sandbox por ID
@@ -931,22 +934,24 @@ ecosistema_jaraba_core.api.sandbox.get:
     _access: 'TRUE'
   methods: [GET]
 
-# Registrar engagement en sandbox
+# Registrar engagement en sandbox (CSRF obligatorio — S1-03)
 ecosistema_jaraba_core.api.sandbox.track:
   path: '/api/v1/sandbox/{id}/track'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::track'
   requirements:
     _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
-# Convertir sandbox a cuenta real
+# Convertir sandbox a cuenta real (CSRF obligatorio — S1-03)
 ecosistema_jaraba_core.api.sandbox.convert:
   path: '/api/v1/sandbox/{id}/convert'
   defaults:
     _controller: '\Drupal\ecosistema_jaraba_core\Controller\SandboxController::convert'
   requirements:
     _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # Listar templates disponibles
@@ -2213,3 +2218,133 @@ ecosistema_jaraba_core.api.v1.reviews.stats:
     _permission: 'access content'
     target_entity_id: '\d+'
     _csrf_request_header_token: 'TRUE'
+
+# === B-01: Helpfulness Voting API ===
+ecosistema_jaraba_core.api.v1.reviews.vote:
+  path: '/api/v1/reviews/{review_type}/{review_id}/vote'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::vote'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    review_id: '\d+'
+    _csrf_request_header_token: 'TRUE'
+
+# === B-02: Filtered Review List API ===
+ecosistema_jaraba_core.api.v1.reviews.list:
+  path: '/api/v1/reviews/{review_type}/list'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::listFiltered'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _csrf_request_header_token: 'TRUE'
+
+# === B-04: Owner Response API ===
+ecosistema_jaraba_core.api.v1.reviews.response:
+  path: '/api/v1/reviews/{review_type}/{review_id}/response'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::ownerResponse'
+  methods: [POST]
+  requirements:
+    _permission: 'respond to reviews'
+    review_id: '\d+'
+    _csrf_request_header_token: 'TRUE'
+
+# === B-05: Review Analytics API ===
+ecosistema_jaraba_core.api.v1.reviews.analytics:
+  path: '/api/v1/reviews/analytics'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::analytics'
+  methods: [GET]
+  requirements:
+    _permission: 'view review analytics'
+    _csrf_request_header_token: 'TRUE'
+
+# === B-05: Review Analytics CSV Export ===
+ecosistema_jaraba_core.api.v1.reviews.analytics.export:
+  path: '/api/v1/reviews/analytics/export'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::analyticsExport'
+  methods: [GET]
+  requirements:
+    _permission: 'export review analytics'
+    _csrf_request_header_token: 'TRUE'
+
+# === B-05: Review Analytics Dashboard (Admin) ===
+ecosistema_jaraba_core.admin.reviews.analytics:
+  path: '/admin/reports/reviews'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewAnalyticsDashboardController::dashboard'
+    _title: 'Review Analytics'
+  requirements:
+    _permission: 'view review analytics'
+  options:
+    _admin_route: TRUE
+
+# === B-08: SEO Review Pages ===
+ecosistema_jaraba_core.reviews.seo:
+  path: '/reviews/{vertical}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSeoController::verticalReviews'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSeoController::verticalReviewsTitle'
+  requirements:
+    _permission: 'access content'
+    vertical: 'comercioconecta|agroconecta|serviciosconecta|formacion|mentoring'
+
+# === B-10: Review Tenant Settings ===
+ecosistema_jaraba_core.review_tenant_settings.add:
+  path: '/admin/config/reviews/settings/add'
+  defaults:
+    _entity_form: 'review_tenant_settings.default'
+    _title: 'Add Review Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+ecosistema_jaraba_core.review_tenant_settings.edit:
+  path: '/admin/config/reviews/settings/{review_tenant_settings}'
+  defaults:
+    _entity_form: 'review_tenant_settings.default'
+    _title: 'Edit Review Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+ecosistema_jaraba_core.review_tenant_settings.collection:
+  path: '/admin/config/reviews/settings'
+  defaults:
+    _entity_list: 'review_tenant_settings'
+    _title: 'Review Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
+
+# === B-17: Public Review API ===
+ecosistema_jaraba_core.api.v1.public.reviews.list:
+  path: '/api/v1/public/reviews/{review_type}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewPublicApiController::listReviews'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+ecosistema_jaraba_core.api.v1.public.reviews.get:
+  path: '/api/v1/public/reviews/{review_type}/{review_id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewPublicApiController::getReview'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    review_id: '\d+'
+
+ecosistema_jaraba_core.api.v1.public.reviews.stats:
+  path: '/api/v1/public/reviews/{review_type}/stats'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewPublicApiController::getStats'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'

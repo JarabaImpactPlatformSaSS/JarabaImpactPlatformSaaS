@@ -3588,7 +3588,193 @@ const example = () => {
             });
         });
 
-        const totalBlocks = basicBlocks.length + layoutBlocks.length + heroBlocks.length + contentBlocks.length + ctaBlocks.length + statsBlocks.length + pricingBlocks.length + contactBlocks.length + mediaBlocks.length + commerceBlocks.length + socialBlocks.length + advancedBlocks.length + utilitiesBlocks.length + premiumExtraBlocks.length;
+        // =================================================================
+        // S4-01: DEMO VERTICAL — Bloques específicos para experiencia demo
+        // 4 bloques que permiten a tenants construir páginas demo-ready
+        // con componentes interactivos de demostración PLG.
+        // =================================================================
+        const demoBlocks = [
+            {
+                id: 'demo-profile-selector',
+                label: Drupal.t('Selector de Perfil Demo'),
+                category: 'Demo',
+                content: `<section class="jaraba-demo-profile-selector" style="padding: 4rem 2rem; background: var(--ej-bg-secondary, #f8fafc);">
+                    <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+                        <h2 style="font-size: 2rem; font-weight: 800; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.75rem;">${Drupal.t('Elige tu perfil y prueba la plataforma')}</h2>
+                        <p style="color: var(--ej-text-muted, #64748b); max-width: 600px; margin: 0 auto 2.5rem; font-size: 1.125rem;">${Drupal.t('Selecciona el sector que mejor se adapte a tu negocio y accede a una demo personalizada.')}</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                            <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.04); border: 2px solid transparent; transition: all 0.2s ease; cursor: pointer;">
+                                <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #556B2F, #8FBC8F); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                    <span style="color: white; font-size: 1.5rem; font-weight: 700;">AG</span>
+                                </div>
+                                <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('AgroConecta')}</h3>
+                                <p style="font-size: 0.875rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('Productores, bodegas y cooperativas agroalimentarias.')}</p>
+                            </div>
+                            <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.04); border: 2px solid transparent; transition: all 0.2s ease; cursor: pointer;">
+                                <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #233D63, #00A9A5); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                    <span style="color: white; font-size: 1.5rem; font-weight: 700;">CC</span>
+                                </div>
+                                <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('ComercioConecta')}</h3>
+                                <p style="font-size: 0.875rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('Tiendas, marketplace y comercio digital.')}</p>
+                            </div>
+                            <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.04); border: 2px solid transparent; transition: all 0.2s ease; cursor: pointer;">
+                                <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #00A9A5, #233D63); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                    <span style="color: white; font-size: 1.5rem; font-weight: 700;">EM</span>
+                                </div>
+                                <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Empleabilidad')}</h3>
+                                <p style="font-size: 0.875rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('Bolsas de empleo y selección de talento.')}</p>
+                            </div>
+                            <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.04); border: 2px solid transparent; transition: all 0.2s ease; cursor: pointer;">
+                                <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #FF8C42, #E63946); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                    <span style="color: white; font-size: 1.5rem; font-weight: 700;">EP</span>
+                                </div>
+                                <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Emprendimiento')}</h3>
+                                <p style="font-size: 0.875rem; color: var(--ej-text-muted, #64748b);">${Drupal.t('Startups, incubadoras y aceleradoras.')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>`,
+                media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg>`,
+            },
+            {
+                id: 'demo-metrics-dashboard',
+                label: Drupal.t('Dashboard Métricas Demo'),
+                category: 'Demo',
+                content: `<section class="jaraba-demo-metrics" style="padding: 4rem 2rem; background: white;">
+                    <div style="max-width: 1200px; margin: 0 auto;">
+                        <div style="text-align: center; margin-bottom: 3rem;">
+                            <h2 style="font-size: 2rem; font-weight: 800; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Panel de Métricas en Tiempo Real')}</h2>
+                            <p style="color: var(--ej-text-muted, #64748b);">${Drupal.t('Visualiza el rendimiento de tu negocio con datos actualizados.')}</p>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                            <div style="background: var(--ej-bg-secondary, #f8fafc); border-radius: 16px; padding: 1.5rem; text-align: center;">
+                                <span style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--ej-color-corporate, #233D63), var(--ej-color-innovation, #00A9A5)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block;">2,847</span>
+                                <span style="color: var(--ej-text-muted, #64748b); font-size: 0.875rem; font-weight: 500;">${Drupal.t('Visitas este mes')}</span>
+                                <span style="display: block; color: #10b981; font-size: 0.75rem; font-weight: 600; margin-top: 0.25rem;">+23%</span>
+                            </div>
+                            <div style="background: var(--ej-bg-secondary, #f8fafc); border-radius: 16px; padding: 1.5rem; text-align: center;">
+                                <span style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--ej-color-innovation, #00A9A5), var(--ej-color-impulse, #FF8C42)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block;">156</span>
+                                <span style="color: var(--ej-text-muted, #64748b); font-size: 0.875rem; font-weight: 500;">${Drupal.t('Pedidos completados')}</span>
+                                <span style="display: block; color: #10b981; font-size: 0.75rem; font-weight: 600; margin-top: 0.25rem;">+15%</span>
+                            </div>
+                            <div style="background: var(--ej-bg-secondary, #f8fafc); border-radius: 16px; padding: 1.5rem; text-align: center;">
+                                <span style="font-size: 2.5rem; font-weight: 900; color: var(--ej-color-impulse, #FF8C42); display: block;">4.8</span>
+                                <span style="color: var(--ej-text-muted, #64748b); font-size: 0.875rem; font-weight: 500;">${Drupal.t('Valoración media')}</span>
+                                <span style="display: block; color: #fbbf24; font-size: 0.75rem; margin-top: 0.25rem;">★★★★★</span>
+                            </div>
+                            <div style="background: var(--ej-bg-secondary, #f8fafc); border-radius: 16px; padding: 1.5rem; text-align: center;">
+                                <span style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42), var(--ej-color-passion, #E63946)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block;">€12.4K</span>
+                                <span style="color: var(--ej-text-muted, #64748b); font-size: 0.875rem; font-weight: 500;">${Drupal.t('Ingresos del mes')}</span>
+                                <span style="display: block; color: #10b981; font-size: 0.75rem; font-weight: 600; margin-top: 0.25rem;">+31%</span>
+                            </div>
+                        </div>
+                        <div style="background: var(--ej-bg-secondary, #f8fafc); border-radius: 16px; padding: 2rem; height: 200px; display: flex; align-items: center; justify-content: center;">
+                            <p style="color: var(--ej-text-muted, #64748b); font-style: italic;">${Drupal.t('Gráfico de tendencia interactivo (se renderiza con datos reales en la demo)')}</p>
+                        </div>
+                    </div>
+                </section>`,
+                media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>`,
+            },
+            {
+                id: 'demo-vertical-comparison',
+                label: Drupal.t('Comparativa Verticales'),
+                category: 'Demo',
+                content: `<section class="jaraba-demo-comparison" style="padding: 4rem 2rem; background: white;">
+                    <div style="max-width: 1000px; margin: 0 auto;">
+                        <div style="text-align: center; margin-bottom: 3rem;">
+                            <h2 style="font-size: 2rem; font-weight: 800; color: var(--ej-text-primary, #1e293b); margin-bottom: 0.5rem;">${Drupal.t('Encuentra tu vertical ideal')}</h2>
+                            <p style="color: var(--ej-text-muted, #64748b);">${Drupal.t('Compara funcionalidades por sector para elegir la solución perfecta.')}</p>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--ej-color-corporate, #233D63);">
+                                        <th style="text-align: left; padding: 1rem; color: var(--ej-text-primary, #1e293b); font-weight: 700;">${Drupal.t('Funcionalidad')}</th>
+                                        <th style="text-align: center; padding: 1rem; color: var(--ej-text-primary, #1e293b); font-weight: 700;">${Drupal.t('AgroConecta')}</th>
+                                        <th style="text-align: center; padding: 1rem; color: var(--ej-text-primary, #1e293b); font-weight: 700;">${Drupal.t('ComercioConecta')}</th>
+                                        <th style="text-align: center; padding: 1rem; color: var(--ej-text-primary, #1e293b); font-weight: 700;">${Drupal.t('Empleabilidad')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="padding: 1rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Marketplace')}</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e2e8f0; background: var(--ej-bg-secondary, #f8fafc);">
+                                        <td style="padding: 1rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('IA Generativa')}</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="padding: 1rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Trazabilidad')}</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: var(--ej-text-muted, #64748b);">—</td>
+                                        <td style="text-align: center; padding: 1rem; color: var(--ej-text-muted, #64748b);">—</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e2e8f0; background: var(--ej-bg-secondary, #f8fafc);">
+                                        <td style="padding: 1rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Bolsa de Empleo')}</td>
+                                        <td style="text-align: center; padding: 1rem; color: var(--ej-text-muted, #64748b);">—</td>
+                                        <td style="text-align: center; padding: 1rem; color: var(--ej-text-muted, #64748b);">—</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="padding: 1rem; color: var(--ej-text-primary, #1e293b);">${Drupal.t('Page Builder')}</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                        <td style="text-align: center; padding: 1rem; color: #10b981; font-weight: 700;">✓</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>`,
+                media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`,
+            },
+            {
+                id: 'demo-ai-playground',
+                label: Drupal.t('Playground IA Demo'),
+                category: 'Demo',
+                content: `<section class="jaraba-demo-ai-playground" style="padding: 4rem 2rem; background: linear-gradient(135deg, var(--ej-color-corporate, #233D63) 0%, #1a2a4a 100%);">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <div style="text-align: center; margin-bottom: 2.5rem;">
+                            <h2 style="font-size: 2rem; font-weight: 800; color: white; margin-bottom: 0.5rem;">${Drupal.t('Prueba la IA en Acción')}</h2>
+                            <p style="color: rgba(255,255,255,0.7); font-size: 1.125rem;">${Drupal.t('Genera contenido profesional para tu negocio en segundos.')}</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem;">
+                            <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                                <span style="padding: 0.5rem 1rem; background: var(--ej-color-innovation, #00A9A5); color: white; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">${Drupal.t('Descripción de Producto')}</span>
+                                <span style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);">${Drupal.t('Post para Redes')}</span>
+                                <span style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);">${Drupal.t('Historia de Marca')}</span>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 1.5rem; font-family: 'Fira Code', monospace; color: #10b981; font-size: 0.875rem; line-height: 1.8; min-height: 120px;">
+                                <span style="color: rgba(255,255,255,0.4);">&gt; </span>${Drupal.t('Aceite de oliva virgen extra de la Sierra de Jaén, prensado en frío a partir de aceitunas Picual seleccionadas a mano. Nuestro proceso artesanal preserva los polifenoles naturales...')}
+                                <span style="display: inline-block; width: 8px; height: 18px; background: #10b981; animation: blink 1s infinite; vertical-align: middle; margin-left: 2px;"></span>
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <button style="background: linear-gradient(135deg, var(--ej-color-impulse, #FF8C42), var(--ej-color-passion, #E63946)); color: white; border: none; padding: 1rem 2.5rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(255,140,66,0.4);">${Drupal.t('Probar con tu negocio')}</button>
+                        </div>
+                    </div>
+                </section>`,
+                media: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg>`,
+            },
+        ];
+
+        // Registrar bloques Demo
+        demoBlocks.forEach((block) => {
+            blockManager.add(block.id, {
+                label: block.label,
+                category: block.category,
+                content: block.content,
+                media: block.media,
+                attributes: { class: 'gjs-block-demo' },
+            });
+        });
+
+        const totalBlocks = basicBlocks.length + layoutBlocks.length + heroBlocks.length + contentBlocks.length + ctaBlocks.length + statsBlocks.length + pricingBlocks.length + contactBlocks.length + mediaBlocks.length + commerceBlocks.length + socialBlocks.length + advancedBlocks.length + utilitiesBlocks.length + premiumExtraBlocks.length + demoBlocks.length;
         console.log('🎯 Jaraba Blocks Plugin: ' + totalBlocks + ' bloques estáticos cargados.');
 
         /**
@@ -3870,6 +4056,8 @@ const example = () => {
                 'Formación': 'lms',
                 'Capacitación': 'training',
                 'Llamada a la Acción': 'cta',
+                'demo': 'demo',
+                'Demo': 'demo',
             };
 
             let injected = 0;

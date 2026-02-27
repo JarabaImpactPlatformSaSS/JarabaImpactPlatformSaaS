@@ -122,7 +122,7 @@
     font-size: 3rem;
     font-weight: 800;
     line-height: 1;
-    color: var(--ej-color-text, $ej-color-text);
+    color: var(--ej-color-text, $ej-color-body);
   }
 
   &__distribution {
@@ -287,7 +287,7 @@
   &__body {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: var(--ej-color-text, $ej-color-text);
+    color: var(--ej-color-text, $ej-color-body);
   }
 
   &__photos {
@@ -390,7 +390,7 @@
   &__text {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: var(--ej-color-text, $ej-color-text);
+    color: var(--ej-color-text, $ej-color-body);
     margin: 0;
   }
 }
@@ -546,6 +546,691 @@
 
   .comment-thread__replies {
     border-left-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// ===============================================
+// === B-01: HELPFULNESS VOTING ===
+// ===============================================
+
+.review-helpful {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: $ej-spacing-sm;
+  font-size: 0.85rem;
+
+  &__label {
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--ej-color-border, #dee2e6);
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: var(--ej-color-primary, $ej-color-primary);
+      color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: var(--ej-color-primary, $ej-color-primary);
+      color: #fff;
+      border-color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &--helpful.review-helpful__btn--active {
+      background: var(--ej-color-success, $ej-color-success);
+      border-color: var(--ej-color-success, $ej-color-success);
+    }
+
+    &--not-helpful.review-helpful__btn--active {
+      background: var(--ej-color-danger, #dc3545);
+      border-color: var(--ej-color-danger, #dc3545);
+    }
+  }
+
+  &__count {
+    font-weight: 600;
+  }
+}
+
+// ===============================================
+// === B-02: REVIEW FILTERS ===
+// ===============================================
+
+.review-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: $ej-spacing-lg;
+  padding: $ej-spacing-md;
+  background: var(--ej-color-bg-subtle, #f8f9fa);
+  border-radius: $ej-border-radius;
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+    margin-right: 0.25rem;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--ej-color-border, #dee2e6);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &--active {
+      background: var(--ej-color-primary, $ej-color-primary);
+      color: #fff;
+      border-color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &__count {
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+  }
+
+  &__sort {
+    margin-left: auto;
+
+    select {
+      padding: 0.25rem 0.5rem;
+      border: 1px solid var(--ej-color-border, #dee2e6);
+      border-radius: $ej-border-radius;
+      font-size: 0.85rem;
+      background: #fff;
+
+      &:focus-visible {
+        outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+
+    &__sort {
+      margin-left: 0;
+      width: 100%;
+
+      select {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// ===============================================
+// === B-03: VERIFIED PURCHASE BADGE ===
+// ===============================================
+
+.review-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--verified {
+    background: color.adjust(#198754, $lightness: 40%);
+    color: #198754;
+  }
+
+  &--sentiment-positive {
+    background: color.adjust(#198754, $lightness: 40%);
+    color: #198754;
+  }
+
+  &--sentiment-neutral {
+    background: color.adjust(#6c757d, $lightness: 40%);
+    color: #6c757d;
+  }
+
+  &--sentiment-negative {
+    background: color.adjust(#dc3545, $lightness: 40%);
+    color: #dc3545;
+  }
+
+  &__icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+// ===============================================
+// === B-04: OWNER RESPONSE ===
+// ===============================================
+
+.review-response {
+  margin-top: $ej-spacing-sm;
+  padding: $ej-spacing-md;
+  border-left: 3px solid var(--ej-color-corporate, $ej-color-primary);
+  background: var(--ej-color-bg-subtle, #f8f9fa);
+  border-radius: 0 $ej-border-radius $ej-border-radius 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ej-color-corporate, $ej-color-primary);
+  }
+
+  &__date {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__body {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+// ===============================================
+// === B-05: REVIEW ANALYTICS DASHBOARD ===
+// ===============================================
+
+.review-analytics {
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: $ej-spacing-md;
+    margin-bottom: $ej-spacing-xl;
+  }
+
+  &__card {
+    padding: $ej-spacing-lg;
+    background: #fff;
+    border-radius: $ej-border-radius;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    text-align: center;
+
+    &-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ej-color-primary, $ej-color-primary);
+    }
+
+    &-label {
+      font-size: 0.85rem;
+      color: var(--ej-color-muted, $ej-color-muted);
+      margin-top: 0.25rem;
+    }
+  }
+
+  &__section {
+    background: #fff;
+    border-radius: $ej-border-radius;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: $ej-spacing-lg;
+    margin-bottom: $ej-spacing-lg;
+
+    h3 {
+      font-size: 1.1rem;
+      margin-bottom: $ej-spacing-md;
+    }
+  }
+
+  &__distribution {
+    max-width: 500px;
+  }
+
+  &__dist-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__dist-stars {
+    width: 3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  &__dist-bar {
+    flex: 1;
+    height: 1.25rem;
+    background: var(--ej-color-bg-subtle, #f8f9fa);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  &__dist-fill {
+    height: 100%;
+    background: var(--ej-review-stars-color, $ej-color-warning);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+
+  &__dist-count {
+    width: 5rem;
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--ej-color-border, #dee2e6);
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--ej-color-muted, $ej-color-muted);
+    }
+  }
+
+  &__recent-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--ej-color-border, #dee2e6);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__recent-stars {
+    color: var(--ej-review-stars-color, $ej-color-warning);
+    font-size: 0.85rem;
+  }
+
+  &__recent-vertical {
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__recent-status {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+
+    &--approved { background: color.adjust(#198754, $lightness: 40%); color: #198754; }
+    &--pending { background: color.adjust(#ffc107, $lightness: 20%); color: #856404; }
+    &--rejected { background: color.adjust(#dc3545, $lightness: 40%); color: #dc3545; }
+    &--flagged { background: color.adjust(#fd7e14, $lightness: 20%); color: #984c0c; }
+  }
+
+  &__recent-date {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--ej-color-muted, $ej-color-muted);
+  }
+
+  &__actions {
+    margin-top: $ej-spacing-lg;
+  }
+}
+
+// ===============================================
+// === B-06: PHOTO GALLERY ===
+// ===============================================
+
+.review-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  &__thumb {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+    border-radius: $ej-border-radius;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ej-color-primary, $ej-color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  &__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background: var(--ej-color-bg-subtle, #f8f9fa);
+    border-radius: $ej-border-radius;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ej-color-muted, $ej-color-muted);
+    cursor: pointer;
+  }
+}
+
+.review-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+
+  &__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+
+    &:focus-visible {
+      outline: 2px solid #fff;
+    }
+  }
+
+  &__img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  &__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    padding: 1rem;
+    cursor: pointer;
+
+    &--prev { left: 1rem; }
+    &--next { right: 1rem; }
+
+    &:focus-visible {
+      outline: 2px solid #fff;
+    }
+  }
+}
+
+// ===============================================
+// === DARK MODE ===
+// ===============================================
+
+.dark-mode {
+  .review-filters {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .review-filters__chip {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .review-response {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .review-analytics__card {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .review-analytics__section {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .review-analytics__table th,
+  .review-analytics__table td {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// ===============================================
+// === B-08: SEO REVIEW PAGES ===
+// ===============================================
+
+.review-seo {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-lg, 2rem) var(--space-md, 1rem);
+
+  &__header {
+    margin-bottom: var(--space-xl, 2.5rem);
+    text-align: center;
+  }
+
+  &__title {
+    font-size: var(--text-3xl, 2rem);
+    margin-bottom: var(--space-sm, 0.5rem);
+  }
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm, 0.5rem);
+    font-size: var(--text-xl, 1.5rem);
+  }
+
+  &__avg {
+    font-weight: 700;
+    color: var(--color-warning, #eab308);
+  }
+
+  &__stars {
+    color: var(--color-warning, #eab308);
+  }
+
+  &__count {
+    color: var(--color-text-secondary, #6b7280);
+    font-size: var(--text-base, 1rem);
+  }
+
+  &__distribution {
+    max-width: 400px;
+    margin: var(--space-md, 1rem) auto;
+  }
+
+  &__dist-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 0.25rem);
+    margin-bottom: 4px;
+  }
+
+  &__dist-label {
+    width: 2.5rem;
+    font-size: var(--text-sm, 0.875rem);
+    text-align: right;
+  }
+
+  &__dist-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-gray-200, #e5e7eb);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__dist-fill {
+    height: 100%;
+    background: var(--color-warning, #eab308);
+    border-radius: 4px;
+  }
+
+  &__dist-count {
+    width: 2rem;
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--color-text-secondary, #6b7280);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md, 1rem);
+  }
+
+  &__item {
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    border-radius: var(--radius-lg, 12px);
+    padding: var(--space-md, 1rem);
+    background: var(--color-surface, #fff);
+  }
+
+  &__item-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm, 0.5rem);
+    margin-bottom: var(--space-xs, 0.25rem);
+  }
+
+  &__item-stars {
+    color: var(--color-warning, #eab308);
+    font-size: var(--text-lg, 1.125rem);
+  }
+
+  &__item-body {
+    color: var(--color-text-primary, #1f2937);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm, 0.5rem);
+  }
+
+  &__item-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--color-text-secondary, #6b7280);
+  }
+
+  &__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-xs, 0.25rem);
+    margin-top: var(--space-xl, 2.5rem);
+  }
+
+  &__pagination-link {
+    padding: 6px 12px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    border-radius: var(--radius-md, 8px);
+    text-decoration: none;
+    color: var(--color-text-primary, #1f2937);
+
+    &:hover {
+      background: var(--color-gray-100, #f3f4f6);
+    }
+  }
+
+  &__pagination-current {
+    padding: 6px 12px;
+    background: var(--color-primary, #4a90d9);
+    color: #fff;
+    border-radius: var(--radius-md, 8px);
+    font-weight: 600;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: var(--space-xl, 2.5rem);
+    color: var(--color-text-secondary, #6b7280);
+  }
+}
+
+// ===============================================
+// === B-13: GAMIFICATION ===
+// ===============================================
+
+.review-gamification {
+  &__tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--bronze { background: #cd7f32; color: #fff; }
+    &--silver { background: #c0c0c0; color: #333; }
+    &--gold { background: #ffd700; color: #333; }
+    &--platinum { background: #e5e4e2; color: #333; }
+    &--diamond { background: linear-gradient(135deg, #b9f2ff, #89cff0); color: #1a365d; }
+  }
+
+  &__points {
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--color-text-secondary, #6b7280);
+  }
+
+  &__leaderboard {
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    border-radius: var(--radius-lg, 12px);
+    overflow: hidden;
+  }
+
+  &__leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+
+    &:last-child { border-bottom: none; }
   }
 }
 

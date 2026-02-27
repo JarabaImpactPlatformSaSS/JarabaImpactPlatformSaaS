@@ -883,6 +883,7 @@ abstract class SmartBaseAgent extends BaseAgent
         try {
             return $this->longTermMemory->buildMemoryPrompt(
                 $this->getAgentId(),
+                (string) ($this->tenantId ?? '0'),
                 $currentPrompt
             );
         } catch (\Exception $e) {
@@ -919,11 +920,11 @@ abstract class SmartBaseAgent extends BaseAgent
 
             $this->longTermMemory->remember(
                 $this->getAgentId(),
+                (string) ($this->tenantId ?? '0'),
+                'interaction_summary',
                 $summary,
                 [
-                    'type' => 'interaction_summary',
                     'action' => $this->currentAction ?? 'general',
-                    'tenant_id' => $this->tenantId,
                     'vertical' => $this->vertical,
                 ]
             );

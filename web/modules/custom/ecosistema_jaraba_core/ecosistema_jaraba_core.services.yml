@@ -387,12 +387,26 @@ services:
   # ===========================================
 
   # Demo interactiva para Time-to-Value < 60s
+  # S1-04: Migrado de State API a tabla demo_sessions (database directa).
   ecosistema_jaraba_core.demo_interactive:
     class: Drupal\ecosistema_jaraba_core\Service\DemoInteractiveService
     arguments:
-      - '@entity_type.manager'
+      - '@database'
       - '@logger.factory'
-      - '@state'
+
+  # S4-03: Feature gate ligero para sesiones demo anónimas.
+  # Controla límites: sesiones/hora, mensajes IA, generaciones, productos.
+  ecosistema_jaraba_core.demo_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\DemoFeatureGateService
+    arguments:
+      - '@database'
+
+  # S4-04: Journey progression para conversión demo → registro.
+  # Evalúa nudges proactivos (first-value, story, session-expiring, actions).
+  ecosistema_jaraba_core.demo_journey_progression:
+    class: Drupal\ecosistema_jaraba_core\Service\DemoJourneyProgressionService
+    arguments:
+      - '@database'
 
   # ===========================================
   # Q1 2027: REVERSE TRIAL MODEL (GAP P1)
@@ -1495,6 +1509,13 @@ services:
   # Reviews & Comments — Servicios Transversales (REV-PHASE3)
   # ──────────────────────────────────────────────────────────────
 
+  # B-10: Review Tenant Settings Resolver
+  ecosistema_jaraba_core.review_tenant_settings_resolver:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewTenantSettingsResolver
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
   ecosistema_jaraba_core.review_aggregation:
     class: Drupal\ecosistema_jaraba_core\Service\ReviewAggregationService
     arguments:
@@ -1525,3 +1546,81 @@ services:
       - '@queue'
       - '@logger.channel.ecosistema_jaraba_core'
       - '@plugin.manager.mail'
+
+  # B-01: Helpfulness Voting
+  ecosistema_jaraba_core.review_helpfulness:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewHelpfulnessService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-05: Review Analytics
+  ecosistema_jaraba_core.review_analytics:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewAnalyticsService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-09: Sentiment Analysis
+  ecosistema_jaraba_core.review_sentiment:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewSentimentService
+    arguments:
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-11: Review Notifications
+  ecosistema_jaraba_core.review_notification:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewNotificationService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.mail'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-12: Review Translation
+  ecosistema_jaraba_core.review_translation:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewTranslationService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?ai.provider'
+
+  # B-13: Review Gamification
+  ecosistema_jaraba_core.review_gamification:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewGamificationService
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-14: Review Import/Export
+  ecosistema_jaraba_core.review_import_export:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewImportExportService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-15: Review A/B Testing
+  ecosistema_jaraba_core.review_ab_test:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewAbTestService
+    arguments:
+      - '@database'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-16: Review Video
+  ecosistema_jaraba_core.review_video:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewVideoService
+    arguments:
+      - '@entity_type.manager'
+      - '@file_system'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # B-18: Review Webhooks
+  ecosistema_jaraba_core.review_webhook:
+    class: Drupal\ecosistema_jaraba_core\Service\ReviewWebhookService
+    arguments:
+      - '@database'
+      - '@queue'
+      - '@logger.channel.ecosistema_jaraba_core'

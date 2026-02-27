@@ -159,21 +159,21 @@ function jaraba_lms_entity_update(EntityInterface $entity): void {
   $entity_type = $entity->getEntityTypeId();
 
   // Solo procesar enrollments
-  if ($entity_type !== 'enrollment') {
+  if ($entity_type !== 'lms_enrollment') {
     return;
   }
 
   // Verificar si el progreso llegó a 100%
-  if (!$entity->hasField('progress')) {
+  if (!$entity->hasField('progress_percent')) {
     return;
   }
 
-  $progress = (int) ($entity->get('progress')->value ?? 0);
+  $progress = (int) ($entity->get('progress_percent')->value ?? 0);
   $originalProgress = 0;
 
   // Obtener progreso anterior para detectar cambio
-  if (isset($entity->original) && $entity->original->hasField('progress')) {
-    $originalProgress = (int) ($entity->original->get('progress')->value ?? 0);
+  if (isset($entity->original) && $entity->original->hasField('progress_percent')) {
+    $originalProgress = (int) ($entity->original->get('progress_percent')->value ?? 0);
   }
 
   // Solo actuar si pasó de <100 a 100

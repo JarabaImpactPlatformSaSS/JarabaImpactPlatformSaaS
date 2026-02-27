@@ -1,0 +1,878 @@
+// =============================================================================
+// DEMO INTERACTIVA — COMPONENTES PLG (Product-Led Growth)
+// =============================================================================
+// Estilos para la demo interactiva: landing, dashboard, storytelling, playground.
+//
+// S2-03: Migrado de inline CSS en templates a SCSS dedicado.
+// Usa CSS Custom Properties inyectables (--ej-*) para personalización por
+// vertical/tenant. Los fallbacks garantizan renderizado correcto sin tokens.
+//
+// PALETA JARABA:
+// - Corporativo: var(--ej-color-primary, #233D63)
+// - Impulso:     var(--ej-color-accent, #FF8C42)
+// - Innovación:  var(--ej-color-secondary, #00A9A5)
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// TOKENS DEMO (derivados de los tokens de plataforma)
+// ---------------------------------------------------------------------------
+
+:root {
+  --demo-card-radius: 1rem;
+  --demo-section-gap: 2rem;
+  --demo-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --demo-card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --demo-gradient-primary: linear-gradient(
+    135deg,
+    var(--ej-color-primary, #233D63) 0%,
+    var(--ej-color-secondary, #00A9A5) 100%
+  );
+  --demo-gradient-cta: linear-gradient(
+    135deg,
+    var(--ej-color-accent, #FF8C42) 0%,
+    var(--ej-color-primary, #233D63) 100%
+  );
+}
+
+// ---------------------------------------------------------------------------
+// DEMO: CONTENEDOR BASE
+// ---------------------------------------------------------------------------
+
+.demo-landing,
+.demo-dashboard,
+.demo-storytelling,
+.demo-playground {
+  max-width: var(--ej-content-max-width, 1200px);
+  margin: 0 auto;
+  padding: var(--demo-section-gap);
+  font-family: var(--ej-font-family-base, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+}
+
+// ---------------------------------------------------------------------------
+// DEMO: BANNER MODO DEMO
+// ---------------------------------------------------------------------------
+
+.demo-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--demo-gradient-primary);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: var(--demo-card-radius);
+  margin-bottom: var(--demo-section-gap);
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &__tenant-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  &__back-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    opacity: 0.9;
+
+    &:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO LANDING: HEADER
+// ---------------------------------------------------------------------------
+
+.demo-landing {
+  &__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  &__title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    color: var(--ej-color-primary, #233D63);
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  &__subtitle {
+    font-size: 1.15rem;
+    color: var(--ej-text-color-secondary, #666);
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+  }
+
+  &__timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--demo-gradient-primary);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO LANDING: GRID DE PERFILES
+// ---------------------------------------------------------------------------
+
+.demo-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.demo-profile-card {
+  background: var(--ej-card-bg, #fff);
+  border-radius: calc(var(--demo-card-radius) * 1.25);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--demo-card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--demo-card-shadow-hover);
+    border-color: var(--ej-color-primary, #233D63);
+  }
+
+  &__icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    margin-inline: auto;
+    background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.1));
+    border-radius: 50%;
+  }
+
+  &__name {
+    font-size: 1.4rem;
+    color: var(--ej-text-color, #1a1a2e);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  &__description {
+    color: var(--ej-text-color-secondary, #666);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  &__vertical {
+    margin-bottom: 1.5rem;
+  }
+
+  &__vertical-badge {
+    display: inline-block;
+    background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.1));
+    color: var(--ej-color-primary, #233D63);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+}
+
+.demo-start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--demo-gradient-primary);
+  color: #fff;
+  padding: 0.875rem 2rem;
+  border-radius: calc(var(--demo-card-radius) * 0.75);
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(35, 61, 99, 0.4);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &__arrow {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(4px);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO LANDING: FEATURES
+// ---------------------------------------------------------------------------
+
+.demo-features {
+  background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.05));
+  border-radius: calc(var(--demo-card-radius) * 1.25);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+
+  &__title {
+    color: var(--ej-text-color, #1a1a2e);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    text-align: start;
+    max-width: 800px;
+  }
+
+  &__item {
+    padding: 0.5rem 0;
+    color: var(--ej-text-color-secondary, #444);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO: CTA CONVERSIÓN
+// ---------------------------------------------------------------------------
+
+.demo-cta-convert {
+  text-align: center;
+  padding: 2.5rem;
+  background: var(--demo-gradient-primary);
+  border-radius: calc(var(--demo-card-radius) * 1.25);
+  color: #fff;
+
+  &__text {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  &__btn {
+    display: inline-block;
+    background: #fff;
+    color: var(--ej-color-primary, #233D63);
+    padding: 1rem 2rem;
+    border-radius: calc(var(--demo-card-radius) * 0.75);
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-decoration: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO DASHBOARD: MAGIC MOMENT ACTIONS
+// ---------------------------------------------------------------------------
+
+.demo-magic-moment {
+  margin-bottom: 3rem;
+}
+
+.demo-magic-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.demo-magic-action-card {
+  background: var(--ej-card-bg, #fff);
+  border-radius: var(--demo-card-radius);
+  padding: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--demo-card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  border: 2px solid transparent;
+  display: block;
+
+  &--highlighted {
+    border-color: var(--ej-color-accent, #FF8C42);
+    background: var(--ej-color-accent-light, rgba(255, 140, 66, 0.05));
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--demo-card-shadow-hover);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &__icon {
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 0.75rem;
+    background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.1));
+    border-radius: 50%;
+  }
+
+  &__title {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+    color: var(--ej-text-color, #1a1a2e);
+    font-weight: 600;
+  }
+
+  &__description {
+    font-size: 0.9rem;
+    color: var(--ej-text-color-secondary, #666);
+    margin: 0;
+  }
+
+  &__recommended {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--demo-gradient-cta);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO DASHBOARD: MÉTRICAS
+// ---------------------------------------------------------------------------
+
+.demo-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: var(--demo-section-gap);
+}
+
+.demo-metric-card {
+  background: var(--ej-card-bg, #fff);
+  border-radius: var(--demo-card-radius);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--demo-card-shadow);
+
+  &--highlight {
+    background: var(--demo-gradient-primary);
+    color: #fff;
+  }
+
+  &__value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  &__label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO DASHBOARD: GRÁFICO Y PRODUCTOS
+// ---------------------------------------------------------------------------
+
+.demo-chart-section {
+  margin-bottom: var(--demo-section-gap);
+}
+
+.demo-chart-container {
+  background: var(--ej-card-bg, #fff);
+  border-radius: var(--demo-card-radius);
+  padding: 1.5rem;
+  box-shadow: var(--demo-card-shadow);
+}
+
+.demo-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: var(--demo-section-gap);
+}
+
+.demo-product-card {
+  background: var(--ej-card-bg, #fff);
+  border-radius: var(--demo-card-radius);
+  overflow: hidden;
+  box-shadow: var(--demo-card-shadow);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &__image {
+    height: 120px;
+    background: var(--demo-gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+  }
+
+  &__info {
+    padding: 1rem;
+  }
+
+  &__name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--ej-text-color, #1a1a2e);
+    font-weight: 600;
+  }
+
+  &__price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ej-color-accent, #FF8C42);
+    margin-bottom: 0.5rem;
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--ej-text-color-secondary, #666);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO: SECTION TITLE
+// ---------------------------------------------------------------------------
+
+.demo-section-title {
+  font-size: 1.4rem;
+  color: var(--ej-text-color, #1a1a2e);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// ---------------------------------------------------------------------------
+// DEMO STORYTELLING
+// ---------------------------------------------------------------------------
+
+.demo-storytelling {
+  max-width: 800px;
+
+  &__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  &__icon {
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    background: var(--ej-color-accent-light, rgba(255, 140, 66, 0.1));
+    border-radius: 50%;
+  }
+
+  &__title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--ej-color-primary, #233D63);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  &__subtitle {
+    color: var(--ej-text-color-secondary, #666);
+    font-size: 1.1rem;
+  }
+}
+
+.demo-story-card {
+  background: var(--ej-card-bg, #fff);
+  border-radius: calc(var(--demo-card-radius) * 1.25);
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  text-align: start;
+
+  &__content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--ej-text-color, #333);
+    margin-bottom: 1.5rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+}
+
+.demo-story-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: calc(var(--demo-card-radius) * 0.75);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &--primary {
+    background: var(--demo-gradient-primary);
+    color: #fff;
+  }
+
+  &--secondary {
+    background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.1));
+    color: var(--ej-color-primary, #233D63);
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO: AI INFO BOX
+// ---------------------------------------------------------------------------
+
+.demo-ai-info {
+  background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.05));
+  border-radius: var(--demo-card-radius);
+  padding: 1.5rem;
+  text-align: start;
+  margin-bottom: 2rem;
+
+  &__title {
+    margin-bottom: 0.75rem;
+    color: var(--ej-text-color, #1a1a2e);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__text {
+    color: var(--ej-text-color-secondary, #666);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    padding: 0.25rem 0;
+    color: var(--ej-text-color-secondary, #444);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO: MODAL DE CONVERSIÓN
+// ---------------------------------------------------------------------------
+
+.demo-convert-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: none;
+
+  &--open {
+    display: block;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__content {
+    position: relative;
+    background: var(--ej-card-bg, #fff);
+    max-width: 400px;
+    margin: 10vh auto;
+    padding: 2rem;
+    border-radius: calc(var(--demo-card-radius) * 1.25);
+    text-align: center;
+  }
+
+  &__title {
+    margin-bottom: 1rem;
+    color: var(--ej-text-color, #1a1a2e);
+    font-weight: 600;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--ej-gray-300, #e0e0e0);
+    border-radius: calc(var(--demo-card-radius) * 0.75);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #233D63);
+    }
+  }
+
+  &__submit {
+    width: 100%;
+    background: var(--demo-gradient-primary);
+    color: #fff;
+    border: none;
+    padding: 1rem;
+    border-radius: calc(var(--demo-card-radius) * 0.75);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--ej-text-color-secondary, #666);
+    line-height: 1;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEMO AI PLAYGROUND
+// ---------------------------------------------------------------------------
+
+.demo-playground {
+  &__scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: var(--demo-section-gap);
+  }
+
+  &__scenario-card {
+    background: var(--ej-card-bg, #fff);
+    border-radius: var(--demo-card-radius);
+    padding: 1.5rem;
+    box-shadow: var(--demo-card-shadow);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--demo-card-shadow-hover);
+      border-color: var(--ej-color-primary, #233D63);
+    }
+
+    &__icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    &__title {
+      font-weight: 600;
+      color: var(--ej-text-color, #1a1a2e);
+      margin-bottom: 0.25rem;
+    }
+
+    &__description {
+      font-size: 0.9rem;
+      color: var(--ej-text-color-secondary, #666);
+    }
+  }
+
+  &__chat {
+    background: var(--ej-card-bg, #fff);
+    border-radius: var(--demo-card-radius);
+    box-shadow: var(--demo-card-shadow);
+    overflow: hidden;
+  }
+
+  &__chat-output {
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  &__chat-input-row {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-top: 1px solid var(--ej-gray-200, #eee);
+  }
+
+  &__chat-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--ej-gray-300, #e0e0e0);
+    border-radius: calc(var(--demo-card-radius) * 0.5);
+    font-size: 0.95rem;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ej-color-primary, #233D63);
+    }
+  }
+
+  &__chat-send {
+    background: var(--demo-gradient-primary);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: calc(var(--demo-card-radius) * 0.5);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__message {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: calc(var(--demo-card-radius) * 0.5);
+    line-height: 1.5;
+    max-width: 85%;
+
+    &--user {
+      background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.1));
+      color: var(--ej-text-color, #333);
+      margin-left: auto;
+    }
+
+    &--assistant {
+      background: var(--ej-card-bg, #f8f9fa);
+      color: var(--ej-text-color, #333);
+      border: 1px solid var(--ej-gray-200, #eee);
+    }
+
+    &--system {
+      background: var(--ej-color-warning-light, rgba(255, 160, 0, 0.1));
+      color: var(--ej-color-warning, #e65100);
+      text-align: center;
+      max-width: 100%;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// RESPONSIVE: MOBILE-FIRST ADJUSTMENTS
+// ---------------------------------------------------------------------------
+
+@media (max-width: 768px) {
+  .demo-landing,
+  .demo-dashboard,
+  .demo-storytelling,
+  .demo-playground {
+    padding: 1rem;
+  }
+
+  .demo-profiles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .demo-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .demo-magic-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-story-card__actions {
+    flex-direction: column;
+  }
+
+  .demo-playground__scenarios {
+    grid-template-columns: 1fr;
+  }
+}

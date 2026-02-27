@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_workflows\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * Defines the WorkflowRule config entity (S4-04).
@@ -18,6 +19,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label_singular = @Translation("workflow rule"),
  *   label_plural = @Translation("workflow rules"),
  *   handlers = {
+ *     "access" = "Drupal\jaraba_workflows\WorkflowRuleAccessControlHandler",
  *     "list_builder" = "Drupal\jaraba_workflows\WorkflowRuleListBuilder",
  *     "form" = {
  *       "default" = "Drupal\jaraba_workflows\Form\WorkflowRuleForm",
@@ -157,6 +159,41 @@ class WorkflowRule extends ConfigEntityBase implements WorkflowRuleInterface
     public function getDescription(): string
     {
         return $this->description;
+    }
+
+    /**
+     * Allowed trigger types.
+     */
+    public const ALLOWED_TRIGGER_TYPES = [
+        'entity_created',
+        'entity_updated',
+        'cron_schedule',
+        'threshold_reached',
+        'ai_insight',
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preSave(EntityStorageInterface $storage): void
+    {
+        parent::preSave($storage);
+
+        // Validate trigger_type is an allowed value.
+        if (!empty($this->trigger_type) && !in_array($this->trigger_type, self::ALLOWED_TRIGGER_TYPES, TRUE)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Invalid trigger_type "%s". Allowed: %s',
+                $this->trigger_type,
+                implode(', ', self::ALLOWED_TRIGGER_TYPES)
+            ));
+        }
+
+        // Validate actions is a proper array of action objects.
+        foreach ($this->actions as $action) {
+            if (!is_array($action) || empty($action['type'])) {
+                throw new \InvalidArgumentException('Each action must be an array with a "type" key.');
+            }
+        }
     }
 
 }

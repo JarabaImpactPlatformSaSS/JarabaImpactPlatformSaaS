@@ -1,0 +1,71 @@
+{#
+/**
+ * @file _meta-site-schema.html.twig
+ * Schema.org JSON-LD dinamico para todos los meta-sitios del Ecosistema Jaraba.
+ *
+ * Genera datos estructurados segun el tipo de sitio:
+ * - Person (pepejaraba.com — marca personal)
+ * - Organization (jarabaimpact.com, plataformadeecosistemas.es)
+ *
+ * Variables esperadas:
+ * - meta_site.schema_type: 'Person' o 'Organization'
+ * - meta_site.canonical_url: URL de produccion del sitio
+ * - meta_site.site_config: entidad SiteConfig con getters
+ *
+ * DIRECTRICES: SEO-SCHEMA-001, SEO-GEO-001
+ * REGLA: rel="noopener" sin nofollow entre dominios propios
+ */
+#}
+
+{% if meta_site and meta_site.site_config %}
+  {% set sc = meta_site.site_config %}
+  {% set schema_type = meta_site.schema_type|default('Organization') %}
+  {% set canonical = meta_site.canonical_url|default('') %}
+  {% set eco_links = sc.getEcosystemFooterLinks() %}
+
+  {# --- Entidad principal (Person u Organization) --- #}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "{{ schema_type }}",
+    "name": "{{ sc.getSiteName()|e('js') }}"
+    {% if canonical %}
+    ,"url": "{{ canonical|e('js') }}"
+    {% endif %}
+    {% if sc.get('contact_email').value %}
+    ,"email": "{{ sc.get('contact_email').value|e('js') }}"
+    {% endif %}
+    {% if sc.get('contact_phone').value %}
+    ,"telephone": "{{ sc.get('contact_phone').value|e('js') }}"
+    {% endif %}
+    {% if sc.get('contact_address').value %}
+    ,"address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ sc.get('contact_address').value|e('js') }}"
+    }
+    {% endif %}
+    {% if eco_links|length > 0 %}
+    ,"sameAs": [
+      {% set same_as_urls = [] %}
+      {% for link in eco_links %}
+        {% if not link.current|default(false) %}
+          "{{ link.url|e('js') }}"{% if not loop.last %},{% endif %}
+        {% endif %}
+      {% endfor %}
+    ]
+    {% endif %}
+  }
+  </script>
+
+  {# --- WebSite con nombre --- #}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "{{ sc.getSiteName()|e('js') }}"
+    {% if canonical %}
+    ,"url": "{{ canonical|e('js') }}"
+    {% endif %}
+  }
+  </script>
+{% endif %}

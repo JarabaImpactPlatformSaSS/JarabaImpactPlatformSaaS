@@ -4,238 +4,90 @@
  * Template para la demo de storytelling con IA.
  *
  * Variables:
- * - session: Datos de la sesión de demo.
- * - generated_story: Historia generada por IA.
+ * - session: Datos de la sesión de demo (session_id, tenant_name, profile, etc.).
+ * - generated_story: Historia generada (string con markdown **bold**).
+ *
+ * S2-02: Reescrito sin CSS/JS inline. CSS en _demo.scss, JS en behavior.
+ * ICON-EMOJI-001: jaraba_icon() en lugar de emojis Unicode.
+ * ROUTE-LANGPREFIX-001: URLs via path().
  *
  * Q1 2027 - Gap P0: Time-to-Value < 60s
  */
 #}
 
-<div class="demo-storytelling-container" data-session-id="{{ session.session_id }}">
+<div class="demo-storytelling" data-demo-storytelling>
   {# Banner de Demo #}
   <div class="demo-banner">
-    <a href="/demo/dashboard/{{ session.session_id }}" class="back-link">← Volver al Dashboard</a>
-    <span class="demo-badge">🎮 MODO DEMO</span>
+    <a href="{{ path('ecosistema_jaraba_core.demo_dashboard', { sessionId: session.session_id }) }}"
+       class="demo-banner__back-link">
+      &larr; {{ 'Volver al Dashboard'|t }}
+    </a>
+    <span class="demo-banner__badge">
+      {{ jaraba_icon('navigation', 'play', { size: '14px', color: 'blanco' }) }}
+      {{ 'MODO DEMO'|t }}
+    </span>
   </div>
 
-  <div class="storytelling-content">
-    <div class="story-header">
-      <span class="story-icon">✨</span>
-      <h1>Tu Historia Generada por IA</h1>
-      <p class="story-subtitle">{{ session.tenant_name }}</p>
+  <div class="demo-storytelling__header">
+    <div class="demo-storytelling__icon">
+      {{ jaraba_icon('ai', 'sparkles', { size: '32px', color: 'naranja-impulso' }) }}
     </div>
+    <h1 class="demo-storytelling__title">{{ 'Tu Historia Generada por IA'|t }}</h1>
+    <p class="demo-storytelling__subtitle">{{ session.tenant_name }}</p>
+  </div>
 
-    <div class="generated-story-card">
-      <div class="story-content">
-        {{ generated_story|safe_html }}
-      </div>
-      <div class="story-actions">
-        <button class="regenerate-btn" id="regenerate-story">
-          🔄 Regenerar Historia
-        </button>
-        <button class="copy-btn" id="copy-story">
-          📋 Copiar
-        </button>
-      </div>
+  {# Historia Generada #}
+  <div class="demo-story-card">
+    <div class="demo-story-card__content" data-story-content>
+      {{ generated_story|raw }}
     </div>
+    <div class="demo-story-card__actions">
+      <button class="demo-story-btn demo-story-btn--primary" data-story-regenerate type="button">
+        {{ jaraba_icon('navigation', 'refresh', { size: '16px', color: 'blanco' }) }}
+        {{ 'Regenerar Historia'|t }}
+      </button>
+      <button class="demo-story-btn demo-story-btn--secondary" data-story-copy type="button">
+        {{ jaraba_icon('navigation', 'copy', { size: '16px', color: 'azul-corporativo' }) }}
+        {{ 'Copiar'|t }}
+      </button>
+    </div>
+  </div>
 
-    <div class="ai-info-box">
-      <h3>💡 ¿Cómo funciona?</h3>
-      <p>Nuestra IA analiza tu perfil, productos y ubicación para crear una historia única que conecta con tus clientes. En producción, podrás:</p>
-      <ul>
-        <li>✅ Personalizar el tono y estilo</li>
-        <li>✅ Generar versiones para diferentes plataformas</li>
-        <li>✅ Traducir automáticamente a otros idiomas</li>
-        <li>✅ Integrar con tus redes sociales</li>
-      </ul>
-    </div>
+  {# Info Box #}
+  <div class="demo-ai-info">
+    <h3 class="demo-ai-info__title">
+      {{ jaraba_icon('ai', 'brain', { size: '20px', color: 'azul-corporativo' }) }}
+      {{ '¿Cómo funciona?'|t }}
+    </h3>
+    <p class="demo-ai-info__text">
+      {{ 'Nuestra IA analiza tu perfil, productos y ubicación para crear una historia única que conecta con tus clientes. En producción, podrás:'|t }}
+    </p>
+    <ul class="demo-ai-info__list">
+      <li class="demo-ai-info__item">
+        {{ jaraba_icon('business', 'check', { size: '16px', color: 'verde-innovacion' }) }}
+        {{ 'Personalizar el tono y estilo'|t }}
+      </li>
+      <li class="demo-ai-info__item">
+        {{ jaraba_icon('business', 'check', { size: '16px', color: 'verde-innovacion' }) }}
+        {{ 'Generar versiones para diferentes plataformas'|t }}
+      </li>
+      <li class="demo-ai-info__item">
+        {{ jaraba_icon('business', 'check', { size: '16px', color: 'verde-innovacion' }) }}
+        {{ 'Traducir automáticamente a otros idiomas'|t }}
+      </li>
+      <li class="demo-ai-info__item">
+        {{ jaraba_icon('business', 'check', { size: '16px', color: 'verde-innovacion' }) }}
+        {{ 'Integrar con tus redes sociales'|t }}
+      </li>
+    </ul>
+  </div>
 
-    <div class="demo-cta">
-      <p>¿Te gusta lo que ves?</p>
-      <a href="/registro" class="cta-btn">Crear Mi Cuenta Real →</a>
-    </div>
+  {# CTA Conversión #}
+  <div class="demo-cta-convert">
+    <p class="demo-cta-convert__text">{{ '¿Te gusta lo que ves?'|t }}</p>
+    <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: session.profile.vertical|default('agroconecta') }) }}"
+       class="demo-cta-convert__btn">
+      {{ 'Crear Mi Cuenta Real'|t }} &rarr;
+    </a>
   </div>
 </div>
-
-<style>
-  .demo-storytelling-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-
-  .demo-banner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
-  .back-link {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .demo-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  .storytelling-content {
-    text-align: center;
-  }
-
-  .story-header {
-    margin-bottom: 2rem;
-  }
-
-  .story-icon {
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 1rem;
-  }
-
-  .story-header h1 {
-    font-size: 2rem;
-    color: #1a1a2e;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .story-subtitle {
-    color: #666;
-    font-size: 1.1rem;
-  }
-
-  .generated-story-card {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    text-align: left;
-  }
-
-  .story-content {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #333;
-    margin-bottom: 1.5rem;
-  }
-
-  .story-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  .regenerate-btn, .copy-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-  }
-
-  .regenerate-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-
-  .copy-btn {
-    background: #f0f4ff;
-    color: #667eea;
-  }
-
-  .regenerate-btn:hover, .copy-btn:hover {
-    transform: scale(1.05);
-  }
-
-  .ai-info-box {
-    background: #f8f9ff;
-    border-radius: 16px;
-    padding: 1.5rem;
-    text-align: left;
-    margin-bottom: 2rem;
-  }
-
-  .ai-info-box h3 {
-    margin-bottom: 0.75rem;
-    color: #1a1a2e;
-  }
-
-  .ai-info-box p {
-    color: #666;
-    margin-bottom: 1rem;
-  }
-
-  .ai-info-box ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .ai-info-box li {
-    padding: 0.25rem 0;
-    color: #444;
-  }
-
-  .demo-cta {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 16px;
-    padding: 2rem;
-    color: white;
-  }
-
-  .demo-cta p {
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-  }
-
-  .cta-btn {
-    display: inline-block;
-    background: white;
-    color: #667eea;
-    padding: 0.875rem 2rem;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .cta-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  }
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Copy story
-  document.getElementById('copy-story').addEventListener('click', function() {
-    const story = document.querySelector('.story-content').innerText;
-    navigator.clipboard.writeText(story).then(() => {
-      this.innerText = '✅ Copiado';
-      setTimeout(() => { this.innerText = '📋 Copiar'; }, 2000);
-    });
-  });
-
-  // Regenerate (demo feedback)
-  document.getElementById('regenerate-story').addEventListener('click', function() {
-    this.innerText = '⏳ Generando...';
-    setTimeout(() => {
-      this.innerText = '🔄 Regenerar Historia';
-      alert('En la versión completa, aquí se generaría una nueva historia con diferentes palabras clave y tono.');
-    }, 1500);
-  });
-});
-</script>

@@ -40,7 +40,7 @@ class CertificationService {
 
     // Check if user has completed the path.
     $enrollment = $this->enrollmentService->getEnrollment($userId, $pathId);
-    if (!$enrollment || ($enrollment['progress'] ?? 0) < 100) {
+    if (!$enrollment || $enrollment->getProgressPercent() < 100) {
       return ['error' => 'Learning path not completed'];
     }
 

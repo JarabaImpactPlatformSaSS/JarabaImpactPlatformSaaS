@@ -1,0 +1,111 @@
+{#
+ # Review Analytics Dashboard.
+ #
+ # B-05: Dashboard admin con metricas de resenas.
+ #
+ # Variables:
+ #   - metrics: array con summary, trend, distribution, by_vertical, response_rate, recent_reviews
+ #   - vertical_filter: filtro por vertical activo (o null)
+ #   - days_filter: periodo en dias
+ #}
+
+<div class="review-analytics">
+  {# === Summary Cards === #}
+  <div class="review-analytics__summary">
+    <div class="review-analytics__card">
+      <div class="review-analytics__card-value">{{ metrics.summary.total_reviews|default(0) }}</div>
+      <div class="review-analytics__card-label">{% trans %}Total Resenas{% endtrans %}</div>
+    </div>
+    <div class="review-analytics__card">
+      <div class="review-analytics__card-value">{{ metrics.summary.average_rating|default(0)|number_format(1) }}</div>
+      <div class="review-analytics__card-label">{% trans %}Rating Promedio{% endtrans %}</div>
+    </div>
+    <div class="review-analytics__card">
+      <div class="review-analytics__card-value">{{ metrics.summary.pending_reviews|default(0) }}</div>
+      <div class="review-analytics__card-label">{% trans %}Pendientes{% endtrans %}</div>
+    </div>
+    <div class="review-analytics__card">
+      <div class="review-analytics__card-value">{{ metrics.response_rate.rate|default(0) }}%</div>
+      <div class="review-analytics__card-label">{% trans %}Tasa de Respuesta{% endtrans %}</div>
+    </div>
+    <div class="review-analytics__card">
+      <div class="review-analytics__card-value">{{ metrics.summary.approval_rate|default(0) }}%</div>
+      <div class="review-analytics__card-label">{% trans %}Tasa de Aprobacion{% endtrans %}</div>
+    </div>
+  </div>
+
+  {# === Distribution === #}
+  <div class="review-analytics__section">
+    <h3>{% trans %}Distribucion de Estrellas{% endtrans %}</h3>
+    <div class="review-analytics__distribution">
+      {% for star in 5..1 %}
+        {% set count = metrics.distribution[star]|default(0) %}
+        {% set total = metrics.summary.total_reviews|default(1) %}
+        {% set pct = total > 0 ? ((count / total) * 100)|round(1) : 0 %}
+        <div class="review-analytics__dist-row">
+          <span class="review-analytics__dist-stars">{{ star }} ★</span>
+          <div class="review-analytics__dist-bar">
+            <div class="review-analytics__dist-fill" style="width: {{ pct }}%"></div>
+          </div>
+          <span class="review-analytics__dist-count">{{ count }} ({{ pct }}%)</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# === By Vertical === #}
+  <div class="review-analytics__section">
+    <h3>{% trans %}Por Vertical{% endtrans %}</h3>
+    <table class="review-analytics__table">
+      <thead>
+        <tr>
+          <th>{% trans %}Vertical{% endtrans %}</th>
+          <th>{% trans %}Total{% endtrans %}</th>
+          <th>{% trans %}Aprobadas{% endtrans %}</th>
+          <th>{% trans %}Pendientes{% endtrans %}</th>
+          <th>{% trans %}Rating{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in metrics.by_vertical|default([]) %}
+          <tr>
+            <td>{{ v.vertical_name }}</td>
+            <td>{{ v.total }}</td>
+            <td>{{ v.approved }}</td>
+            <td>{{ v.pending }}</td>
+            <td>{{ v.average_rating|number_format(1) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# === Recent Reviews === #}
+  <div class="review-analytics__section">
+    <h3>{% trans %}Resenas Recientes{% endtrans %}</h3>
+    <div class="review-analytics__recent">
+      {% for review in metrics.recent_reviews|default([]) %}
+        <div class="review-analytics__recent-item">
+          <span class="review-analytics__recent-stars">
+            {% for i in 1..5 %}{{ i <= review.rating ? '★' : '☆' }}{% endfor %}
+          </span>
+          <span class="review-analytics__recent-vertical">{{ review.vertical }}</span>
+          <span class="review-analytics__recent-status review-analytics__recent-status--{{ review.status }}">
+            {{ review.status }}
+          </span>
+          <span class="review-analytics__recent-date">
+            {{ review.created|date('d/m/Y H:i') }}
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# === Export === #}
+  <div class="review-analytics__actions">
+    <a href="{{ path('ecosistema_jaraba_core.api.v1.reviews.analytics.export') }}"
+       class="button button--primary">
+      {% trans %}Exportar CSV{% endtrans %}
+    </a>
+  </div>
+</div>

@@ -5,268 +5,82 @@
  *
  * Variables:
  * - profiles: Array de perfiles de demo disponibles.
+ *   Cada perfil tiene: id, name, description, icon_category, icon_name, vertical.
+ *
+ * S2-02: Reescrito sin CSS inline, con jaraba_icon(), path(), parciales BEM.
+ * ICON-EMOJI-001: Usa jaraba_icon() en lugar de emojis Unicode.
+ * ROUTE-LANGPREFIX-001: URLs via path() de Twig.
  *
  * Q1 2027 - Gap P0: Time-to-Value < 60s
  */
 #}
 
-<div class="demo-landing-container">
-  <div class="demo-landing-header">
-    <h1 class="demo-title">🚀 Prueba la Plataforma sin Registro</h1>
-    <p class="demo-subtitle">
-      Experimenta el poder de Jaraba Impact Platform en menos de <strong>60 segundos</strong>.
-      Elige tu perfil y comienza ahora.
+<div class="demo-landing">
+  {# Header #}
+  <div class="demo-landing__header">
+    <h1 class="demo-landing__title">
+      {{ jaraba_icon('navigation', 'rocket', { color: 'naranja-impulso', size: '32px' }) }}
+      {{ 'Prueba la Plataforma sin Registro'|t }}
+    </h1>
+    <p class="demo-landing__subtitle">
+      {{ 'Experimenta el poder de Jaraba Impact Platform en menos de <strong>60 segundos</strong>. Elige tu perfil y comienza ahora.'|t }}
     </p>
-    <div class="demo-timer">
-      <span class="timer-icon">⏱️</span>
-      <span class="timer-text">Time-to-Value garantizado: <strong>&lt; 60s</strong></span>
+    <div class="demo-landing__timer">
+      {{ jaraba_icon('dashboard', 'clock', { color: 'blanco', size: '18px' }) }}
+      <span>{{ 'Time-to-Value garantizado: <strong>&lt; 60s</strong>'|t }}</span>
     </div>
   </div>
 
+  {# Grid de Perfiles #}
   <div class="demo-profiles-grid">
     {% for profile in profiles %}
       <article class="demo-profile-card" data-profile="{{ profile.id }}">
-        <div class="profile-icon">{{ profile.icon }}</div>
-        <h2 class="profile-name">{{ profile.name }}</h2>
-        <p class="profile-description">{{ profile.description }}</p>
-        <div class="profile-vertical">
-          <span class="vertical-badge">{{ profile.vertical }}</span>
+        <div class="demo-profile-card__icon">
+          {{ jaraba_icon(profile.icon_category, profile.icon_name, { size: '32px', variant: 'duotone' }) }}
         </div>
-        <a href="/demo/start/{{ profile.id }}" class="demo-start-btn">
-          Probar Ahora
-          <span class="btn-arrow">→</span>
+        <h2 class="demo-profile-card__name">{{ profile.name }}</h2>
+        <p class="demo-profile-card__description">{{ profile.description }}</p>
+        <div class="demo-profile-card__vertical">
+          <span class="demo-profile-card__vertical-badge">{{ profile.vertical }}</span>
+        </div>
+        <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: profile.id }) }}"
+           class="demo-start-btn">
+          {{ 'Probar Ahora'|t }}
+          <span class="demo-start-btn__arrow">&rarr;</span>
         </a>
       </article>
     {% endfor %}
   </div>
 
+  {# Features #}
   <div class="demo-features">
-    <h3>¿Qué podrás hacer?</h3>
-    <ul class="features-list">
-      <li>✨ <strong>Ver tu dashboard</strong> con métricas simuladas</li>
-      <li>🤖 <strong>Generar contenido con IA</strong> para tu negocio</li>
-      <li>🛒 <strong>Explorar el marketplace</strong> con productos reales</li>
-      <li>📊 <strong>Visualizar proyecciones</strong> de ingresos</li>
+    <h3 class="demo-features__title">{{ '¿Qué podrás hacer?'|t }}</h3>
+    <ul class="demo-features__list">
+      <li class="demo-features__item">
+        {{ jaraba_icon('ai', 'sparkles', { size: '18px', color: 'naranja-impulso' }) }}
+        <strong>{{ 'Ver tu dashboard'|t }}</strong> {{ 'con métricas simuladas'|t }}
+      </li>
+      <li class="demo-features__item">
+        {{ jaraba_icon('ai', 'brain', { size: '18px', color: 'verde-innovacion' }) }}
+        <strong>{{ 'Generar contenido con IA'|t }}</strong> {{ 'para tu negocio'|t }}
+      </li>
+      <li class="demo-features__item">
+        {{ jaraba_icon('commerce', 'cart', { size: '18px', color: 'azul-corporativo' }) }}
+        <strong>{{ 'Explorar el marketplace'|t }}</strong> {{ 'con productos reales'|t }}
+      </li>
+      <li class="demo-features__item">
+        {{ jaraba_icon('analytics', 'chart-line', { size: '18px', color: 'azul-corporativo' }) }}
+        <strong>{{ 'Visualizar proyecciones'|t }}</strong> {{ 'de ingresos'|t }}
+      </li>
     </ul>
   </div>
 
+  {# CTA Conversión #}
   <div class="demo-cta-convert">
-    <p>¿Te gustó lo que viste?</p>
-    <a href="/user/register" class="cta-register-btn">Crear Cuenta Real →</a>
+    <p class="demo-cta-convert__text">{{ '¿Te gustó lo que viste?'|t }}</p>
+    <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: 'emprendimiento' }) }}"
+       class="demo-cta-convert__btn">
+      {{ 'Crear Cuenta Real'|t }} &rarr;
+    </a>
   </div>
 </div>
-
-<style>
-  .demo-landing-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-
-  .demo-landing-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .demo-title {
-    font-size: 2.5rem;
-    color: #1a1a2e;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .demo-subtitle {
-    font-size: 1.2rem;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto 1.5rem;
-  }
-
-  .demo-timer {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    font-weight: 500;
-  }
-
-  .demo-profiles-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-  }
-
-  .demo-profile-card {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-  }
-
-  .demo-profile-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
-    border-color: #667eea;
-  }
-
-  .profile-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-  }
-
-  .profile-name {
-    font-size: 1.5rem;
-    color: #1a1a2e;
-    margin-bottom: 0.5rem;
-  }
-
-  .profile-description {
-    color: #666;
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-  }
-
-  .vertical-badge {
-    display: inline-block;
-    background: #f0f4ff;
-    color: #667eea;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
-  }
-
-  .demo-start-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 0.875rem 2rem;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .demo-start-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-  }
-
-  .btn-arrow {
-    transition: transform 0.3s ease;
-  }
-
-  .demo-start-btn:hover .btn-arrow {
-    transform: translateX(4px);
-  }
-
-  .demo-features {
-    background: #f8f9ff;
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .demo-features h3 {
-    color: #1a1a2e;
-    margin-bottom: 1rem;
-  }
-
-  .features-list {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    text-align: left;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .features-list li {
-    padding: 0.5rem 0;
-    color: #444;
-  }
-
-  .demo-cta-convert {
-    text-align: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    color: white;
-  }
-
-  .demo-cta-convert p {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-  }
-
-  .cta-register-btn {
-    display: inline-block;
-    background: white;
-    color: #667eea;
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .cta-register-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .demo-landing-container {
-      background: #1a1a2e;
-    }
-
-    .demo-title {
-      color: white;
-    }
-
-    .demo-subtitle {
-      color: #aaa;
-    }
-
-    .demo-profile-card {
-      background: #252542;
-    }
-
-    .profile-name {
-      color: white;
-    }
-
-    .profile-description {
-      color: #aaa;
-    }
-
-    .demo-features {
-      background: #252542;
-    }
-
-    .demo-features h3 {
-      color: white;
-    }
-
-    .features-list li {
-      color: #ccc;
-    }
-  }
-</style>

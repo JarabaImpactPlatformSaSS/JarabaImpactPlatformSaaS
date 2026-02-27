@@ -214,6 +214,24 @@ class FeatureFlagServiceTest extends TestCase {
   }
 
   /**
+   * Tests that repeated calls for the same flag reuse cached evaluation.
+   */
+  public function testIsEnabledCachesResult(): void {
+    $flag = $this->createMockFlag('cached_feature', TRUE, 'global');
+    // load() should be called at most once per flag due to internal caching.
+    $this->flagStorage->expects($this->atMost(2))
+      ->method('load')
+      ->with('cached_feature')
+      ->willReturn($flag);
+
+    $result1 = $this->service->isEnabled('cached_feature');
+    $result2 = $this->service->isEnabled('cached_feature');
+
+    $this->assertTrue($result1);
+    $this->assertSame($result1, $result2);
+  }
+
+  /**
    * Tests unknown scope returns FALSE.
    */
   public function testIsEnabledUnknownScope(): void {

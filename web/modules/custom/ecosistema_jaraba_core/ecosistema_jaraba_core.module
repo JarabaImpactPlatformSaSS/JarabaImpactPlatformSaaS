@@ -77,6 +77,32 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
+    // B-05: Review Analytics Dashboard
+    'review_analytics_dashboard' => [
+      'variables' => [
+        'metrics' => [],
+        'vertical_filter' => NULL,
+        'days_filter' => 30,
+      ],
+      'template' => 'review-analytics-dashboard',
+      'path' => $path . '/templates',
+    ],
+
+    // B-08: SEO Review Pages
+    'review_seo_page' => [
+      'variables' => [
+        'vertical' => '',
+        'vertical_label' => '',
+        'reviews' => [],
+        'stats' => [],
+        'page' => 1,
+        'total_pages' => 1,
+        'total_reviews' => 0,
+      ],
+      'template' => 'review-seo-page',
+      'path' => $path . '/templates',
+    ],
+
     // S2-04: Per-tenant analytics dashboard
     // Ruta: /tenant/analytics
     'tenant_analytics_dashboard' => [
@@ -328,11 +354,13 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // Vista ampliada del dashboard demo
     // Ruta: /demo/dashboard/{sessionId}
+    // S2-04: Corregido — usa template propio con variable session (no el
+    // mismo template de demo_dashboard que espera variables individuales).
     'demo_dashboard_view' => [
       'variables' => [
         'session' => [],
       ],
-      'template' => 'demo-dashboard',
+      'template' => 'demo-dashboard-view',
       'path' => $path . '/templates',
     ],
 
@@ -349,12 +377,14 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
 
     // GAP-AUD-003: AI Playground — public demo with embedded copilot
     // Ruta: /demo/ai-playground
+    // S2-04: Añadido path (faltaba) + template en módulo (no en tema).
     'demo_ai_playground' => [
       'variables' => [
         'scenarios' => [],
         'copilot_endpoint' => '',
       ],
       'template' => 'demo-ai-playground',
+      'path' => $path . '/templates',
     ],
 
     // =========================================================================
@@ -1235,6 +1265,73 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       break;
 
     // =========================================================================
+    // REVIEW NOTIFICATION EMAILS (Reviews & Comments System)
+    // =========================================================================
+
+    // Email al propietario cuando se crea una nueva resena.
+    case 'review_notification_review_created':
+      $stars = $params['stars'] ?? '';
+      $message['subject'] = t('Nueva resena en @target', [
+        '@target' => $params['target_label'] ?? '',
+      ]);
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['owner_name'] ?? '',
+      ]);
+      $message['body'][] = t('Has recibido una nueva resena en @target.', [
+        '@target' => $params['target_label'] ?? '',
+      ]);
+      $message['body'][] = t('Valoracion: @stars (@rating/5)', [
+        '@stars' => $stars,
+        '@rating' => $params['rating'] ?? 0,
+      ]);
+      $message['body'][] = '';
+      $message['body'][] = t('Accede a tu panel para ver los detalles y responder a la resena.');
+      $message['body'][] = '---';
+      $message['body'][] = t('Jaraba Impact Platform — Sistema de Resenas');
+      break;
+
+    // Email al autor cuando su resena es aprobada.
+    case 'review_notification_review_approved':
+      $message['subject'] = t('Tu resena ha sido aprobada');
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['user_name'] ?? '',
+      ]);
+      $message['body'][] = t('Tu resena ha sido revisada y aprobada. Ya es visible para otros usuarios.');
+      $message['body'][] = t('Gracias por compartir tu experiencia.');
+      $message['body'][] = '---';
+      $message['body'][] = t('Jaraba Impact Platform — Sistema de Resenas');
+      break;
+
+    // Email al autor cuando el propietario responde a su resena.
+    case 'review_notification_review_responded':
+      $message['subject'] = t('Han respondido a tu resena');
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['user_name'] ?? '',
+      ]);
+      $message['body'][] = t('El propietario ha respondido a tu resena:');
+      $message['body'][] = '';
+      $message['body'][] = $params['response_preview'] ?? '';
+      $message['body'][] = '';
+      $message['body'][] = t('Accede a la plataforma para ver la respuesta completa.');
+      $message['body'][] = '---';
+      $message['body'][] = t('Jaraba Impact Platform — Sistema de Resenas');
+      break;
+
+    // Email de invitacion a dejar una resena tras transaccion completada.
+    case 'review_invitation':
+      $message['subject'] = t('Cuentanos tu experiencia');
+      $message['body'][] = t('Hola @name,', [
+        '@name' => $params['user_display_name'] ?? '',
+      ]);
+      $message['body'][] = t('Tu experiencia nos importa. Nos gustaria saber como fue tu experiencia.');
+      $message['body'][] = t('Dedica un momento a dejar tu valoracion y ayuda a otros usuarios a tomar mejores decisiones.');
+      $message['body'][] = '';
+      $message['body'][] = t('Tu opinion marca la diferencia. Gracias por tu tiempo.');
+      $message['body'][] = '---';
+      $message['body'][] = t('Jaraba Impact Platform — Sistema de Resenas');
+      break;
+
+    // =========================================================================
     // Sprint 5: Onboarding Email Sequence
     // =========================================================================
     case 'onboarding_welcome':
@@ -1416,7 +1513,43 @@ function ecosistema_jaraba_core_cron() {
     );
   }
 
-  // 6. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
+  // 7. S1-05: Limpieza de sesiones de demo expiradas (tabla demo_sessions).
+  if (\Drupal::hasService('ecosistema_jaraba_core.demo_interactive')) {
+    try {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\DemoInteractiveService $demoService */
+      $demoService = \Drupal::service('ecosistema_jaraba_core.demo_interactive');
+      $cleaned = $demoService->cleanupExpiredSessions();
+      if ($cleaned > 0) {
+        \Drupal::logger('demo_interactive')->info(
+          'Cron: @count sesiones de demo expiradas eliminadas.',
+          ['@count' => $cleaned]
+        );
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('demo_interactive')->error(
+        'Error limpiando sesiones de demo: @message',
+        ['@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 8. S1-05: Limpieza de sandboxes expirados (State API legacy).
+  if (\Drupal::hasService('ecosistema_jaraba_core.sandbox_tenant')) {
+    try {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\SandboxTenantService $sandboxService */
+      $sandboxService = \Drupal::service('ecosistema_jaraba_core.sandbox_tenant');
+      $sandboxService->cleanupExpiredSandboxes();
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('sandbox_tenant')->error(
+        'Error limpiando sandboxes expirados: @message',
+        ['@message' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 9. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
   _ecosistema_jaraba_core_cron_extended();
 }
 
@@ -2976,8 +3109,11 @@ HTML;
 function ecosistema_jaraba_core_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
   // REV-PHASE3: Recalcular agregacion de ratings para entidades de resena.
   _ecosistema_jaraba_core_review_aggregation_trigger($entity);
+  // B-13: Gamificacion + B-18: Webhook al cambiar status de resena.
+  _ecosistema_jaraba_core_review_status_change_trigger($entity);
+  _ecosistema_jaraba_core_review_webhook_trigger($entity, 'review.approved');
 
-  // Guard: Only process commerce_order entities.
+  // Guard: Only process commerce_order entities below this point.
   if ($entity->getEntityTypeId() !== 'commerce_order') {
     return;
   }
@@ -3304,13 +3440,97 @@ function ecosistema_jaraba_core_preprocess_page(array &$variables): void {
 }
 
 /**
+ * Implements hook_entity_presave() for review entities.
+ *
+ * B-07: Fake review detection scoring.
+ * B-09: Sentiment analysis.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ */
+function ecosistema_jaraba_core_entity_presave(\Drupal\Core\Entity\EntityInterface $entity): void {
+  _ecosistema_jaraba_core_review_presave_enrich($entity);
+}
+
+/**
  * Implements hook_entity_insert() for review entities.
  *
  * REV-PHASE3: Recalcula agregacion de ratings al crear una resena aprobada.
- * Sigue PRESAVE-RESILIENCE-001 — nunca falla el guardado por servicios opcionales.
+ * B-11: Notificaciones al crear resena.
+ * PRESAVE-RESILIENCE-001 — nunca falla el guardado por servicios opcionales.
  */
 function ecosistema_jaraba_core_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
   _ecosistema_jaraba_core_review_aggregation_trigger($entity);
+  _ecosistema_jaraba_core_review_notification_trigger($entity, 'created');
+  _ecosistema_jaraba_core_review_gamification_trigger($entity, 'submitted');
+  _ecosistema_jaraba_core_review_webhook_trigger($entity, 'review.created');
+}
+
+/**
+ * Enrich review entities on presave with sentiment and authenticity.
+ *
+ * B-07: Sets authenticity_score field.
+ * B-09: Sets sentiment field.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_review_presave_enrich(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $reviewEntityTypes = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+  ];
+
+  if (!in_array($entity->getEntityTypeId(), $reviewEntityTypes, TRUE)) {
+    return;
+  }
+
+  // B-09: Sentiment analysis.
+  if ($entity->hasField('sentiment') && \Drupal::hasService('ecosistema_jaraba_core.review_sentiment')) {
+    try {
+      /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewSentimentService $sentiment */
+      $sentiment = \Drupal::service('ecosistema_jaraba_core.review_sentiment');
+      $result = $sentiment->analyze($entity);
+      $entity->set('sentiment', $result['sentiment']);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('ecosistema_jaraba_core')->warning(
+        'Sentiment analysis failed for @type @id: @msg',
+        ['@type' => $entity->getEntityTypeId(), '@id' => $entity->id() ?? 'new', '@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // B-07: Fake review detection.
+  if ($entity->hasField('authenticity_score') && \Drupal::hasService('jaraba_ai_agents.fake_review_detection')) {
+    try {
+      /** @var \Drupal\jaraba_ai_agents\Service\FakeReviewDetectionService $fakeDetector */
+      $fakeDetector = \Drupal::service('jaraba_ai_agents.fake_review_detection');
+      $result = $fakeDetector->analyze($entity);
+      $entity->set('authenticity_score', 1.0 - $result['score']);
+
+      // Auto-flag if highly suspicious.
+      if ($result['should_flag'] && $entity->hasField('status')) {
+        $entity->set('status', 'flagged');
+        \Drupal::logger('ecosistema_jaraba_core')->notice(
+          'Review @type @id auto-flagged: score @score, flags: @flags',
+          [
+            '@type' => $entity->getEntityTypeId(),
+            '@id' => $entity->id() ?? 'new',
+            '@score' => $result['score'],
+            '@flags' => implode(', ', $result['flags']),
+          ]
+        );
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('ecosistema_jaraba_core')->warning(
+        'Fake detection failed for @type @id: @msg',
+        ['@type' => $entity->getEntityTypeId(), '@id' => $entity->id() ?? 'new', '@msg' => $e->getMessage()]
+      );
+    }
+  }
 }
 
 /**
@@ -3350,6 +3570,176 @@ function _ecosistema_jaraba_core_review_aggregation_trigger(\Drupal\Core\Entity\
         '@id' => $entity->id(),
         '@msg' => $e->getMessage(),
       ]
+    );
+  }
+}
+
+/**
+ * Trigger notification on review creation.
+ *
+ * B-11: Notifies target entity owner when a new review is created.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_review_notification_trigger(\Drupal\Core\Entity\EntityInterface $entity, string $event): void {
+  $reviewEntityTypes = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+  ];
+
+  if (!in_array($entity->getEntityTypeId(), $reviewEntityTypes, TRUE)) {
+    return;
+  }
+
+  if (!\Drupal::hasService('ecosistema_jaraba_core.review_notification')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewNotificationService $notification */
+    $notification = \Drupal::service('ecosistema_jaraba_core.review_notification');
+    if ($event === 'created') {
+      $notification->notifyReviewCreated($entity);
+    }
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'Review notification failed for @type @id: @msg',
+      ['@type' => $entity->getEntityTypeId(), '@id' => $entity->id(), '@msg' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Check for review status change (pending → approved).
+ *
+ * B-11: Notifies review author when review is approved.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_review_status_change_trigger(\Drupal\Core\Entity\EntityInterface $entity): void {
+  $reviewEntityTypes = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+  ];
+
+  if (!in_array($entity->getEntityTypeId(), $reviewEntityTypes, TRUE)) {
+    return;
+  }
+
+  if (!$entity->hasField('status') || !isset($entity->original)) {
+    return;
+  }
+
+  $oldStatus = $entity->original->get('status')->value ?? '';
+  $newStatus = $entity->get('status')->value ?? '';
+
+  // Approved transition.
+  if ($oldStatus !== 'approved' && $newStatus === 'approved') {
+    if (\Drupal::hasService('ecosistema_jaraba_core.review_notification')) {
+      try {
+        /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewNotificationService $notification */
+        $notification = \Drupal::service('ecosistema_jaraba_core.review_notification');
+        $notification->notifyReviewApproved($entity);
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('ecosistema_jaraba_core')->warning(
+          'Review approval notification failed: @msg',
+          ['@msg' => $e->getMessage()]
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Trigger gamification points for review actions.
+ *
+ * B-13: Awards points to review authors.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_review_gamification_trigger(\Drupal\Core\Entity\EntityInterface $entity, string $action): void {
+  $reviewEntityTypes = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+  ];
+
+  if (!in_array($entity->getEntityTypeId(), $reviewEntityTypes, TRUE)) {
+    return;
+  }
+
+  if (!\Drupal::hasService('ecosistema_jaraba_core.review_gamification')) {
+    return;
+  }
+
+  $uid = $entity->hasField('uid') ? (int) ($entity->get('uid')->target_id ?? 0) : 0;
+  if ($uid === 0) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewGamificationService $gamification */
+    $gamification = \Drupal::service('ecosistema_jaraba_core.review_gamification');
+    $gamification->awardPoints($uid, 'review_' . $action, [
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+    ]);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'Review gamification failed for @type @id: @msg',
+      ['@type' => $entity->getEntityTypeId(), '@id' => $entity->id(), '@msg' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Dispatch webhook event for a review entity.
+ *
+ * B-18: Sends webhook notifications for review lifecycle events.
+ * PRESAVE-RESILIENCE-001: hasService() + try-catch.
+ *
+ * @internal
+ */
+function _ecosistema_jaraba_core_review_webhook_trigger(\Drupal\Core\Entity\EntityInterface $entity, string $event): void {
+  $reviewEntityTypes = [
+    'comercio_review',
+    'review_agro',
+    'review_servicios',
+    'session_review',
+    'course_review',
+  ];
+
+  if (!in_array($entity->getEntityTypeId(), $reviewEntityTypes, TRUE)) {
+    return;
+  }
+
+  if (!\Drupal::hasService('ecosistema_jaraba_core.review_webhook')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewWebhookService $webhook */
+    $webhook = \Drupal::service('ecosistema_jaraba_core.review_webhook');
+    $webhook->dispatch($event, $entity);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->warning(
+      'Review webhook dispatch failed for @type @id: @msg',
+      ['@type' => $entity->getEntityTypeId(), '@id' => $entity->id(), '@msg' => $e->getMessage()]
     );
   }
 }

@@ -1216,6 +1216,66 @@ body.menu-open {
             }
         }
     }
+
+    // --- Banda Ecosistema: navegacion transversal entre dominios ---
+    &__ecosystem {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.8125rem;
+        color: rgba(255, 255, 255, 0.5);
+
+        @media (max-width: 640px) {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+
+    &__ecosystem-label {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        white-space: nowrap;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__ecosystem-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    &__ecosystem-link {
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        transition: color 0.2s ease;
+        white-space: nowrap;
+
+        &:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        &--current {
+            color: #fff;
+            font-weight: 600;
+            cursor: default;
+        }
+    }
+
+    &__ecosystem-separator {
+        color: rgba(255, 255, 255, 0.25);
+    }
+
+    &__ecosystem-sublabel {
+        display: none;
+    }
 }
 
 // =============================================

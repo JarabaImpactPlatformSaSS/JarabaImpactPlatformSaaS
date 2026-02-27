@@ -1,0 +1,74 @@
+{#
+/**
+ * @file
+ * Template para el AI Playground — demo pública de IA.
+ *
+ * Variables:
+ * - scenarios: Array de escenarios preconfigurados (id, title, description, icon, prompt).
+ * - copilot_endpoint: URL del endpoint del copilot público.
+ *
+ * S2-04: Template creado en módulo (antes solo existía en tema sin path).
+ * S2-02: Sin CSS/JS inline. CSS en _demo.scss, JS en demo-ai-playground.js.
+ * ICON-EMOJI-001: Material icons por nombre (ya en formato correcto).
+ * ROUTE-LANGPREFIX-001: Endpoint en drupalSettings (generado en controller).
+ *
+ * Q1 2027 - GAP-AUD-003
+ */
+#}
+
+<div class="demo-playground" data-demo-playground>
+  {# Header #}
+  <div class="demo-landing__header">
+    <h1 class="demo-landing__title">
+      {{ jaraba_icon('ai', 'brain', { color: 'azul-corporativo', size: '32px' }) }}
+      {{ 'AI Playground'|t }}
+    </h1>
+    <p class="demo-landing__subtitle">
+      {{ 'Prueba las capacidades de inteligencia artificial de la plataforma. Selecciona un escenario o escribe tu propia consulta.'|t }}
+    </p>
+  </div>
+
+  {# Escenarios #}
+  <div class="demo-playground__scenarios">
+    {% for scenario in scenarios %}
+      <div class="demo-playground__scenario-card"
+           data-scenario-prompt="{{ scenario.prompt }}"
+           role="button"
+           tabindex="0">
+        <div class="demo-playground__scenario-card__icon">
+          {{ jaraba_icon('ai', scenario.icon|default('sparkles'), { size: '24px', color: 'azul-corporativo' }) }}
+        </div>
+        <div class="demo-playground__scenario-card__title">{{ scenario.title }}</div>
+        <div class="demo-playground__scenario-card__description">{{ scenario.description }}</div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Chat #}
+  <div class="demo-playground__chat">
+    <div class="demo-playground__chat-output" data-chat-output>
+      <div class="demo-playground__message demo-playground__message--system">
+        {{ '¡Bienvenido al AI Playground! Selecciona un escenario arriba o escribe tu pregunta.'|t }}
+      </div>
+    </div>
+    <div class="demo-playground__chat-input-row">
+      <input type="text"
+             class="demo-playground__chat-input"
+             data-chat-input
+             placeholder="{{ 'Escribe tu consulta...'|t }}"
+             maxlength="500">
+      <button class="demo-playground__chat-send" data-chat-send type="button">
+        {{ 'Enviar'|t }}
+      </button>
+    </div>
+  </div>
+
+  {# CTA Conversión #}
+  <div class="demo-cta-convert" style="margin-top: var(--demo-section-gap);">
+    <p class="demo-cta-convert__text">{{ '¿Quieres acceso completo a la IA?'|t }}</p>
+    <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: 'emprendimiento' }) }}"
+       class="demo-cta-convert__btn">
+      {{ 'Crear Mi Cuenta'|t }} &rarr;
+    </a>
+  </div>
+</div>

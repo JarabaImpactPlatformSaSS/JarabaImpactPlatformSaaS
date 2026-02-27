@@ -204,7 +204,7 @@ class SemanticCacheService
     protected function searchQdrant(array $embedding, array $filters): array
     {
         if (method_exists($this->qdrantClient, 'vectorSearch')) {
-            return $this->qdrantClient->vectorSearch(self::COLLECTION, $embedding, 1, $filters);
+            return $this->qdrantClient->vectorSearch($embedding, $filters, 1, self::SIMILARITY_THRESHOLD, self::COLLECTION);
         }
         return [];
     }

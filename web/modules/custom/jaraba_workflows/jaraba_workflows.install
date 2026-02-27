@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update, and requirements for jaraba_workflows module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function jaraba_workflows_requirements(string $phase): array {
+  $requirements = [];
+
+  if ($phase === 'runtime') {
+    // Check optional dependency: jaraba_ai_agents (for observability logging).
+    $has_observability = \Drupal::hasService('jaraba_ai_agents.observability');
+    $requirements['jaraba_workflows_observability'] = [
+      'title' => t('Workflow Observability'),
+      'value' => $has_observability ? t('Available') : t('Not available'),
+      'description' => $has_observability
+        ? t('Workflow executions are logged via AI Observability.')
+        : t('Install jaraba_ai_agents module for workflow execution logging.'),
+      'severity' => $has_observability ? REQUIREMENT_OK : REQUIREMENT_INFO,
+    ];
+
+    // Check optional dependency: mail manager.
+    $has_mail = \Drupal::hasService('plugin.manager.mail');
+    $requirements['jaraba_workflows_mail'] = [
+      'title' => t('Workflow Email Actions'),
+      'value' => $has_mail ? t('Available') : t('Not available'),
+      'description' => $has_mail
+        ? t('Email actions can send notifications.')
+        : t('Mail manager not available — email actions will fail.'),
+      'severity' => $has_mail ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}

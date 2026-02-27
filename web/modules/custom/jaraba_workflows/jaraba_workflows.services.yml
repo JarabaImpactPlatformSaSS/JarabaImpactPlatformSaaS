@@ -6,6 +6,7 @@ services:
       - '@event_dispatcher'
       - '@logger.channel.jaraba_workflows'
       - '@?jaraba_ai_agents.observability'
+      - '@?plugin.manager.mail'
 
   logger.channel.jaraba_workflows:
     parent: logger.channel_base

@@ -175,10 +175,39 @@
       </div>
     </div>
 
+    {# --- BANDA ECOSISTEMA: Navegacion transversal entre dominios del ecosistema --- #}
+    {% set eco_enabled = (ts.ecosystem_footer_enabled is defined) ? ts.ecosystem_footer_enabled : false %}
+    {% set eco_links = ts.ecosystem_footer_links|default([]) %}
+    {% if eco_enabled and eco_links|length > 0 %}
+      <div class="landing-footer__ecosystem">
+        <span class="landing-footer__ecosystem-label">Ecosistema Jaraba</span>
+        <nav class="landing-footer__ecosystem-nav" aria-label="Ecosistema Jaraba">
+          {% for link in eco_links %}
+            {% if link.current|default(false) %}
+              <span class="landing-footer__ecosystem-link landing-footer__ecosystem-link--current"
+                    aria-current="true">
+                {{ link.name }}
+              </span>
+            {% else %}
+              <a href="{{ link.url }}"
+                 class="landing-footer__ecosystem-link"
+                 target="_blank"
+                 rel="noopener">
+                {{ link.name }}
+              </a>
+            {% endif %}
+            {% if not loop.last %}
+              <span class="landing-footer__ecosystem-separator" aria-hidden="true">&middot;</span>
+            {% endif %}
+          {% endfor %}
+        </nav>
+      </div>
+    {% endif %}
+
     {# Powered by (configurable) #}
     {% if (ts.footer_show_powered_by is defined) ? ts.footer_show_powered_by : true %}
       <div class="landing-footer__powered">
-        <span>{% trans %}Powered by{% endtrans %} 
+        <span>{% trans %}Powered by{% endtrans %}
           <a href="{{ ts.footer_powered_url|default('https://jaraba.io') }}" target="_blank" rel="noopener">
             {{ ts.footer_powered_text|default('Jaraba Impact Platform'|t) }}
           </a>

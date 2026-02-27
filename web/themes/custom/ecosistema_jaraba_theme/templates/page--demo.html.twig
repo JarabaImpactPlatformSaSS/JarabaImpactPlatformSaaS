@@ -1,0 +1,64 @@
+{#
+/**
+ * @file
+ * Page template zero-region para rutas de demo.
+ *
+ * S3-01: Template dedicado para la experiencia demo.
+ * Zero Region Policy — sin bloques ni regiones de Drupal.
+ *
+ * Variables (inyectadas desde hook_preprocess_page):
+ * - clean_content: Render array del controlador
+ * - clean_messages: Mensajes del sistema
+ * - theme_settings: Configuración del tema
+ * - site_name, site_slogan, logo, footer_copyright
+ *
+ * Aplicado a:
+ * - /demo (landing de selección de perfil)
+ * - /demo/start/{profileId} (dashboard con datos sintéticos)
+ * - /demo/dashboard/{sessionId} (dashboard con sesión activa)
+ * - /demo/ai/storytelling/{sessionId}
+ * - /demo/ai-playground
+ */
+#}
+{% set site_name = site_name|default('Jaraba Impact Platform') %}
+{% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
+
+<div class="page-wrapper page-wrapper--clean page-wrapper--demo">
+
+  {# =============================================
+     HEADER - Parcial reutilizable del tema
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_header.html.twig' with {
+    'site_name': site_name,
+    'site_slogan': site_slogan,
+    'logo': logo,
+    'logged_in': logged_in,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+  {# =============================================
+     CONTENIDO PRINCIPAL - Zero Region, Full Width
+     ============================================= #}
+  <main id="main-content" class="demo-main" role="main">
+    {% if clean_messages %}
+      <div class="highlighted container">
+        {{ clean_messages }}
+      </div>
+    {% endif %}
+
+    <div class="demo-wrapper">
+      {{ clean_content }}
+    </div>
+  </main>
+
+  {# =============================================
+     FOOTER - Parcial reutilizable del tema
+     ============================================= #}
+  {% include '@ecosistema_jaraba_theme/partials/_footer.html.twig' with {
+    'site_name': site_name,
+    'logo': logo,
+    'footer_copyright': footer_copyright,
+    'theme_settings': theme_settings|default({})
+  } only %}
+
+</div>

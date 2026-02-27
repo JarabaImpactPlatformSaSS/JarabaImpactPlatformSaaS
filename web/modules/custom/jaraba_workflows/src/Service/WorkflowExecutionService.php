@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_workflows\Service;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\jaraba_workflows\Entity\WorkflowRuleInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -26,8 +28,14 @@ class WorkflowExecutionService
         protected EventDispatcherInterface $eventDispatcher,
         protected LoggerInterface $logger,
         protected ?object $observability = NULL,
+        protected ?MailManagerInterface $mailManager = NULL,
     ) {
     }
+
+    /**
+     * Max rules evaluated per single trigger event to prevent cascades.
+     */
+    protected const MAX_RULES_PER_TRIGGER = 20;
 
     /**
      * Evaluates all active rules for a given trigger event.
@@ -46,6 +54,16 @@ class WorkflowExecutionService
 
         try {
             $rules = $this->getActiveRulesForTrigger($triggerType, $eventData['tenant_id'] ?? 0);
+
+            // FIX-020: Rate limit to prevent cascade explosions.
+            if (count($rules) > self::MAX_RULES_PER_TRIGGER) {
+                $this->logger->warning('Workflow rate limit: @count rules match trigger @type, capping at @max.', [
+                    '@count' => count($rules),
+                    '@type' => $triggerType,
+                    '@max' => self::MAX_RULES_PER_TRIGGER,
+                ]);
+                $rules = array_slice($rules, 0, self::MAX_RULES_PER_TRIGGER);
+            }
 
             foreach ($rules as $rule) {
                 if ($this->checkConditions($rule, $eventData)) {
@@ -268,8 +286,10 @@ class WorkflowExecutionService
         }
 
         try {
-            /** @var \Drupal\Core\Mail\MailManagerInterface $mailManager */
-            $mailManager = \Drupal::service('plugin.manager.mail');
+            $mailManager = $this->mailManager;
+            if (!$mailManager) {
+                return ['success' => FALSE, 'message' => 'Mail manager not available.'];
+            }
             $result = $mailManager->mail(
                 'jaraba_workflows',
                 'workflow_notification',
@@ -401,7 +421,9 @@ class WorkflowExecutionService
     {
         return preg_replace_callback('/\{\{(\w+)\}\}/', function ($matches) use ($eventData) {
             $key = $matches[1];
-            return (string) ($eventData[$key] ?? $matches[0]);
+            $value = (string) ($eventData[$key] ?? $matches[0]);
+            // FIX-021: Sanitize token values to prevent XSS in email bodies.
+            return Html::escape($value);
         }, $text) ?? $text;
     }
 

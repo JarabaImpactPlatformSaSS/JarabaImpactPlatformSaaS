@@ -267,3 +267,12 @@ respond reviews:
 view review analytics:
   title: 'Ver analiticas de resenas'
   description: 'Permite ver estadisticas y resumenes de resenas.'
+
+export review analytics:
+  title: 'Exportar analiticas de resenas'
+  description: 'Permite exportar datos de resenas en formato CSV.'
+  restrict access: TRUE
+
+respond to reviews:
+  title: 'Responder a resenas (API)'
+  description: 'Permite responder a resenas via la API REST.'

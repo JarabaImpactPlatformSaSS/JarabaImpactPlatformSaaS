@@ -1,0 +1,128 @@
+{#
+ # B-08: SEO Review Page.
+ #
+ # Generates SEO-optimized review listing with structured data.
+ #
+ # Variables:
+ #   - vertical: string — vertical canonical name
+ #   - vertical_label: string — human-readable label
+ #   - reviews: array of review items
+ #   - stats: array with average, count, distribution
+ #   - page: int — current page
+ #   - total_pages: int
+ #   - total_reviews: int
+ #}
+
+<div class="review-seo" itemscope itemtype="https://schema.org/Organization">
+  <meta itemprop="name" content="{{ vertical_label }}">
+
+  {# === Summary Header === #}
+  <header class="review-seo__header">
+    <h1 class="review-seo__title">{% trans %}Reviews — {{ vertical_label }}{% endtrans %}</h1>
+    <div class="review-seo__summary" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+      <span class="review-seo__avg" itemprop="ratingValue">{{ stats.average|default(0)|number_format(1) }}</span>
+      <span class="review-seo__stars">
+        {% for i in 1..5 %}{{ i <= stats.average|round ? '★' : '☆' }}{% endfor %}
+      </span>
+      <span class="review-seo__count">
+        {% trans %}{{ total_reviews }} reviews{% endtrans %}
+      </span>
+      <meta itemprop="reviewCount" content="{{ total_reviews }}">
+      <meta itemprop="bestRating" content="5">
+      <meta itemprop="worstRating" content="1">
+    </div>
+
+    {# Distribution bars #}
+    {% if stats.distribution is defined %}
+      <div class="review-seo__distribution">
+        {% for star in 5..1 %}
+          {% set count = stats.distribution[star]|default(0) %}
+          {% set pct = total_reviews > 0 ? ((count / total_reviews) * 100)|round(1) : 0 %}
+          <div class="review-seo__dist-row">
+            <span class="review-seo__dist-label">{{ star }}★</span>
+            <div class="review-seo__dist-bar">
+              <div class="review-seo__dist-fill" style="width: {{ pct }}%"></div>
+            </div>
+            <span class="review-seo__dist-count">{{ count }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  {# === Review List === #}
+  <div class="review-seo__list">
+    {% for review in reviews %}
+      <article class="review-seo__item" itemprop="review" itemscope itemtype="https://schema.org/Review">
+        <div class="review-seo__item-header">
+          <span class="review-seo__item-stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+            <meta itemprop="ratingValue" content="{{ review.rating }}">
+            <meta itemprop="bestRating" content="5">
+            {{ review.stars }}
+          </span>
+          {% if review.verified %}
+            <span class="review-badge review-badge--verified">{% trans %}Compra Verificada{% endtrans %}</span>
+          {% endif %}
+          {% if review.sentiment %}
+            <span class="review-badge review-badge--sentiment-{{ review.sentiment }}">{{ review.sentiment }}</span>
+          {% endif %}
+        </div>
+
+        {% if review.body %}
+          <div class="review-seo__item-body" itemprop="reviewBody">
+            {{ review.body|striptags|slice(0, 500) }}
+            {% if review.body|length > 500 %}...{% endif %}
+          </div>
+        {% endif %}
+
+        <footer class="review-seo__item-footer">
+          {% if review.author_name %}
+            <span class="review-seo__item-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+              <span itemprop="name">{{ review.author_name }}</span>
+            </span>
+          {% endif %}
+          {% if review.created %}
+            <time class="review-seo__item-date" itemprop="datePublished"
+                  datetime="{{ review.created|date('Y-m-d') }}">
+              {{ review.created|date('d/m/Y') }}
+            </time>
+          {% endif %}
+        </footer>
+      </article>
+    {% endfor %}
+  </div>
+
+  {# === Pagination === #}
+  {% if total_pages > 1 %}
+    <nav class="review-seo__pagination" aria-label="{% trans %}Pagination{% endtrans %}">
+      {% if page > 1 %}
+        <a href="?page={{ page - 1 }}" class="review-seo__pagination-link" rel="prev">
+          &laquo; {% trans %}Anterior{% endtrans %}
+        </a>
+      {% endif %}
+
+      {% for p in 1..total_pages %}
+        {% if p == page %}
+          <span class="review-seo__pagination-current" aria-current="page">{{ p }}</span>
+        {% elseif p <= 3 or p > total_pages - 3 or (p >= page - 2 and p <= page + 2) %}
+          <a href="?page={{ p }}" class="review-seo__pagination-link">{{ p }}</a>
+        {% elseif p == 4 or p == total_pages - 3 %}
+          <span class="review-seo__pagination-ellipsis">&hellip;</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}" class="review-seo__pagination-link" rel="next">
+          {% trans %}Siguiente{% endtrans %} &raquo;
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
+
+  {# Empty state #}
+  {% if reviews is empty %}
+    <div class="review-seo__empty">
+      <p>{% trans %}No hay reviews disponibles para esta vertical.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

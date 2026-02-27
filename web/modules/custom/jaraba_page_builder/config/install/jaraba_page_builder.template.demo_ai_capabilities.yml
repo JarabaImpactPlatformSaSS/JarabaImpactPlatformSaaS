@@ -1,0 +1,132 @@
+# S4-02: Plantilla Demo AI Capabilities
+# Showcase de capacidades IA con playground interactivo.
+
+langcode: es
+status: true
+dependencies: {}
+id: demo_ai_capabilities
+label: 'Capacidades IA Demo'
+description: 'Sección de demostración de las capacidades de IA integradas: generación de contenido, storytelling, copilot y agentes autónomos.'
+category: demo
+twig_template: '@jaraba_page_builder/blocks/demo/demo-ai-capabilities.html.twig'
+fields_schema:
+  type: object
+  title: 'Capacidades IA'
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      maxLength: 100
+      ui:widget: text
+      default: 'IA que trabaja para tu negocio'
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+      maxLength: 250
+      ui:widget: textarea
+    capabilities:
+      type: array
+      title: 'Capacidades IA'
+      maxItems: 6
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            title: 'Título'
+            maxLength: 50
+          description:
+            type: string
+            title: 'Descripción'
+            maxLength: 200
+          icon:
+            type: string
+            title: 'Icono'
+            ui:widget: icon-picker
+          demo_prompt:
+            type: string
+            title: 'Prompt de ejemplo'
+            maxLength: 200
+            ui:widget: textarea
+            ui:placeholder: 'Ej: Genera una descripción para mi aceite de oliva premium'
+    playground_enabled:
+      type: boolean
+      title: 'Mostrar playground interactivo'
+      default: true
+    playground_prompts:
+      type: array
+      title: 'Prompts sugeridos del playground'
+      maxItems: 5
+      items:
+        type: object
+        properties:
+          label:
+            type: string
+            title: 'Etiqueta del prompt'
+            maxLength: 40
+          prompt:
+            type: string
+            title: 'Texto del prompt'
+            maxLength: 200
+    cta_text:
+      type: string
+      title: 'Texto CTA'
+      maxLength: 50
+      default: 'Probar IA gratis'
+    cta_url:
+      type: string
+      format: uri
+      title: 'URL CTA'
+    background:
+      type: string
+      title: 'Estilo de fondo'
+      enum:
+        - dark
+        - gradient
+        - light
+      enumLabels:
+        dark: 'Oscuro (corporate)'
+        gradient: 'Gradiente'
+        light: 'Claro'
+      default: dark
+  required:
+    - title
+    - capabilities
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/demo-ai-capabilities.png'
+weight: 2
+preview_data:
+  title: 'IA que trabaja para tu negocio'
+  subtitle: 'Genera contenido profesional, obtén insights y automatiza tareas con inteligencia artificial integrada.'
+  capabilities:
+    - title: 'Generación de Contenido'
+      description: 'Crea descripciones de productos, posts para redes y contenido SEO automáticamente.'
+      icon: 'edit'
+      demo_prompt: 'Genera una descripción para aceite de oliva premium de Jaén'
+    - title: 'Storytelling de Marca'
+      description: 'Construye la narrativa de tu negocio con historias que conectan con tu audiencia.'
+      icon: 'book'
+      demo_prompt: 'Cuenta la historia de una bodega familiar con 3 generaciones'
+    - title: 'Copilot Inteligente'
+      description: 'Asistente conversacional que responde preguntas sobre tu negocio y te guía paso a paso.'
+      icon: 'message-circle'
+      demo_prompt: 'Ayúdame a mejorar el SEO de mi tienda online'
+    - title: 'Agentes Autónomos'
+      description: 'Automatiza tareas repetitivas como el análisis de competencia o la optimización de precios.'
+      icon: 'cpu'
+      demo_prompt: 'Analiza las tendencias del mercado de productos ecológicos'
+  playground_enabled: true
+  playground_prompts:
+    - label: 'Descripción de Producto'
+      prompt: 'Genera una descripción atractiva para mi aceite de oliva virgen extra de la Sierra de Jaén'
+    - label: 'Post para Redes'
+      prompt: 'Crea un post para Instagram sobre nuestra nueva cosecha de temporada'
+    - label: 'Historia de Marca'
+      prompt: 'Cuenta la historia de nuestra bodega familiar con 50 años de tradición'
+  cta_text: 'Probar IA gratis'
+  cta_url: '#register'
+  background: dark

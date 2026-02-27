@@ -132,7 +132,7 @@ class AIObservabilityService {
    *   - parent_span_id: string - (GAP-02) UUID del span padre.
    *   - operation_name: string - (GAP-02) Nombre de la operacion.
    */
-  public function log(array $data): void {
+  public function log(array $data): ?int {
     try {
       $storage = $this->entityTypeManager->getStorage('ai_usage_log');
 
@@ -166,6 +166,7 @@ class AIObservabilityService {
       ]);
 
       $log->save();
+      $logEntityId = (int) $log->id();
 
       // GAP-AUD-002: Bridge to TenantMeteringService for billing.
       $tenantId = $data['tenant_id'] ?? '';
@@ -188,9 +189,12 @@ class AIObservabilityService {
           ]);
         }
       }
+
+      return $logEntityId;
     }
     catch (\Exception $e) {
       $this->logger->error('Error al registrar uso de IA: @msg', ['@msg' => $e->getMessage()]);
+      return NULL;
     }
   }
 

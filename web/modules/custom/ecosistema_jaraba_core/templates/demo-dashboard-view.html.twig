@@ -1,0 +1,115 @@
+{#
+/**
+ * @file
+ * Template para la vista de dashboard de demo con sesión activa.
+ *
+ * Variables:
+ * - session: Array completo de datos de sesión (session_id, profile, tenant_name,
+ *   metrics, products, sales_history, magic_moment_actions, etc.).
+ *
+ * S2-04: Template dedicado — antes usaba el mismo template que demo_dashboard
+ * pero con variables incompatibles, resultando en una página vacía.
+ *
+ * Reutiliza la misma estructura visual que demo-dashboard.html.twig
+ * pero extrae las variables del array session.
+ */
+#}
+
+{# Extraer variables del array session para reutilizar la misma estructura #}
+{% set session_id = session.session_id|default('') %}
+{% set profile = session.profile|default({}) %}
+{% set tenant_name = session.tenant_name|default('') %}
+{% set metrics = session.metrics|default({}) %}
+{% set products = session.products|default([]) %}
+{% set magic_actions = session.magic_moment_actions|default([]) %}
+
+<div class="demo-dashboard" data-session-id="{{ session_id }}" data-demo-dashboard>
+  {# Banner de Demo #}
+  <div class="demo-banner">
+    <div class="demo-banner__content">
+      <span class="demo-banner__badge">
+        {{ jaraba_icon('navigation', 'play', { size: '14px', color: 'blanco' }) }}
+        {{ 'MODO DEMO'|t }}
+      </span>
+      <span class="demo-banner__tenant-name">{{ tenant_name }}</span>
+      {% if profile.icon_category is defined and profile.icon_name is defined %}
+        <span>
+          {{ jaraba_icon(profile.icon_category, profile.icon_name, { size: '18px', color: 'blanco' }) }}
+          {{ profile.name|default('') }}
+        </span>
+      {% endif %}
+    </div>
+    <div>
+      <button class="demo-start-btn" data-demo-convert-open type="button">
+        {{ jaraba_icon('ai', 'sparkles', { size: '16px', color: 'azul-corporativo' }) }}
+        {{ 'Convertir en Cuenta Real'|t }}
+      </button>
+    </div>
+  </div>
+
+  {# Magic Moment Actions #}
+  {% if magic_actions %}
+    <section class="demo-magic-moment" data-tour-step="demo-magic-moment">
+      <h2 class="demo-section-title">
+        {{ jaraba_icon('business', 'target', { color: 'naranja-impulso', size: '24px' }) }}
+        {{ 'Tu Primer Paso'|t }}
+      </h2>
+      <div class="demo-magic-actions-grid">
+        {% for action in magic_actions %}
+          {% set action_url = action.url %}
+          {% if action.url == '__storytelling__' %}
+            {% set action_url = path('ecosistema_jaraba_core.demo_storytelling', { sessionId: session_id }) %}
+          {% endif %}
+          <a href="{{ action_url }}"
+             class="demo-magic-action-card {{ action.highlight ? 'demo-magic-action-card--highlighted' : '' }}"
+             data-action="{{ action.id }}">
+            <div class="demo-magic-action-card__icon">
+              {{ jaraba_icon(action.icon_category|default('navigation'), action.icon_name|default('arrow'), { size: '24px', variant: 'duotone' }) }}
+            </div>
+            <h3 class="demo-magic-action-card__title">{{ action.label }}</h3>
+            <p class="demo-magic-action-card__description">{{ action.description }}</p>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# Métricas #}
+  <section id="metrics" data-tour-step="demo-metrics">
+    <h2 class="demo-section-title">
+      {{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }}
+      {{ 'Tus Métricas'|t }}
+    </h2>
+    <div class="demo-metrics-grid">
+      {% for key, value in metrics %}
+        <div class="demo-metric-card {{ key == 'revenue_last_month' or key == 'products_available' ? 'demo-metric-card--highlight' : '' }}">
+          <span class="demo-metric-card__value">
+            {% if 'revenue' in key %}&euro;{{ value|number_format(0, ',', '.') }}{% else %}{{ value }}{% endif %}
+          </span>
+          <span class="demo-metric-card__label">{{ key|replace({'_': ' '})|capitalize }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Gráfico de Ventas #}
+  <section class="demo-chart-section" data-tour-step="demo-chart">
+    <h2 class="demo-section-title">
+      {{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}
+      {{ 'Tendencia de Ventas'|t }}
+    </h2>
+    <div class="demo-chart-container">
+      <canvas id="salesChart" height="300"></canvas>
+    </div>
+  </section>
+
+  {# CTA Conversión #}
+  <section class="demo-cta-convert" data-tour-step="demo-convert">
+    <h2 class="demo-cta-convert__text">{{ '¿Te gusta lo que ves?'|t }}</h2>
+    <p>{{ 'Convierte esta demo en tu cuenta real.'|t }}</p>
+    <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: profile.vertical|default('agroconecta') }) }}"
+       class="demo-cta-convert__btn">
+      {{ 'Crear Mi Cuenta Real'|t }} &rarr;
+    </a>
+  </section>
+</div>
