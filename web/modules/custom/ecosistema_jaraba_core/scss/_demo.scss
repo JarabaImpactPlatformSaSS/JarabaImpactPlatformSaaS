@@ -18,10 +18,17 @@
 // ---------------------------------------------------------------------------
 
 :root {
+  // Layout
   --demo-card-radius: 1rem;
   --demo-section-gap: 2rem;
+  --demo-content-max-width: 1200px;
+  --demo-content-narrow-width: 800px;
+
+  // Shadows
   --demo-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   --demo-card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.15);
+
+  // Gradients
   --demo-gradient-primary: linear-gradient(
     135deg,
     var(--ej-color-primary, #233D63) 0%,
@@ -32,6 +39,23 @@
     var(--ej-color-accent, #FF8C42) 0%,
     var(--ej-color-primary, #233D63) 100%
   );
+
+  // Spacing (mobile-first defaults)
+  --demo-padding-container: 1rem;
+  --demo-padding-card: 1.5rem;
+
+  // Typography
+  --demo-font-size-title: clamp(1.75rem, 4vw, 2.5rem);
+  --demo-font-size-section: 1.4rem;
+  --demo-font-weight-heading: 600;
+  --demo-font-weight-bold: 700;
+
+  // Transitions
+  --demo-transition-speed: 0.3s;
+  --demo-transition-fn: ease;
+
+  // Z-index
+  --demo-z-modal: 1000;
 }
 
 // ---------------------------------------------------------------------------
@@ -42,9 +66,9 @@
 .demo-dashboard,
 .demo-storytelling,
 .demo-playground {
-  max-width: var(--ej-content-max-width, 1200px);
+  max-width: var(--demo-content-max-width, 1200px);
   margin: 0 auto;
-  padding: var(--demo-section-gap);
+  padding: var(--demo-padding-container);
   font-family: var(--ej-font-family-base, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
 }
 
@@ -54,14 +78,14 @@
 
 .demo-banner {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
   background: var(--demo-gradient-primary);
   color: #fff;
   padding: 1rem 1.5rem;
   border-radius: var(--demo-card-radius);
   margin-bottom: var(--demo-section-gap);
-  flex-wrap: wrap;
   gap: 1rem;
 
   &__content {
@@ -135,12 +159,88 @@
 }
 
 // ---------------------------------------------------------------------------
+// S7-05: SOCIAL PROOF
+// ---------------------------------------------------------------------------
+
+.demo-social-proof {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--ej-color-secondary-light, rgba(0, 169, 165, 0.08));
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ej-color-secondary, #00A9A5);
+}
+
+// ---------------------------------------------------------------------------
+// S7-06: SESSION COUNTDOWN
+// ---------------------------------------------------------------------------
+
+.demo-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+
+  &--warning {
+    background: var(--ej-color-warning, #e65100);
+    color: #fff;
+    animation: demo-countdown-pulse 1s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes demo-countdown-pulse {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+// ---------------------------------------------------------------------------
+// S7-07: PROGRESSIVE DISCLOSURE — LOCKED SECTION
+// ---------------------------------------------------------------------------
+
+.demo-locked-section {
+  position: relative;
+  margin-bottom: var(--demo-section-gap);
+  border-radius: var(--demo-card-radius);
+  overflow: hidden;
+  min-height: 120px;
+
+  &__overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border: 2px dashed var(--ej-gray-300, #e0e0e0);
+    border-radius: var(--demo-card-radius);
+    gap: 0.5rem;
+  }
+
+  &__message {
+    color: var(--ej-text-color-secondary, #666);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // DEMO LANDING: GRID DE PERFILES
 // ---------------------------------------------------------------------------
 
 .demo-profiles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   margin-bottom: 3rem;
 }
@@ -254,7 +354,7 @@
     padding: 0;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     text-align: start;
     max-width: 800px;
@@ -315,7 +415,7 @@
 
 .demo-magic-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
 }
 
@@ -391,7 +491,7 @@
 
 .demo-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: var(--demo-section-gap);
 }
@@ -509,7 +609,7 @@
 // ---------------------------------------------------------------------------
 
 .demo-storytelling {
-  max-width: 800px;
+  max-width: var(--demo-content-narrow-width, 800px);
 
   &__header {
     text-align: center;
@@ -558,6 +658,7 @@
 
   &__actions {
     display: flex;
+    flex-direction: column;
     gap: 1rem;
     justify-content: center;
   }
@@ -640,7 +741,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: var(--demo-z-modal);
   display: none;
 
   &--open {
@@ -720,18 +821,20 @@
 .demo-playground {
   &__scenarios {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: var(--demo-section-gap);
   }
 
+  // S8-05: BEM correcto — sin doble-underscore grandchild.
   &__scenario-card {
     background: var(--ej-card-bg, #fff);
     border-radius: var(--demo-card-radius);
     padding: 1.5rem;
     box-shadow: var(--demo-card-shadow);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--demo-transition-speed) var(--demo-transition-fn),
+                box-shadow var(--demo-transition-speed) var(--demo-transition-fn);
     border: 2px solid transparent;
 
     &:hover {
@@ -739,22 +842,22 @@
       box-shadow: var(--demo-card-shadow-hover);
       border-color: var(--ej-color-primary, #233D63);
     }
+  }
 
-    &__icon {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
+  &__scenario-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
 
-    &__title {
-      font-weight: 600;
-      color: var(--ej-text-color, #1a1a2e);
-      margin-bottom: 0.25rem;
-    }
+  &__scenario-title {
+    font-weight: var(--demo-font-weight-heading);
+    color: var(--ej-text-color, #1a1a2e);
+    margin-bottom: 0.25rem;
+  }
 
-    &__description {
-      font-size: 0.9rem;
-      color: var(--ej-text-color-secondary, #666);
-    }
+  &__scenario-description {
+    font-size: 0.9rem;
+    color: var(--ej-text-color-secondary, #666);
   }
 
   &__chat {
@@ -840,39 +943,238 @@
 }
 
 // ---------------------------------------------------------------------------
-// RESPONSIVE: MOBILE-FIRST ADJUSTMENTS
+// S6-04: RESPONSIVE BREAKPOINTS (mobile-first)
+// Base styles = mobile. Progressive enhancement via min-width.
 // ---------------------------------------------------------------------------
 
-@media (max-width: 768px) {
+// --- Tablet (≥ 768px) ---
+@media (min-width: 768px) {
   .demo-landing,
   .demo-dashboard,
   .demo-storytelling,
   .demo-playground {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
   .demo-profiles-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 
   .demo-banner {
-    flex-direction: column;
-    text-align: center;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: start;
   }
 
   .demo-metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 
   .demo-magic-actions-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 
   .demo-story-card__actions {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .demo-playground__scenarios {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .demo-features__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// --- Desktop (≥ 1024px) ---
+@media (min-width: 1024px) {
+  .demo-landing,
+  .demo-dashboard,
+  .demo-storytelling,
+  .demo-playground {
+    padding: var(--demo-section-gap);
+  }
+
+  .demo-metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .demo-magic-actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// --- Wide (≥ 1440px) ---
+@media (min-width: 1440px) {
+  .demo-landing,
+  .demo-dashboard,
+  .demo-storytelling,
+  .demo-playground {
+    max-width: 1400px;
+  }
+}
+
+// ==========================================================================
+// S5-08: prefers-reduced-motion — desactivar animaciones y transiciones.
+// ==========================================================================
+@media (prefers-reduced-motion: reduce) {
+  .demo-dashboard,
+  .demo-storytelling,
+  .demo-playground,
+  .demo-landing {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+// ==========================================================================
+// S5-05: Modal de conversión — feedback y focus styles.
+// ==========================================================================
+.demo-convert-modal__feedback {
+  margin-top: var(--ej-spacing-sm, 8px);
+  font-size: var(--ej-font-size-sm, 0.875rem);
+  min-height: 1.5em;
+
+  &--error {
+    color: var(--ej-color-error, #dc3545);
+  }
+}
+
+// ==========================================================================
+// S5-09: Typing indicator (3 dots animation).
+// ==========================================================================
+.demo-playground__message--typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: var(--ej-spacing-sm, 8px) var(--ej-spacing-md, 16px);
+}
+
+.demo-playground__typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ej-color-text-muted, #6c757d);
+  animation: demo-typing-bounce 1.4s infinite ease-in-out both;
+
+  &:nth-child(1) { animation-delay: -0.32s; }
+  &:nth-child(2) { animation-delay: -0.16s; }
+  &:nth-child(3) { animation-delay: 0s; }
+}
+
+@keyframes demo-typing-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+// ==========================================================================
+// S5: Playground CTA margin (antes era inline style).
+// ==========================================================================
+.demo-cta-convert--playground {
+  margin-top: var(--demo-section-gap, 2rem);
+}
+
+// ==========================================================================
+// S7-09: Print styles — ocultar elementos interactivos, diseño legible.
+// ==========================================================================
+@media print {
+  .demo-nudge-fab,
+  .demo-convert-cta,
+  .demo-convert-modal,
+  .demo-playground__chat-input-row,
+  .demo-banner,
+  .demo-social-proof,
+  .demo-countdown,
+  .demo-cta-convert,
+  .demo-start-btn {
+    display: none !important;
+  }
+
+  .demo-dashboard,
+  .demo-landing,
+  .demo-storytelling,
+  .demo-playground {
+    background: #fff;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .demo-metric-card {
+    break-inside: avoid;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+
+  .demo-chart-container {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .demo-story-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+
+// ==========================================================================
+// S8-12: will-change — GPU layer hint para cards con hover transitions.
+// ==========================================================================
+.demo-profile-card,
+.demo-metric-card,
+.demo-magic-action-card,
+.demo-playground__scenario-card {
+  will-change: transform;
+}
+
+// ==========================================================================
+// S8-13: touch-action — eliminar tap delay en dispositivos táctiles.
+// ==========================================================================
+.demo-start-btn,
+.demo-cta-convert__btn,
+.demo-story-btn,
+.demo-playground__chat-send,
+.demo-convert-modal__submit {
+  touch-action: manipulation;
+}
+
+// ==========================================================================
+// S8-14: GDPR privacy notice styling.
+// ==========================================================================
+// ==========================================================================
+// S8-08: GrapesJS demo blocks — padding responsive.
+// ==========================================================================
+.jaraba-demo-showcase,
+.jaraba-demo-ai-capabilities,
+.jaraba-demo-comparison {
+  padding: 2rem 1rem;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 4rem 2rem;
+  }
+}
+
+.demo-privacy-notice {
+  font-size: 0.8rem;
+  color: var(--ej-text-color-secondary, #666);
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--ej-color-primary-light, rgba(35, 61, 99, 0.03));
+  border-radius: calc(var(--demo-card-radius) * 0.5);
+
+  a {
+    color: var(--ej-color-primary, #233D63);
   }
 }

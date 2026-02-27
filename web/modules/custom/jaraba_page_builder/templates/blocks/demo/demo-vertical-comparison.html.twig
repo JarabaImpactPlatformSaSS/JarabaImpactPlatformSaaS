@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Template para el bloque Demo Vertical Comparison.
+ *
+ * S5-03: Tabla comparativa interactiva de funcionalidades por vertical.
+ *
+ * Variables (via content):
+ * - title: Título de la sección.
+ * - subtitle: Subtítulo.
+ * - verticals: Array (name, color).
+ * - features: Array (name, availability: [bool, bool, ...]).
+ * - cta_text: Texto CTA.
+ * - cta_url: URL CTA.
+ * - background: white|light|gradient.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('white') %}
+
+<section class="jaraba-demo-comparison jaraba-demo-comparison--{{ bg_class }} jaraba-block"
+         data-block-type="demo_vertical_comparison"
+         aria-label="{{ content.title|default('Comparativa de Verticales') }}">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    <header class="jaraba-demo-comparison__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Tabla Comparativa #}
+    {% if content.verticals is not empty and content.features is not empty %}
+      <div class="jaraba-demo-comparison__table-wrapper" role="region" aria-label="{{ 'Tabla comparativa de funcionalidades'|t }}" tabindex="0">
+        <table class="jaraba-demo-comparison__table">
+          <thead>
+            <tr>
+              <th scope="col" class="jaraba-demo-comparison__feature-header">{{ 'Funcionalidad'|t }}</th>
+              {% for vertical in content.verticals %}
+                <th scope="col" class="jaraba-demo-comparison__vertical-header" style="--vertical-color: {{ vertical.color|default('#233D63') }}">
+                  {{ vertical.name }}
+                </th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for feature in content.features %}
+              <tr>
+                <td class="jaraba-demo-comparison__feature-name">{{ feature.name }}</td>
+                {% for available in feature.availability %}
+                  <td class="jaraba-demo-comparison__cell" aria-label="{{ available ? 'Disponible'|t : 'No disponible'|t }}">
+                    {% if available %}
+                      <span class="jaraba-demo-comparison__check" aria-hidden="true">&#10003;</span>
+                    {% else %}
+                      <span class="jaraba-demo-comparison__cross" aria-hidden="true">&#10005;</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    {# CTA #}
+    {% if content.cta_text and content.cta_url %}
+      <div class="jaraba-demo-comparison__cta">
+        <a href="{{ content.cta_url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+          {{ content.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>

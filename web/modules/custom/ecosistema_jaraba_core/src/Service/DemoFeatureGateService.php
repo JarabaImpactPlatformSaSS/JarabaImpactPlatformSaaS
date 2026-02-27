@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
  * Feature gate service para la experiencia demo.
@@ -37,6 +38,7 @@ class DemoFeatureGateService
      */
     public function __construct(
         protected Connection $database,
+        protected ?LoggerChannelFactoryInterface $loggerFactory = NULL,
     ) {
     }
 
@@ -55,7 +57,12 @@ class DemoFeatureGateService
     {
         $limit = self::DEMO_LIMITS[$feature] ?? NULL;
         if ($limit === NULL) {
-            return ['allowed' => TRUE, 'remaining' => PHP_INT_MAX];
+            // S8-02: Log warning para features desconocidas.
+            $this->loggerFactory?->get('demo_feature_gate')->warning(
+                'Unknown demo feature gate: @feature',
+                ['@feature' => $feature]
+            );
+            return ['allowed' => TRUE, 'remaining' => PHP_INT_MAX, 'limit' => PHP_INT_MAX, 'current' => 0];
         }
 
         $currentUsage = $this->getUsage($sessionId, $feature);

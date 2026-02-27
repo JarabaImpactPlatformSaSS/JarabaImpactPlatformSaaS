@@ -768,6 +768,16 @@ ecosistema_jaraba_core.demo_api_convert:
     _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
+# API: Dismiss nudge de conversión (S5-02, CSRF obligatorio)
+ecosistema_jaraba_core.demo_api_dismiss_nudge:
+  path: '/api/v1/demo/dismiss-nudge'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\DemoController::dismissNudge'
+  requirements:
+    _access: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+  methods: [POST]
+
 # GAP-AUD-008: Command Bar search API
 ecosistema_jaraba_core.command_bar.search:
   path: '/api/v1/command-bar/search'
@@ -1407,12 +1417,23 @@ ecosistema_jaraba_core.landing.jarabalex:
   requirements:
     _access: 'TRUE'
 
-# Alias: /legal → JarabaLex landing
+# Landing Despachos — Digitalización de despachos de abogados
+# Complementa JarabaLex (investigación legal): gestión del despacho.
+ecosistema_jaraba_core.landing.despachos:
+  path: '/despachos'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::despachos'
+    _title: 'Despachos - Digitaliza tu despacho con IA'
+  requirements:
+    _access: 'TRUE'
+
+# Redirect legacy /legal → /despachos (301 permanent)
+# Anteriormente alias de JarabaLex; ahora redirige al vertical Despachos.
 ecosistema_jaraba_core.landing.legal:
   path: '/legal'
   defaults:
-    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::jarabalex'
-    _title: 'JarabaLex - Inteligencia legal con IA'
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::legalRedirect'
+    _title: 'Redirigiendo…'
   requirements:
     _access: 'TRUE'
 
@@ -2348,3 +2369,96 @@ ecosistema_jaraba_core.api.v1.public.reviews.stats:
   methods: [GET]
   requirements:
     _permission: 'access content'
+
+# === Item 18: Public Review Submission ===
+ecosistema_jaraba_core.reviews.submit.comercio:
+  path: '/comercio/{entity_id}/reviews/escribir'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSubmitController::submitForm'
+    _title: 'Escribir resena'
+    vertical: 'comercioconecta'
+    review_entity_type: 'comercio_review'
+    target_entity_type: 'merchant_profile'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.submit.agro:
+  path: '/agro/{entity_id}/reviews/escribir'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSubmitController::submitForm'
+    _title: 'Escribir resena'
+    vertical: 'agroconecta'
+    review_entity_type: 'review_agro'
+    target_entity_type: 'producer_profile'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.submit.servicios:
+  path: '/servicios/{entity_id}/reviews/escribir'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSubmitController::submitForm'
+    _title: 'Escribir resena'
+    vertical: 'serviciosconecta'
+    review_entity_type: 'review_servicios'
+    target_entity_type: 'provider_profile'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.submit.formacion:
+  path: '/cursos/{entity_id}/reviews/escribir'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSubmitController::submitForm'
+    _title: 'Escribir resena'
+    vertical: 'formacion'
+    review_entity_type: 'course_review'
+    target_entity_type: 'lms_course'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    entity_id: '\d+'
+
+ecosistema_jaraba_core.reviews.submit.mentoring:
+  path: '/mentoring/{entity_id}/reviews/escribir'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewSubmitController::submitForm'
+    _title: 'Escribir resena'
+    vertical: 'mentoring'
+    review_entity_type: 'session_review'
+    target_entity_type: 'mentoring_session'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    entity_id: '\d+'
+
+# === Item 19: Report Abuse ===
+ecosistema_jaraba_core.api.v1.reviews.report:
+  path: '/api/v1/reviews/{review_type}/{review_id}/report'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::reportAbuse'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    review_id: '\d+'
+
+# === Item 20: Edit/Delete Reviews by Author ===
+ecosistema_jaraba_core.api.v1.reviews.edit:
+  path: '/api/v1/reviews/{review_type}/{review_id}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::editReview'
+  methods: [PATCH]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    review_id: '\d+'
+
+ecosistema_jaraba_core.api.v1.reviews.delete:
+  path: '/api/v1/reviews/{review_type}/{review_id}/delete'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\ReviewApiController::deleteReview'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    review_id: '\d+'

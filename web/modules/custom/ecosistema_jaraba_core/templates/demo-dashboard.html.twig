@@ -134,7 +134,8 @@
       {{ 'Tendencia de Ventas'|t }}
     </h2>
     <div class="demo-chart-container">
-      <canvas id="salesChart" height="300"></canvas>
+      {# S5-07: Canvas accesible con role y aria-label. #}
+      <canvas id="salesChart" height="300" role="img" aria-label="{{ 'Gráfico de tendencia de ventas mensuales'|t }}"></canvas>
     </div>
   </section>
 
@@ -178,25 +179,40 @@
   </section>
 </div>
 
-{# Modal de Conversión #}
-<div class="demo-convert-modal" data-demo-convert-modal>
+{# S5-05: Modal de Conversión — ARIA compliant (role, aria-modal, aria-labelledby, focus trap). #}
+<div class="demo-convert-modal"
+     data-demo-convert-modal
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="demo-convert-modal-title"
+     aria-hidden="true">
   <div class="demo-convert-modal__overlay" data-demo-convert-close></div>
   <div class="demo-convert-modal__content">
-    <h3 class="demo-convert-modal__title">
+    <h3 class="demo-convert-modal__title" id="demo-convert-modal-title">
       {{ jaraba_icon('business', 'achievement', { size: '24px', color: 'naranja-impulso' }) }}
       {{ '¡Convierte tu Demo!'|t }}
     </h3>
     <p>{{ 'Introduce tu email para crear tu cuenta real:'|t }}</p>
     <form data-demo-convert-form>
+      {# S5-06: Label accesible para el input de email. #}
+      <label for="demo-convert-email" class="visually-hidden">{{ 'Tu dirección de email'|t }}</label>
       <input type="email"
+             id="demo-convert-email"
              class="demo-convert-modal__input"
              data-demo-convert-email
              placeholder="{{ 'tu@email.com'|t }}"
+             autocomplete="email"
              required>
-      <button type="submit" class="demo-convert-modal__submit">
+      <button type="submit" class="demo-convert-modal__submit" data-demo-convert-submit>
         {{ 'Crear Cuenta'|t }}
       </button>
+      {# S5-10: Zona de feedback de errores. #}
+      <div class="demo-convert-modal__feedback" data-demo-convert-feedback role="alert" aria-live="assertive"></div>
     </form>
-    <button class="demo-convert-modal__close" data-demo-convert-close type="button">&times;</button>
+    {# S5-16: Close button con aria-label descriptivo. #}
+    <button class="demo-convert-modal__close"
+            data-demo-convert-close
+            type="button"
+            aria-label="{{ 'Cerrar diálogo de conversión'|t }}">&times;</button>
   </div>
 </div>

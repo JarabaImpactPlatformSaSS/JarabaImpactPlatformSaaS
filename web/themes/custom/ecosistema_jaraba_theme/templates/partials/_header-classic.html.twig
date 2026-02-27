@@ -1,21 +1,29 @@
 {#
 /**
  * @file
- * Header sub-partial: Classic
+ * Header sub-partial: Classic — Megamenu por audiencia.
  *
- * Layout estándar: Logo izquierda, nav horizontal centro, acciones derecha.
- * Mobile: Hamburguesa que se transforma en X.
+ * Layout: Logo izquierda, megamenu "Soluciones" + links directos centro,
+ * selector idioma + auth + CTA derecha.
+ * Mobile: Hamburguesa → overlay con accordion de grupos.
+ *
+ * Usa CSS classes existentes: header--mega, mega-panel__*, language-switcher.
  *
  * Variables esperadas:
  * - site_name, site_slogan, logo, logged_in
- * - nav_items: array de { text, url } desde theme_settings.navigation_items
+ * - nav_items: fallback array de { text, url } (para meta-sitios sin megamenu)
  * - theme_settings: configuración completa del tema
+ * - available_languages, current_langcode: para selector de idioma
  */
 #}
-<header class="landing-header landing-header--classic" role="banner">
-  <div class="landing-header__container">
-    
-    {# Logo + Branding #}
+{% set ts = theme_settings|default({}) %}
+{% set show_auth = ts.header_show_auth|default(true) %}
+{% set use_megamenu = ts.header_megamenu|default(true) %}
+
+<header class="landing-header landing-header--classic header--mega" role="banner">
+  <div class="landing-header__container header__container">
+
+    {# ── Logo + Branding ── #}
     <a href="{{ path('<front>') }}" class="landing-header__brand" rel="home">
       {% if logo %}
         <img src="{{ logo }}" alt="{{ site_name }}" class="landing-header__logo" />
@@ -26,36 +34,152 @@
       </div>
     </a>
 
-    {# Navegación Principal — dinámica desde theme_settings #}
+    {# ── Navegación Principal: Megamenu por audiencia ── #}
     <nav class="landing-header__nav" aria-label="{% trans %}Main navigation{% endtrans %}">
+      {% if use_megamenu %}
+      <ul class="header__menu">
+        {# Dropdown: Soluciones (megamenu 3 columnas) #}
+        <li class="header__menu-item has-mega-menu">
+          <button class="header__menu-link" aria-expanded="false" aria-haspopup="true">
+            {% trans %}Soluciones{% endtrans %}
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="header__mega-panel" role="menu" aria-label="{% trans %}Solutions menu{% endtrans %}">
+            <div class="mega-panel__container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+              <div class="mega-panel__columns" style="grid-template-columns: repeat(3, 1fr);">
+
+                {# Columna 1: Para Profesionales #}
+                <div class="mega-panel__column">
+                  <h3 class="mega-panel__title">{% trans %}Para Profesionales{% endtrans %}</h3>
+                  <ul class="mega-panel__list">
+                    <li>
+                      <a href="/empleabilidad" class="mega-panel__link">
+                        <strong>{% trans %}Empleabilidad{% endtrans %}</strong>
+                        <small>{% trans %}Impulsa tu carrera profesional{% endtrans %}</small>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/talento" class="mega-panel__link">
+                        <strong>{% trans %}Talento{% endtrans %}</strong>
+                        <small>{% trans %}Conecta con oportunidades{% endtrans %}</small>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+                {# Columna 2: Para Empresas #}
+                <div class="mega-panel__column">
+                  <h3 class="mega-panel__title">{% trans %}Para Empresas{% endtrans %}</h3>
+                  <ul class="mega-panel__list">
+                    <li>
+                      <a href="/emprendimiento" class="mega-panel__link">
+                        <strong>{% trans %}Emprendimiento{% endtrans %}</strong>
+                        <small>{% trans %}De la idea al negocio{% endtrans %}</small>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/despachos" class="mega-panel__link">
+                        <strong>{% trans %}Despachos{% endtrans %}</strong>
+                        <small>{% trans %}Digitaliza tu despacho con IA{% endtrans %}</small>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/comercioconecta" class="mega-panel__link">
+                        <strong>{% trans %}ComercioConecta{% endtrans %}</strong>
+                        <small>{% trans %}Comercio local digital{% endtrans %}</small>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/agroconecta" class="mega-panel__link">
+                        <strong>{% trans %}AgroConecta{% endtrans %}</strong>
+                        <small>{% trans %}Marketplace agroalimentario{% endtrans %}</small>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/serviciosconecta" class="mega-panel__link">
+                        <strong>{% trans %}ServiciosConecta{% endtrans %}</strong>
+                        <small>{% trans %}Servicios profesionales{% endtrans %}</small>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+                {# Columna 3: Para Instituciones + Promo CTA #}
+                <div class="mega-panel__column">
+                  <h3 class="mega-panel__title">{% trans %}Para Instituciones{% endtrans %}</h3>
+                  <ul class="mega-panel__list">
+                    <li>
+                      <a href="/instituciones" class="mega-panel__link">
+                        <strong>{% trans %}Instituciones{% endtrans %}</strong>
+                        <small>{% trans %}Impulsa tu territorio{% endtrans %}</small>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/andalucia-ei" class="mega-panel__link">
+                        <strong>{% trans %}Andalucía +ei{% endtrans %}</strong>
+                        <small>{% trans %}Programa de empleo institucional{% endtrans %}</small>
+                      </a>
+                    </li>
+                  </ul>
+                  {# Promo card #}
+                  <div class="mega-panel__promo" style="margin-top: 1rem;">
+                    <h4>{% trans %}¿No sabes cuál elegir?{% endtrans %}</h4>
+                    <p>{% trans %}Haz nuestro test de 1 minuto y te recomendamos la mejor solución.{% endtrans %}</p>
+                    <a href="/user/register" class="btn-primary btn-primary--sm">
+                      {% trans %}Empezar gratis{% endtrans %} →
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </li>
+
+        {# Links directos (fuera del megamenu) #}
+        <li class="header__menu-item">
+          <a href="/planes" class="header__menu-link">{% trans %}Precios{% endtrans %}</a>
+        </li>
+        <li class="header__menu-item">
+          <a href="/casos-de-exito" class="header__menu-link">{% trans %}Casos de Éxito{% endtrans %}</a>
+        </li>
+      </ul>
+
+      {% else %}
+      {# Fallback: navegación plana para meta-sitios #}
       <ul class="landing-nav">
         {% for item in nav_items|default([]) %}
           <li><a href="{{ item.url }}">{{ item.text }}</a></li>
         {% endfor %}
       </ul>
+      {% endif %}
     </nav>
 
-    {# Acciones Usuario (visible en desktop) #}
+    {# ── Acciones: Idioma + Auth + CTA ── #}
     <div class="landing-header__actions">
-      {# Auth actions: ocultar en sitios brochure via header_show_auth #}
-      {% set show_auth = (theme_settings.header_show_auth is defined) ? theme_settings.header_show_auth : true %}
+      {# Selector de idioma (si hay más de 1 idioma disponible) #}
+      {% if available_languages|default([])|length > 1 %}
+        {% include '@ecosistema_jaraba_theme/partials/_language-switcher.html.twig' with {
+          available_languages: available_languages,
+          current_langcode: current_langcode|default('es'),
+        } only %}
+      {% endif %}
+
+      {# Auth actions #}
       {% if show_auth %}
         {% if logged_in %}
           <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
-          <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
         {% else %}
           <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
-          {% if not theme_settings.enable_header_cta %}
-            <a href="/user/register" class="btn-primary btn-primary--glow">
-              {% trans %}Empezar gratis{% endtrans %}
-            </a>
-          {% endif %}
         {% endif %}
       {% endif %}
-      {# CTA configurable — visible siempre (independiente de show_auth) #}
-      {% if theme_settings.enable_header_cta %}
-        <a href="{{ theme_settings.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
-          {{ theme_settings.header_cta_text|default('Empezar gratis'|t) }}
+
+      {# CTA principal — siempre visible #}
+      {% if not logged_in %}
+        <a href="{{ ts.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
+          {{ ts.header_cta_text|default('Empieza gratis'|t) }} →
         </a>
       {% endif %}
     </div>

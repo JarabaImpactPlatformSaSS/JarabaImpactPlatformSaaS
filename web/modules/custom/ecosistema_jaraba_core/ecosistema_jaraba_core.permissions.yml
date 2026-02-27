@@ -276,3 +276,16 @@ export review analytics:
 respond to reviews:
   title: 'Responder a resenas (API)'
   description: 'Permite responder a resenas via la API REST.'
+
+# ===========================================
+# S6-08: DEMO INTERACTIVA
+# ===========================================
+
+administer demo configuration:
+  title: 'Administrar configuracion de demo'
+  description: 'Permite gestionar perfiles, limites y tokens de la experiencia demo.'
+  restrict access: TRUE
+
+view demo analytics:
+  title: 'Ver analiticas de demo'
+  description: 'Permite consultar metricas de conversion y uso de la experiencia demo.'

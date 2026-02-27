@@ -1,0 +1,85 @@
+{#
+/**
+ * @file
+ * Template para el bloque Demo AI Capabilities.
+ *
+ * S5-03: Showcase de capacidades IA con playground interactivo opcional.
+ *
+ * Variables (via content):
+ * - title: Título de la sección.
+ * - subtitle: Subtítulo.
+ * - capabilities: Array (title, description, icon, demo_prompt).
+ * - playground_enabled: Boolean — mostrar playground interactivo.
+ * - playground_prompts: Array (label, prompt).
+ * - cta_text: Texto CTA.
+ * - cta_url: URL CTA.
+ * - background: dark|gradient|light.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+{% set bg_class = content.background|default('dark') %}
+
+<section class="jaraba-demo-ai jaraba-demo-ai--{{ bg_class }} jaraba-block"
+         data-block-type="demo_ai_capabilities"
+         aria-label="{{ content.title|default('AI Capabilities') }}">
+  <div class="jaraba-block__container">
+
+    {# Header #}
+    <header class="jaraba-demo-ai__header">
+      {% if content.title %}
+        <h2 class="jaraba-block__title">{{ content.title }}</h2>
+      {% endif %}
+      {% if content.subtitle %}
+        <p class="jaraba-block__subtitle">{{ content.subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Capabilities Grid #}
+    {% if content.capabilities is not empty %}
+      <div class="jaraba-demo-ai__grid">
+        {% for cap in content.capabilities %}
+          <div class="jaraba-demo-ai__card">
+            {% if cap.icon %}
+              <div class="jaraba-demo-ai__card-icon">
+                {{ jaraba_icon('ai', cap.icon|default('sparkles'), { size: '28px', variant: 'duotone' }) }}
+              </div>
+            {% endif %}
+            {% if cap.title %}
+              <h3 class="jaraba-demo-ai__card-title">{{ cap.title }}</h3>
+            {% endif %}
+            {% if cap.description %}
+              <p class="jaraba-demo-ai__card-desc">{{ cap.description }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Playground interactivo #}
+    {% if content.playground_enabled and content.playground_prompts is not empty %}
+      <div class="jaraba-demo-ai__playground">
+        <div class="jaraba-demo-ai__playground-prompts">
+          {% for p in content.playground_prompts %}
+            <button type="button"
+                    class="jaraba-demo-ai__prompt-btn"
+                    data-demo-prompt="{{ p.prompt }}"
+                    role="button">
+              {{ p.label }}
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {# CTA #}
+    {% if content.cta_text and content.cta_url %}
+      <div class="jaraba-demo-ai__cta">
+        <a href="{{ content.cta_url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+          {{ content.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>

@@ -11,14 +11,11 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 /**
  * Sandbox Tenant Service.
  *
- * Crea tenants temporales de "prueba" para demos sin registro.
- * Permite al usuario experimentar el producto completo antes de registrarse.
+ * @deprecated in 1.x y se eliminará en 2.x. Usar DemoInteractiveService en su lugar.
+ *   La demo interactiva usa la tabla demo_sessions en lugar de State API.
+ *   Ver DemoController y DemoInteractiveService para la implementación actual.
  *
- * CARACTERÍSTICAS:
- * - Sandbox temporal con TTL (Time-To-Live)
- * - Datos pre-populados realistas
- * - Conversión seamless a cuenta real
- * - Métricas de engagement
+ * @see \Drupal\ecosistema_jaraba_core\Service\DemoInteractiveService
  */
 class SandboxTenantService
 {
@@ -94,6 +91,7 @@ class SandboxTenantService
         StateInterface $state,
         LoggerChannelFactoryInterface $loggerFactory
     ) {
+        @trigger_error('SandboxTenantService is deprecated in 1.x. Use DemoInteractiveService instead.', E_USER_DEPRECATED);
         $this->entityTypeManager = $entityTypeManager;
         $this->state = $state;
         $this->loggerFactory = $loggerFactory;
@@ -325,7 +323,7 @@ class SandboxTenantService
         $this->state->set("sandbox_{$sandboxId}", $sandbox);
 
         $this->loggerFactory->get('sandbox')->notice(
-            '🎉 Sandbox @id converted to account in @seconds seconds',
+            '[SandboxTenant] Sandbox @id converted to account in @seconds seconds',
             ['@id' => $sandboxId, '@seconds' => $conversionTime]
         );
 
@@ -386,7 +384,7 @@ class SandboxTenantService
 
         if ($cleaned > 0) {
             $this->loggerFactory->get('sandbox')->info(
-                '🧹 Cleaned @count expired sandboxes',
+                '[SandboxTenant] Cleaned @count expired sandboxes',
                 ['@count' => $cleaned]
             );
         }

@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Partial — Gráfico de ventas demo (shared).
+ *
+ * S6-05: Extraído para DRY.
+ * S5-07: Canvas con role="img" y aria-label.
+ */
+#}
+<section class="demo-chart-section" data-tour-step="demo-chart">
+  <h2 class="demo-section-title">
+    {{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}
+    {{ 'Tendencia de Ventas'|t }}
+  </h2>
+  <div class="demo-chart-container">
+    <canvas id="salesChart" height="300" role="img" aria-label="{{ 'Gráfico de tendencia de ventas mensuales'|t }}"></canvas>
+  </div>
+</section>

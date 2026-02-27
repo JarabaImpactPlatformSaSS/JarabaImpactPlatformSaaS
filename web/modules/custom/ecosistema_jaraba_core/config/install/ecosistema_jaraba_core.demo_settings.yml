@@ -1,0 +1,18 @@
+# S6-13: Configuración de la experiencia demo interactiva.
+# Estos valores se consumen en DemoController (rate limits) y
+# DemoInteractiveService (TTL de sesiones).
+# Para modificar en runtime: drush config:set ecosistema_jaraba_core.demo_settings ...
+
+rate_limits:
+  start: 10
+  track: 30
+  session: 20
+  convert: 5
+
+session_ttl: 3600
+
+feature_limits:
+  demo_sessions_per_hour: 5
+  ai_messages_per_session: 10
+  story_generations_per_session: 3
+  products_viewed_per_session: 50

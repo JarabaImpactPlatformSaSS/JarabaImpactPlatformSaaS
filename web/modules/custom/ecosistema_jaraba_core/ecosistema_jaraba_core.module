@@ -88,6 +88,19 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
+    // Item 18: Review Submission Form
+    'review_submit_form' => [
+      'variables' => [
+        'vertical' => '',
+        'target_label' => '',
+        'target_id' => 0,
+        'review_entity_type' => '',
+        'settings' => [],
+      ],
+      'template' => 'review-submit-form',
+      'path' => $path . '/templates',
+    ],
+
     // B-08: SEO Review Pages
     'review_seo_page' => [
       'variables' => [
@@ -330,6 +343,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     'demo_landing' => [
       'variables' => [
         'profiles' => [],
+        'active_demo_count' => 0,
       ],
       'template' => 'demo-landing',
       'path' => $path . '/templates',
@@ -359,6 +373,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     'demo_dashboard_view' => [
       'variables' => [
         'session' => [],
+        'nudges' => [],
+        'disclosure' => [],
       ],
       'template' => 'demo-dashboard-view',
       'path' => $path . '/templates',

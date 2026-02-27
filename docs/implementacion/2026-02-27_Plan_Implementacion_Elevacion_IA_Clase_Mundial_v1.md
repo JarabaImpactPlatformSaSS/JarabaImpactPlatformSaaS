@@ -1,9 +1,13 @@
 # Plan de Implementacion: Elevacion IA Clase Mundial — Ecosistema SaaS Multi-Tenant Multi-Vertical
 
-**Fecha:** 2026-02-27
-**Modulos afectados:** `jaraba_ai_agents`, `jaraba_agents`, `jaraba_copilot_v2`, `jaraba_rag`, `ecosistema_jaraba_core`, `jaraba_content_hub`, `jaraba_page_builder`, `jaraba_candidate`, `jaraba_legal_intelligence`, `jaraba_business_tools`, `jaraba_job_board`, `jaraba_lms`, `jaraba_billing`, `ecosistema_jaraba_theme`
-**Spec:** `docs/analisis/2026-02-27_Auditoria_IA_SaaS_Clase_Mundial_v1.md`
-**Impacto:** 20 hallazgos criticos, 4 sprints, estimacion 320-480 horas, target de 70/100 -> 85/100
+**Fecha de creacion:** 2026-02-27 10:00
+**Ultima actualizacion:** 2026-02-27 18:00
+**Autor:** IA Asistente (Claude Opus 4.6)
+**Version:** 2.0.0
+**Categoria:** Implementacion
+**Modulos afectados:** `jaraba_ai_agents`, `jaraba_agents`, `jaraba_copilot_v2`, `jaraba_rag`, `ecosistema_jaraba_core`, `jaraba_content_hub`, `jaraba_page_builder`, `jaraba_candidate`, `jaraba_legal_intelligence`, `jaraba_business_tools`, `jaraba_job_board`, `jaraba_lms`, `jaraba_billing`, `ecosistema_jaraba_theme`, `jaraba_customer_success`, `jaraba_workflows`, `jaraba_comercio_conecta`, `jaraba_geo`
+**Spec:** `docs/analisis/2026-02-27_Auditoria_IA_SaaS_Clase_Mundial_v1.md` (v2.0.0 — 30 hallazgos)
+**Impacto:** 30 hallazgos (20 originales + 10 nuevos), 5 sprints, estimacion 480-680 horas, target de 82/100 -> **100/100**
 
 ---
 
@@ -16,51 +20,54 @@
    - 1.4 [Filosofia de implementacion](#14-filosofia-de-implementacion)
    - 1.5 [Estimacion](#15-estimacion)
    - 1.6 [Riesgos y mitigacion](#16-riesgos-y-mitigacion)
-2. [Tabla de Correspondencia: Hallazgos -> Acciones](#2-tabla-de-correspondencia-hallazgos---acciones)
-3. [Tabla de Cumplimiento de Directrices](#3-tabla-de-cumplimiento-de-directrices)
-4. [Sprint 1 — Seguridad e Integridad](#4-sprint-1--seguridad-e-integridad)
-   - 4.1 [S1-01: Guardrails en ToolRegistry.execute()](#41-s1-01-guardrails-en-toolregistryexecute)
-   - 4.2 [S1-02: Approval gating en herramientas](#42-s1-02-approval-gating-en-herramientas)
-   - 4.3 [S1-03: Sandbox GrapesJS canvas (CSP)](#43-s1-03-sandbox-grapesjs-canvas-csp)
-   - 4.4 [S1-04: Audit tenant_id en handlers](#44-s1-04-audit-tenant_id-en-handlers)
-   - 4.5 [S1-05: Datos reales en RecruiterAssistant](#45-s1-05-datos-reales-en-recruiterassistant)
-   - 4.6 [S1-06: Guardrails mandatory en paths criticos](#46-s1-06-guardrails-mandatory-en-paths-criticos)
-5. [Sprint 2 — Revenue y Operaciones](#5-sprint-2--revenue-y-operaciones)
-   - 5.1 [S2-01: Usage metering real](#51-s2-01-usage-metering-real)
-   - 5.2 [S2-02: Feature flag service](#52-s2-02-feature-flag-service)
-   - 5.3 [S2-03: Provisioning automatizado](#53-s2-03-provisioning-automatizado)
-   - 5.4 [S2-04: Per-tenant analytics dashboard](#54-s2-04-per-tenant-analytics-dashboard)
-6. [Sprint 3 — IA de Clase Mundial](#6-sprint-3--ia-de-clase-mundial)
-   - 6.1 [S3-01: AgentLongTermMemory con Qdrant](#61-s3-01-agentlongtermemory-con-qdrant)
-   - 6.2 [S3-02: ReActLoop con parsing completo](#62-s3-02-reactloop-con-parsing-completo)
-   - 6.3 [S3-03: IA proactiva](#63-s3-03-ia-proactiva)
-   - 6.4 [S3-04: LearningPathAgent](#64-s3-04-learningpathagent)
-   - 6.5 [S3-05: ModelRouter activation en Gen 2](#65-s3-05-modelrouter-activation-en-gen-2)
-   - 6.6 [S3-06: A/B testing de prompts](#66-s3-06-ab-testing-de-prompts)
-7. [Sprint 4 — Performance y UX](#7-sprint-4--performance-y-ux)
-   - 7.1 [S4-01: Core Web Vitals](#71-s4-01-core-web-vitals)
-   - 7.2 [S4-02: CSS code splitting](#72-s4-02-css-code-splitting)
-   - 7.3 [S4-03: GEO/Local SEO](#73-s4-03-geocal-seo)
-   - 7.4 [S4-04: Workflow automation engine](#74-s4-04-workflow-automation-engine)
-   - 7.5 [S4-05: Plan de testing progresivo](#75-s4-05-plan-de-testing-progresivo)
-8. [Arquitectura Frontend: Directrices de Cumplimiento](#8-arquitectura-frontend-directrices-de-cumplimiento)
-   - 8.1 [Modelo SCSS con variables inyectables](#81-modelo-scss-con-variables-inyectables)
-   - 8.2 [Templates Twig limpias (Zero-Region Policy)](#82-templates-twig-limpias-zero-region-policy)
-   - 8.3 [Parciales Twig con include](#83-parciales-twig-con-include)
-   - 8.4 [Theme settings configurables desde UI](#84-theme-settings-configurables-desde-ui)
-   - 8.5 [Layout full-width mobile-first](#85-layout-full-width-mobile-first)
-   - 8.6 [Modales y slide-panels para CRUD](#86-modales-y-slide-panels-para-crud)
-   - 8.7 [hook_preprocess_html() para body classes](#87-hook_preprocess_html-para-body-classes)
-   - 8.8 [Iconos duotone con jaraba_icon()](#88-iconos-duotone-con-jaraba_icon)
-   - 8.9 [Textos traducibles (i18n)](#89-textos-traducibles-i18n)
-   - 8.10 [Dart Sass moderno](#810-dart-sass-moderno)
-   - 8.11 [Integracion de entidades con Field UI y Views](#811-integracion-de-entidades-con-field-ui-y-views)
-   - 8.12 [Tenant sin acceso a tema admin](#812-tenant-sin-acceso-a-tema-admin)
-9. [Especificaciones Tecnicas de Aplicacion](#9-especificaciones-tecnicas-de-aplicacion)
-10. [Estrategia de Testing](#10-estrategia-de-testing)
-11. [Verificacion y Despliegue](#11-verificacion-y-despliegue)
-12. [Referencias Cruzadas](#12-referencias-cruzadas)
-13. [Registro de Cambios](#13-registro-de-cambios)
+2. [Requisitos Previos](#2-requisitos-previos)
+3. [Tabla de Correspondencia: Hallazgos -> Acciones](#3-tabla-de-correspondencia-hallazgos---acciones)
+4. [Tabla de Cumplimiento de Directrices](#4-tabla-de-cumplimiento-de-directrices)
+5. [Sprint 1 — Seguridad e Integridad (COMPLETADO)](#5-sprint-1--seguridad-e-integridad)
+   - 5.1 [S1-01: Guardrails en ToolRegistry.execute()](#51-s1-01-guardrails-en-toolregistryexecute)
+   - 5.2 [S1-02: Approval gating en herramientas](#52-s1-02-approval-gating-en-herramientas)
+   - 5.3 [S1-03: Sandbox GrapesJS canvas (CSP)](#53-s1-03-sandbox-grapesjs-canvas-csp)
+   - 5.4 [S1-04: Audit tenant_id en handlers](#54-s1-04-audit-tenant_id-en-handlers)
+   - 5.5 [S1-05: Datos reales en RecruiterAssistant](#55-s1-05-datos-reales-en-recruiterassistant)
+   - 5.6 [S1-06: Guardrails mandatory en paths criticos](#56-s1-06-guardrails-mandatory-en-paths-criticos)
+6. [Sprint 2 — Revenue y Operaciones](#6-sprint-2--revenue-y-operaciones)
+   - 6.1 [S2-01: Usage metering real](#61-s2-01-usage-metering-real)
+   - 6.2 [S2-02: Feature flag service](#62-s2-02-feature-flag-service)
+   - 6.3 [S2-03: Provisioning automatizado](#63-s2-03-provisioning-automatizado)
+   - 6.4 [S2-04: Per-tenant analytics dashboard](#64-s2-04-per-tenant-analytics-dashboard)
+7. [Sprint 3 — IA de Clase Mundial](#7-sprint-3--ia-de-clase-mundial)
+   - 7.1 [S3-01: AgentLongTermMemory con Qdrant](#71-s3-01-agentlongtermemory-con-qdrant)
+   - 7.2 [S3-02: ReActLoop con parsing completo](#72-s3-02-reactloop-con-parsing-completo)
+   - 7.3 [S3-03: IA proactiva](#73-s3-03-ia-proactiva)
+   - 7.4 [S3-04: LearningPathAgent](#74-s3-04-learningpathagent)
+   - 7.5 [S3-05: ModelRouter activation en Gen 2](#75-s3-05-modelrouter-activation-en-gen-2)
+   - 7.6 [S3-06: A/B testing de prompts](#76-s3-06-ab-testing-de-prompts)
+8. [Sprint 4 — Performance y UX](#8-sprint-4--performance-y-ux)
+   - 8.1 [S4-01: Core Web Vitals](#81-s4-01-core-web-vitals)
+   - 8.2 [S4-02: CSS code splitting](#82-s4-02-css-code-splitting)
+   - 8.3 [S4-03: GEO/Local SEO](#83-s4-03-geocal-seo)
+   - 8.4 [S4-04: Workflow automation engine](#84-s4-04-workflow-automation-engine)
+   - 8.5 [S4-05: Plan de testing progresivo](#85-s4-05-plan-de-testing-progresivo)
+9. [Sprint 5 — 100% Clase Mundial (NUEVO v2.0)](#9-sprint-5--100-clase-mundial)
+   - 9.1 [S5-01: Migracion Gen 1 a Gen 2](#91-s5-01-migracion-gen-1-a-gen-2)
+   - 9.2 [S5-02: Agent evaluation framework](#92-s5-02-agent-evaluation-framework)
+   - 9.3 [S5-03: Prompt versioning y management](#93-s5-03-prompt-versioning-y-management)
+   - 9.4 [S5-04: SemanticCacheService real](#94-s5-04-semanticcacheservice-real)
+   - 9.5 [S5-05: ContextWindowManager progressive trimming](#95-s5-05-contextwindowmanager-progressive-trimming)
+   - 9.6 [S5-06: Brand voice per-tenant completo](#96-s5-06-brand-voice-per-tenant-completo)
+   - 9.7 [S5-07: Agent collaboration patterns](#97-s5-07-agent-collaboration-patterns)
+   - 9.8 [S5-08: Schema.org completo](#98-s5-08-schemaorg-completo)
+   - 9.9 [S5-09: PersonalizationEngine con ML](#99-s5-09-personalizationengine-con-ml)
+   - 9.10 [S5-10: Residuales de Sprints 1-4](#910-s5-10-residuales-de-sprints-1-4)
+10. [Arquitectura Frontend: Directrices de Cumplimiento](#10-arquitectura-frontend-directrices-de-cumplimiento)
+    - 10.1-10.12 [Subsecciones existentes sin cambio]
+11. [Especificaciones Tecnicas de Aplicacion](#11-especificaciones-tecnicas-de-aplicacion)
+12. [Configuracion](#12-configuracion)
+13. [Estrategia de Testing](#13-estrategia-de-testing)
+14. [Verificacion y Despliegue](#14-verificacion-y-despliegue)
+15. [Troubleshooting](#15-troubleshooting)
+16. [Referencias Cruzadas](#16-referencias-cruzadas)
+17. [Registro de Cambios](#17-registro-de-cambios)
 
 ---
 
@@ -68,11 +75,13 @@
 
 ### 1.1 Que se implementa
 
-Se implementa un plan de elevacion integral de la plataforma SaaS desde su estado actual (70/100) hasta el nivel de clase mundial (85+/100) en 7 dimensiones: agentes IA, servicios transversales, modulos verticales, multi-tenancy, SEO, page builder y UX. El plan cubre 20 hallazgos criticos identificados en la auditoria `2026-02-27_Auditoria_IA_SaaS_Clase_Mundial_v1.md`.
+> **ACTUALIZACION v2.0.0:** Re-evaluacion completa. 11/20 hallazgos originales RESUELTOS. Target elevado de 85/100 a **100/100**. +10 hallazgos nuevos (HAL-AI-21..30). Sprint 5 anadido. Secciones obligatorias faltantes incorporadas (Requisitos Previos, Configuracion, Troubleshooting).
+
+Se implementa un plan de elevacion integral de la plataforma SaaS desde su estado actual (**82/100**, post-resoluciones) hasta el nivel **100/100 clase mundial** en 7 dimensiones: agentes IA, servicios transversales, modulos verticales, multi-tenancy, SEO, page builder y UX. El plan cubre 30 hallazgos (20 originales + 10 nuevos) identificados en la auditoria `2026-02-27_Auditoria_IA_SaaS_Clase_Mundial_v1.md` (v2.0.0).
 
 ### 1.2 Por que se implementa
 
-La auditoria revela que la plataforma tiene una arquitectura ambiciosa con 89 modulos custom y 21 agentes IA, pero un 30% del stack IA es scaffolding sin implementacion real. Los gaps criticos incluyen: ejecucion de herramientas sin guardrails (riesgo de seguridad), metering simulado (imposible facturar), tenant isolation inconsistente (riesgo de data leakage), y ausencia de IA proactiva (solo chatbot reactivo). El benchmark de mercado (Jasper, Salesforce, Sitecore) demuestra que las plataformas de clase mundial cumplen 18 capacidades obligatorias; Jaraba cumple 9/18.
+La auditoria v2.0 revela que la plataforma ha cerrado los gaps criticos de seguridad (guardrails + approval gating), memoria (Qdrant), razonamiento (ReActLoop), y IA proactiva (ProactiveInsights + ChurnPrediction). De 18 capacidades obligatorias, ahora cumple 14/18 (era 9/18). Los gaps residuales para 100% incluyen: CSS monolitico (736KB), agentes Gen 1 sin migracion a Gen 2, evaluacion de agentes inexistente, prompt versioning ausente, cache semantico no integrado, collaboration patterns incompletos (solo sequential y plan-first de 5 patrones), y brand voice per-tenant incompleto. El benchmark de mercado exige que las 18 capacidades esten al 100%.
 
 ### 1.3 Alcance
 
@@ -109,13 +118,14 @@ La auditoria revela que la plataforma tiene una arquitectura ambiciosa con 89 mo
 
 ### 1.5 Estimacion
 
-| Sprint | Duracion | Horas Estimadas | Prioridad |
-|--------|----------|----------------|-----------|
-| Sprint 1: Seguridad | 1-2 semanas | 60-80h | CRITICA |
-| Sprint 2: Revenue | 2-4 semanas | 80-120h | ALTA |
-| Sprint 3: IA Clase Mundial | 4-8 semanas | 120-180h | ALTA |
-| Sprint 4: Performance + UX | 2-4 semanas | 60-100h | MEDIA |
-| **Total** | **10-18 semanas** | **320-480h** | — |
+| Sprint | Duracion | Horas Estimadas | Prioridad | Estado v2.0 |
+|--------|----------|----------------|-----------|-------------|
+| Sprint 1: Seguridad | 1-2 semanas | 60-80h | CRITICA | **COMPLETADO** (4/6 resueltos, 2 parciales) |
+| Sprint 2: Revenue | 2-4 semanas | 80-120h | ALTA | **MAYORMENTE COMPLETADO** (2/4 resueltos, 2 pendientes) |
+| Sprint 3: IA Clase Mundial | 4-8 semanas | 120-180h | ALTA | **MAYORMENTE COMPLETADO** (4/6 resueltos, 2 parciales) |
+| Sprint 4: Performance + UX | 2-4 semanas | 60-100h | MEDIA | **PARCIAL** (2/5 resueltos, 3 abiertos/parciales) |
+| Sprint 5: 100% Clase Mundial | 3-5 meses | 160-200h | ALTA | **NUEVO** — 10 items + residuales |
+| **Total** | **13-23 semanas** | **480-680h** | — | — |
 
 ### 1.6 Riesgos y mitigacion
 
@@ -129,7 +139,44 @@ La auditoria revela que la plataforma tiene una arquitectura ambiciosa con 89 mo
 
 ---
 
-## 2. Tabla de Correspondencia: Hallazgos -> Acciones
+## 2. Requisitos Previos
+
+### 2.1 Software Requerido
+
+| Software | Version Minima | Proposito |
+|----------|----------------|-----------|
+| PHP | 8.4 | Runtime de Drupal 11 |
+| Drupal | 11.x | CMS framework |
+| MariaDB | 10.11+ | Base de datos relacional |
+| Redis | 7.4 | Cache y session storage |
+| Qdrant | 1.7+ | Vector database para memoria semantica, RAG, cache semantico |
+| Composer | 2.x | Gestion de dependencias PHP |
+| Node.js | 20+ | Build tools (Dart Sass, GrapesJS) |
+| Dart Sass | 1.70+ | Compilacion SCSS |
+| Lando | 3.x | Entorno de desarrollo local |
+
+### 2.2 Conocimientos Previos
+
+- Arquitectura Drupal 11 (entities, services, plugins, events)
+- PHP 8.4 (readonly properties, enums, attributes, fibers)
+- Patron PremiumEntityFormBase del proyecto (237 forms migrados)
+- SmartBaseAgent Gen 2 pattern (doExecute, tool use, model routing)
+- GrapesJS API (blocks, components, StorageManager, plugins)
+- Qdrant API (collections, points, vector search, filtering)
+- Drupal AI module (AiProviderPluginManager, ChatInput, embeddings)
+
+### 2.3 Accesos Necesarios
+
+- [ ] Repositorio Git con permisos de push
+- [ ] Entorno Lando local funcional (`lando start`)
+- [ ] API key de proveedor IA (Anthropic o OpenAI) en `config/deploy/settings.secrets.php`
+- [ ] Qdrant server accesible (local o cloud) para Sprints 3 y 5
+- [ ] Stripe API keys (test mode) para Sprint 2 (provisioning)
+- [ ] Acceso a Google Search Console (Sprint 4, SEO)
+
+---
+
+## 3. Tabla de Correspondencia: Hallazgos -> Acciones
 
 | HAL | Titulo | Sprint | Accion | Archivos Afectados | Estimacion |
 |-----|--------|--------|--------|-------------------|------------|
@@ -1017,7 +1064,324 @@ scss/
 
 ---
 
-## 8. Arquitectura Frontend: Directrices de Cumplimiento
+## 9. Sprint 5 — 100% Clase Mundial (NUEVO v2.0)
+
+**Duracion:** 3-5 meses
+**Prioridad:** ALTA — Cierra la brecha de 82 a 100/100
+**Objetivo:** Completar las 18 capacidades obligatorias al 100%. Resolver todos los residuales de Sprints 1-4.
+
+### 9.1 S5-01: Migracion Gen 1 a Gen 2
+
+**Hallazgo:** HAL-AI-21 — EmployabilityCopilot (6 modos), LegalCopilot (8 modos), ContentWriter (5 acciones) son Gen 1 sin tool use ni model routing.
+
+**Que se debe implementar:**
+
+1. **EmployabilityCopilotAgent → SmartEmployabilityCopilotAgent:**
+   - Extender `SmartBaseAgent` en lugar de `BaseAgent`
+   - Convertir los 6 modos (cv_analysis, interview_prep, job_search, career_path, skill_gap, motivation) a tools via `ToolRegistry`
+   - Habilitar model routing: `cv_analysis` = balanced, `motivation` = fast
+   - Preservar la logica de dominio de cada modo
+   - Anadir observabilidad via `AIObservabilityService`
+
+2. **LegalCopilotAgent → SmartLegalCopilotAgent:**
+   - 8 modos → 8 tools (contract_analysis, dispute_resolution, legal_research, compliance_check, document_draft, case_summary, deadline_tracker, legal_qa)
+   - Integrar RAG legal existente como tool adicional
+   - Model routing: `contract_analysis` = premium, `legal_qa` = fast
+
+3. **ContentWriterAgent → SmartContentWriterAgent:**
+   - 5 acciones → tools (generate_article, seo_optimize, headline_variants, meta_description, content_calendar)
+   - Integrar Canvas editor API como tool
+
+**Directrices aplicables:**
+- AGENT-GEN2-PATTERN-001: Override `doExecute()`, no `execute()`
+- SMART-AGENT-CONSTRUCTOR-001: 10 args con 3 opcionales
+- TOOL-USE-LOOP-001: Iterativo hasta 5 ciclos
+- PRESAVE-RESILIENCE-001: try-catch en todas las integraciones
+
+**Archivos afectados:**
+- `jaraba_candidate/src/Agent/EmployabilityCopilotAgent.php` → nuevo `SmartEmployabilityCopilotAgent.php`
+- `jaraba_legal_intelligence/src/Agent/LegalCopilotAgent.php` → nuevo `SmartLegalCopilotAgent.php`
+- `jaraba_content_hub/src/Agent/ContentWriterAgent.php` → nuevo `SmartContentWriterAgent.php`
+- Nuevos tools en `jaraba_ai_agents/src/Tool/` para cada modo migrado
+- services.yml de cada modulo
+
+**Estimacion:** 40-60 horas
+
+### 9.2 S5-02: Agent evaluation framework
+
+**Hallazgo:** HAL-AI-22 — Sin metricas de calidad, sin benchmarks, sin regression testing de prompts.
+
+**Que se debe implementar:**
+
+1. **AgentEvalService:**
+   - `runEval(string $agentType, array $goldenDataset): EvalResult`
+   - `compareVersions(string $agentType, string $versionA, string $versionB): ComparisonResult`
+   - Metricas: relevance (0-1), coherence (0-1), helpfulness (0-1), safety (pass/fail), latency_ms
+   - Evaluacion via LLM judge (fast tier) con rubric estandarizado
+
+2. **GoldenDataset entity:**
+   - `EvalDataset` ConfigEntity con: agent_type, items (array de {input, expected_output, context})
+   - Admin UI: `/admin/config/ai/evals` con PremiumEntityFormBase
+
+3. **CI integration:**
+   - Drush command: `drush jaraba:eval-agents --agent=smart_marketing --threshold=0.8`
+   - Fallo de CI si score < threshold
+
+4. **Dashboard de resultados:**
+   - Historico de scores por agente y version
+   - Trend charts (mejora/degradacion)
+
+**Directrices aplicables:**
+- PREMIUM-FORMS-PATTERN-001: AdminForm
+- MODEL-ROUTING-CONFIG-001: Eval LLM usa fast tier para coste minimo
+- TRACE-CONTEXT-001: Cada eval run genera trace
+
+**Archivos nuevos:**
+- `jaraba_ai_agents/src/Service/AgentEvalService.php`
+- `jaraba_ai_agents/src/Entity/EvalDataset.php`
+- `jaraba_ai_agents/src/Form/EvalDatasetForm.php`
+- `jaraba_ai_agents/src/Commands/AgentEvalCommands.php`
+
+**Estimacion:** 20-30 horas
+
+### 9.3 S5-03: Prompt versioning y management
+
+**Hallazgo:** HAL-AI-23 — Prompts inline en PHP sin versionado ni rollback.
+
+**Que se debe implementar:**
+
+1. **PromptTemplate ConfigEntity:**
+   - Campos: `id`, `label`, `agent_type`, `prompt_type` (system/user), `content` (text_long), `version`, `variables` (array), `is_active`
+   - Versionado semantico automatico al guardar
+   - Rollback: boton "Revert to version X" en admin UI
+
+2. **PromptTemplateService:**
+   - `getPrompt(string $agentType, string $promptType, array $variables = []): string`
+   - Variable interpolation: `{{variable_name}}` → valor
+   - Fallback a prompt inline si template no existe (migracion gradual)
+   - Cache per-template con invalidacion al guardar
+
+3. **Migracion gradual:**
+   - Fase 1: Crear templates para los 7 Gen 2 agents existentes
+   - Fase 2: Migrar Gen 1 conforme se convierten a Gen 2 (S5-01)
+
+**Directrices aplicables:**
+- CONFIG-SCHEMA-001: Schema YAML
+- PREMIUM-FORMS-PATTERN-001: Admin form
+- PRESAVE-RESILIENCE-001: fallback a inline si service no disponible
+
+**Archivos nuevos:**
+- `jaraba_ai_agents/src/Entity/PromptTemplate.php`
+- `jaraba_ai_agents/src/Form/PromptTemplateForm.php`
+- `jaraba_ai_agents/src/Service/PromptTemplateService.php`
+
+**Estimacion:** 16-24 horas
+
+### 9.4 S5-04: SemanticCacheService real
+
+**Hallazgo:** HAL-AI-25 — Declarado en services.yml pero no integrado en ningun call path.
+
+**Que se debe implementar:**
+
+1. **Completar SemanticCacheService:**
+   - `get(string $query, float $threshold = 0.92): ?array` — genera embedding de query, busca en Qdrant collection `semantic_cache` con similarity >= threshold, retorna {response, metadata, hit_count}
+   - `set(string $query, string $response, array $metadata): void` — genera embedding, almacena en Qdrant con TTL configurable (default 24h)
+   - `invalidate(string $pattern): int` — invalida entradas por patron (regex en metadata)
+   - Deduplicacion: si query tiene similarity > 0.98 con entrada existente, actualizar en lugar de insertar
+
+2. **Integracion en CopilotOrchestratorService:**
+   - Antes de llamar al LLM, verificar cache: `$cached = $this->semanticCache->get($userMessage)`
+   - Si hit, retornar `{type: 'cached', response: $cached['response']}` (SSE event type `cached`)
+   - Despues de LLM response, almacenar: `$this->semanticCache->set($userMessage, $response, ['tenant_id' => ..., 'mode' => ...])`
+
+3. **Per-tenant isolation:** Filtro `tenant_id` en todas las queries Qdrant
+
+**Directrices aplicables:**
+- OPTIONAL-SERVICE-DI-001: Qdrant client como @? con fallback
+- TENANT-BRIDGE-001: Filtrar por tenant_id
+- TRACE-CONTEXT-001: Span para cache lookup
+
+**Archivos afectados:**
+- `jaraba_copilot_v2/src/Service/SemanticCacheService.php` (completar)
+- `jaraba_copilot_v2/src/Service/CopilotOrchestratorService.php` (integracion)
+- `jaraba_copilot_v2/src/Service/StreamingOrchestratorService.php` (integracion)
+
+**Estimacion:** 16-20 horas
+
+### 9.5 S5-05: ContextWindowManager progressive trimming
+
+**Hallazgo:** HAL-AI-26 — Solo token math, sin progressive trimming.
+
+**Que se debe implementar:**
+
+1. **fitContext(array $sections, int $maxTokens): array**
+   - Secciones con prioridad: `system_prompt` (P0, nunca recortar), `tools` (P1), `rag_context` (P2), `memory` (P3), `conversation_history` (P4)
+   - Algoritmo: Si total > maxTokens, recortar P4 (conversation) primero, luego P3, luego P2
+   - Para cada seccion recortada: truncar desde el inicio (mantener mensajes recientes)
+   - Retornar array de secciones ajustadas + metadata de cuanto se recorto
+
+2. **Integracion en SmartBaseAgent.execute():**
+   - Antes de `callAiApi()`, invocar `contextWindowManager->fitContext()` con system prompt + rag + memory + history
+   - Log de warning si se recorta > 30% del contexto original
+
+**Archivos afectados:**
+- `jaraba_ai_agents/src/Service/ContextWindowManager.php` (completar)
+- `jaraba_ai_agents/src/Agent/SmartBaseAgent.php` (integracion)
+
+**Estimacion:** 8-12 horas
+
+### 9.6 S5-06: Brand voice per-tenant completo
+
+**Hallazgo:** HAL-AI-30 — BrandVoiceService existe pero no persiste configuracion por tenant.
+
+**Que se debe implementar:**
+
+1. **BrandVoiceProfile entity (content entity, no config):**
+   - Campos: `tenant_id` (entity_reference), `tone` (list_string: formal/casual/tecnico/emprendedor), `vocabulary_preferred` (string_long, JSON array), `vocabulary_forbidden` (string_long, JSON array), `personality_traits` (string_long, JSON array), `style_guide` (text_long), `sample_text` (text_long)
+   - Un perfil por tenant (unique constraint)
+
+2. **BrandVoiceService::buildPromptSection(int $tenantId): string**
+   - Carga BrandVoiceProfile del tenant
+   - Genera seccion de system prompt:
+   ```
+   ## Brand Voice
+   - Tone: [formal]
+   - Preferred terms: [ecosystem, impact, transformation]
+   - Forbidden terms: [free, cheap, discount]
+   - Style: [style_guide text]
+   ```
+   - Cache per-tenant con invalidacion al guardar perfil
+
+3. **Integracion en SmartBaseAgent:**
+   - En `execute()`, inyectar brand voice section en system prompt via `buildPromptSection()`
+   - Feature flag: `brand_voice_enabled` para activacion gradual
+
+**Directrices aplicables:**
+- PREMIUM-FORMS-PATTERN-001: Form de configuracion
+- TENANT-BRIDGE-001: Resolucion de tenant
+- ENTITY-PREPROCESS-001: Si se muestra en view mode
+
+**Archivos afectados:**
+- Nuevo `BrandVoiceProfile` entity + form + handler
+- `BrandVoiceService` (completar)
+- `SmartBaseAgent.php` (integracion)
+
+**Estimacion:** 16-20 horas
+
+### 9.7 S5-07: Agent collaboration patterns
+
+**Hallazgo:** HAL-AI-29 — Solo sequential y plan-first de 5 patrones del estado del arte.
+
+**Que se debe implementar:**
+
+1. **AgentOrchestratorService:**
+   - `executeSequential(array $agentIds, string $input): array` — ya existe via AgentExecutionBridge
+   - `executeConcurrent(array $agentIds, string $input): array` — ejecutar N agentes en paralelo, merge resultados
+   - `executeHandoff(string $startAgentId, string $input): array` — patron de delegacion dinamica: agent A decide pasar a agent B via tool call `handoff_to(agentId, reason)`, el runner cambia `active_agent` y mantiene historial compartido
+   - `executeGroupChat(array $agentIds, string $topic, int $maxRounds = 3): array` — agentes discuten en turnos hasta consenso o maxRounds
+
+2. **Handoff pattern (prioridad maxima):**
+   - Nuevo tool `HandoffTool` con `execute(string $targetAgentId, string $reason, array $context)`
+   - `HandoffDecisionService` (existente) evalua si handoff es necesario
+   - El orchestrator mantiene `$activeAgent` y `$sharedHistory` (array de messages)
+
+**Directrices aplicables:**
+- TOOL-USE-LOOP-001: HandoffTool como tool registrado
+- TRACE-CONTEXT-001: Span por agente en la cadena
+- PRESAVE-RESILIENCE-001: Fallback si target agent no disponible
+
+**Archivos nuevos:**
+- `jaraba_ai_agents/src/Service/AgentOrchestratorService.php`
+- `jaraba_ai_agents/src/Tool/HandoffTool.php`
+
+**Archivos afectados:**
+- `jaraba_ai_agents/src/Service/HandoffDecisionService.php` (completar)
+- `jaraba_ai_agents/src/Service/AgentToolRegistry.php` (registrar HandoffTool)
+
+**Estimacion:** 24-32 horas
+
+### 9.8 S5-08: Schema.org completo
+
+**Hallazgo:** HAL-AI-28 — Faltan 7 tipos de Schema.org para clase mundial.
+
+**Que se debe implementar:**
+
+1. **Extender SchemaOrgService con builders:**
+   - `buildFAQPageSchema(array $faqs): array` — para secciones FAQ de verticales
+   - `buildVideoObjectSchema(array $video): array` — para testimonios con video
+   - `buildEventSchema(array $event): array` — para formaciones y webinars
+   - `buildProductSchema(array $product): array` — para marketplace
+   - `buildCourseSchema(array $course): array` — para LMS
+   - `buildHowToSchema(array $steps): array` — para guias paso a paso
+   - `buildReviewSchema(array $review): array` — para reviews system
+
+2. **Integracion en preprocess de cada vertical:**
+   - LMS: `template_preprocess_course()` → CourseSchema
+   - Marketplace: `template_preprocess_product_listing()` → ProductSchema
+   - Reviews: `template_preprocess_*_review()` → ReviewSchema + AggregateRating
+
+**Directrices aplicables:**
+- ENTITY-PREPROCESS-001: Inyectar schema en variables
+- SEO best practices: JSON-LD en `<script type="application/ld+json">`
+
+**Archivos afectados:**
+- `jaraba_page_builder/src/Service/SchemaOrgService.php` (extender)
+- Preprocess hooks en 5+ modulos
+
+**Estimacion:** 12-16 horas
+
+### 9.9 S5-09: PersonalizationEngine con ML
+
+**Hallazgo:** HAL-AI-20 residual — Solo rule-based, sin ML recommendations.
+
+**Que se debe implementar:**
+
+1. **PersonalizationService:**
+   - `getRecommendations(int $userId, string $entityType, int $limit = 5): array`
+   - Algoritmo hibrido:
+     a. Collaborative filtering basico: "usuarios que vieron X tambien vieron Y" via tabla `user_interactions`
+     b. Content-based: embedding de perfil de usuario vs embeddings de contenido (Qdrant)
+     c. Popularity fallback: contenido mas popular si no hay datos suficientes
+   - Per-tenant isolation: recomendaciones solo del contenido del tenant del usuario
+
+2. **UserInteraction tracking:**
+   - Entidad `UserInteraction`: user_id, entity_type, entity_id, action (view/click/complete), timestamp, tenant_id
+   - Tracking via EventSubscriber en entity view
+   - Batch processing via cron para calcular similarity matrices
+
+3. **Widget de recomendaciones:**
+   - Twig partial `_recommendations.html.twig` incluible en cualquier template
+   - Endpoint API: `GET /api/v1/recommendations?type=content_article&limit=5`
+
+**Directrices aplicables:**
+- TENANT-BRIDGE-001: Recomendaciones aisladas por tenant
+- OPTIONAL-SERVICE-DI-001: Qdrant como @?
+- ZERO-REGION-001: Widget limpio
+
+**Estimacion:** 30-40 horas
+
+### 9.10 S5-10: Residuales de Sprints 1-4
+
+**Items pendientes de sprints anteriores que deben cerrarse para 100%:**
+
+| Item | Sprint orig. | Que falta | Estimacion |
+|------|-------------|-----------|------------|
+| HAL-AI-02 residual | S2 | Implementar deteccion real de IPs multiples, sesiones concurrentes, credenciales compartidas | 8-12h |
+| HAL-AI-08 residual | S1 | Migrar RecruiterAssistant a Gen 2 + LLM real para optimizeJobDescription, suggestInterviewQuestions, draftCandidateResponse | 12-16h |
+| HAL-AI-10+13 residual | S4 | fetchpriority en hero images globales, srcset en todos los templates, AVIF, CWV monitoring (web-vitals.js) | 16-20h |
+| HAL-AI-12 | S4 | CSS code splitting: dividir main.scss en bundles por ruta, critical CSS inline, libraries-override por ruta | 20-30h |
+| HAL-AI-15 residual | S4 | Kernel tests para servicios IA criticos, Functional tests E2E, coverage report en CI | 16-24h |
+| HAL-AI-17 residual | S1 | Guardrails mandatory en jaraba_tenant_knowledge, revisar 5 constructores nullable | 2-4h |
+| S2-03 | S2 | Provisioning automatizado: webhook Stripe → AutoProvisioningService | 16-20h |
+| S2-04 | S2 | Per-tenant analytics dashboard en `/tenant/{tenant}/analytics` | 12-16h |
+| HAL-AI-24 (multi-modal) | S5 | Vision: OCR documentos (JarabaLex), analisis imagenes producto (Comercio) | 20-30h |
+| HAL-AI-27 (locking) | S5 | Optimistic locking con version field en Page Builder canvas | 8-12h |
+
+**Estimacion total residuales:** 130-184 horas
+
+---
+
+## 10. Arquitectura Frontend: Directrices de Cumplimiento
 
 Esta seccion consolida TODAS las directrices frontend que DEBEN cumplirse en cada implementacion del plan. Es una guia de referencia para el equipo tecnico.
 
@@ -1448,25 +1812,163 @@ lando ssh -c "cd /app && drush cr && drush updb -y && drush cim -y"
 
 ---
 
-## 12. Referencias Cruzadas
+## 12. Configuracion
+
+### 12.1 Configuracion de Qdrant (Sprints 3 y 5)
+
+```yaml
+# config/deploy/settings.secrets.php
+$config['jaraba_ai_agents.qdrant'] = [
+  'host' => getenv('QDRANT_HOST') ?: 'localhost',
+  'port' => (int) (getenv('QDRANT_PORT') ?: 6333),
+  'api_key' => getenv('QDRANT_API_KEY') ?: '',
+];
+```
+
+**Collections requeridas:**
+| Collection | Dimension | Uso |
+|------------|-----------|-----|
+| `agent_memory` | 1536 | AgentLongTermMemoryService (S3-01) |
+| `semantic_cache` | 1536 | SemanticCacheService (S5-04) |
+| `content_embeddings` | 1536 | PersonalizationService (S5-09) |
+
+### 12.2 Configuracion de Feature Flags
+
+```yaml
+# Via admin UI: /admin/config/system/feature-flags
+# O via drush:
+drush config:set feature_flag.brand_voice_enabled status 1
+drush config:set feature_flag.proactive_insights scope 'percentage' percentage 25
+```
+
+### 12.3 Parametros Configurables del Sprint 5
+
+| Parametro | Tipo | Default | Descripcion |
+|-----------|------|---------|-------------|
+| `semantic_cache.threshold` | float | 0.92 | Umbral de similitud para cache hit |
+| `semantic_cache.ttl` | integer | 86400 | TTL en segundos (24h) |
+| `context_window.max_tokens` | integer | 200000 | Limite de tokens por modelo |
+| `agent_eval.min_score` | float | 0.8 | Score minimo para pass en CI |
+| `brand_voice.enabled` | boolean | false | Activar brand voice per-tenant |
+| `personalization.min_interactions` | integer | 10 | Interacciones minimas para collaborative filtering |
+| `handoff.max_chain_length` | integer | 5 | Maximo de handoffs en cadena |
+
+---
+
+## 13. Estrategia de Testing
+
+(Seccion existente actualizada — se mantiene contenido original + adiciones Sprint 5)
+
+### 13.1 Tests Sprint 5
+
+| Test | Tipo | Comando |
+|------|------|---------|
+| SmartEmployabilityCopilotTest | Unit | `phpunit --filter SmartEmployabilityCopilotTest` |
+| SmartLegalCopilotTest | Unit | `phpunit --filter SmartLegalCopilotTest` |
+| AgentEvalServiceTest | Kernel | `phpunit --filter AgentEvalServiceTest` |
+| PromptTemplateServiceTest | Unit | `phpunit --filter PromptTemplateServiceTest` |
+| SemanticCacheServiceTest | Kernel | `phpunit --filter SemanticCacheServiceTest` |
+| BrandVoiceServiceTest | Unit | `phpunit --filter BrandVoiceServiceTest` |
+| AgentOrchestratorServiceTest | Kernel | `phpunit --filter AgentOrchestratorServiceTest` |
+| PersonalizationServiceTest | Kernel | `phpunit --filter PersonalizationServiceTest` |
+
+---
+
+## 15. Troubleshooting
+
+### Problema 1: Qdrant connection refused
+
+**Sintomas:**
+- `ConnectionException: Failed to connect to Qdrant`
+- AgentLongTermMemory, SemanticCache, Personalization fallan silenciosamente
+
+**Causa:** Qdrant server no accesible o API key incorrecta.
+
+**Solucion:**
+```bash
+# Verificar que Qdrant esta corriendo
+curl -s http://localhost:6333/healthz
+# Si usa Lando, verificar el servicio
+lando info | grep qdrant
+# Verificar config
+drush config:get jaraba_ai_agents.qdrant
+```
+
+### Problema 2: CSS monolitico no se divide tras code splitting
+
+**Sintomas:**
+- `ecosistema-jaraba-theme.css` sigue siendo 700KB+ tras implementar S4-02
+
+**Causa:** `libraries-override` no configurado correctamente o `global-styling` sigue cargando el bundle completo.
+
+**Solucion:**
+```bash
+# Verificar que las libraries override estan activas
+drush theme:info ecosistema_jaraba_theme | grep libraries
+# Rebuild cache
+drush cr
+# Verificar CSS cargado en ruta especifica
+curl -s https://jaraba-saas.lndo.site/content-hub | grep -o 'ecosistema.*\.css' | sort -u
+```
+
+### Problema 3: Agent eval score por debajo del threshold en CI
+
+**Sintomas:**
+- CI falla con `Agent eval score 0.65 < threshold 0.80`
+
+**Causa:** Cambio en prompt o modelo que degrada calidad.
+
+**Solucion:**
+```bash
+# Ejecutar eval localmente con verbose
+drush jaraba:eval-agents --agent=smart_marketing --verbose
+# Revisar golden dataset
+drush config:get eval_dataset.smart_marketing
+# Si el cambio es intencional, actualizar golden dataset
+drush jaraba:eval-update-golden --agent=smart_marketing
+```
+
+### Problema 4: Brand voice no se aplica en respuestas del copilot
+
+**Sintomas:**
+- Respuestas del copilot ignoran el tone y vocabulary del tenant
+
+**Causa:** Feature flag desactivado o BrandVoiceProfile no creado para el tenant.
+
+**Solucion:**
+```bash
+# Verificar feature flag
+drush eval "echo \Drupal::service('ecosistema_jaraba_core.feature_flag')->isEnabled('brand_voice_enabled') ? 'ON' : 'OFF';"
+# Verificar perfil del tenant
+drush eval "echo \Drupal::entityTypeManager()->getStorage('brand_voice_profile')->loadByProperties(['tenant_id' => TENANT_ID]) ? 'EXISTS' : 'MISSING';"
+```
+
+---
+
+## 16. Referencias Cruzadas
 
 | Documento | Version | Relacion |
 |-----------|---------|----------|
-| `docs/analisis/2026-02-27_Auditoria_IA_SaaS_Clase_Mundial_v1.md` | v1.0.0 | Auditoria fuente de este plan |
-| `docs/00_DIRECTRICES_PROYECTO.md` | v88.0.0 | Directrices de cumplimiento |
-| `docs/00_DOCUMENTO_MAESTRO_ARQUITECTURA.md` | v81.0.0 | Arquitectura de referencia |
-| `docs/00_FLUJO_TRABAJO_CLAUDE.md` | v42.0.0 | Flujo de trabajo y 50 aprendizajes |
-| `docs/00_INDICE_GENERAL.md` | v113.0.0 | Indice de documentacion |
+| `docs/analisis/2026-02-27_Auditoria_IA_SaaS_Clase_Mundial_v1.md` | v2.0.0 | Auditoria fuente de este plan (30 hallazgos) |
+| `docs/00_DIRECTRICES_PROYECTO.md` | v91.0.0 | Directrices de cumplimiento |
+| `docs/00_DOCUMENTO_MAESTRO_ARQUITECTURA.md` | v84.0.0 | Arquitectura de referencia |
+| `docs/00_FLUJO_TRABAJO_CLAUDE.md` | v45.0.0 | Flujo de trabajo y aprendizajes |
+| `docs/00_INDICE_GENERAL.md` | v119.0.0 | Indice de documentacion |
 | `docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md` | v2.1 | Federated Design Tokens |
 | `docs/arquitectura/2026-02-26_arquitectura_elevacion_ia_nivel5.md` | v2.0.0 | Arquitectura IA nivel 5 |
 | `docs/arquitectura/2026-02-05_especificacion_grapesjs_saas.md` | v1.0 | Especificacion GrapesJS |
 | `docs/implementacion/2026-02-26_Plan_Implementacion_GrapesJS_Content_Hub_v1.md` | v1.0.0 | Plan GrapesJS Content Hub |
 | `docs/implementacion/2026-02-26_Plan_Elevacion_IA_Nivel5_Clase_Mundial_v1.md` | v1.0.0 | Plan IA Nivel 5 previo |
+| `docs/implementacion/2026-02-26_Plan_Implementacion_Reviews_Comentarios_Clase_Mundial_v1.md` | v2.0.0 | Plan Reviews y Comentarios |
+| `docs/analisis/2026-02-27_Auditoria_Demo_Vertical_Clase_Mundial_v2.md` | v2.0.0 | Auditoria Demo Vertical |
 
 ---
 
-## 13. Registro de Cambios
+## 17. Registro de Cambios
 
 | Version | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0.0 | 2026-02-27 | Claude Opus 4.6 | Creacion inicial: plan de implementacion con 20 acciones en 4 sprints, tabla de correspondencia hallazgos-acciones, tabla de cumplimiento de 35 directrices, especificaciones tecnicas completas, 12 secciones de arquitectura frontend |
+| 2.0.0 | 2026-02-27 | Claude Opus 4.6 | Re-evaluacion completa. Target elevado de 85→100/100. Sprints 1-3 marcados como COMPLETADOS/MAYORMENTE COMPLETADOS. Sprint 5 anadido con 10 items nuevos (S5-01..S5-10) + tabla de residuales. Secciones obligatorias anadidas: Requisitos Previos (sec. 2), Configuracion (sec. 12), Troubleshooting (sec. 15). Metadata actualizada a formato plantilla (Fecha creacion/actualizacion, Autor, Version, Categoria). Versiones de referencia actualizadas (DIRECTRICES v91, FLUJO v45, ARQUITECTURA v84, INDICE v119). 30 hallazgos totales. Estimacion: 480-680h en 5 sprints. |
+
+> **Nota**: Recuerda actualizar el indice general (`00_INDICE_GENERAL.md`) despues de modificar este documento.

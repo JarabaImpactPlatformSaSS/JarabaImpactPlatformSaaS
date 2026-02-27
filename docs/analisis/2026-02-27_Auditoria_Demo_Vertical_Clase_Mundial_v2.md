@@ -1,9 +1,9 @@
 # Auditoria Integral: Demo Vertical — Clase Mundial PLG SaaS
 
 **Fecha de creacion:** 2026-02-27 14:00
-**Ultima actualizacion:** 2026-02-27 14:00
+**Ultima actualizacion:** 2026-02-27 18:00
 **Autor:** IA Asistente (Claude Opus 4.6)
-**Version:** 2.0.0 (post-remediacion 4 sprints)
+**Version:** 2.1.0 (post-remediacion 4 sprints, target 100%)
 **Categoria:** Analisis
 **Modulo:** `ecosistema_jaraba_core` (demo vertical), `jaraba_page_builder` (demo blocks/templates)
 **Documentos fuente:** 00_DIRECTRICES_PROYECTO.md v92.0.0, 00_FLUJO_TRABAJO_CLAUDE.md v45.0.0, 2026-02-27_Plan_Implementacion_Remediacion_Demo_Vertical_Clase_Mundial_v1.md
@@ -26,6 +26,7 @@
 12. [Scorecard Global](#12-scorecard)
 13. [Catalogo Completo de Hallazgos](#13-catalogo)
 14. [Prioridades para 100% Clase Mundial](#14-prioridades)
+15. [Registro de Cambios](#15-registro-de-cambios)
 
 ---
 
@@ -545,6 +546,26 @@ IP almacenada en `demo_sessions.client_ip` sin consentimiento. No hay disclaimer
 | PLG-SOCIAL | MEDIA | Social proof | S7 |
 | PLG-URGENCY | MEDIA | Session countdown | S7 |
 | PLG-PROGRESSIVE | MEDIA | Progressive disclosure | S7 |
+| HAL-DEMO-BE-14 | BAJA | Emojis en log messages | S8 |
+| HAL-DEMO-BE-15 | BAJA | PHP_INT_MAX features desconocidas | S8 |
+| HAL-DEMO-BE-16 | BAJA | dismissNudge sin validacion | S8 |
+| HAL-DEMO-BE-17 | BAJA | Docblock huerfano | S8 |
+| HAL-DEMO-FE-16 | BAJA | BEM nesting violation | S8 |
+| HAL-DEMO-FE-17 | BAJA | JS behaviors sin detach | S8 |
+| HAL-DEMO-FE-18 | BAJA | CSRF token doble fetch | S8 |
+| HAL-DEMO-FE-19 | BAJA | GrapesJS padding hardcoded | S8 |
+| HAL-DEMO-FE-20 | BAJA | HTML dentro de \|t strings | S8 |
+| PERF-01 | BAJA | Chart.js bundle size | S8 |
+| PERF-02 | BAJA | GrapesJS blocks inline HTML | S8 |
+| PERF-03 | BAJA | Cards sin will-change | S8 |
+| PERF-04 | BAJA | touch-action ausente | S8 |
+| PERF-05 | BAJA | Sin @media print | S7 |
+| A11Y-08 | BAJA | Metricas no traducidas en view | S6 |
+| A11Y-09 | MEDIA | Modal sin focus trap | S5 |
+| A11Y-10 | BAJA | Sin lang en wrapper | S8 |
+| I18N-04 | BAJA | Acentos faltantes en Drupal.t() | S8 |
+| I18N-05 | BAJA | Metric labels sin traducir | S6 |
+| SEC-05 | BAJA | Inline style vs CSP | S8 |
 
 ---
 
@@ -582,7 +603,7 @@ Objetivo: Pasar de 78% a 88%
 
 ### Sprint 7 (PLG Excellence): Analytics + Real AI + Social Proof
 
-Objetivo: Pasar de 88% a 95%+
+Objetivo: Pasar de 88% a 95%
 
 1. Tabla `demo_analytics` + pipeline agregacion
 2. Event dispatch para lifecycle demo
@@ -593,7 +614,38 @@ Objetivo: Pasar de 88% a 95%+
 7. Progressive disclosure mejorado
 8. Cleanup con retencion/agregacion
 9. Config entity para rate limits
+10. Print styles (@media print)
+
+### Sprint 8 (Pulido Final): Codigo Limpio + Rendimiento + Accesibilidad residual
+
+Objetivo: Pasar de 95% a 100%
+
+1. Eliminar emojis en log messages de SandboxTenantService (HAL-DEMO-BE-14)
+2. Log warning para features desconocidas en FeatureGate (HAL-DEMO-BE-15)
+3. Validar nudgeId en dismissNudge (HAL-DEMO-BE-16)
+4. Corregir docblock huerfano en DemoInteractiveService (HAL-DEMO-BE-17)
+5. Corregir BEM nesting violation `__scenario-card__icon` → `__scenario-icon` (HAL-DEMO-FE-16)
+6. Implementar `detach()` en los 3 behaviors JS demo (HAL-DEMO-FE-17)
+7. Cachear CSRF token por sesion (HAL-DEMO-FE-18)
+8. Responsive padding en bloques GrapesJS demo (HAL-DEMO-FE-19)
+9. Migrar `|t` con HTML a `{% trans %}` con markup (HAL-DEMO-FE-20)
+10. Lazy-load Chart.js solo cuando canvas es visible (PERF-01)
+11. Externalizar HTML de bloques GrapesJS a templates (PERF-02)
+12. Anadir `will-change: transform` a cards con hover (PERF-03)
+13. Anadir `touch-action: manipulation` a botones (PERF-04)
+14. Anadir `lang` attribute al wrapper demo (A11Y-10)
+15. Corregir acentos faltantes en Drupal.t() (I18N-04)
+16. Mover inline styles a SCSS para compatibilidad CSP (SEC-05)
 
 ---
 
-*Fin del documento. Version 2.0.0 — Post-remediacion 4 sprints.*
+## 15. Registro de Cambios
+
+| Fecha | Version | Descripcion |
+|-------|---------|-------------|
+| 2026-02-27 | 2.0.0 | Auditoria post-remediacion 4 sprints: 67 hallazgos identificados, scorecard 60% |
+| 2026-02-27 | 2.1.0 | Revision documental: target actualizado a 100%, catalogo completado con los 67 hallazgos, Sprint 8 anadido, versiones de referencia actualizadas, Registro de Cambios anadido |
+
+---
+
+*Fin del documento. Version 2.1.0 — Post-remediacion 4 sprints, target 100% clase mundial.*

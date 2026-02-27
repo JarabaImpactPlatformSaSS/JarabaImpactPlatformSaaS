@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Servicio de tours guiados contextuales.
@@ -18,6 +19,8 @@ use Drupal\Core\Session\AccountProxyInterface;
  */
 class GuidedTourService
 {
+
+    use StringTranslationTrait;
 
     /**
      * Tours disponibles.
@@ -187,18 +190,36 @@ class GuidedTourService
 
     /**
      * Obtiene todos los tours disponibles.
+     *
+     * S6-02: Traduce títulos y contenido de pasos.
      */
     public function getAllTours(): array
     {
-        return self::TOURS;
+        return array_map([$this, 'translateTour'], self::TOURS);
     }
 
     /**
      * Obtiene un tour específico.
+     *
+     * S6-02: Traduce títulos y contenido de pasos.
      */
     public function getTour(string $tourId): ?array
     {
-        return self::TOURS[$tourId] ?? NULL;
+        $tour = self::TOURS[$tourId] ?? NULL;
+        return $tour ? $this->translateTour($tour) : NULL;
+    }
+
+    /**
+     * Traduce las cadenas de un tour.
+     */
+    protected function translateTour(array $tour): array
+    {
+        $tour['name'] = (string) $this->t($tour['name']);
+        foreach ($tour['steps'] as &$step) {
+            $step['title'] = (string) $this->t($step['title']);
+            $step['content'] = (string) $this->t($step['content']);
+        }
+        return $tour;
     }
 
     /**
@@ -207,6 +228,11 @@ class GuidedTourService
     public function completeTour(string $tourId): void
     {
         $userId = $this->currentUser->id();
+
+        // S5-14: Guard — no persistir tours para usuarios anónimos (uid=0).
+        if ($userId <= 0) {
+            return;
+        }
 
         $this->database->merge('user_completed_tours')
             ->keys([

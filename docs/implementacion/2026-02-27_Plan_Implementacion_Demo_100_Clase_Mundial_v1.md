@@ -1,12 +1,12 @@
 # Plan de Implementacion: Demo Vertical 100% Clase Mundial
 
 **Fecha de creacion:** 2026-02-27 14:30
-**Ultima actualizacion:** 2026-02-27 14:30
+**Ultima actualizacion:** 2026-02-27 18:00
 **Autor:** IA Asistente (Claude Opus 4.6)
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Categoria:** Implementacion
 **Documento fuente:** `docs/analisis/2026-02-27_Auditoria_Demo_Vertical_Clase_Mundial_v2.md`
-**Hallazgos a resolver:** 67 (4 criticos, 15 altos, 27 medios, 21 bajos)
+**Hallazgos a resolver:** 67 (4 criticos, 15 altos, 27 medios, 21 bajos) — Objetivo: 100% clase mundial
 
 ---
 
@@ -17,20 +17,24 @@
 3. [Sprint 5: Seguridad + A11Y + Wire Services](#3-sprint-5)
 4. [Sprint 6: i18n + Arquitectura + GDPR](#4-sprint-6)
 5. [Sprint 7: PLG Excellence](#5-sprint-7)
-6. [Dependencias y Riesgos](#6-dependencias)
-7. [Criterios de Aceptacion Globales](#7-criterios)
+6. [Sprint 8: Pulido Final — De 95% a 100%](#6-sprint-8)
+7. [Dependencias y Riesgos](#7-dependencias)
+8. [Criterios de Aceptacion Globales](#8-criterios)
+9. [Referencias Cruzadas](#9-referencias)
+10. [Registro de Cambios](#10-registro-de-cambios)
 
 ---
 
 ## 1. Resumen Ejecutivo
 
-Este plan continua la remediacion de la vertical demo desde el 60% alcanzado tras 4 sprints previos hasta el objetivo de 95%+ clase mundial. Se organiza en 3 sprints adicionales con 39 items de trabajo.
+Este plan continua la remediacion de la vertical demo desde el 60% alcanzado tras 4 sprints previos hasta el objetivo de **100% clase mundial**. Se organiza en 4 sprints adicionales con 55 items de trabajo que resuelven los 67 hallazgos identificados en la auditoria v2.
 
 | Sprint | Foco | Items | Score objetivo |
 |--------|------|-------|---------------|
 | S5 | Seguridad + A11Y + Wire Services | 16 | 60% → 78% |
 | S6 | i18n + Arquitectura + GDPR | 13 | 78% → 88% |
-| S7 | PLG Excellence | 10 | 88% → 95%+ |
+| S7 | PLG Excellence | 10 | 88% → 95% |
+| S8 | Pulido Final (Codigo limpio + Rendimiento + A11Y residual) | 16 | 95% → 100% |
 
 ---
 
@@ -866,17 +870,7 @@ Modificar `cleanupExpiredSessions()`:
 
 ---
 
-### S7-09: Config entity para rate limits
-
-Crear form admin para `ecosistema_jaraba_core.demo_settings`:
-- Rate limits editables
-- Session TTL configurable
-- Feature gate limits editables
-- Perfiles activos/inactivos toggle
-
----
-
-### S7-10: Print styles
+### S7-09: Print styles
 
 **Hallazgo:** PERF-05
 
@@ -893,7 +887,241 @@ Crear form admin para `ecosistema_jaraba_core.demo_settings`:
 
 ---
 
-## 6. Dependencias y Riesgos
+## 6. Sprint 8: Pulido Final — De 95% a 100%
+
+**Prioridad:** P3 (pulido final)
+**Hallazgos resueltos:** HAL-DEMO-BE-14, BE-15, BE-16, BE-17, FE-16, FE-17, FE-18, FE-19, FE-20, PERF-01, PERF-02, PERF-03, PERF-04, A11Y-10, I18N-04, SEC-05
+
+### S8-01: Eliminar emojis en log messages de SandboxTenantService
+
+**Hallazgo:** HAL-DEMO-BE-14
+**Archivo:** `SandboxTenantService.php` lineas 151, 218, 329, 361, 389
+
+Reemplazar emojis Unicode en mensajes de `$this->logger->info()` y `->error()` con prefijos textuales:
+```php
+// ANTES (viola ICON-EMOJI-001):
+$this->logger->info('🚀 Sandbox created for @ip');
+// DESPUES:
+$this->logger->info('[SandboxTenant] Sandbox created for @ip');
+```
+
+---
+
+### S8-02: Log warning para features desconocidas en FeatureGate
+
+**Hallazgo:** HAL-DEMO-BE-15
+**Archivo:** `DemoFeatureGateService.php` linea 58
+
+```php
+public function check(string $sessionId, string $feature): array {
+    if (!isset(self::DEMO_LIMITS[$feature])) {
+        $this->logger->warning('Unknown demo feature gate: @feature', ['@feature' => $feature]);
+        return ['allowed' => TRUE, 'limit' => PHP_INT_MAX, 'remaining' => PHP_INT_MAX];
+    }
+    // ... existing logic
+}
+```
+
+---
+
+### S8-03: Validar nudgeId en dismissNudge
+
+**Hallazgo:** HAL-DEMO-BE-16
+**Archivo:** `DemoJourneyProgressionService.php` linea 120
+
+```php
+public function dismissNudge(string $sessionId, string $nudgeId): void {
+    $validNudges = array_keys(self::PROACTIVE_RULES);
+    if (!in_array($nudgeId, $validNudges, TRUE)) {
+        return;
+    }
+    // ... existing logic
+}
+```
+
+---
+
+### S8-04: Corregir docblock huerfano
+
+**Hallazgo:** HAL-DEMO-BE-17
+**Archivo:** `DemoInteractiveService.php` lineas 1108-1115
+
+Mover el docblock de `cleanupExpiredSessions()` para que preceda inmediatamente al metodo, eliminando la separacion por `getPlaceholderSvg()`.
+
+---
+
+### S8-05: Corregir BEM nesting violation
+
+**Hallazgo:** HAL-DEMO-FE-16
+**Archivo:** `_demo.scss` lineas 743-757
+
+Renombrar `__scenario-card__icon` a `__scenario-icon` (eliminar doble-underscore grandchild). Actualizar selectores en templates y JS.
+
+---
+
+### S8-06: Implementar detach() en JS behaviors demo
+
+**Hallazgo:** HAL-DEMO-FE-17
+**Archivos:** `demo-dashboard.js`, `demo-storytelling.js`, `demo-ai-playground.js`
+
+Anadir `detach` method a cada `Drupal.behaviors.jarabaDemoXxx`:
+```javascript
+Drupal.behaviors.jarabaDemoDashboard = {
+    attach(context, settings) { /* ... */ },
+    detach(context, settings, trigger) {
+        if (trigger === 'unload') {
+            // Destroy Chart.js instances, remove event listeners
+            once.remove('demo-dashboard', '[data-demo-dashboard]', context);
+        }
+    },
+};
+```
+
+---
+
+### S8-07: Cachear CSRF token por sesion
+
+**Hallazgo:** HAL-DEMO-FE-18
+**Archivos:** `demo-dashboard.js`, `demo-ai-playground.js`
+
+```javascript
+let cachedToken = null;
+async function getCsrfToken() {
+    if (!cachedToken) {
+        cachedToken = drupalSettings.demo.csrfToken;
+    }
+    return cachedToken;
+}
+```
+
+---
+
+### S8-08: Responsive padding en bloques GrapesJS demo
+
+**Hallazgo:** HAL-DEMO-FE-19
+**Archivo:** `grapesjs-jaraba-blocks.js` lineas 3601-3763
+
+Reemplazar `padding: 4rem 2rem` inline por clases CSS con breakpoints:
+```scss
+.pb-demo-block {
+    padding: var(--ej-spacing-lg, 1.5rem) var(--ej-spacing-md, 1rem);
+    @include respond-to(md) {
+        padding: var(--ej-spacing-2xl, 3rem) var(--ej-spacing-xl, 2rem);
+    }
+    @include respond-to(lg) {
+        padding: 4rem 2rem;
+    }
+}
+```
+
+---
+
+### S8-09: Migrar |t con HTML a {% trans %}
+
+**Hallazgo:** HAL-DEMO-FE-20
+**Archivo:** `demo-landing.html.twig` lineas 26, 30
+
+```twig
+{# ANTES: #}
+{{ 'Descubre <strong>tu plataforma</strong>'|t }}
+
+{# DESPUES: #}
+{% trans %}Descubre <strong>tu plataforma</strong>{% endtrans %}
+```
+
+---
+
+### S8-10: Lazy-load Chart.js
+
+**Hallazgo:** PERF-01
+**Archivo:** `ecosistema_jaraba_core.libraries.yml`
+
+Mover Chart.js de dependencia global a carga condicional:
+```javascript
+// En demo-dashboard.js
+if (document.querySelector('#salesChart')) {
+    const { Chart } = await import('chart.js/auto');
+    // Initialize chart...
+}
+```
+
+---
+
+### S8-11: Externalizar HTML de bloques GrapesJS
+
+**Hallazgo:** PERF-02
+**Archivo:** `grapesjs-jaraba-blocks.js`
+
+Mover los ~12KB de HTML inline de los 4 bloques demo a templates HTML separados en `templates/blocks/demo/` que se cargan via `fetch()` en `view.onRender()`.
+
+---
+
+### S8-12: will-change en cards con hover
+
+**Hallazgo:** PERF-03
+**Archivo:** `_demo.scss`
+
+```scss
+.demo-profile-card,
+.demo-metric-card,
+.demo-magic-action-card {
+    will-change: transform;
+}
+```
+
+---
+
+### S8-13: touch-action en botones
+
+**Hallazgo:** PERF-04
+**Archivo:** `_demo.scss`
+
+```scss
+.demo-profile-card__cta,
+.demo-convert-cta,
+.demo-nudge-fab__cta,
+.demo-playground__send-btn {
+    touch-action: manipulation;
+}
+```
+
+---
+
+### S8-14: lang attribute en wrapper demo
+
+**Hallazgo:** A11Y-10
+**Archivo:** `page--demo.html.twig`
+
+```twig
+<div class="page-wrapper page-wrapper--clean page-wrapper--demo" lang="{{ language.getId() }}">
+```
+
+---
+
+### S8-15: Corregir acentos faltantes en Drupal.t()
+
+**Hallazgo:** I18N-04
+**Archivo:** `demo-ai-playground.js`
+
+```javascript
+// ANTES:
+Drupal.t('Generacion de contenido')
+// DESPUES:
+Drupal.t('Generación de contenido')
+```
+
+---
+
+### S8-16: Mover inline styles a SCSS
+
+**Hallazgo:** SEC-05
+**Archivo:** `demo-ai-playground.html.twig` linea 67
+
+Mover atributos `style="..."` a clases CSS en `_demo-playground.scss` para compatibilidad con Content Security Policy (CSP).
+
+---
+
+## 7. Dependencias y Riesgos
 
 | Riesgo | Mitigacion |
 |--------|-----------|
@@ -905,7 +1133,7 @@ Crear form admin para `ecosistema_jaraba_core.demo_settings`:
 
 ---
 
-## 7. Criterios de Aceptacion Globales
+## 8. Criterios de Aceptacion Globales
 
 ### Sprint 5
 - [ ] `php -l` sin errores en todos los archivos PHP modificados
@@ -931,6 +1159,43 @@ Crear form admin para `ecosistema_jaraba_core.demo_settings`:
 - [ ] Storytelling genera contenido real con AI agent (si disponible)
 - [ ] Event subscribers pueden escuchar lifecycle events
 
+### Sprint 8
+- [ ] 0 emojis Unicode en log messages (`grep -Prn '[\x{1F300}-\x{1F9FF}]' SandboxTenantService.php` = 0)
+- [ ] Feature gate desconocido logea warning
+- [ ] dismissNudge rechaza nudgeIds invalidos
+- [ ] BEM correcto: 0 doble-underscore grandchild en SCSS
+- [ ] Los 3 JS behaviors tienen `detach()` funcional
+- [ ] CSRF token cacheado (1 fetch por sesion, no N)
+- [ ] GrapesJS blocks responsive en 375px
+- [ ] 0 inline `style=""` en templates demo
+- [ ] Chart.js carga solo cuando canvas es visible (Lighthouse: -200KB initial bundle)
+- [ ] `will-change` y `touch-action` aplicados
+- [ ] `lang` attribute presente en wrapper demo
+- [ ] Acentos correctos en todos los `Drupal.t()` de JS demo
+
 ---
 
-*Fin del plan. Version 1.0.0 — 39 items, 3 sprints, objetivo 95%+ clase mundial.*
+## 9. Referencias Cruzadas
+
+| Documento | Relacion |
+|-----------|---------|
+| `docs/analisis/2026-02-27_Auditoria_Demo_Vertical_Clase_Mundial_v2.md` | Auditoria fuente con 67 hallazgos |
+| `docs/implementacion/2026-02-27_Plan_Implementacion_Remediacion_Demo_Vertical_Clase_Mundial_v1.md` | Plan original Sprints 1-4 (COMPLETADO) |
+| `docs/00_DIRECTRICES_PROYECTO.md` v92.0.0 | Directrices maestras |
+| `docs/00_FLUJO_TRABAJO_CLAUDE.md` v45.0.0 | Flujo de trabajo y aprendizajes |
+| `docs/00_DOCUMENTO_MAESTRO_ARQUITECTURA.md` v84.0.0 | Arquitectura del SaaS |
+| `docs/arquitectura/2026-02-05_arquitectura_theming_saas_master.md` | SCSS, zero-region, design tokens |
+| `memory/MEMORY.md` | ROUTE-LANGPREFIX-001, SLIDE-PANEL-RENDER-001, PRESAVE-RESILIENCE-001 |
+
+---
+
+## 10. Registro de Cambios
+
+| Fecha | Version | Descripcion |
+|-------|---------|-------------|
+| 2026-02-27 | 1.0.0 | Plan inicial: 39 items, 3 sprints (S5-S7), objetivo 95%+ |
+| 2026-02-27 | 1.1.0 | Revision documental: Sprint 8 anadido (16 items), target actualizado a 100%, duplicado S7-09 eliminado, secciones Referencias y Registro de Cambios anadidas. Total: 55 items, 4 sprints (S5-S8) |
+
+---
+
+*Fin del plan. Version 1.1.0 — 55 items, 4 sprints, objetivo 100% clase mundial.*

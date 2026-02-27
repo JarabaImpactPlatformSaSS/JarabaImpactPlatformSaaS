@@ -202,7 +202,6 @@ demo-dashboard:
     - core/drupal
     - core/drupalSettings
     - core/once
-    - ecosistema_jaraba_core/chartjs
 
 # ---------------------------------------------------------------------------
 # BIBLIOTECA DE CHARTS (ALIAS PARA DEMO)

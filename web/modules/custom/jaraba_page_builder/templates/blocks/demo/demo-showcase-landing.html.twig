@@ -1,0 +1,69 @@
+{#
+/**
+ * @file
+ * Template para el bloque Demo Showcase Landing.
+ *
+ * S5-03: Landing page completa para la experiencia demo interactiva.
+ * Incluye selector de perfil, métricas opcionales, playground IA y CTA.
+ *
+ * Variables (via content):
+ * - hero_title: Título hero principal.
+ * - hero_subtitle: Subtítulo hero.
+ * - profiles_title: Título de la sección de perfiles.
+ * - profiles: Array de perfiles demo (name, vertical, description, icon_color).
+ * - cta_text: Texto del CTA principal.
+ * - cta_url: URL del CTA.
+ * - metrics_enabled: Boolean — mostrar sección de métricas.
+ * - ai_playground_enabled: Boolean — mostrar playground IA.
+ *
+ * @ingroup jaraba_page_builder
+ */
+#}
+
+<section class="jaraba-demo-showcase jaraba-block"
+         data-block-type="demo_showcase_landing"
+         aria-label="{{ content.hero_title|default('Demo Showcase') }}">
+  <div class="jaraba-block__container">
+
+    {# Hero #}
+    <header class="jaraba-demo-showcase__hero">
+      {% if content.hero_title %}
+        <h1 class="jaraba-block__title jaraba-demo-showcase__title">{{ content.hero_title }}</h1>
+      {% endif %}
+      {% if content.hero_subtitle %}
+        <p class="jaraba-block__subtitle jaraba-demo-showcase__subtitle">{{ content.hero_subtitle }}</p>
+      {% endif %}
+    </header>
+
+    {# Selector de Perfiles #}
+    {% if content.profiles is not empty %}
+      <div class="jaraba-demo-showcase__profiles">
+        {% if content.profiles_title %}
+          <h2 class="jaraba-demo-showcase__section-title">{{ content.profiles_title }}</h2>
+        {% endif %}
+        <div class="jaraba-demo-showcase__profiles-grid">
+          {% for profile in content.profiles %}
+            <a href="{{ path('ecosistema_jaraba_core.demo_start', { profileId: profile.vertical|default('emprendimiento') }) }}"
+               class="jaraba-demo-showcase__profile-card"
+               style="--profile-color: {{ profile.icon_color|default('#233D63') }}">
+              <h3 class="jaraba-demo-showcase__profile-name">{{ profile.name }}</h3>
+              {% if profile.description %}
+                <p class="jaraba-demo-showcase__profile-desc">{{ profile.description }}</p>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {# CTA Principal #}
+    {% if content.cta_text and content.cta_url %}
+      <div class="jaraba-demo-showcase__cta">
+        <a href="{{ content.cta_url }}" class="jaraba-btn jaraba-btn--primary jaraba-btn--lg">
+          {{ content.cta_text }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>

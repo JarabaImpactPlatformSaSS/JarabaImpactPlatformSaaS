@@ -55,6 +55,7 @@ description: Lecciones aprendidas en implementación de módulos custom Drupal c
 | **Tenant** | ContentEntity | Datos operativos de clientes |
 | **SaasPlan** | ContentEntity | Admin puede crear planes personalizados |
 | **Course, JobPosting** | ContentEntity | Datos de usuario, necesitan Field UI |
+| **SuccessCase** | ContentEntity | Casos de éxito centralizados, multimedia via Field UI, slug auto-generado. Referencia: `jaraba_success_cases` (26 ficheros, 2026-02-27) |
 
 > [!IMPORTANT]
 > **Si el administrador SaaS necesita poder añadir campos personalizados sin tocar código → usa ContentEntity.**

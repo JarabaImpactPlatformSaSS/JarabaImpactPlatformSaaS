@@ -393,6 +393,7 @@ services:
     arguments:
       - '@database'
       - '@logger.factory'
+      - '@event_dispatcher'
 
   # S4-03: Feature gate ligero para sesiones demo anónimas.
   # Controla límites: sesiones/hora, mensajes IA, generaciones, productos.

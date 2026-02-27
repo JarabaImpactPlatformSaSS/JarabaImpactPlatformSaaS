@@ -499,28 +499,167 @@ class UsageLimitsService
     }
 
     /**
-     * Detecta accesos desde múltiples IPs.
+     * Detecta accesos desde multiples IPs en las ultimas 24h.
+     *
+     * Consulta la tabla {sessions} agrupando por uid para miembros del tenant.
+     * Si un mismo uid accede desde >3 IPs distintas en 24h, se considera
+     * indicador de credential sharing o necesidad de multi-seat.
+     *
+     * @param string $tenantId
+     *   ID del tenant (group ID).
+     *
+     * @return bool
+     *   TRUE si se detectan >3 IPs distintas para algun usuario del tenant.
      */
     protected function detectMultipleIPs(string $tenantId): bool
     {
-        // Simulación - en producción consultaría logs de acceso.
-        return rand(0, 1) === 1;
+        try {
+            if (!$this->database->schema()->tableExists('sessions')) {
+                return FALSE;
+            }
+
+            $threshold24h = \Drupal::time()->getRequestTime() - 86400;
+
+            // Get tenant member UIDs from group_relationship.
+            $memberUids = $this->database->query(
+                "SELECT DISTINCT grfd.entity_id FROM {group_relationship_field_data} grfd WHERE grfd.gid = :gid AND grfd.type LIKE :type",
+                [':gid' => $tenantId, ':type' => '%-group_membership']
+            )->fetchCol();
+
+            if (empty($memberUids)) {
+                return FALSE;
+            }
+
+            // Check if any member has >3 distinct IPs in last 24h.
+            foreach ($memberUids as $uid) {
+                $ipCount = $this->database->query(
+                    "SELECT COUNT(DISTINCT hostname) FROM {sessions} WHERE uid = :uid AND timestamp >= :threshold",
+                    [':uid' => $uid, ':threshold' => $threshold24h]
+                )->fetchField();
+
+                if ((int) $ipCount > 3) {
+                    return TRUE;
+                }
+            }
+        }
+        catch (\Exception $e) {
+            if ($this->logger) {
+                $this->logger->warning('Failed to detect multiple IPs for tenant @tid: @error', [
+                    '@tid' => $tenantId,
+                    '@error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return FALSE;
     }
 
     /**
      * Detecta credenciales compartidas.
+     *
+     * Heuristica: si un mismo uid tiene >3 IPs distintas en 1 hora,
+     * es un fuerte indicador de credential sharing (IPs que cambian
+     * demasiado rapido para ser un solo usuario movil).
+     *
+     * @param string $tenantId
+     *   ID del tenant (group ID).
+     *
+     * @return bool
+     *   TRUE si se detecta patron de credenciales compartidas.
      */
     protected function detectSharedCredentials(string $tenantId): bool
     {
-        return FALSE; // Por defecto asumimos que no.
+        try {
+            if (!$this->database->schema()->tableExists('sessions')) {
+                return FALSE;
+            }
+
+            $threshold1h = \Drupal::time()->getRequestTime() - 3600;
+
+            $memberUids = $this->database->query(
+                "SELECT DISTINCT grfd.entity_id FROM {group_relationship_field_data} grfd WHERE grfd.gid = :gid AND grfd.type LIKE :type",
+                [':gid' => $tenantId, ':type' => '%-group_membership']
+            )->fetchCol();
+
+            if (empty($memberUids)) {
+                return FALSE;
+            }
+
+            foreach ($memberUids as $uid) {
+                $ipCount = $this->database->query(
+                    "SELECT COUNT(DISTINCT hostname) FROM {sessions} WHERE uid = :uid AND timestamp >= :threshold",
+                    [':uid' => $uid, ':threshold' => $threshold1h]
+                )->fetchField();
+
+                // >3 distinct IPs in 1 hour = strong indicator.
+                if ((int) $ipCount > 3) {
+                    return TRUE;
+                }
+            }
+        }
+        catch (\Exception $e) {
+            if ($this->logger) {
+                $this->logger->warning('Failed to detect shared credentials for tenant @tid: @error', [
+                    '@tid' => $tenantId,
+                    '@error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return FALSE;
     }
 
     /**
-     * Detecta sesiones concurrentes.
+     * Detecta sesiones concurrentes para el mismo usuario.
+     *
+     * Si un mismo uid tiene >1 sesion activa (timestamp < 30 min),
+     * indica acceso simultaneo desde multiples dispositivos/personas.
+     *
+     * @param string $tenantId
+     *   ID del tenant (group ID).
+     *
+     * @return bool
+     *   TRUE si se detectan sesiones concurrentes.
      */
     protected function detectConcurrentSessions(string $tenantId): bool
     {
-        return rand(0, 2) === 2;
+        try {
+            if (!$this->database->schema()->tableExists('sessions')) {
+                return FALSE;
+            }
+
+            $threshold30min = \Drupal::time()->getRequestTime() - 1800;
+
+            $memberUids = $this->database->query(
+                "SELECT DISTINCT grfd.entity_id FROM {group_relationship_field_data} grfd WHERE grfd.gid = :gid AND grfd.type LIKE :type",
+                [':gid' => $tenantId, ':type' => '%-group_membership']
+            )->fetchCol();
+
+            if (empty($memberUids)) {
+                return FALSE;
+            }
+
+            foreach ($memberUids as $uid) {
+                $sessionCount = $this->database->query(
+                    "SELECT COUNT(*) FROM {sessions} WHERE uid = :uid AND timestamp >= :threshold",
+                    [':uid' => $uid, ':threshold' => $threshold30min]
+                )->fetchField();
+
+                if ((int) $sessionCount > 1) {
+                    return TRUE;
+                }
+            }
+        }
+        catch (\Exception $e) {
+            if ($this->logger) {
+                $this->logger->warning('Failed to detect concurrent sessions for tenant @tid: @error', [
+                    '@tid' => $tenantId,
+                    '@error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return FALSE;
     }
 
 }

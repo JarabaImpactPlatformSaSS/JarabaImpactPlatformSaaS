@@ -35,24 +35,28 @@
            data-scenario-prompt="{{ scenario.prompt }}"
            role="button"
            tabindex="0">
-        <div class="demo-playground__scenario-card__icon">
+        <div class="demo-playground__scenario-icon">
           {{ jaraba_icon('ai', scenario.icon|default('sparkles'), { size: '24px', color: 'azul-corporativo' }) }}
         </div>
-        <div class="demo-playground__scenario-card__title">{{ scenario.title }}</div>
-        <div class="demo-playground__scenario-card__description">{{ scenario.description }}</div>
+        <div class="demo-playground__scenario-title">{{ scenario.title }}</div>
+        <div class="demo-playground__scenario-description">{{ scenario.description }}</div>
       </div>
     {% endfor %}
   </div>
 
   {# Chat #}
   <div class="demo-playground__chat">
-    <div class="demo-playground__chat-output" data-chat-output>
+    {# S5-06: aria-live para anunciar nuevos mensajes a lectores de pantalla. #}
+    <div class="demo-playground__chat-output" data-chat-output aria-live="polite" aria-relevant="additions">
       <div class="demo-playground__message demo-playground__message--system">
         {{ '¡Bienvenido al AI Playground! Selecciona un escenario arriba o escribe tu pregunta.'|t }}
       </div>
     </div>
     <div class="demo-playground__chat-input-row">
+      {# S5-06: Label accesible para el input del chat. #}
+      <label for="demo-chat-input" class="visually-hidden">{{ 'Escribe tu consulta al asistente IA'|t }}</label>
       <input type="text"
+             id="demo-chat-input"
              class="demo-playground__chat-input"
              data-chat-input
              placeholder="{{ 'Escribe tu consulta...'|t }}"
@@ -64,7 +68,8 @@
   </div>
 
   {# CTA Conversión #}
-  <div class="demo-cta-convert" style="margin-top: var(--demo-section-gap);">
+  {# S5: Inline style eliminado — margen gestionado por CSS. #}
+  <div class="demo-cta-convert demo-cta-convert--playground">
     <p class="demo-cta-convert__text">{{ '¿Quieres acceso completo a la IA?'|t }}</p>
     <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: 'emprendimiento' }) }}"
        class="demo-cta-convert__btn">

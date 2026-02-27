@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Partial — CTA de conversión demo (shared).
+ *
+ * S6-05: Extraído para DRY.
+ *
+ * Variables:
+ * - vertical: ID del vertical para el enlace de registro.
+ */
+#}
+<section class="demo-cta-convert" data-tour-step="demo-convert">
+  <h2 class="demo-cta-convert__text">{{ '¿Te gusta lo que ves?'|t }}</h2>
+  <p>{{ 'Convierte esta demo en tu cuenta real.'|t }}</p>
+  <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: vertical|default('agroconecta') }) }}"
+     class="demo-cta-convert__btn">
+    {{ 'Crear Mi Cuenta Real'|t }} &rarr;
+  </a>
+</section>

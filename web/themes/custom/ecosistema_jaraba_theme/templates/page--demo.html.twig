@@ -23,7 +23,8 @@
 {% set site_name = site_name|default('Jaraba Impact Platform') %}
 {% set site_slogan = site_slogan|default('Impulsando el talento y la innovación') %}
 
-<div class="page-wrapper page-wrapper--clean page-wrapper--demo">
+{# S8-14: lang attribute para screen readers. #}
+<div class="page-wrapper page-wrapper--clean page-wrapper--demo" lang="{{ language.getId() }}" dir="{{ language.getDirection() }}">
 
   {# =============================================
      HEADER - Parcial reutilizable del tema

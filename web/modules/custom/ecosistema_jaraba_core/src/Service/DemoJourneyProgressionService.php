@@ -63,6 +63,68 @@ class DemoJourneyProgressionService
     }
 
     /**
+     * S7-07: Disclosure levels para desbloqueo progresivo de funciones.
+     *
+     * Nivel 1 (initial): Dashboard + métricas.
+     * Nivel 2 (1 acción): Productos + AI storytelling.
+     * Nivel 3 (3 acciones): AI playground.
+     * Nivel 4 (TTFV reached): Full features + prompt de conversión.
+     */
+    protected const DISCLOSURE_LEVELS = [
+        1 => ['dashboard', 'metrics'],
+        2 => ['products', 'storytelling'],
+        3 => ['ai_playground'],
+        4 => ['full_features', 'conversion_prompt'],
+    ];
+
+    /**
+     * Calcula el nivel de disclosure actual de una sesión.
+     *
+     * S7-07: Progressive disclosure — desbloqueo gradual.
+     *
+     * @return array{level: int, unlocked: string[], next_actions_needed: int}
+     */
+    public function getDisclosureLevel(string $sessionId): array
+    {
+        $session = $this->getSessionData($sessionId);
+        if (!$session) {
+            return ['level' => 1, 'unlocked' => self::DISCLOSURE_LEVELS[1], 'next_actions_needed' => 1];
+        }
+
+        $actionCount = count($session['actions'] ?? []);
+        $hasTtfv = !empty($session['ttfv_seconds']);
+
+        if ($hasTtfv || $actionCount >= 5) {
+            $level = 4;
+            $actionsNeeded = 0;
+        }
+        elseif ($actionCount >= 3) {
+            $level = 3;
+            $actionsNeeded = 5 - $actionCount;
+        }
+        elseif ($actionCount >= 1) {
+            $level = 2;
+            $actionsNeeded = 3 - $actionCount;
+        }
+        else {
+            $level = 1;
+            $actionsNeeded = 1;
+        }
+
+        // Acumular secciones desbloqueadas.
+        $unlocked = [];
+        for ($i = 1; $i <= $level; $i++) {
+            $unlocked = array_merge($unlocked, self::DISCLOSURE_LEVELS[$i]);
+        }
+
+        return [
+            'level' => $level,
+            'unlocked' => $unlocked,
+            'next_actions_needed' => $actionsNeeded,
+        ];
+    }
+
+    /**
      * Evalúa las reglas de nudge y devuelve los aplicables.
      *
      * @param string $sessionId
@@ -119,6 +181,11 @@ class DemoJourneyProgressionService
      */
     public function dismissNudge(string $sessionId, string $nudgeId): void
     {
+        // S8-03: Validar que el nudgeId existe en las reglas conocidas.
+        if (!isset(self::PROACTIVE_RULES[$nudgeId])) {
+            return;
+        }
+
         try {
             $row = $this->database->select('demo_sessions', 'ds')
                 ->fields('ds', ['session_data'])

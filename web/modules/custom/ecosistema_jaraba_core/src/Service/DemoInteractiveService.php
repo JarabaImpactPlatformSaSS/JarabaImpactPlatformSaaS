@@ -6,7 +6,11 @@ namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Drupal\ecosistema_jaraba_core\Event\DemoSessionEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Servicio de demo interactiva para Time-to-Value < 60 segundos.
@@ -27,6 +31,8 @@ use Drupal\Core\Url;
  */
 class DemoInteractiveService
 {
+
+    use StringTranslationTrait;
 
     /**
      * TTL de sesiones de demo en segundos (1 hora).
@@ -467,23 +473,41 @@ class DemoInteractiveService
     public function __construct(
         protected Connection $database,
         protected LoggerChannelFactoryInterface $loggerFactory,
+        protected ?EventDispatcherInterface $eventDispatcher = NULL,
     ) {
     }
 
     /**
      * Obtiene todos los perfiles de demo disponibles.
+     *
+     * S6-01: Nombres y descripciones traducidos via StringTranslationTrait.
      */
     public function getDemoProfiles(): array
     {
-        return self::DEMO_PROFILES;
+        return array_map([$this, 'translateProfile'], self::DEMO_PROFILES);
     }
 
     /**
      * Obtiene un perfil de demo específico.
+     *
+     * S6-01: Traduce nombre y descripción.
      */
     public function getDemoProfile(string $profileId): ?array
     {
-        return self::DEMO_PROFILES[$profileId] ?? NULL;
+        $profile = self::DEMO_PROFILES[$profileId] ?? NULL;
+        return $profile ? $this->translateProfile($profile) : NULL;
+    }
+
+    /**
+     * Traduce las cadenas de un perfil de demo.
+     *
+     * S6-01: Separa datos estáticos (constante) de la traducción (runtime).
+     */
+    protected function translateProfile(array $profile): array
+    {
+        $profile['name'] = (string) $this->t($profile['name']);
+        $profile['description'] = (string) $this->t($profile['description']);
+        return $profile;
     }
 
     /**
@@ -499,7 +523,7 @@ class DemoInteractiveService
      * @return array
      *   Datos generados para la demo.
      */
-    public function generateDemoSession(string $profileId, string $sessionId, string $clientIp = ''): array
+    public function generateDemoSession(string $profileId, string $sessionId, string $clientIp = '', array $abVariants = []): array
     {
         $profile = $this->getDemoProfile($profileId);
 
@@ -568,9 +592,16 @@ class DemoInteractiveService
             'expires' => $now + self::SESSION_TTL,
             'magic_moment_actions' => $this->getMagicMomentActions($profileId),
             'actions' => [],
+            'ab_variants' => $abVariants,
         ];
 
         $this->saveDemoSession($sessionId, $profileId, $clientIp, $sessionData);
+
+        // S7-02: Dispatch session created event.
+        $this->dispatchEvent(DemoSessionEvent::CREATED, $sessionId, $profileId, [
+            'vertical' => $vertical,
+            'tenant_name' => $randomName,
+        ]);
 
         $this->loggerFactory->get('demo_interactive')->info(
             'Demo session created: @session for profile @profile',
@@ -934,7 +965,14 @@ class DemoInteractiveService
             ],
         ];
 
-        return $actions[$profileId] ?? [];
+        $profileActions = $actions[$profileId] ?? [];
+
+        // S6-01: Traducir etiquetas y descripciones de acciones.
+        return array_map(function (array $action): array {
+            $action['label'] = (string) $this->t($action['label']);
+            $action['description'] = (string) $this->t($action['description']);
+            return $action;
+        }, $profileActions);
     }
 
     /**
@@ -945,11 +983,14 @@ class DemoInteractiveService
     protected function saveDemoSession(string $sessionId, string $profileId, string $clientIp, array $data): void
     {
         try {
+            // S6-09: Anonimizar IP con hash diario (GDPR).
+            $hashedIp = $clientIp ? hash('sha256', $clientIp . date('Y-m-d') . Settings::getHashSalt()) : '';
+
             $this->database->merge('demo_sessions')
                 ->keys(['session_id' => $sessionId])
                 ->fields([
                     'profile_id' => $profileId,
-                    'client_ip' => $clientIp,
+                    'client_ip' => $hashedIp,
                     'session_data' => json_encode($data, JSON_UNESCAPED_UNICODE),
                     'created' => $data['created'] ?? time(),
                     'expires' => $data['expires'] ?? time() + self::SESSION_TTL,
@@ -1000,26 +1041,46 @@ class DemoInteractiveService
      */
     public function trackDemoAction(string $sessionId, string $action, array $metadata = []): void
     {
-        $session = $this->getDemoSession($sessionId);
-
-        if (!$session) {
-            return;
-        }
-
-        $session['actions'][] = [
-            'action' => $action,
-            'timestamp' => time(),
-            'metadata' => $metadata,
-        ];
-
-        // Actualizar datos de sesión en la tabla.
+        // S6-10: Transaction para evitar race conditions en read-modify-write.
+        $transaction = $this->database->startTransaction();
         try {
+            $row = $this->database->select('demo_sessions', 'ds')
+                ->fields('ds', ['session_data', 'expires'])
+                ->condition('session_id', $sessionId)
+                ->condition('expires', time(), '>')
+                ->execute()
+                ->fetchObject();
+
+            if (!$row) {
+                return;
+            }
+
+            $session = json_decode($row->session_data, TRUE);
+            if (!is_array($session)) {
+                return;
+            }
+
+            $session['actions'][] = [
+                'action' => $action,
+                'timestamp' => time(),
+                'metadata' => $metadata,
+            ];
+
             $this->database->update('demo_sessions')
                 ->fields([
                     'session_data' => json_encode($session, JSON_UNESCAPED_UNICODE),
                 ])
                 ->condition('session_id', $sessionId)
                 ->execute();
+
+            // S7-02: Dispatch value action event for qualifying actions.
+            if (in_array($action, DemoSessionEvent::VALUE_ACTIONS, TRUE)) {
+                $profileId = $session['profile_id'] ?? $session['profile']['id'] ?? 'unknown';
+                $this->dispatchEvent(DemoSessionEvent::VALUE_ACTION, $sessionId, $profileId, [
+                    'action' => $action,
+                    'metadata' => $metadata,
+                ]);
+            }
         }
         catch (\Exception $e) {
             $this->loggerFactory->get('demo_interactive')->error(
@@ -1077,14 +1138,15 @@ class DemoInteractiveService
 
         $vertical = $session['profile']['vertical'] ?? 'agroconecta';
 
-        // Generar URL de registro con prefill via query params.
+        // S6-11: HMAC token temporal — no exponer email en query params.
+        $demoToken = hash_hmac('sha256', $sessionId . '|' . $email, Settings::getHashSalt());
+
         $registrationUrl = Url::fromRoute('ecosistema_jaraba_core.onboarding.register', [
             'vertical' => $vertical,
         ], [
             'query' => [
+                'demo_token' => $demoToken,
                 'demo_session' => $sessionId,
-                'email' => $email,
-                'business_name' => $session['tenant_name'] ?? '',
             ],
         ])->toString();
 
@@ -1092,6 +1154,12 @@ class DemoInteractiveService
         $this->trackDemoAction($sessionId, 'click_cta', [
             'type' => 'conversion',
             'email' => $email,
+        ]);
+
+        // S7-02: Dispatch conversion event.
+        $profileId = $session['profile_id'] ?? $session['profile']['id'] ?? 'unknown';
+        $this->dispatchEvent(DemoSessionEvent::CONVERSION, $sessionId, $profileId, [
+            'vertical' => $vertical,
         ]);
 
         return [
@@ -1105,14 +1173,6 @@ class DemoInteractiveService
         ];
     }
 
-    /**
-     * Limpia sesiones expiradas de la tabla.
-     *
-     * S1-05: Llamado desde hook_cron.
-     *
-     * @return int
-     *   Número de sesiones eliminadas.
-     */
     /**
      * Genera un SVG placeholder data URI con colores de marca del vertical.
      *
@@ -1171,19 +1231,292 @@ class DemoInteractiveService
         return 'data:image/svg+xml,' . rawurlencode($svg);
     }
 
-    public function cleanupExpiredSessions(): int
+    /**
+     * Genera la historia demo por perfil.
+     *
+     * S6-12: Extraído de DemoController::demoAiStorytelling() a servicio.
+     *
+     * @param string $profileId
+     *   ID del perfil de demo.
+     * @param string $tenantName
+     *   Nombre del tenant simulado.
+     *
+     * @return string
+     *   Historia generada (string traducido).
+     */
+    public function getDemoStory(string $profileId, string $tenantName): string
+    {
+        $stories = [
+            'producer' => (string) $this->t(
+                '**@name** representa la tradición olivarera de más de tres generaciones. En las laderas de Sierra Mágina, donde el sol y la brisa mediterránea crean el microclima perfecto, nuestros olivos centenarios producen un aceite de oliva virgen extra de calidad excepcional. Cada gota cuenta la historia de una familia comprometida con la excelencia.',
+                ['@name' => $tenantName],
+            ),
+            'winery' => (string) $this->t(
+                '**@name** nace de la pasión por el terruño y la tradición vinícola. En nuestros viñedos, cultivados con métodos sostenibles, las variedades autóctonas encuentran la expresión perfecta de un territorio único. Cada botella es un viaje sensorial que captura la esencia de nuestra tierra.',
+                ['@name' => $tenantName],
+            ),
+            'cheese' => (string) $this->t(
+                'En **@name**, cada queso es el resultado de un proceso artesanal transmitido de generación en generación. Nuestros maestros queseros seleccionan la mejor leche de ganaderías locales para crear productos únicos que honran la tradición y deleitan los paladares más exigentes.',
+                ['@name' => $tenantName],
+            ),
+            'buyer' => (string) $this->t(
+                '**@name** es un comprador exigente que valora la calidad y la procedencia de los productos. A través de nuestra plataforma, accede directamente a productores locales, apoyando la economía circular y disfrutando de la frescura y autenticidad que solo lo artesanal puede ofrecer.',
+                ['@name' => $tenantName],
+            ),
+            'jobseeker' => (string) $this->t(
+                '**@name** está construyendo una carrera profesional orientada al impacto. Con herramientas de IA que optimizan su currículum y sugieren itinerarios formativos, cada paso es más estratégico. La plataforma conecta talento con empresas que comparten valores de sostenibilidad e innovación social.',
+                ['@name' => $tenantName],
+            ),
+            'startup' => (string) $this->t(
+                '**@name** nació con la misión de transformar su sector a través de la tecnología y la innovación. Desde la validación de la idea hasta la captación de clientes, nuestra plataforma acompaña cada fase del emprendimiento con métricas inteligentes, marketing automatizado y una comunidad de mentores.',
+                ['@name' => $tenantName],
+            ),
+            'lawfirm' => (string) $this->t(
+                '**@name** combina la solidez de la tradición jurídica con la eficiencia de las herramientas digitales. Gestión inteligente de expedientes, análisis de jurisprudencia con IA y comunicación segura con clientes: así es como un despacho moderno marca la diferencia en Andalucía.',
+                ['@name' => $tenantName],
+            ),
+            'servicepro' => (string) $this->t(
+                '**@name** ofrece servicios profesionales de alta calidad respaldados por la confianza de sus clientes. La plataforma le permite gestionar citas, generar presupuestos inteligentes con IA y construir una reputación sólida basada en reseñas verificadas y trabajo bien hecho.',
+                ['@name' => $tenantName],
+            ),
+            'socialimpact' => (string) $this->t(
+                '**@name** trabaja cada día para generar un impacto positivo en la comunidad. Con herramientas de medición de impacto social, gestión de programas y comunicación transparente, nuestra plataforma ayuda a organizaciones como esta a amplificar su labor y atraer colaboradores comprometidos.',
+                ['@name' => $tenantName],
+            ),
+            'creator' => (string) $this->t(
+                '**@name** crea contenido que inspira, educa y conecta. Con un editor avanzado, analíticas de audiencia y optimización SEO asistida por IA, cada publicación alcanza a más lectores. La plataforma es el hogar perfecto para creadores que quieren profesionalizar su labor editorial.',
+                ['@name' => $tenantName],
+            ),
+            'academy' => (string) $this->t(
+                '**@name** forma a los profesionales del mañana con cursos online de primer nivel. Desde la creación de contenido didáctico con IA hasta el seguimiento del progreso de cada alumno, nuestra plataforma LMS ofrece una experiencia de aprendizaje que transforma conocimiento en oportunidades.',
+                ['@name' => $tenantName],
+            ),
+        ];
+
+        return $stories[$profileId] ?? (string) $this->t('Historia generada por IA para @name.', ['@name' => $tenantName]);
+    }
+
+    /**
+     * Obtiene los escenarios del AI Playground.
+     *
+     * S6-12: Extraído de DemoController::aiPlayground() a servicio.
+     *
+     * @return array
+     *   Array de escenarios con id, title, description, icon, prompt.
+     */
+    public function getAiScenarios(): array
+    {
+        return [
+            [
+                'id' => 'marketing',
+                'title' => (string) $this->t('Marketing Digital'),
+                'description' => (string) $this->t('Genera ideas de campañas, contenido para redes sociales y estrategias de marketing.'),
+                'icon' => 'campaign',
+                'prompt' => (string) $this->t('Necesito ideas para una campaña en redes sociales para una marca de alimentación ecológica dirigida a millennials.'),
+            ],
+            [
+                'id' => 'legal',
+                'title' => (string) $this->t('Consulta Legal'),
+                'description' => (string) $this->t('Obtén orientación sobre cuestiones legales para emprendedores y empresas.'),
+                'icon' => 'gavel',
+                'prompt' => (string) $this->t('¿Cuáles son los requisitos legales para crear una cooperativa en España?'),
+            ],
+            [
+                'id' => 'employment',
+                'title' => (string) $this->t('Empleabilidad'),
+                'description' => (string) $this->t('Optimiza tu CV, prepara entrevistas y descubre itinerarios profesionales.'),
+                'icon' => 'work',
+                'prompt' => (string) $this->t('Ayúdame a optimizar mi CV para un puesto de marketing digital. Tengo 3 años de experiencia.'),
+            ],
+            [
+                'id' => 'entrepreneurship',
+                'title' => (string) $this->t('Emprendimiento'),
+                'description' => (string) $this->t('Valida ideas de negocio, construye tu canvas y planifica tu lanzamiento.'),
+                'icon' => 'rocket_launch',
+                'prompt' => (string) $this->t('Quiero validar una idea SaaS para gestión de restaurantes. ¿Por dónde empiezo?'),
+            ],
+        ];
+    }
+
+    /**
+     * Obtiene el número de sesiones demo activas.
+     *
+     * S7-05: Social proof counter para la landing.
+     */
+    public function getActiveDemoCount(): int
     {
         try {
-            return (int) $this->database->delete('demo_sessions')
-                ->condition('expires', time(), '<')
+            return (int) $this->database->select('demo_sessions', 's')
+                ->condition('s.expires', time(), '>')
+                ->countQuery()
+                ->execute()
+                ->fetchField();
+        }
+        catch (\Exception) {
+            return 0;
+        }
+    }
+
+    /**
+     * Limpia sesiones expiradas con agregación previa a demo_analytics.
+     *
+     * S7-01/S7-08: Lee sesiones expiradas → agrega por fecha/vertical/perfil
+     * → UPSERT en demo_analytics → elimina sesiones expiradas.
+     */
+    public function cleanupExpiredSessions(): int
+    {
+        $logger = $this->loggerFactory->get('demo_interactive');
+
+        try {
+            $now = time();
+
+            // 1. Leer sesiones expiradas antes de eliminar.
+            $expired = $this->database->select('demo_sessions', 's')
+                ->fields('s', ['session_id', 'profile_id', 'session_data', 'created'])
+                ->condition('s.expires', $now, '<')
+                ->execute()
+                ->fetchAll();
+
+            if (empty($expired)) {
+                return 0;
+            }
+
+            // S7-02: Dispatch EXPIRED event per session.
+            foreach ($expired as $expiredRow) {
+                $expData = json_decode($expiredRow->session_data, TRUE) ?? [];
+                $this->dispatchEvent(
+                    DemoSessionEvent::EXPIRED,
+                    $expiredRow->session_id,
+                    $expiredRow->profile_id,
+                    ['vertical' => $expData['profile']['vertical'] ?? 'unknown'],
+                );
+            }
+
+            // 2. Agregar métricas por fecha + perfil.
+            $aggregated = [];
+            foreach ($expired as $row) {
+                $data = json_decode($row->session_data, TRUE) ?? [];
+                $profile = $data['profile'] ?? [];
+                $vertical = $profile['vertical'] ?? 'unknown';
+                $date = date('Y-m-d', (int) $row->created);
+                $key = "{$date}|{$vertical}|{$row->profile_id}";
+
+                if (!isset($aggregated[$key])) {
+                    $aggregated[$key] = [
+                        'date' => $date,
+                        'vertical' => $vertical,
+                        'profile_id' => $row->profile_id,
+                        'sessions_started' => 0,
+                        'conversions' => 0,
+                        'ttfv_values' => [],
+                        'funnel_dashboard_view' => 0,
+                        'funnel_value_action' => 0,
+                    ];
+                }
+
+                $aggregated[$key]['sessions_started']++;
+
+                // Calcular TTFV: tiempo desde creación hasta primera acción de valor.
+                $actions = $data['actions'] ?? [];
+                $valueActions = ['generate_story', 'browse_marketplace', 'view_products'];
+                foreach ($actions as $action) {
+                    if (in_array($action['action'] ?? '', $valueActions, TRUE)) {
+                        $ttfv = ($action['timestamp'] ?? $row->created) - $row->created;
+                        $aggregated[$key]['ttfv_values'][] = max(0, $ttfv);
+                        break;
+                    }
+                }
+
+                // Funnel.
+                foreach ($actions as $action) {
+                    $actionName = $action['action'] ?? '';
+                    if ($actionName === 'view_dashboard') {
+                        $aggregated[$key]['funnel_dashboard_view']++;
+                    }
+                    if (in_array($actionName, $valueActions, TRUE)) {
+                        $aggregated[$key]['funnel_value_action']++;
+                    }
+                }
+            }
+
+            // 3. UPSERT en demo_analytics.
+            foreach ($aggregated as $agg) {
+                $ttfvValues = $agg['ttfv_values'];
+                sort($ttfvValues);
+                $count = count($ttfvValues);
+                $ttfvAvg = $count > 0 ? array_sum($ttfvValues) / $count : 0;
+                $ttfvP50 = $count > 0 ? $ttfvValues[(int) floor($count * 0.5)] : 0;
+                $ttfvP95 = $count > 0 ? $ttfvValues[(int) floor($count * 0.95)] : 0;
+
+                $this->database->merge('demo_analytics')
+                    ->keys([
+                        'date' => $agg['date'],
+                        'vertical' => $agg['vertical'],
+                        'profile_id' => $agg['profile_id'],
+                    ])
+                    ->expressions([
+                        'sessions_started' => 'sessions_started + :sessions',
+                        'conversions' => 'conversions + :conversions',
+                        'funnel_dashboard_view' => 'funnel_dashboard_view + :fdv',
+                        'funnel_value_action' => 'funnel_value_action + :fva',
+                    ], [
+                        ':sessions' => $agg['sessions_started'],
+                        ':conversions' => $agg['conversions'],
+                        ':fdv' => $agg['funnel_dashboard_view'],
+                        ':fva' => $agg['funnel_value_action'],
+                    ])
+                    ->fields([
+                        'date' => $agg['date'],
+                        'vertical' => $agg['vertical'],
+                        'profile_id' => $agg['profile_id'],
+                        'sessions_started' => $agg['sessions_started'],
+                        'ttfv_avg_seconds' => $ttfvAvg,
+                        'ttfv_p50_seconds' => $ttfvP50,
+                        'ttfv_p95_seconds' => $ttfvP95,
+                        'conversions' => $agg['conversions'],
+                        'funnel_landing' => 0,
+                        'funnel_profile_select' => $agg['sessions_started'],
+                        'funnel_dashboard_view' => $agg['funnel_dashboard_view'],
+                        'funnel_value_action' => $agg['funnel_value_action'],
+                        'funnel_conversion_attempt' => 0,
+                        'funnel_conversion_success' => 0,
+                    ])
+                    ->execute();
+            }
+
+            // 4. Eliminar sesiones expiradas.
+            $deleted = (int) $this->database->delete('demo_sessions')
+                ->condition('expires', $now, '<')
                 ->execute();
+
+            $logger->info(
+                'Demo cleanup: @deleted sessions deleted, @aggregated groups aggregated.',
+                ['@deleted' => $deleted, '@aggregated' => count($aggregated)]
+            );
+
+            return $deleted;
         }
         catch (\Exception $e) {
-            $this->loggerFactory->get('demo_interactive')->error(
+            $logger->error(
                 'Error cleaning up demo sessions: @error',
                 ['@error' => $e->getMessage()]
             );
             return 0;
+        }
+    }
+
+    /**
+     * Dispatches a demo session event if the dispatcher is available.
+     *
+     * S7-02: Helper centralizado para despacho de eventos.
+     */
+    protected function dispatchEvent(string $eventName, string $sessionId, string $profileId, array $context = []): void
+    {
+        if ($this->eventDispatcher) {
+            $this->eventDispatcher->dispatch(
+                new DemoSessionEvent($sessionId, $profileId, $context),
+                $eventName,
+            );
         }
     }
 

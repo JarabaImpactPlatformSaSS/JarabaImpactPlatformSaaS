@@ -530,6 +530,114 @@ function ecosistema_jaraba_core_schema() {
     ],
   ];
 
+  // ---------------------------------------------------------------------------
+  // Tabla: demo_analytics (S7-01)
+  // ---------------------------------------------------------------------------
+  // Almacena métricas agregadas de sesiones de demo. Las sesiones expiradas
+  // se agregan aquí antes de ser eliminadas (S7-08).
+  $schema['demo_analytics'] = [
+    'description' => 'Métricas agregadas de sesiones demo por fecha/vertical/perfil.',
+    'fields' => [
+      'date' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'description' => 'Fecha en formato YYYY-MM-DD.',
+      ],
+      'vertical' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Vertical del perfil (agroconecta, empleabilidad, etc.).',
+      ],
+      'profile_id' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'ID del perfil de demo.',
+      ],
+      'sessions_started' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Número de sesiones iniciadas.',
+      ],
+      'ttfv_avg_seconds' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Time-to-First-Value promedio en segundos.',
+      ],
+      'ttfv_p50_seconds' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Time-to-First-Value percentil 50.',
+      ],
+      'ttfv_p95_seconds' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Time-to-First-Value percentil 95.',
+      ],
+      'conversions' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Número de conversiones completadas.',
+      ],
+      'funnel_landing' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: vistas de landing.',
+      ],
+      'funnel_profile_select' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: selección de perfil.',
+      ],
+      'funnel_dashboard_view' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: vista de dashboard.',
+      ],
+      'funnel_value_action' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: acción de valor (story, marketplace).',
+      ],
+      'funnel_conversion_attempt' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: intento de conversión.',
+      ],
+      'funnel_conversion_success' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Funnel: conversión exitosa.',
+      ],
+    ],
+    'primary key' => ['date', 'vertical', 'profile_id'],
+    'indexes' => [
+      'date' => ['date'],
+      'vertical' => ['vertical'],
+    ],
+  ];
+
   return $schema;
 }
 
@@ -2007,4 +2115,19 @@ function ecosistema_jaraba_core_update_9022(): string {
   }
 
   return 'S1-04: Tabla demo_sessions ya existía.';
+}
+
+/**
+ * S7-01: Crear tabla demo_analytics para métricas agregadas de demo.
+ */
+function ecosistema_jaraba_core_update_9023(): string {
+  $schema = ecosistema_jaraba_core_schema();
+  $database = \Drupal::database();
+
+  if (!$database->schema()->tableExists('demo_analytics')) {
+    $database->schema()->createTable('demo_analytics', $schema['demo_analytics']);
+    return 'S7-01: Tabla demo_analytics creada.';
+  }
+
+  return 'S7-01: Tabla demo_analytics ya existía.';
 }

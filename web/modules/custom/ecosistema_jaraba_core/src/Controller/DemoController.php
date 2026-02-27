@@ -7,7 +7,12 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Flood\FloodInterface;
 use Drupal\Core\Url;
+use Drupal\Component\Utility\Xss;
+use Drupal\ecosistema_jaraba_core\Service\AbTestService;
+use Drupal\jaraba_ai_agents\Agent\StorytellingAgent;
+use Drupal\ecosistema_jaraba_core\Service\DemoFeatureGateService;
 use Drupal\ecosistema_jaraba_core\Service\DemoInteractiveService;
+use Drupal\ecosistema_jaraba_core\Service\DemoJourneyProgressionService;
 use Drupal\ecosistema_jaraba_core\Service\GuidedTourService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -59,6 +64,10 @@ class DemoController extends ControllerBase
         protected DemoInteractiveService $demoService,
         protected GuidedTourService $tourService,
         protected FloodInterface $flood,
+        protected DemoFeatureGateService $featureGate,
+        protected DemoJourneyProgressionService $journeyProgression,
+        protected ?AbTestService $abTestService = NULL,
+        protected ?StorytellingAgent $storytellingAgent = NULL,
     ) {
     }
 
@@ -71,6 +80,10 @@ class DemoController extends ControllerBase
             $container->get('ecosistema_jaraba_core.demo_interactive'),
             $container->get('ecosistema_jaraba_core.guided_tours'),
             $container->get('flood'),
+            $container->get('ecosistema_jaraba_core.demo_feature_gate'),
+            $container->get('ecosistema_jaraba_core.demo_journey_progression'),
+            $container->has('ecosistema_jaraba_core.ab_test') ? $container->get('ecosistema_jaraba_core.ab_test') : NULL,
+            $container->has('jaraba_ai_agents.storytelling_agent') ? $container->get('jaraba_ai_agents.storytelling_agent') : NULL,
         );
     }
 
@@ -119,14 +132,18 @@ class DemoController extends ControllerBase
     {
         $profiles = $this->demoService->getDemoProfiles();
 
+        // S7-05: Social proof — cuántas personas están explorando.
+        $activeDemoCount = $this->demoService->getActiveDemoCount();
+
         return [
             '#theme' => 'demo_landing',
             '#profiles' => $profiles,
+            '#active_demo_count' => $activeDemoCount,
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/demo-landing'],
             ],
             '#cache' => [
-                'max-age' => 3600,
+                'max-age' => 60,
             ],
         ];
     }
@@ -162,11 +179,22 @@ class DemoController extends ControllerBase
         // Generar ID de sesión único.
         $sessionId = 'demo_' . bin2hex(random_bytes(8));
 
+        // S7-03: A/B testing — asignar variantes para la sesión.
+        $abVariants = [];
+        if ($this->abTestService) {
+            $abVariants = [
+                'demo_landing_cta' => $this->abTestService->getVariant('demo_landing_cta'),
+                'demo_profile_order' => $this->abTestService->getVariant('demo_profile_order'),
+                'demo_conversion_modal_timing' => $this->abTestService->getVariant('demo_conversion_modal_timing'),
+            ];
+        }
+
         // Generar datos de demo (S1-04: incluir IP para tracking en tabla).
         $demoData = $this->demoService->generateDemoSession(
             $profileId,
             $sessionId,
             $request->getClientIp() ?? '',
+            $abVariants,
         );
 
         if (isset($demoData['error'])) {
@@ -191,7 +219,6 @@ class DemoController extends ControllerBase
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/demo-dashboard',
-                    'ecosistema_jaraba_core/charts',
                 ],
                 'drupalSettings' => [
                     'demo' => [
@@ -260,6 +287,24 @@ class DemoController extends ControllerBase
         $metadata = array_slice($metadata, 0, 10);
         $metadata = array_filter($metadata, fn($v) => is_string($v) || is_numeric($v));
 
+        // S5-01: Feature gate — limitar funcionalidades demo.
+        $featureMap = [
+            'generate_story' => 'story_generations_per_session',
+            'view_products' => 'products_viewed_per_session',
+        ];
+        if (isset($featureMap[$action])) {
+            $gate = $this->featureGate->check($sessionId, $featureMap[$action]);
+            if (!$gate['allowed']) {
+                return new JsonResponse([
+                    'success' => FALSE,
+                    'error' => (string) $this->t('Has alcanzado el límite de esta funcionalidad en la demo.'),
+                    'feature_limited' => TRUE,
+                    'remaining' => 0,
+                ], 429);
+            }
+            $this->featureGate->recordUsage($sessionId, $featureMap[$action]);
+        }
+
         $this->demoService->trackDemoAction($sessionId, $action, $metadata);
 
         // Calcular TTFV si es una acción de valor.
@@ -288,6 +333,14 @@ class DemoController extends ControllerBase
             return $rateLimited;
         }
 
+        // S5-11: Validar formato de session_id.
+        if (!$this->isValidSessionId($sessionId)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('ID de sesión inválido.'),
+            ], 400);
+        }
+
         $session = $this->demoService->getDemoSession($sessionId);
 
         if (!$session) {
@@ -297,9 +350,13 @@ class DemoController extends ControllerBase
             ], 404);
         }
 
+        // S5-02: Incluir nudges de conversión proactivos.
+        $nudges = $this->journeyProgression->evaluateNudges($sessionId);
+
         return new JsonResponse([
             'success' => TRUE,
             'session' => $session,
+            'nudges' => $nudges,
         ]);
     }
 
@@ -354,7 +411,9 @@ class DemoController extends ControllerBase
 
         $result = $this->demoService->convertToRealAccount($sessionId, $email);
 
-        return new JsonResponse($result);
+        // S5-13: Código HTTP apropiado según resultado.
+        $statusCode = !empty($result['success']) ? 200 : 422;
+        return new JsonResponse($result, $statusCode);
     }
 
     /**
@@ -377,6 +436,16 @@ class DemoController extends ControllerBase
             ];
         }
 
+        // S5-11: Validar formato de session_id.
+        if (!$this->isValidSessionId($sessionId)) {
+            $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
+            return [
+                '#markup' => '<div class="demo-error">'
+                    . (string) $this->t('ID de sesión inválido. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
+                    . '</div>',
+            ];
+        }
+
         $session = $this->demoService->getDemoSession($sessionId);
 
         if (!$session) {
@@ -392,21 +461,35 @@ class DemoController extends ControllerBase
         // Registrar acción.
         $this->demoService->trackDemoAction($sessionId, 'view_dashboard');
 
+        // S5-02: Evaluar nudges de conversión proactivos.
+        $nudges = $this->journeyProgression->evaluateNudges($sessionId);
+
+        // S7-07: Progressive disclosure level.
+        $disclosure = $this->journeyProgression->getDisclosureLevel($sessionId);
+
         return [
             '#theme' => 'demo_dashboard_view',
             '#session' => $session,
+            '#nudges' => $nudges,
+            '#disclosure' => $disclosure,
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/demo-dashboard',
-                    'ecosistema_jaraba_core/charts',
                 ],
                 'drupalSettings' => [
                     'demo' => [
                         'sessionId' => $sessionId,
                         'salesHistory' => $session['sales_history'],
                         'metrics' => $session['metrics'],
+                        'nudges' => $nudges,
+                        'expires' => $session['expires'] ?? 0,
+                        'disclosure' => $disclosure,
                     ],
                 ],
+            ],
+            // S5-12: Cache metadata explícita.
+            '#cache' => [
+                'max-age' => 0,
             ],
         ];
     }
@@ -421,36 +504,8 @@ class DemoController extends ControllerBase
      */
     public function aiPlayground(): array
     {
-        $scenarios = [
-            [
-                'id' => 'marketing',
-                'title' => (string) $this->t('Marketing Digital'),
-                'description' => (string) $this->t('Genera ideas de campañas, contenido para redes sociales y estrategias de marketing.'),
-                'icon' => 'campaign',
-                'prompt' => (string) $this->t('Necesito ideas para una campaña en redes sociales para una marca de alimentación ecológica dirigida a millennials.'),
-            ],
-            [
-                'id' => 'legal',
-                'title' => (string) $this->t('Consulta Legal'),
-                'description' => (string) $this->t('Obtén orientación sobre cuestiones legales para emprendedores y empresas.'),
-                'icon' => 'gavel',
-                'prompt' => (string) $this->t('¿Cuáles son los requisitos legales para crear una cooperativa en España?'),
-            ],
-            [
-                'id' => 'employment',
-                'title' => (string) $this->t('Empleabilidad'),
-                'description' => (string) $this->t('Optimiza tu CV, prepara entrevistas y descubre itinerarios profesionales.'),
-                'icon' => 'work',
-                'prompt' => (string) $this->t('Ayúdame a optimizar mi CV para un puesto de marketing digital. Tengo 3 años de experiencia.'),
-            ],
-            [
-                'id' => 'entrepreneurship',
-                'title' => (string) $this->t('Emprendimiento'),
-                'description' => (string) $this->t('Valida ideas de negocio, construye tu canvas y planifica tu lanzamiento.'),
-                'icon' => 'rocket_launch',
-                'prompt' => (string) $this->t('Quiero validar una idea SaaS para gestión de restaurantes. ¿Por dónde empiezo?'),
-            ],
-        ];
+        // S6-12: Escenarios delegados al servicio.
+        $scenarios = $this->demoService->getAiScenarios();
 
         // S1-06: Generar URL via Url::fromRoute() (ROUTE-LANGPREFIX-001).
         $copilotEndpoint = Url::fromRoute('jaraba_copilot_v2.api.public_chat')->toString();
@@ -496,6 +551,16 @@ class DemoController extends ControllerBase
             ];
         }
 
+        // S5-11: Validar formato de session_id.
+        if (!$this->isValidSessionId($sessionId)) {
+            $demoUrl = Url::fromRoute('ecosistema_jaraba_core.demo_landing')->toString();
+            return [
+                '#markup' => '<div class="demo-error">'
+                    . (string) $this->t('ID de sesión inválido. <a href="@url">Iniciar nueva demo</a>', ['@url' => $demoUrl])
+                    . '</div>',
+            ];
+        }
+
         $session = $this->demoService->getDemoSession($sessionId);
 
         if (!$session) {
@@ -508,70 +573,117 @@ class DemoController extends ControllerBase
             ];
         }
 
+        // S5-01: Feature gate — limitar generaciones de historias.
+        $storyGate = $this->featureGate->check($sessionId, 'story_generations_per_session');
+        if (!$storyGate['allowed']) {
+            return [
+                '#theme' => 'demo_ai_storytelling',
+                '#session' => $session,
+                '#generated_story' => (string) $this->t('Has alcanzado el límite de generaciones de historia en esta demo. Crea tu cuenta para acceso ilimitado.'),
+                '#story_limited' => TRUE,
+                '#attached' => [
+                    'library' => ['ecosistema_jaraba_core/demo-storytelling'],
+                ],
+            ];
+        }
+        $this->featureGate->recordUsage($sessionId, 'story_generations_per_session');
+
         // Registrar acción de valor.
         $this->demoService->trackDemoAction($sessionId, 'generate_story');
 
-        // Generar historia demo (sintética, por perfil).
+        // S7-04: Intentar storytelling con IA real, fallback a hardcoded.
         $profile = $session['profile'];
         $tenantName = $session['tenant_name'];
+        $story = NULL;
+        $isAiGenerated = FALSE;
 
-        $demoStories = [
-            'producer' => (string) $this->t(
-                '**@name** representa la tradición olivarera de más de tres generaciones. En las laderas de Sierra Mágina, donde el sol y la brisa mediterránea crean el microclima perfecto, nuestros olivos centenarios producen un aceite de oliva virgen extra de calidad excepcional. Cada gota cuenta la historia de una familia comprometida con la excelencia.',
-                ['@name' => $tenantName],
-            ),
-            'winery' => (string) $this->t(
-                '**@name** nace de la pasión por el terruño y la tradición vinícola. En nuestros viñedos, cultivados con métodos sostenibles, las variedades autóctonas encuentran la expresión perfecta de un territorio único. Cada botella es un viaje sensorial que captura la esencia de nuestra tierra.',
-                ['@name' => $tenantName],
-            ),
-            'cheese' => (string) $this->t(
-                'En **@name**, cada queso es el resultado de un proceso artesanal transmitido de generación en generación. Nuestros maestros queseros seleccionan la mejor leche de ganaderías locales para crear productos únicos que honran la tradición y deleitan los paladares más exigentes.',
-                ['@name' => $tenantName],
-            ),
-            'buyer' => (string) $this->t(
-                '**@name** es un comprador exigente que valora la calidad y la procedencia de los productos. A través de nuestra plataforma, accede directamente a productores locales, apoyando la economía circular y disfrutando de la frescura y autenticidad que solo lo artesanal puede ofrecer.',
-                ['@name' => $tenantName],
-            ),
-            'jobseeker' => (string) $this->t(
-                '**@name** está construyendo una carrera profesional orientada al impacto. Con herramientas de IA que optimizan su currículum y sugieren itinerarios formativos, cada paso es más estratégico. La plataforma conecta talento con empresas que comparten valores de sostenibilidad e innovación social.',
-                ['@name' => $tenantName],
-            ),
-            'startup' => (string) $this->t(
-                '**@name** nació con la misión de transformar su sector a través de la tecnología y la innovación. Desde la validación de la idea hasta la captación de clientes, nuestra plataforma acompaña cada fase del emprendimiento con métricas inteligentes, marketing automatizado y una comunidad de mentores.',
-                ['@name' => $tenantName],
-            ),
-            'lawfirm' => (string) $this->t(
-                '**@name** combina la solidez de la tradición jurídica con la eficiencia de las herramientas digitales. Gestión inteligente de expedientes, análisis de jurisprudencia con IA y comunicación segura con clientes: así es como un despacho moderno marca la diferencia en Andalucía.',
-                ['@name' => $tenantName],
-            ),
-            'servicepro' => (string) $this->t(
-                '**@name** ofrece servicios profesionales de alta calidad respaldados por la confianza de sus clientes. La plataforma le permite gestionar citas, generar presupuestos inteligentes con IA y construir una reputación sólida basada en reseñas verificadas y trabajo bien hecho.',
-                ['@name' => $tenantName],
-            ),
-            'socialimpact' => (string) $this->t(
-                '**@name** trabaja cada día para generar un impacto positivo en la comunidad. Con herramientas de medición de impacto social, gestión de programas y comunicación transparente, nuestra plataforma ayuda a organizaciones como esta a amplificar su labor y atraer colaboradores comprometidos.',
-                ['@name' => $tenantName],
-            ),
-            'creator' => (string) $this->t(
-                '**@name** crea contenido que inspira, educa y conecta. Con un editor avanzado, analíticas de audiencia y optimización SEO asistida por IA, cada publicación alcanza a más lectores. La plataforma es el hogar perfecto para creadores que quieren profesionalizar su labor editorial.',
-                ['@name' => $tenantName],
-            ),
-            'academy' => (string) $this->t(
-                '**@name** forma a los profesionales del mañana con cursos online de primer nivel. Desde la creación de contenido didáctico con IA hasta el seguimiento del progreso de cada alumno, nuestra plataforma LMS ofrece una experiencia de aprendizaje que transforma conocimiento en oportunidades.',
-                ['@name' => $tenantName],
-            ),
-        ];
+        if ($this->storytellingAgent) {
+            try {
+                $result = $this->storytellingAgent->execute('brand_story', [
+                    'brand_name' => $tenantName,
+                    'vertical' => $profile['vertical'] ?? 'agroconecta',
+                    'founding_context' => $profile['description'] ?? '',
+                    'values' => (string) $this->t('Innovación, sostenibilidad, comunidad'),
+                ]);
 
-        $story = $demoStories[$profile['id']] ?? (string) $this->t('Historia generada por IA para @name.', ['@name' => $tenantName]);
+                if (!empty($result['success']) && !empty($result['content'])) {
+                    $story = Xss::filter($result['content']);
+                    $isAiGenerated = TRUE;
+                }
+            }
+            catch (\Exception $e) {
+                $this->getLogger('demo_controller')->warning(
+                    'Storytelling agent failed for session @session: @error',
+                    ['@session' => $sessionId, '@error' => $e->getMessage()]
+                );
+            }
+        }
+
+        // S6-12: Fallback a historias hardcoded.
+        if (!$story) {
+            $story = $this->demoService->getDemoStory($profile['id'], $tenantName);
+        }
 
         return [
             '#theme' => 'demo_ai_storytelling',
             '#session' => $session,
             '#generated_story' => $story,
+            '#ai_generated' => $isAiGenerated,
             '#attached' => [
                 'library' => ['ecosistema_jaraba_core/demo-storytelling'],
             ],
         ];
+    }
+
+    /**
+     * API: Descarta un nudge de conversión.
+     *
+     * S5-02: Endpoint para que el frontend descarte nudges proactivos.
+     * Rate limit: 30 req/min por IP (reutiliza demo_track).
+     * CSRF: obligatorio via routing.yml.
+     */
+    public function dismissNudge(Request $request): JsonResponse
+    {
+        // Rate limiting.
+        $rateLimited = $this->checkRateLimit(
+            'demo_track',
+            self::RATE_LIMIT_TRACK,
+            $request->getClientIp() ?? 'unknown',
+        );
+        if ($rateLimited) {
+            return $rateLimited;
+        }
+
+        $data = json_decode($request->getContent(), TRUE);
+        if (!is_array($data)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('Formato de datos inválido.'),
+            ], 400);
+        }
+
+        $sessionId = $data['session_id'] ?? '';
+        $nudgeId = $data['nudge_id'] ?? '';
+
+        // Validar session_id.
+        if (!is_string($sessionId) || !$this->isValidSessionId($sessionId)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('ID de sesión inválido.'),
+            ], 400);
+        }
+
+        // Validar nudge_id (solo letras minúsculas y guiones bajos).
+        if (!is_string($nudgeId) || !preg_match('/^[a-z_]+$/', $nudgeId)) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => (string) $this->t('ID de nudge inválido.'),
+            ], 400);
+        }
+
+        $this->journeyProgression->dismissNudge($sessionId, $nudgeId);
+
+        return new JsonResponse(['success' => TRUE]);
     }
 
 }

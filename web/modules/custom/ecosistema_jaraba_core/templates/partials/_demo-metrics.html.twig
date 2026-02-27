@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Partial — Métricas demo (shared between dashboard y dashboard-view).
+ *
+ * S6-05: Extraído de demo-dashboard.html.twig para DRY.
+ *
+ * Variables:
+ * - metrics: Array asociativo (key => value) de métricas.
+ */
+#}
+<section id="metrics" data-tour-step="demo-metrics">
+  <h2 class="demo-section-title">
+    {{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }}
+    {{ 'Tus Métricas'|t }}
+  </h2>
+  <div class="demo-metrics-grid">
+    {% for key, value in metrics %}
+      <div class="demo-metric-card {{ key == 'revenue_last_month' or key == 'products_available' ? 'demo-metric-card--highlight' : '' }}">
+        <span class="demo-metric-card__value">
+          {% if 'revenue' in key %}&euro;{{ value|number_format(0, ',', '.') }}{% else %}{{ value }}{% endif %}
+        </span>
+        <span class="demo-metric-card__label">{{ key|replace({'_': ' '})|capitalize }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>

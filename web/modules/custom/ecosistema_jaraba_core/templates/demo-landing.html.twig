@@ -23,13 +23,21 @@
       {{ 'Prueba la Plataforma sin Registro'|t }}
     </h1>
     <p class="demo-landing__subtitle">
-      {{ 'Experimenta el poder de Jaraba Impact Platform en menos de <strong>60 segundos</strong>. Elige tu perfil y comienza ahora.'|t }}
+      {% trans %}Experimenta el poder de Jaraba Impact Platform en menos de <strong>60 segundos</strong>. Elige tu perfil y comienza ahora.{% endtrans %}
     </p>
     <div class="demo-landing__timer">
       {{ jaraba_icon('dashboard', 'clock', { color: 'blanco', size: '18px' }) }}
-      <span>{{ 'Time-to-Value garantizado: <strong>&lt; 60s</strong>'|t }}</span>
+      <span>{% trans %}Time-to-Value garantizado: <strong>&lt; 60s</strong>{% endtrans %}</span>
     </div>
   </div>
+
+  {# S7-05: Social proof — cuántas personas exploran la demo ahora. #}
+  {% if active_demo_count > 0 %}
+    <div class="demo-social-proof" aria-label="{{ 'Prueba social'|t }}">
+      {{ jaraba_icon('business', 'users', { size: '16px', color: 'verde-innovacion' }) }}
+      {{ '@count personas están explorando la demo ahora'|t({'@count': active_demo_count}) }}
+    </div>
+  {% endif %}
 
   {# Grid de Perfiles #}
   <div class="demo-profiles-grid">
@@ -73,6 +81,14 @@
         <strong>{{ 'Visualizar proyecciones'|t }}</strong> {{ 'de ingresos'|t }}
       </li>
     </ul>
+  </div>
+
+  {# S6-09: GDPR — Aviso de privacidad para sesiones anónimas. #}
+  <div class="demo-privacy-notice" role="region" aria-label="{{ 'Aviso de privacidad'|t }}">
+    <p>
+      {{ 'Al iniciar la demo, aceptas que almacenemos datos anónimos de tu sesión durante 1 hora para mejorar la experiencia. Tu IP se anonimiza mediante hash.'|t }}
+      <a href="{{ path('ecosistema_jaraba_core.legal.privacy') }}">{{ 'Política de privacidad'|t }}</a>
+    </p>
   </div>
 
   {# CTA Conversión #}

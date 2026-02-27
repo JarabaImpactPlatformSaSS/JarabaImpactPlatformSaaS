@@ -58,25 +58,64 @@
   logo: logo,
   logged_in: logged_in,
   nav_items: nav_items,
-  theme_settings: theme_settings
+  theme_settings: theme_settings,
+  available_languages: available_languages|default([]),
+  current_langcode: current_langcode|default('es'),
 } %}
 
 {# Mobile Menu Overlay (compartido por todos los layouts) #}
 <div class="mobile-menu-overlay" aria-hidden="true">
   <nav class="mobile-menu-nav" aria-label="{% trans %}Mobile navigation{% endtrans %}">
-    <ul class="mobile-menu-list">
-      {% for item in nav_items %}
-        <li><a href="{{ item.url }}">{{ item.text }}</a></li>
-      {% endfor %}
+    {# Grupo: Para Profesionales #}
+    <details class="mobile-menu-group" open>
+      <summary class="mobile-menu-group__title">{% trans %}Para Profesionales{% endtrans %}</summary>
+      <ul class="mobile-menu-list">
+        <li><a href="/empleabilidad">{% trans %}Empleabilidad{% endtrans %}</a></li>
+        <li><a href="/talento">{% trans %}Talento{% endtrans %}</a></li>
+      </ul>
+    </details>
+    {# Grupo: Para Empresas #}
+    <details class="mobile-menu-group">
+      <summary class="mobile-menu-group__title">{% trans %}Para Empresas{% endtrans %}</summary>
+      <ul class="mobile-menu-list">
+        <li><a href="/emprendimiento">{% trans %}Emprendimiento{% endtrans %}</a></li>
+        <li><a href="/despachos">{% trans %}Despachos{% endtrans %}</a></li>
+        <li><a href="/comercioconecta">{% trans %}ComercioConecta{% endtrans %}</a></li>
+        <li><a href="/agroconecta">{% trans %}AgroConecta{% endtrans %}</a></li>
+        <li><a href="/serviciosconecta">{% trans %}ServiciosConecta{% endtrans %}</a></li>
+      </ul>
+    </details>
+    {# Grupo: Para Instituciones #}
+    <details class="mobile-menu-group">
+      <summary class="mobile-menu-group__title">{% trans %}Para Instituciones{% endtrans %}</summary>
+      <ul class="mobile-menu-list">
+        <li><a href="/instituciones">{% trans %}Instituciones{% endtrans %}</a></li>
+        <li><a href="/andalucia-ei">{% trans %}Andalucía +ei{% endtrans %}</a></li>
+      </ul>
+    </details>
+    {# Links directos #}
+    <ul class="mobile-menu-list mobile-menu-list--direct">
+      <li><a href="/planes">{% trans %}Precios{% endtrans %}</a></li>
+      <li><a href="/casos-de-exito">{% trans %}Casos de Éxito{% endtrans %}</a></li>
     </ul>
   </nav>
+
+  {# Selector de idioma en mobile #}
+  {% if available_languages|default([])|length > 1 %}
+    <div class="mobile-menu-lang">
+      {% include '@ecosistema_jaraba_theme/partials/_language-switcher.html.twig' with {
+        available_languages: available_languages|default([]),
+        current_langcode: current_langcode|default('es'),
+      } only %}
+    </div>
+  {% endif %}
+
   <div class="mobile-menu-actions">
     {% if logged_in %}
       <a href="/user" class="btn-ghost">{% trans %}Mi cuenta{% endtrans %}</a>
-      <a href="/user/logout" class="btn-ghost">{% trans %}Cerrar sesión{% endtrans %}</a>
     {% else %}
       <a href="/user/login" class="btn-ghost">{% trans %}Iniciar sesión{% endtrans %}</a>
-      <a href="/user/register" class="btn-primary btn-primary--glow">{% trans %}Empezar gratis{% endtrans %}</a>
+      <a href="/user/register" class="btn-primary btn-primary--glow">{% trans %}Empieza gratis{% endtrans %} →</a>
     {% endif %}
   </div>
 

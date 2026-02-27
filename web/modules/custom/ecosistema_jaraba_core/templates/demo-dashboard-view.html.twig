@@ -22,6 +22,9 @@
 {% set metrics = session.metrics|default({}) %}
 {% set products = session.products|default([]) %}
 {% set magic_actions = session.magic_moment_actions|default([]) %}
+{% set unlocked = disclosure.unlocked|default(['dashboard', 'metrics']) %}
+{% set disclosure_level = disclosure.level|default(1) %}
+{% set next_actions = disclosure.next_actions_needed|default(1) %}
 
 <div class="demo-dashboard" data-session-id="{{ session_id }}" data-demo-dashboard>
   {# Banner de Demo #}
@@ -39,7 +42,12 @@
         </span>
       {% endif %}
     </div>
-    <div>
+    <div class="demo-banner__actions">
+      {# S7-06: Countdown timer — actualizado via JS. #}
+      <span class="demo-countdown" data-demo-countdown aria-live="polite" aria-label="{{ 'Tiempo restante de sesión'|t }}">
+        {{ jaraba_icon('dashboard', 'clock', { size: '14px', color: 'blanco' }) }}
+        <span data-countdown-display>--:--</span>
+      </span>
       <button class="demo-start-btn" data-demo-convert-open type="button">
         {{ jaraba_icon('ai', 'sparkles', { size: '16px', color: 'azul-corporativo' }) }}
         {{ 'Convertir en Cuenta Real'|t }}
@@ -74,42 +82,26 @@
     </section>
   {% endif %}
 
-  {# Métricas #}
-  <section id="metrics" data-tour-step="demo-metrics">
-    <h2 class="demo-section-title">
-      {{ jaraba_icon('analytics', 'gauge', { color: 'azul-corporativo', size: '24px' }) }}
-      {{ 'Tus Métricas'|t }}
-    </h2>
-    <div class="demo-metrics-grid">
-      {% for key, value in metrics %}
-        <div class="demo-metric-card {{ key == 'revenue_last_month' or key == 'products_available' ? 'demo-metric-card--highlight' : '' }}">
-          <span class="demo-metric-card__value">
-            {% if 'revenue' in key %}&euro;{{ value|number_format(0, ',', '.') }}{% else %}{{ value }}{% endif %}
-          </span>
-          <span class="demo-metric-card__label">{{ key|replace({'_': ' '})|capitalize }}</span>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
+  {# S6-05: Métricas via partial compartido. #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-metrics.html.twig' with { metrics: metrics } only %}
 
-  {# Gráfico de Ventas #}
-  <section class="demo-chart-section" data-tour-step="demo-chart">
-    <h2 class="demo-section-title">
-      {{ jaraba_icon('analytics', 'chart-line', { color: 'verde-innovacion', size: '24px' }) }}
-      {{ 'Tendencia de Ventas'|t }}
-    </h2>
-    <div class="demo-chart-container">
-      <canvas id="salesChart" height="300"></canvas>
-    </div>
-  </section>
+  {# S6-05: Gráfico via partial compartido. #}
+  {% include '@ecosistema_jaraba_core/partials/_demo-chart.html.twig' only %}
 
-  {# CTA Conversión #}
-  <section class="demo-cta-convert" data-tour-step="demo-convert">
-    <h2 class="demo-cta-convert__text">{{ '¿Te gusta lo que ves?'|t }}</h2>
-    <p>{{ 'Convierte esta demo en tu cuenta real.'|t }}</p>
-    <a href="{{ path('ecosistema_jaraba_core.onboarding.register', { vertical: profile.vertical|default('agroconecta') }) }}"
-       class="demo-cta-convert__btn">
-      {{ 'Crear Mi Cuenta Real'|t }} &rarr;
-    </a>
-  </section>
+  {# S7-07: Secciones bloqueadas con glass overlay si no desbloqueadas. #}
+  {% if 'ai_playground' not in unlocked %}
+    <section class="demo-locked-section" aria-label="{{ 'Sección bloqueada'|t }}">
+      <div class="demo-locked-section__overlay">
+        {{ jaraba_icon('navigation', 'lock', { size: '32px', color: 'azul-corporativo' }) }}
+        <p class="demo-locked-section__message">
+          {{ 'Realiza @count acciones más para desbloquear el AI Playground'|t({'@count': next_actions}) }}
+        </p>
+      </div>
+    </section>
+  {% endif %}
+
+  {# S6-05: CTA via partial compartido (solo nivel 4). #}
+  {% if 'conversion_prompt' in unlocked %}
+    {% include '@ecosistema_jaraba_core/partials/_demo-cta.html.twig' with { vertical: profile.vertical|default('agroconecta') } only %}
+  {% endif %}
 </div>

@@ -37,7 +37,8 @@ class VerticalLandingController extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container): static {
+  public static function create(ContainerInterface $container): static
+  {
     $instance = parent::create($container);
     // Optional injection: doesn't break if service not registered.
     if ($container->has('ecosistema_jaraba_core.metasite_pricing')) {
@@ -593,6 +594,98 @@ class VerticalLandingController extends ControllerBase
       ],
     ]);
   }
+  /**
+   * Landing Despachos — Digitalización de despachos de abogados.
+   *
+   * Ruta: /despachos
+   * Complementa JarabaLex (investigación legal): este vertical gestiona
+   * el despacho (expedientes, citas, facturación, bóveda documental).
+   */
+  public function despachos(): array
+  {
+    return $this->buildLanding([
+      'key' => 'despachos',
+      'color' => 'corporate',
+      'hero' => [
+        'headline' => $this->t('Digitaliza tu despacho con IA'),
+        'subheadline' => $this->t('Expedientes, citas, facturación y documentos. Todo en un solo lugar, con inteligencia artificial integrada.'),
+        'icon' => ['category' => 'legal', 'name' => 'gavel'],
+        'cta' => [
+          'text' => $this->t('Empieza gratis'),
+          'url' => Url::fromRoute('user.register')->toString(),
+        ],
+        'cta_secondary' => [
+          'text' => $this->t('Solicitar demo'),
+          'url' => '/contacto',
+        ],
+      ],
+      'pain_points' => [
+        ['icon' => ['category' => 'legal', 'name' => 'briefcase'], 'text' => $this->t('Expedientes repartidos entre carpetas, emails y discos duros')],
+        ['icon' => ['category' => 'ui', 'name' => 'calendar'], 'text' => $this->t('Citas que se solapan y plazos procesales que se escapan')],
+        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'text' => $this->t('Facturación manual que consume horas cada mes')],
+        ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'text' => $this->t('Documentos sensibles compartidos por email sin cifrar')],
+      ],
+      'steps' => [
+        ['title' => $this->t('Configura tu despacho'), 'description' => $this->t('Logo, datos fiscales y permisos del equipo en 10 minutos')],
+        ['title' => $this->t('Importa tus expedientes'), 'description' => $this->t('Desde Excel, carpetas o manualmente — la IA organiza por ti')],
+        ['title' => $this->t('Automatiza y factura'), 'description' => $this->t('Plazos, recordatorios y facturación automática integrada')],
+      ],
+      'features' => [
+        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copiloto IA para Borradores'), 'description' => $this->t('Genera borradores de demandas, contestaciones y recursos adaptados a tu caso')],
+        ['icon' => ['category' => 'legal', 'name' => 'briefcase'], 'title' => $this->t('Gestión de Expedientes'), 'description' => $this->t('Todo el expediente en un solo lugar: documentos, notas, plazos y comunicaciones')],
+        ['icon' => ['category' => 'ui', 'name' => 'calendar'], 'title' => $this->t('Agenda Inteligente'), 'description' => $this->t('Citas con clientes, vistas judiciales y plazos procesales con alertas automáticas')],
+        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Facturación Automatizada'), 'description' => $this->t('Minutas, provisiones de fondos y facturación con serie fiscal legal')],
+        ['icon' => ['category' => 'legal', 'name' => 'citation'], 'title' => $this->t('Citaciones Multi-formato'), 'description' => $this->t('Genera citaciones jurídicas en 4 formatos con un clic (integración JarabaLex)')],
+        ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'title' => $this->t('Bóveda Documental'), 'description' => $this->t('Almacenamiento cifrado end-to-end con control de acceso granular y trazabilidad')],
+      ],
+      'social_proof' => [
+        'testimonials' => [
+          ['quote' => $this->t('Antes perdía 30 minutos buscando cada expediente. Ahora todo está en un clic. La IA me ahorra 2 horas diarias en borradores.'), 'author' => 'Elena', 'role' => $this->t('abogada laboralista en Madrid')],
+          ['quote' => $this->t('La facturación automática y el control de plazos han transformado cómo gestionamos el bufete.'), 'author' => 'Roberto', 'role' => $this->t('socio de bufete en Sevilla')],
+        ],
+        'metrics' => [
+          ['value' => '2h', 'label' => $this->t('ahorro diario promedio')],
+          ['value' => '0', 'label' => $this->t('plazos incumplidos con alertas')],
+        ],
+      ],
+      'lead_magnet' => [
+        'title' => $this->t('Auditoría Digital para Despachos'),
+        'description' => $this->t('Descubre en 3 minutos el nivel de digitalización de tu despacho y qué mejorar primero.'),
+        'url' => '/despachos/auditoria-digital',
+        'cta_text' => $this->t('Hacer auditoría gratuita'),
+        'icon' => ['category' => 'ai', 'name' => 'screening'],
+      ],
+      'pricing' => [
+        'headline' => $this->t('Planes para despachos'),
+        'from_price' => '0',
+        'currency' => 'EUR',
+        'period' => $this->t('mes'),
+        'cta_text' => $this->t('Ver todos los planes'),
+        'cta_url' => '/planes',
+        'features_preview' => [
+          $this->t('5 expedientes gratis'),
+          $this->t('Copiloto IA incluido'),
+          $this->t('Agenda con alertas'),
+          $this->t('Bóveda documental 1 GB'),
+        ],
+      ],
+      'faq' => [
+        ['question' => $this->t('¿Puedo importar expedientes desde mi sistema actual?'), 'answer' => $this->t('Sí. Importa desde Excel, carpetas compartidas o manualmente. La IA clasifica documentos y extrae datos clave automáticamente.')],
+        ['question' => $this->t('¿Cómo se relaciona con JarabaLex?'), 'answer' => $this->t('Son complementarios. JarabaLex busca jurisprudencia y normativa. Despachos gestiona el día a día del despacho: expedientes, citas, facturación. Se integran nativamente.')],
+        ['question' => $this->t('¿La facturación cumple con la normativa fiscal?'), 'answer' => $this->t('Totalmente. Series fiscales legales, formato TicketBAI/SII compatible, y exportación para tu asesoría contable.')],
+        ['question' => $this->t('¿Es seguro para documentos confidenciales?'), 'answer' => $this->t('Cifrado end-to-end, servidores europeos, cumple RGPD y secreto profesional. Control de acceso granular por expediente.')],
+        ['question' => $this->t('¿Puedo gestionar un bufete con varios abogados?'), 'answer' => $this->t('Sí, el plan Bufete incluye usuarios ilimitados, permisos por rol y panel de gestión con métricas de productividad.')],
+        ['question' => $this->t('¿Incluye calendario de vistas judiciales?'), 'answer' => $this->t('Sí. La agenda se sincroniza con Google Calendar y Outlook. Las vistas y plazos procesales generan alertas automáticas.')],
+      ],
+      'final_cta' => [
+        'headline' => $this->t('¿Listo para digitalizar tu despacho?'),
+        'cta' => [
+          'text' => $this->t('Empieza gratis ahora'),
+          'url' => Url::fromRoute('user.register')->toString(),
+        ],
+      ],
+    ]);
+  }
 
   // =========================================================================
   // LANDING PAGES LEGACY — Refactorizadas al formato de 9 secciones
@@ -619,7 +712,8 @@ class VerticalLandingController extends ControllerBase
    * F4 full landing: 9 secciones completas.
    * Sprint 3 — Growth Infrastructure (VERT-02).
    */
-  public function talento(): array {
+  public function talento(): array
+  {
     return $this->buildLanding([
       'key' => 'talento',
       'color' => 'innovation',
@@ -720,13 +814,29 @@ class VerticalLandingController extends ControllerBase
   }
 
   /**
+   * Redirect legacy /legal → /despachos (301 permanent).
+   *
+   * Anteriormente /legal era alias de /jarabalex. Ahora redirige
+   * al vertical Despachos (gestión de despacho vs investigación legal).
+   * SEO: LEGAL-ROUTE-001 (F4 route naming convention).
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   301 Moved Permanently redirect.
+   */
+  public function legalRedirect(): RedirectResponse
+  {
+    return new RedirectResponse('/despachos', 301);
+  }
+
+  /**
    * Landing Instituciones B2G — Entidades públicas y desarrollo local.
    *
    * Ruta: /instituciones
    * F4 full landing: 9 secciones completas.
    * Sprint 3 — Growth Infrastructure (VERT-01).
    */
-  public function instituciones(): array {
+  public function instituciones(): array
+  {
     return $this->buildLanding([
       'key' => 'instituciones',
       'color' => 'corporate',
