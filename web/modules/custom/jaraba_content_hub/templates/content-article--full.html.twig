@@ -195,3 +195,37 @@
   variant: 'grid',
   show_reading_time: true
 } only %}
+
+{# Comments Section — REV-PHASE9 #}
+{{ attach_library('jaraba_content_hub/article-comments') }}
+<section class="article-comments" data-article-comments data-article-id="{{ article.id }}"
+         aria-label="{% trans %}Comments{% endtrans %}">
+
+  <h2 class="article-comments__title">
+    {% trans %}Comments{% endtrans %}
+    <span class="article-comments__count" data-comments-count>0</span>
+  </h2>
+
+  <div class="article-comments__list" data-comments-list></div>
+
+  <form class="article-comments__form" data-comment-form>
+    <div data-comment-messages></div>
+
+    <div class="article-comments__reply-indicator" data-reply-indicator style="display:none">
+      <span>{% trans %}Replying to{% endtrans %} <strong data-reply-name></strong></span>
+      <button type="button" class="article-comments__cancel-reply" data-cancel-reply aria-label="{% trans %}Cancel reply{% endtrans %}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <input type="hidden" name="parent_id" value="">
+
+    <textarea name="comment_body" class="article-comments__textarea"
+              placeholder="{% trans %}Write a comment...{% endtrans %}"
+              rows="3" maxlength="5000" required></textarea>
+
+    <button type="submit" class="article-comments__submit" data-comment-submit-btn>
+      {% trans %}Comment{% endtrans %}
+    </button>
+  </form>
+</section>

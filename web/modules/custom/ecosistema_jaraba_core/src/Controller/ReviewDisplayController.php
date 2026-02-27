@@ -116,6 +116,7 @@ class ReviewDisplayController extends ControllerBase {
       '#theme' => 'reviews_page',
       '#target_entity' => $targetEntity,
       '#vertical' => $vertical,
+      '#review_entity_type' => $reviewEntityType,
       '#stats' => $stats,
       '#reviews' => $reviews,
       '#current_page' => $page,

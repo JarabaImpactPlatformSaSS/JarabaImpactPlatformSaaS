@@ -56,6 +56,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'variables' => [
         'target_entity' => NULL,
         'vertical' => NULL,
+        'review_entity_type' => NULL,
         'stats' => [],
         'reviews' => [],
         'current_page' => 0,
@@ -68,6 +69,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'variables' => [
         'target_entity' => NULL,
         'vertical' => NULL,
+        'review_entity_type' => NULL,
         'stats' => [],
         'reviews' => [],
         'current_page' => 0,
@@ -3444,6 +3446,159 @@ function ecosistema_jaraba_core_preprocess_page(array &$variables): void {
   }
 
   $variables['ab_variants'] = $variants;
+}
+
+// ---------------------------------------------------------------------------
+// REV-PHASE9: Inject live reviews into entity detail templates.
+// ---------------------------------------------------------------------------
+
+/**
+ * Implements hook_preprocess_comercio_product_detail().
+ *
+ * REV-PHASE9: Loads approved reviews for the product's merchant.
+ */
+function ecosistema_jaraba_core_preprocess_comercio_product_detail(array &$variables): void {
+  _ecosistema_jaraba_core_inject_reviews_into_template(
+    $variables, 'comercio_review', 'merchant_profile', 'merchant');
+}
+
+/**
+ * Implements hook_preprocess_course_detail().
+ *
+ * REV-PHASE9: Loads course reviews for the LMS course detail page.
+ */
+function ecosistema_jaraba_core_preprocess_course_detail(array &$variables): void {
+  _ecosistema_jaraba_core_inject_reviews_into_template(
+    $variables, 'course_review', 'lms_course', 'course');
+}
+
+/**
+ * Implements hook_preprocess_agro_product_detail().
+ *
+ * REV-PHASE9: Loads reviews for the agro producer.
+ */
+function ecosistema_jaraba_core_preprocess_agro_product_detail(array &$variables): void {
+  _ecosistema_jaraba_core_inject_reviews_into_template(
+    $variables, 'review_agro', 'producer_profile', 'producer');
+}
+
+/**
+ * Implements hook_preprocess_servicios_provider_detail().
+ *
+ * REV-PHASE9: Loads reviews for the servicios provider.
+ */
+function ecosistema_jaraba_core_preprocess_servicios_provider_detail(array &$variables): void {
+  _ecosistema_jaraba_core_inject_reviews_into_template(
+    $variables, 'review_servicios', 'provider_profile', 'provider');
+}
+
+/**
+ * Loads approved reviews and stats into template variables.
+ *
+ * REV-PHASE9: Centralized loader for any entity detail template that
+ * has 'reviews' and 'review_summary' variables. Uses ReviewAggregationService
+ * for stats and loads the most recent approved reviews directly.
+ *
+ * PRESAVE-RESILIENCE-001: Never fails the page render.
+ *
+ * @param array &$variables
+ *   Template variables (must have 'reviews' key).
+ * @param string $reviewEntityType
+ *   Review entity type ID.
+ * @param string $targetEntityType
+ *   Target entity type ID.
+ * @param string $entityVarName
+ *   Key in $variables holding the target entity (e.g., 'merchant', 'course').
+ */
+function _ecosistema_jaraba_core_inject_reviews_into_template(
+  array &$variables,
+  string $reviewEntityType,
+  string $targetEntityType,
+  string $entityVarName
+): void {
+  // Skip if reviews already populated by the controller.
+  if (!empty($variables['reviews'])) {
+    return;
+  }
+
+  $entity = $variables[$entityVarName] ?? NULL;
+  if (!$entity || !($entity instanceof \Drupal\Core\Entity\EntityInterface)) {
+    return;
+  }
+
+  if (!\Drupal::hasService('ecosistema_jaraba_core.review_aggregation')) {
+    return;
+  }
+
+  try {
+    $entityId = (int) $entity->id();
+
+    // 1. Load stats.
+    /** @var \Drupal\ecosistema_jaraba_core\Service\ReviewAggregationService $aggregation */
+    $aggregation = \Drupal::service('ecosistema_jaraba_core.review_aggregation');
+    $stats = $aggregation->getRatingStats($reviewEntityType, $targetEntityType, $entityId);
+    $variables['review_summary'] = $stats;
+
+    // 2. Load recent approved reviews (max 5).
+    $targetFieldMap = [
+      'comercio_review' => 'entity_id_ref',
+      'review_agro' => 'target_entity_id',
+      'review_servicios' => 'provider_id',
+      'course_review' => 'course_id',
+      'session_review' => 'session_id',
+    ];
+    $statusFieldMap = [
+      'comercio_review' => 'status',
+      'review_agro' => 'state',
+      'review_servicios' => 'status',
+      'course_review' => 'review_status',
+      'session_review' => 'review_status',
+    ];
+
+    $targetField = $targetFieldMap[$reviewEntityType] ?? NULL;
+    $statusField = $statusFieldMap[$reviewEntityType] ?? NULL;
+    if (!$targetField || !$statusField) {
+      return;
+    }
+
+    $storage = \Drupal::entityTypeManager()->getStorage($reviewEntityType);
+    $ids = $storage->getQuery()
+      ->accessCheck(TRUE)
+      ->condition($targetField, $entityId)
+      ->condition($statusField, 'approved')
+      ->sort('created', 'DESC')
+      ->range(0, 5)
+      ->execute();
+
+    $reviews = $ids ? $storage->loadMultiple($ids) : [];
+
+    // Convert to template-friendly arrays.
+    $reviewData = [];
+    foreach ($reviews as $review) {
+      $author = $review->getOwner();
+      $reviewData[] = [
+        'id' => $review->id(),
+        'rating' => method_exists($review, 'getReviewRating') ? $review->getReviewRating() : 0,
+        'stars' => method_exists($review, 'getRatingStarsDisplay') ? $review->getRatingStarsDisplay() : '',
+        'title' => $review->hasField('title') ? ($review->get('title')->value ?? '') : '',
+        'body' => $review->hasField('body') ? ($review->get('body')->value ?? '') : ($review->hasField('comment') ? ($review->get('comment')->value ?? '') : ''),
+        'author_name' => $author ? ($author->getDisplayName() ?? '') : '',
+        'created' => $review->hasField('created') ? ($review->get('created')->value ?? 0) : 0,
+        'verified_purchase' => $review->hasField('verified_purchase') ? (bool) ($review->get('verified_purchase')->value ?? FALSE) : FALSE,
+        'helpful_count' => $review->hasField('helpful_count') ? (int) ($review->get('helpful_count')->value ?? 0) : 0,
+        'owner_response' => $review->hasField('owner_response') ? ($review->get('owner_response')->value ?? '') : '',
+      ];
+    }
+
+    $variables['reviews'] = $reviewData;
+  }
+  catch (\Exception $e) {
+    // PRESAVE-RESILIENCE-001: Never fail page render.
+    \Drupal::logger('ecosistema_jaraba_core')->notice(
+      'REV-PHASE9: Failed to load reviews for @type @id: @error',
+      ['@type' => $targetEntityType, '@id' => $entity->id(), '@error' => $e->getMessage()]
+    );
+  }
 }
 
 /**

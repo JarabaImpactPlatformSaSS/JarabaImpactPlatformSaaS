@@ -11,7 +11,10 @@
  #
  # REV-PHASE5: Pagina publica de resenas.
  #}
-<div class="reviews-page">
+<div class="reviews-page" data-reviews-page
+     data-review-type="{{ review_entity_type|default('') }}"
+     data-target-id="{{ target_entity.id }}"
+     data-vertical="{{ vertical|default('') }}">
   <header class="reviews-page__header">
     <h1 class="reviews-page__title">
       {{ 'Resenas de @name'|t({'@name': target_entity.label}) }}
@@ -27,6 +30,29 @@
     can_submit: false,
     submit_url: null,
   } only %}
+
+  {# Filter bar — B-02 #}
+  <div class="review-filters" aria-label="{{ 'Filtros de resenas'|t }}">
+    <div class="review-filters__group" data-filter-group="stars">
+      <button type="button" class="review-filters__chip review-filters__chip--active" data-filter-type="stars" data-filter-value="">{{ 'Todas'|t }}</button>
+      {% for star in 5..1 %}
+        <button type="button" class="review-filters__chip" data-filter-type="stars" data-filter-value="{{ star }}">{{ star }} ★ {% if stats.distribution[star] is defined %}({{ stats.distribution[star] }}){% endif %}</button>
+      {% endfor %}
+    </div>
+    <div class="review-filters__group" data-filter-group="extras">
+      <button type="button" class="review-filters__chip" data-filter-type="verified" data-filter-value="1">{{ 'Compra verificada'|t }}</button>
+      <button type="button" class="review-filters__chip" data-filter-type="has_photos" data-filter-value="1">{{ 'Con fotos'|t }}</button>
+    </div>
+    <div class="review-filters__sort">
+      <select aria-label="{{ 'Ordenar resenas'|t }}">
+        <option value="newest">{{ 'Mas recientes'|t }}</option>
+        <option value="helpful">{{ 'Mas utiles'|t }}</option>
+        <option value="highest">{{ 'Mejor valoradas'|t }}</option>
+        <option value="lowest">{{ 'Peor valoradas'|t }}</option>
+        <option value="oldest">{{ 'Mas antiguas'|t }}</option>
+      </select>
+    </div>
+  </div>
 
   {# Reviews list #}
   {% if reviews is not empty %}

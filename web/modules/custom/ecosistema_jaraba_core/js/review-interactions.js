@@ -145,6 +145,149 @@
   }
 
   /**
+   * B-02b: Fetch filtered reviews from API and re-render.
+   *
+   * Listens for 'reviewFilterChange' events dispatched by filter chips
+   * and fetches from /api/v1/reviews/{type}/list with query params.
+   */
+  Drupal.behaviors.reviewFilterFetch = {
+    attach: function (context) {
+      once('review-filter-fetch', '[data-reviews-page]', context).forEach(function (container) {
+        var reviewType = container.dataset.reviewType;
+        var targetId = container.dataset.targetId;
+        var listEl = container.querySelector('.reviews-page__list');
+
+        if (!reviewType || !listEl) {
+          return;
+        }
+
+        document.addEventListener('reviewFilterChange', function (e) {
+          var filters = e.detail || {};
+          var params = new URLSearchParams();
+
+          if (targetId) {
+            params.set('target_id', targetId);
+          }
+          if (filters.stars) {
+            params.set('stars', filters.stars);
+          }
+          if (filters.verified) {
+            params.set('verified', '1');
+          }
+          if (filters.has_photos) {
+            params.set('has_photos', '1');
+          }
+          if (filters.sort) {
+            params.set('sort', filters.sort);
+          }
+          params.set('limit', '10');
+
+          listEl.classList.add('reviews-page__list--loading');
+
+          fetch(Drupal.url('api/v1/reviews/' + reviewType + '/list') + '?' + params.toString())
+            .then(function (response) { return response.json(); })
+            .then(function (result) {
+              listEl.classList.remove('reviews-page__list--loading');
+              if (!result.success || !result.data) {
+                return;
+              }
+              renderFilteredReviews(listEl, result.data);
+            })
+            .catch(function () {
+              listEl.classList.remove('reviews-page__list--loading');
+            });
+        });
+      });
+    }
+  };
+
+  /**
+   * Render filtered reviews into the list container.
+   */
+  function renderFilteredReviews(container, reviews) {
+    if (reviews.length === 0) {
+      container.innerHTML = '<div class="reviews-page__empty"><p>' +
+        Drupal.t('No hay resenas que coincidan con los filtros.') + '</p></div>';
+      return;
+    }
+
+    var html = '';
+    reviews.forEach(function (r) {
+      html += '<div role="listitem">';
+      html += '<article class="review-card" data-review-id="' + r.id + '">';
+
+      // Header.
+      html += '<header class="review-card__header">';
+      html += '<div class="review-card__author">';
+      html += '<span class="review-card__avatar review-card__avatar--placeholder" aria-hidden="true">';
+      html += Drupal.checkPlain((r.author || 'A').charAt(0).toUpperCase());
+      html += '</span>';
+      html += '<div>';
+      html += '<span class="review-card__author-name">' + Drupal.checkPlain(r.author || '') + '</span>';
+      if (r.created) {
+        var d = new Date(r.created * 1000);
+        var dateStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        html += '<time class="review-card__date">' + dateStr + '</time>';
+      }
+      html += '</div></div>';
+
+      if (r.verified_purchase) {
+        html += '<span class="review-card__badge review-card__badge--verified">' + Drupal.t('Compra verificada') + '</span>';
+      }
+      html += '</header>';
+
+      // Rating stars.
+      if (r.rating > 0) {
+        html += '<div class="star-rating star-rating--sm">';
+        for (var s = 1; s <= 5; s++) {
+          html += s <= r.rating ? '★' : '☆';
+        }
+        html += '</div>';
+      }
+
+      // Title.
+      if (r.title) {
+        html += '<h4 class="review-card__title">' + Drupal.checkPlain(r.title) + '</h4>';
+      }
+
+      // Body.
+      if (r.body) {
+        html += '<div class="review-card__body">' + Drupal.checkPlain(r.body) + '</div>';
+      }
+
+      // Photos.
+      if (r.photos && r.photos.length > 0) {
+        html += '<div class="review-card__photos">';
+        r.photos.forEach(function (photo) {
+          html += '<img class="review-card__photo review-photos__thumb" src="' + Drupal.checkPlain(photo) + '" alt="' + Drupal.t('Foto de la resena') + '" loading="lazy" width="120" height="120">';
+        });
+        html += '</div>';
+      }
+
+      // Footer.
+      html += '<footer class="review-card__footer">';
+      html += '<button type="button" class="review-helpful__btn" data-review-type="' + Drupal.checkPlain(document.querySelector('[data-reviews-page]').dataset.reviewType || '') + '" data-review-id="' + r.id + '" data-vote-type="helpful">';
+      html += '<span aria-hidden="true">👍</span> ' + Drupal.t('Util') + ' (' + (r.helpful_count || 0) + ')';
+      html += '</button>';
+      html += '</footer>';
+
+      // Owner response.
+      if (r.response) {
+        html += '<div class="review-card__response">';
+        html += '<p class="review-card__response-body">' + Drupal.checkPlain(r.response) + '</p>';
+        html += '</div>';
+      }
+
+      html += '</article></div>';
+    });
+
+    container.innerHTML = html;
+
+    // Re-attach Drupal behaviors for the new elements.
+    Drupal.attachBehaviors(container);
+  }
+
+  /**
    * B-06: Photo gallery lightbox.
    */
   Drupal.behaviors.reviewPhotoGallery = {

@@ -13,6 +13,14 @@ reading-progress:
   dependencies:
     - core/drupal
 
+article-comments:
+  version: 1.0
+  js:
+    js/article-comments.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 article-canvas-editor:
   version: 1.0
   js:

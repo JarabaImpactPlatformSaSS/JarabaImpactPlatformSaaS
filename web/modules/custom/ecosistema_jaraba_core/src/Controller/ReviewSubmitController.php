@@ -140,7 +140,10 @@ class ReviewSubmitController extends ControllerBase
         'max_photos' => $settings?->getMaxPhotos() ?? 5,
       ],
       '#attached' => [
-        'library' => ['ecosistema_jaraba_core/review-interactions'],
+        'library' => [
+            'ecosistema_jaraba_core/review-submit',
+            'ecosistema_jaraba_core/review-interactions',
+          ],
         'drupalSettings' => [
           'reviewSubmit' => [
             'vertical' => $vertical,

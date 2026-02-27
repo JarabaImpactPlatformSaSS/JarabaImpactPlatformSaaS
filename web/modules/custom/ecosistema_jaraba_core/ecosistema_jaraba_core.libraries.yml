@@ -699,6 +699,16 @@ review-interactions:
     - core/drupal
     - core/once
 
+# Review submission form handler (star picker, validation, API POST)
+review-submit:
+  version: 1.x
+  js:
+    js/review-submit.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 # B-05: Review analytics dashboard
 review-analytics:
   version: 1.x
