@@ -42,6 +42,8 @@ class ReviewSentimentService {
 
   public function __construct(
     protected readonly LoggerInterface $logger,
+    protected readonly mixed $modelRouter = NULL,
+    protected readonly mixed $aiProvider = NULL,
   ) {}
 
   /**
@@ -58,26 +60,50 @@ class ReviewSentimentService {
     $body = $this->extractBody($reviewEntity);
     $rating = $this->extractRating($reviewEntity);
 
-    // Combinar analisis de texto y rating.
+    // Combinar analisis de texto y rating (heuristic).
     $textSentiment = $this->analyzeText($body);
     $ratingSentiment = $this->analyzeRating($rating);
 
     // Ponderar: rating tiene mas peso que texto.
-    $score = ($textSentiment['score'] * 0.4) + ($ratingSentiment['score'] * 0.6);
+    $heuristicScore = ($textSentiment['score'] * 0.4) + ($ratingSentiment['score'] * 0.6);
+
+    // Try AI sentiment analysis if available and body is substantial.
+    $aiResult = NULL;
+    if ($this->modelRouter !== NULL && $this->aiProvider !== NULL && mb_strlen($body) > 50) {
+      $aiResult = $this->analyzeWithAi($body);
+    }
+
+    // Blend AI and heuristic scores.
+    if ($aiResult !== NULL) {
+      $finalScore = ($aiResult['score'] * 0.7) + ($heuristicScore * 0.3);
+      $method = 'ai_blended';
+      $aspects = $aiResult['aspects'] ?? [];
+    }
+    else {
+      $finalScore = $heuristicScore;
+      $method = 'heuristic';
+      $aspects = [];
+    }
 
     $sentiment = 'neutral';
-    if ($score > 0.2) {
+    if ($finalScore > 0.2) {
       $sentiment = 'positive';
     }
-    elseif ($score < -0.2) {
+    elseif ($finalScore < -0.2) {
       $sentiment = 'negative';
     }
 
-    return [
+    $result = [
       'sentiment' => $sentiment,
-      'confidence' => round(abs($score), 2),
-      'method' => 'heuristic',
+      'confidence' => round(abs($finalScore), 2),
+      'method' => $method,
     ];
+
+    if (!empty($aspects)) {
+      $result['aspects'] = $aspects;
+    }
+
+    return $result;
   }
 
   /**
@@ -124,6 +150,46 @@ class ReviewSentimentService {
     // 1-2 = negativo, 3 = neutral, 4-5 = positivo.
     $map = [1 => -1.0, 2 => -0.5, 3 => 0.0, 4 => 0.5, 5 => 1.0];
     return ['score' => $map[$rating] ?? 0.0];
+  }
+
+  /**
+   * Analyze sentiment using AI (fast tier).
+   *
+   * @return array|null
+   *   ['score' => float (-1 to 1), 'aspects' => array] or NULL on failure.
+   */
+  protected function analyzeWithAi(string $body): ?array {
+    try {
+      $prompt = "Analyze the sentiment of this review. Respond ONLY with JSON:\n"
+        . "{\"sentiment\": \"positive\"|\"neutral\"|\"negative\", \"score\": float (-1.0 to 1.0), \"aspects\": [{\"aspect\": string, \"sentiment\": string}]}\n\n"
+        . "Review:\n" . mb_substr($body, 0, 1000);
+
+      $modelConfig = $this->modelRouter->route('classification', $prompt, ['force_tier' => 'fast']);
+      $modelId = $modelConfig['model_id'] ?? 'claude-haiku-4-5-20251001';
+
+      $input = new \Drupal\ai\OperationType\Chat\ChatInput([
+        new \Drupal\ai\OperationType\Chat\ChatMessage('user', $prompt),
+      ]);
+
+      $response = $this->aiProvider->chat($input, $modelId);
+      $text = trim($response->getNormalized()->getText());
+
+      // Extract JSON.
+      if (preg_match('/\{.*\}/s', $text, $matches)) {
+        $parsed = json_decode($matches[0], TRUE);
+        if (is_array($parsed) && isset($parsed['score'])) {
+          return [
+            'score' => max(-1.0, min(1.0, (float) $parsed['score'])),
+            'aspects' => is_array($parsed['aspects'] ?? NULL) ? $parsed['aspects'] : [],
+          ];
+        }
+      }
+    }
+    catch (\Exception $e) {
+      $this->logger->warning('AI sentiment analysis failed: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return NULL;
   }
 
   /**

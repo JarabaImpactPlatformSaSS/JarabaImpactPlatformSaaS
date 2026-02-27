@@ -1569,6 +1569,8 @@ services:
     class: Drupal\ecosistema_jaraba_core\Service\ReviewSentimentService
     arguments:
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@?jaraba_ai_agents.model_router'
+      - '@?ai.provider'
 
   # B-11: Review Notifications
   ecosistema_jaraba_core.review_notification:
