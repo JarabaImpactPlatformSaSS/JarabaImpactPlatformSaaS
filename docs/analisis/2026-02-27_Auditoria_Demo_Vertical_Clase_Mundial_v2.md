@@ -6,7 +6,7 @@
 **Version:** 2.0.0 (post-remediacion 4 sprints)
 **Categoria:** Analisis
 **Modulo:** `ecosistema_jaraba_core` (demo vertical), `jaraba_page_builder` (demo blocks/templates)
-**Documentos fuente:** 00_DIRECTRICES_PROYECTO.md v88.0.0, 00_FLUJO_TRABAJO_CLAUDE.md v42.0.0, 2026-02-27_Plan_Implementacion_Remediacion_Demo_Vertical_Clase_Mundial_v1.md
+**Documentos fuente:** 00_DIRECTRICES_PROYECTO.md v92.0.0, 00_FLUJO_TRABAJO_CLAUDE.md v45.0.0, 2026-02-27_Plan_Implementacion_Remediacion_Demo_Vertical_Clase_Mundial_v1.md
 
 ---
 
@@ -61,15 +61,15 @@ La re-auditoria profunda identifica **67 hallazgos nuevos** que impiden alcanzar
 
 | Dimension | Antes (v1) | Despues (v2) | Objetivo |
 |-----------|-----------|-------------|----------|
-| Seguridad | 35% | 72% | 95% |
-| Accesibilidad | 20% | 40% | 90% |
-| i18n | 30% | 55% | 95% |
-| Rendimiento | 45% | 60% | 85% |
-| PLG/Conversion | 25% | 50% | 90% |
-| Arquitectura | 40% | 70% | 90% |
-| Frontend UX | 35% | 65% | 90% |
-| Codigo limpio | 50% | 70% | 90% |
-| **GLOBAL** | **35%** | **60%** | **92%** |
+| Seguridad | 35% | 72% | 100% |
+| Accesibilidad | 20% | 40% | 100% |
+| i18n | 30% | 55% | 100% |
+| Rendimiento | 45% | 60% | 100% |
+| PLG/Conversion | 25% | 50% | 100% |
+| Arquitectura | 40% | 70% | 100% |
+| Frontend UX | 35% | 65% | 100% |
+| Codigo limpio | 50% | 70% | 100% |
+| **GLOBAL** | **35%** | **60%** | **100%** |
 
 ---
 
@@ -486,7 +486,7 @@ IP almacenada en `demo_sessions.client_ip` sin consentimiento. No hay disclaimer
 | Arquitectura | 70% | DB migration OK, services pattern OK. Falta: wire services, deprecate sandbox, event dispatch, PB twig templates |
 | Frontend UX | 65% | Templates BEM OK, SCSS tokens OK. Falta: DRY templates, DRY SCSS, loading states, real regenerate, error feedback |
 | Codigo limpio | 70% | PHP 8.4 patterns OK. Falta: move business logic to services, fix docblocks, remove emojis from logs |
-| **GLOBAL** | **60%** | **Necesita 32 puntos mas para 92%** |
+| **GLOBAL** | **60%** | **Necesita 40 puntos mas para 100%** |
 
 ### Gaps criticos para 100%
 
