@@ -41,13 +41,13 @@ class ContentEmbeddingService
     /**
      * Constructor.
      *
-     * @param \Drupal\ai\AiProviderPluginManager $aiProvider
-     *   Gestor de proveedores AI.
+     * @param \Drupal\ai\AiProviderPluginManager|null $aiProvider
+     *   Gestor de proveedores AI (NULL si drupal/ai no disponible).
      * @param \Psr\Log\LoggerInterface $logger
      *   Logger del módulo.
      */
     public function __construct(
-        protected AiProviderPluginManager $aiProvider,
+        protected ?AiProviderPluginManager $aiProvider,
         protected LoggerInterface $logger,
     ) {
     }
@@ -66,7 +66,7 @@ class ContentEmbeddingService
      */
     public function generate(string $text): array
     {
-        if (empty(trim($text))) {
+        if ($this->aiProvider === NULL || empty(trim($text))) {
             return [];
         }
 

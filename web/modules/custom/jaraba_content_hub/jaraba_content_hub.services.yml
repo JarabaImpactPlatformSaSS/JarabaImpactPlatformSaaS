@@ -31,14 +31,14 @@ services:
   jaraba_content_hub.content_writer_agent:
     class: Drupal\jaraba_content_hub\Agent\ContentWriterAgent
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@config.factory'
       - '@logger.channel.jaraba_content_hub'
-      - '@jaraba_ai_agents.tenant_brand_voice'
-      - '@jaraba_ai_agents.observability'
+      - '@?jaraba_ai_agents.tenant_brand_voice'
+      - '@?jaraba_ai_agents.observability'
       - '@entity_type.manager'
       - '@current_user'
-      - '@jaraba_billing.tenant_metering'
+      - '@?jaraba_billing.tenant_metering'
 
   # Writing Assistant Service
   jaraba_content_hub.writing_assistant:
@@ -63,7 +63,7 @@ services:
   jaraba_content_hub.content_embedding:
     class: Drupal\jaraba_content_hub\Service\ContentEmbeddingService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@logger.channel.jaraba_content_hub'
 
   # Qdrant Content Client

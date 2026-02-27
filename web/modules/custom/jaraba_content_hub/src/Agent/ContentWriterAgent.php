@@ -61,39 +61,45 @@ class ContentWriterAgent extends BaseAgent implements AgentInterface
     /**
      * Servicio de medición de uso.
      */
-    protected TenantMeteringService $meteringService;
+    protected ?TenantMeteringService $meteringService = NULL;
 
     /**
      * Construye un ContentWriterAgent.
      *
-     * @param \Drupal\ai\AiProviderPluginManager $aiProvider
-     *   El gestor de proveedores IA.
+     * @param \Drupal\ai\AiProviderPluginManager|null $aiProvider
+     *   El gestor de proveedores IA (NULL si drupal/ai no disponible).
      * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
      *   La factoría de configuración.
      * @param \Psr\Log\LoggerInterface $logger
      *   El servicio de logging.
-     * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService $brandVoice
+     * @param \Drupal\jaraba_ai_agents\Service\TenantBrandVoiceService|null $brandVoice
      *   El servicio de Brand Voice.
-     * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService $observability
+     * @param \Drupal\jaraba_ai_agents\Service\AIObservabilityService|null $observability
      *   El servicio de observabilidad.
      * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
      *   El gestor de tipos de entidad.
      * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
      *   El usuario actual.
-     * @param \Drupal\jaraba_billing\Service\TenantMeteringService $meteringService
+     * @param \Drupal\jaraba_billing\Service\TenantMeteringService|null $meteringService
      *   El servicio de metering.
      */
     public function __construct(
-        AiProviderPluginManager $aiProvider,
+        ?AiProviderPluginManager $aiProvider,
         ConfigFactoryInterface $configFactory,
         LoggerInterface $logger,
-        TenantBrandVoiceService $brandVoice,
-        AIObservabilityService $observability,
+        ?TenantBrandVoiceService $brandVoice,
+        ?AIObservabilityService $observability,
         EntityTypeManagerInterface $entityTypeManager,
         AccountProxyInterface $currentUser,
-        TenantMeteringService $meteringService,
+        ?TenantMeteringService $meteringService,
     ) {
-        parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability);
+        if ($aiProvider !== NULL && $brandVoice !== NULL && $observability !== NULL) {
+            parent::__construct($aiProvider, $configFactory, $logger, $brandVoice, $observability);
+        } else {
+            // AI stack not available (e.g., Kernel test environment).
+            $this->configFactory = $configFactory;
+            $this->logger = $logger;
+        }
         $this->entityTypeManager = $entityTypeManager;
         $this->currentUser = $currentUser;
         $this->meteringService = $meteringService;
@@ -177,6 +183,13 @@ class ContentWriterAgent extends BaseAgent implements AgentInterface
      */
     public function execute(string $action, array $context): array
     {
+        if (!isset($this->aiProvider)) {
+            return [
+                'success' => FALSE,
+                'error' => 'AI provider not available.',
+            ];
+        }
+
         $this->setCurrentAction($action);
 
         // Convertir nombre de acción a nombre de método (snake_case -> camelCase).

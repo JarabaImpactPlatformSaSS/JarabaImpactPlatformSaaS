@@ -106,16 +106,23 @@ class ReviewServiceRegistrationTest extends KernelTestBase {
 
   /**
    * Tests que ReviewAiSummaryService esta registrado.
+   *
+   * Este servicio vive en jaraba_ai_agents (no en ecosistema_jaraba_core)
+   * porque depende de ModelRouterService y ai.provider.
    */
   public function testReviewAiSummaryServiceExists(): void {
+    if (!\Drupal::moduleHandler()->moduleExists('jaraba_ai_agents')) {
+      $this->markTestSkipped('jaraba_ai_agents module not enabled — ReviewAiSummaryService lives there.');
+    }
+
     $this->assertTrue(
-      \Drupal::hasService('ecosistema_jaraba_core.review_ai_summary'),
+      \Drupal::hasService('jaraba_ai_agents.review_ai_summary'),
       'ReviewAiSummaryService debe estar registrado.'
     );
 
-    $service = \Drupal::service('ecosistema_jaraba_core.review_ai_summary');
+    $service = \Drupal::service('jaraba_ai_agents.review_ai_summary');
     $this->assertInstanceOf(
-      'Drupal\ecosistema_jaraba_core\Service\ReviewAiSummaryService',
+      'Drupal\jaraba_ai_agents\Service\ReviewAiSummaryService',
       $service,
     );
   }
