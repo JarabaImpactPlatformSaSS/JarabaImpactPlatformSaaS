@@ -133,8 +133,10 @@ case "$EXT" in
 esac
 
 # Reportar errores si los hay
+# stdout: feedback principal para el agente Claude Code
+# exit 2: indica error de lint
 if [ -n "$ERRORS" ]; then
-  echo -e "$ERRORS" >&2
+  echo -e "$ERRORS"
   exit 2
 fi
 

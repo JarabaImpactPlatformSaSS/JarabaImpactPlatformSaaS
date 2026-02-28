@@ -8,7 +8,7 @@
 #
 # EXIT CODES:
 #   0 = Permitir la operacion (opcionalmente con JSON decision)
-#   2 = Bloquear la operacion (stderr se muestra como error)
+#   2 = Bloquear la operacion (stdout JSON con deny + stderr como fallback)
 #
 # INPUT: JSON via stdin con tool_name y tool_input
 # =============================================================================
@@ -19,11 +19,13 @@ set -euo pipefail
 INPUT=$(cat)
 
 # Extraer tool_input.file_path del JSON
+# Nota: tanto Edit como Write envian file_path como clave directa de tool_input.
+# No intentar buscar dentro de 'content' (puede ser string en Write).
 FILE_PATH=$(echo "$INPUT" | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
 ti = data.get('tool_input', {})
-print(ti.get('file_path', ti.get('content', {}).get('file_path', '')))
+print(ti.get('file_path', ''))
 " 2>/dev/null || echo "")
 
 # Si no hay file_path, permitir (no es una operacion de archivo)
@@ -50,7 +52,9 @@ BLOCKED_FILES=(
 
 for blocked in "${BLOCKED_FILES[@]}"; do
   if [ "$REL_PATH" = "$blocked" ]; then
-    echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Archivo protegido: '"$blocked"'. Este archivo no debe ser modificado por Claude Code. Usa las herramientas apropiadas (composer update, lando rebuild, etc.)."}}' >&2
+    # stdout: JSON formal para que Claude Code parsee el motivo
+    # exit 2: bloqueo efectivo de la operacion
+    echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Archivo protegido: '"$blocked"'. Este archivo no debe ser modificado por Claude Code. Usa las herramientas apropiadas (composer update, lando rebuild, etc.)."}}'
     exit 2
   fi
 done

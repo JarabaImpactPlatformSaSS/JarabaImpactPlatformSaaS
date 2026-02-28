@@ -131,12 +131,14 @@ No saltar niveles (h1 -> h3 sin h2).
 
 ```bash
 echo "=== Imagenes sin alt ==="
-grep -rn '<img ' \
+# Nota: usa grep multilinea (-Pzo) para detectar <img> donde alt= esta en otra linea
+grep -rPzol '<img[^>]*(?<!alt=)[^>]*>' \
   web/modules/custom/$ARGUMENTS/templates/ \
   web/themes/custom/ecosistema_jaraba_theme/templates/ \
-  --include='*.html.twig' | \
-  grep -v 'alt=' | \
+  --include='*.html.twig' 2>/dev/null | \
   head -10
+# Fallback single-line si -Pzo no disponible:
+# grep -rn '<img ' ... | grep -v 'alt=' | head -10
 
 echo "=== SVG sin aria-label o aria-hidden ==="
 grep -rn '<svg' \
