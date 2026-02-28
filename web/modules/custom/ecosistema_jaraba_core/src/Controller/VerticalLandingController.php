@@ -511,10 +511,10 @@ class VerticalLandingController extends ControllerBase
   {
     return $this->buildLanding([
       'key' => 'jarabalex',
-      'color' => 'corporate',
+      'color' => 'legal',
       'hero' => [
         'headline' => $this->t('Inteligencia legal con IA al alcance de todos'),
-        'subheadline' => $this->t('Jurisprudencia nacional y europea, búsqueda semántica, alertas inteligentes y citaciones automatizadas. Sin intermediarios.'),
+        'subheadline' => $this->t('Gestiona tu despacho, investiga jurisprudencia, presenta en LexNET y factura — todo con IA integrada, desde 0 €/mes.'),
         'icon' => ['category' => 'legal', 'name' => 'search-legal'],
         'cta' => [
           'text' => $this->t('Haz tu diagnóstico legal gratuito'),
@@ -527,36 +527,39 @@ class VerticalLandingController extends ControllerBase
       ],
       'pain_points' => [
         ['icon' => ['category' => 'ui', 'name' => 'search'], 'text' => $this->t('Búsqueda manual en bases de datos desconectadas')],
-        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Alertas normativas que llegan tarde o nunca')],
-        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('Citaciones que consumen horas de formateo')],
+        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Expedientes repartidos entre carpetas, emails y discos duros')],
+        ['icon' => ['category' => 'ui', 'name' => 'clock'], 'text' => $this->t('Plazos procesales que se escapan y citas que se solapan')],
         ['icon' => ['category' => 'business', 'name' => 'money'], 'text' => $this->t('Coste prohibitivo de herramientas premium (3.000–8.000 €/año)')],
       ],
       'steps' => [
         ['title' => $this->t('Busca'), 'description' => $this->t('Búsqueda semántica con IA en 8 fuentes oficiales (CENDOJ, BOE, EUR-Lex...)')],
-        ['title' => $this->t('Analiza'), 'description' => $this->t('Pipeline NLP extrae entidades, clasifica por jurisdicción y resume automáticamente')],
-        ['title' => $this->t('Cita'), 'description' => $this->t('Citaciones automáticas en 4 formatos jurídicos listos para usar')],
+        ['title' => $this->t('Gestiona'), 'description' => $this->t('Expedientes, plazos, documentos y facturación en un solo lugar con IA')],
+        ['title' => $this->t('Presenta'), 'description' => $this->t('Presenta escritos en LexNET y genera documentos con plantillas jurídicas')],
       ],
       'features' => [
         ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Búsqueda Semántica'), 'description' => $this->t('Encuentra resoluciones por significado, no solo por palabras clave. Embeddings 3072D.')],
         ['icon' => ['category' => 'legal', 'name' => 'search-legal'], 'title' => $this->t('8 Fuentes Oficiales'), 'description' => $this->t('CENDOJ, BOE, DGT, TEAC, EUR-Lex, CURIA, HUDOC y EDPB integrados.')],
-        ['icon' => ['category' => 'ui', 'name' => 'bell'], 'title' => $this->t('Alertas Inteligentes'), 'description' => $this->t('10 tipos de alerta: derogaciones, nueva doctrina, cambios normativos, plazos.')],
-        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Citaciones en 4 Formatos'), 'description' => $this->t('Formal, resumida, bibliográfica y nota al pie. Inserción directa en expedientes.')],
-        ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Digest Semanal'), 'description' => $this->t('Resumen personalizado cada lunes con las resoluciones más relevantes para ti.')],
-        ['icon' => ['category' => 'analytics', 'name' => 'chart-line'], 'title' => $this->t('Grafo de Citaciones'), 'description' => $this->t('Visualización interactiva de relaciones entre resoluciones (D3.js).')],
+        ['icon' => ['category' => 'legal', 'name' => 'briefcase'], 'title' => $this->t('Gestión Integral de Expedientes'), 'description' => $this->t('Expedientes con plazos, partes, documentos y comunicaciones. 5 expedientes gratis.')],
+        ['icon' => ['category' => 'legal', 'name' => 'gavel'], 'title' => $this->t('Integración LexNET'), 'description' => $this->t('Presentación electrónica de escritos al CGPJ directamente desde tu expediente.')],
+        ['icon' => ['category' => 'ui', 'name' => 'bell'], 'title' => $this->t('Alertas Inteligentes'), 'description' => $this->t('10 tipos de alerta: derogaciones, nueva doctrina, cambios normativos, plazos procesales.')],
+        ['icon' => ['category' => 'ui', 'name' => 'calendar'], 'title' => $this->t('Agenda con Plazos Procesales'), 'description' => $this->t('Citas, vistas judiciales y plazos con alertas automáticas. Sync con Google Calendar y Outlook.')],
+        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Facturación Automatizada'), 'description' => $this->t('Minutas, provisiones de fondos y facturación con serie fiscal legal desde Starter.')],
+        ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'title' => $this->t('Bóveda Documental Cifrada'), 'description' => $this->t('Almacenamiento cifrado end-to-end con control de acceso granular y trazabilidad.')],
       ],
       'social_proof' => [
         'testimonials' => [
           ['quote' => $this->t('Antes tardaba horas buscando jurisprudencia. Ahora encuentro resoluciones relevantes en segundos con la búsqueda semántica.'), 'author' => 'Elena', 'role' => $this->t('abogada mercantilista en Madrid')],
-          ['quote' => $this->t('Las alertas de cambios normativos me han salvado de presentar recursos basados en doctrina superada.'), 'author' => 'Roberto', 'role' => $this->t('asesor fiscal en Sevilla')],
+          ['quote' => $this->t('La facturación automática y el control de plazos han transformado cómo gestionamos el bufete.'), 'author' => 'Roberto', 'role' => $this->t('socio de bufete en Sevilla')],
         ],
         'metrics' => [
           ['value' => '8', 'label' => $this->t('fuentes oficiales integradas')],
           ['value' => '< 3s', 'label' => $this->t('tiempo medio de búsqueda')],
+          ['value' => '0', 'label' => $this->t('plazos incumplidos con alertas')],
         ],
       ],
       'lead_magnet' => [
         'title' => $this->t('Diagnóstico Legal Gratuito'),
-        'description' => $this->t('Descubre en 2 minutos las áreas de riesgo legal más relevantes para tu actividad profesional.'),
+        'description' => $this->t('Descubre en 2 minutos las áreas de riesgo legal y el nivel de digitalización de tu despacho.'),
         'url' => '/jarabalex/diagnostico-legal',
         'cta_text' => $this->t('Hacer diagnóstico'),
         'icon' => ['category' => 'ai', 'name' => 'screening'],
@@ -569,21 +572,23 @@ class VerticalLandingController extends ControllerBase
         'cta_text' => $this->t('Ver todos los planes'),
         'cta_url' => '/planes',
         'features_preview' => [
-          $this->t('10 búsquedas/mes gratis'),
-          $this->t('1 alerta inteligente'),
-          $this->t('Acceso a CENDOJ y BOE'),
+          $this->t('5 expedientes gratis'),
+          $this->t('10 búsquedas/mes en CENDOJ y BOE'),
+          $this->t('Agenda con 10 plazos y alertas'),
           $this->t('Copilot legal incluido'),
         ],
       ],
       'faq' => [
         ['question' => $this->t('¿De dónde proviene la información legal?'), 'answer' => $this->t('De fuentes oficiales públicas: CENDOJ, BOE, DGT, TEAC (España) y EUR-Lex, CURIA, HUDOC, EDPB (Europa). Todo bajo licencia de datos abiertos (Ley 37/2007).')],
         ['question' => $this->t('¿Es fiable la búsqueda con IA?'), 'answer' => $this->t('Sí. Cada resultado incluye enlaces directos a la fuente oficial. La IA busca por significado semántico, pero siempre puedes verificar en la fuente original.')],
-        ['question' => $this->t('¿Cómo funcionan las alertas?'), 'answer' => $this->t('Configuras criterios (jurisdicción, tema, órgano emisor) y recibes notificaciones cuando se publica doctrina relevante o cambia normativa aplicable.')],
-        ['question' => $this->t('¿Puedo insertar citaciones en mis documentos?'), 'answer' => $this->t('Sí, en plan Pro. Genera citaciones en 4 formatos (formal, resumida, bibliográfica, nota al pie) con un clic.')],
+        ['question' => $this->t('¿Puedo gestionar expedientes de mi despacho?'), 'answer' => $this->t('Sí. JarabaLex integra gestión completa de expedientes: documentos, plazos procesales, partes, comunicaciones y facturación. 5 expedientes gratis en el plan Free.')],
+        ['question' => $this->t('¿Qué es la integración con LexNET?'), 'answer' => $this->t('LexNET es el sistema obligatorio de comunicación electrónica con los juzgados (CGPJ). Desde JarabaLex puedes presentar escritos electrónicamente directamente desde tu expediente, disponible en plan Starter.')],
         ['question' => $this->t('¿Cuánto cuesta comparado con Aranzadi o vLex?'), 'answer' => $this->t('Desde 0€/mes (Free) hasta 99€/mes (Pro). Frente a 3.000–8.000€/año de herramientas tradicionales, accedes a las mismas fuentes oficiales por una fracción.')],
         ['question' => $this->t('¿Incluye normativa europea?'), 'answer' => $this->t('Sí. EUR-Lex (legislación UE), CURIA (TJUE), HUDOC (TEDH) y EDPB (protección de datos) están integrados con detección de primacía.')],
+        ['question' => $this->t('¿La facturación cumple con la normativa fiscal?'), 'answer' => $this->t('Totalmente. Series fiscales legales, formato TicketBAI/SII compatible, y exportación para tu asesoría contable. Disponible desde plan Starter.')],
         ['question' => $this->t('¿Qué es el Diagnóstico Legal Gratuito?'), 'answer' => $this->t('Un cuestionario de 5 preguntas que la IA analiza para identificar tus áreas de riesgo legal y recomendarte fuentes y alertas personalizadas.')],
-        ['question' => $this->t('¿Puedo probarlo sin dar mi tarjeta?'), 'answer' => $this->t('Por supuesto. El plan Free incluye 10 búsquedas/mes, 1 alerta y acceso a 2 fuentes. Sin tarjeta de crédito.')],
+        ['question' => $this->t('¿Es seguro para documentos confidenciales?'), 'answer' => $this->t('Cifrado end-to-end, servidores europeos, cumple RGPD y secreto profesional. Control de acceso granular por expediente.')],
+        ['question' => $this->t('¿Puedo probarlo sin dar mi tarjeta?'), 'answer' => $this->t('Por supuesto. El plan Free incluye 5 expedientes, 10 búsquedas/mes, 1 alerta y bóveda de 100 MB. Sin tarjeta de crédito.')],
       ],
       'final_cta' => [
         'headline' => $this->t('Empieza a investigar con inteligencia'),
@@ -595,96 +600,18 @@ class VerticalLandingController extends ControllerBase
     ]);
   }
   /**
-   * Landing Despachos — Digitalización de despachos de abogados.
+   * Redirect /despachos → /jarabalex (301 permanent).
    *
-   * Ruta: /despachos
-   * Complementa JarabaLex (investigación legal): este vertical gestiona
-   * el despacho (expedientes, citas, facturación, bóveda documental).
+   * Plan Unificacion JarabaLex + Despachos v1 — Fase 3.
+   * Despachos features consolidated into JarabaLex landing.
+   * SEO: 301 redirect preserves link equity.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   301 Moved Permanently redirect.
    */
-  public function despachos(): array
+  public function despachos(): RedirectResponse
   {
-    return $this->buildLanding([
-      'key' => 'despachos',
-      'color' => 'corporate',
-      'hero' => [
-        'headline' => $this->t('Digitaliza tu despacho con IA'),
-        'subheadline' => $this->t('Expedientes, citas, facturación y documentos. Todo en un solo lugar, con inteligencia artificial integrada.'),
-        'icon' => ['category' => 'legal', 'name' => 'gavel'],
-        'cta' => [
-          'text' => $this->t('Empieza gratis'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-        'cta_secondary' => [
-          'text' => $this->t('Solicitar demo'),
-          'url' => '/contacto',
-        ],
-      ],
-      'pain_points' => [
-        ['icon' => ['category' => 'legal', 'name' => 'briefcase'], 'text' => $this->t('Expedientes repartidos entre carpetas, emails y discos duros')],
-        ['icon' => ['category' => 'ui', 'name' => 'calendar'], 'text' => $this->t('Citas que se solapan y plazos procesales que se escapan')],
-        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'text' => $this->t('Facturación manual que consume horas cada mes')],
-        ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'text' => $this->t('Documentos sensibles compartidos por email sin cifrar')],
-      ],
-      'steps' => [
-        ['title' => $this->t('Configura tu despacho'), 'description' => $this->t('Logo, datos fiscales y permisos del equipo en 10 minutos')],
-        ['title' => $this->t('Importa tus expedientes'), 'description' => $this->t('Desde Excel, carpetas o manualmente — la IA organiza por ti')],
-        ['title' => $this->t('Automatiza y factura'), 'description' => $this->t('Plazos, recordatorios y facturación automática integrada')],
-      ],
-      'features' => [
-        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copiloto IA para Borradores'), 'description' => $this->t('Genera borradores de demandas, contestaciones y recursos adaptados a tu caso')],
-        ['icon' => ['category' => 'legal', 'name' => 'briefcase'], 'title' => $this->t('Gestión de Expedientes'), 'description' => $this->t('Todo el expediente en un solo lugar: documentos, notas, plazos y comunicaciones')],
-        ['icon' => ['category' => 'ui', 'name' => 'calendar'], 'title' => $this->t('Agenda Inteligente'), 'description' => $this->t('Citas con clientes, vistas judiciales y plazos procesales con alertas automáticas')],
-        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Facturación Automatizada'), 'description' => $this->t('Minutas, provisiones de fondos y facturación con serie fiscal legal')],
-        ['icon' => ['category' => 'legal', 'name' => 'citation'], 'title' => $this->t('Citaciones Multi-formato'), 'description' => $this->t('Genera citaciones jurídicas en 4 formatos con un clic (integración JarabaLex)')],
-        ['icon' => ['category' => 'legal', 'name' => 'shield-privacy'], 'title' => $this->t('Bóveda Documental'), 'description' => $this->t('Almacenamiento cifrado end-to-end con control de acceso granular y trazabilidad')],
-      ],
-      'social_proof' => [
-        'testimonials' => [
-          ['quote' => $this->t('Antes perdía 30 minutos buscando cada expediente. Ahora todo está en un clic. La IA me ahorra 2 horas diarias en borradores.'), 'author' => 'Elena', 'role' => $this->t('abogada laboralista en Madrid')],
-          ['quote' => $this->t('La facturación automática y el control de plazos han transformado cómo gestionamos el bufete.'), 'author' => 'Roberto', 'role' => $this->t('socio de bufete en Sevilla')],
-        ],
-        'metrics' => [
-          ['value' => '2h', 'label' => $this->t('ahorro diario promedio')],
-          ['value' => '0', 'label' => $this->t('plazos incumplidos con alertas')],
-        ],
-      ],
-      'lead_magnet' => [
-        'title' => $this->t('Auditoría Digital para Despachos'),
-        'description' => $this->t('Descubre en 3 minutos el nivel de digitalización de tu despacho y qué mejorar primero.'),
-        'url' => '/despachos/auditoria-digital',
-        'cta_text' => $this->t('Hacer auditoría gratuita'),
-        'icon' => ['category' => 'ai', 'name' => 'screening'],
-      ],
-      'pricing' => [
-        'headline' => $this->t('Planes para despachos'),
-        'from_price' => '0',
-        'currency' => 'EUR',
-        'period' => $this->t('mes'),
-        'cta_text' => $this->t('Ver todos los planes'),
-        'cta_url' => '/planes',
-        'features_preview' => [
-          $this->t('5 expedientes gratis'),
-          $this->t('Copiloto IA incluido'),
-          $this->t('Agenda con alertas'),
-          $this->t('Bóveda documental 1 GB'),
-        ],
-      ],
-      'faq' => [
-        ['question' => $this->t('¿Puedo importar expedientes desde mi sistema actual?'), 'answer' => $this->t('Sí. Importa desde Excel, carpetas compartidas o manualmente. La IA clasifica documentos y extrae datos clave automáticamente.')],
-        ['question' => $this->t('¿Cómo se relaciona con JarabaLex?'), 'answer' => $this->t('Son complementarios. JarabaLex busca jurisprudencia y normativa. Despachos gestiona el día a día del despacho: expedientes, citas, facturación. Se integran nativamente.')],
-        ['question' => $this->t('¿La facturación cumple con la normativa fiscal?'), 'answer' => $this->t('Totalmente. Series fiscales legales, formato TicketBAI/SII compatible, y exportación para tu asesoría contable.')],
-        ['question' => $this->t('¿Es seguro para documentos confidenciales?'), 'answer' => $this->t('Cifrado end-to-end, servidores europeos, cumple RGPD y secreto profesional. Control de acceso granular por expediente.')],
-        ['question' => $this->t('¿Puedo gestionar un bufete con varios abogados?'), 'answer' => $this->t('Sí, el plan Bufete incluye usuarios ilimitados, permisos por rol y panel de gestión con métricas de productividad.')],
-        ['question' => $this->t('¿Incluye calendario de vistas judiciales?'), 'answer' => $this->t('Sí. La agenda se sincroniza con Google Calendar y Outlook. Las vistas y plazos procesales generan alertas automáticas.')],
-      ],
-      'final_cta' => [
-        'headline' => $this->t('¿Listo para digitalizar tu despacho?'),
-        'cta' => [
-          'text' => $this->t('Empieza gratis ahora'),
-          'url' => Url::fromRoute('user.register')->toString(),
-        ],
-      ],
-    ]);
+    return new RedirectResponse(Url::fromRoute('ecosistema_jaraba_core.landing.jarabalex')->toString(), 301);
   }
 
   // =========================================================================
@@ -814,10 +741,9 @@ class VerticalLandingController extends ControllerBase
   }
 
   /**
-   * Redirect legacy /legal → /despachos (301 permanent).
+   * Redirect legacy /legal → /jarabalex (301 permanent).
    *
-   * Anteriormente /legal era alias de /jarabalex. Ahora redirige
-   * al vertical Despachos (gestión de despacho vs investigación legal).
+   * Plan Unificacion JarabaLex + Despachos v1 — Fase 3.
    * SEO: LEGAL-ROUTE-001 (F4 route naming convention).
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -825,7 +751,7 @@ class VerticalLandingController extends ControllerBase
    */
   public function legalRedirect(): RedirectResponse
   {
-    return new RedirectResponse('/despachos', 301);
+    return new RedirectResponse(Url::fromRoute('ecosistema_jaraba_core.landing.jarabalex')->toString(), 301);
   }
 
   /**

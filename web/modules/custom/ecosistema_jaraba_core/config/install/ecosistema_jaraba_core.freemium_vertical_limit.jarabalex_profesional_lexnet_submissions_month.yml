@@ -1,0 +1,11 @@
+id: jarabalex_profesional_lexnet_submissions_month
+label: 'JarabaLex Profesional: Presentaciones LexNET ilimitadas'
+vertical: jarabalex
+plan: profesional
+feature_key: lexnet_submissions_month
+limit_value: -1
+description: 'Presentaciones LexNET ilimitadas en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 354
+status: true

@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core\Hook;
 
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Path\CurrentPathStack;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\ecosistema_jaraba_core\Service\StylePresetService;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 
@@ -22,6 +23,7 @@ class PageAttachmentsHooks
     protected readonly CurrentPathStack $currentPath,
     protected readonly StylePresetService $stylePreset,
     protected readonly TenantContextService $tenantContext,
+    protected readonly RouteMatchInterface $routeMatch,
   ) {
   }
 
@@ -34,6 +36,7 @@ class PageAttachmentsHooks
     $this->addPwaMetaTags($attachments);
     $this->addDesignTokenCss($attachments);
     $this->addPremiumAdminStyles($attachments);
+    $this->addLandingSeo($attachments);
   }
 
   /**
@@ -223,6 +226,67 @@ class PageAttachmentsHooks
           '#value' => $this->getPremiumAdminCss(),
         ],
         'ecosistema_jaraba_premium_structure_styles',
+      ];
+    }
+  }
+
+  /**
+   * Adds SEO meta tags and Schema.org JSON-LD for landing pages.
+   *
+   * Plan Unificacion JarabaLex + Despachos v1 — Fase 4.
+   */
+  protected function addLandingSeo(array &$attachments): void
+  {
+    $route = (string) $this->routeMatch->getRouteName();
+
+    if ($route === 'ecosistema_jaraba_core.landing.jarabalex') {
+      // Meta description.
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => 'JarabaLex: inteligencia legal con IA. Gestiona expedientes, busca jurisprudencia en 8 fuentes oficiales, presenta en LexNET y factura. Desde 0 EUR/mes.',
+          ],
+        ],
+        'jarabalex_meta_description',
+      ];
+
+      // Schema.org SoftwareApplication JSON-LD.
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'JarabaLex',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => 'Plataforma de inteligencia legal con IA: gestion de expedientes, busqueda semantica en CENDOJ/BOE/EUR-Lex, integracion LexNET, facturacion y boveda documental cifrada.',
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan Free: 5 expedientes, 10 busquedas/mes, boveda 100 MB',
+        ],
+        'featureList' => [
+          'Busqueda semantica con IA en 8 fuentes oficiales',
+          'Gestion integral de expedientes juridicos',
+          'Integracion LexNET (CGPJ)',
+          'Facturacion automatizada con serie fiscal legal',
+          'Boveda documental cifrada end-to-end',
+          'Alertas inteligentes de cambios normativos',
+          'Agenda con plazos procesales',
+          'Copiloto legal con IA',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'jarabalex_schema_org',
       ];
     }
   }

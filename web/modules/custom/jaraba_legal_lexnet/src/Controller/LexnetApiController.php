@@ -24,9 +24,11 @@ class LexnetApiController extends ControllerBase {
   public function __construct(
     protected readonly LexnetSyncService $syncService,
     protected readonly LexnetSubmissionService $submissionService,
-    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

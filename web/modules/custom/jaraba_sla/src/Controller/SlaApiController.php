@@ -34,8 +34,10 @@ class SlaApiController extends ControllerBase {
     protected readonly SlaCreditEngineService $creditEngine,
     protected readonly PostmortemService $postmortem,
     protected readonly TenantContextService $tenantContext,
-    protected readonly EntityTypeManagerInterface $entityTypeManager,
-  ) {}
+    EntityTypeManagerInterface $entityTypeManager,
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

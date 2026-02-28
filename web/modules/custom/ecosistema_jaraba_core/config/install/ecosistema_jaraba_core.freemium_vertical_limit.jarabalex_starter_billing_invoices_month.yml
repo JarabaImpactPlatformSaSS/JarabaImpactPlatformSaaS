@@ -1,0 +1,11 @@
+id: jarabalex_starter_billing_invoices_month
+label: 'JarabaLex Starter: Facturas por mes'
+vertical: jarabalex
+plan: starter
+feature_key: billing_invoices_month
+limit_value: 20
+description: 'Maximo 20 facturas por mes en plan Starter JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 20 facturas mensuales. Actualiza a Profesional para facturacion ilimitada.'
+expected_conversion: 0.40
+weight: 350
+status: true

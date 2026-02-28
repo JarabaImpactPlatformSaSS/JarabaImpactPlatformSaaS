@@ -1,0 +1,11 @@
+id: jarabalex_starter_vault_storage_mb
+label: 'JarabaLex Starter: Boveda documental (MB)'
+vertical: jarabalex
+plan: starter
+feature_key: vault_storage_mb
+limit_value: 500
+description: 'Maximo 500 MB de almacenamiento en boveda documental en plan Starter.'
+upgrade_message: 'Has alcanzado los 500 MB de almacenamiento. Actualiza a Profesional para 5 GB de boveda documental.'
+expected_conversion: 0.30
+weight: 344
+status: true

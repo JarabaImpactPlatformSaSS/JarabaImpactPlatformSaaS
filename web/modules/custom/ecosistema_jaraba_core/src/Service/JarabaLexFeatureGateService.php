@@ -55,6 +55,13 @@ class JarabaLexFeatureGateService {
     'citation_insert' => 'citation_blocked',
     'digest_access' => 'digest_blocked',
     'api_access' => 'api_blocked',
+    // Plan Unificacion JarabaLex + Despachos v1 — Fase 2.
+    'max_cases' => 'case_limit_reached',
+    'vault_storage_mb' => 'vault_storage_full',
+    'calendar_deadlines' => 'deadline_limit_reached',
+    'billing_invoices_month' => 'billing_blocked',
+    'lexnet_submissions_month' => 'lexnet_blocked',
+    'template_generations_month' => 'template_blocked',
   ];
 
   /**

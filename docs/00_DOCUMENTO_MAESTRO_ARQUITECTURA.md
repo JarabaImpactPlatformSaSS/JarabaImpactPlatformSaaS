@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-28
-**Versión:** 90.0.0 (Centro de Ayuda Clase Mundial — /ayuda con 25 FAQs + Busqueda Unificada FAQ+KB)
+**Versión:** 91.0.0 (Unificacion Landing JarabaLex + Despachos — 5 modulos habilitados, 18 FreemiumVerticalLimit, LexNET killer feature, SEO Schema.org)
 **Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2407,8 +2407,8 @@ La madurez se eleva de 4.5/5.0 a **4.9/5.0** tras completar FASE 1 (7 Críticos)
 2. Zero-Region Consolidation (body classes via hook_preprocess_html)
 3. Modal CRUD (citation modal, alert confirm, dialog.ajax)
 4. SCSS Compliance + Design Tokens (vertical_jarabalex navy/gold)
-5. Feature Gating (JarabaLexFeatureGateService + 9 FreemiumVerticalLimit)
-6. Upgrade Triggers (5 legal trigger types + fire() + copilot upsell)
+5. Feature Gating (JarabaLexFeatureGateService + 36 FreemiumVerticalLimit: 18 legal research + 18 despacho management)
+6. Upgrade Triggers (11 legal trigger types: 5 research + 6 despacho + fire() + copilot upsell)
 7. Email Sequences (5 MJML templates SEQ_LEX_001-005)
 8. CRM Integration (ensure_crm_contact + sync_crm_event pipeline)
 9. Cross-Vertical Bridges (4: emprendimiento, empleabilidad, fiscal, formacion)
@@ -2506,7 +2506,7 @@ Sprint 3 — Funcionalidades Avanzadas:
 
 **Inversión total stack fiscal:** 720-956h / 32,400-43,020 EUR (implementación 3 módulos).
 
-### 12.6 Vertical JarabaLex — Legal Intelligence Hub (2026-02-15)
+### 12.6 Vertical JarabaLex — Legal Intelligence Hub (2026-02-15, actualizado 2026-02-28)
 
 3 documentos técnicos + 1 plan de implementación especificando el Legal Intelligence Hub, elevado a vertical independiente JarabaLex (antes sub-feature ServiciosConecta):
 
@@ -2516,6 +2516,8 @@ Sprint 3 — Funcionalidades Avanzadas:
 | **178A** | Legal Intelligence Hub EU Sources | Fuentes europeas: EUR-Lex (CELLAR SPARQL), CURIA/TJUE, HUDOC/TEDH, EDPB, embeddings multilingües 1024D, cross-lingual search |
 | **178B** | Legal Intelligence Hub Implementation | Guía implementación: arquitectura módulo, compilación SCSS, Docker NLP (spaCy + FastAPI), 12 iconos SVG duotone, paleta legal 10 tokens |
 | **Plan** | Plan Implementación Legal Intelligence Hub v1 | 10 fases (0-9), 530-685h, 23,850-30,825 EUR, 14 directrices con ejemplos código, estrategia convivencia jaraba_legal_knowledge |
+
+**Unificacion Landing JarabaLex + Despachos (2026-02-28):** La landing `/despachos` (features de practica legal) se unifico en `/jarabalex` via 301 redirect. 5 modulos legales habilitados (calendar, vault, billing, lexnet, templates). 18 FreemiumVerticalLimit configs creados (36 total). LexNET como killer differentiator. Auditoria: `docs/analisis/2026-02-28_Auditoria_Landing_JarabaLex_Despachos_Clase_Mundial_v1.md`. Plan: `docs/implementacion/2026-02-28_Plan_Unificacion_Landing_JarabaLex_Despachos_Clase_Mundial_v1.md`.
 
 **Relación con jaraba_legal_knowledge:** El nuevo módulo `jaraba_legal_intelligence` extiende las capacidades de `jaraba_legal_knowledge` (4 entidades, 10 servicios, colección Qdrant `jaraba_knowledge`). Estrategia de convivencia: jaraba_legal_knowledge se mantiene como módulo ligero para RAG normativo básico (BOE, fiscal); jaraba_legal_intelligence añade resoluciones judiciales, fuentes europeas, NLP avanzado y dashboard profesional.
 
@@ -2712,13 +2714,14 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 90.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
+> **Versión:** 91.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
 
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-28 | **91.0.0** | **Unificacion Landing JarabaLex + Despachos — 5 Modulos Habilitados + 18 FreemiumVerticalLimit + LexNET + SEO:** Unificacion de `/despachos` en `/jarabalex` via 301 redirect (`Url::fromRoute()`). 5 modulos legales habilitados (jaraba_legal_calendar, jaraba_legal_vault, jaraba_legal_billing, jaraba_legal_lexnet, jaraba_legal_templates). 18 nuevos FreemiumVerticalLimit configs (6 feature_keys × 3 planes: max_cases, vault_storage_mb, calendar_deadlines, billing_invoices_month, lexnet_submissions_month, template_generations_month — total 36). JarabaLexFeatureGateService +6 FEATURE_TRIGGER_MAP entries. UpgradeTriggerService +6 trigger types (11 total) con mensajes y iconos. 3 SaasPlan YAMLs actualizados (starter/pro/enterprise con legal modules). jarabalex() reescrito con 8 features (LexNET killer differentiator, expedientes, agenda, facturacion, boveda), 10 FAQs, pain points despacho, pricing preview con limites reales. despachos() convertido a 301 redirect. legalRedirect() actualizado. Megamenu: "Despachos" → "JarabaLex". PageAttachmentsHooks: SEO meta description + Schema.org SoftwareApplication JSON-LD para /jarabalex (RouteMatchInterface inyectado). Theme: landing.legal anadido a $vertical_routes. Fix: 5 controllers PHP 8.4 readonly property conflict con ControllerBase (CONTROLLER-READONLY-001). Fix: VaultApiController syntax error. 2 reglas nuevas en Directrices v102.0.0: LEGAL-LANDING-UNIFIED-001, CONTROLLER-READONLY-001. Aprendizaje #152. |
 | 2026-02-28 | **90.0.0** | **Centro de Ayuda Clase Mundial — /ayuda con 25 FAQs + Busqueda Unificada FAQ+KB:** Nuevo ASCII box CENTRO DE AYUDA CLASE MUNDIAL en seccion 8.3. Modulo `jaraba_tenant_knowledge` elevado: HelpCenterController refactorizado (getCategoryMeta(), buildFaqPageSchema(), buildBreadcrumbSchema(), buildHelpCenterSeoHead(), getKbArticleCount(), searchApi unificado FAQ+KB). 8 categorias SaaS multi-vertical (getting_started, account, features, billing, ai_copilot, integrations, security, troubleshooting). 25 FAQs seed platform-wide via update_10003 (tenant_id=NULL). Template: hero con trust signals, quick links via Url::fromRoute(), KB cross-link, CTA con botones accionables. Busqueda unificada: FAQ+KB con hasDefinition() guard, slug-based KB URLs, campo type en JSON, JS drupalSettings searchApiUrl. SEO: FAQPage + BreadcrumbList + QAPage JSON-LD, OG/Twitter meta tags, canonical. SCSS: quick-links grid, kb-promo banner, contact buttons, animations con prefers-reduced-motion + no-js fallback. Integracion: jaraba_support (quick links), Knowledge Base (cross-link + busqueda), FAQ Bot widget, footer link. 10 ficheros modificados. Aprendizaje #151. |
 | 2026-02-27 | **88.0.0** | **Navegación Ecosistema + Pricing Labels — Megamenu Selectivo + formatFeatureLabels():** Corrección de 6 regresiones de navegación del ecosistema: megamenu restringido a SaaS principal via `header_megamenu|default(false)` con inyección PHP selectiva en `preprocess_page()`, megamenu transparente corregido con `var(--header-bg, #ffffff)` fallback, menu items alineados via normalización button/anchor CSS, barra ecosistema footer activada por defecto con 4 links, mobile overlay condicional por `use_megamenu`, pricing features con labels humanos via `MetaSitePricingService::formatFeatureLabels()` (mapa 28 machine names → labels traducibles, almacenamiento dual features/features_raw). Starter tier con features base default cuando vacío (basic_profile, community, one_vertical, email_support). 2 reglas: MEGAMENU-CONTROL-001 (P1), PRICING-LABEL-001 (P1). Aprendizaje #149. |
 | 2026-02-27 | **87.0.0** | **Demo Vertical PLG 100% Clase Mundial — Guided Tour + Storytelling AI + Progressive Disclosure:** Nuevo ASCII box DEMO VERTICAL PLG. Subsistema demo en ecosistema_jaraba_core (~4,000 LOC): DemoController (765 LOC, 8 metodos: landing/start/dashboard/storytelling/playground/regenerate/track/convert), DemoInteractiveService (1,523 LOC, 10 perfiles, metricas sinteticas, session management demo_sessions table, analytics aggregation demo_analytics table, 11 historias por perfil), DemoFeatureGateService (149 LOC, usage tracking), DemoJourneyProgressionService (319 LOC, disclosure levels basic→intermediate→advanced, nudge system), GuidedTourService (demo_welcome 4 pasos, user_completed_tours table). 4 JS libraries self-contained (dashboard chart+tracking+conversion+countdown, guided-tour overlay+spotlight+popovers+keyboard, storytelling fetch+copy+feedback, ai-playground copilot+scenarios+typing). 5 templates + 3 partials DRY. drupalSettings injection chain: demo.sessionId + demoTour (GuidedTourService) + demoStorytelling.regenerateUrl (Url::fromRoute) + demoPlayground.copilotEndpoint (Url::fromRoute). User journey: /demo → profile select → dashboard (tour auto-start) → magic actions → storytelling (AI regenerate) → progressive disclosure → conversion modal → /registro/{vertical}. 24 unit tests, 84 assertions. SCSS _demo.scss 1,180 LOC compilado. 2 reglas nuevas en Directrices v96.0.0: SCSS-COMPILE-VERIFY-001, RUNTIME-VERIFY-001. Aprendizaje #146. |
@@ -2758,4 +2761,4 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 89.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente
+> **Versión:** 91.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente

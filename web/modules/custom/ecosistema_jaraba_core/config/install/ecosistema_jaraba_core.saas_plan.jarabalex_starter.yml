@@ -8,7 +8,11 @@ price_monthly: '49.00'
 price_yearly: '490.00'
 features:
   - legal_search
+  - legal_calendar
+  - legal_vault
+  - legal_templates
+  - legal_lexnet
   - soporte_email
-limits: '{"searches_per_month": 50, "max_alerts": 5, "max_bookmarks": 100}'
+limits: '{"searches_per_month": 50, "max_alerts": 5, "max_bookmarks": 100, "max_cases": 50, "vault_storage_mb": 500, "calendar_deadlines": 100, "billing_invoices_month": 20, "lexnet_submissions_month": 10, "template_generations_month": 5}'
 stripe_price_id: ''
 weight: 10

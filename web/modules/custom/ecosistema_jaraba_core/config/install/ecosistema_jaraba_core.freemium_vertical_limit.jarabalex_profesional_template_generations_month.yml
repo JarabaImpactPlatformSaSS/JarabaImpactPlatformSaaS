@@ -1,0 +1,11 @@
+id: jarabalex_profesional_template_generations_month
+label: 'JarabaLex Profesional: Generaciones de plantilla ilimitadas'
+vertical: jarabalex
+plan: profesional
+feature_key: template_generations_month
+limit_value: -1
+description: 'Generaciones de documentos con plantilla ilimitadas en plan Profesional.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 357
+status: true

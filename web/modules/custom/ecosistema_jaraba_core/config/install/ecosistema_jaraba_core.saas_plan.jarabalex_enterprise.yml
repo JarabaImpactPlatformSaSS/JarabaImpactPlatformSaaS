@@ -10,10 +10,15 @@ features:
   - legal_search
   - legal_alerts
   - legal_citations
+  - legal_calendar
+  - legal_vault
+  - legal_billing
+  - legal_templates
+  - legal_lexnet
   - api_access
   - soporte_email
   - soporte_chat
   - soporte_dedicado
-limits: '{"searches_per_month": 0, "max_alerts": 0, "max_bookmarks": 0}'
+limits: '{"searches_per_month": 0, "max_alerts": 0, "max_bookmarks": 0, "max_cases": -1, "vault_storage_mb": -1, "calendar_deadlines": -1, "billing_invoices_month": -1, "lexnet_submissions_month": -1, "template_generations_month": -1}'
 stripe_price_id: ''
 weight: 12

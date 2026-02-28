@@ -24,9 +24,11 @@ class TemplatesApiController extends ControllerBase {
   public function __construct(
     protected readonly TemplateManagerService $templateManager,
     protected readonly DocumentGeneratorService $documentGenerator,
-    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

@@ -155,7 +155,7 @@ class VaultApiController extends ControllerBase {
       return new JsonResponse(['error' => $result['error'] ?? 'Error al crear version.'], 500);
     }
 
-    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($result['document', 'meta' => ['timestamp' => time()]])], 201);
+    return new JsonResponse(['success' => TRUE, 'data' => $this->serializeDocument($result['document']), 'meta' => ['timestamp' => time()]], 201);
   }
 
   /**

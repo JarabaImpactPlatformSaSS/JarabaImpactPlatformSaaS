@@ -27,9 +27,11 @@ class BillingApiController extends ControllerBase {
     protected readonly TimeTrackingService $timeTracker,
     protected readonly InvoiceManagerService $invoiceManager,
     protected readonly StripeInvoiceService $stripeService,
-    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

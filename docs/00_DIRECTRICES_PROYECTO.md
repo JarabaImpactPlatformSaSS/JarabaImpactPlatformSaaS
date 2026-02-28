@@ -3,8 +3,8 @@
 > **⚠️ DOCUMENTO MAESTRO**: Este documento debe leerse y memorizarse al inicio de cada conversación o al reanudarla.
 
 **Fecha de creación:** 2026-01-09 15:28  
-**Última actualización:** 2026-02-27
-**Versión:** 101.0.0 (Centro de Ayuda Clase Mundial — HELP-CENTER-SEED-001 + UNIFIED-SEARCH-001)
+**Última actualización:** 2026-02-28
+**Versión:** 102.0.0 (Unificacion Landing JarabaLex + Despachos — 301 redirect, 5 modulos habilitados, 18 FreemiumVerticalLimit, SEO Schema.org)
 
 ---
 
@@ -52,7 +52,7 @@ Crear una plataforma tecnológica que empodere a productores locales, facilitand
   - `jaraba_legal_vault` ✅ (FASE B2): Content Entities (VaultDocument, VaultAccessLog), VaultStorageService (hash chain SHA-256), VaultAuditLogService (append-only), VaultDashboardController
   - `jaraba_legal_lexnet` ✅ (FASE B3): Content Entity LexnetNotification, LexnetSyncService, LexnetProcessingService, LexnetDashboardController, integracion API LexNET
   - `jaraba_legal_templates` ✅ (FASE C1): Content Entity LegalTemplate, TemplateManagerService (merge fields), TemplateEditorController, GrapesJS 11 bloques legales
-  - Config entities: vertical, 3 features, 3 SaaS plans, 9 FreemiumVerticalLimit
+  - Config entities: vertical, 3 features, 3 SaaS plans, 36 FreemiumVerticalLimit (18 legal research + 18 despacho management)
   - Theme: page--legal.html.twig, page--legal-cases.html.twig, page--legal-case-detail.html.twig, page--jarabalex.html.twig, CSS custom properties --ej-legal-*
   - Diagnostico Lead Magnet: LegalLandingController (6 areas legales, analisis basado en reglas), legal-diagnostico.html.twig + JS + SCSS
   - JarabaLexCopilotAgent: 6 modos (legal_search, legal_analysis, legal_alerts, case_assistant, document_drafter, legal_advisor) con deteccion por keywords
@@ -992,12 +992,14 @@ Hub de inteligencia juridica profesional con busqueda semantica IA sobre fuentes
 | Componente | Descripcion |
 |-----------|-------------|
 | **Vertical seed** | `ecosistema_jaraba_core.vertical.jarabalex.yml` — 3 features, 1 AI agent |
-| **Features** | legal_search (busqueda semantica), legal_alerts (alertas), legal_citations (citaciones) |
-| **SaaS Plans** | Starter (49 EUR/mes), Pro (99 EUR/mes), Enterprise (199 EUR/mes) |
-| **FreemiumVerticalLimit** | 9 configs (3 plans x 3 feature_keys: searches, alerts, bookmarks) |
-| **Theme** | page--legal.html.twig (zero-region + Copilot FAB legal_copilot) |
+| **Features** | legal_search, legal_alerts, legal_citations, legal_calendar, legal_vault, legal_billing, legal_templates, legal_lexnet |
+| **SaaS Plans** | Starter (49 EUR/mes, +calendar/vault/templates/lexnet), Pro (99 EUR/mes, +billing ilimitado), Enterprise (199 EUR/mes, +API) |
+| **FreemiumVerticalLimit** | 36 configs (3 plans x 12 feature_keys: searches, alerts, bookmarks, cases, vault_mb, deadlines, invoices, lexnet, templates + citation, digest, api) |
+| **Theme** | page--legal.html.twig (zero-region + Copilot FAB legal_copilot), color token `legal` |
 | **Design Tokens** | CSS custom properties --ej-legal-* (primary #1E3A5F, accent #C8A96E) |
+| **Landing** | `/jarabalex` (8 features, LexNET killer differentiator). `/despachos` → 301 redirect a `/jarabalex`. `/legal` → 301 redirect a `/jarabalex` |
 | **Billing** | FEATURE_ADDON_MAP: legal_search, legal_alerts, legal_citations → jaraba_legal_intelligence |
+| **SEO** | Schema.org SoftwareApplication JSON-LD, meta description, featureList 8 items |
 
 ### 2.11 AI Orchestration (Arquitectura Multiproveedor)
 
@@ -1672,6 +1674,8 @@ Si la respuesta a cualquiera es "No" y debería ser "Sí", **refactorizar antes 
 | **Disclaimer + citas verificables** | LEGAL-RAG-001 | Toda respuesta del copiloto legal basada en resoluciones DEBE incluir un disclaimer legal y citas verificables (ECLI, referencia BOE, numero CELEX). Nunca inventar resoluciones ni datos normativos. Aplicable a LegalCopilotAgent y LegalCopilotBridgeService | P0 |
 | **FeatureGate en servicios con limites** | LEGAL-GATE-001 | Todo servicio que ejecute una operacion con limite de plan (busquedas, alertas, citas, digest, API) DEBE inyectar `JarabaLexFeatureGateService`, llamar `check()` antes de ejecutar, y llamar `fire()` del `UpgradeTriggerService` cuando el resultado sea denegado. Patron: check → denied → fireDeniedTrigger | P0 |
 | **Body classes via hook_preprocess_html** | LEGAL-BODY-001 | Las body classes de rutas legales SIEMPRE se inyectan via `hook_preprocess_html()` en el `.module`, NUNCA con `attributes.addClass()` en el template Twig. El template solo usa `{{ attributes }}` | P0 |
+| **Landing unificada /jarabalex** | LEGAL-LANDING-UNIFIED-001 | JarabaLex y Despachos estan unificados bajo `/jarabalex`. `/despachos` y `/legal` redirigen 301 a `/jarabalex`. NUNCA crear landings separadas para gestion de despacho — todo es JarabaLex. 8 features en grid, LexNET como killer differentiator | P0 |
+| **ControllerBase readonly property** | CONTROLLER-READONLY-001 | En PHP 8.4 + Drupal 11, `ControllerBase::$entityTypeManager` NO tiene type declaration. Subclases NO DEBEN declarar `protected readonly EntityTypeManagerInterface $entityTypeManager` en constructor promotion — genera fatal error. Usar parametro sin promotion + `$this->entityTypeManager = $entityTypeManager` en body | P0 |
 
 #### 5.8.6 Reglas Content Entities y Modulos (2026-02-16)
 
@@ -2228,6 +2232,7 @@ El asistente IA debe:
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-28 | **102.0.0** | **Unificacion Landing JarabaLex + Despachos — 301 Redirect + 5 Modulos + 18 FreemiumVerticalLimit + SEO Schema.org:** 2 reglas nuevas: LEGAL-LANDING-UNIFIED-001 (P0, `/despachos` y `/legal` redirigen 301 a `/jarabalex` — NUNCA crear landings separadas para gestion de despacho), CONTROLLER-READONLY-001 (P0, `ControllerBase::$entityTypeManager` sin type declaration — subclases NO DEBEN usar `protected readonly` en constructor promotion). 5 modulos legales habilitados (`jaraba_legal_calendar`, `jaraba_legal_vault`, `jaraba_legal_billing`, `jaraba_legal_lexnet`, `jaraba_legal_templates`) con 6 fatal errors corregidos (5 readonly property + 1 syntax error). 18 FreemiumVerticalLimit YAML configs nuevos (6 feature_keys x 3 plans: max_cases 5/50/-1, vault_storage_mb 100/500/5120, calendar_deadlines 10/100/-1, billing_invoices_month 0/20/-1, lexnet_submissions_month 0/10/-1, template_generations_month 0/5/-1). FeatureGateService +6 FEATURE_TRIGGER_MAP entries. UpgradeTriggerService +6 trigger types con titulos/mensajes/iconos. 3 SaasPlan YAMLs actualizados con modulos y limits. Landing `/jarabalex` expandida: 8 features (añadidos Expedientes, LexNET, Agenda, Facturacion, Boveda), pain points despacho, pricing preview con limites reales, 10 FAQs, color token `legal`. Megamenu actualizado: "Despachos" → "JarabaLex". PageAttachmentsHooks: meta description + Schema.org SoftwareApplication JSON-LD. Theme: `landing.legal` en $vertical_routes. 145 tests pasan. Regla de oro #88-89. Aprendizaje #152. |
 | 2026-02-28 | **101.0.0** | **Centro de Ayuda Clase Mundial — /ayuda con Seed Data + Busqueda Unificada:** 2 reglas nuevas: HELP-CENTER-SEED-001 (P1, contenido seed de plataforma via update hooks con tenant_id=NULL para platform-wide, entity reference target_id=0 almacena NULL en BD, idempotencia con notExists('tenant_id'), migracion categorias con SQL sobre _field_data), UNIFIED-SEARCH-001 (P1, APIs busqueda cross-entity con hasDefinition() para tipos opcionales, Url::fromRoute() para todas las URLs, campo type en JSON, slug-based URLs, JS sin fallback URLs). Implementacion completa: 8 categorias SaaS (getting_started/account/features/billing/ai_copilot/integrations/security/troubleshooting), 25 FAQs seed via update_10003, HelpCenterController refactorizado (getCategoryMeta(), buildFaqPageSchema(), buildBreadcrumbSchema(), buildHelpCenterSeoHead(), getKbArticleCount()), busqueda unificada FAQ+KB, Schema.org FAQPage+BreadcrumbList+QAPage JSON-LD, template con trust signals+quick links+KB cross-link+CTA con botones, SCSS ~270 LOC nuevas (quick-links/kb-promo/contact-buttons/animations con prefers-reduced-motion+no-js fallback), JS drupalSettings searchApiUrl+IntersectionObserver. 11 gaps de auditoria RUNTIME-VERIFY-001 corregidos post-implementacion. 10 ficheros modificados. Regla de oro #86-87. Aprendizaje #151. |
 | 2026-02-27 | **100.0.0** | **Elevacion UX Clase Mundial 8 Fases + Auditoria Directrices:** 1 regla nueva: CSS-VAR-ALL-COLORS-001 (P0, todo valor visual en SCSS satelite DEBE estar envuelto en `var(--ej-*, fallback)` — NUNCA hex hardcodeado, rgba() sin wrapper, ni valores numericos sin token; garantiza configurabilidad desde Theme Settings sin tocar codigo). 8 fases UX implementadas: (1) Skeleton Screens 4 variantes, (2) Empty States con CTA contextual, (3) Micro-interacciones CSS, (4) Error Recovery con fetch-retry + toasts, (5) Bottom Navigation Mobile, (6) Centro de Notificaciones modulo completo, (7) Busqueda Global cross-entity, (8) Onboarding Quick-Start Overlay 4 verticales. Auditoria post-implementacion encontro 6 violaciones: 2x ICON-COLOR-001 (faltaba color de paleta Jaraba en jaraba_icon()), 4x DESIGN-TOKEN-FEDERATED-001 (hex/rgba hardcodeados en _notification-panel.scss). 3 tokens CSS nuevos: `--ej-text-on-primary`, `--ej-color-primary-subtle`, `--ej-border-radius-pill`. 63 clases BEM nuevas. 16 ficheros creados, 10 modificados. SCSS compilado. Material Icons aceptado como patron para JS-rendered content (sin API de iconos SVG en JS). Regla de oro #84-85. Aprendizaje #150. |
 | 2026-02-27 | **99.0.0** | **Navegación Ecosistema + Pricing Labels — Megamenu Control + Feature Label Display:** 2 reglas nuevas: MEGAMENU-CONTROL-001 (P1, variables Twig de control de features DEBEN usar `default(false)` — opt-in explícito desde PHP via preprocess hooks, NUNCA opt-out implícito por ausencia de variable; `header_megamenu` inyectado como TRUE solo para SaaS principal, meta-sitios usan nav_items personalizados), PRICING-LABEL-001 (P1, features en pricing DEBEN tener almacenamiento dual: machine names para lógica programática `hasFeature()` y labels traductibles `$this->t()` para display — NUNCA mostrar machine names como `seo_advanced` al usuario, usar `formatFeatureLabels()` con mapa de 28 machine names → labels españoles). 6 regresiones de navegación corregidas: (1) megamenu applied to all meta-sites → `default(false)` + inyección selectiva, (2) megamenu transparente → `var(--header-bg, #ffffff)` fallback, (3) menú desalineado 7px → normalización button/anchor con `font: inherit`, (4) barra ecosistema invisible → `default(true)` + links default, (5) mobile overlay hardcoded → condicional `use_megamenu`, (6) pricing features con machine names → `formatFeatureLabels()`. 7 archivos modificados (3 Twig partials, 1 .theme PHP, 1 SCSS, 1 Service PHP). SCSS recompilado. 4 sitios verificados en browser (SaaS megamenu ✓, 3 meta-sitios nav plana ✓). Regla de oro #82-83. Aprendizaje #149. |

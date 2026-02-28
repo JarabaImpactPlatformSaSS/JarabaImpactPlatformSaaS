@@ -1,0 +1,11 @@
+id: jarabalex_starter_calendar_deadlines
+label: 'JarabaLex Starter: Plazos en agenda'
+vertical: jarabalex
+plan: starter
+feature_key: calendar_deadlines
+limit_value: 100
+description: 'Maximo 100 plazos activos en agenda en plan Starter JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 100 plazos. Actualiza a Profesional para plazos ilimitados.'
+expected_conversion: 0.25
+weight: 347
+status: true

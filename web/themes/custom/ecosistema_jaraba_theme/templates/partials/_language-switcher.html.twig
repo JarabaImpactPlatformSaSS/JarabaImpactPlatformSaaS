@@ -1,13 +1,13 @@
 {#
 /**
  * @file _language-switcher.html.twig
- * Selector de idioma para meta-sitios.
+ * Selector de idioma para el ecosistema.
  *
- * Muestra banderas/códigos de idioma basándose en las traducciones
- * disponibles de la página actual.
+ * Muestra banderas/códigos de idioma basándose en los idiomas
+ * habilitados en Drupal.
  *
  * Variables esperadas:
- * - available_languages: array de langcodes con traducción (['es', 'en', 'pt-br'])
+ * - available_languages: array de langcodes habilitados (['es', 'en', 'pt-br'])
  * - current_langcode: idioma actual de la página ('es')
  *
  * Diseño: Dropdown compacto que encaja en la zona de acciones del header.
@@ -16,8 +16,6 @@
 #}
 {% set langs = available_languages|default(['es']) %}
 {% set current_lang = current_langcode|default('es') %}
-{% set current_path = path('<current>') %}
-{% set base_url = (url('<front>', {}, {absolute: true}) ~ '')|trim('/') %}
 
 {# Mapa de labels e iconos por idioma #}
 {% set lang_labels = {
@@ -40,7 +38,7 @@
     {% for lang in langs %}
       {% if lang != current_lang %}
         <li role="menuitem">
-          <a href="{{ base_url }}/{{ lang }}{{ current_path }}"
+          <a href="/{{ lang }}"
              class="language-switcher__option"
              hreflang="{{ lang }}"
              lang="{{ lang }}">
@@ -54,3 +52,4 @@
   </ul>
 </div>
 {% endif %}
+

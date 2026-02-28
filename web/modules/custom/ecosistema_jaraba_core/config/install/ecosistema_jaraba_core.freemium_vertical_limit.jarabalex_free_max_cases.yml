@@ -1,0 +1,11 @@
+id: jarabalex_free_max_cases
+label: 'JarabaLex Free: Expedientes maximos'
+vertical: jarabalex
+plan: free
+feature_key: max_cases
+limit_value: 5
+description: 'Maximo 5 expedientes activos en plan gratuito JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 5 expedientes. Actualiza a Starter para gestionar hasta 50 expedientes.'
+expected_conversion: 0.35
+weight: 340
+status: true

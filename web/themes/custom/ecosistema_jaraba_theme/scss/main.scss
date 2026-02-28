@@ -182,3 +182,9 @@
 
 // Quick-Start Overlay — First-visit welcome modal (FASE 8 Elevacion Clase Mundial)
 @use 'components/quick-start';
+
+// Error Pages — 404 Not Found + 403 Access Denied premium pages
+@use 'components/error-pages';
+
+// Language Switcher — i18n language selector dropdown
+@use 'components/language-switcher';

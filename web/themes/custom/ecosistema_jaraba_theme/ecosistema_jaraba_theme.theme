@@ -1163,6 +1163,8 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     // JarabaLex — Inteligencia Legal con IA.
     // Plan Elevación JarabaLex Clase Mundial v1 — Fase 0.
     'ecosistema_jaraba_core.landing.jarabalex',
+    // Plan Unificacion JarabaLex + Despachos v1 — Fase 5.
+    'ecosistema_jaraba_core.landing.legal',
   ];
   if (in_array($route, $vertical_routes)) {
     $variables['attributes']['class'][] = 'landing-page';
@@ -2455,6 +2457,18 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   catch (\Exception $e) {
     // MetaSiteResolver no disponible o error — usar valores por defecto.
   }
+
+  // =========================================================================
+  // I18N: Inject available languages for language switcher component.
+  // The Twig partial _language-switcher.html.twig only renders when
+  // available_languages|length > 1. Without this, it silently hides.
+  // @see templates/partials/_language-switcher.html.twig
+  // @see templates/partials/_header-classic.html.twig (lines 163-168)
+  // =========================================================================
+  $language_manager = \Drupal::languageManager();
+  $languages = $language_manager->getLanguages();
+  $variables['available_languages'] = array_keys($languages);
+  $variables['current_langcode'] = $language_manager->getCurrentLanguage()->getId();
 
   // =========================================================================
   // MEGAMENU: Solo para SaaS principal (NO meta-sitios)

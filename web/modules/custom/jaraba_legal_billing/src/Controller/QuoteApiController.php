@@ -25,9 +25,11 @@ class QuoteApiController extends ControllerBase {
   public function __construct(
     protected readonly QuoteManagerService $quoteManager,
     protected readonly QuoteEstimatorService $quoteEstimator,
-    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
-  ) {}
+  ) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}

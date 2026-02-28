@@ -1,0 +1,11 @@
+id: jarabalex_profesional_calendar_deadlines
+label: 'JarabaLex Profesional: Plazos ilimitados'
+vertical: jarabalex
+plan: profesional
+feature_key: calendar_deadlines
+limit_value: -1
+description: 'Plazos ilimitados en agenda en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 348
+status: true

@@ -59,6 +59,13 @@ class UpgradeTriggerService
         'citation_blocked' => 0.35,
         'digest_blocked' => 0.25,
         'api_blocked' => 0.15,
+        // Plan Unificacion JarabaLex + Despachos v1 — Fase 2.
+        'case_limit_reached' => 0.35,
+        'vault_storage_full' => 0.30,
+        'deadline_limit_reached' => 0.25,
+        'billing_blocked' => 0.40,
+        'lexnet_blocked' => 0.45,
+        'template_blocked' => 0.30,
         // AgroConecta v1 — Fase 0+1.
         'agro_products_limit_reached' => 0.35,
         'agro_orders_per_month_limit_reached' => 0.30,
@@ -212,6 +219,9 @@ class UpgradeTriggerService
             'limit_reached', 'feature_blocked',
             'search_limit_reached', 'alert_limit_reached',
             'citation_blocked', 'digest_blocked', 'api_blocked',
+            // Plan Unificacion JarabaLex + Despachos v1 — Fase 2.
+            'case_limit_reached', 'vault_storage_full', 'deadline_limit_reached',
+            'billing_blocked', 'lexnet_blocked', 'template_blocked',
             'comercio_product_limit_reached', 'comercio_flash_offer_limit_reached',
             'comercio_qr_limit_reached', 'comercio_copilot_limit_reached',
             'comercio_analytics_gate', 'comercio_pos_gate', 'comercio_seo_gate',
@@ -434,6 +444,61 @@ class UpgradeTriggerService
                 return [
                     'title' => $this->t('API REST no disponible'),
                     'message' => $this->t('El acceso a la API REST de inteligencia legal para integraciones esta disponible en el plan @plan.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            // Plan Unificacion JarabaLex + Despachos v1 — Fase 2.
+            case 'case_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 5);
+                return [
+                    'title' => $this->t('Has alcanzado tu limite de expedientes'),
+                    'message' => $this->t('Tienes @limit expedientes activos. Con el plan @plan podras gestionar hasta 50 expedientes con plazos, partes y documentos integrados.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'vault_storage_full':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 100);
+                return [
+                    'title' => $this->t('Almacenamiento de boveda lleno'),
+                    'message' => $this->t('Has alcanzado los @limit MB de tu boveda documental. Con el plan @plan tendras hasta 500 MB de almacenamiento cifrado end-to-end.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'deadline_limit_reached':
+                $limitValue = $freemiumLimit ? $freemiumLimit->getLimitValue() : ($context['limit_value'] ?? 10);
+                return [
+                    'title' => $this->t('Has alcanzado tu limite de plazos en agenda'),
+                    'message' => $this->t('Tienes @limit plazos activos en tu agenda. Con el plan @plan podras gestionar hasta 100 plazos procesales con alertas automaticas.', [
+                        '@limit' => $limitValue,
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'billing_blocked':
+                return [
+                    'title' => $this->t('Facturacion no disponible'),
+                    'message' => $this->t('La facturacion automatizada con serie fiscal legal esta disponible desde el plan @plan. Genera minutas, provisiones de fondos y facturas en un clic.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'lexnet_blocked':
+                return [
+                    'title' => $this->t('Integracion LexNET no disponible'),
+                    'message' => $this->t('La presentacion electronica de escritos via LexNET (CGPJ) esta disponible desde el plan @plan. Presenta directamente desde tu expediente.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
+            case 'template_blocked':
+                return [
+                    'title' => $this->t('Generacion de plantillas no disponible'),
+                    'message' => $this->t('La generacion de documentos con plantillas juridicas (demandas, contestaciones, recursos) esta disponible desde el plan @plan.', [
                         '@plan' => $recommendedPlanId,
                     ]),
                 ];
@@ -726,6 +791,44 @@ class UpgradeTriggerService
             'name' => 'code',
             'variant' => 'duotone',
             'color' => 'azul-corporativo',
+        ];
+
+        // Plan Unificacion JarabaLex + Despachos v1 — Fase 2.
+        $icons['case_limit_reached'] = [
+            'category' => 'legal',
+            'name' => 'briefcase',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['vault_storage_full'] = [
+            'category' => 'legal',
+            'name' => 'shield-privacy',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['deadline_limit_reached'] = [
+            'category' => 'actions',
+            'name' => 'calendar',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['billing_blocked'] = [
+            'category' => 'business',
+            'name' => 'receipt',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
+        ];
+        $icons['lexnet_blocked'] = [
+            'category' => 'legal',
+            'name' => 'gavel',
+            'variant' => 'duotone',
+            'color' => 'azul-corporativo',
+        ];
+        $icons['template_blocked'] = [
+            'category' => 'actions',
+            'name' => 'document',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
         ];
 
         // AgroConecta v1 — Fase 0+1.

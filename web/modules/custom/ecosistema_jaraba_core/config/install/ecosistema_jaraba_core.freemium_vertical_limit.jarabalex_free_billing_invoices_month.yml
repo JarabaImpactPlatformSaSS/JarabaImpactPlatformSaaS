@@ -1,0 +1,11 @@
+id: jarabalex_free_billing_invoices_month
+label: 'JarabaLex Free: Facturas por mes'
+vertical: jarabalex
+plan: free
+feature_key: billing_invoices_month
+limit_value: 0
+description: 'Facturacion no incluida en plan gratuito JarabaLex.'
+upgrade_message: 'La facturacion automatizada esta disponible desde el plan Starter. Genera facturas con serie fiscal legal.'
+expected_conversion: 0.40
+weight: 349
+status: true

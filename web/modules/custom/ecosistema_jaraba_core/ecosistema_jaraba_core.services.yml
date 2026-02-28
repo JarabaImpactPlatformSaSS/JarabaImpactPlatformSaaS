@@ -544,6 +544,7 @@ services:
       - '@path.current'
       - '@ecosistema_jaraba_core.style_preset'
       - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_route_match'
 
   # ===========================================
   # Q1 2027: AI COST OPTIMIZATION (FinOps for AI)
