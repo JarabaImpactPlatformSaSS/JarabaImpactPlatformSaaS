@@ -257,6 +257,15 @@ abstract class SmartBaseAgent extends BaseAgent
                 $systemPrompt .= "\n\n" . $memoryPrompt;
             }
 
+            // LCIS Capa 4: Inyectar coherencia juridica si vertical=jarabalex o accion legal.
+            if (\Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::requiresCoherence(
+              $options['action'] ?? '',
+              $this->vertical ?? '',
+            )) {
+                $short = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::useShortVersion($options['action'] ?? '');
+                $systemPrompt = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::apply($systemPrompt, $short);
+            }
+
             // S3-06: Apply A/B experiment variant's system prompt override.
             if ($this->activeExperimentVariant && !empty($this->activeExperimentVariant['system_prompt'])) {
                 $systemPrompt = $this->activeExperimentVariant['system_prompt'];

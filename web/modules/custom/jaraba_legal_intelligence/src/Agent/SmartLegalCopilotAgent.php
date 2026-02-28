@@ -412,6 +412,10 @@ class SmartLegalCopilotAgent extends SmartBaseAgent
     {
         $prompt = self::MODE_PROMPTS[$mode] ?? self::MODE_PROMPTS['legal_search'];
 
+        // LCIS Capa 4: Inyeccion de regla de coherencia juridica.
+        $short = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::useShortVersion($mode);
+        $prompt = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::apply($prompt, $short);
+
         // Brand voice del tenant.
         $brandVoice = $this->getBrandVoicePrompt();
         if ($brandVoice) {

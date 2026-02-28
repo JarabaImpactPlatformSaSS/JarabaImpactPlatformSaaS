@@ -228,6 +228,9 @@ class LegalCopilotBridgeService {
       }
       $xml .= '</legal_context>';
 
+      // LCIS Capa 4: Prepend coherencia juridica al contexto RAG legal.
+      $xml = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::COHERENCE_PROMPT_SHORT . "\n\n" . $xml;
+
       return $xml;
     }
     catch (\Exception $e) {

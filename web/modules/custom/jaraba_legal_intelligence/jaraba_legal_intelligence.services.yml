@@ -108,6 +108,60 @@ services:
     calls:
       - [setCostAlertService, ['@?ecosistema_jaraba_core.cost_alert']]
 
+  # =====================================================
+  # === LEGAL COHERENCE INTELLIGENCE SYSTEM (LCIS) ===
+  # =====================================================
+  # 9-layer pipeline para coherencia juridica de IA.
+  # Capas 1 (KB) y 4 (PromptRule) son clases estaticas, no servicios.
+
+  # CAPA 2: Intent Classifier — gate del pipeline LCIS.
+  jaraba_legal_intelligence.legal_intent_classifier:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalIntentClassifierService
+    arguments:
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # CAPA 3: Normative Graph Enricher — Authority-Aware RAG Ranking.
+  jaraba_legal_intelligence.normative_graph_enricher:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\NormativeGraphEnricher
+    arguments:
+      - '@?entity_type.manager'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # CAPA 6: Validator — validacion determinista zero-cost.
+  jaraba_legal_intelligence.legal_coherence_validator:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherenceValidatorService
+    arguments:
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # CAPA 7: Verifier — verificacion semantica profunda via LLM.
+  jaraba_legal_intelligence.legal_coherence_verifier:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherenceVerifierService
+    arguments:
+      - '@ai.provider'
+      - '@jaraba_ai_agents.model_router'
+      - '@logger.channel.jaraba_legal_intelligence'
+      - '@?jaraba_ai_agents.observability'
+
+  # CAPA 8: Disclaimer Enforcement — no-eliminable.
+  jaraba_legal_intelligence.legal_disclaimer_enforcement:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalDisclaimerEnforcementService
+    arguments:
+      - '@?jaraba_legal_knowledge.disclaimer'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # Feedback Loop — correcciones profesionales.
+  jaraba_legal_intelligence.legal_feedback:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalFeedbackService
+    arguments:
+      - '@?entity_type.manager'
+      - '@logger.channel.jaraba_legal_intelligence'
+
+  # Multi-turn — contexto de conversacion legal.
+  jaraba_legal_intelligence.legal_conversation_context:
+    class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalConversationContext
+    arguments:
+      - '@logger.channel.jaraba_legal_intelligence'
+
   # === MERGE & RANK: Fusion de resultados nacionales + UE ===
   jaraba_legal_intelligence.merge_rank:
     class: Drupal\jaraba_legal_intelligence\Service\LegalMergeRankService

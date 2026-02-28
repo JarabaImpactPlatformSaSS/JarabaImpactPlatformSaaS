@@ -1,0 +1,117 @@
+# Legal Coherence Intelligence System (LCIS) — Configuration v2.0.0
+#
+# 9-layer pipeline for AI legal response consistency.
+# See: docs/implementacion/2026-02-28_Especificacion_Sistema_Coherencia_Juridica_IA_v1.md
+#
+# LEGAL-COHERENCE-KB-001: This config controls PIPELINE behavior,
+# not substantive legal knowledge (that's in LegalCoherenceKnowledgeBase.php).
+
+# === Global LCIS settings ===
+enabled: true
+version: '2.0.0'
+
+# === Layer 2: Intent Classifier ===
+intent_classifier:
+  enabled: true
+  # Threshold for LEGAL_DIRECT classification (fast resolution).
+  threshold_high: 0.85
+  # Threshold below which query is NON_LEGAL (fast resolution).
+  threshold_low: 0.15
+  # Enable LLM fallback for gray zone (future v2).
+  llm_fallback_enabled: false
+  llm_fallback_tier: 'fast'
+
+# === Layer 3: Normative Graph Enricher ===
+normative_graph:
+  enabled: true
+  # Authority-Aware Ranking weights (sum = 1.0).
+  weight_semantic: 0.55
+  weight_authority: 0.30
+  weight_recency: 0.15
+  # Bonus for CCAA law in exclusive regional competence.
+  ccaa_exclusive_bonus: 0.12
+  # Filter out fully derogated norms from RAG results.
+  filter_derogated: true
+
+# === Layer 4: Prompt Rule ===
+prompt_rule:
+  enabled: true
+  # Use short version for fast-tier actions.
+  short_version_actions:
+    - 'faq'
+    - 'legal_alerts'
+    - 'legal_citations'
+
+# === Layer 5: Constitutional Rule ===
+# NOTE: Constitutional rules are PHP constants (immutable).
+# No configuration possible by design.
+
+# === Layer 6: Validator ===
+validator:
+  enabled: true
+  # Score below which output is blocked or regenerated.
+  threshold_block: 0.5
+  # Score below which output gets warning annotations.
+  threshold_warn: 0.7
+  # Maximum regeneration retries before hard block.
+  max_retries: 2
+  # Enable anti-sycophancy checks (V8 Premise Validation).
+  sycophancy_check_enabled: true
+  # Enable antinomy detection.
+  antinomy_check_enabled: true
+
+# === Layer 7: Verifier ===
+verifier:
+  enabled: true
+  # Actions that require deep semantic verification.
+  high_risk_actions:
+    - 'legal_analysis'
+    - 'legal_search'
+    - 'case_assistant'
+    - 'document_drafter'
+    - 'legal_eu'
+    - 'contract_generation'
+    - 'legal_document_draft'
+  # LLM tier for verification (premium = Opus for max precision).
+  tier: 'premium'
+  # Temperature for verification (low = deterministic).
+  temperature: 0.1
+  # Minimum score to pass verification.
+  pass_threshold: 0.7
+  # Enable Citation-Claim Alignment (V8b Anti-Misgrounding).
+  citation_alignment_enabled: true
+  # Enable Premise Validation in verifier prompt (V8).
+  premise_validation_enabled: true
+
+# === Layer 8: Disclaimer Enforcement ===
+disclaimer:
+  enabled: true
+  # Score threshold below which Legal Coherence Score is shown.
+  score_warning_threshold: 70
+  # Disclaimer can be customized but NOT eliminated.
+  # Tenant override text (empty = use default from LegalDisclaimerService).
+  custom_text: ''
+
+# === Layer 9: Benchmark ===
+benchmark:
+  # Number of core test cases.
+  core_cases: 52
+  # Passing threshold for benchmark suite.
+  pass_threshold: 0.8
+  # Cron schedule: monthly subset, quarterly full.
+  cron_monthly_subset: 100
+  cron_quarterly_full: true
+
+# === Multi-turn coherence ===
+multi_turn:
+  enabled: true
+  # Maximum assertions to track per session.
+  max_assertions: 50
+  # Maximum turns to track per session.
+  max_turns: 20
+
+# === Feedback loop ===
+feedback:
+  enabled: true
+  # Require admin validation before incorporating corrections.
+  require_validation: true

@@ -717,8 +717,15 @@ class CopilotOrchestratorService
         // Upgrade context enrichment (soft nudge when near limits).
         $upgradePrompt = $this->getUpgradeContextPrompt($mode);
 
+        // LCIS Capa 4: Coherencia juridica para modos fiscal y laboral.
+        $legalCoherencePrompt = '';
+        if (in_array($mode, ['fiscal', 'laboral'], TRUE)) {
+            $legalCoherencePrompt = \Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherencePromptRule::COHERENCE_PROMPT_SHORT;
+        }
+
         return implode("\n\n", array_filter([
             $identityRule,
+            $legalCoherencePrompt,
             $basePrompt,
             $modePrompt,
             $contextPrompt,

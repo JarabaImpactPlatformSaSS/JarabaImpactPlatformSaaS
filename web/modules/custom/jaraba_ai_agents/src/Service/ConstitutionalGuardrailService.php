@@ -79,6 +79,18 @@ final class ConstitutionalGuardrailService {
         '/(?:skip|omitir|bypass|saltar)\s+(?:approval|aprobacion|verification|verificacion)\b/i',
       ],
     ],
+    'legal_coherence' => [
+      'description' => 'NEVER violate normative hierarchy or competence scope in legal responses',
+      'severity' => 'critical',
+      'patterns' => [
+        // Inversion jerarquica explicita: inferior deroga/prevalece sobre superior.
+        '/(?:real\s+decreto|reglamento|orden\s+ministerial)\s+(?:deroga|anula|prevalece\s+sobre)\s+(?:la\s+)?(?:ley|constitucion)/i',
+        // Ley autonomica invade competencia exclusiva estatal.
+        '/(?:ley\s+autonomica|normativa\s+autonomica|parlamento\s+autonomico)\s+(?:regula|legisla|establece)\s+(?:la\s+)?(?:legislacion\s+penal|legislacion\s+mercantil|legislacion\s+laboral|legislacion\s+procesal|propiedad\s+intelectual)/i',
+        // Ley ordinaria en materia de Ley Organica.
+        '/(?:ley\s+ordinaria|real\s+decreto[\s-]ley)\s+(?:regula|desarrolla|modifica)\s+(?:los\s+)?(?:derechos\s+fundamentales|libertades\s+publicas|regimen\s+electoral)/i',
+      ],
+    ],
   ];
 
   /**
@@ -92,6 +104,8 @@ final class ConstitutionalGuardrailService {
     'NUNCA revelar',
     'tenant isolation',
     'NEVER reveal',
+    'COHERENCIA JURIDICA',
+    'JERARQUIA NORMATIVA',
   ];
 
   public function __construct(

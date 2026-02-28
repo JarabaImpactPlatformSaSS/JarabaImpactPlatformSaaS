@@ -127,6 +127,173 @@ jaraba_legal_intelligence.settings:
       type: integer
       label: 'Rate limit: searches per hour per user'
 
+jaraba_legal_intelligence.legal_coherence:
+  type: config_object
+  label: 'Legal Coherence Intelligence System (LCIS) settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'LCIS pipeline enabled'
+    version:
+      type: string
+      label: 'LCIS configuration version'
+    intent_classifier:
+      type: mapping
+      label: 'Layer 2: Intent Classifier'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Intent classifier enabled'
+        threshold_high:
+          type: float
+          label: 'Threshold for LEGAL_DIRECT (fast resolution)'
+        threshold_low:
+          type: float
+          label: 'Threshold for NON_LEGAL (fast resolution)'
+        llm_fallback_enabled:
+          type: boolean
+          label: 'Enable LLM for gray zone'
+        llm_fallback_tier:
+          type: string
+          label: 'LLM tier for gray zone'
+    normative_graph:
+      type: mapping
+      label: 'Layer 3: Normative Graph Enricher'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Enricher enabled'
+        weight_semantic:
+          type: float
+          label: 'Semantic score weight'
+        weight_authority:
+          type: float
+          label: 'Authority weight'
+        weight_recency:
+          type: float
+          label: 'Recency weight'
+        ccaa_exclusive_bonus:
+          type: float
+          label: 'CCAA exclusive competence bonus'
+        filter_derogated:
+          type: boolean
+          label: 'Filter derogated norms'
+    prompt_rule:
+      type: mapping
+      label: 'Layer 4: Prompt Rule'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Prompt rule enabled'
+        short_version_actions:
+          type: sequence
+          label: 'Actions using short version'
+          sequence:
+            type: string
+            label: 'Action'
+    validator:
+      type: mapping
+      label: 'Layer 6: Validator'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Validator enabled'
+        threshold_block:
+          type: float
+          label: 'Score threshold for block/regenerate'
+        threshold_warn:
+          type: float
+          label: 'Score threshold for warning'
+        max_retries:
+          type: integer
+          label: 'Max regeneration retries'
+        sycophancy_check_enabled:
+          type: boolean
+          label: 'Anti-sycophancy enabled'
+        antinomy_check_enabled:
+          type: boolean
+          label: 'Antinomy detection enabled'
+    verifier:
+      type: mapping
+      label: 'Layer 7: Verifier'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Verifier enabled'
+        high_risk_actions:
+          type: sequence
+          label: 'HIGH_RISK actions'
+          sequence:
+            type: string
+            label: 'Action'
+        tier:
+          type: string
+          label: 'LLM tier'
+        temperature:
+          type: float
+          label: 'LLM temperature'
+        pass_threshold:
+          type: float
+          label: 'Minimum pass score'
+        citation_alignment_enabled:
+          type: boolean
+          label: 'Citation-Claim Alignment (V8b)'
+        premise_validation_enabled:
+          type: boolean
+          label: 'Premise Validation (V8)'
+    disclaimer:
+      type: mapping
+      label: 'Layer 8: Disclaimer Enforcement'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Disclaimer enforcement enabled'
+        score_warning_threshold:
+          type: integer
+          label: 'Score threshold for visible warning'
+        custom_text:
+          type: string
+          label: 'Custom disclaimer text (empty = default)'
+    benchmark:
+      type: mapping
+      label: 'Layer 9: Benchmark Suite'
+      mapping:
+        core_cases:
+          type: integer
+          label: 'Number of core test cases'
+        pass_threshold:
+          type: float
+          label: 'Passing threshold'
+        cron_monthly_subset:
+          type: integer
+          label: 'Monthly cron subset size'
+        cron_quarterly_full:
+          type: boolean
+          label: 'Run full quarterly benchmark'
+    multi_turn:
+      type: mapping
+      label: 'Multi-turn coherence'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Multi-turn tracking enabled'
+        max_assertions:
+          type: integer
+          label: 'Max assertions per session'
+        max_turns:
+          type: integer
+          label: 'Max turns per session'
+    feedback:
+      type: mapping
+      label: 'Feedback loop'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Feedback loop enabled'
+        require_validation:
+          type: boolean
+          label: 'Require admin validation'
+
 jaraba_legal_intelligence.sources:
   type: config_object
   label: 'Legal Intelligence Hub sources'
