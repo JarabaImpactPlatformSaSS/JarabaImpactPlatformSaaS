@@ -95,6 +95,7 @@ class UpgradeTriggerService
         'servicios_packages_limit_reached' => 0.30,
         'servicios_copilot_queries_month_limit_reached' => 0.35,
         'servicios_reviews_visible_limit_reached' => 0.25,
+        'servicios_presupuestador_ai_limit_reached' => 0.30,
     ];
 
     /**
@@ -234,7 +235,7 @@ class UpgradeTriggerService
             'servicios_firma_digital_limit_reached', 'servicios_ai_triage_limit_reached',
             'servicios_video_conferencing_limit_reached', 'servicios_analytics_dashboard_limit_reached',
             'servicios_packages_limit_reached', 'servicios_copilot_queries_month_limit_reached',
-            'servicios_reviews_visible_limit_reached',
+            'servicios_reviews_visible_limit_reached', 'servicios_presupuestador_ai_limit_reached',
         ];
         if ($featureKey && in_array($type, $triggerTypesWithLimits)) {
             $freemiumLimit = $this->getVerticalLimit($verticalId, $planId, $featureKey);
@@ -745,6 +746,14 @@ class UpgradeTriggerService
                         ]),
                 ];
 
+            case 'servicios_presupuestador_ai_limit_reached':
+                return [
+                    'title' => $this->t('Presupuestador con IA'),
+                    'message' => $this->t('El presupuestador automatico con IA esta disponible desde el plan @plan. Genera presupuestos personalizados en segundos.', [
+                        '@plan' => $recommendedPlanId,
+                    ]),
+                ];
+
             default:
                 return [
                     'title' => $this->t('Mejora tu plan'),
@@ -1036,6 +1045,12 @@ class UpgradeTriggerService
             'name' => 'star',
             'variant' => 'duotone',
             'color' => 'naranja-impulso',
+        ];
+        $icons['servicios_presupuestador_ai_limit_reached'] = [
+            'category' => 'business',
+            'name' => 'receipt',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
         ];
 
         return $icons[$type] ?? $icons['limit_reached'];

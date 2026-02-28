@@ -243,7 +243,7 @@ class VerticalLandingController extends ControllerBase
       'color' => 'servicios',
       'hero' => [
         'headline' => $this->t('Más clientes, menos papeleo. Tu negocio de servicios digitalizado.'),
-        'subheadline' => $this->t('Motor de reservas 24/7, videoconsulta online, marketplace profesional y cobro automático via Stripe — todo en un solo lugar, desde 0 €/mes.'),
+        'subheadline' => $this->t('Motor de reservas 24/7, videoconsulta online, marketplace profesional, presupuestador IA, firma digital y cobro automático via Stripe — todo en un solo lugar, desde 0 €/mes.'),
         'icon' => ['category' => 'business', 'name' => 'briefcase'],
         'cta' => [
           'text' => $this->t('Empieza gratis ahora'),
@@ -274,6 +274,9 @@ class VerticalLandingController extends ControllerBase
         ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Cobro Automático via Stripe'), 'description' => $this->t('Pagos seguros con Stripe Connect. Comisión transparente del 10%. Tu dinero en 2-7 días.')],
         ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot IA para Profesionales'), 'description' => $this->t('Asistente inteligente que optimiza tu oferta, sugiere precios y analiza tendencias de demanda.')],
         ['icon' => ['category' => 'business', 'name' => 'chart'], 'title' => $this->t('Dashboard con Analítica'), 'description' => $this->t('KPIs en tiempo real: ingresos, tasa de reserva, satisfacción, no-shows y tendencias mensuales.')],
+        ['icon' => ['category' => 'business', 'name' => 'receipt'], 'title' => $this->t('Presupuestador con IA'), 'description' => $this->t('Genera presupuestos personalizados en segundos. La IA analiza el servicio y ajusta el precio a la complejidad.')],
+        ['icon' => ['category' => 'business', 'name' => 'signature'], 'title' => $this->t('Firma Digital PAdES'), 'description' => $this->t('Contratos de servicio con firma digital avanzada via AutoFirma. Validez legal europea.')],
+        ['icon' => ['category' => 'ui', 'name' => 'lock'], 'title' => $this->t('Buzón de Confianza'), 'description' => $this->t('Mensajería cifrada end-to-end entre cliente y profesional. Historial vinculado a cada reserva.')],
       ],
       'social_proof' => [
         'testimonials' => [
@@ -305,6 +308,7 @@ class VerticalLandingController extends ControllerBase
           $this->t('Marketplace con perfil profesional'),
           $this->t('Cobro automático via Stripe'),
           $this->t('Copilot IA incluido'),
+          $this->t('Presupuestador IA desde Starter'),
         ],
       ],
       'faq' => [
@@ -318,6 +322,9 @@ class VerticalLandingController extends ControllerBase
         ['question' => $this->t('¿Qué pasa si un cliente no se presenta?'), 'answer' => $this->t('El sistema detecta no-shows automáticamente. Puedes configurar política de cancelación con cobro parcial y el cliente queda marcado para futuras reservas.')],
         ['question' => $this->t('¿Cuánto cuesta comparado con otras plataformas?'), 'answer' => $this->t('Desde 0 €/mes (plan Free: 3 servicios, 10 reservas/mes). Frente a Doctolib, Treatwell o Calendly Pro (30-90 €/mes), accedes a reservas + marketplace + cobro + IA por una fracción.')],
         ['question' => $this->t('¿Puedo probarlo sin dar mi tarjeta?'), 'answer' => $this->t('Por supuesto. El plan Free incluye 3 servicios, 10 reservas/mes, perfil en marketplace y Copilot IA con 10 consultas/mes. Sin tarjeta de crédito.')],
+        ['question' => $this->t('¿Cómo funciona el presupuestador automático?'), 'answer' => $this->t('Cuando un servicio tiene precio tipo "bajo presupuesto", la IA genera una estimación personalizada basada en la complejidad descrita por el cliente. El profesional revisa y envía el presupuesto final.')],
+        ['question' => $this->t('¿La firma digital tiene validez legal?'), 'answer' => $this->t('Sí. Utilizamos firma PAdES (PDF Advanced Electronic Signatures) via AutoFirma con certificados FNMT. Validez legal en toda la Unión Europea según eIDAS.')],
+        ['question' => $this->t('¿Cómo funciona el Buzón de Confianza?'), 'answer' => $this->t('Al confirmar una reserva, se abre automáticamente un canal cifrado end-to-end entre cliente y profesional. Los mensajes, archivos y documentos quedan vinculados a la reserva con trazabilidad completa.')],
       ],
       'final_cta' => [
         'headline' => $this->t('Digitaliza tu negocio de servicios hoy mismo'),

@@ -391,6 +391,53 @@ function jaraba_servicios_conecta_entity_update(EntityInterface $entity): void {
           );
         }
       }
+
+      // Buzon de Confianza: auto-crear conversacion segura al confirmar.
+      // PRESAVE-RESILIENCE-001: hasService() + try-catch.
+      if ($new_status === 'confirmed' && $old_status !== 'confirmed'
+          && $entity->hasField('conversation_uuid')
+          && empty($entity->get('conversation_uuid')->value)) {
+        if (\Drupal::hasService('jaraba_messaging.conversation')) {
+          try {
+            $conversationService = \Drupal::service('jaraba_messaging.conversation');
+            $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+            $tenant = $tenantContext->getCurrentTenant();
+
+            $provider = $entity->get('provider_id')->entity;
+            $providerUid = $provider ? (int) $provider->getOwnerId() : 0;
+            $clientUid = (int) $entity->getOwnerId();
+
+            if ($tenant && $providerUid && $clientUid) {
+              $offeringLabel = $entity->get('offering_id')->entity?->label() ?? 'Servicio';
+              $conversation = $conversationService->create(
+                tenantId: (int) $tenant->id(),
+                initiatedBy: $clientUid,
+                participantIds: [$clientUid, $providerUid],
+                title: 'Reserva #' . $entity->id() . ' - ' . $offeringLabel,
+                conversationType: 'direct',
+                contextType: 'booking',
+                contextId: (string) $entity->id(),
+              );
+              $entity->set('conversation_uuid', $conversation->uuid());
+              // Evitar loop infinito: guardar sin disparar hooks.
+              $entity->setSyncing(TRUE);
+              $entity->save();
+              $entity->setSyncing(FALSE);
+
+              \Drupal::logger('jaraba_servicios_conecta')->info(
+                'Secure conversation created for booking @id (UUID: @uuid).',
+                ['@id' => $entity->id(), '@uuid' => $conversation->uuid()]
+              );
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('jaraba_servicios_conecta')->warning(
+              'Error creating secure conversation for booking @id: @error',
+              ['@id' => $entity->id(), '@error' => $e->getMessage()]
+            );
+          }
+        }
+      }
     }
   }
 }

@@ -240,3 +240,54 @@ function jaraba_servicios_conecta_update_10002(): void {
     }
   }
 }
+
+/**
+ * Add cross-module integration fields to booking entity (quote, contract, conversation).
+ */
+function jaraba_servicios_conecta_update_10003(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_id = 'booking';
+
+  if (!$update_manager->getEntityType($entity_type_id)) {
+    return;
+  }
+
+  // quote_id: integer FK to Quote entity (ENTITY-FK-001: cross-module = integer).
+  if (!$update_manager->getFieldStorageDefinition('quote_id', $entity_type_id)) {
+    $field = \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Presupuesto'))
+      ->setDescription(t('ID del presupuesto asociado (Quote entity de jaraba_legal_billing).'))
+      ->setSetting('unsigned', TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setTargetEntityTypeId($entity_type_id);
+    $update_manager->installFieldStorageDefinition('quote_id', $entity_type_id, 'jaraba_servicios_conecta', $field);
+    \Drupal::logger('jaraba_servicios_conecta')->info('Installed quote_id field on booking.');
+  }
+
+  // contract_document_id: integer FK to documento_firma node.
+  if (!$update_manager->getFieldStorageDefinition('contract_document_id', $entity_type_id)) {
+    $field = \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Contrato Firmado'))
+      ->setDescription(t('NID del documento de firma (documento_firma node).'))
+      ->setSetting('unsigned', TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setTargetEntityTypeId($entity_type_id);
+    $update_manager->installFieldStorageDefinition('contract_document_id', $entity_type_id, 'jaraba_servicios_conecta', $field);
+    \Drupal::logger('jaraba_servicios_conecta')->info('Installed contract_document_id field on booking.');
+  }
+
+  // conversation_uuid: string FK to SecureConversation UUID.
+  if (!$update_manager->getFieldStorageDefinition('conversation_uuid', $entity_type_id)) {
+    $field = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setLabel(t('Conversación'))
+      ->setDescription(t('UUID de la conversación segura en jaraba_messaging.'))
+      ->setSetting('max_length', 36)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setTargetEntityTypeId($entity_type_id);
+    $update_manager->installFieldStorageDefinition('conversation_uuid', $entity_type_id, 'jaraba_servicios_conecta', $field);
+    \Drupal::logger('jaraba_servicios_conecta')->info('Installed conversation_uuid field on booking.');
+  }
+}

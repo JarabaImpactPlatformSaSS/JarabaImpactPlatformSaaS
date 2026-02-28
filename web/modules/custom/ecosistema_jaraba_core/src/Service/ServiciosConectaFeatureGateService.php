@@ -75,6 +75,7 @@ class ServiciosConectaFeatureGateService {
     'ai_triage',
     'video_conferencing',
     'analytics_dashboard',
+    'presupuestador_ai',
   ];
 
   /**

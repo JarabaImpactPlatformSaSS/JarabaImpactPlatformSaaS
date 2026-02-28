@@ -6,9 +6,11 @@ namespace Drupal\jaraba_servicios_conecta\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\jaraba_servicios_conecta\Service\AvailabilityService;
+use Drupal\jaraba_servicios_conecta\Service\BookingContractService;
 use Drupal\jaraba_servicios_conecta\Service\ProviderService;
 use Drupal\jaraba_servicios_conecta\Service\ServiceOfferingService;
-use Drupal\jaraba_servicios_conecta\Service\AvailabilityService;
+use Drupal\jaraba_servicios_conecta\Service\ServiceQuoteService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +47,23 @@ class ServiceApiController extends ControllerBase {
   protected TenantContextService $tenantContext;
 
   /**
+   * The service quote service.
+   */
+  protected ?ServiceQuoteService $quoteService;
+
+  /**
+   * The booking contract service.
+   */
+  protected ?BookingContractService $contractService;
+
+  /**
+   * The feature gate service (optional).
+   *
+   * @var object|null
+   */
+  protected ?object $featureGate;
+
+  /**
    * Constructor.
    */
   public function __construct(
@@ -52,11 +71,17 @@ class ServiceApiController extends ControllerBase {
     ServiceOfferingService $offering_service,
     AvailabilityService $availability_service,
     TenantContextService $tenant_context,
+    ?ServiceQuoteService $quote_service = NULL,
+    ?BookingContractService $contract_service = NULL,
+    ?object $feature_gate = NULL,
   ) {
     $this->providerService = $provider_service;
     $this->offeringService = $offering_service;
     $this->availabilityService = $availability_service;
     $this->tenantContext = $tenant_context;
+    $this->quoteService = $quote_service;
+    $this->contractService = $contract_service;
+    $this->featureGate = $feature_gate;
   }
 
   /**
@@ -68,6 +93,9 @@ class ServiceApiController extends ControllerBase {
       $container->get('jaraba_servicios_conecta.service_offering'),
       $container->get('jaraba_servicios_conecta.availability'),
       $container->get('ecosistema_jaraba_core.tenant_context'),
+      $container->has('jaraba_servicios_conecta.service_quote') ? $container->get('jaraba_servicios_conecta.service_quote') : NULL,
+      $container->has('jaraba_servicios_conecta.booking_contract') ? $container->get('jaraba_servicios_conecta.booking_contract') : NULL,
+      $container->has('ecosistema_jaraba_core.serviciosconecta_feature_gate') ? $container->get('ecosistema_jaraba_core.serviciosconecta_feature_gate') : NULL,
     );
   }
 
@@ -420,6 +448,170 @@ class ServiceApiController extends ControllerBase {
         'date' => $date,
         'duration_minutes' => $duration,
         'available_slots' => $available_slots,
+      ],
+    ]);
+  }
+
+  /**
+   * POST /api/v1/servicios/quotes - Crear presupuesto con IA.
+   */
+  public function createQuote(Request $request): JsonResponse {
+    if (!$this->quoteService) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'UNAVAILABLE', 'message' => 'Quote service not available']], 503);
+    }
+
+    // Feature gate check.
+    $userId = (int) $this->currentUser()->id();
+    if ($this->featureGate && method_exists($this->featureGate, 'checkAndFire')) {
+      $gateResult = $this->featureGate->checkAndFire($userId, 'presupuestador_ai', []);
+      if (!$gateResult->isAllowed()) {
+        return new JsonResponse([
+          'success' => FALSE,
+          'error' => [
+            'code' => 'FEATURE_GATE',
+            'message' => 'Presupuestador IA no disponible en tu plan actual.',
+            'upgrade' => TRUE,
+          ],
+        ], 403);
+      }
+    }
+
+    $data = json_decode($request->getContent(), TRUE);
+
+    if (empty($data['offering_id'])) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'VALIDATION', 'message' => 'Missing required field: offering_id']], 400);
+    }
+
+    $clientData = [
+      'client_name' => $data['client_name'] ?? '',
+      'client_email' => $data['client_email'] ?? '',
+      'client_phone' => $data['client_phone'] ?? '',
+    ];
+
+    $result = $this->quoteService->generateQuote(
+      (int) $data['offering_id'],
+      $clientData,
+      $data['description'] ?? NULL
+    );
+
+    if (!$result) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Failed to generate quote']], 500);
+    }
+
+    return new JsonResponse(['success' => TRUE, 'data' => $result], 201);
+  }
+
+  /**
+   * POST /api/v1/servicios/bookings/{booking}/contract - Generar contrato.
+   */
+  public function generateContract(string $booking): JsonResponse {
+    if (!$this->contractService) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'UNAVAILABLE', 'message' => 'Contract service not available']], 503);
+    }
+
+    // Feature gate check.
+    $userId = (int) $this->currentUser()->id();
+    if ($this->featureGate && method_exists($this->featureGate, 'checkAndFire')) {
+      $gateResult = $this->featureGate->checkAndFire($userId, 'firma_digital', []);
+      if (!$gateResult->isAllowed()) {
+        return new JsonResponse([
+          'success' => FALSE,
+          'error' => [
+            'code' => 'FEATURE_GATE',
+            'message' => 'Firma digital no disponible en tu plan actual.',
+            'upgrade' => TRUE,
+          ],
+        ], 403);
+      }
+    }
+
+    // Verify the booking exists and belongs to the current user.
+    $bookingEntity = $this->entityTypeManager()->getStorage('booking')->load($booking);
+    if (!$bookingEntity) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'Booking not found']], 404);
+    }
+
+    $currentUserId = (int) $this->currentUser()->id();
+    $bookingOwner = (int) $bookingEntity->getOwnerId();
+    $providerProfile = $bookingEntity->get('provider_id')->entity;
+    $providerOwner = $providerProfile ? (int) $providerProfile->getOwnerId() : 0;
+
+    if ($currentUserId !== $bookingOwner && $currentUserId !== $providerOwner) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'FORBIDDEN', 'message' => 'Access denied']], 403);
+    }
+
+    $result = $this->contractService->generateContract((int) $booking);
+    if (!$result) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'ERROR', 'message' => 'Failed to generate contract']], 500);
+    }
+
+    return new JsonResponse(['success' => TRUE, 'data' => $result], 201);
+  }
+
+  /**
+   * GET /api/v1/servicios/bookings/{booking}/contract/status - Estado firma.
+   */
+  public function contractStatus(string $booking): JsonResponse {
+    if (!$this->contractService) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'UNAVAILABLE', 'message' => 'Contract service not available']], 503);
+    }
+
+    $result = $this->contractService->getContractStatus((int) $booking);
+    if (!$result) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'No contract found for this booking']], 404);
+    }
+
+    return new JsonResponse(['success' => TRUE, 'data' => $result]);
+  }
+
+  /**
+   * GET /api/v1/servicios/bookings/{booking}/conversation - Buzon confianza.
+   */
+  public function bookingConversation(string $booking): JsonResponse {
+    // Feature gate check.
+    $userId = (int) $this->currentUser()->id();
+    if ($this->featureGate && method_exists($this->featureGate, 'checkAndFire')) {
+      $gateResult = $this->featureGate->checkAndFire($userId, 'buzon_confianza', []);
+      if (!$gateResult->isAllowed()) {
+        return new JsonResponse([
+          'success' => FALSE,
+          'error' => [
+            'code' => 'FEATURE_GATE',
+            'message' => 'Buzón de Confianza no disponible en tu plan actual.',
+            'upgrade' => TRUE,
+          ],
+        ], 403);
+      }
+    }
+
+    $bookingEntity = $this->entityTypeManager()->getStorage('booking')->load($booking);
+    if (!$bookingEntity) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'Booking not found']], 404);
+    }
+
+    // Verify access.
+    $currentUserId = (int) $this->currentUser()->id();
+    $bookingOwner = (int) $bookingEntity->getOwnerId();
+    $providerProfile = $bookingEntity->get('provider_id')->entity;
+    $providerOwner = $providerProfile ? (int) $providerProfile->getOwnerId() : 0;
+
+    if ($currentUserId !== $bookingOwner && $currentUserId !== $providerOwner) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'FORBIDDEN', 'message' => 'Access denied']], 403);
+    }
+
+    $conversationUuid = $bookingEntity->hasField('conversation_uuid')
+      ? ($bookingEntity->get('conversation_uuid')->value ?? '')
+      : '';
+
+    if (empty($conversationUuid)) {
+      return new JsonResponse(['success' => FALSE, 'error' => ['code' => 'NOT_FOUND', 'message' => 'No conversation linked to this booking']], 404);
+    }
+
+    return new JsonResponse([
+      'success' => TRUE,
+      'data' => [
+        'conversation_uuid' => $conversationUuid,
+        'messaging_api_url' => '/api/v1/messaging/conversations/' . $conversationUuid,
       ],
     ]);
   }

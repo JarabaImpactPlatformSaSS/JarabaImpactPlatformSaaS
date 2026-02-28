@@ -231,6 +231,28 @@ class Booking extends ContentEntityBase implements EntityChangedInterface, Entit
       ->setDisplayOptions('form', ['weight' => 61])
       ->setDisplayConfigurable('form', TRUE);
 
+    // --- Integraciones cross-module ---
+    $fields['quote_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Presupuesto'))
+      ->setDescription(t('ID del presupuesto asociado (Quote entity de jaraba_legal_billing).'))
+      ->setSetting('unsigned', TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['contract_document_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Contrato Firmado'))
+      ->setDescription(t('NID del documento de firma (documento_firma node).'))
+      ->setSetting('unsigned', TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['conversation_uuid'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Conversación'))
+      ->setDescription(t('UUID de la conversación segura en jaraba_messaging.'))
+      ->setSetting('max_length', 36)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // --- Timestamps ---
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Creado'));

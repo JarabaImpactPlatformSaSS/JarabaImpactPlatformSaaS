@@ -291,7 +291,7 @@ class PageAttachmentsHooks
     }
 
     if ($route === 'ecosistema_jaraba_core.landing.serviciosconecta') {
-      $description = 'ServiciosConecta: plataforma SaaS para profesionales de servicios. Motor de reservas 24/7, videoconsulta online, marketplace profesional, cobro automatico via Stripe y Copilot IA. Plan gratuito disponible.';
+      $description = 'ServiciosConecta: plataforma SaaS para profesionales de servicios. Motor de reservas 24/7, videoconsulta online, marketplace profesional, presupuestador IA, firma digital PAdES, buzon de confianza cifrado, cobro automatico via Stripe y Copilot IA. Plan gratuito disponible.';
 
       // Meta description.
       $attachments['#attached']['html_head'][] = [
@@ -313,7 +313,7 @@ class PageAttachmentsHooks
         'name' => 'ServiciosConecta',
         'applicationCategory' => 'BusinessApplication',
         'operatingSystem' => 'Web',
-        'description' => 'Plataforma de gestion integral para profesionales de servicios: motor de reservas 24/7, videoconsulta via Jitsi, marketplace profesional, cobro automatico via Stripe Connect, paquetes de sesiones, resenas verificadas y Copilot IA.',
+        'description' => 'Plataforma de gestion integral para profesionales de servicios: motor de reservas 24/7, videoconsulta via Jitsi, marketplace profesional, presupuestador IA, firma digital PAdES, buzon de confianza cifrado, cobro automatico via Stripe Connect, paquetes de sesiones, resenas verificadas y Copilot IA.',
         'offers' => [
           '@type' => 'Offer',
           'price' => '0',
@@ -329,6 +329,9 @@ class PageAttachmentsHooks
           'Cobro automatico via Stripe Connect',
           'Copilot IA para optimizar tu oferta',
           'Dashboard con analitica en tiempo real',
+          'Presupuestador automatico con IA',
+          'Firma digital PAdES con validez legal europea',
+          'Buzon de confianza con mensajeria cifrada end-to-end',
         ],
       ];
 

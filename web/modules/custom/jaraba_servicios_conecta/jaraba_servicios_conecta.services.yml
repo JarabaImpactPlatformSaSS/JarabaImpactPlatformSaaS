@@ -71,6 +71,32 @@ services:
       - '@logger.channel.jaraba_servicios_conecta'
 
 
+  # =====================================================================
+  # ServiceQuoteService: Puente entre ServiceOffering y Quote entity
+  # Responsabilidad: generar presupuestos con estimacion IA opcional
+  # Relaciones: consume Quote (jaraba_legal_billing), ServiceOffering
+  # =====================================================================
+  jaraba_servicios_conecta.service_quote:
+    class: Drupal\jaraba_servicios_conecta\Service\ServiceQuoteService
+    arguments:
+      - '@entity_type.manager'
+      - '@?jaraba_legal_billing.quote_estimator'
+      - '@current_user'
+      - '@logger.channel.jaraba_servicios_conecta'
+
+  # =====================================================================
+  # BookingContractService: Generacion de contratos PDF y registro firma
+  # Responsabilidad: crear PDF de contrato, registrar documento_firma
+  # Relaciones: consume FirmaDigitalService (ecosistema_jaraba_core)
+  # =====================================================================
+  jaraba_servicios_conecta.booking_contract:
+    class: Drupal\jaraba_servicios_conecta\Service\BookingContractService
+    arguments:
+      - '@entity_type.manager'
+      - '@?ecosistema_jaraba_core.firma_digital'
+      - '@current_user'
+      - '@logger.channel.jaraba_servicios_conecta'
+
   # FIX-046 + GAP-AUD-022: Service Matching — Hybrid scoring with AI re-ranking
   jaraba_servicios_conecta.service_matching:
     class: Drupal\jaraba_servicios_conecta\Service\ServiceMatchingService

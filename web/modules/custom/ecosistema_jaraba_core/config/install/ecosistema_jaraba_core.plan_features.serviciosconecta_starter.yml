@@ -9,5 +9,6 @@ limits:
   calendar_sync: 0
   buzon_confianza: 0
   firma_digital: 0
+  presupuestador_ai: 1
 description: 'Limites del tier Starter para la vertical ServiciosConecta.'
 status: true

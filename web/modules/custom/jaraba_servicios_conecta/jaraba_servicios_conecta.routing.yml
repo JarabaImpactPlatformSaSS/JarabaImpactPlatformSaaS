@@ -203,6 +203,49 @@ jaraba_servicios_conecta.settings:
   requirements:
     _permission: 'administer site configuration'
 
+# --- API REST Quotes (Presupuestador IA) ---
+
+jaraba_servicios_conecta.api.quote:
+  path: '/api/v1/servicios/quotes'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::createQuote'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+
+# --- API REST Contracts (Firma Digital PAdES) ---
+
+jaraba_servicios_conecta.api.contract:
+  path: '/api/v1/servicios/bookings/{booking}/contract'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::generateContract'
+  methods: [POST]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+    booking: '\d+'
+
+jaraba_servicios_conecta.api.contract.status:
+  path: '/api/v1/servicios/bookings/{booking}/contract/status'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::contractStatus'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    booking: '\d+'
+
+# --- API REST Conversations (Buzon de Confianza) ---
+
+jaraba_servicios_conecta.api.booking_conversation:
+  path: '/api/v1/servicios/bookings/{booking}/conversation'
+  defaults:
+    _controller: '\Drupal\jaraba_servicios_conecta\Controller\ServiceApiController::bookingConversation'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    booking: '\d+'
+
 # === Review API Routes (REV-PHASE4) ===
 
 jaraba_servicios_conecta.api.reviews.list:

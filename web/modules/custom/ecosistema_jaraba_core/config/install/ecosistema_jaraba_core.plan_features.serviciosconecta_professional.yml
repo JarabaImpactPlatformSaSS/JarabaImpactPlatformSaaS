@@ -14,5 +14,6 @@ limits:
   calendar_sync: 1
   buzon_confianza: 1
   firma_digital: 0
+  presupuestador_ai: 1
 description: 'Limites del tier Professional para la vertical ServiciosConecta.'
 status: true
