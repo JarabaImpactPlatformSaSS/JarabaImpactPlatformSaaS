@@ -2,8 +2,8 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-28
-**Versión:** 92.0.0 (Sistema de Coherencia Juridica LCIS 9 Capas — KB normativa + Intent Classifier + Normative Graph + Prompt Rules + Validator + Disclaimer + Multi-Turn)
-**Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
+**Versión:** 93.0.0 (Claude Code Development Pipeline — CLAUDE.md + 3 Subagentes + 2 Hooks + 4 Commands + MCP Stripe)
+**Estado:** Claude Code DX Pipeline (14 ficheros, 30 tests funcionales) + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
 ---
@@ -2246,6 +2246,64 @@ La auditoría profunda multidimensional del 2026-02-06 identificó **9 hallazgos
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 10.6 Developer Experience Pipeline (Claude Code)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│              CLAUDE CODE DEVELOPMENT PIPELINE                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                   CAPA 1: PROTECCION (PreToolUse)                │  │
+│   │  • pre-tool-use.sh — Bloquea: composer.lock, .lando.yml,        │  │
+│   │    settings.php, settings.secrets.php, phpstan-baseline.neon     │  │
+│   │  • Advierte: master docs (DOC-GUARD-001), CI workflows          │  │
+│   │  • JSON stdout: permissionDecision deny/ask + exit code 2/0     │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                           │                                             │
+│                           ▼                                             │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                   CAPA 2: LINT (PostToolUse)                     │  │
+│   │  • post-edit-lint.sh — 4 tipos de archivo:                       │  │
+│   │    PHP: syntax + ContentEntityForm + eval/exec                   │  │
+│   │    SCSS: hex hardcoded + @import + rgba(#hex)                    │  │
+│   │    JS: URL hardcoded + innerHTML sin checkPlain                  │  │
+│   │    Twig: |raw + textos sin {% trans %}                           │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                           │                                             │
+│                           ▼                                             │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                   CAPA 3: SUBAGENTES                             │  │
+│   │  • reviewer — Code review con 20+ directrices del proyecto       │  │
+│   │  • tester — Generacion tests PHP 8.4 (7 reglas criticas)        │  │
+│   │  • security-auditor — 10 categorias de escaneo                  │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                           │                                             │
+│                           ▼                                             │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                   CAPA 4: SLASH COMMANDS                         │  │
+│   │  • /fix-issue [#N] — Workflow 8 pasos con branch + PR           │  │
+│   │  • /create-entity [mod] [id] — Scaffold 9 archivos completo     │  │
+│   │  • /verify-runtime [mod] — 12 checks RUNTIME-VERIFY-001         │  │
+│   │  • /audit-wcag [url] — 10 categorias WCAG 2.1 AA                │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                           │                                             │
+│                           ▼                                             │
+│   ┌─────────────────────────────────────────────────────────────────┐  │
+│   │                   CAPA 5: INTEGRACIONES                          │  │
+│   │  • MCP Stripe — .mcp.json con @stripe/mcp (stdio)               │  │
+│   │  • CLAUDE.md — 236 LOC con identidad proyecto + stack + reglas  │  │
+│   │  • Estado del SaaS — 793 LOC para Claude Chat Project Knowledge │  │
+│   └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│   ARCHIVOS: 14 creados en .claude/ + docs/                              │
+│   TESTS: 30 funcionales (5+14+5+5+1)                                   │
+│   DIRECTRICES: HOOK-PRETOOLUSE-001, HOOK-POSTLINT-001,                 │
+│                CLAUDE-SUBAGENT-001                                      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 11. Roadmap
@@ -2731,13 +2789,14 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 92.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
+> **Versión:** 93.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
 
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-28 | **93.0.0** | **Claude Code Development Pipeline — DX Clase Mundial:** Nueva seccion 10.6 Developer Experience Pipeline con ASCII box 5 capas. Capa 1 Proteccion: `pre-tool-use.sh` PreToolUse hook bloquea 7 archivos criticos (exit 2 + JSON deny stdout), advierte master docs (ask). Capa 2 Lint: `post-edit-lint.sh` PostToolUse hook valida 4 tipos archivo (PHP syntax + PREMIUM-FORMS + eval, SCSS CSS-VAR-ALL-COLORS-001 + @import + rgba, JS ROUTE-LANGPREFIX-001 + innerHTML XSS, Twig |raw + i18n). Capa 3 Subagentes: reviewer (20+ directrices, 4 niveles severidad), tester (7 reglas PHP 8.4, templates Unit+Kernel), security-auditor (10 categorias escaneo). Capa 4 Commands: /fix-issue (8 pasos branch+PR), /create-entity (scaffold 9 archivos), /verify-runtime (12 checks), /audit-wcag (10 categorias WCAG 2.1 AA). Capa 5 Integraciones: MCP Stripe, CLAUDE.md 236 LOC, Estado SaaS 793 LOC. settings.json con hooks config. 14 ficheros, 30 tests funcionales. 3 bugs corregidos (Python extraction, output channel, multiline grep). 3 reglas nuevas en Directrices v104.0.0. Aprendizaje #154. |
 | 2026-02-28 | **92.0.0** | **Sistema de Coherencia Juridica LCIS 9 Capas — Validacion Normativa + Anti-Sycophancy + Multi-Turn:** Nuevo ASCII box SISTEMA DE COHERENCIA JURIDICA (LCIS) en seccion 12.6. 9 servicios PHP en `jaraba_legal_intelligence/src/LegalCoherence/`: LegalCoherenceKnowledgeBase (L1, 9 niveles NORMATIVE_HIERARCHY derecho_ue_primario→circulares, 6 FORAL_LAW_REGIMES, 7 STATE_EXCLUSIVE_COMPETENCES Art.149.1, 30+ NORM_TYPE_PATTERNS regex, pesos authority 0.98-0.20), LegalIntentClassifierService (L2, gate 5 intents LEGAL_DIRECT/IMPLICIT/REFERENCE/COMPLIANCE/NON_LEGAL, scoring keywords con thresholds 0.85/0.15, shortcircuits acciones legales + jarabalex, bonus vertical), NormativeGraphEnricher (L3, authority-aware RAG ranking formula 0.55 semantic + 0.30 authority + 0.15 recency, derogation filter, territory warnings, CCAA competence bonus), LegalCoherencePromptRule (L4, 8+1 reglas R1-R8 + R9 territorial, COHERENCE_PROMPT full + COHERENCE_PROMPT_SHORT, applyWithTerritory() con foral law auto-detection, requiresCoherence()/useShortVersion()), LegalConstitutionalGuardrailService (L5), LegalCoherenceValidatorService (L6, 7 checks: hierarchy_inversion/organic_law/eu_primacy/competence/vigencia/contradiction/sycophancy + antinomies, PENALTIES scoring critical=-0.30 to low=-0.05, action regenerate max 2 retries/block/warn/allow, anti-sycophancy V8 premise validation), LegalCoherenceVerifierService (L7), LegalDisclaimerEnforcementService (L8, non-removable disclaimer, fallback without LegalDisclaimerService, coherence score display threshold 70%), LegalConversationContext (MT, extractAssertions para competencia/primacia/vigencia/reserva_lo/retroactividad/jerarquia, checkCrossTurnCoherence, MAX_TURNS=20, MAX_ASSERTIONS=50). 7 ficheros de test: 149 tests, 277 assertions, 0 errores. EU AI Act compliance HIGH RISK Annex III art.8. 6 reglas nuevas en Directrices v103.0.0. Aprendizaje #153. |
 | 2026-02-28 | **91.0.0** | **Unificacion Landing JarabaLex + Despachos — 5 Modulos Habilitados + 18 FreemiumVerticalLimit + LexNET + SEO:** Unificacion de `/despachos` en `/jarabalex` via 301 redirect (`Url::fromRoute()`). 5 modulos legales habilitados (jaraba_legal_calendar, jaraba_legal_vault, jaraba_legal_billing, jaraba_legal_lexnet, jaraba_legal_templates). 18 nuevos FreemiumVerticalLimit configs (6 feature_keys × 3 planes: max_cases, vault_storage_mb, calendar_deadlines, billing_invoices_month, lexnet_submissions_month, template_generations_month — total 36). JarabaLexFeatureGateService +6 FEATURE_TRIGGER_MAP entries. UpgradeTriggerService +6 trigger types (11 total) con mensajes y iconos. 3 SaasPlan YAMLs actualizados (starter/pro/enterprise con legal modules). jarabalex() reescrito con 8 features (LexNET killer differentiator, expedientes, agenda, facturacion, boveda), 10 FAQs, pain points despacho, pricing preview con limites reales. despachos() convertido a 301 redirect. legalRedirect() actualizado. Megamenu: "Despachos" → "JarabaLex". PageAttachmentsHooks: SEO meta description + Schema.org SoftwareApplication JSON-LD para /jarabalex (RouteMatchInterface inyectado). Theme: landing.legal anadido a $vertical_routes. Fix: 5 controllers PHP 8.4 readonly property conflict con ControllerBase (CONTROLLER-READONLY-001). Fix: VaultApiController syntax error. 2 reglas nuevas en Directrices v102.0.0: LEGAL-LANDING-UNIFIED-001, CONTROLLER-READONLY-001. Aprendizaje #152. |
 | 2026-02-28 | **90.0.0** | **Centro de Ayuda Clase Mundial — /ayuda con 25 FAQs + Busqueda Unificada FAQ+KB:** Nuevo ASCII box CENTRO DE AYUDA CLASE MUNDIAL en seccion 8.3. Modulo `jaraba_tenant_knowledge` elevado: HelpCenterController refactorizado (getCategoryMeta(), buildFaqPageSchema(), buildBreadcrumbSchema(), buildHelpCenterSeoHead(), getKbArticleCount(), searchApi unificado FAQ+KB). 8 categorias SaaS multi-vertical (getting_started, account, features, billing, ai_copilot, integrations, security, troubleshooting). 25 FAQs seed platform-wide via update_10003 (tenant_id=NULL). Template: hero con trust signals, quick links via Url::fromRoute(), KB cross-link, CTA con botones accionables. Busqueda unificada: FAQ+KB con hasDefinition() guard, slug-based KB URLs, campo type en JSON, JS drupalSettings searchApiUrl. SEO: FAQPage + BreadcrumbList + QAPage JSON-LD, OG/Twitter meta tags, canonical. SCSS: quick-links grid, kb-promo banner, contact buttons, animations con prefers-reduced-motion + no-js fallback. Integracion: jaraba_support (quick links), Knowledge Base (cross-link + busqueda), FAQ Bot widget, footer link. 10 ficheros modificados. Aprendizaje #151. |
@@ -2779,4 +2838,4 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 92.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
+> **Versión:** 93.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
