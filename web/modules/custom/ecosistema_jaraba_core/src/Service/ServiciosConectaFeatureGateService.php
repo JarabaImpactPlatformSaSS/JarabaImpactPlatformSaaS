@@ -53,6 +53,7 @@ class ServiciosConectaFeatureGateService {
    */
   protected const CUMULATIVE_FEATURES = [
     'services',
+    'packages',
   ];
 
   /**
@@ -60,6 +61,8 @@ class ServiciosConectaFeatureGateService {
    */
   protected const MONTHLY_FEATURES = [
     'bookings_per_month',
+    'copilot_queries_month',
+    'reviews_visible',
   ];
 
   /**
@@ -476,6 +479,9 @@ class ServiciosConectaFeatureGateService {
     $messages = [
       'services' => 'Has alcanzado el limite de servicios de tu plan. Actualiza para publicar mas.',
       'bookings_per_month' => 'Has alcanzado el limite de reservas mensuales. Actualiza para no perder clientes.',
+      'packages' => 'Los paquetes de sesiones no estan disponibles en tu plan actual. Actualiza para crear bonos.',
+      'copilot_queries_month' => 'Has alcanzado el limite de consultas IA mensuales. Actualiza para mas consultas.',
+      'reviews_visible' => 'Has alcanzado el limite de resenas visibles. Actualiza para mostrar todas tus resenas.',
       'calendar_sync' => 'La sincronizacion con calendario externo no esta disponible en tu plan actual.',
       'buzon_confianza' => 'El buzon de confianza no esta disponible en tu plan actual.',
       'firma_digital' => 'La firma digital no esta disponible en tu plan actual.',

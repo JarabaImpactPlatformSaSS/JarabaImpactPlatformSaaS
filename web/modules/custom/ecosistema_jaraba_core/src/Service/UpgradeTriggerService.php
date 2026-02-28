@@ -92,6 +92,9 @@ class UpgradeTriggerService
         'servicios_ai_triage_limit_reached' => 0.28,
         'servicios_video_conferencing_limit_reached' => 0.20,
         'servicios_analytics_dashboard_limit_reached' => 0.18,
+        'servicios_packages_limit_reached' => 0.30,
+        'servicios_copilot_queries_month_limit_reached' => 0.35,
+        'servicios_reviews_visible_limit_reached' => 0.25,
     ];
 
     /**
@@ -230,6 +233,8 @@ class UpgradeTriggerService
             'servicios_calendar_sync_limit_reached', 'servicios_buzon_confianza_limit_reached',
             'servicios_firma_digital_limit_reached', 'servicios_ai_triage_limit_reached',
             'servicios_video_conferencing_limit_reached', 'servicios_analytics_dashboard_limit_reached',
+            'servicios_packages_limit_reached', 'servicios_copilot_queries_month_limit_reached',
+            'servicios_reviews_visible_limit_reached',
         ];
         if ($featureKey && in_array($type, $triggerTypesWithLimits)) {
             $freemiumLimit = $this->getVerticalLimit($verticalId, $planId, $featureKey);
@@ -700,6 +705,46 @@ class UpgradeTriggerService
                     ]),
                 ];
 
+            case 'servicios_packages_limit_reached':
+                return [
+                    'title' => $this->t('Limite de paquetes alcanzado'),
+                    'message' => $freemiumLimit
+                        ? $this->t('Has alcanzado el limite de @limit paquetes de sesiones. Actualiza a @plan para crear mas bonos y fidelizar clientes.', [
+                            '@limit' => $freemiumLimit->get('limit_value'),
+                            '@plan' => $recommendedPlanId,
+                        ])
+                        : $this->t('Los paquetes de sesiones estan disponibles desde el plan @plan.', [
+                            '@plan' => $recommendedPlanId,
+                        ]),
+                ];
+
+            case 'servicios_copilot_queries_month_limit_reached':
+                return [
+                    'title' => $this->t('Consultas IA agotadas este mes'),
+                    'message' => $freemiumLimit
+                        ? $this->t('Has usado tus @limit consultas al Copilot IA este mes. Actualiza a @plan para @next consultas/mes.', [
+                            '@limit' => $freemiumLimit->get('limit_value'),
+                            '@plan' => $recommendedPlanId,
+                            '@next' => $recommendedPlanId === 'profesional' ? '100' : 'ilimitadas',
+                        ])
+                        : $this->t('El Copilot IA esta disponible desde el plan @plan.', [
+                            '@plan' => $recommendedPlanId,
+                        ]),
+                ];
+
+            case 'servicios_reviews_visible_limit_reached':
+                return [
+                    'title' => $this->t('Limite de resenas visibles'),
+                    'message' => $freemiumLimit
+                        ? $this->t('Solo tus @limit resenas mas recientes son visibles en tu perfil. Actualiza a @plan para mostrar todas.', [
+                            '@limit' => $freemiumLimit->get('limit_value'),
+                            '@plan' => $recommendedPlanId,
+                        ])
+                        : $this->t('Resenas ilimitadas estan disponibles desde el plan @plan.', [
+                            '@plan' => $recommendedPlanId,
+                        ]),
+                ];
+
             default:
                 return [
                     'title' => $this->t('Mejora tu plan'),
@@ -973,6 +1018,24 @@ class UpgradeTriggerService
             'name' => 'chart-bar',
             'variant' => 'duotone',
             'color' => 'azul-corporativo',
+        ];
+        $icons['servicios_packages_limit_reached'] = [
+            'category' => 'business',
+            'name' => 'gift',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
+        ];
+        $icons['servicios_copilot_queries_month_limit_reached'] = [
+            'category' => 'ai',
+            'name' => 'brain',
+            'variant' => 'duotone',
+            'color' => 'verde-innovacion',
+        ];
+        $icons['servicios_reviews_visible_limit_reached'] = [
+            'category' => 'ui',
+            'name' => 'star',
+            'variant' => 'duotone',
+            'color' => 'naranja-impulso',
         ];
 
         return $icons[$type] ?? $icons['limit_reached'];

@@ -1,0 +1,11 @@
+id: serviciosconecta_free_copilot_queries_month
+label: 'ServiciosConecta Free: Consultas Copilot IA por mes'
+vertical: serviciosconecta
+plan: free
+feature_key: copilot_queries_month
+limit_value: 10
+description: 'Maximo 10 consultas al Copilot IA por mes en plan gratuito ServiciosConecta.'
+upgrade_message: 'Has alcanzado el limite de 10 consultas IA mensuales. Actualiza a Starter para 25 consultas/mes.'
+expected_conversion: 0.35
+weight: 230
+status: true

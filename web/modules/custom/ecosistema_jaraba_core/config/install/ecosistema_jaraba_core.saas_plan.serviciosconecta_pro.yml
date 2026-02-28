@@ -1,0 +1,23 @@
+# Plan SaaS ServiciosConecta Profesional - Para profesionales con volumen
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'ServiciosConecta Profesional'
+price_monthly: '59.00'
+price_yearly: '590.00'
+features:
+  - booking_engine
+  - video_conferencing
+  - marketplace_profile
+  - stripe_payments
+  - reviews
+  - copilot_ia
+  - service_packages
+  - analytics_dashboard
+  - calendar_sync
+  - soporte_email
+  - soporte_chat
+limits: '{"services": 50, "bookings_per_month": 200, "packages": 10, "copilot_queries_month": 100, "reviews_visible": -1, "video_conferencing": 1, "analytics_dashboard": 1, "calendar_sync": 1}'
+stripe_price_id: ''
+weight: 11

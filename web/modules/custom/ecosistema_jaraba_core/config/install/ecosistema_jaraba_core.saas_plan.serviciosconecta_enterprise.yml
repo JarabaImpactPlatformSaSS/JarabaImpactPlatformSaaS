@@ -1,0 +1,26 @@
+# Plan SaaS ServiciosConecta Enterprise - Para empresas y equipos
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'ServiciosConecta Enterprise'
+price_monthly: '149.00'
+price_yearly: '1490.00'
+features:
+  - booking_engine
+  - video_conferencing
+  - marketplace_profile
+  - stripe_payments
+  - reviews
+  - copilot_ia
+  - service_packages
+  - analytics_dashboard
+  - calendar_sync
+  - api_access
+  - white_label
+  - soporte_email
+  - soporte_chat
+  - soporte_dedicado
+limits: '{"services": -1, "bookings_per_month": -1, "packages": -1, "copilot_queries_month": -1, "reviews_visible": -1, "video_conferencing": 1, "analytics_dashboard": 1, "calendar_sync": 1}'
+stripe_price_id: ''
+weight: 12

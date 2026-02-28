@@ -2459,16 +2459,37 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   }
 
   // =========================================================================
-  // I18N: Inject available languages for language switcher component.
-  // The Twig partial _language-switcher.html.twig only renders when
-  // available_languages|length > 1. Without this, it silently hides.
+  // I18N: Inject available languages with proper switch links.
+  // Uses Drupal's language negotiation to generate correct URLs for
+  // the current page in each available language (handles prefixes,
+  // content translations, and path aliases).
   // @see templates/partials/_language-switcher.html.twig
   // @see templates/partials/_header-classic.html.twig (lines 163-168)
   // =========================================================================
   $language_manager = \Drupal::languageManager();
-  $languages = $language_manager->getLanguages();
-  $variables['available_languages'] = array_keys($languages);
-  $variables['current_langcode'] = $language_manager->getCurrentLanguage()->getId();
+  $current_language = $language_manager->getCurrentLanguage();
+  $variables['current_langcode'] = $current_language->getId();
+
+  // Build language switch links for the current page.
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+  $route_params = $route_match->getRawParameters()->all();
+
+  $language_links = [];
+  foreach ($language_manager->getLanguages() as $langcode => $language) {
+    try {
+      $url = \Drupal\Core\Url::fromRoute($route_name ?: '<front>', $route_params, [
+        'language' => $language,
+      ]);
+      $language_links[$langcode] = $url->toString();
+    }
+    catch (\Exception $e) {
+      // Fallback to language prefix root if route can't be resolved.
+      $language_links[$langcode] = '/' . $langcode;
+    }
+  }
+  $variables['available_languages'] = array_keys($language_links);
+  $variables['language_links'] = $language_links;
 
   // =========================================================================
   // MEGAMENU: Solo para SaaS principal (NO meta-sitios)
@@ -3262,7 +3283,7 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           'emprendimiento' => 'impulse',
           'agroconecta' => 'innovation',
           'comercioconecta' => 'impulse',
-          'serviciosconecta' => 'corporate',
+          'serviciosconecta' => 'servicios',
           'jarabalex' => 'corporate',
         ];
 

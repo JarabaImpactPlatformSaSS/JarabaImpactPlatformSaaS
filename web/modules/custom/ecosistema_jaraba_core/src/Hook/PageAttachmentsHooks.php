@@ -289,6 +289,102 @@ class PageAttachmentsHooks
         'jarabalex_schema_org',
       ];
     }
+
+    if ($route === 'ecosistema_jaraba_core.landing.serviciosconecta') {
+      $description = 'ServiciosConecta: plataforma SaaS para profesionales de servicios. Motor de reservas 24/7, videoconsulta online, marketplace profesional, cobro automatico via Stripe y Copilot IA. Plan gratuito disponible.';
+
+      // Meta description.
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'serviciosconecta_meta_description',
+      ];
+
+      // Schema.org SoftwareApplication JSON-LD.
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'ServiciosConecta',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => 'Plataforma de gestion integral para profesionales de servicios: motor de reservas 24/7, videoconsulta via Jitsi, marketplace profesional, cobro automatico via Stripe Connect, paquetes de sesiones, resenas verificadas y Copilot IA.',
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan Free: 3 servicios, 10 reservas/mes, perfil en marketplace',
+        ],
+        'featureList' => [
+          'Motor de reservas online 24/7 con recordatorios',
+          'Videoconsulta integrada via Jitsi Meet',
+          'Marketplace profesional con portfolio y certificaciones',
+          'Paquetes y bonos de sesiones con descuento',
+          'Resenas y reputacion verificada con Schema.org',
+          'Cobro automatico via Stripe Connect',
+          'Copilot IA para optimizar tu oferta',
+          'Dashboard con analitica en tiempo real',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'serviciosconecta_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'ServiciosConecta — Digitaliza tu negocio de servicios',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/serviciosconecta',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'serviciosconecta_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'ServiciosConecta — Digitaliza tu negocio de servicios',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'serviciosconecta_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
   }
 
   /**
