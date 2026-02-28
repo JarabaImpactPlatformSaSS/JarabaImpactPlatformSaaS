@@ -1,0 +1,11 @@
+id: emprendimiento_enterprise_copilot_sessions_daily
+label: 'Emprendimiento Enterprise: Sesiones Copiloto Diarias'
+vertical: emprendimiento
+plan: enterprise
+feature_key: copilot_sessions_daily
+limit_value: -1
+description: 'Sesiones diarias de copilot IA ilimitadas en plan Enterprise Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 623
+status: true

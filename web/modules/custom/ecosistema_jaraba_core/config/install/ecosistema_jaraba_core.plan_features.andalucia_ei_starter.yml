@@ -1,0 +1,17 @@
+id: andalucia_ei_starter
+label: 'Andalucía +ei - Starter'
+vertical: andalucia_ei
+tier: starter
+features:
+  - copilot_ia
+  - formacion_certificada
+  - expediente_digital
+limits:
+  copilot_sessions_daily: 15
+  mentoring_hours_monthly: 5
+  sto_exports: 10
+  training_modules: 10
+  diagnostic_access: 3
+  report_downloads: 5
+description: 'Limites del tier Starter para el vertical Andalucia +ei (institucional).'
+status: true

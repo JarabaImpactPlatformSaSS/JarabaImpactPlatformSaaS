@@ -1,0 +1,11 @@
+id: empleabilidad_enterprise_job_alerts
+label: 'Empleabilidad Enterprise: Alertas de empleo'
+vertical: empleabilidad
+plan: enterprise
+feature_key: job_alerts
+limit_value: -1
+description: 'Alertas de empleo ilimitadas en plan Enterprise Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 363
+status: true

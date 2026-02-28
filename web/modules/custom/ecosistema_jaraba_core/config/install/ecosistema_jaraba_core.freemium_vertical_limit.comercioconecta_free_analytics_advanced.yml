@@ -1,0 +1,11 @@
+id: comercioconecta_free_analytics_advanced
+label: 'ComercioConecta Free: Analytics Avanzados'
+vertical: comercioconecta
+plan: free
+feature_key: analytics_advanced
+limit_value: 0
+description: 'Analytics avanzados no disponibles en plan gratuito ComercioConecta.'
+upgrade_message: 'Los analytics avanzados te ayudan a entender tus ventas y clientes. Disponible desde Profesional.'
+expected_conversion: 0.18
+weight: 140
+status: true

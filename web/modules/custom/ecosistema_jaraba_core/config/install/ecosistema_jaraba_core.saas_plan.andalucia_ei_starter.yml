@@ -1,0 +1,19 @@
+# Plan SaaS Andalucia +ei Starter - Para instituciones pequenas
+# Participantes usan el programa gratis; este plan es para la entidad que despliega el programa
+
+langcode: es
+status: true
+name: 'Andalucía +ei Starter'
+price_monthly: '49.00'
+price_yearly: '490.00'
+features:
+  - copilot_ia
+  - formacion_certificada
+  - expediente_digital
+  - evaluacion_ia_perfil
+  - seguimiento_progreso
+  - exportacion_sto
+  - soporte_email
+limits: '{"copilot_sessions_daily": 15, "mentoring_hours_monthly": 5, "sto_exports": 10, "training_modules": 10, "diagnostic_access": 3, "report_downloads": 5}'
+stripe_price_id: ''
+weight: 10

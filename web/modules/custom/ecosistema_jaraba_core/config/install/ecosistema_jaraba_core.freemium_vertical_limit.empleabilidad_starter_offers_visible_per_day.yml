@@ -3,9 +3,9 @@ label: 'Empleabilidad Starter: Ofertas visibles/dia'
 vertical: empleabilidad
 plan: starter
 feature_key: offers_visible_per_day
-limit_value: -1
-description: 'Ofertas de empleo ilimitadas en plan Starter Empleabilidad.'
-upgrade_message: ''
-expected_conversion: 0
+limit_value: 25
+description: '25 ofertas de empleo visibles al dia en plan Starter Empleabilidad.'
+upgrade_message: 'Has alcanzado el limite de 25 ofertas diarias. Actualiza a Profesional para ofertas ilimitadas.'
+expected_conversion: 0.20
 weight: 311
 status: true

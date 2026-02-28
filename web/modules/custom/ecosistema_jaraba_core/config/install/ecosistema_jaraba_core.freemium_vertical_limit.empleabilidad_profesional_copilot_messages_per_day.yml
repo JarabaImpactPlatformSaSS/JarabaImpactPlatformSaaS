@@ -1,0 +1,11 @@
+id: empleabilidad_profesional_copilot_messages_per_day
+label: 'Empleabilidad Profesional: Mensajes Copilot diarios'
+vertical: empleabilidad
+plan: profesional
+feature_key: copilot_messages_per_day
+limit_value: -1
+description: 'Mensajes al copilot ilimitados en plan Profesional Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 352
+status: true

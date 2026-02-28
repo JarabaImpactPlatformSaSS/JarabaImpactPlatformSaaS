@@ -1,0 +1,11 @@
+id: empleabilidad_enterprise_offers_visible_per_day
+label: 'Empleabilidad Enterprise: Ofertas visibles/dia'
+vertical: empleabilidad
+plan: enterprise
+feature_key: offers_visible_per_day
+limit_value: -1
+description: 'Ofertas de empleo ilimitadas en plan Enterprise Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 313
+status: true

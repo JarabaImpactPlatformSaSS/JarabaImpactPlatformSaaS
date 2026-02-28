@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_orders_per_month
+label: 'AgroConecta Enterprise: Pedidos por Mes'
+vertical: agroconecta
+plan: enterprise
+feature_key: orders_per_month
+limit_value: -1
+description: 'Pedidos ilimitados en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 203
+status: true

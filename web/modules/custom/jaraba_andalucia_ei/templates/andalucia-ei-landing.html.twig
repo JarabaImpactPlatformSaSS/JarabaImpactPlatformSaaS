@@ -15,7 +15,7 @@
     <div class="aei-landing__hero-content">
       <span class="aei-landing__eyebrow">{{ 'Andalucia +ei'|t }}</span>
       <h1 class="aei-landing__title">{{ 'Emprendimiento e Insercion Laboral Aumentado con IA'|t }}</h1>
-      <p class="aei-landing__subtitle">{{ 'Programa gratuito de emprendimiento, formacion certificada y mentoria con inteligencia artificial para personas desempleadas en Andalucia.'|t }}</p>
+      <p class="aei-landing__subtitle">{{ 'Programa gratuito con mentoria IA, formacion adaptativa, expediente digital seguro, evaluacion automatica de perfil e insercion laboral real. 100% subvencionado por la Junta de Andalucia y el FSE.'|t }}</p>
       <div class="aei-landing__actions">
         <a href="{{ solicitar_url }}" class="aei-landing__cta aei-landing__cta--primary">
           {{ 'Solicitar plaza'|t }}
@@ -38,10 +38,12 @@
   <div class="aei-landing__container">
     <div class="aei-landing__stats-grid">
       {% set stats = [
-        { value: '+200', label: 'Participantes'|t, icon: 'users' },
-        { value: '85%', label: 'Tasa de insercion'|t, icon: 'trending-up' },
-        { value: '4.8', label: 'Satisfaccion media'|t, icon: 'star' },
+        { value: '+200', label: 'Participantes activos'|t, icon: 'users' },
+        { value: '85%', label: 'Tasa de insercion laboral'|t, icon: 'trending-up' },
+        { value: '4.8/5', label: 'Satisfaccion media'|t, icon: 'star' },
         { value: '+500h', label: 'Mentoria IA acumulada'|t, icon: 'cpu' },
+        { value: '10', label: 'Servicios integrados'|t, icon: 'grid' },
+        { value: '<48h', label: 'Evaluacion de perfil'|t, icon: 'clock' },
       ] %}
       {% for stat in stats %}
         <div class="aei-landing__stat-card" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
@@ -61,7 +63,7 @@
   <div class="aei-landing__container">
     <div class="aei-landing__section-header">
       <span class="aei-landing__eyebrow">{{ 'Que incluye'|t }}</span>
-      <h2 class="aei-landing__section-title">{{ 'Todo lo que necesitas para tu insercion laboral'|t }}</h2>
+      <h2 class="aei-landing__section-title">{{ '10 herramientas reales para tu insercion laboral'|t }}</h2>
     </div>
     <div class="aei-landing__features-grid">
       {% set features = [
@@ -69,19 +71,61 @@
           icon: 'cpu',
           icon_category: 'ui',
           title: 'Mentoria con Inteligencia Artificial'|t,
-          desc: 'Acceso ilimitado a un tutor IA personalizado que te guia en tu busqueda de empleo, mejora tu CV y prepara tus entrevistas.'|t,
+          desc: 'Tutor IA personalizado que mejora tu CV, prepara entrevistas, elabora planes de negocio y te guia en tu busqueda de empleo. Disponible 24/7.'|t,
         },
         {
           icon: 'graduation',
           icon_category: 'education',
-          title: 'Formacion Certificada'|t,
-          desc: 'Mas de 50 horas de formacion en competencias digitales, emprendimiento y habilidades profesionales con certificado oficial.'|t,
+          title: 'Formacion Adaptativa Certificada'|t,
+          desc: 'Mas de 50 horas en competencias digitales, emprendimiento y habilidades profesionales. El motor de dificultad adaptativa ajusta el contenido a tu nivel.'|t,
         },
         {
           icon: 'briefcase',
           icon_category: 'legal',
           title: 'Insercion Laboral Real'|t,
-          desc: 'Plan personalizado de insercion con orientacion individual, acceso a ofertas exclusivas y acompanamiento hasta tu contratacion.'|t,
+          desc: 'Plan personalizado con orientacion individual, ofertas exclusivas, gestion de fases automatizada y acompanamiento hasta tu contratacion o lanzamiento de negocio.'|t,
+        },
+        {
+          icon: 'folder',
+          icon_category: 'ui',
+          title: 'Expediente Digital Seguro'|t,
+          desc: 'Tu expediente completo en 18 categorias documentales: CV, certificados, contratos, evaluaciones. Almacenamiento cifrado con firma digital y acceso controlado.'|t,
+        },
+        {
+          icon: 'zap',
+          icon_category: 'ui',
+          title: 'Evaluacion IA de tu Perfil'|t,
+          desc: 'Al solicitar plaza, la IA analiza tu perfil en menos de 48h: detecta fortalezas, areas de mejora y te asigna el itinerario mas adecuado automaticamente.'|t,
+        },
+        {
+          icon: 'trending-up',
+          icon_category: 'ui',
+          title: 'Seguimiento de Progreso'|t,
+          desc: 'Panel con tu health score, timeline de hitos, completitud de formacion y metricas de empleabilidad. Ve tu evolucion en tiempo real.'|t,
+        },
+        {
+          icon: 'file-text',
+          icon_category: 'ui',
+          title: 'Informes PDF Personalizados'|t,
+          desc: 'Genera informes de progreso en PDF con marca institucional: competencias adquiridas, horas completadas, evaluaciones y recomendaciones de la IA.'|t,
+        },
+        {
+          icon: 'edit',
+          icon_category: 'ui',
+          title: 'Revision IA de Documentos'|t,
+          desc: 'La IA revisa y mejora tu CV, carta de presentacion y plan de negocio. Sugerencias concretas de formato, contenido y adaptacion a cada oferta.'|t,
+        },
+        {
+          icon: 'message-circle',
+          icon_category: 'ui',
+          title: 'Comunicacion Directa con Mentores'|t,
+          desc: 'Mensajeria integrada con tus mentores y orientadores. Historial de conversaciones vinculado a tu expediente para seguimiento continuo.'|t,
+        },
+        {
+          icon: 'share-2',
+          icon_category: 'ui',
+          title: 'Exportacion STO Automatica'|t,
+          desc: 'Sincronizacion automatica con el Sistema Telematico de Orientacion de la Junta de Andalucia. Tu progreso queda registrado oficialmente sin tramites adicionales.'|t,
         },
       ] %}
       {% for feature in features %}
@@ -106,10 +150,10 @@
         <h2 class="aei-landing__section-title">{{ 'Tu camino hacia el empleo en 4 pasos'|t }}</h2>
         <div class="aei-landing__steps">
           {% set steps = [
-            { num: '1', title: 'Solicita tu plaza'|t, desc: 'Rellena el formulario en 2 minutos. Evaluaremos tu perfil con IA para asignarte el itinerario mas adecuado.'|t },
-            { num: '2', title: 'Diagnostico inicial'|t, desc: 'Primera sesion con tu mentor IA para detectar fortalezas, areas de mejora y objetivos profesionales.'|t },
-            { num: '3', title: 'Formacion + Orientacion'|t, desc: 'Combina formacion certificada con sesiones de orientacion individual y grupal. Minimo 50h formacion + 10h orientacion.'|t },
-            { num: '4', title: 'Insercion laboral'|t, desc: 'Plan personalizado de busqueda activa o lanzamiento de tu proyecto emprendedor con acompanamiento continuo.'|t },
+            { num: '1', title: 'Solicita tu plaza'|t, desc: 'Rellena el formulario en 2 minutos. La IA evalua tu perfil en menos de 48h y te asigna el itinerario mas adecuado automaticamente.'|t },
+            { num: '2', title: 'Diagnostico IA + Expediente'|t, desc: 'Se abre tu expediente digital seguro y el mentor IA analiza tus fortalezas, areas de mejora y objetivos. Tu documentacion queda organizada en 18 categorias.'|t },
+            { num: '3', title: 'Formacion adaptativa'|t, desc: 'Formacion certificada con dificultad que se ajusta a tu nivel. Sesiones de orientacion, revision IA de CV y documentos, todo con seguimiento de progreso en tiempo real.'|t },
+            { num: '4', title: 'Insercion laboral'|t, desc: 'Plan personalizado de busqueda activa o lanzamiento de tu emprendimiento. Informes PDF, sincronizacion STO y acompanamiento continuo hasta tu contratacion.'|t },
           ] %}
           {% for step in steps %}
             <div class="aei-landing__step" data-effect="fade-up" data-delay="{{ loop.index0 * 100 }}">
@@ -199,11 +243,17 @@
     <div class="aei-landing__faq-list">
       {% set faqs = [
         { q: 'Es realmente gratuito?'|t, a: 'Si, el programa esta 100% subvencionado por la Junta de Andalucia y el Fondo Social Europeo. No tiene ningun coste para los participantes.'|t },
-        { q: 'Que es la mentoria con IA?'|t, a: 'Tendras acceso a un tutor virtual basado en inteligencia artificial que te ayuda con tu CV, preparacion de entrevistas, plan de negocio y orientacion profesional personalizada.'|t },
-        { q: 'Cuanto dura el programa?'|t, a: 'La fase de Atencion incluye un minimo de 50 horas de formacion y 10 horas de orientacion. La duracion total depende de tu ritmo y objetivos.'|t },
+        { q: 'Que es la mentoria con IA?'|t, a: 'Tendras acceso a un tutor virtual basado en inteligencia artificial que te ayuda con tu CV, preparacion de entrevistas, plan de negocio y orientacion profesional personalizada. Disponible 24/7 con sesiones ilimitadas en el plan Profesional.'|t },
+        { q: 'Cuanto dura el programa?'|t, a: 'La fase de Atencion incluye un minimo de 50 horas de formacion y 10 horas de orientacion. La duracion total depende de tu ritmo y objetivos. El motor de dificultad adaptativa ajusta el contenido a tu nivel.'|t },
         { q: 'Puedo participar si soy autonomo?'|t, a: 'El programa esta dirigido a personas desempleadas inscritas como demandantes de empleo. Si eres autonomo pero no estas facturando, consulta tu caso concreto.'|t },
-        { q: 'Obtengo algun certificado?'|t, a: 'Si, al completar la formacion recibes un certificado oficial de competencias. Ademas, el programa queda registrado en tu historial del STO.'|t },
+        { q: 'Obtengo algun certificado?'|t, a: 'Si, al completar la formacion recibes un certificado oficial de competencias. Ademas, puedes generar informes PDF personalizados con tus logros y el programa queda registrado en tu historial del STO.'|t },
         { q: 'Que pasa si encuentro trabajo durante el programa?'|t, a: 'Transitas a la Fase de Insercion y el equipo te acompana en la incorporacion laboral. Es el objetivo del programa.'|t },
+        { q: 'Que es el expediente digital?'|t, a: 'Tu expediente digital organiza toda tu documentacion en 18 categorias: CV, certificados, evaluaciones, contratos y mas. Se almacena con cifrado y firma digital, y solo tu y tus mentores autorizados tienen acceso.'|t },
+        { q: 'Como funciona la evaluacion IA de mi perfil?'|t, a: 'Al enviar tu solicitud, la IA analiza tu experiencia, formacion y objetivos para asignarte el itinerario mas adecuado. El proceso tarda menos de 48 horas y recibiras una notificacion con los resultados y recomendaciones.'|t },
+        { q: 'Que es el health score?'|t, a: 'Es una puntuacion en tiempo real que refleja tu progreso en el programa: asistencia, formacion completada, participacion en mentoria y avance hacia la insercion. Te ayuda a identificar areas donde puedes mejorar.'|t },
+        { q: 'Puedo comunicarme directamente con mi mentor?'|t, a: 'Si, la plataforma incluye mensajeria integrada con tus mentores y orientadores. Las conversaciones quedan vinculadas a tu expediente para un seguimiento continuo y documentado.'|t },
+        { q: 'Mis datos estan seguros?'|t, a: 'Absolutamente. Toda la informacion se almacena con cifrado AES-256, cumplimiento RGPD completo y acceso controlado por roles. Solo tu y los profesionales autorizados del programa pueden acceder a tu expediente.'|t },
+        { q: 'Que es la sincronizacion STO?'|t, a: 'Tu progreso en el programa se sincroniza automaticamente con el Sistema Telematico de Orientacion de la Junta de Andalucia. No necesitas hacer tramites adicionales: los certificados y horas quedan registrados oficialmente.'|t },
       ] %}
       {% for faq in faqs %}
         <details class="aei-landing__faq-item" data-effect="fade-up" data-delay="{{ loop.index0 * 80 }}">
@@ -220,7 +270,7 @@
   <div class="aei-landing__container">
     <div class="aei-landing__cta-content">
       <h2 class="aei-landing__cta-title">{{ 'Solicita tu plaza ahora'|t }}</h2>
-      <p class="aei-landing__cta-subtitle">{{ 'Plazas limitadas. Programa 100% gratuito y subvencionado.'|t }}</p>
+      <p class="aei-landing__cta-subtitle">{{ 'Plazas limitadas. 10 herramientas reales, mentoria IA, expediente digital seguro y formacion adaptativa. 100% gratuito.'|t }}</p>
       <div class="aei-landing__cta-actions">
         <a href="{{ solicitar_url }}" class="aei-landing__cta aei-landing__cta--primary aei-landing__cta--large">
           {{ 'Solicitar plaza'|t }}

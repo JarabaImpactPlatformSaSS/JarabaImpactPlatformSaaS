@@ -1,0 +1,11 @@
+id: comercioconecta_free_pos_integration
+label: 'ComercioConecta Free: Integracion TPV'
+vertical: comercioconecta
+plan: free
+feature_key: pos_integration
+limit_value: 0
+description: 'Integracion TPV no disponible en plan gratuito ComercioConecta.'
+upgrade_message: 'La integracion con tu TPV/datafono sincroniza ventas fisicas y online. Disponible en Enterprise.'
+expected_conversion: 0.12
+weight: 150
+status: true

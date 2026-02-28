@@ -1,0 +1,11 @@
+id: emprendimiento_enterprise_calculadora_uses
+label: 'Emprendimiento Enterprise: Usos Calculadora'
+vertical: emprendimiento
+plan: enterprise
+feature_key: calculadora_uses
+limit_value: -1
+description: 'Usos de calculadora de madurez ilimitados en plan Enterprise Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 653
+status: true

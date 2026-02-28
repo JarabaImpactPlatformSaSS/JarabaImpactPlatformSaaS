@@ -2,12 +2,15 @@ id: comercioconecta_starter
 label: 'ComercioConecta - Starter'
 vertical: comercioconecta
 tier: starter
-features: []
+features:
+  - seo_advanced
 limits:
-  products: 10
-  flash_offers_active: 1
-  copilot_uses_per_month: 10
-  qr_codes: 5
+  products: -1
+  flash_offers_active: 10
+  copilot_uses_per_month: 200
+  qr_codes: 10
   seo_local_audit: 0
+  analytics_advanced: 0
+  pos_integration: 0
 description: 'Limites del tier Starter para la vertical ComercioConecta.'
 status: true

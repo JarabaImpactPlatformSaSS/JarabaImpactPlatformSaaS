@@ -1,0 +1,11 @@
+id: andalucia_ei_enterprise_report_downloads
+label: 'Andalucía +ei Enterprise: Descargas Informes'
+vertical: andalucia_ei
+plan: enterprise
+feature_key: report_downloads
+limit_value: -1
+description: 'Descargas de informes ilimitadas en plan Enterprise.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 559
+status: true

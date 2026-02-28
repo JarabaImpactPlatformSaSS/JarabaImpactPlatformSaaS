@@ -1,0 +1,11 @@
+id: empleabilidad_enterprise_diagnostics
+label: 'Empleabilidad Enterprise: Diagnosticos'
+vertical: empleabilidad
+plan: enterprise
+feature_key: diagnostics
+limit_value: -1
+description: 'Diagnosticos ilimitados en plan Enterprise Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 303
+status: true

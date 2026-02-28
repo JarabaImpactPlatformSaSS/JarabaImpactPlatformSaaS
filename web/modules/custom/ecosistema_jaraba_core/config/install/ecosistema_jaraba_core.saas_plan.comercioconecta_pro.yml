@@ -1,0 +1,25 @@
+# Plan SaaS ComercioConecta Profesional - Para comercios con volumen
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'ComercioConecta Profesional'
+price_monthly: '59.00'
+price_yearly: '590.00'
+features:
+  - catalog
+  - flash_offers
+  - qr_codes
+  - stripe_payments
+  - copilot_ia
+  - click_collect
+  - analytics_dashboard
+  - seo_local_audit
+  - loyalty_program
+  - notifications_push
+  - delivery
+  - soporte_email
+  - soporte_chat
+limits: '{"products": -1, "flash_offers_active": -1, "copilot_uses_per_month": -1, "qr_codes": -1, "seo_local_audit": -1, "analytics_advanced": -1, "pos_integration": 0}'
+stripe_price_id: ''
+weight: 11

@@ -9,6 +9,7 @@
  * Variables esperadas:
  * - available_languages: array de langcodes habilitados (['es', 'en', 'pt-br'])
  * - current_langcode: idioma actual de la página ('es')
+ * - language_links: mapa langcode => URL de la página actual en ese idioma
  *
  * Diseño: Dropdown compacto que encaja en la zona de acciones del header.
  * Mobile: Se muestra inline en el overlay del menú móvil.
@@ -38,7 +39,7 @@
     {% for lang in langs %}
       {% if lang != current_lang %}
         <li role="menuitem">
-          <a href="/{{ lang }}"
+          <a href="{{ language_links[lang]|default('/' ~ lang) }}"
              class="language-switcher__option"
              hreflang="{{ lang }}"
              lang="{{ lang }}">

@@ -1,0 +1,11 @@
+id: emprendimiento_enterprise_experiments_monthly
+label: 'Emprendimiento Enterprise: Experimentos Mensuales'
+vertical: emprendimiento
+plan: enterprise
+feature_key: experiments_monthly
+limit_value: -1
+description: 'Experimentos mensuales ilimitados en plan Enterprise Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 613
+status: true

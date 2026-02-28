@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_demand_forecaster
+label: 'AgroConecta Enterprise: Prevision de Demanda'
+vertical: agroconecta
+plan: enterprise
+feature_key: demand_forecaster
+limit_value: -1
+description: 'Prevision de demanda IA ilimitada en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 206
+status: true

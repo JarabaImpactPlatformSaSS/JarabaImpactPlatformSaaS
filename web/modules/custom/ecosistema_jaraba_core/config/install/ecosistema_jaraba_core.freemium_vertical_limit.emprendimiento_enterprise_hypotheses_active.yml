@@ -1,0 +1,11 @@
+id: emprendimiento_enterprise_hypotheses_active
+label: 'Emprendimiento Enterprise: Hipótesis Activas'
+vertical: emprendimiento
+plan: enterprise
+feature_key: hypotheses_active
+limit_value: -1
+description: 'Hipotesis activas ilimitadas en plan Enterprise Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 603
+status: true

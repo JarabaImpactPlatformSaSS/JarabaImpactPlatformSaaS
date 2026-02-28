@@ -239,6 +239,66 @@ class PageAttachmentsHooks
   {
     $route = (string) $this->routeMatch->getRouteName();
 
+    // --- Homepage (frontpage) ---
+    if (\Drupal::service('path.matcher')->isFrontPage()) {
+      $description = 'Jaraba Impact Platform: plataforma SaaS con 10 verticales especializados, 11 agentes IA Gen 2, copiloto integrado, firma digital PAdES y 80+ módulos Drupal 11. Empleabilidad, emprendimiento, agroalimentación, comercio local, servicios profesionales, inteligencia legal, formación, talento y más. Desde 0 EUR/mes.';
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'homepage_meta_description',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'Jaraba Impact Platform — Empleo, emprendimiento y digitalización con IA',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'homepage_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'Jaraba Impact Platform — 10 verticales con IA',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'homepage_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
     if ($route === 'ecosistema_jaraba_core.landing.jarabalex') {
       // Meta description.
       $attachments['#attached']['html_head'][] = [
@@ -385,6 +445,612 @@ class PageAttachmentsHooks
             ],
           ],
           'serviciosconecta_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    if ($route === 'ecosistema_jaraba_core.landing.comercioconecta') {
+      $description = 'ComercioConecta: plataforma SaaS de comercio local digital. Catalogo online, ofertas flash, codigos QR, click & collect, pagos Stripe, Copilot IA, analytics en tiempo real, SEO local y fidelizacion. Plan gratuito disponible.';
+
+      // Meta description.
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'comercioconecta_meta_description',
+      ];
+
+      // Schema.org SoftwareApplication JSON-LD.
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'ComercioConecta',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => 'Plataforma de digitalizacion integral para comercio local: catalogo online con variantes y stock, ofertas flash con temporizador, codigos QR dinamicos, click & collect, pasarela de pagos Stripe Connect, Copilot IA para comerciantes, analytics en tiempo real, SEO local automatizado, programa de fidelizacion, notificaciones push, integracion TPV, resenas verificadas, pedidos delivery, gestion multi-tienda y soporte IA 24/7.',
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan Free: 10 productos, 1 oferta flash, Copilot IA',
+        ],
+        'featureList' => [
+          'Catalogo online profesional con variantes y stock',
+          'Ofertas flash con temporizador y notificaciones',
+          'Codigos QR dinamicos para escaparate',
+          'Click & Collect y gestion de pedidos',
+          'Pasarela de pagos via Stripe Connect',
+          'Copilot IA para optimizar ventas',
+          'Analytics y metricas en tiempo real',
+          'SEO local automatizado con Google Business',
+          'Programa de fidelizacion con puntos',
+          'Notificaciones push a clientes cercanos',
+          'Integracion TPV y datafono',
+          'Resenas verificadas con Schema.org',
+          'Pedidos delivery con zona de reparto',
+          'Gestion multi-tienda centralizada',
+          'Soporte IA inteligente 24/7',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'comercioconecta_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'ComercioConecta — Digitaliza tu comercio local',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/comercioconecta',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'comercioconecta_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'ComercioConecta — Digitaliza tu comercio local',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'comercioconecta_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    if ($route === 'ecosistema_jaraba_core.landing.agroconecta') {
+      $description = 'AgroConecta: marketplace agro sin intermediarios. Trazabilidad QR, envio MRW/SEUR, Copilot IA con prevision de demanda, analytics avanzados, resenas verificadas, promociones, Hub B2B y cobro seguro Stripe Connect. Plan gratuito.';
+
+      // Meta description.
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'agroconecta_meta_description',
+      ];
+
+      // Schema.org SoftwareApplication JSON-LD.
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'AgroConecta',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => 'Marketplace agroalimentario sin intermediarios: catalogo con variantes y stock, trazabilidad QR criptografica, envio MRW y SEUR con tracking, Copilot IA con prevision de demanda y sugerencia de precios, analytics en tiempo real, resenas verificadas, promociones y cupones, Hub B2B para partners, notificaciones multi-canal, portal del cliente y cobro seguro via Stripe Connect.',
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan Free: 5 productos, Copilot IA, cobro Stripe',
+        ],
+        'featureList' => [
+          'Producer Copilot IA con generacion de descripciones y precios',
+          'QR de trazabilidad con prueba criptografica',
+          'Marketplace profesional con busqueda y colecciones',
+          'Envio MRW y SEUR con calculo y tracking',
+          'Cobro seguro via Stripe Connect multi-vendedor',
+          'Resenas verificadas con moderacion y respuestas',
+          'Analytics y metricas en tiempo real',
+          'Prevision de demanda IA con predicciones ML',
+          'Certificaciones digitales eco, DOP y comercio justo',
+          'Pedidos WhatsApp Business con recuperacion de carritos',
+          'Promociones porcentuales, fijas y cupones',
+          'Inteligencia de mercado y monitoreo de competencia',
+          'Hub B2B Partners con documentos compliance',
+          'Notificaciones email, SMS y push configurables',
+          'Portal del cliente con favoritos y preferencias',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'agroconecta_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'AgroConecta — Vende del campo a la mesa sin intermediarios',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/agroconecta',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'agroconecta_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'AgroConecta — Vende del campo a la mesa sin intermediarios',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'agroconecta_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    // --- Andalucia +ei ---
+    if ($route === 'jaraba_andalucia_ei.landing') {
+      $description = 'Programa gratuito de emprendimiento e insercion laboral con IA: mentoria personalizada, formacion adaptativa, expediente digital seguro, evaluacion IA de perfil, informes PDF, revision de documentos, comunicacion con mentores y exportacion STO. Subvencionado por la Junta de Andalucia y el FSE.';
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'andalucia_ei_meta_description',
+      ];
+
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'Andalucia +ei — Emprendimiento e Insercion con IA',
+        'applicationCategory' => 'EducationalApplication',
+        'operatingSystem' => 'Web',
+        'description' => $description,
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Programa 100% gratuito subvencionado por la Junta de Andalucia y el FSE',
+        ],
+        'featureList' => [
+          'Mentoria con Inteligencia Artificial 24/7',
+          'Formacion Adaptativa Certificada (+50h)',
+          'Insercion Laboral Real con acompanamiento',
+          'Expediente Digital Seguro (18 categorias)',
+          'Evaluacion IA de tu Perfil (<48h)',
+          'Seguimiento de Progreso en tiempo real',
+          'Informes PDF Personalizados',
+          'Revision IA de Documentos (CV, carta, plan de negocio)',
+          'Comunicacion Directa con Mentores',
+          'Exportacion STO Automatica (Junta de Andalucia)',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'andalucia_ei_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'Andalucia +ei — Emprendimiento e Insercion con IA',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/andalucia-ei/programa',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'andalucia_ei_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'Andalucia +ei — Emprendimiento e Insercion con IA',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'andalucia_ei_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    // --- Emprendimiento ---
+    if ($route === 'ecosistema_jaraba_core.landing.emprendimiento') {
+      $description = 'Plataforma de emprendimiento con IA: calculadora de madurez digital, Business Model Canvas con IA, validación de MVP con Lean Startup, mentoría 1:1, health score emprendedor, 15 insignias digitales, copilot proactivo, motor de experimentos A/B y acceso a financiación ICO/ENISA.';
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'emprendimiento_meta_description',
+      ];
+
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'Emprendimiento — De idea a negocio rentable',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => $description,
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan gratuito con calculadora de madurez, 1 Business Model Canvas, 3 hipótesis activas y copilot IA',
+        ],
+        'featureList' => [
+          'Calculadora de Madurez Digital con reporte PDF',
+          'Business Model Canvas con IA iterativo',
+          'Validación de MVP con Lean Startup y experimentos A/B',
+          'Mentoría 1:1 con empresarios experimentados',
+          'Proyecciones financieras con IA',
+          'Acceso a financiación ICO, ENISA y aceleradoras',
+          'Health Score Emprendedor (5 dimensiones, 0-100)',
+          '15 Insignias + 3 Diplomas Digitales',
+          'Niveles de Expertise con beneficios (Explorador a Master)',
+          'Copilot IA Proactivo (7 nudges automáticos)',
+          'Journey Personalizado por Avatar (3 itinerarios)',
+          'Motor de Experimentos A/B (4 ámbitos, 10 eventos)',
+          'Puentes Cross-Vertical a Formación, Comercio y Servicios',
+          'Email Nurturing Automatizado por fase',
+          'Cross-Sell Inteligente (4 ofertas personalizadas)',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'emprendimiento_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'Emprendimiento — De idea a negocio rentable',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/emprendimiento',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'emprendimiento_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'Emprendimiento — De idea a negocio rentable',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'emprendimiento_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    // --- Empleabilidad ---
+    if ($route === 'ecosistema_jaraba_core.landing.empleabilidad') {
+      $description = 'Plataforma de empleabilidad con IA: diagnóstico de competencias, rutas formativas adaptativas, CV builder con 4 plantillas ATS, matching inteligente empresa-candidato, simulador de entrevistas con IA, health score profesional, copilot con 6 modos especializados, portal de empleo, LMS gamificado y credenciales digitales verificables.';
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'empleabilidad_meta_description',
+      ];
+
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'Empleabilidad — Tu carrera profesional con IA',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => $description,
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan gratuito con diagnóstico básico, 1 CV, 3 alertas de empleo y copilot IA',
+        ],
+        'featureList' => [
+          'Diagnóstico Express de Competencias con IA (25 indicadores)',
+          'Rutas Formativas Adaptativas por nivel y objetivo',
+          'CV Builder con IA y 4 plantillas optimizadas ATS',
+          'Matching Inteligente Empresa-Candidato (compatibilidad %)',
+          'Simulador de Entrevistas con IA y feedback detallado',
+          'Credenciales Digitales Verificables (OpenBadge v3)',
+          'Health Score Profesional (6 dimensiones, 0-100)',
+          'Copilot IA con 6 Modos Especializados',
+          'Journey Personalizado por Avatar (3 itinerarios)',
+          'Portal de Empleo con búsqueda semántica',
+          'Dashboard para Empresas y Reclutadores',
+          'Importación LinkedIn con análisis automático',
+          'Email Nurturing Automatizado por fase profesional',
+          'LMS Gamificado con insignias y leaderboards',
+          'Notificaciones Web Push para ofertas y alertas',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'empleabilidad_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'Empleabilidad — Tu carrera profesional con IA',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/empleabilidad',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'empleabilidad_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'Empleabilidad — Tu carrera profesional con IA',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'empleabilidad_' . str_replace(':', '_', $name),
+        ];
+      }
+    }
+
+    // --- Talento (recruiter-facing empleabilidad) ---
+    if ($route === 'ecosistema_jaraba_core.vertical.talento') {
+      $description = 'Plataforma de reclutamiento con IA: matching inteligente en 5 dimensiones, mini-ATS con 8 estados, asistente IA del reclutador con 6 acciones, perfil de empresa verificado, notificaciones multi-canal, alertas de talento inteligentes, detección de fraude anti-spam y API REST completa.';
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $description,
+          ],
+        ],
+        'talento_meta_description',
+      ];
+
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'Talento — Encuentra el talento que necesitas con IA',
+        'applicationCategory' => 'BusinessApplication',
+        'operatingSystem' => 'Web',
+        'description' => $description,
+        'offers' => [
+          '@type' => 'Offer',
+          'price' => '0',
+          'priceCurrency' => 'EUR',
+          'description' => 'Plan gratuito con 1 oferta activa, búsqueda básica y notificaciones email',
+        ],
+        'featureList' => [
+          'Búsqueda Avanzada de Talento con filtros semánticos',
+          'Asistente IA del Reclutador (6 acciones automatizadas)',
+          'Dashboard Analytics de contratación en tiempo real',
+          'Gestión Colaborativa en equipo con trazabilidad',
+          'Mini-ATS con 8 estados de pipeline',
+          'Matching Inteligente 5 Dimensiones (skills, experiencia, educación, ubicación, semántico)',
+          'Perfil de Empresa Verificado',
+          'Health Score del Reclutador (5 fases, 0-100)',
+          'Notificaciones Multi-Canal (email + Web Push + webhooks)',
+          'Alertas de Talento Inteligentes con digest diario/semanal',
+          'Detección de Fraude Anti-Spam integrada',
+          'API REST completa con documentación OpenAPI',
+        ],
+      ];
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ],
+        'talento_schema_org',
+      ];
+
+      // OG meta tags.
+      $ogTags = [
+        'og:title' => 'Talento — Encuentra el talento que necesitas con IA',
+        'og:description' => $description,
+        'og:type' => 'website',
+        'og:url' => '/talento',
+      ];
+
+      foreach ($ogTags as $property => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'property' => $property,
+              'content' => $content,
+            ],
+          ],
+          'talento_' . str_replace(':', '_', $property),
+        ];
+      }
+
+      // Twitter Card meta tags.
+      $twitterTags = [
+        'twitter:card' => 'summary_large_image',
+        'twitter:title' => 'Talento — Encuentra el talento que necesitas con IA',
+        'twitter:description' => $description,
+      ];
+
+      foreach ($twitterTags as $name => $content) {
+        $attachments['#attached']['html_head'][] = [
+          [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $name,
+              'content' => $content,
+            ],
+          ],
+          'talento_' . str_replace(':', '_', $name),
         ];
       }
     }

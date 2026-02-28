@@ -1,0 +1,11 @@
+id: empleabilidad_enterprise_copilot_messages_per_day
+label: 'Empleabilidad Enterprise: Mensajes Copilot diarios'
+vertical: empleabilidad
+plan: enterprise
+feature_key: copilot_messages_per_day
+limit_value: -1
+description: 'Mensajes al copilot ilimitados en plan Enterprise Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 353
+status: true

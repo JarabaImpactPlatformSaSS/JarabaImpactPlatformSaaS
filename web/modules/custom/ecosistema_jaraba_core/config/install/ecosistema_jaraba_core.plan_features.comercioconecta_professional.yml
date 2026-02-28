@@ -8,10 +8,12 @@ features:
   - premium_blocks
   - seo_local_audit
 limits:
-  products: 100
-  flash_offers_active: 10
-  copilot_uses_per_month: 100
-  qr_codes: 50
-  seo_local_audit: 4
+  products: -1
+  flash_offers_active: -1
+  copilot_uses_per_month: -1
+  qr_codes: -1
+  seo_local_audit: -1
+  analytics_advanced: -1
+  pos_integration: 0
 description: 'Limites del tier Professional para la vertical ComercioConecta.'
 status: true

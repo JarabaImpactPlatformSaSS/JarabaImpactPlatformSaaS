@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_photos_per_product
+label: 'AgroConecta Enterprise: Fotos por Producto'
+vertical: agroconecta
+plan: enterprise
+feature_key: photos_per_product
+limit_value: -1
+description: 'Fotos ilimitadas por producto en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 201
+status: true

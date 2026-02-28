@@ -1,0 +1,11 @@
+id: andalucia_ei_enterprise_mentoring_hours_monthly
+label: 'Andalucía +ei Enterprise: Horas Mentoría Mensual'
+vertical: andalucia_ei
+plan: enterprise
+feature_key: mentoring_hours_monthly
+limit_value: -1
+description: 'Horas de mentoria humana ilimitadas en plan Enterprise.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 519
+status: true

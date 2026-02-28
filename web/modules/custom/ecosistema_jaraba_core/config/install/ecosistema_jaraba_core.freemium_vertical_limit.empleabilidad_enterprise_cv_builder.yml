@@ -1,0 +1,11 @@
+id: empleabilidad_enterprise_cv_builder
+label: 'Empleabilidad Enterprise: Generador CV'
+vertical: empleabilidad
+plan: enterprise
+feature_key: cv_builder
+limit_value: -1
+description: 'CVs generados con IA ilimitados en plan Enterprise Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 323
+status: true

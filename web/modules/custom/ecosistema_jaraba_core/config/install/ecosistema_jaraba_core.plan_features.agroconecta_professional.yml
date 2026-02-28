@@ -8,11 +8,14 @@ features:
   - premium_blocks
   - traceability_qr
 limits:
-  products: 50
-  orders_per_month: 300
-  copilot_uses_per_month: 100
+  products: -1
+  orders_per_month: -1
+  copilot_uses_per_month: -1
   photos_per_product: 10
   commission_pct: 5
-  traceability_qr: 50
+  traceability_qr: -1
+  analytics_advanced: -1
+  demand_forecaster: -1
+  partner_hub: 0
 description: 'Limites del tier Professional para la vertical AgroConecta.'
 status: true

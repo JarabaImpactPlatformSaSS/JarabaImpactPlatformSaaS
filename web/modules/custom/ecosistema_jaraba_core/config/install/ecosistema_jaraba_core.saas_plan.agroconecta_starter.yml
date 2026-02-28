@@ -1,0 +1,23 @@
+# Plan SaaS AgroConecta Starter - Para productores individuales
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'AgroConecta Starter'
+price_monthly: '29.00'
+price_yearly: '290.00'
+features:
+  - catalog
+  - traceability_qr
+  - shipping_mrw_seur
+  - stripe_payments
+  - copilot_ia
+  - whatsapp_orders
+  - certifications
+  - reviews
+  - promotions
+  - cart_recovery
+  - soporte_email
+limits: '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": 30, "photos_per_product": 5, "commission_pct": 8, "traceability_qr": 5, "analytics_advanced": 0, "demand_forecaster": 0, "partner_hub": 0}'
+stripe_price_id: ''
+weight: 10

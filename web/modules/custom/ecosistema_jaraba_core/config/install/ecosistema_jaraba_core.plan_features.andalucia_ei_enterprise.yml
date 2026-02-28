@@ -1,0 +1,24 @@
+id: andalucia_ei_enterprise
+label: 'Andalucía +ei - Enterprise'
+vertical: andalucia_ei
+tier: enterprise
+features:
+  - copilot_ia
+  - formacion_certificada
+  - expediente_digital
+  - dificultad_adaptativa
+  - informes_pdf
+  - revision_ia_documentos
+  - mensajeria_mentores
+  - api_access
+  - white_label
+  - sto_sync_bidireccional
+limits:
+  copilot_sessions_daily: -1
+  mentoring_hours_monthly: -1
+  sto_exports: -1
+  training_modules: -1
+  diagnostic_access: -1
+  report_downloads: -1
+description: 'Limites del tier Enterprise para el vertical Andalucia +ei (institucional, ilimitado).'
+status: true

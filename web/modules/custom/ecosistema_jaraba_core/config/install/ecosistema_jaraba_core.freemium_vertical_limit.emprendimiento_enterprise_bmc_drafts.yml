@@ -1,0 +1,11 @@
+id: emprendimiento_enterprise_bmc_drafts
+label: 'Emprendimiento Enterprise: Borradores BMC'
+vertical: emprendimiento
+plan: enterprise
+feature_key: bmc_drafts
+limit_value: -1
+description: 'Borradores de Business Model Canvas ilimitados en plan Enterprise Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 643
+status: true

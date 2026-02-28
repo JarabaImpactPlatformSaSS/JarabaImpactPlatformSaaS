@@ -1,0 +1,11 @@
+id: empleabilidad_enterprise_job_applications_per_day
+label: 'Empleabilidad Enterprise: Candidaturas diarias'
+vertical: empleabilidad
+plan: enterprise
+feature_key: job_applications_per_day
+limit_value: -1
+description: 'Candidaturas diarias ilimitadas en plan Enterprise Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 343
+status: true

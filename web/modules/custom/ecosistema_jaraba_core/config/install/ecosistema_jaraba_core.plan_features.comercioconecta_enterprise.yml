@@ -16,5 +16,7 @@ limits:
   copilot_uses_per_month: -1
   qr_codes: -1
   seo_local_audit: -1
+  analytics_advanced: -1
+  pos_integration: -1
 description: 'Limites del tier Enterprise para la vertical ComercioConecta (ilimitado).'
 status: true

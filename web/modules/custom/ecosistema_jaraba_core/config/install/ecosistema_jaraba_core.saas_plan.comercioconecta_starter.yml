@@ -1,0 +1,19 @@
+# Plan SaaS ComercioConecta Starter - Para comercios individuales
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'ComercioConecta Starter'
+price_monthly: '29.00'
+price_yearly: '290.00'
+features:
+  - catalog
+  - flash_offers
+  - qr_codes
+  - stripe_payments
+  - copilot_ia
+  - click_collect
+  - soporte_email
+limits: '{"products": -1, "flash_offers_active": 10, "copilot_uses_per_month": 200, "qr_codes": 10, "seo_local_audit": 0, "analytics_advanced": 0, "pos_integration": 0}'
+stripe_price_id: ''
+weight: 10

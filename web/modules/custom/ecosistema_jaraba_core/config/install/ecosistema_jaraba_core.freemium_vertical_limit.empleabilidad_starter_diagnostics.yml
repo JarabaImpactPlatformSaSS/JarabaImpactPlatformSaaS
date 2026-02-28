@@ -3,9 +3,9 @@ label: 'Empleabilidad Starter: Diagnosticos'
 vertical: empleabilidad
 plan: starter
 feature_key: diagnostics
-limit_value: -1
-description: 'Diagnosticos ilimitados en plan Starter Empleabilidad.'
-upgrade_message: ''
-expected_conversion: 0
+limit_value: 3
+description: '3 diagnosticos de competencias en plan Starter Empleabilidad.'
+upgrade_message: 'Has alcanzado el limite de 3 diagnosticos. Actualiza a Profesional para diagnosticos ilimitados.'
+expected_conversion: 0.25
 weight: 301
 status: true

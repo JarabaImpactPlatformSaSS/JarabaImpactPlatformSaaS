@@ -1,0 +1,29 @@
+# Plan SaaS AgroConecta Profesional - Para productores con volumen
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'AgroConecta Profesional'
+price_monthly: '59.00'
+price_yearly: '590.00'
+features:
+  - catalog
+  - traceability_qr
+  - shipping_mrw_seur
+  - stripe_payments
+  - copilot_ia
+  - whatsapp_orders
+  - certifications
+  - reviews
+  - promotions
+  - cart_recovery
+  - analytics_dashboard
+  - demand_forecaster
+  - market_intelligence
+  - cross_sell
+  - notifications_multichannel
+  - soporte_email
+  - soporte_chat
+limits: '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": -1, "photos_per_product": 10, "commission_pct": 5, "traceability_qr": -1, "analytics_advanced": -1, "demand_forecaster": -1, "partner_hub": 0}'
+stripe_price_id: ''
+weight: 11

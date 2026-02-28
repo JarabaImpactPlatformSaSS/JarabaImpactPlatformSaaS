@@ -1,0 +1,23 @@
+# Plan SaaS Andalucia +ei Profesional - Para instituciones medianas
+# Participantes usan el programa gratis; este plan es para la entidad que despliega el programa
+
+langcode: es
+status: true
+name: 'Andalucía +ei Profesional'
+price_monthly: '99.00'
+price_yearly: '990.00'
+features:
+  - copilot_ia
+  - formacion_certificada
+  - expediente_digital
+  - evaluacion_ia_perfil
+  - seguimiento_progreso
+  - exportacion_sto
+  - dificultad_adaptativa
+  - informes_pdf
+  - revision_ia_documentos
+  - mensajeria_mentores
+  - soporte_chat
+limits: '{"copilot_sessions_daily": -1, "mentoring_hours_monthly": -1, "sto_exports": -1, "training_modules": -1, "diagnostic_access": -1, "report_downloads": -1}'
+stripe_price_id: ''
+weight: 20

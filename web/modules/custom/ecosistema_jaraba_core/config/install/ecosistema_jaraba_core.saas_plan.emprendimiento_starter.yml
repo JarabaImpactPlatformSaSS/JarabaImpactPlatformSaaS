@@ -1,0 +1,22 @@
+# Plan SaaS Emprendimiento Starter - Para emprendedores individuales
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'Emprendimiento Starter'
+price_monthly: '29.00'
+price_yearly: '290.00'
+features:
+  - calculadora_madurez
+  - bmc_ia
+  - validacion_mvp
+  - mentoring_1a1
+  - proyecciones_financieras
+  - health_score
+  - credenciales_digitales
+  - copilot_ia
+  - email_nurturing
+  - soporte_email
+limits: '{"hypotheses_active": 20, "experiments_monthly": 10, "copilot_sessions_daily": 50, "mentoring_sessions_monthly": 2, "bmc_drafts": -1, "calculadora_uses": -1}'
+stripe_price_id: ''
+weight: 10

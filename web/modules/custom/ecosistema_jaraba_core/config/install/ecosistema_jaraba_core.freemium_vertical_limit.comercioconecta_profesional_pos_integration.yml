@@ -1,0 +1,11 @@
+id: comercioconecta_profesional_pos_integration
+label: 'ComercioConecta Profesional: Integracion TPV'
+vertical: comercioconecta
+plan: profesional
+feature_key: pos_integration
+limit_value: 0
+description: 'Integracion TPV no disponible en plan Profesional ComercioConecta. Solo Enterprise.'
+upgrade_message: 'La integracion con tu TPV/datafono sincroniza ventas fisicas y online. Disponible en Enterprise.'
+expected_conversion: 0.18
+weight: 152
+status: true

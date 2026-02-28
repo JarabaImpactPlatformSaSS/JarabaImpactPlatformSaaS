@@ -17,5 +17,8 @@ limits:
   photos_per_product: -1
   commission_pct: 3
   traceability_qr: -1
+  analytics_advanced: -1
+  demand_forecaster: -1
+  partner_hub: -1
 description: 'Limites del tier Enterprise para la vertical AgroConecta (ilimitado).'
 status: true

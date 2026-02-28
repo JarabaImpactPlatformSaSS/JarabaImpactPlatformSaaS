@@ -133,6 +133,15 @@ mobile-menu:
     - core/drupal
     - ecosistema_jaraba_theme/global-styling
 
+# Language Switcher — i18n dropdown toggle + keyboard navigation
+language-switcher:
+  version: 1.0.0
+  js:
+    js/language-switcher.js: {}
+  dependencies:
+    - core/drupal
+    - ecosistema_jaraba_theme/global-styling
+
 # Content Hub - Blog, Articles, Categories, Dashboard
 content-hub:
   version: 1.0.1

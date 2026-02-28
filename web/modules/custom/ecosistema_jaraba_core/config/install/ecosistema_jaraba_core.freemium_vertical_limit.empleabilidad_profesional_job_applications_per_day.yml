@@ -1,0 +1,11 @@
+id: empleabilidad_profesional_job_applications_per_day
+label: 'Empleabilidad Profesional: Candidaturas diarias'
+vertical: empleabilidad
+plan: profesional
+feature_key: job_applications_per_day
+limit_value: -1
+description: 'Candidaturas diarias ilimitadas en plan Profesional Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 342
+status: true

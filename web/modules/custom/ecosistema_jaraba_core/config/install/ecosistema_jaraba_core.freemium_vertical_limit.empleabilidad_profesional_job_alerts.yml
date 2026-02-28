@@ -1,0 +1,11 @@
+id: empleabilidad_profesional_job_alerts
+label: 'Empleabilidad Profesional: Alertas de empleo'
+vertical: empleabilidad
+plan: profesional
+feature_key: job_alerts
+limit_value: -1
+description: 'Alertas de empleo ilimitadas en plan Profesional Empleabilidad.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 362
+status: true

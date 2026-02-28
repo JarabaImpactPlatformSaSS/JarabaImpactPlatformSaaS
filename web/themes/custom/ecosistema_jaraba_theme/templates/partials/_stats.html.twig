@@ -30,10 +30,10 @@
 
 {# Fallback: Datos verificables del programa Andalucía +ei #}
 {% set default_stats = [
-  { value: 7, suffix: '', label: 'Verticales activas'|t },
-  { value: 3, suffix: '', label: 'Casos de éxito documentados'|t },
-  { value: 100, suffix: '%', label: 'Recomendarían el programa'|t },
-  { value: 1, suffix: '', label: 'Negocio rural creado'|t }
+  { value: 10, suffix: '', label: 'Verticales especializados'|t },
+  { value: 11, suffix: '', label: 'Agentes IA Gen 2'|t },
+  { value: 80, suffix: '+', label: 'Módulos custom Drupal 11'|t },
+  { value: 100, suffix: '%', label: 'Recomendarían el programa'|t }
 ] %}
 
 {% set stat_items = stats|default([])|length > 0 ? stats : default_stats %}
