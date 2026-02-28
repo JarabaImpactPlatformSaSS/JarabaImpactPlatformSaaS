@@ -1,8 +1,8 @@
 # 🏗️ DOCUMENTO MAESTRO DE ARQUITECTURA
 ## Jaraba Impact Platform SaaS v73.0
 
-**Fecha:** 2026-02-27
-**Versión:** 89.0.0 (Navegación Ecosistema + Pricing Labels — Megamenu Control + formatFeatureLabels())
+**Fecha:** 2026-02-28
+**Versión:** 90.0.0 (Centro de Ayuda Clase Mundial — /ayuda con 25 FAQs + Busqueda Unificada FAQ+KB)
 **Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -1668,6 +1668,68 @@ Integración unificada de soberanía legal y resiliencia técnica:
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 8.3 Centro de Ayuda Clase Mundial (/ayuda)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    CENTRO DE AYUDA CLASE MUNDIAL                        │
+│                        /ayuda — Público                                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   MÓDULO: jaraba_tenant_knowledge                                       │
+│   CONTROLLER: HelpCenterController (index, viewArticle, searchApi)      │
+│   TEMPLATE: help-center.html.twig + help-article.html.twig             │
+│                                                                         │
+│   8 CATEGORÍAS SaaS:                                                    │
+│   ┌──────────────┬────────────────┬──────────────┬──────────────┐       │
+│   │ getting_     │ account        │ features     │ billing      │       │
+│   │ started      │ (user)         │ (zap)        │ (credit-card)│       │
+│   ├──────────────┼────────────────┼──────────────┼──────────────┤       │
+│   │ ai_copilot   │ integrations   │ security     │ trouble-     │       │
+│   │ (cpu)        │ (link)         │ (shield)     │ shooting     │       │
+│   └──────────────┴────────────────┴──────────────┴──(tool)──────┘       │
+│                                                                         │
+│   ARQUITECTURA:                                                         │
+│   ┌─────────────────────────────────────────────────────────────────┐   │
+│   │  Hero (search + trust signals + article count)                   │   │
+│   │  Quick Links → /soporte/crear, /contacto, /ayuda/kb, /blog      │   │
+│   │  Categorías Grid (8 cards, ordered by getCategoryMeta())         │   │
+│   │  Artículos Populares (top 6 FAQs)                                │   │
+│   │  KB Cross-link (si kb_articles_count > 0)                        │   │
+│   │  FAQs por Categoría (expandible, link a artículo individual)     │   │
+│   │  CTA Contacto (botones /contacto + /soporte)                     │   │
+│   │  FAQ Bot Widget (G114-4, faq-bot-widget.html.twig)               │   │
+│   └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│   BÚSQUEDA UNIFICADA:                                                   │
+│   ┌─────────────────────────────────────────────────────────────────┐   │
+│   │  searchApi() → TenantFaq LIKE + KbArticle LIKE (hasDefinition)  │   │
+│   │  JS: drupalSettings.helpCenter.searchApiUrl (LANGPREFIX-001)    │   │
+│   │  Autocomplete: FAQ items + KB items (type badge)                 │   │
+│   │  URLs: Url::fromRoute() — never hardcoded                       │   │
+│   └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│   SEO:                                                                  │
+│   - FAQPage JSON-LD (todas las FAQs visibles)                          │
+│   - BreadcrumbList JSON-LD (Home > Centro de Ayuda)                    │
+│   - QAPage JSON-LD (artículo individual)                               │
+│   - OG + Twitter meta tags                                              │
+│   - Canonical URL                                                       │
+│                                                                         │
+│   SEED DATA:                                                            │
+│   - update_10003: 25 FAQs plataforma (tenant_id = NULL)                │
+│   - Migración categorías e-commerce → SaaS                             │
+│   - Idempotente: notExists('tenant_id') + condition('question')         │
+│                                                                         │
+│   INTEGRACIÓN:                                                          │
+│   - jaraba_support: Quick Links → /soporte/crear                       │
+│   - Knowledge Base: Cross-link + búsqueda unificada                    │
+│   - FAQ Bot: Widget incluido via Twig include                          │
+│   - Footer: "Centro de Ayuda|/ayuda" en col2_links                     │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 9. Seguridad y Cumplimiento
@@ -2650,13 +2712,14 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 87.0.0 | **Fecha:** 2026-02-27 | **Autor:** IA Asistente
+> **Versión:** 90.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
 
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-28 | **90.0.0** | **Centro de Ayuda Clase Mundial — /ayuda con 25 FAQs + Busqueda Unificada FAQ+KB:** Nuevo ASCII box CENTRO DE AYUDA CLASE MUNDIAL en seccion 8.3. Modulo `jaraba_tenant_knowledge` elevado: HelpCenterController refactorizado (getCategoryMeta(), buildFaqPageSchema(), buildBreadcrumbSchema(), buildHelpCenterSeoHead(), getKbArticleCount(), searchApi unificado FAQ+KB). 8 categorias SaaS multi-vertical (getting_started, account, features, billing, ai_copilot, integrations, security, troubleshooting). 25 FAQs seed platform-wide via update_10003 (tenant_id=NULL). Template: hero con trust signals, quick links via Url::fromRoute(), KB cross-link, CTA con botones accionables. Busqueda unificada: FAQ+KB con hasDefinition() guard, slug-based KB URLs, campo type en JSON, JS drupalSettings searchApiUrl. SEO: FAQPage + BreadcrumbList + QAPage JSON-LD, OG/Twitter meta tags, canonical. SCSS: quick-links grid, kb-promo banner, contact buttons, animations con prefers-reduced-motion + no-js fallback. Integracion: jaraba_support (quick links), Knowledge Base (cross-link + busqueda), FAQ Bot widget, footer link. 10 ficheros modificados. Aprendizaje #151. |
 | 2026-02-27 | **88.0.0** | **Navegación Ecosistema + Pricing Labels — Megamenu Selectivo + formatFeatureLabels():** Corrección de 6 regresiones de navegación del ecosistema: megamenu restringido a SaaS principal via `header_megamenu|default(false)` con inyección PHP selectiva en `preprocess_page()`, megamenu transparente corregido con `var(--header-bg, #ffffff)` fallback, menu items alineados via normalización button/anchor CSS, barra ecosistema footer activada por defecto con 4 links, mobile overlay condicional por `use_megamenu`, pricing features con labels humanos via `MetaSitePricingService::formatFeatureLabels()` (mapa 28 machine names → labels traducibles, almacenamiento dual features/features_raw). Starter tier con features base default cuando vacío (basic_profile, community, one_vertical, email_support). 2 reglas: MEGAMENU-CONTROL-001 (P1), PRICING-LABEL-001 (P1). Aprendizaje #149. |
 | 2026-02-27 | **87.0.0** | **Demo Vertical PLG 100% Clase Mundial — Guided Tour + Storytelling AI + Progressive Disclosure:** Nuevo ASCII box DEMO VERTICAL PLG. Subsistema demo en ecosistema_jaraba_core (~4,000 LOC): DemoController (765 LOC, 8 metodos: landing/start/dashboard/storytelling/playground/regenerate/track/convert), DemoInteractiveService (1,523 LOC, 10 perfiles, metricas sinteticas, session management demo_sessions table, analytics aggregation demo_analytics table, 11 historias por perfil), DemoFeatureGateService (149 LOC, usage tracking), DemoJourneyProgressionService (319 LOC, disclosure levels basic→intermediate→advanced, nudge system), GuidedTourService (demo_welcome 4 pasos, user_completed_tours table). 4 JS libraries self-contained (dashboard chart+tracking+conversion+countdown, guided-tour overlay+spotlight+popovers+keyboard, storytelling fetch+copy+feedback, ai-playground copilot+scenarios+typing). 5 templates + 3 partials DRY. drupalSettings injection chain: demo.sessionId + demoTour (GuidedTourService) + demoStorytelling.regenerateUrl (Url::fromRoute) + demoPlayground.copilotEndpoint (Url::fromRoute). User journey: /demo → profile select → dashboard (tour auto-start) → magic actions → storytelling (AI regenerate) → progressive disclosure → conversion modal → /registro/{vertical}. 24 unit tests, 84 assertions. SCSS _demo.scss 1,180 LOC compilado. 2 reglas nuevas en Directrices v96.0.0: SCSS-COMPILE-VERIFY-001, RUNTIME-VERIFY-001. Aprendizaje #146. |
 | 2026-02-27 | **86.0.0** | **jaraba_support Clase Mundial — Soporte Omnicanal + SLA Engine + AI Agent + SSE + HMAC Attachments:** Nuevo ASCII box SOPORTE AL CLIENTE CLASE MUNDIAL. Modulo `jaraba_support` implementado completo en 10 fases. Arquitectura: 7 Content Entities (SupportTicket con state machine 6 estados open→in_progress→waiting_customer→resolved→closed + escalated lateral, TicketMessage, TicketAttachment, TicketWatcher, TicketTag, TicketAiClassification, TicketAiResolution) + 2 Config Entities (SlaPolicy con id {plan_tier}_{priority}, SupportSettings). 18 servicios: TicketService (state machine con VALID_TRANSITIONS + first_responded_at tracking), SlaEngineService (attachSlaToTicket resolve policy → calculateDeadline con BusinessHoursService, processSlaCron check breached/warned), BusinessHoursService (loadSchedule desde ConfigEntity, isDayInSchedule timezone-aware, isHoliday, addBusinessHours minuto a minuto con max 365 iteraciones), TicketRoutingService (multi-factor scoring: skills +50, vertical +30, workload inversely proportional +20, experience bonus +15 para critical/high), AttachmentService (upload con FileSystemInterface::saveData, validation MIME/extension/size/double-extension 16 dangerous exts), AttachmentScanService (ClamAV nSCAN via unix socket + 4-layer heuristic fallback: dangerous ext, double-ext, suspicious content 8KB, MIME mismatch), AttachmentUrlService (HMAC SHA-256 signed URLs base64 JSON token 1h expiry, 3-tier auth admin/reporter/assignee, BinaryFileResponse con security headers), TicketNotificationService (5 metodos: created/newMessage/slaWarning/slaBreached escalation/resolved con CSAT link), TicketMergeService (transferencia mensajes/adjuntos/watchers con duplicate detection + system message), CsatSurveyService (schedule 1h delay, submit 1-5 clamp, low satisfaction warning), SupportHealthScoreService (5 componentes: volume trend, SLA compliance, CSAT, escalation rate, resolution speed, churn alert <40), TicketStreamService (DB-backed SSE con support_ticket_events, agent+watcher ticket merging, viewer registration), SupportCronService (5 tareas: SLA/scans/auto-close 7d/CSAT surveys/purge 24h), SupportAgentSmartAgent (Gen 2, 5 acciones fast/balanced/premium). SupportApiController 12+ endpoints REST. SupportStreamController SSE. hook_schema 2 tablas auxiliares + update_10001. 22 unit tests / 111 assertions. Aprendizaje #145. |
