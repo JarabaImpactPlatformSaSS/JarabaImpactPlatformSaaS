@@ -58,8 +58,8 @@ final class LegalCoherenceVerifierService {
   private const PASS_THRESHOLD = 0.7;
 
   public function __construct(
-    protected readonly AiProviderPluginManager $aiProvider,
-    protected readonly ModelRouterService $modelRouter,
+    protected readonly ?AiProviderPluginManager $aiProvider = NULL,
+    protected readonly ?ModelRouterService $modelRouter = NULL,
     protected readonly LoggerInterface $logger,
     protected readonly ?AIObservabilityService $observability = NULL,
   ) {}
@@ -91,6 +91,20 @@ final class LegalCoherenceVerifierService {
    */
   public function verify(string $userInput, string $agentOutput, array $context = []): array {
     $action = $context['action'] ?? '';
+
+    // Fail-open: si AI no esta disponible, pasar sin verificar.
+    if ($this->aiProvider === NULL || $this->modelRouter === NULL) {
+      return [
+        'verified' => FALSE,
+        'passed' => TRUE,
+        'score' => NULL,
+        'issues' => [],
+        'corrections' => [],
+        'premise_issues' => [],
+        'citation_alignment' => [],
+        'output' => $agentOutput,
+      ];
+    }
 
     // Solo verificar acciones de alto riesgo legal.
     if (!$this->shouldVerify($action)) {
