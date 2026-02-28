@@ -4,7 +4,18 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-02-28
-**Versión:** 133.0.0 (Claude Code Development Pipeline — CLAUDE.md + 3 Subagentes + 2 Hooks + 4 Commands + MCP Stripe + 30 tests funcionales)
+**Versión:** 134.0.0 (Elevacion Sistematica Landing Pages + Homepage — 3 Niveles: Contenido + Schema.org + Config Layer)
+
+> **🚀 ELEVACION SISTEMATICA LANDING PAGES + HOMEPAGE — PATRON 3 NIVELES** (2026-02-28)
+> - **Contexto:** Auditoria sistematica de landing pages verticales y homepage del SaaS identifico informacion desactualizada (6 verticales→10), metricas fabricadas, Schema.org incompleto (highPrice=99→199, featureList 7→12), ausencia de meta/OG/Twitter en homepage. Implementacion de patron de elevacion en 3 niveles obligatorio.
+> - **NIVEL 1 (Landing Content):** Para verticales: auditar infraestructura real del codebase y reflejar en features/FAQs/stats/testimonials. URLs via `Url::fromRoute()`. Para homepage: editar Twig partials directamente (template-driven, no controller).
+> - **NIVEL 2 (Schema.org + SEO):** SoftwareApplication JSON-LD con featureList completo + meta description + OG tags + Twitter cards en PageAttachmentsHooks.php. Homepage via `isFrontPage()`, verticales via route name match.
+> - **NIVEL 3 (Config Layer):** FreemiumVerticalLimit + SaasPlan + PlanFeatures coherentes. No aplica a Talento (hereda de Empleabilidad).
+> - **Empleabilidad Config:** Schema.org 15 featureList, 12 FVL nuevos (starter/profesional/enterprise), 2 FVL bugs corregidos (diagnostics -1→3, offers -1→25), PlanFeatures professional fix (todos→-1), 3 SaasPlan (29/79/199 EUR).
+> - **Talento Landing:** 4→12 features (Mini-ATS 8 estados, Matching 5D, EmployerProfile, HealthScore, WebPush, JobAlerts, FraudDetection, API REST), 4→10 FAQs, testimonios recruiter-especificos. Descubrimiento: Talento NO es vertical canonico — es persona recruiter de Empleabilidad.
+> - **Homepage:** 6 Twig partials: _seo-schema (highPrice 199, featureList 12), _hero (10 verticales + 11 agentes IA), _features (badge 10 verticales), _stats (metricas verificables 10/11/80+/100%), _cross-pollination (10 verticales). Meta/OG/Twitter via isFrontPage().
+> - **2 reglas nuevas:** LANDING-ELEVATION-001 (P1), METRICS-HONESTY-001 (P0). Reglas de oro #92-93. Aprendizaje #155.
+> - **Cross-refs:** Directrices v105.0.0, Arquitectura v94.0.0, Flujo v58.0.0.
 
 > **🎨 ELEVACION UX CLASE MUNDIAL 8 FASES + AUDITORIA DIRECTRICES** (2026-02-27)
 > - **Contexto:** Auditoria comparativa contra Stripe/HubSpot/Notion identifico 8 brechas criticas en la capa UX. Implementacion secuencial de 8 fases + auditoria post-implementacion contra directrices del proyecto (ICON-COLOR-001, DESIGN-TOKEN-FEDERATED-001, i18n, SCSS SSOT, Theme Settings).
