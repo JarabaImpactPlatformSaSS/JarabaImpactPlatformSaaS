@@ -178,14 +178,14 @@ class TenantFaq extends ContentEntityBase implements EntityChangedInterface, Rev
             ->setRevisionable(TRUE)
             ->setSettings([
                 'allowed_values' => [
-                    'general' => 'General',
-                    'products' => 'Productos/Servicios',
-                    'shipping' => 'Envíos',
-                    'returns' => 'Devoluciones',
-                    'payment' => 'Pagos',
-                    'support' => 'Soporte',
-                    'promotions' => 'Promociones',
-                    'other' => 'Otro',
+                    'getting_started' => 'Primeros Pasos',
+                    'account' => 'Cuenta y Perfil',
+                    'features' => 'Funcionalidades',
+                    'billing' => 'Planes y Facturación',
+                    'ai_copilot' => 'IA y Copiloto',
+                    'integrations' => 'Integraciones',
+                    'security' => 'Seguridad y Privacidad',
+                    'troubleshooting' => 'Solución de Problemas',
                 ],
             ])
             ->setDefaultValue('general')

@@ -45,6 +45,7 @@ help-center:
     js/help-center.js: {}
   dependencies:
     - core/drupal
+    - core/drupalSettings
     - core/once
     - ecosistema_jaraba_core/global
 

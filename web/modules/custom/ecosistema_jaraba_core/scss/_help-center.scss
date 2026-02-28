@@ -165,10 +165,30 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 }
 
 .help-autocomplete__question {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 0.2rem;
+}
+
+.help-autocomplete__type {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 3px;
+  background: color.change($_primary, $alpha: 0.1);
+  color: var(--ej-color-primary, $_primary);
+  flex-shrink: 0;
+
+  &--kb {
+    background: color.change($_orange, $alpha: 0.12);
+    color: var(--ej-color-secondary, $_orange);
+  }
 }
 
 .help-autocomplete__preview {
@@ -388,6 +408,181 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 }
 
 // ---------------------------------------------------------------------------
+// TRUST SIGNALS (hero)
+// ---------------------------------------------------------------------------
+.help-center__trust-signals {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.help-center__trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+
+  svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// QUICK LINKS
+// ---------------------------------------------------------------------------
+.help-center__quick-links {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+.help-center__quick-links-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.help-quick-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  background: var(--ej-color-surface, $_card-bg);
+  border: 1px solid var(--ej-color-border, $_border);
+  border-radius: $_radius;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: var(--ej-color-text, $_text);
+  box-shadow: $_shadow;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    box-shadow: $_shadow-hover;
+    transform: translateY(-2px);
+    border-color: var(--ej-color-accent, $_accent);
+    color: var(--ej-color-text, $_text);
+  }
+}
+
+.help-quick-link__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: color.change($_accent, $alpha: 0.1);
+  border-radius: 10px;
+  color: var(--ej-color-accent, $_accent);
+}
+
+.help-quick-link__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.help-quick-link__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
+.help-quick-link__description {
+  font-size: 0.8rem;
+  color: var(--ej-color-text-secondary, $_text-light);
+  line-height: 1.4;
+}
+
+// ---------------------------------------------------------------------------
+// KB PROMO BANNER
+// ---------------------------------------------------------------------------
+.help-center__kb-promo {
+  max-width: 1100px;
+  margin: 0 auto 2.5rem;
+  padding: 0 1.5rem;
+}
+
+.help-center__kb-promo-content {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, color.change($_primary, $alpha: 0.04) 0%, color.change($_accent, $alpha: 0.06) 100%);
+  border: 1px solid color.change($_accent, $alpha: 0.2);
+  border-radius: $_radius;
+  padding: 1.5rem 2rem;
+  flex-wrap: wrap;
+
+  @media (min-width: 768px) {
+    flex-wrap: nowrap;
+  }
+}
+
+.help-center__kb-promo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: color.change($_accent, $alpha: 0.1);
+  border-radius: 50%;
+  color: var(--ej-color-accent, $_accent);
+}
+
+.help-center__kb-promo-text {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ej-color-primary, $_primary);
+    margin: 0 0 0.25rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--ej-color-text-secondary, $_text-light);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.help-center__kb-promo-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  background: var(--ej-color-accent, $_accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: color.adjust($_accent, $lightness: -8%);
+    color: #fff;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // CONTACTO CTA
 // ---------------------------------------------------------------------------
 .help-center__contact {
@@ -407,6 +602,79 @@ $_shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.10);
 .help-center__contact-text {
   font-size: 0.95rem;
   color: var(--ej-color-text-secondary, $_text-light);
+  margin-bottom: 1.5rem;
+}
+
+.help-center__contact-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.help-center__contact-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &--primary {
+    background: var(--ej-color-accent, $_accent);
+    color: #fff;
+
+    &:hover {
+      background: color.adjust($_accent, $lightness: -8%);
+      color: #fff;
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: var(--ej-color-primary, $_primary);
+    border: 2px solid var(--ej-color-primary, $_primary);
+
+    &:hover {
+      background: var(--ej-color-primary, $_primary);
+      color: #fff;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ANIMATIONS (scroll-triggered)
+// ---------------------------------------------------------------------------
+// Animación solo si JS está disponible Y el usuario no prefiere movimiento reducido.
+// Sin JS o con prefers-reduced-motion, los elementos son visibles inmediatamente.
+[data-animate] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+[data-animate].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+// Accesibilidad: deshabilitar animaciones si el usuario lo prefiere.
+@media (prefers-reduced-motion: reduce) {
+  [data-animate] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+// Fallback noscript: si JS no carga, todo es visible.
+// Drupal siempre carga JS, pero esta es la red de seguridad.
+.no-js [data-animate],
+html:not(.js) [data-animate] {
+  opacity: 1;
+  transform: none;
 }
 
 // ---------------------------------------------------------------------------

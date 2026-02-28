@@ -3,19 +3,20 @@
  * help-center.js — Interactividad del Centro de Ayuda público.
  *
  * PROPÓSITO:
- * Autocompletado de búsqueda, smooth scroll a categorías,
- * feedback de artículos y animaciones de entrada.
+ * Autocompletado de búsqueda unificada (FAQ + KB), smooth scroll a categorías,
+ * feedback de artículos, animaciones de scroll (IntersectionObserver).
  *
  * DIRECTRICES:
  * - Drupal.behaviors para compatibilidad AJAX/BigPipe
  * - Debounce en búsqueda para no saturar el servidor
+ * - ROUTE-LANGPREFIX-001: URL de API vía drupalSettings.helpCenter.searchApiUrl
  * - Traducciones con Drupal.t()
  */
-(function (Drupal, once) {
+(function (Drupal, drupalSettings, once) {
   'use strict';
 
   /**
-   * Behavior: Autocompletado de búsqueda.
+   * Behavior: Autocompletado de búsqueda unificada (FAQ + KB).
    */
   Drupal.behaviors.helpCenterSearch = {
     attach: function (context) {
@@ -29,6 +30,12 @@
         .querySelector('[data-help-autocomplete]');
       var debounceTimer = null;
 
+      // ROUTE-LANGPREFIX-001: URL vía drupalSettings, nunca hardcoded.
+      if (!drupalSettings.helpCenter || !drupalSettings.helpCenter.searchApiUrl) {
+        return;
+      }
+      var searchApiUrl = drupalSettings.helpCenter.searchApiUrl;
+
       input.addEventListener('input', function () {
         var query = input.value.trim();
 
@@ -41,7 +48,7 @@
         }
 
         debounceTimer = setTimeout(function () {
-          fetch('/api/v1/help/search?q=' + encodeURIComponent(query))
+          fetch(searchApiUrl + '?q=' + encodeURIComponent(query))
             .then(function (r) { return r.json(); })
             .then(function (data) {
               if (!data.success || !data.data.length) {
@@ -51,8 +58,16 @@
               }
 
               var html = data.data.map(function (item) {
-                return '<a href="/ayuda/' + item.id + '" class="help-autocomplete__item">' +
-                  '<span class="help-autocomplete__question">' + Drupal.checkPlain(item.question) + '</span>' +
+                // Unified search: URL siempre viene del servidor con language prefix correcto.
+                if (!item.url) {
+                  return '';
+                }
+                var itemUrl = item.url;
+                var typeLabel = item.type === 'kb'
+                  ? '<span class="help-autocomplete__type help-autocomplete__type--kb">KB</span>'
+                  : '';
+                return '<a href="' + itemUrl + '" class="help-autocomplete__item">' +
+                  '<span class="help-autocomplete__question">' + Drupal.checkPlain(item.question) + typeLabel + '</span>' +
                   '<span class="help-autocomplete__preview">' + Drupal.checkPlain(item.answer_preview) + '</span>' +
                   '</a>';
               }).join('');
@@ -125,4 +140,36 @@
     },
   };
 
-})(Drupal, once);
+  /**
+   * Behavior: Animaciones de scroll con IntersectionObserver.
+   */
+  Drupal.behaviors.helpCenterAnimations = {
+    attach: function (context) {
+      var elements = once('help-animate', '[data-animate]', context);
+      if (!elements.length || !('IntersectionObserver' in window)) {
+        // Fallback: show all elements immediately.
+        elements.forEach(function (el) {
+          el.classList.add('is-visible');
+        });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px',
+      });
+
+      elements.forEach(function (el) {
+        observer.observe(el);
+      });
+    },
+  };
+
+})(Drupal, drupalSettings, once);

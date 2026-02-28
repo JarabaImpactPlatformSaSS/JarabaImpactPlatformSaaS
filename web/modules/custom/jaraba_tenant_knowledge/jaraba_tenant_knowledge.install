@@ -35,3 +35,257 @@ function jaraba_tenant_knowledge_update_10002(array &$sandbox): void {
 
   $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
 }
+
+/**
+ * Migra categorías de FAQ (e-commerce → SaaS) y crea 25 FAQs semilla.
+ *
+ * PROPÓSITO:
+ * 1. Migra categorías existentes del esquema e-commerce al SaaS multi-vertical.
+ * 2. Actualiza la definición de campo para reflejar los nuevos allowed_values.
+ * 3. Inserta 25 FAQs de plataforma (sin tenant_id) cubriendo 8 categorías.
+ *
+ * DIRECTRICES:
+ * - TRANSLATABLE-FIELDDATA-001: usa _field_data para migraciones en entidades traducibles.
+ * - QUERY-CHAIN-001: sin encadenamiento de addExpression/join.
+ * - TENANT-ISOLATION-ACCESS-001: FAQs de plataforma sin tenant_id (NULL) = visibles globalmente.
+ */
+function jaraba_tenant_knowledge_update_10003(): void {
+  $database = \Drupal::database();
+  $logger = \Drupal::logger('jaraba_tenant_knowledge');
+
+  // --- Paso 1: Migrar categorías existentes en _field_data ---
+  // TRANSLATABLE-FIELDDATA-001: entidades translatable almacenan en _field_data.
+  $category_map = [
+    'general' => 'getting_started',
+    'products' => 'features',
+    'shipping' => 'features',
+    'returns' => 'troubleshooting',
+    'payment' => 'billing',
+    'support' => 'troubleshooting',
+    'promotions' => 'features',
+    'other' => 'getting_started',
+  ];
+
+  foreach ($category_map as $old => $new) {
+    $updated = $database->update('tenant_faq_field_data')
+      ->fields(['category' => $new])
+      ->condition('category', $old)
+      ->execute();
+    if ($updated > 0) {
+      $logger->info('Migrated @count FAQs from category @old to @new.', [
+        '@count' => $updated,
+        '@old' => $old,
+        '@new' => $new,
+      ]);
+    }
+    // Also update revision table.
+    $database->update('tenant_faq_field_revision')
+      ->fields(['category' => $new])
+      ->condition('category', $old)
+      ->execute();
+  }
+
+  // --- Paso 2: Actualizar definición de campo ---
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $field = $definition_update_manager->getFieldStorageDefinition('category', 'tenant_faq');
+  if ($field) {
+    $field->setSettings([
+      'allowed_values' => [
+        'getting_started' => 'Primeros Pasos',
+        'account' => 'Cuenta y Perfil',
+        'features' => 'Funcionalidades',
+        'billing' => 'Planes y Facturación',
+        'ai_copilot' => 'IA y Copiloto',
+        'integrations' => 'Integraciones',
+        'security' => 'Seguridad y Privacidad',
+        'troubleshooting' => 'Solución de Problemas',
+      ],
+    ]);
+    $definition_update_manager->updateFieldStorageDefinition($field);
+  }
+
+  // --- Paso 3: Insertar 25 FAQs semilla de plataforma ---
+  $faqs = _jaraba_tenant_knowledge_seed_faqs();
+
+  $faq_storage = \Drupal::entityTypeManager()->getStorage('tenant_faq');
+  $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+  $count = 0;
+
+  foreach ($faqs as $priority => $faq_data) {
+    // Verificar si ya existe una FAQ con la misma pregunta (idempotencia).
+    // FAQs de plataforma no tienen tenant_id (NULL).
+    $existing = $faq_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('question', $faq_data['question'])
+      ->notExists('tenant_id')
+      ->range(0, 1)
+      ->execute();
+    if (!empty($existing)) {
+      continue;
+    }
+
+    $entity = $faq_storage->create([
+      'question' => $faq_data['question'],
+      'answer' => ['value' => $faq_data['answer'], 'format' => 'basic_html'],
+      'category' => $faq_data['category'],
+      'is_published' => TRUE,
+      'priority' => 100 - $priority,
+      'langcode' => $langcode,
+    ]);
+    $entity->save();
+    $count++;
+  }
+
+  $logger->info('Centro de Ayuda: @count FAQs semilla creadas.', ['@count' => $count]);
+}
+
+/**
+ * Retorna las 25 FAQs semilla de plataforma.
+ *
+ * @return array
+ *   Array de FAQs con keys: question, answer, category.
+ */
+function _jaraba_tenant_knowledge_seed_faqs(): array {
+  return [
+    // --- PRIMEROS PASOS (getting_started) ---
+    [
+      'question' => '¿Cómo empiezo a usar la plataforma?',
+      'answer' => '<p>¡Bienvenido! Para comenzar, sigue estos pasos:</p><ol><li>Completa tu perfil con tu información profesional.</li><li>Explora las verticales disponibles (Empleabilidad, Emprendimiento, Comercio, etc.).</li><li>Personaliza tu panel de control desde Configuración.</li></ol><p>Nuestro copiloto IA está disponible en cada sección para guiarte.</p>',
+      'category' => 'getting_started',
+    ],
+    [
+      'question' => '¿Qué verticales están disponibles en la plataforma?',
+      'answer' => '<p>La plataforma ofrece 10 verticales especializadas:</p><ul><li><strong>Empleabilidad</strong> — Búsqueda de empleo y desarrollo profesional</li><li><strong>Emprendimiento</strong> — Herramientas para emprendedores</li><li><strong>ComercioConecta</strong> — Marketplace y comercio digital</li><li><strong>AgroConecta</strong> — Sector agroalimentario</li><li><strong>JarabaLex</strong> — Asesoría legal y compliance</li><li><strong>ServiciosConecta</strong> — Servicios profesionales</li><li><strong>Andalucía E+I</strong> — Emprendimiento e innovación regional</li><li><strong>Formación</strong> — Cursos y aprendizaje online</li><li><strong>Content Hub</strong> — Blog y contenido editorial</li><li><strong>Demo</strong> — Entorno de pruebas</li></ul>',
+      'category' => 'getting_started',
+    ],
+    [
+      'question' => '¿Cómo funciona el panel de control?',
+      'answer' => '<p>Tu panel de control es tu centro de operaciones. Desde allí puedes:</p><ul><li>Ver estadísticas de tu actividad y rendimiento.</li><li>Acceder a las herramientas de cada vertical.</li><li>Gestionar tu base de conocimiento y FAQs.</li><li>Configurar tu copiloto IA personalizado.</li><li>Revisar notificaciones y tareas pendientes.</li></ul><p>El panel se adapta automáticamente según las verticales que tengas activas.</p>',
+      'category' => 'getting_started',
+    ],
+
+    // --- CUENTA Y PERFIL (account) ---
+    [
+      'question' => '¿Cómo edito mi perfil profesional?',
+      'answer' => '<p>Para editar tu perfil:</p><ol><li>Accede a <strong>Mi Perfil</strong> desde el menú de usuario.</li><li>Modifica tu información personal, experiencia y habilidades.</li><li>Sube o actualiza tu foto de perfil.</li><li>Guarda los cambios.</li></ol><p>Tu perfil es visible para otros usuarios de la plataforma según tu configuración de privacidad.</p>',
+      'category' => 'account',
+    ],
+    [
+      'question' => '¿Cómo cambio mi contraseña?',
+      'answer' => '<p>Para cambiar tu contraseña:</p><ol><li>Ve a <strong>Mi Perfil → Editar</strong>.</li><li>Introduce tu contraseña actual en el campo correspondiente.</li><li>Escribe la nueva contraseña (mínimo 8 caracteres, con mayúsculas y números).</li><li>Confirma la nueva contraseña y guarda.</li></ol><p>Si olvidaste tu contraseña, usa el enlace "¿Olvidaste tu contraseña?" en la página de inicio de sesión.</p>',
+      'category' => 'account',
+    ],
+    [
+      'question' => '¿Cómo configuro las notificaciones?',
+      'answer' => '<p>Puedes personalizar tus notificaciones desde <strong>Configuración → Notificaciones</strong>:</p><ul><li><strong>Email</strong> — Resúmenes diarios o semanales de actividad.</li><li><strong>Plataforma</strong> — Notificaciones en tiempo real dentro de la app.</li><li><strong>Copiloto</strong> — Alertas proactivas del asistente IA.</li></ul><p>Cada vertical tiene sus propias opciones de notificación que puedes activar o desactivar independientemente.</p>',
+      'category' => 'account',
+    ],
+
+    // --- FUNCIONALIDADES (features) ---
+    [
+      'question' => '¿Cómo uso el Page Builder para crear páginas?',
+      'answer' => '<p>El Page Builder te permite crear páginas profesionales sin programar:</p><ol><li>Ve a <strong>Páginas → Crear nueva</strong>.</li><li>Elige una plantilla o empieza desde cero.</li><li>Arrastra y suelta bloques: texto, imágenes, vídeos, formularios, CTAs.</li><li>Personaliza colores, tipografías y espaciado.</li><li>Previsualiza en móvil y escritorio.</li><li>Publica cuando estés satisfecho.</li></ol><p>Cada tenant tiene una cuota de páginas según su plan.</p>',
+      'category' => 'features',
+    ],
+    [
+      'question' => '¿Cómo publico un artículo en el blog?',
+      'answer' => '<p>Para publicar en el Content Hub (blog):</p><ol><li>Accede a <strong>Content Hub → Nuevo artículo</strong>.</li><li>Escribe el título y contenido. Puedes usar el editor visual o el canvas avanzado.</li><li>Asigna una categoría y etiquetas.</li><li>Configura la imagen destacada y el extracto SEO.</li><li>Programa la publicación o publícalo inmediatamente.</li></ol><p>El copiloto IA puede ayudarte a mejorar el texto, sugerir títulos y optimizar el SEO.</p>',
+      'category' => 'features',
+    ],
+    [
+      'question' => '¿Cómo gestiono mi catálogo de productos?',
+      'answer' => '<p>Si tienes activa la vertical <strong>ComercioConecta</strong>:</p><ol><li>Ve a <strong>Productos → Gestionar catálogo</strong>.</li><li>Añade productos con fotos, descripción, precio y variantes.</li><li>Organiza por categorías.</li><li>Configura inventario y disponibilidad.</li><li>Los productos se publican automáticamente en tu tienda.</li></ol><p>Puedes importar productos masivamente desde un archivo CSV.</p>',
+      'category' => 'features',
+    ],
+    [
+      'question' => '¿Qué es el sistema de reputación?',
+      'answer' => '<p>El sistema de reputación evalúa la confiabilidad de usuarios y negocios:</p><ul><li><strong>Puntuación</strong> — Basada en actividad, reviews y respuesta.</li><li><strong>Insignias</strong> — Se otorgan al alcanzar hitos específicos.</li><li><strong>Reviews</strong> — Los clientes pueden calificar productos y servicios.</li><li><strong>Verificación</strong> — Proceso de validación de identidad del negocio.</li></ul><p>Una mejor reputación mejora tu visibilidad en los listados de la plataforma.</p>',
+      'category' => 'features',
+    ],
+
+    // --- PLANES Y FACTURACIÓN (billing) ---
+    [
+      'question' => '¿Qué planes están disponibles?',
+      'answer' => '<p>Ofrecemos planes adaptados a cada necesidad:</p><ul><li><strong>Gratuito</strong> — Acceso básico a verticales, 1 página, copiloto limitado.</li><li><strong>Profesional</strong> — Todas las verticales, páginas ilimitadas, copiloto completo, analíticas.</li><li><strong>Empresa</strong> — Todo lo anterior + soporte prioritario, API, marca blanca, SLA.</li></ul><p>Puedes cambiar de plan en cualquier momento desde <strong>Facturación → Mi Plan</strong>. Los cambios se aplican inmediatamente con prorrateo.</p>',
+      'category' => 'billing',
+    ],
+    [
+      'question' => '¿Cómo actualizo mi método de pago?',
+      'answer' => '<p>Para actualizar tu forma de pago:</p><ol><li>Ve a <strong>Facturación → Método de pago</strong>.</li><li>Haz clic en "Actualizar tarjeta".</li><li>Introduce los datos de tu nueva tarjeta.</li><li>Los pagos se procesan de forma segura mediante Stripe.</li></ol><p>Aceptamos Visa, Mastercard, American Express y tarjetas de débito. También disponible SEPA para domiciliación bancaria en la UE.</p>',
+      'category' => 'billing',
+    ],
+    [
+      'question' => '¿Cómo descargo mis facturas?',
+      'answer' => '<p>Tus facturas están disponibles en <strong>Facturación → Historial</strong>:</p><ul><li>Cada factura se genera automáticamente al procesar el pago.</li><li>Puedes descargarlas en formato PDF.</li><li>Incluyen todos los datos fiscales configurados en tu cuenta.</li></ul><p>Si necesitas modificar los datos fiscales de una factura, contacta con soporte antes de la fecha de cierre del período.</p>',
+      'category' => 'billing',
+    ],
+
+    // --- IA Y COPILOTO (ai_copilot) ---
+    [
+      'question' => '¿Qué puede hacer el copiloto IA?',
+      'answer' => '<p>Tu copiloto IA es un asistente personalizado que te ayuda en múltiples áreas:</p><ul><li><strong>Contenido</strong> — Genera, mejora y traduce textos para blog y páginas.</li><li><strong>Atención al cliente</strong> — Responde automáticamente usando tu base de conocimiento.</li><li><strong>Marketing</strong> — Crea campañas, subject lines de email y copy para redes.</li><li><strong>Análisis</strong> — Resume datos y sugiere acciones basadas en tendencias.</li><li><strong>Legal</strong> — Revisa textos legales y genera políticas de privacidad.</li></ul><p>El copiloto aprende de tu negocio a través de las FAQs y documentos que subas.</p>',
+      'category' => 'ai_copilot',
+    ],
+    [
+      'question' => '¿Cómo entreno al copiloto con mis datos?',
+      'answer' => '<p>Para personalizar el copiloto con tu conocimiento:</p><ol><li>Ve a <strong>Knowledge → Panel de entrenamiento</strong>.</li><li>Configura la información de tu negocio (nombre, sector, descripción).</li><li>Añade FAQs personalizadas con preguntas y respuestas.</li><li>Sube políticas y documentos (PDF, DOCX) para ampliar la base de conocimiento.</li><li>Usa la consola de pruebas para verificar que responde correctamente.</li></ol><p>Los cambios se reflejan en tiempo real gracias a la indexación semántica en Qdrant.</p>',
+      'category' => 'ai_copilot',
+    ],
+    [
+      'question' => '¿Qué modelos de IA utiliza la plataforma?',
+      'answer' => '<p>La plataforma utiliza modelos de última generación con enrutamiento inteligente:</p><ul><li><strong>Rápido (Haiku)</strong> — Para tareas simples como clasificación y extracción.</li><li><strong>Equilibrado (Sonnet)</strong> — Para la mayoría de interacciones conversacionales.</li><li><strong>Premium (Opus)</strong> — Para tareas complejas como análisis legal y generación avanzada.</li></ul><p>El router de modelos selecciona automáticamente el más adecuado según la complejidad de cada solicitud, optimizando coste y calidad.</p>',
+      'category' => 'ai_copilot',
+    ],
+
+    // --- INTEGRACIONES (integrations) ---
+    [
+      'question' => '¿Qué integraciones están disponibles?',
+      'answer' => '<p>La plataforma se integra con múltiples servicios:</p><ul><li><strong>OAuth</strong> — Inicio de sesión con Google, LinkedIn y Microsoft.</li><li><strong>Pagos</strong> — Stripe para suscripciones y pagos únicos.</li><li><strong>Email</strong> — SMTP configurado para comunicaciones transaccionales.</li><li><strong>Analíticas</strong> — Google Analytics y métricas internas.</li><li><strong>IA</strong> — API de Anthropic (Claude) para copiloto y agentes.</li></ul><p>Las integraciones se configuran desde <strong>Configuración → Integraciones</strong> por el administrador del tenant.</p>',
+      'category' => 'integrations',
+    ],
+    [
+      'question' => '¿Cómo conecto mi cuenta de Google/LinkedIn para login social?',
+      'answer' => '<p>El login social simplifica el acceso:</p><ol><li>En la página de inicio de sesión, haz clic en "Continuar con Google" o "Continuar con LinkedIn".</li><li>Autoriza el acceso a tu información básica.</li><li>Si es tu primera vez, se creará una cuenta vinculada automáticamente.</li><li>En visitas posteriores, iniciarás sesión con un solo clic.</li></ol><p>Puedes vincular o desvincular proveedores sociales desde <strong>Mi Perfil → Cuentas vinculadas</strong>.</p>',
+      'category' => 'integrations',
+    ],
+    [
+      'question' => '¿Tiene API disponible para desarrolladores?',
+      'answer' => '<p>Sí, la plataforma ofrece varias APIs:</p><ul><li><strong>REST API</strong> — Endpoints para gestionar contenido, usuarios y productos.</li><li><strong>MCP Server</strong> — Protocolo de comunicación para herramientas IA externas (JSON-RPC 2.0).</li><li><strong>Webhooks</strong> — Notificaciones en tiempo real de eventos del sistema.</li></ul><p>La documentación de la API está disponible para los planes Profesional y Empresa. Requiere autenticación con token.</p>',
+      'category' => 'integrations',
+    ],
+
+    // --- SEGURIDAD Y PRIVACIDAD (security) ---
+    [
+      'question' => '¿Cómo se protegen mis datos?',
+      'answer' => '<p>La seguridad de tus datos es nuestra prioridad:</p><ul><li><strong>Cifrado</strong> — Todas las comunicaciones usan HTTPS/TLS 1.3.</li><li><strong>Aislamiento</strong> — Cada tenant tiene datos completamente aislados (multi-tenancy estricto).</li><li><strong>Backups</strong> — Copias de seguridad automáticas diarias con retención de 30 días.</li><li><strong>RGPD</strong> — Cumplimiento total del Reglamento General de Protección de Datos.</li><li><strong>PII Detection</strong> — El sistema IA detecta y enmascara datos personales sensibles.</li></ul>',
+      'category' => 'security',
+    ],
+    [
+      'question' => '¿Cómo cumplen con el RGPD?',
+      'answer' => '<p>Nuestro cumplimiento RGPD incluye:</p><ul><li><strong>Consentimiento</strong> — Cookies y tracking requieren consentimiento explícito.</li><li><strong>Derecho al olvido</strong> — Puedes solicitar la eliminación completa de tus datos.</li><li><strong>Portabilidad</strong> — Exporta tus datos en formatos estándar.</li><li><strong>DPO</strong> — Delegado de Protección de Datos disponible.</li><li><strong>Guardrails IA</strong> — Detección automática de DNI, NIE, IBAN y datos PII en interacciones con IA.</li></ul><p>Consulta nuestra política de privacidad completa en <a href="/politica-privacidad">/politica-privacidad</a>.</p>',
+      'category' => 'security',
+    ],
+    [
+      'question' => '¿Qué permisos tienen los diferentes roles de usuario?',
+      'answer' => '<p>La plataforma tiene un sistema de roles granular:</p><ul><li><strong>Administrador</strong> — Control total del tenant, facturación, configuración.</li><li><strong>Editor</strong> — Gestión de contenido, productos, FAQs.</li><li><strong>Colaborador</strong> — Creación de contenido con aprobación requerida.</li><li><strong>Miembro</strong> — Acceso básico y uso de herramientas.</li></ul><p>Los permisos se gestionan desde <strong>Administración → Personas → Roles</strong>.</p>',
+      'category' => 'security',
+    ],
+
+    // --- SOLUCIÓN DE PROBLEMAS (troubleshooting) ---
+    [
+      'question' => '¿Qué hago si no puedo iniciar sesión?',
+      'answer' => '<p>Si tienes problemas para acceder:</p><ol><li><strong>Verifica tu email</strong> — Asegúrate de usar el email correcto de registro.</li><li><strong>Restablece la contraseña</strong> — Usa "¿Olvidaste tu contraseña?" para recibir un enlace de restablecimiento.</li><li><strong>Limpia caché</strong> — Borra cookies y caché del navegador.</li><li><strong>Login social</strong> — Si te registraste con Google/LinkedIn, usa el mismo proveedor.</li></ol><p>Si el problema persiste, contacta a soporte en <a href="/contacto">/contacto</a> indicando tu email de registro.</p>',
+      'category' => 'troubleshooting',
+    ],
+    [
+      'question' => '¿Por qué mis cambios no aparecen publicados?',
+      'answer' => '<p>Si tus cambios no son visibles, verifica lo siguiente:</p><ul><li><strong>Estado de publicación</strong> — El contenido debe estar marcado como "Publicado".</li><li><strong>Caché</strong> — La plataforma usa caché agresiva. Espera hasta 5 minutos o limpia la caché manualmente.</li><li><strong>Permisos</strong> — Tu rol debe tener permisos de publicación directa.</li><li><strong>Preview</strong> — Usa la función de previsualización para verificar el contenido antes de publicar.</li></ul><p>Si el contenido está publicado pero no aparece, contacta con soporte técnico.</p>',
+      'category' => 'troubleshooting',
+    ],
+    [
+      'question' => '¿Cómo contacto con soporte técnico?',
+      'answer' => '<p>Tienes varias formas de obtener ayuda:</p><ul><li><strong>Centro de Ayuda</strong> — Busca en nuestras FAQs y artículos (estás aquí).</li><li><strong>Copiloto IA</strong> — Pregunta al bot de esta página para respuestas instantáneas.</li><li><strong>Ticket de soporte</strong> — Crea un ticket en <a href="/soporte/crear">/soporte/crear</a> para seguimiento personalizado.</li><li><strong>Contacto directo</strong> — Usa el formulario en <a href="/contacto">/contacto</a>.</li></ul><p>Los tickets de soporte tienen SLA según tu plan: Empresa (4h), Profesional (24h), Gratuito (72h).</p>',
+      'category' => 'troubleshooting',
+    ],
+  ];
+}
