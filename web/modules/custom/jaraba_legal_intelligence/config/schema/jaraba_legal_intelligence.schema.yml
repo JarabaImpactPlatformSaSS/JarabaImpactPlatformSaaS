@@ -329,3 +329,69 @@ jaraba_legal_intelligence.sources:
           scope:
             type: string
             label: 'Scope (national/eu)'
+
+jaraba_legal_intelligence.legal_coherence_benchmark:
+  type: config_object
+  label: 'Legal Coherence Benchmark Suite (JLB)'
+  mapping:
+    id:
+      type: string
+      label: 'Benchmark ID'
+    label:
+      type: label
+      label: 'Benchmark label'
+    agent_id:
+      type: string
+      label: 'Agent ID for benchmark execution'
+    version:
+      type: string
+      label: 'Benchmark version'
+    threshold:
+      type: float
+      label: 'Global passing threshold'
+    test_cases:
+      type: mapping
+      label: 'Test cases'
+      mapping:
+        '*':
+          type: mapping
+          label: 'Test case'
+          mapping:
+            input:
+              type: string
+              label: 'User input / question'
+            expected_output_contains:
+              type: sequence
+              label: 'Expected output keywords'
+              sequence:
+                type: string
+                label: 'Keyword'
+            expected_output_not_contains:
+              type: sequence
+              label: 'Forbidden output keywords'
+              sequence:
+                type: string
+                label: 'Keyword'
+            criteria:
+              type: string
+              label: 'Evaluation criteria'
+            category:
+              type: string
+              label: 'Test category'
+            expected_intent:
+              type: string
+              label: 'Expected intent classification'
+    evaluation_criteria:
+      type: mapping
+      label: 'Evaluation criteria weights'
+      mapping:
+        '*':
+          type: mapping
+          label: 'Criterion'
+          mapping:
+            weight:
+              type: float
+              label: 'Weight (0.0-1.0)'
+            description:
+              type: string
+              label: 'Criterion description'
