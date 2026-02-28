@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v73.0
 
 **Fecha:** 2026-02-28
-**Versión:** 91.0.0 (Unificacion Landing JarabaLex + Despachos — 5 modulos habilitados, 18 FreemiumVerticalLimit, LexNET killer feature, SEO Schema.org)
+**Versión:** 92.0.0 (Sistema de Coherencia Juridica LCIS 9 Capas — KB normativa + Intent Classifier + Normative Graph + Prompt Rules + Validator + Disclaimer + Multi-Turn)
 **Estado:** Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo (GTM + A/B + Heatmap + Tracking) + Auditoria IA 30/30 Completada (100/100) + AI Stack Clase Mundial (33 items: 23 FIX + 10 GAP) + Streaming Real + MCP Server + Native Function Calling + Empleabilidad Elevated + Andalucia EI Plan Maestro + Meta-Site Tenant-Aware + Tenant Remediation Complete + CWV Optimized + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -2521,6 +2521,23 @@ Sprint 3 — Funcionalidades Avanzadas:
 
 **Relación con jaraba_legal_knowledge:** El nuevo módulo `jaraba_legal_intelligence` extiende las capacidades de `jaraba_legal_knowledge` (4 entidades, 10 servicios, colección Qdrant `jaraba_knowledge`). Estrategia de convivencia: jaraba_legal_knowledge se mantiene como módulo ligero para RAG normativo básico (BOE, fiscal); jaraba_legal_intelligence añade resoluciones judiciales, fuentes europeas, NLP avanzado y dashboard profesional.
 
+> **SISTEMA DE COHERENCIA JURIDICA (LCIS) — 9 CAPAS** (2026-02-28)
+> Legal Coherence Intelligence System implementado en `jaraba_legal_intelligence/src/LegalCoherence/`. 9 servicios PHP puros (sin dependencias Drupal en capas 1-4), patron fail-open en todas las capas. 149 unit tests, 277 assertions.
+>
+> | Capa | Servicio | LOC | Funcion |
+> |------|----------|-----|---------|
+> | **L1** Knowledge Base | `LegalCoherenceKnowledgeBase` | 445 | 9 niveles jerarquicos, 6 regimenes forales, 30+ regex, competencias Art.149.1 |
+> | **L2** Intent Classifier | `LegalIntentClassifierService` | 345 | Gate 5 intents (DIRECT/IMPLICIT/REFERENCE/COMPLIANCE/NON_LEGAL), shortcircuits |
+> | **L3** Normative Graph | `NormativeGraphEnricher` | 329 | Authority-Aware RAG: 0.55 semantic + 0.30 authority + 0.15 recency, derogation filter |
+> | **L4** Prompt Rules | `LegalCoherencePromptRule` | 176 | 8+1 reglas inyectadas (R1-R8 + R9 territorial), version short, foral auto-detection |
+> | **L5** Constitutional | `LegalConstitutionalGuardrailService` | — | Guardrails constitucionales pre-LLM |
+> | **L6** Validator | `LegalCoherenceValidatorService` | 684 | 7 checks post-LLM, scoring PENALTIES, regenerate/block/warn, anti-sycophancy V8 |
+> | **L7** Verifier | `LegalCoherenceVerifierService` | — | Verificacion final coherencia |
+> | **L8** Disclaimer | `LegalDisclaimerEnforcementService` | 166 | Disclaimer no-eliminable, fallback, score threshold 70% |
+> | **MT** Multi-Turn | `LegalConversationContext` | 256 | Cross-turn assertions, contradiction detection, MAX_TURNS=20, MAX_ASSERTIONS=50 |
+>
+> Reglas: LEGAL-COHERENCE-KB-001, LEGAL-COHERENCE-INTENT-001, LEGAL-COHERENCE-PROMPT-001, LEGAL-COHERENCE-FAILOPEN-001, LEGAL-COHERENCE-REGEN-001, LEGAL-COHERENCE-MULTITURN-001 en Directrices v103.0.0. EU AI Act: HIGH RISK (Annex III, 8 — Administration of Justice). Aprendizaje #153.
+
 ### 12.7 Especificación Niveles de Madurez N1/N2/N3 (2026-02-16)
 
 21 documentos técnicos especificando capacidades organizados por nivel de madurez plataforma, más 3 auditorías de readiness y 1 plan de implementación fiscal:
@@ -2714,13 +2731,14 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-16 | **40.0.0** | **Plan Elevacion JarabaLex v1 — 14 Fases Clase Mundial:** jaraba_legal_intelligence elevado de Vertical Independiente a Clase Mundial (14/14 fases). Modulo actualizado en seccion 7.1 (icon checkmark, 10 services, Copilot Agent, FeatureGate, 5 MJML, 3 funnels). Copilot JarabaLex 6 modos anadido a seccion 8.1. Tabla 12.3 actualizada a 14/14 + detalle 14 fases. Aprendizaje #89. |
 | 2026-02-16 | **39.0.0** | **Documentation Update — 5 Modules Added:** jaraba_tenant_export, jaraba_privacy, jaraba_legal, jaraba_dr, ComplianceAggregatorService añadidos al registro de modulos seccion 7.1. Reglas ZERO-REGION-001/002/003 en Directrices v39.0.0. Aprendizaje #88. |
 
-> **Versión:** 91.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
+> **Versión:** 92.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
 
 
 ## 15. Registro de Cambios
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-02-28 | **92.0.0** | **Sistema de Coherencia Juridica LCIS 9 Capas — Validacion Normativa + Anti-Sycophancy + Multi-Turn:** Nuevo ASCII box SISTEMA DE COHERENCIA JURIDICA (LCIS) en seccion 12.6. 9 servicios PHP en `jaraba_legal_intelligence/src/LegalCoherence/`: LegalCoherenceKnowledgeBase (L1, 9 niveles NORMATIVE_HIERARCHY derecho_ue_primario→circulares, 6 FORAL_LAW_REGIMES, 7 STATE_EXCLUSIVE_COMPETENCES Art.149.1, 30+ NORM_TYPE_PATTERNS regex, pesos authority 0.98-0.20), LegalIntentClassifierService (L2, gate 5 intents LEGAL_DIRECT/IMPLICIT/REFERENCE/COMPLIANCE/NON_LEGAL, scoring keywords con thresholds 0.85/0.15, shortcircuits acciones legales + jarabalex, bonus vertical), NormativeGraphEnricher (L3, authority-aware RAG ranking formula 0.55 semantic + 0.30 authority + 0.15 recency, derogation filter, territory warnings, CCAA competence bonus), LegalCoherencePromptRule (L4, 8+1 reglas R1-R8 + R9 territorial, COHERENCE_PROMPT full + COHERENCE_PROMPT_SHORT, applyWithTerritory() con foral law auto-detection, requiresCoherence()/useShortVersion()), LegalConstitutionalGuardrailService (L5), LegalCoherenceValidatorService (L6, 7 checks: hierarchy_inversion/organic_law/eu_primacy/competence/vigencia/contradiction/sycophancy + antinomies, PENALTIES scoring critical=-0.30 to low=-0.05, action regenerate max 2 retries/block/warn/allow, anti-sycophancy V8 premise validation), LegalCoherenceVerifierService (L7), LegalDisclaimerEnforcementService (L8, non-removable disclaimer, fallback without LegalDisclaimerService, coherence score display threshold 70%), LegalConversationContext (MT, extractAssertions para competencia/primacia/vigencia/reserva_lo/retroactividad/jerarquia, checkCrossTurnCoherence, MAX_TURNS=20, MAX_ASSERTIONS=50). 7 ficheros de test: 149 tests, 277 assertions, 0 errores. EU AI Act compliance HIGH RISK Annex III art.8. 6 reglas nuevas en Directrices v103.0.0. Aprendizaje #153. |
 | 2026-02-28 | **91.0.0** | **Unificacion Landing JarabaLex + Despachos — 5 Modulos Habilitados + 18 FreemiumVerticalLimit + LexNET + SEO:** Unificacion de `/despachos` en `/jarabalex` via 301 redirect (`Url::fromRoute()`). 5 modulos legales habilitados (jaraba_legal_calendar, jaraba_legal_vault, jaraba_legal_billing, jaraba_legal_lexnet, jaraba_legal_templates). 18 nuevos FreemiumVerticalLimit configs (6 feature_keys × 3 planes: max_cases, vault_storage_mb, calendar_deadlines, billing_invoices_month, lexnet_submissions_month, template_generations_month — total 36). JarabaLexFeatureGateService +6 FEATURE_TRIGGER_MAP entries. UpgradeTriggerService +6 trigger types (11 total) con mensajes y iconos. 3 SaasPlan YAMLs actualizados (starter/pro/enterprise con legal modules). jarabalex() reescrito con 8 features (LexNET killer differentiator, expedientes, agenda, facturacion, boveda), 10 FAQs, pain points despacho, pricing preview con limites reales. despachos() convertido a 301 redirect. legalRedirect() actualizado. Megamenu: "Despachos" → "JarabaLex". PageAttachmentsHooks: SEO meta description + Schema.org SoftwareApplication JSON-LD para /jarabalex (RouteMatchInterface inyectado). Theme: landing.legal anadido a $vertical_routes. Fix: 5 controllers PHP 8.4 readonly property conflict con ControllerBase (CONTROLLER-READONLY-001). Fix: VaultApiController syntax error. 2 reglas nuevas en Directrices v102.0.0: LEGAL-LANDING-UNIFIED-001, CONTROLLER-READONLY-001. Aprendizaje #152. |
 | 2026-02-28 | **90.0.0** | **Centro de Ayuda Clase Mundial — /ayuda con 25 FAQs + Busqueda Unificada FAQ+KB:** Nuevo ASCII box CENTRO DE AYUDA CLASE MUNDIAL en seccion 8.3. Modulo `jaraba_tenant_knowledge` elevado: HelpCenterController refactorizado (getCategoryMeta(), buildFaqPageSchema(), buildBreadcrumbSchema(), buildHelpCenterSeoHead(), getKbArticleCount(), searchApi unificado FAQ+KB). 8 categorias SaaS multi-vertical (getting_started, account, features, billing, ai_copilot, integrations, security, troubleshooting). 25 FAQs seed platform-wide via update_10003 (tenant_id=NULL). Template: hero con trust signals, quick links via Url::fromRoute(), KB cross-link, CTA con botones accionables. Busqueda unificada: FAQ+KB con hasDefinition() guard, slug-based KB URLs, campo type en JSON, JS drupalSettings searchApiUrl. SEO: FAQPage + BreadcrumbList + QAPage JSON-LD, OG/Twitter meta tags, canonical. SCSS: quick-links grid, kb-promo banner, contact buttons, animations con prefers-reduced-motion + no-js fallback. Integracion: jaraba_support (quick links), Knowledge Base (cross-link + busqueda), FAQ Bot widget, footer link. 10 ficheros modificados. Aprendizaje #151. |
 | 2026-02-27 | **88.0.0** | **Navegación Ecosistema + Pricing Labels — Megamenu Selectivo + formatFeatureLabels():** Corrección de 6 regresiones de navegación del ecosistema: megamenu restringido a SaaS principal via `header_megamenu|default(false)` con inyección PHP selectiva en `preprocess_page()`, megamenu transparente corregido con `var(--header-bg, #ffffff)` fallback, menu items alineados via normalización button/anchor CSS, barra ecosistema footer activada por defecto con 4 links, mobile overlay condicional por `use_megamenu`, pricing features con labels humanos via `MetaSitePricingService::formatFeatureLabels()` (mapa 28 machine names → labels traducibles, almacenamiento dual features/features_raw). Starter tier con features base default cuando vacío (basic_profile, community, one_vertical, email_support). 2 reglas: MEGAMENU-CONTROL-001 (P1), PRICING-LABEL-001 (P1). Aprendizaje #149. |
@@ -2761,4 +2779,4 @@ Sprint 3 — Funcionalidades Avanzadas:
 | 2026-02-18 | 53.0.0 | **The Unified & Stabilized SaaS:** Consolidación final de las 5 fases. Implementación del Stack de Cumplimiento Fiscal N1. Estabilización masiva de 370+ tests unitarios. |
 | 2026-02-18 | 52.0.0 | **The Living SaaS:** Lanzamiento de los Bloques O y P. Inteligencia ZKP con Privacidad Diferencial e Interfaz Adaptativa (Ambient UX). |
 
-> **Versión:** 91.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
+> **Versión:** 92.0.0 | **Fecha:** 2026-02-28 | **Autor:** IA Asistente
