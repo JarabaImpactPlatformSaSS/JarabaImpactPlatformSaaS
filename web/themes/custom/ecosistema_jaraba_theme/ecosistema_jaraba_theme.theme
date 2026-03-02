@@ -1171,6 +1171,26 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     $variables['attributes']['class'][] = 'page-vertical-landing';
     // F12 — Lenis smooth scroll para landing pages verticales.
     $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/lenis-scroll';
+
+    // RUNTIME-VERIFY-001: Vertical-specific body class for SCSS targeting.
+    // Produces: <body class="landing-page page-vertical-landing landing-page--talento">
+    $landing_vertical_map = [
+      'ecosistema_jaraba_core.landing.empleabilidad' => 'empleabilidad',
+      'ecosistema_jaraba_core.vertical.talento' => 'talento',
+      'ecosistema_jaraba_core.landing.emprendimiento' => 'emprendimiento',
+      'ecosistema_jaraba_core.landing.agroconecta' => 'agroconecta',
+      'ecosistema_jaraba_core.landing.comercioconecta' => 'comercioconecta',
+      'ecosistema_jaraba_core.landing.serviciosconecta' => 'serviciosconecta',
+      'ecosistema_jaraba_core.landing.jarabalex' => 'jarabalex',
+      'ecosistema_jaraba_core.landing.legal' => 'jarabalex',
+      'ecosistema_jaraba_core.vertical.empleo' => 'empleabilidad',
+      'ecosistema_jaraba_core.vertical.emprender' => 'emprendimiento',
+      'ecosistema_jaraba_core.vertical.comercio' => 'comercioconecta',
+      'ecosistema_jaraba_core.vertical.instituciones' => 'demo',
+    ];
+    if (isset($landing_vertical_map[$route])) {
+      $variables['attributes']['class'][] = 'landing-page--' . $landing_vertical_map[$route];
+    }
   }
 
   // F6 Doc 181 / Spec f104 — Admin Center Premium body classes.
@@ -2671,6 +2691,29 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       $variables['#attached']['library'][] = 'ecosistema_jaraba_theme/proactive-insights';
       $variables['#attached']['drupalSettings']['proactiveInsightsCount'] = $variables['proactive_insights_count'];
     }
+  }
+
+  // RUNTIME-VERIFY-001: Inject vertical_key for FAB Copilot contextual agent.
+  // Without this, page--vertical-landing.html.twig defaults to 'public_copilot'
+  // for ALL landing pages instead of vertical-specific agents.
+  $variables['vertical_key'] = NULL;
+  $route = \Drupal::routeMatch()->getRouteName() ?? '';
+  $landing_vertical_map = [
+    'ecosistema_jaraba_core.landing.empleabilidad' => 'empleabilidad',
+    'ecosistema_jaraba_core.vertical.talento' => 'talento',
+    'ecosistema_jaraba_core.landing.emprendimiento' => 'emprendimiento',
+    'ecosistema_jaraba_core.landing.agroconecta' => 'agroconecta',
+    'ecosistema_jaraba_core.landing.comercioconecta' => 'comercioconecta',
+    'ecosistema_jaraba_core.landing.serviciosconecta' => 'serviciosconecta',
+    'ecosistema_jaraba_core.landing.jarabalex' => 'jarabalex',
+    'ecosistema_jaraba_core.landing.legal' => 'jarabalex',
+    'ecosistema_jaraba_core.vertical.empleo' => 'empleabilidad',
+    'ecosistema_jaraba_core.vertical.emprender' => 'emprendimiento',
+    'ecosistema_jaraba_core.vertical.comercio' => 'comercioconecta',
+    'ecosistema_jaraba_core.vertical.instituciones' => 'demo',
+  ];
+  if (isset($landing_vertical_map[$route])) {
+    $variables['vertical_key'] = $landing_vertical_map[$route];
   }
 }
 
@@ -4287,6 +4330,19 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'user.pass' => ['ecosistema_jaraba_theme/route-auth', 'ecosistema_jaraba_theme/bundle-auth'],
     'jaraba_page_builder.landing' => ['ecosistema_jaraba_theme/route-landing'],
     'entity.page_content.canonical' => ['ecosistema_jaraba_theme/route-landing'],
+    // RUNTIME-VERIFY-001: Vertical landing pages need route-landing CSS.
+    'ecosistema_jaraba_core.landing.empleabilidad' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.landing.emprendimiento' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.landing.agroconecta' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.vertical.talento' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.landing.comercioconecta' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.landing.serviciosconecta' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.landing.jarabalex' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.landing.legal' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.vertical.empleo' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.vertical.emprender' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.vertical.comercio' => ['ecosistema_jaraba_theme/route-landing'],
+    'ecosistema_jaraba_core.vertical.instituciones' => ['ecosistema_jaraba_theme/route-landing'],
     'empleabilidad.' => ['ecosistema_jaraba_theme/route-empleabilidad', 'ecosistema_jaraba_theme/bundle-employability-pages'],
     // GAP-L5: Dashboard-specific CSS for IA Level 5 pages.
     'jaraba_ai_agents.compliance_dashboard' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/route-ai-compliance'],

@@ -26,7 +26,7 @@
 {% set avatar_type = context.avatar|default('general') %}
 {% set user_name = context.user_name|default('') %}
 {% set is_authenticated = context.is_authenticated|default(false) %}
-{% set agent_context = 'copilot_' ~ avatar_type %}
+{% set agent_context = agent_context|default('copilot_' ~ avatar_type) %}
 
 {# Greeting dinámico según contexto #}
 {% set greeting_name = user_name ? ('¡Hola, ' ~ user_name ~ '!') : '¡Hola! 👋' %}
