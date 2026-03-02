@@ -5,15 +5,13 @@
 # in Drupal custom modules: SQL injection, XSS, insecure deserialization,
 # unsafe function calls, and missing access checks.
 #
-# Requires: phpstan/phpstan-strict-rules, spaze/phpstan-disallowed-calls
+# Required packages (auto-loaded by phpstan/extension-installer — do NOT
+# add manual includes here or PHPStan will abort with duplicate-include error):
+#   - phpstan/phpstan-strict-rules: type coercion → auth bypass / privilege escalation
+#   - spaze/phpstan-disallowed-calls: bans eval, exec, shell_exec, unserialize, etc.
+#   - mglaman/phpstan-drupal: Drupal-specific access, DI, plugin rules
+#
 # Included automatically by phpstan.neon.
-
-includes:
-  # AUDIT-SEC-N11: Strict type-safety rules — catches type coercion issues
-  # that can lead to auth bypass or privilege escalation.
-  - vendor/phpstan/phpstan-strict-rules/rules.neon
-  # AUDIT-SEC-N11: Dangerous function detection — bans eval, exec, etc.
-  - vendor/spaze/phpstan-disallowed-calls/extension.neon
 
 parameters:
   # -------------------------------------------------------

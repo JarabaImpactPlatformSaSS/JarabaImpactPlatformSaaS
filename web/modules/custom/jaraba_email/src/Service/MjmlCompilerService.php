@@ -71,17 +71,29 @@ class MjmlCompilerService
         $tempInput = tempnam(sys_get_temp_dir(), 'mjml_');
         $tempOutput = tempnam(sys_get_temp_dir(), 'html_');
 
+        if ($tempInput === false || $tempOutput === false) {
+            $this->logger->warning('Could not create temp files for MJML compilation.');
+            return $this->fallbackConvert($mjml);
+        }
+
         file_put_contents($tempInput, $mjml);
 
-        $command = "{$mjmlBinary} {$tempInput} -o {$tempOutput} 2>&1";
+        $command = escapeshellcmd($mjmlBinary)
+            . ' ' . escapeshellarg($tempInput)
+            . ' -o ' . escapeshellarg($tempOutput)
+            . ' 2>&1';
         exec($command, $output, $returnCode);
 
         if ($returnCode === 0 && file_exists($tempOutput)) {
             $html = file_get_contents($tempOutput);
-            unlink($tempInput);
-            unlink($tempOutput);
-            return $html;
+            @unlink($tempInput);
+            @unlink($tempOutput);
+            return $html !== false ? $html : $this->fallbackConvert($mjml);
         }
+
+        // Clean up temp files on failure.
+        @unlink($tempInput);
+        @unlink($tempOutput);
 
         // Fallback: conversión básica MJML a HTML.
         $this->logger->warning('Binario MJML no disponible, usando conversión fallback.');

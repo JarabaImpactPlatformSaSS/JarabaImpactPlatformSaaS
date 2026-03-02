@@ -18,9 +18,10 @@ class JarabaMessagingCommands extends DrushCommands {
 
   public function __construct(
     protected ConfigFactoryInterface $configFactory,
-    protected LoggerInterface $logger,
+    LoggerInterface $logger,
   ) {
     parent::__construct();
+    $this->logger = $logger;
   }
 
   /**

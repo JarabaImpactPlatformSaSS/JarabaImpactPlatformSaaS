@@ -487,11 +487,18 @@ class DocumentProcessorService
 
     /**
      * Verifica si un comando existe en el sistema.
+     *
+     * @param string $command
+     *   Command name (alphanumeric, hyphens, underscores only).
      */
     protected function commandExists(string $command): bool
     {
+        // Validate command name to prevent injection.
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $command)) {
+            return FALSE;
+        }
         $whereIsCommand = PHP_OS_FAMILY === 'Windows' ? 'where' : 'which';
-        $result = shell_exec("$whereIsCommand $command 2>&1");
+        $result = shell_exec($whereIsCommand . ' ' . escapeshellarg($command) . ' 2>&1');
         return !empty($result) && strpos($result, 'not found') === FALSE;
     }
 

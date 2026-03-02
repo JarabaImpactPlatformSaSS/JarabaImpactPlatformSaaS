@@ -18,6 +18,10 @@ parameters:
     - '*/node_modules/*'
     # Contrib-like module with missing Google AI dependencies.
     - web/modules/custom/ai_provider_google_gemini
+    # ECA module classes — optional dependency not installed.
+    - web/modules/custom/jaraba_messaging/src/Plugin/ECA
+    # Ratchet WebSocket — optional dependency (cboden/ratchet) not installed.
+    - web/modules/custom/jaraba_messaging/src/WebSocket
 
   ignoreErrors:
     # new static() is a best practice in Drupal.

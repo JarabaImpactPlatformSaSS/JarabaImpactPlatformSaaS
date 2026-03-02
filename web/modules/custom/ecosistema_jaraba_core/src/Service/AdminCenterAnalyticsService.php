@@ -494,7 +494,7 @@ class AdminCenterAnalyticsService {
     // Format message.
     $message = $row->message;
     try {
-      $variables = @unserialize($row->variables);
+      $variables = @unserialize($row->variables, ['allowed_classes' => FALSE]);
       if (is_array($variables)) {
         $message = strtr($message, $variables);
       }
