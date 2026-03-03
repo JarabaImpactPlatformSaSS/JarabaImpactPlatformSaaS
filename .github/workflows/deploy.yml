@@ -67,6 +67,9 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
+      - name: Module consistency check (MODULE-ORPHAN-001)
+        run: bash scripts/maintenance/check-module-consistency.sh
+
       - name: Run PHPUnit Unit tests
         run: vendor/bin/phpunit --configuration phpunit.xml --no-progress --testsuite Unit
 

@@ -76,6 +76,9 @@ jobs:
       - name: Stylelint
         run: npm run lint:css --if-present
 
+      - name: Module consistency check (MODULE-ORPHAN-001)
+        run: bash scripts/maintenance/check-module-consistency.sh
+
   # ===========================================
   # JOB 2: TESTS UNITARIOS
   # ===========================================
