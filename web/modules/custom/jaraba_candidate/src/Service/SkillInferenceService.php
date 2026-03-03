@@ -58,7 +58,7 @@ class SkillInferenceService {
     try {
       $prompt = $this->buildInferencePrompt($text, $context);
 
-      $result = $this->aiAgent->execute([
+      $result = $this->aiAgent->execute('skill_inference', [
         'prompt' => $prompt,
         'tier' => 'balanced',
         'max_tokens' => 1024,
@@ -342,7 +342,7 @@ PROMPT;
         TRUE
       );
 
-      $result = $this->aiAgent->execute([
+      $result = $this->aiAgent->execute('training_recommendations', [
         'prompt' => $prompt,
         'tier' => 'fast',
         'max_tokens' => 512,

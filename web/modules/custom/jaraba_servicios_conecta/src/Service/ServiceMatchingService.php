@@ -396,7 +396,7 @@ class ServiceMatchingService
                 TRUE
             );
 
-            $result = $this->aiAgent->execute([
+            $result = $this->aiAgent->execute('service_matching', [
                 'prompt' => $prompt,
                 'tier' => 'fast',
                 'max_tokens' => 256,

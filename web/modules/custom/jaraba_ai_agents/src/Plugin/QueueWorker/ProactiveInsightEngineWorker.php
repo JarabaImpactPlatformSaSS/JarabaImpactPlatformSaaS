@@ -95,8 +95,7 @@ class ProactiveInsightEngineWorker extends QueueWorkerBase implements ContainerF
                 TRUE
             );
 
-            $result = $this->aiAgent->execute([
-                'action' => 'proactive_insight',
+            $result = $this->aiAgent->execute('proactive_insight', [
                 'prompt' => $prompt,
                 'tier' => 'balanced',
             ]);

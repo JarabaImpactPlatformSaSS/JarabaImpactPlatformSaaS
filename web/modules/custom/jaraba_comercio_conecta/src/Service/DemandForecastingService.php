@@ -65,7 +65,7 @@ class DemandForecastingService {
         $daysAhead
       );
 
-      $result = $this->aiAgent->execute([
+      $result = $this->aiAgent->execute('demand_forecast', [
         'prompt' => AIIdentityRule::apply($prompt, TRUE),
         'tier' => 'balanced',
         'max_tokens' => 2048,

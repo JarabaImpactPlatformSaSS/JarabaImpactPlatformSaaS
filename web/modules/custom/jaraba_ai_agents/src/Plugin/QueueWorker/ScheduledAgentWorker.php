@@ -138,7 +138,7 @@ class ScheduledAgentWorker extends QueueWorkerBase implements ContainerFactoryPl
           TRUE
         );
 
-        $result = $this->aiAgent->execute([
+        $result = $this->aiAgent->execute('batch_content_audit', [
           'prompt' => $prompt,
           'tier' => 'fast',
           'max_tokens' => 512,
@@ -178,7 +178,7 @@ class ScheduledAgentWorker extends QueueWorkerBase implements ContainerFactoryPl
           TRUE
         );
 
-        $this->aiAgent->execute([
+        $this->aiAgent->execute('batch_seo_analysis', [
           'prompt' => $prompt,
           'tier' => 'fast',
           'max_tokens' => 512,
@@ -220,7 +220,7 @@ class ScheduledAgentWorker extends QueueWorkerBase implements ContainerFactoryPl
       TRUE
     );
 
-    $result = $this->aiAgent->execute([
+    $result = $this->aiAgent->execute('tenant_health_check', [
       'prompt' => $prompt,
       'tier' => 'fast',
       'max_tokens' => 512,

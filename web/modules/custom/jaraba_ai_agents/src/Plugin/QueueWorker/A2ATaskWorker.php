@@ -146,7 +146,7 @@ class A2ATaskWorker extends QueueWorkerBase implements ContainerFactoryPluginInt
       default => 'fast',
     };
 
-    $result = $this->aiAgent->execute([
+    $result = $this->aiAgent->execute($action, [
       'prompt' => AIIdentityRule::apply($prompt, TRUE),
       'tier' => $tier,
       'max_tokens' => 1024,

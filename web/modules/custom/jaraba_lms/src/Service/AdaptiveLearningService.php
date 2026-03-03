@@ -292,7 +292,7 @@ class AdaptiveLearningService
                 TRUE
             );
 
-            $result = $this->aiAgent->execute([
+            $result = $this->aiAgent->execute('adaptive_recommendations', [
                 'prompt' => $prompt,
                 'tier' => 'fast',
                 'max_tokens' => 512,

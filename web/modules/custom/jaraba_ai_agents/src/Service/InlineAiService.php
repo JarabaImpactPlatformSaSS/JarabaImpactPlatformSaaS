@@ -64,8 +64,7 @@ class InlineAiService
             $prompt = $this->buildSuggestionPrompt($fieldName, $currentValue, $entityType, $context);
 
             // Use the agent's execute method with fast tier.
-            $result = $this->aiAgent->execute([
-                'action' => 'inline_suggest',
+            $result = $this->aiAgent->execute('inline_suggest', [
                 'prompt' => $prompt,
                 'tier' => 'fast',
             ]);

@@ -126,7 +126,7 @@ class VerticalLandingController extends ControllerBase
         'currency' => 'EUR',
         'period' => $this->t('mes'),
         'cta_text' => $this->t('Ver todos los planes'),
-        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.planes')->toString(),
+        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         'features_preview' => [
           $this->t('5 productos gratis'),
           $this->t('Copilot IA para descripciones'),
@@ -455,7 +455,7 @@ class VerticalLandingController extends ControllerBase
         'currency' => 'EUR',
         'period' => $this->t('mes'),
         'cta_text' => $this->t('Ver todos los planes'),
-        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.planes')->toString(),
+        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         'features_preview' => [
           $this->t('Diagnóstico gratuito con PDF'),
           $this->t('CV Builder con IA (1 CV)'),
@@ -571,7 +571,7 @@ class VerticalLandingController extends ControllerBase
         'currency' => 'EUR',
         'period' => $this->t('mes'),
         'cta_text' => $this->t('Ver todos los planes'),
-        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.planes')->toString(),
+        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         'features_preview' => [
           $this->t('Calculadora de madurez + reporte PDF'),
           $this->t('Business Model Canvas con IA'),
@@ -761,7 +761,7 @@ class VerticalLandingController extends ControllerBase
         ],
         'cta_secondary' => [
           'text' => $this->t('Ver planes'),
-          'url' => Url::fromRoute('ecosistema_jaraba_core.planes')->toString(),
+          'url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         ],
       ],
       'pain_points' => [
@@ -818,7 +818,7 @@ class VerticalLandingController extends ControllerBase
       'pricing' => [
         'title' => $this->t('Planes para empresas'),
         'subtitle' => $this->t('Desde plan gratuito con búsqueda básica hasta Enterprise con API, white-label y soporte dedicado'),
-        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.planes')->toString(),
+        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         'features_preview' => [
           $this->t('Búsqueda de talento desde Free'),
           $this->t('Matching IA 5D desde Starter'),
