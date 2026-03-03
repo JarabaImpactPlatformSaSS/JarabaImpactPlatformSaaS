@@ -76,6 +76,24 @@ jobs:
           SIMPLETEST_BASE_URL: http://localhost
         run: vendor/bin/phpunit --configuration phpunit.xml --no-progress --testsuite Kernel
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify compiled CSS is up-to-date (SCSS-COMPILE-VERIFY-001)
+        run: |
+          cd web/themes/custom/ecosistema_jaraba_theme
+          npm ci
+          npm run build
+          cd $GITHUB_WORKSPACE
+          if ! git diff --quiet -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/; then
+            echo "::error::Compiled CSS/JS is stale! Run 'npm run build' in ecosistema_jaraba_theme and commit the output."
+            git diff --stat -- web/themes/custom/ecosistema_jaraba_theme/css/ web/themes/custom/ecosistema_jaraba_theme/js/dist/
+            exit 1
+          fi
+          echo "✅ Compiled CSS/JS is up-to-date"
+
   deploy:
     name: 🚀 Deploy to IONOS
     runs-on: ubuntu-latest
