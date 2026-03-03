@@ -195,6 +195,8 @@ class MetaSitePricingService
                 'is_recommended' => FALSE,
                 'stripe_price_monthly' => '',
                 'stripe_price_yearly' => '',
+                'price_monthly' => 0.0,
+                'price_yearly' => 0.0,
             ],
             [
                 'tier_key' => 'professional',
@@ -211,6 +213,8 @@ class MetaSitePricingService
                 'is_recommended' => TRUE,
                 'stripe_price_monthly' => '',
                 'stripe_price_yearly' => '',
+                'price_monthly' => 29.0,
+                'price_yearly' => 290.0,
             ],
             [
                 'tier_key' => 'enterprise',
@@ -228,6 +232,8 @@ class MetaSitePricingService
                 'is_recommended' => FALSE,
                 'stripe_price_monthly' => '',
                 'stripe_price_yearly' => '',
+                'price_monthly' => 99.0,
+                'price_yearly' => 990.0,
             ],
         ];
     }

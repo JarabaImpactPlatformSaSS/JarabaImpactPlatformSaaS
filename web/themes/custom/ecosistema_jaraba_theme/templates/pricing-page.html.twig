@@ -107,7 +107,7 @@
 
         {# Price display — dynamic from cascade data #}
         <div class="pricing-card__price">
-          {% if tier.tier_key == 'starter' or tier.price_monthly <= 0 %}
+          {% if tier.tier_key == 'starter' and tier.price_monthly <= 0 %}
             <span class="pricing-card__amount">{% trans %}Gratis{% endtrans %}</span>
             <span class="pricing-card__period">{% trans %}para siempre{% endtrans %}</span>
           {% else %}
