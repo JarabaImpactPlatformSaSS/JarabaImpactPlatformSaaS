@@ -359,11 +359,10 @@ class FeatureStoreService {
         return 0.5;
       }
 
-      $usedFeatures = (int) $this->database->select('agroconecta_feature_usage', 'f')
-        ->condition('f.tenant_id', $tenantId)
-        ->addExpression('COUNT(DISTINCT feature_key)', 'count')
-        ->execute()
-        ->fetchField();
+      $query = $this->database->select('agroconecta_feature_usage', 'f')
+        ->condition('f.tenant_id', $tenantId);
+      $query->addExpression('COUNT(DISTINCT feature_key)', 'count');
+      $usedFeatures = (int) $query->execute()->fetchField();
 
       // Asumimos un máximo de 10 features principales por vertical para el score.
       return (float) min(1.0, $usedFeatures / 10);
@@ -382,13 +381,12 @@ class FeatureStoreService {
         return 0.0;
       }
 
-      $revenue = $this->database->select('financial_transaction', 't')
+      $query = $this->database->select('financial_transaction', 't')
         ->condition('t.tenant_id', $tenantId)
         ->condition('t.type', 'credit')
-        ->condition('t.created', time() - (30 * 86400), '>=')
-        ->addExpression('SUM(amount)', 'total')
-        ->execute()
-        ->fetchField();
+        ->condition('t.created', time() - (30 * 86400), '>=');
+      $query->addExpression('SUM(amount)', 'total');
+      $revenue = $query->execute()->fetchField();
 
       return (float) ($revenue ?? 0.0);
     }

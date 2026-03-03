@@ -7,7 +7,7 @@ services:
       - '@current_user'
       - '@request_stack'
       - '@cache.default'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_analytics'
       - '@ecosistema_jaraba_core.tenant_context'
 
   jaraba_analytics.analytics_aggregator:
@@ -16,7 +16,7 @@ services:
       - '@database'
       - '@entity_type.manager'
       - '@cache.default'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_analytics'
 
   jaraba_analytics.funnel_tracking:
     class: Drupal\jaraba_analytics\Service\FunnelTrackingService

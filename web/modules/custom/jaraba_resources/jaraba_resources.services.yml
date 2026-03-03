@@ -4,7 +4,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.default'
 
   jaraba_resources.kit_service:
     class: Drupal\jaraba_resources\Service\KitService

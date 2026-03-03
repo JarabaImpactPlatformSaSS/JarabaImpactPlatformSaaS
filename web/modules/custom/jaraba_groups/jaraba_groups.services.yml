@@ -15,7 +15,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_groups'
 
   jaraba_groups.activity_service:
     class: Drupal\jaraba_groups\Service\ActivityService

@@ -62,6 +62,90 @@ class SocialApiController extends ControllerBase
     }
 
     /**
+     * Calendario de publicaciones programadas.
+     */
+    public function calendar(Request $request): JsonResponse
+    {
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? NULL;
+        $posts = $this->postService->getScheduledPosts($tenantId);
+
+        return new JsonResponse(['success' => TRUE, 'data' => $posts]);
+    }
+
+    /**
+     * Reprogramar publicacion.
+     */
+    public function reschedule(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE) ?? [];
+        $postId = $data['post_id'] ?? NULL;
+        $newDate = $data['scheduled_at'] ?? NULL;
+
+        if (!$postId || !$newDate) {
+            return new JsonResponse(['success' => FALSE, 'error' => 'post_id and scheduled_at are required.'], 422);
+        }
+
+        $result = $this->postService->reschedulePost((int) $postId, $newDate);
+
+        return new JsonResponse(['success' => TRUE, 'data' => $result]);
+    }
+
+    /**
+     * Metricas de analytics de redes sociales.
+     */
+    public function analyticsMetrics(Request $request): JsonResponse
+    {
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? NULL;
+        $days = (int) $request->query->get('days', '30');
+        $metrics = $this->postService->getAnalyticsMetrics($tenantId, $days);
+
+        return new JsonResponse(['success' => TRUE, 'data' => $metrics]);
+    }
+
+    /**
+     * Rendimiento de un post individual.
+     */
+    public function postPerformance(int $post_id): JsonResponse
+    {
+        $metrics = $this->postService->getPostPerformance($post_id);
+
+        return new JsonResponse(['success' => TRUE, 'data' => $metrics]);
+    }
+
+    /**
+     * Posts con mejor rendimiento.
+     */
+    public function topPosts(Request $request): JsonResponse
+    {
+        $tenantId = $this->tenantContext->getCurrentTenantId() ?? NULL;
+        $limit = min(50, max(1, (int) $request->query->get('limit', '10')));
+        $posts = $this->postService->getTopPosts($tenantId, $limit);
+
+        return new JsonResponse(['success' => TRUE, 'data' => $posts]);
+    }
+
+    /**
+     * Publicar via Make.com (Integromat).
+     */
+    public function makecomPublish(int $post_id): JsonResponse
+    {
+        $result = $this->postService->publishViaMakecom($post_id);
+
+        return new JsonResponse(['success' => TRUE, 'data' => $result]);
+    }
+
+    /**
+     * Webhook de Make.com para recibir resultados.
+     */
+    public function makecomWebhook(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), TRUE) ?? [];
+        $this->postService->processMakecomWebhook($data);
+
+        return new JsonResponse(['success' => TRUE]);
+    }
+
+    /**
      * Estadísticas de posts.
      */
     public function stats(Request $request): JsonResponse

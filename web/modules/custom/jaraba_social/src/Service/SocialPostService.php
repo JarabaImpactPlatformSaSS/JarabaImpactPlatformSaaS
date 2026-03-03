@@ -316,6 +316,155 @@ class SocialPostService
     }
 
     /**
+     * Obtiene posts programados para un tenant.
+     */
+    public function getScheduledPosts(?int $tenantId = NULL): array
+    {
+        $storage = $this->entityTypeManager->getStorage('social_post');
+        $query = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', SocialPost::STATUS_SCHEDULED)
+            ->sort('scheduled_at', 'ASC');
+
+        if ($tenantId) {
+            $query->condition('tenant_id', $tenantId);
+        }
+
+        $ids = $query->range(0, 100)->execute();
+        $posts = $ids ? $storage->loadMultiple($ids) : [];
+        $result = [];
+
+        foreach ($posts as $post) {
+            $result[] = [
+                'id' => (int) $post->id(),
+                'content' => $post->getContent(),
+                'scheduled_at' => $post->get('scheduled_at')->value ?? NULL,
+                'status' => $post->get('status')->value,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Reprograma un post.
+     */
+    public function reschedulePost(int $postId, string $newDate): array
+    {
+        $post = $this->entityTypeManager->getStorage('social_post')->load($postId);
+        if (!$post) {
+            return ['success' => FALSE, 'error' => 'Post not found'];
+        }
+
+        $post->set('scheduled_at', $newDate);
+        $post->save();
+
+        return ['success' => TRUE, 'post_id' => $postId, 'scheduled_at' => $newDate];
+    }
+
+    /**
+     * Metricas de analytics de redes sociales.
+     */
+    public function getAnalyticsMetrics(?int $tenantId = NULL, int $days = 30): array
+    {
+        $stats = $this->getStats($tenantId);
+        return array_merge($stats, [
+            'days' => $days,
+            'engagement_rate' => 0.0,
+            'reach' => 0,
+        ]);
+    }
+
+    /**
+     * Rendimiento de un post individual.
+     */
+    public function getPostPerformance(int $postId): array
+    {
+        $post = $this->entityTypeManager->getStorage('social_post')->load($postId);
+        if (!$post) {
+            return ['error' => 'Post not found'];
+        }
+
+        return [
+            'post_id' => $postId,
+            'impressions' => (int) ($post->get('impressions')->value ?? 0),
+            'clicks' => (int) ($post->get('clicks')->value ?? 0),
+            'likes' => (int) ($post->get('likes')->value ?? 0),
+            'shares' => (int) ($post->get('shares')->value ?? 0),
+        ];
+    }
+
+    /**
+     * Posts con mejor rendimiento.
+     */
+    public function getTopPosts(?int $tenantId = NULL, int $limit = 10): array
+    {
+        $storage = $this->entityTypeManager->getStorage('social_post');
+        $query = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('status', SocialPost::STATUS_PUBLISHED)
+            ->sort('impressions', 'DESC')
+            ->range(0, $limit);
+
+        if ($tenantId) {
+            $query->condition('tenant_id', $tenantId);
+        }
+
+        $ids = $query->execute();
+        $posts = $ids ? $storage->loadMultiple($ids) : [];
+        $result = [];
+
+        foreach ($posts as $post) {
+            $result[] = [
+                'id' => (int) $post->id(),
+                'content' => mb_substr($post->getContent(), 0, 100),
+                'impressions' => (int) ($post->get('impressions')->value ?? 0),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Publica un post via Make.com webhook.
+     */
+    public function publishViaMakecom(int $postId): array
+    {
+        $post = $this->entityTypeManager->getStorage('social_post')->load($postId);
+        if (!$post) {
+            return ['success' => FALSE, 'error' => 'Post not found'];
+        }
+
+        $this->publish($post);
+
+        return ['success' => TRUE, 'post_id' => $postId, 'status' => 'queued'];
+    }
+
+    /**
+     * Procesa webhook entrante de Make.com.
+     */
+    public function processMakecomWebhook(array $data): void
+    {
+        $postId = $data['post_id'] ?? NULL;
+        if (!$postId) {
+            return;
+        }
+
+        $post = $this->entityTypeManager->getStorage('social_post')->load($postId);
+        if (!$post) {
+            return;
+        }
+
+        if (!empty($data['external_post_id'])) {
+            $post->set('external_id', $data['external_post_id']);
+        }
+        if (!empty($data['status'])) {
+            $post->set('status', $data['status']);
+        }
+        $post->save();
+    }
+
+    /**
      * Obtiene estadísticas de posts.
      *
      * @param int|null $tenantId

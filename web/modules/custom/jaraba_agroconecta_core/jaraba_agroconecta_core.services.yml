@@ -12,7 +12,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
       - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.producer_service -> jaraba_agroconecta_core.producer_service
@@ -21,7 +21,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.marketplace_service -> jaraba_agroconecta_core.marketplace_service
   jaraba_agroconecta_core.marketplace_service:
@@ -38,7 +38,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
       - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.stripe_payment_service -> jaraba_agroconecta_core.stripe_payment_service
@@ -47,7 +47,7 @@ services:
     arguments:
       - '@?jaraba_foc.stripe_connect'
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
       - '@config.factory'
       - '@?ecosistema_jaraba_core.agroconecta_feature_gate'
 
@@ -67,7 +67,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.notification_service -> jaraba_agroconecta_core.notification_service
   jaraba_agroconecta_core.notification_service:
@@ -76,7 +76,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@plugin.manager.mail'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
 
   # Fase 5: Search & Discovery
 
@@ -86,7 +86,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
 
   # Fase 5: Promotions & Coupons
 
@@ -139,7 +139,7 @@ services:
     class: Drupal\jaraba_agroconecta_core\Service\AgroTraceabilityService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_agroconecta_core'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.qr_service -> jaraba_agroconecta_core.qr_service
   jaraba_agroconecta_core.qr_service:

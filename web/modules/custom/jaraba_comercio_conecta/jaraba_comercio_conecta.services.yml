@@ -140,7 +140,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\MerchantPayoutService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F8: ComercioSearchService — Busqueda con facetas y geolocalizacion
@@ -150,7 +150,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F8: LocalSeoService — Schema.org, sitemap, Google Business Profile
@@ -159,7 +159,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\LocalSeoService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F9: FlashOfferService — Ofertas relampago geolocalizadas
@@ -168,7 +168,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\FlashOfferService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F9: QrRetailService — QR dinamicos con A/B testing
@@ -177,7 +177,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\QrRetailService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F9: ReviewRetailService — Resenas y valoraciones
@@ -187,7 +187,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F9: NotificationService — Notificaciones multi-canal
@@ -197,7 +197,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@plugin.manager.mail'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10a: ShippingRetailService — Tarifas, tracking, carriers
@@ -206,7 +206,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\ShippingRetailService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10a: ClickCollectService — Reserva en tienda, horarios
@@ -215,7 +215,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\ClickCollectService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10b: PosIntegrationService — Sincronizacion bidireccional TPV
@@ -224,7 +224,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\PosIntegrationService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10c: ComercioAdminService — Panel admin del marketplace
@@ -234,7 +234,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10c: ModerationService — Moderacion de contenido
@@ -243,7 +243,7 @@ services:
     class: Drupal\jaraba_comercio_conecta\Service\ModerationService
     arguments:
       - '@entity_type.manager'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10d: ComercioAnalyticsService — KPIs del marketplace
@@ -253,7 +253,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   # =====================================================================
   # F10d: MerchantAnalyticsService — Analytics por comerciante
@@ -263,7 +263,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.factory'
+      - '@logger.channel.jaraba_comercio_conecta'
 
   jaraba_comercio_conecta.copilot_bridge:
     class: Drupal\jaraba_comercio_conecta\Service\ComercioConectaCopilotBridgeService

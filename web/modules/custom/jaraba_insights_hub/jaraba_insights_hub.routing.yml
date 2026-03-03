@@ -90,7 +90,7 @@ jaraba_insights_hub.api.errors.collect:
 jaraba_insights_hub.api.errors.list:
   path: '/api/v1/insights/errors/list'
   defaults:
-    _controller: '\Drupal\jaraba_insights_hub\Controller\ErrorTrackingApiController::list'
+    _controller: '\Drupal\jaraba_insights_hub\Controller\ErrorTrackingApiController::listErrors'
   requirements:
     _permission: 'view insights dashboard'
   methods: [GET]
@@ -113,7 +113,7 @@ jaraba_insights_hub.api.errors.resolve:
 jaraba_insights_hub.api.search_console.queries:
   path: '/api/v1/insights/search-console/queries'
   defaults:
-    _controller: '\Drupal\jaraba_insights_hub\Controller\SearchConsoleApiController::queries'
+    _controller: '\Drupal\jaraba_insights_hub\Controller\SearchConsoleApiController::topQueries'
   requirements:
     _permission: 'view insights dashboard'
   methods: [GET]
@@ -122,7 +122,7 @@ jaraba_insights_hub.api.search_console.queries:
 jaraba_insights_hub.api.search_console.pages:
   path: '/api/v1/insights/search-console/pages'
   defaults:
-    _controller: '\Drupal\jaraba_insights_hub\Controller\SearchConsoleApiController::pages'
+    _controller: '\Drupal\jaraba_insights_hub\Controller\SearchConsoleApiController::topPages'
   requirements:
     _permission: 'view insights dashboard'
   methods: [GET]

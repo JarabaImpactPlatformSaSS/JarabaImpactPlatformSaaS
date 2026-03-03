@@ -486,6 +486,232 @@ class AgentsApiController extends ControllerBase {
   }
 
   // ============================================
+  // CONVERSACIONES (FASE 3B)
+  // ============================================
+
+  /**
+   * POST /api/v1/agents/conversations/start — Iniciar conversacion.
+   */
+  public function startConversation(Request $request): JsonResponse {
+    try {
+      $content = json_decode($request->getContent(), TRUE) ?? [];
+      $agent_id = $content['agent_id'] ?? NULL;
+
+      if (!$agent_id) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Se requiere agent_id.'),
+        ], 422);
+      }
+
+      $agent = $this->entityTypeManager()
+        ->getStorage('autonomous_agent')
+        ->load($agent_id);
+
+      if (!$agent) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Agente autonomo no encontrado.'),
+        ], 404);
+      }
+
+      $storage = $this->entityTypeManager()->getStorage('agent_conversation');
+      $conversation = $storage->create([
+        'agent_id' => $agent_id,
+        'status' => 'active',
+        'context' => json_encode($content['context'] ?? []),
+      ]);
+      $conversation->save();
+
+      return new JsonResponse([
+        'data' => [
+          'conversation_id' => (int) $conversation->id(),
+          'agent_id' => (int) $agent_id,
+          'status' => 'active',
+        ],
+      ], 201);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'error' => (string) new TranslatableMarkup('Error al iniciar la conversacion.'),
+      ], 500);
+    }
+  }
+
+  /**
+   * POST /api/v1/agents/conversations/{agent_conversation}/message — Enviar mensaje.
+   */
+  public function addMessage(Request $request, int $agent_conversation): JsonResponse {
+    try {
+      $conversation = $this->entityTypeManager()
+        ->getStorage('agent_conversation')
+        ->load($agent_conversation);
+
+      if (!$conversation) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Conversacion no encontrada.'),
+        ], 404);
+      }
+
+      $content = json_decode($request->getContent(), TRUE) ?? [];
+      $message = $content['message'] ?? '';
+
+      if (empty($message)) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Se requiere el campo message.'),
+        ], 422);
+      }
+
+      $agent = $this->entityTypeManager()
+        ->getStorage('autonomous_agent')
+        ->load($conversation->get('agent_id')->target_id);
+
+      $response_text = '';
+      if ($agent) {
+        $execution = $this->orchestrator->store($agent, 'conversation', [
+          'conversation_id' => $agent_conversation,
+          'message' => $message,
+        ]);
+        $response_text = $execution->get('result_summary')->value ?? '';
+      }
+
+      return new JsonResponse([
+        'data' => [
+          'conversation_id' => $agent_conversation,
+          'response' => $response_text,
+        ],
+      ]);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'error' => (string) new TranslatableMarkup('Error al procesar el mensaje.'),
+      ], 500);
+    }
+  }
+
+  /**
+   * POST /api/v1/agents/conversations/{agent_conversation}/end — Finalizar conversacion.
+   */
+  public function endConversation(int $agent_conversation): JsonResponse {
+    try {
+      $conversation = $this->entityTypeManager()
+        ->getStorage('agent_conversation')
+        ->load($agent_conversation);
+
+      if (!$conversation) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Conversacion no encontrada.'),
+        ], 404);
+      }
+
+      $conversation->set('status', 'ended');
+      $conversation->save();
+
+      return new JsonResponse([
+        'data' => ['conversation_id' => $agent_conversation, 'status' => 'ended'],
+      ]);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'error' => (string) new TranslatableMarkup('Error al finalizar la conversacion.'),
+      ], 500);
+    }
+  }
+
+  /**
+   * POST /api/v1/agents/conversations/{agent_conversation}/rate — Calificar conversacion.
+   */
+  public function rateConversation(Request $request, int $agent_conversation): JsonResponse {
+    try {
+      $conversation = $this->entityTypeManager()
+        ->getStorage('agent_conversation')
+        ->load($agent_conversation);
+
+      if (!$conversation) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Conversacion no encontrada.'),
+        ], 404);
+      }
+
+      $content = json_decode($request->getContent(), TRUE) ?? [];
+      $rating = $content['rating'] ?? NULL;
+
+      if ($rating === NULL || $rating < 1 || $rating > 5) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Se requiere rating entre 1 y 5.'),
+        ], 422);
+      }
+
+      $conversation->set('rating', (int) $rating);
+      if (!empty($content['feedback'])) {
+        $conversation->set('feedback', $content['feedback']);
+      }
+      $conversation->save();
+
+      return new JsonResponse([
+        'data' => ['conversation_id' => $agent_conversation, 'rating' => (int) $rating],
+      ]);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'error' => (string) new TranslatableMarkup('Error al calificar la conversacion.'),
+      ], 500);
+    }
+  }
+
+  /**
+   * GET /api/v1/agents/conversations/{agent_conversation}/trace — Traza de conversacion.
+   */
+  public function traceConversation(int $agent_conversation): JsonResponse {
+    try {
+      $conversation = $this->entityTypeManager()
+        ->getStorage('agent_conversation')
+        ->load($agent_conversation);
+
+      if (!$conversation) {
+        return new JsonResponse([
+          'error' => (string) new TranslatableMarkup('Conversacion no encontrada.'),
+        ], 404);
+      }
+
+      $executions = $this->entityTypeManager()
+        ->getStorage('agent_execution')
+        ->getQuery()
+        ->accessCheck(TRUE)
+        ->condition('trigger_data', '%"conversation_id":' . $agent_conversation . '%', 'LIKE')
+        ->sort('created', 'ASC')
+        ->execute();
+
+      $trace = [];
+      foreach ($this->entityTypeManager()->getStorage('agent_execution')->loadMultiple($executions) as $exec) {
+        $trace[] = $this->serializeExecution($exec);
+      }
+
+      return new JsonResponse(['data' => $trace]);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'error' => (string) new TranslatableMarkup('Error al obtener la traza.'),
+      ], 500);
+    }
+  }
+
+  /**
+   * GET /api/v1/agents/orchestration/metrics — Metricas de orquestacion.
+   */
+  public function orchestrationMetrics(Request $request): JsonResponse {
+    try {
+      $days = (int) $request->query->get('days', 30);
+      $result = $this->metrics->collect(NULL, $days);
+
+      return new JsonResponse(['data' => $result]);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'error' => (string) new TranslatableMarkup('Error al obtener metricas de orquestacion.'),
+      ], 500);
+    }
+  }
+
+  // ============================================
   // SERIALIZACION
   // ============================================
 
