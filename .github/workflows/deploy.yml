@@ -368,7 +368,6 @@ jobs:
           EOF
 
       - name: Run database updates
-        continue-on-error: true
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
@@ -379,9 +378,10 @@ jobs:
             UPDB_EXIT=$?
             echo "=== updatedb exit code: $UPDB_EXIT ==="
             if [ $UPDB_EXIT -ne 0 ]; then
-              echo "⚠️ updatedb failed. Checking PHP error log..."
+              echo "❌ updatedb failed. Checking PHP error log..."
               tail -30 ~/logs/error.log 2>/dev/null || tail -30 ~/logs/php_error.log 2>/dev/null || echo "No error log found at ~/logs/"
               ls -la ~/logs/ 2>/dev/null || echo "~/logs/ directory not found"
+              exit 1
             fi
 
           EOF
@@ -420,6 +420,33 @@ jobs:
             fi
 
             /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
+          EOF
+
+      - name: Verify entity/field schema consistency (UPDATE-HOOK-REQUIRED-001)
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            export PATH="$HOME/bin_cli:$PATH"
+            export DRUSH_PHP=/usr/bin/php8.4-cli
+            echo "=== Checking entity/field definition mismatches ==="
+            MISMATCHES=$(/usr/bin/php8.4-cli vendor/bin/drush.php eval "
+              \$manager = \Drupal::entityDefinitionUpdateManager();
+              \$changes = \$manager->getChangeList();
+              if (empty(\$changes)) {
+                echo 'CLEAN';
+              } else {
+                foreach (\$changes as \$type => \$info) {
+                  echo \$type . ': ' . json_encode(\$info) . PHP_EOL;
+                }
+              }
+            " 2>&1)
+            echo "$MISMATCHES"
+            if echo "$MISMATCHES" | grep -q "CLEAN"; then
+              echo "✅ Entity/field definitions match database schema"
+            else
+              echo "⚠️ Entity/field definition mismatches detected (non-blocking for now)"
+              echo "Missing update hooks — see /admin/reports/status for details"
+            fi
           EOF
 
       - name: Disable maintenance mode and verify site

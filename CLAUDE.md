@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-02-28 | Version: 1.0.0
+# Ultima actualizacion: 2026-03-03 | Version: 1.1.0
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -72,6 +72,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - TRANSLATABLE-FIELDDATA-001: Entities translatable guardan campos en {type}_field_data, NO en tabla base. SQL directo DEBE usar _field_data
 - QUERY-CHAIN-001: addExpression() y join() devuelven alias (string), NO $this. NUNCA encadenar ->addExpression()->execute()
 - DATETIME-ARITHMETIC-001: datetime = VARCHAR 'Y-m-d\TH:i:s', created/changed = INT Unix. Usar UNIX_TIMESTAMP(REPLACE(field,'T',' ')) para convertir
+- UPDATE-FIELD-DEF-001: updateFieldStorageDefinition() EXIGE setName($field_name) y setTargetEntityTypeId($entity_type_id) en el BaseFieldDefinition. baseFieldDefinitions() NO los establece — estan en la key del array, no dentro del objeto
+- UPDATE-HOOK-CATCH-001: try-catch en hook_update_N() DEBE usar \Throwable (NO \Exception). PHP 8.4 TypeError extiende \Error, no \Exception. catch(\Exception) deja pasar TypeErrors y mata updatedb
+- UPDATE-HOOK-REQUIRED-001: TODO cambio en baseFieldDefinitions(), nueva entity, o campo modificado DEBE incluir hook_update_N() con EntityDefinitionUpdateManager. Sin el hook, CI pasa pero produccion diverge
 - Raw SQL SOLO en .install hooks. En todo otro contexto: Entity Query o DB API
 
 ### JavaScript
