@@ -1,0 +1,11 @@
+id: agroconecta_free_products
+label: 'AgroConecta Free: Productos'
+vertical: agroconecta
+plan: free
+feature_key: products
+limit_value: 5
+description: 'Maximo 5 productos en plan gratuito AgroConecta.'
+upgrade_message: 'Has alcanzado el limite de 5 productos. Actualiza a Starter para publicar productos ilimitados.'
+expected_conversion: 0.35
+weight: 0
+status: true

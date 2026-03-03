@@ -1,0 +1,11 @@
+id: jarabalex_starter_max_cases
+label: 'JarabaLex Starter: Expedientes maximos'
+vertical: jarabalex
+plan: starter
+feature_key: max_cases
+limit_value: 50
+description: 'Maximo 50 expedientes activos en plan Starter JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 50 expedientes. Actualiza a Profesional para expedientes ilimitados.'
+expected_conversion: 0.35
+weight: 341
+status: true

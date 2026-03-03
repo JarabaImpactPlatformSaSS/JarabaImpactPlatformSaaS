@@ -8,6 +8,8 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -60,8 +62,9 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.case_activity.settings",
  * )
  */
-class CaseActivity extends ContentEntityBase implements EntityOwnerInterface {
+class CaseActivity extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
+  use EntityChangedTrait;
   use EntityOwnerTrait;
 
   /**

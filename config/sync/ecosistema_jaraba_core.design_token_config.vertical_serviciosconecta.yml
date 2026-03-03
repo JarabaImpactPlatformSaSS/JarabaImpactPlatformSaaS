@@ -1,0 +1,17 @@
+langcode: es
+status: true
+dependencies: {  }
+id: vertical_serviciosconecta
+label: 'ServiciosConecta'
+description: 'Paleta corporativa de confianza digital para la vertical ServiciosConecta'
+scope: vertical
+vertical_id: serviciosconecta
+plan_id: ''
+tenant_id: ''
+preset_id: servicios_profesionales
+color_tokens: '{"primary":"#233D63","secondary":"#10B981","accent":"#00A9A5","background":"#F8FAFC","surface":"#FFFFFF","text":"#1A1A2E","text-muted":"#6B7280","border":"#E2E8F0","success":"#10B981","warning":"#F59E0B","error":"#EF4444","impulse":"#FF8C42"}'
+typography_tokens: '{"family-heading":"Inter, system-ui, sans-serif","family-body":"Inter, system-ui, sans-serif","size-base":"1rem","weight-heading":"700"}'
+spacing_tokens: '{"unit":"0.25rem","radius-base":"8px","radius-xl":"16px"}'
+effect_tokens: '{"glass-bg":"rgba(248, 250, 252, 0.92)","glass-blur":"12px","shadow-card":"0 4px 20px rgba(35, 61, 99, 0.08)","gradient-primary":"linear-gradient(135deg, #233D63, #00A9A5)","animation-speed":"0.3s"}'
+component_variants: '{"header":"sticky_glass","card":"elevated","hero":"split","footer":"dark"}'
+weight: 0

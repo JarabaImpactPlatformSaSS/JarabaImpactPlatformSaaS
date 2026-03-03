@@ -1,0 +1,11 @@
+id: eca_ten_002
+label: 'Stripe Connect Completado'
+description: 'Al recibir webhook account.updated de Stripe confirmando la activacion de la cuenta Connect del tenant, se actualizan campos del tenant y se habilitan features de pago.'
+domain: TEN
+trigger_event: 'webhook:account.updated'
+module: jaraba_foc
+hook_function: jaraba_foc_stripe_webhook_account_updated
+spec_reference: 06_Core
+implementation_status: partial
+weight: 11
+status: true

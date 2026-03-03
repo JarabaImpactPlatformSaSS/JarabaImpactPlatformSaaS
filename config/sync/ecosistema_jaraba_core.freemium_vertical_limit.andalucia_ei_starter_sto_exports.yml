@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_sto_exports
+label: 'Andalucía +ei Starter: Exportaciones STO'
+vertical: andalucia_ei
+plan: starter
+feature_key: sto_exports
+limit_value: 10
+description: 'Hasta 10 exportaciones STO mensuales en plan Starter.'
+upgrade_message: 'Has alcanzado el limite de exportaciones STO en Starter. Actualiza a Profesional para exportaciones ilimitadas.'
+expected_conversion: 0
+weight: 524
+status: true

@@ -1,0 +1,17 @@
+langcode: es
+status: true
+dependencies: {  }
+id: vertical_comercioconecta
+label: 'ComercioConecta - Naranja Impulso'
+description: 'Paleta naranja impulso para la vertical ComercioConecta'
+scope: vertical
+vertical_id: comercioconecta
+plan_id: ''
+tenant_id: ''
+preset_id: comercio_barrio
+color_tokens: '{"primary":"#FF8C42","secondary":"#2D6A4F","accent":"#F59E0B","background":"#FFF8F0","surface":"#FFFFFF","text":"#1A1A2E","text-muted":"#6B7280","border":"#E5E7EB","success":"#10B981","warning":"#F59E0B","error":"#EF4444"}'
+typography_tokens: '{"family-heading":"Outfit, system-ui, sans-serif","family-body":"Inter, system-ui, sans-serif","size-base":"1rem","weight-heading":"700"}'
+spacing_tokens: '{"unit":"0.25rem","radius-base":"8px","radius-xl":"16px"}'
+effect_tokens: '{"glass-bg":"rgba(255, 248, 240, 0.92)","glass-blur":"12px","shadow-card":"0 4px 20px rgba(255, 140, 66, 0.08)","gradient-primary":"linear-gradient(135deg, #FF8C42, #F59E0B)","animation-speed":"0.3s"}'
+component_variants: '{"header":"sticky_glass","card":"elevated","hero":"split","footer":"dark"}'
+weight: 0

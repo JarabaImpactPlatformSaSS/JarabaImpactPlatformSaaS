@@ -1,0 +1,16 @@
+id: serviciosconecta_cliente
+label: 'ServiciosConecta: Embudo Cliente'
+vertical: serviciosconecta
+avatar: cliente_servicios
+steps:
+  - event_type: visit_marketplace
+    label: 'Visita marketplace'
+  - event_type: view_provider
+    label: 'Vista perfil profesional'
+  - event_type: book_service
+    label: 'Reserva de servicio'
+  - event_type: leave_review
+    label: 'Deja resena'
+conversion_window_hours: 168
+status: true
+weight: 0

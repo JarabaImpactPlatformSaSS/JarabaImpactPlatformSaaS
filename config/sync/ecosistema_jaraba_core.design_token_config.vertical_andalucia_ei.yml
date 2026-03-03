@@ -1,0 +1,16 @@
+ecosistema_jaraba_core.design_token_config.vertical_andalucia_ei:
+  id: vertical_andalucia_ei
+  label: 'Vertical Andalucía +ei'
+  description: 'Tokens de diseño del programa Andalucía +ei — Emprendimiento Aumentado con Inteligencia Artificial. Hereda de platform_defaults y especializa la paleta para el programa EI.'
+  scope: vertical
+  vertical_id: andalucia_ei
+  plan_id: ''
+  tenant_id: ''
+  preset_id: andalucia_ei_program
+  weight: 100
+  status: true
+  color_tokens: '{"primary":"#FF8C42","secondary":"#00A9A5","accent":"#233D63","background":"#FFFBF7","surface":"#FFFFFF","text":"#233D63","text-muted":"#64748b","border":"#E5E7EB","success":"#10B981","warning":"#F59E0B","error":"#EF4444"}'
+  typography_tokens: '{"family-heading":"Outfit, system-ui, sans-serif","family-body":"Outfit, system-ui, sans-serif","size-base":"1rem","weight-heading":"700"}'
+  spacing_tokens: '{"unit":"0.25rem","radius-base":"12px","radius-xl":"24px"}'
+  effect_tokens: '{"glass-bg":"color-mix(in srgb, white 94%, transparent)","glass-blur":"14px","shadow-card":"0 4px 20px color-mix(in srgb, black 8%, transparent)","gradient-primary":"linear-gradient(135deg, #FF8C42, #00A9A5)","animation-speed":"0.3s"}'
+  component_variants: '{"header":"sticky_glass","card":"elevated","hero":"gradient_corporate","footer":"dark"}'

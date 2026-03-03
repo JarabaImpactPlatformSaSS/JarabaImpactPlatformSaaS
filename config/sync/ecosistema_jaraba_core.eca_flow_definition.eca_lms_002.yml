@@ -1,0 +1,11 @@
+id: eca_lms_002
+label: 'Badge Automatico'
+description: 'Al actualizar el progreso de una matricula LMS y cumplir los criterios de una insignia, se otorga automaticamente el badge correspondiente con celebracion visual.'
+domain: LMS
+trigger_event: 'hook_entity_update(lms_enrollment)'
+module: jaraba_lms
+hook_function: jaraba_lms_enrollment_update
+spec_reference: 30_LMS
+implementation_status: implemented
+weight: 51
+status: true

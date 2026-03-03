@@ -1,0 +1,34 @@
+langcode: es
+status: true
+dependencies: {  }
+id: jarabalex_acquisition
+label: 'JarabaLex - Adquisicion Profesional Juridico'
+description: 'Embudo de adquisicion de nuevos profesionales juridicos desde landing hasta primera busqueda.'
+vertical: jarabalex
+steps:
+  -
+    id: landing_visit
+    label: 'Visita Landing'
+    event: page_view
+    conditions: 'path:/jarabalex'
+  -
+    id: diagnostico_started
+    label: 'Diagnostico Iniciado'
+    event: lead_magnet_start
+    conditions: 'vertical:jarabalex,path:/jarabalex/diagnostico-legal'
+  -
+    id: diagnostico_completed
+    label: 'Diagnostico Completado'
+    event: lead_magnet_download
+    conditions: 'vertical:jarabalex'
+  -
+    id: registration
+    label: 'Registro'
+    event: user_register
+    conditions: 'vertical:jarabalex'
+  -
+    id: first_search
+    label: 'Primera Busqueda'
+    event: legal_search
+    conditions: 'first_time:true'
+weight: 0

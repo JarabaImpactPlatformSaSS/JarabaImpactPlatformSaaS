@@ -7,6 +7,9 @@ namespace Drupal\jaraba_agent_market\Entity;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -34,8 +37,9 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.digital_twin.settings",
  * )
  */
-class DigitalTwin extends ContentEntityBase {
+class DigitalTwin extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
+  use EntityChangedTrait;
   use EntityOwnerTrait;
 
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {

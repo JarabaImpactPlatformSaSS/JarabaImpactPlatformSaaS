@@ -1,0 +1,11 @@
+id: jarabalex_free_template_generations_month
+label: 'JarabaLex Free: Generaciones de plantilla por mes'
+vertical: jarabalex
+plan: free
+feature_key: template_generations_month
+limit_value: 0
+description: 'Generacion de documentos con plantillas no incluida en plan gratuito JarabaLex.'
+upgrade_message: 'La generacion de documentos con plantillas juridicas esta disponible desde el plan Starter.'
+expected_conversion: 0.30
+weight: 355
+status: true

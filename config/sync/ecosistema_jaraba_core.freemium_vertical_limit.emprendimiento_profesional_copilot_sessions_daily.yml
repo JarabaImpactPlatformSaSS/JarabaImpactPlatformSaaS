@@ -1,0 +1,11 @@
+id: emprendimiento_profesional_copilot_sessions_daily
+label: 'Emprendimiento Profesional: Sesiones Copiloto Diarias'
+vertical: emprendimiento
+plan: profesional
+feature_key: copilot_sessions_daily
+limit_value: -1
+description: 'Sesiones diarias de Copiloto IA ilimitadas en plan Profesional Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 420
+status: true

@@ -1,0 +1,33 @@
+# FIX-050: Job matching settings.
+# Activates hybrid scoring: rules (6 factors) + semantic (Qdrant) + freshness boost.
+semantic_matching_enabled: true
+
+scoring:
+  # Weight distribution for hybrid scoring factors (must sum to 1.0).
+  weights:
+    skills_match: 0.25
+    experience_alignment: 0.20
+    location_proximity: 0.15
+    salary_compatibility: 0.15
+    semantic_similarity: 0.15
+    freshness_boost: 0.10
+
+  # Minimum score for a match to be returned.
+  min_score: 0.35
+
+  # Maximum results per query.
+  max_results: 20
+
+semantic:
+  # Qdrant collection for job embeddings.
+  collection: job_embeddings
+  # Minimum similarity score for semantic matches.
+  min_similarity: 0.7
+  # Maximum candidates to retrieve from vector search.
+  vector_top_k: 50
+
+freshness:
+  # Days before freshness boost starts decaying.
+  decay_start_days: 7
+  # Days at which freshness boost reaches zero.
+  decay_end_days: 60

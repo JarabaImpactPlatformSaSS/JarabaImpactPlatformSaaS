@@ -1,0 +1,11 @@
+id: andalucia_ei_free_report_downloads
+label: 'Andalucía +ei Free: Descargas Informes'
+vertical: andalucia_ei
+plan: free
+feature_key: report_downloads
+limit_value: 1
+description: '1 descarga de informe mensual en plan gratuito.'
+upgrade_message: 'Has usado tu descarga gratuita de informes. Actualiza a Starter para 5 descargas mensuales.'
+expected_conversion: 0.15
+weight: 550
+status: true

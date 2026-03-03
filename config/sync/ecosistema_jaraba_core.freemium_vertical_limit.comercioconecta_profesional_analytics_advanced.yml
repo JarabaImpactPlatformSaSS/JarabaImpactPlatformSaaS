@@ -1,0 +1,11 @@
+id: comercioconecta_profesional_analytics_advanced
+label: 'ComercioConecta Profesional: Analytics Avanzados'
+vertical: comercioconecta
+plan: profesional
+feature_key: analytics_advanced
+limit_value: -1
+description: 'Analytics avanzados ilimitados en plan Profesional ComercioConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 142
+status: true

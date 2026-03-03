@@ -1,0 +1,11 @@
+id: jarabalex_profesional_max_alerts
+label: 'JarabaLex Profesional: Alertas'
+vertical: jarabalex
+plan: profesional
+feature_key: max_alerts
+limit_value: -1
+description: 'Alertas juridicas ilimitadas en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 307
+status: true

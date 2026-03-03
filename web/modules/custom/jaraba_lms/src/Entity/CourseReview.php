@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Drupal\jaraba_lms\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\ecosistema_jaraba_core\Entity\ReviewableEntityTrait;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -57,7 +59,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.course_review.settings",
  * )
  */
-class CourseReview extends ContentEntityBase implements CourseReviewInterface {
+class CourseReview extends ContentEntityBase implements CourseReviewInterface, EntityOwnerInterface, EntityChangedInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;

@@ -1,0 +1,11 @@
+id: agroconecta_starter_products
+label: 'AgroConecta Starter: Productos'
+vertical: agroconecta
+plan: starter
+feature_key: products
+limit_value: -1
+description: 'Productos ilimitados en plan Starter AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 1
+status: true

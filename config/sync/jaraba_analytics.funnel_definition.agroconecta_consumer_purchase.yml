@@ -1,0 +1,12 @@
+id: agroconecta_consumer_purchase
+label: 'AgroConecta: Compra Consumidor'
+vertical: agroconecta
+steps:
+  - { key: marketplace_visit, label: 'Visita Marketplace', event: agro_marketplace_visit }
+  - { key: product_view, label: 'Ver Producto', event: agro_product_view }
+  - { key: add_to_cart, label: 'Anadir al Carrito', event: agro_cart_created }
+  - { key: checkout_started, label: 'Checkout', event: agro_checkout_started }
+  - { key: order_completed, label: 'Pedido Completado', event: agro_order_completed }
+conversion_window_hours: 48
+is_active: true
+status: true

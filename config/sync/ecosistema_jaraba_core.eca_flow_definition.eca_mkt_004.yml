@@ -1,0 +1,11 @@
+id: eca_mkt_004
+label: 'Churn Risk Sequence'
+description: 'Secuencia de emails de retencion activada cuando el Health Score del tenant baja de 40. Incluye encuesta de satisfaccion, oferta de soporte y descuento de retencion.'
+domain: MKT
+trigger_event: 'health_score_threshold:below_40'
+module: jaraba_email
+hook_function: jaraba_email_churn_risk_sequence
+spec_reference: 145_AC
+implementation_status: pending
+weight: 33
+status: true

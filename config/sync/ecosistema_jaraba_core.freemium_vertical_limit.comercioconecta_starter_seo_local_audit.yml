@@ -1,0 +1,11 @@
+id: comercioconecta_starter_seo_local_audit
+label: 'ComercioConecta Starter: Auditoria SEO Local'
+vertical: comercioconecta
+plan: starter
+feature_key: seo_local_audit
+limit_value: 0
+description: 'Auditoria SEO local no disponible en plan Starter ComercioConecta.'
+upgrade_message: 'La auditoria SEO local te ayuda a posicionar tu negocio en Google Maps. Disponible desde Profesional.'
+expected_conversion: 0.20
+weight: 131
+status: true

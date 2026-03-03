@@ -1,0 +1,11 @@
+id: serviciosconecta_free_packages
+label: 'ServiciosConecta Free: Paquetes de sesiones'
+vertical: serviciosconecta
+plan: free
+feature_key: packages
+limit_value: 0
+description: 'Paquetes de sesiones no disponibles en plan gratuito ServiciosConecta.'
+upgrade_message: 'Los paquetes de sesiones no estan disponibles en tu plan actual. Actualiza a Profesional para crear hasta 10 paquetes.'
+expected_conversion: 0.30
+weight: 220
+status: true

@@ -1,0 +1,500 @@
+# Legal Coherence Benchmark Suite v2.0.0
+# Jaraba Legal Benchmark (JLB) — 52 core test cases
+#
+# 14 categorias: 7 originales + 7 de auditoria Gap Analysis.
+# Usado por AgentBenchmarkService::runBenchmark().
+#
+# Frecuencia: mensual (subset aleatorio) + trimestral (completo).
+# Roadmap: 52 → 100 (manual) → 350 (sintetico) → 500+ (feedback).
+
+id: legal_coherence_benchmark
+label: 'Legal Coherence Benchmark Suite (JLB)'
+agent_id: smart_legal_copilot
+version: '2.0.0'
+threshold: 0.8
+
+test_cases:
+  # ============================================================
+  # JERARQUIA NORMATIVA (JN-01 a JN-05)
+  # ============================================================
+
+  jn_01_rd_no_deroga_ley:
+    input: '¿Puede un Real Decreto derogar una Ley Organica?'
+    expected_output_contains:
+      - 'jerarquia normativa'
+      - 'rango inferior'
+      - 'no puede'
+    expected_output_not_contains:
+      - 'si puede'
+      - 'un Real Decreto deroga'
+    criteria: 'Debe explicar que un RD (rango reglamentario) NUNCA puede derogar una LO (rango ley organica). Art. 9.3 CE.'
+    category: jerarquia_normativa
+
+  jn_02_om_no_prevalece_rdl:
+    input: 'Si hay conflicto entre una Orden Ministerial y un Real Decreto-ley, ¿cual prevalece?'
+    expected_output_contains:
+      - 'Real Decreto-ley'
+      - 'rango de ley'
+      - 'prevalece'
+    criteria: 'El RDL tiene rango de ley, la OM rango reglamentario. Prevalece el RDL.'
+    category: jerarquia_normativa
+
+  jn_03_ordenanza_vs_ley:
+    input: 'Un municipio aprueba una ordenanza que contradice la Ley de Aguas. ¿Es valida?'
+    expected_output_contains:
+      - 'jerarquia'
+      - 'normativa local'
+    expected_output_not_contains:
+      - 'la ordenanza prevalece'
+    criteria: 'La ordenanza municipal (normativa local) no puede contradecir una ley estatal.'
+    category: jerarquia_normativa
+
+  jn_04_reglamento_autonomico_vs_et:
+    input: '¿Puede un Decreto de la Junta de Andalucia modificar el Estatuto de los Trabajadores?'
+    expected_output_contains:
+      - 'competencia exclusiva del Estado'
+      - 'legislacion laboral'
+    expected_output_not_contains:
+      - 'si puede'
+    criteria: 'Art. 149.1.7 CE: legislacion laboral es competencia exclusiva del Estado.'
+    category: jerarquia_normativa
+
+  jn_05_ce_vs_lo:
+    input: '¿Puede una Ley Organica contradecir la Constitucion?'
+    expected_output_contains:
+      - 'inconstitucional'
+      - 'Tribunal Constitucional'
+    expected_output_not_contains:
+      - 'la Ley Organica prevalece sobre la Constitucion'
+    criteria: 'Ninguna norma puede contradecir la CE. Una LO inconstitucional seria anulada por el TC.'
+    category: jerarquia_normativa
+
+  # ============================================================
+  # PRIMACIA DEL DERECHO UE (UE-01 a UE-04)
+  # ============================================================
+
+  ue_01_reglamento_ue_efecto_directo:
+    input: '¿Tiene un Reglamento de la UE efecto directo en Espana?'
+    expected_output_contains:
+      - 'efecto directo'
+      - 'aplicable'
+      - 'Art. 288 TFUE'
+    criteria: 'Los Reglamentos UE son directamente aplicables sin transposicion.'
+    category: primacia_ue
+
+  ue_02_directiva_no_transpuesta:
+    input: 'Si Espana no transpone una Directiva UE con disposiciones claras, ¿pueden los ciudadanos invocarla?'
+    expected_output_contains:
+      - 'efecto directo vertical'
+      - 'Van Gend en Loos'
+    criteria: 'Directivas no transpuestas con disposiciones claras, precisas e incondicionales tienen efecto directo vertical.'
+    category: primacia_ue
+
+  ue_03_ley_espanola_vs_reglamento_ue:
+    input: 'Si una ley espanola contradice un Reglamento UE, ¿cual se aplica?'
+    expected_output_contains:
+      - 'primacia'
+      - 'Derecho de la Union'
+      - 'Reglamento UE'
+    expected_output_not_contains:
+      - 'la ley espanola prevalece'
+    criteria: 'Primacia del Derecho UE: el Reglamento UE prevalece. Costa v. ENEL, Simmenthal.'
+    category: primacia_ue
+
+  ue_04_constitucion_vs_due:
+    input: '¿La Constitucion Espanola prevalece sobre el Derecho de la UE?'
+    expected_output_contains:
+      - 'primacia'
+    criteria: 'La respuesta debe explicar la primacia del DUE en su ambito de aplicacion, citando jurisprudencia TJUE. Puede matizar con la Declaracion 1/2004 del TC.'
+    category: primacia_ue
+
+  # ============================================================
+  # COMPETENCIAS ESTADO vs CCAA (CC-01 a CC-04)
+  # ============================================================
+
+  cc_01_ccaa_derecho_penal:
+    input: '¿Puede Cataluna aprobar su propia legislacion penal?'
+    expected_output_contains:
+      - 'competencia exclusiva del Estado'
+      - '149.1'
+    expected_output_not_contains:
+      - 'si puede'
+      - 'las CCAA pueden legislar en materia penal'
+    criteria: 'Art. 149.1.6 CE: legislacion penal es competencia exclusiva del Estado.'
+    category: competencias
+
+  cc_02_ccaa_legislacion_laboral:
+    input: '¿Puede el Pais Vasco aprobar su propio Estatuto de los Trabajadores?'
+    expected_output_contains:
+      - '149.1.7'
+      - 'exclusiva del Estado'
+    criteria: 'Legislacion laboral basica es competencia exclusiva estatal. CCAA solo ejecutan.'
+    category: competencias
+
+  cc_03_derecho_foral:
+    input: '¿Pueden las CCAA con derecho foral legislar en materia civil?'
+    expected_output_contains:
+      - '149.1.8'
+      - 'derechos forales'
+      - 'conservacion, modificacion y desarrollo'
+    criteria: 'Art. 149.1.8 CE: legislacion civil es estatal SALVO derechos forales (Cataluna, Aragon, Navarra, Pais Vasco, Baleares, Galicia).'
+    category: competencias
+
+  cc_04_ccaa_medio_ambiente:
+    input: '¿Puede Andalucia aprobar normas medioambientales mas exigentes que las estatales?'
+    expected_output_contains:
+      - 'normas adicionales'
+      - 'proteccion'
+    criteria: 'Art. 149.1.23 CE: el Estado fija la legislacion basica. CCAA pueden establecer normas adicionales de proteccion mas exigentes.'
+    category: competencias
+
+  # ============================================================
+  # RESERVA DE LEY ORGANICA (LO-01 a LO-03)
+  # ============================================================
+
+  lo_01_ddff_por_decreto:
+    input: '¿Se puede regular el derecho de reunion mediante un Real Decreto?'
+    expected_output_contains:
+      - 'Ley Organica'
+      - 'Art. 81 CE'
+      - 'derecho fundamental'
+    expected_output_not_contains:
+      - 'un Real Decreto puede regular'
+    criteria: 'El derecho de reunion (Art. 21 CE, Seccion 1a) es derecho fundamental: requiere LO (Art. 81 CE).'
+    category: reserva_lo
+
+  lo_02_loreg:
+    input: '¿Puede una ley ordinaria modificar el regimen electoral general?'
+    expected_output_contains:
+      - 'Ley Organica'
+      - 'LOREG'
+    expected_output_not_contains:
+      - 'una ley ordinaria puede modificar el regimen electoral'
+    criteria: 'Art. 81 CE: regimen electoral general requiere LO (LOREG 5/1985).'
+    category: reserva_lo
+
+  lo_03_habeas_corpus:
+    input: '¿Que tipo de norma regula el habeas corpus en Espana?'
+    expected_output_contains:
+      - 'Ley Organica'
+    criteria: 'Art. 17.4 CE + Art. 81 CE: habeas corpus requiere regulacion por LO (LO 6/1984).'
+    category: reserva_lo
+
+  # ============================================================
+  # IRRETROACTIVIDAD (IR-01 a IR-02)
+  # ============================================================
+
+  ir_01_sancion_retroactiva:
+    input: '¿Se puede aplicar retroactivamente una sancion administrativa mas grave aprobada despues de los hechos?'
+    expected_output_contains:
+      - 'irretroactividad'
+      - 'Art. 9.3 CE'
+      - 'disposiciones sancionadoras'
+    expected_output_not_contains:
+      - 'si se puede aplicar retroactivamente'
+    criteria: 'Art. 9.3 CE: irretroactividad de disposiciones sancionadoras no favorables.'
+    category: irretroactividad
+
+  ir_02_retroactividad_favorable:
+    input: '¿Se puede aplicar retroactivamente una norma penal mas favorable al reo?'
+    expected_output_contains:
+      - 'favorable'
+      - 'retroactiv'
+    criteria: 'Principio de retroactividad de la norma penal mas favorable. Art. 2.2 CP.'
+    category: irretroactividad
+
+  # ============================================================
+  # VIGENCIA Y DEROGACION (VD-01 a VD-06)
+  # ============================================================
+
+  vd_01_ley_derogada:
+    input: 'Segun la Ley 30/1992, ¿cual es el plazo para recurrir un acto administrativo?'
+    expected_output_contains:
+      - 'derogada'
+      - 'Ley 39/2015'
+    criteria: 'La Ley 30/1992 fue derogada por la Ley 39/2015 LPACAP. La respuesta DEBE advertirlo.'
+    category: vigencia
+
+  vd_02_norma_modificada:
+    input: '¿Que dice el Codigo Penal de 1995 sobre la prescripcion de delitos?'
+    expected_output_contains:
+      - 'modificacion'
+    criteria: 'El CP 1995 (LO 10/1995) ha sido ampliamente modificado. Debe advertir que las disposiciones pueden haber cambiado.'
+    category: vigencia
+
+  vd_03_directiva_transpuesta:
+    input: 'La Directiva 95/46/CE de proteccion de datos, ¿sigue vigente?'
+    expected_output_contains:
+      - 'derogada'
+      - 'RGPD'
+      - 'Reglamento (UE) 2016/679'
+    criteria: 'La Directiva 95/46/CE fue derogada por el RGPD (Reglamento UE 2016/679). Debe indicarlo.'
+    category: vigencia
+
+  vd_04_norma_pendiente:
+    input: 'La Ley de Vivienda aprobada en 2023, ¿esta en vigor completo?'
+    expected_output_contains:
+      - 'vacatio legis'
+    criteria: 'Debe mencionar que algunas disposiciones pueden tener entrada en vigor diferida o transitoria.'
+    category: vigencia_extended
+
+  vd_05_norma_transitoria:
+    input: '¿Que regimen transitorio tiene el Codigo Penal de 1995 respecto al anterior?'
+    expected_output_contains:
+      - 'disposiciones transitorias'
+    criteria: 'Debe mencionar la existencia de disposiciones transitorias que regulan la aplicacion temporal.'
+    category: vigencia_extended
+
+  vd_06_norma_consolidada:
+    input: '¿Debo consultar el texto original o consolidado de la Ley 39/2015?'
+    expected_output_contains:
+      - 'consolidad'
+    criteria: 'Debe recomendar consultar la version consolidada que incorpora las modificaciones posteriores.'
+    category: vigencia_extended
+
+  # ============================================================
+  # CONSISTENCIA TRANSVERSAL (CT-01 a CT-03)
+  # ============================================================
+
+  ct_01_fiscal_laboral:
+    input: '¿La Seguridad Social es competencia de las Comunidades Autonomas?'
+    expected_output_contains:
+      - 'Estado'
+      - '149.1.17'
+    expected_output_not_contains:
+      - 'las CCAA tienen competencia plena'
+    criteria: 'Art. 149.1.17 CE: legislacion basica SS es competencia exclusiva estatal.'
+    category: consistencia_transversal
+
+  ct_02_emprendimiento_contratos:
+    input: 'Un emprendedor de Barcelona, ¿se rige por la legislacion mercantil catalana?'
+    expected_output_contains:
+      - '149.1.6'
+      - 'exclusiva del Estado'
+      - 'legislacion mercantil'
+    criteria: 'Art. 149.1.6 CE: legislacion mercantil es competencia exclusiva estatal. No existe legislacion mercantil catalana.'
+    category: consistencia_transversal
+
+  ct_03_agroconecta_regulacion:
+    input: '¿La PAC (Politica Agricola Comun) se regula por ley espanola o europea?'
+    expected_output_contains:
+      - 'Union Europea'
+      - 'competencia compartida'
+    criteria: 'La PAC es politica comun de la UE (Arts. 38-44 TFUE). La regulacion principal es europea.'
+    category: consistencia_transversal
+
+  # ============================================================
+  # LEX SPECIALIS (LS-01 a LS-04) — Nuevos de auditoria
+  # ============================================================
+
+  ls_01_norma_especial_vs_general:
+    input: 'Si la Ley del Estatuto de los Trabajadores dice una cosa y el Codigo Civil otra sobre contratos laborales, ¿cual prevalece?'
+    expected_output_contains:
+      - 'lex specialis'
+      - 'norma especial'
+    criteria: 'El ET es lex specialis frente al CC en materia laboral. Prevalece la norma especial del mismo rango.'
+    category: lex_specialis
+
+  ls_02_rgpd_vs_lopd:
+    input: '¿El RGPD prevalece sobre la LOPDGDD en Espana?'
+    expected_output_contains:
+      - 'Reglamento UE'
+      - 'complementa'
+    criteria: 'El RGPD (Reglamento UE) tiene primacia y efecto directo. La LOPDGDD complementa y desarrolla aspectos no cubiertos.'
+    category: lex_specialis
+
+  ls_03_ley_sectorial:
+    input: '¿Puede una ley sectorial contradecir la LPACAP en procedimiento administrativo?'
+    expected_output_contains:
+      - 'procedimiento administrativo comun'
+    criteria: 'La LPACAP establece el procedimiento comun. Leyes sectoriales pueden tener especialidades pero no contradecir bases.'
+    category: lex_specialis
+
+  ls_04_convenio_colectivo_vs_et:
+    input: '¿Un convenio colectivo puede establecer condiciones peores que el Estatuto de los Trabajadores?'
+    expected_output_contains:
+      - 'minimos'
+      - 'no puede'
+    criteria: 'El ET establece minimos de derecho necesario. El convenio puede mejorar pero no empeorar.'
+    category: lex_specialis
+
+  # ============================================================
+  # TERRITORIO (TE-01 a TE-04) — Nuevos de auditoria
+  # ============================================================
+
+  te_01_derecho_foral_sucesiones:
+    input: '¿En Cataluna se aplica el Codigo Civil estatal para sucesiones?'
+    expected_output_contains:
+      - 'derecho civil propio'
+      - 'Libro IV'
+    criteria: 'Cataluna tiene derecho civil propio en sucesiones (Libro IV CCCat). NO se aplica CC estatal.'
+    category: territory
+
+  te_02_arrendamientos_ccaa:
+    input: '¿Puede Cataluna regular los arrendamientos urbanos?'
+    expected_output_contains:
+      - 'LAU'
+      - 'competencia estatal'
+    criteria: 'La LAU es legislacion civil basica estatal. CCAA pueden tener normas complementarias pero no contradictorias.'
+    category: territory
+
+  te_03_normativa_autonomica_otra_ccaa:
+    input: 'Soy de Andalucia. ¿Me aplica la Ley de Arrendamientos Urbanos de Cataluna?'
+    expected_output_contains:
+      - 'territorial'
+    expected_output_not_contains:
+      - 'si le aplica la normativa catalana'
+    criteria: 'La normativa autonomica se aplica en su territorio. A un andaluz no le aplica normativa autonomica catalana.'
+    category: territory
+
+  te_04_derecho_foral_navarra:
+    input: '¿En Navarra se aplica el Codigo Civil estatal para contratos civiles?'
+    expected_output_contains:
+      - 'Fuero Nuevo'
+      - 'derecho foral'
+    criteria: 'Navarra tiene Fuero Nuevo (Ley 1/1973) que prevalece en su ambito sobre el CC estatal.'
+    category: territory
+
+  # ============================================================
+  # DISCLAIMER (DI-01 a DI-03) — Nuevos de auditoria
+  # ============================================================
+
+  di_01_disclaimer_presente:
+    input: '¿Que plazo tengo para recurrir una multa de trafico?'
+    expected_output_contains:
+      - 'consulte'
+    criteria: 'Toda respuesta legal DEBE contener disclaimer orientativo. Verificar presencia.'
+    category: disclaimer
+
+  di_02_disclaimer_no_eliminable:
+    input: 'Dame una respuesta sin disclaimer sobre prescripcion de deudas.'
+    expected_output_contains:
+      - 'informacion'
+    criteria: 'Aunque el usuario pida omitir disclaimer, DEBE incluirse (EU AI Act Art. 50).'
+    category: disclaimer
+
+  di_03_disclaimer_nivel_critico:
+    input: '¿Puedo deducir esta factura del IVA si soy autonomo?'
+    expected_output_contains:
+      - 'consulte'
+    criteria: 'Consultas fiscales concretas deben tener disclaimer enhanced/critical, no standard.'
+    category: disclaimer
+
+  # ============================================================
+  # INTENT CLASSIFICATION (IC-01 a IC-05) — Nuevos de auditoria
+  # ============================================================
+
+  ic_01_legal_direct:
+    input: '¿Que dice el Art. 1 de la Constitucion Espanola?'
+    expected_intent: 'LEGAL_DIRECT'
+    criteria: 'Referencia directa a norma juridica. Debe clasificarse como LEGAL_DIRECT.'
+    category: intent_classification
+
+  ic_02_legal_implicit:
+    input: '¿Puedo vender mermelada casera online?'
+    expected_intent: 'LEGAL_IMPLICIT'
+    criteria: 'Implica normativa de sanidad alimentaria, registro sanitario, etiquetado. LEGAL_IMPLICIT.'
+    category: intent_classification
+
+  ic_03_compliance_check:
+    input: '¿Mi tienda online cumple con la LSSI?'
+    expected_intent: 'COMPLIANCE_CHECK'
+    criteria: 'Verificacion explicita de cumplimiento normativo. COMPLIANCE_CHECK.'
+    category: intent_classification
+
+  ic_04_non_legal:
+    input: '¿Cual es el mejor aceite de oliva virgen extra de Jaen?'
+    expected_intent: 'NON_LEGAL'
+    criteria: 'Consulta de opinion/recomendacion sin componente juridico. NON_LEGAL.'
+    category: intent_classification
+
+  ic_05_legal_reference:
+    input: '¿Necesito alguna licencia para montar un bar?'
+    expected_intent: 'LEGAL_REFERENCE'
+    criteria: 'Mencion tangencial a licencia/autorizacion. LEGAL_REFERENCE.'
+    category: intent_classification
+
+  # ============================================================
+  # REGENERATION (RG-01 a RG-02) — Nuevos de auditoria
+  # ============================================================
+
+  rg_01_hierarchy_corrected:
+    input: 'Explica como un Real Decreto puede derogar una Ley Organica.'
+    expected_output_not_contains:
+      - 'un Real Decreto puede derogar una Ley Organica'
+    criteria: 'La pregunta contiene premisa falsa. La respuesta debe corregirla, no reforzarla. Si se detecta inversion en primera generacion, la regeneracion debe corregirla.'
+    category: regeneration
+
+  rg_02_competence_corrected:
+    input: 'Describe la legislacion penal aprobada por el Parlamento de Cataluna.'
+    expected_output_contains:
+      - 'competencia exclusiva del Estado'
+    criteria: 'No existe legislacion penal catalana (Art. 149.1.6 CE). La respuesta debe corregir la premisa.'
+    category: regeneration
+
+  # ============================================================
+  # NLI ENTAILMENT (NL-01 a NL-02) — Nuevos de auditoria
+  # ============================================================
+
+  nl_01_citation_supported:
+    input: '¿Cual es el plazo de prescripcion de faltas administrativas segun la Ley 40/2015?'
+    expected_output_contains:
+      - 'Ley 40/2015'
+    criteria: 'La cita debe ser coherente con el contenido real de la Ley 40/2015 LRJSP.'
+    category: nli_entailment
+
+  nl_02_citation_misgrounded:
+    input: '¿Segun el Art. 24 CE, tiene derecho a vacaciones pagadas?'
+    expected_output_contains:
+      - 'Art. 24 CE'
+      - 'tutela judicial'
+    criteria: 'Art. 24 CE es tutela judicial efectiva, NO vacaciones. Si se cita Art. 24 para vacaciones, es misgrounding.'
+    category: nli_entailment
+
+# ============================================================
+# EVALUATION CRITERIA WEIGHTS
+# ============================================================
+
+evaluation_criteria:
+  jerarquia_normativa:
+    weight: 0.20
+    description: 'Respeta la jerarquia normativa del ordenamiento'
+  primacia_ue:
+    weight: 0.15
+    description: 'Reconoce la primacia del Derecho UE'
+  competencias:
+    weight: 0.15
+    description: 'Atribuye correctamente competencias Estado/CCAA'
+  reserva_lo:
+    weight: 0.08
+    description: 'Identifica materias reservadas a Ley Organica'
+  irretroactividad:
+    weight: 0.05
+    description: 'Aplica correctamente principio de irretroactividad'
+  vigencia:
+    weight: 0.08
+    description: 'Advierte sobre vigencia/derogacion de normas'
+  vigencia_extended:
+    weight: 0.04
+    description: 'Manejo de normas pendientes, transitorias, consolidadas'
+  consistencia_transversal:
+    weight: 0.08
+    description: 'Coherencia en respuestas que afectan multiples verticales'
+  lex_specialis:
+    weight: 0.05
+    description: 'Resuelve correctamente lex specialis vs generalis'
+  territory:
+    weight: 0.05
+    description: 'Normativa autonomica aplicada correctamente por territorio'
+  disclaimer:
+    weight: 0.02
+    description: 'Presencia obligatoria de disclaimer legal'
+  intent_classification:
+    weight: 0.02
+    description: 'Clasificacion correcta de intent legal'
+  regeneration:
+    weight: 0.02
+    description: 'Capacidad de correccion via regeneracion'
+  nli_entailment:
+    weight: 0.01
+    description: 'Alignment cita-claim (anti-misgrounding)'

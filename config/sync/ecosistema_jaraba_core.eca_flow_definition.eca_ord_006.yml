@@ -1,0 +1,11 @@
+id: eca_ord_006
+label: 'Payout Completado'
+description: 'Al recibir webhook payout.paid de Stripe, se registra el pago al productor, se actualiza el balance del tenant y se genera notificacion de cobro exitoso.'
+domain: ORD
+trigger_event: 'webhook:payout.paid'
+module: jaraba_foc
+hook_function: jaraba_foc_stripe_webhook_payout_paid
+spec_reference: 50_Checkout
+implementation_status: implemented
+weight: 45
+status: true

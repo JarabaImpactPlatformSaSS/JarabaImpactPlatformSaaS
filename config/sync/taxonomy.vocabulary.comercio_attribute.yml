@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_comercio_conecta
+name: 'Atributos Comercio'
+vid: comercio_attribute
+description: 'Atributos de variación de producto (color, talla, material) para ComercioConecta. Vocabulario jerárquico de 2 niveles.'
+weight: 0

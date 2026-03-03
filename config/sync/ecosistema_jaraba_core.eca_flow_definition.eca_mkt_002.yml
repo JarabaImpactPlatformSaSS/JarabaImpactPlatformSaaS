@@ -1,0 +1,11 @@
+id: eca_mkt_002
+label: 'Onboarding Email Day 1'
+description: 'Email inmediato de onboarding (Day 0) tras el registro del usuario con bienvenida personalizada, primer paso de valor y enlace directo a la funcionalidad principal de su vertical.'
+domain: MKT
+trigger_event: 'hook_user_insert + 0h'
+module: jaraba_email
+hook_function: jaraba_email_onboarding_day1
+spec_reference: 145_AC
+implementation_status: pending
+weight: 31
+status: true

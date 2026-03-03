@@ -8,6 +8,8 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -62,10 +64,11 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.interactive_content.settings",
  * )
  */
-class InteractiveContent extends ContentEntityBase implements EntityOwnerInterface, InteractiveContentInterface
+class InteractiveContent extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface, InteractiveContentInterface
 {
 
-    use EntityOwnerTrait;
+    use EntityChangedTrait;
+  use EntityOwnerTrait;
 
     /**
      * {@inheritdoc}

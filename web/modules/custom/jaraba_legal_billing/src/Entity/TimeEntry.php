@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -70,8 +72,9 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "jaraba_legal_billing.time_entry.settings",
  * )
  */
-class TimeEntry extends ContentEntityBase implements EntityOwnerInterface {
+class TimeEntry extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
+  use EntityChangedTrait;
   use EntityOwnerTrait;
 
   /**

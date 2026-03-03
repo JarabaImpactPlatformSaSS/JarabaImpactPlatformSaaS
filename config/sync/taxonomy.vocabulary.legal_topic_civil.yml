@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Materia Civil'
+vid: legal_topic_civil
+description: 'Materias de derecho civil: Contratos, Familia, Herencias, Propiedad, Responsabilidad, Arrendamientos.'
+weight: 0

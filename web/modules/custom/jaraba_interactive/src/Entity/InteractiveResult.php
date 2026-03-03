@@ -7,6 +7,8 @@ namespace Drupal\jaraba_interactive\Entity;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -46,10 +48,11 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.interactive_result.settings",
  * )
  */
-class InteractiveResult extends ContentEntityBase implements EntityOwnerInterface, InteractiveResultInterface
+class InteractiveResult extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface, InteractiveResultInterface
 {
 
-    use EntityOwnerTrait;
+    use EntityChangedTrait;
+  use EntityOwnerTrait;
 
     /**
      * Obtiene el contenido interactivo asociado.

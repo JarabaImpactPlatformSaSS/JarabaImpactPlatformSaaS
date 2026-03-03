@@ -1,0 +1,11 @@
+id: jarabalex_profesional_max_cases
+label: 'JarabaLex Profesional: Expedientes ilimitados'
+vertical: jarabalex
+plan: profesional
+feature_key: max_cases
+limit_value: -1
+description: 'Expedientes ilimitados en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 342
+status: true

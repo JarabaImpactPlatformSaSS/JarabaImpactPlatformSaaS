@@ -1,0 +1,11 @@
+id: jarabalex_free_vault_storage_mb
+label: 'JarabaLex Free: Boveda documental (MB)'
+vertical: jarabalex
+plan: free
+feature_key: vault_storage_mb
+limit_value: 100
+description: 'Maximo 100 MB de almacenamiento en boveda documental en plan gratuito.'
+upgrade_message: 'Has alcanzado los 100 MB de almacenamiento. Actualiza a Starter para 500 MB de boveda documental.'
+expected_conversion: 0.30
+weight: 343
+status: true

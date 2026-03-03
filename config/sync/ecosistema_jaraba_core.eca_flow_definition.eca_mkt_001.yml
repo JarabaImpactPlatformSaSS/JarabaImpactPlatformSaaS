@@ -1,0 +1,11 @@
+id: eca_mkt_001
+label: 'Lead Magnet Completed'
+description: 'Al completar un diagnostico (lead magnet), se registra la conversion, se segmenta al lead por vertical y se inicia nurturing sequence personalizada.'
+domain: MKT
+trigger_event: 'hook_entity_insert(diagnostic)'
+module: jaraba_diagnostic
+hook_function: jaraba_diagnostic_lead_magnet_complete
+spec_reference: 145_AC
+implementation_status: implemented
+weight: 30
+status: true

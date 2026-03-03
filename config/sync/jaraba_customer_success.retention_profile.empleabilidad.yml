@@ -1,0 +1,60 @@
+vertical_id: empleabilidad
+label: 'Empleabilidad'
+max_inactivity_days: 14
+health_score_weights:
+  engagement: 35
+  adoption: 25
+  satisfaction: 15
+  support: 10
+  growth: 15
+seasonality_calendar:
+  - { month: 1, risk_level: low, label: 'Propositos ano nuevo / alta busqueda', adjustment: -0.15 }
+  - { month: 2, risk_level: low, label: 'Convocatorias Q1 activas', adjustment: -0.10 }
+  - { month: 3, risk_level: low, label: 'Periodo contratacion activo', adjustment: -0.10 }
+  - { month: 4, risk_level: medium, label: 'Meseta primavera', adjustment: 0.0 }
+  - { month: 5, risk_level: medium, label: 'Pre-verano', adjustment: 0.05 }
+  - { month: 6, risk_level: medium, label: 'Contratos temporales verano', adjustment: 0.0 }
+  - { month: 7, risk_level: high, label: 'Vacaciones - baja busqueda', adjustment: 0.15 }
+  - { month: 8, risk_level: high, label: 'Agosto - minima actividad', adjustment: 0.20 }
+  - { month: 9, risk_level: low, label: 'Vuelta - pico contratacion', adjustment: -0.15 }
+  - { month: 10, risk_level: low, label: 'Contratacion Q4', adjustment: -0.10 }
+  - { month: 11, risk_level: low, label: 'Campana navidad temporal', adjustment: -0.05 }
+  - { month: 12, risk_level: medium, label: 'Cierre ano', adjustment: 0.10 }
+churn_risk_signals:
+  - { signal_id: hired_status, metric: application_status_hired, operator: '==', threshold: 1, lookback_days: 30, weight: 0.40, description: 'Candidato contratado (churn por exito)' }
+  - { signal_id: no_searches_14d, metric: job_searches, operator: '==', threshold: 0, lookback_days: 14, weight: 0.25, description: 'Sin busquedas de empleo en 14 dias' }
+  - { signal_id: no_applications_21d, metric: applications_sent, operator: '==', threshold: 0, lookback_days: 21, weight: 0.20, description: 'Sin candidaturas enviadas en 21 dias' }
+  - { signal_id: profile_incomplete, metric: profile_completion_pct, operator: '<', threshold: 50, lookback_days: 0, weight: 0.15, description: 'Perfil incompleto (menos del 50%)' }
+critical_features:
+  - job_search
+  - cv_builder
+  - application_tracking
+  - interview_prep
+  - skill_assessments
+reengagement_triggers:
+  - { trigger: new_matching_jobs, message_template: job_match_alert, delay_days: 0 }
+  - { trigger: skill_gap_identified, message_template: training_suggestion, delay_days: 2 }
+  - { trigger: profile_stale, message_template: profile_update_reminder, delay_days: 7 }
+upsell_signals:
+  - { signal: multiple_applications, recommended_plan: premium_job_seeker, message: 'Destaca tu perfil frente a otros candidatos' }
+  - { signal: interview_prep_needed, recommended_plan: coaching_pack, message: 'Prepara tus entrevistas con un coach' }
+seasonal_offers:
+  - { months: [1, 2], offer_type: new_year_boost, description: 'Impulso busqueda ano nuevo' }
+  - { months: [9, 10], offer_type: back_to_work, description: 'Vuelta al mercado laboral' }
+expected_usage_pattern:
+  1: high
+  2: high
+  3: high
+  4: medium
+  5: medium
+  6: medium
+  7: low
+  8: low
+  9: high
+  10: high
+  11: high
+  12: medium
+playbook_overrides:
+  health_drop: 6
+  churn_risk: 10
+  expansion: 15

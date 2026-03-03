@@ -7,6 +7,8 @@ namespace Drupal\jaraba_self_discovery\Entity;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -67,10 +69,11 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class LifeWheelAssessment extends ContentEntityBase implements EntityOwnerInterface
+class LifeWheelAssessment extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface
 {
 
-    use EntityOwnerTrait;
+    use EntityChangedTrait;
+  use EntityOwnerTrait;
 
     /**
      * {@inheritdoc}

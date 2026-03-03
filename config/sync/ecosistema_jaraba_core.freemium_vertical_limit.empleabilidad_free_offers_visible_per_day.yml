@@ -1,0 +1,11 @@
+id: empleabilidad_free_offers_visible_per_day
+label: 'Empleabilidad Free: Ofertas visibles/dia'
+vertical: empleabilidad
+plan: free
+feature_key: offers_visible_per_day
+limit_value: 10
+description: '10 ofertas de empleo visibles al dia en plan gratuito Empleabilidad.'
+upgrade_message: 'Solo puedes ver 10 ofertas al dia. Actualiza a Starter para ver todas las ofertas disponibles.'
+expected_conversion: 0.22
+weight: 310
+status: true

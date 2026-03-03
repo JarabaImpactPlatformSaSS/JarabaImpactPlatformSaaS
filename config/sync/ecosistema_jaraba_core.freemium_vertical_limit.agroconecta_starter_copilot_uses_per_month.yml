@@ -1,0 +1,11 @@
+id: agroconecta_starter_copilot_uses_per_month
+label: 'AgroConecta Starter: Copiloto IA/mes'
+vertical: agroconecta
+plan: starter
+feature_key: copilot_uses_per_month
+limit_value: 30
+description: '30 consultas al copiloto IA mensuales en plan Starter AgroConecta.'
+upgrade_message: 'Has usado tus 30 consultas de copiloto IA este mes. Actualiza a Profesional para consultas ilimitadas.'
+expected_conversion: 0.22
+weight: 21
+status: true

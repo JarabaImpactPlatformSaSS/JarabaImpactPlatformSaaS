@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_content_hub\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -41,7 +42,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.ai_generation_log.settings",
  * )
  */
-class AiGenerationLog extends ContentEntityBase implements EntityOwnerInterface
+class AiGenerationLog extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface
 {
 
     use EntityChangedTrait;

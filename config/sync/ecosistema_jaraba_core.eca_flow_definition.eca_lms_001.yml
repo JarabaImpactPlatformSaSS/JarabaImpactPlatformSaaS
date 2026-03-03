@@ -1,0 +1,11 @@
+id: eca_lms_001
+label: 'Auto-Enrollment'
+description: 'Al completar un diagnostico, el usuario se matricula automaticamente en la ruta de aprendizaje recomendada segun sus gaps de competencias identificados.'
+domain: LMS
+trigger_event: 'hook_entity_insert(diagnostic)'
+module: jaraba_lms
+hook_function: jaraba_lms_diagnostic_insert
+spec_reference: 30_LMS
+implementation_status: implemented
+weight: 50
+status: true

@@ -1,0 +1,11 @@
+id: agroconecta_starter_photos_per_product
+label: 'AgroConecta Starter: Fotos/producto'
+vertical: agroconecta
+plan: starter
+feature_key: photos_per_product
+limit_value: 5
+description: '5 fotos por producto en plan Starter AgroConecta.'
+upgrade_message: 'Limite de 5 fotos por producto alcanzado. Actualiza a Profesional para hasta 10 fotos.'
+expected_conversion: 0.18
+weight: 31
+status: true

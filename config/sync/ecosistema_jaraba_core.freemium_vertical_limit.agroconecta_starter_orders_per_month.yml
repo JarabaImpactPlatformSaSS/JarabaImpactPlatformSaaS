@@ -1,0 +1,11 @@
+id: agroconecta_starter_orders_per_month
+label: 'AgroConecta Starter: Pedidos/mes'
+vertical: agroconecta
+plan: starter
+feature_key: orders_per_month
+limit_value: -1
+description: 'Pedidos ilimitados en plan Starter AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 11
+status: true

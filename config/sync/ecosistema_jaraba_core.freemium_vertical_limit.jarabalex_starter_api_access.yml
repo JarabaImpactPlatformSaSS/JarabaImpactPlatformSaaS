@@ -1,0 +1,11 @@
+id: jarabalex_starter_api_access
+label: 'JarabaLex Starter: Acceso API'
+vertical: jarabalex
+plan: starter
+feature_key: api_access
+limit_value: 0
+description: 'Acceso a la API REST no disponible en plan Starter JarabaLex.'
+upgrade_message: 'El acceso a la API REST requiere plan Profesional o superior.'
+expected_conversion: 0.20
+weight: 333
+status: true

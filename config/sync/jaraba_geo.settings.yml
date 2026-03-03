@@ -1,0 +1,5 @@
+# Configuración de URLs externas para Schema.org Organization sameAs.
+# Editar en: /admin/config/search/jaraba-geo (cuando exista formulario)
+# o via drush: drush cset jaraba_geo.settings wikidata_url 'https://www.wikidata.org/wiki/QXXX'
+wikidata_url: ''
+crunchbase_url: ''

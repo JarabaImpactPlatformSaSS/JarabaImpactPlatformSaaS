@@ -1,0 +1,11 @@
+id: emprendimiento_free_mentoring_sessions_monthly
+label: 'Emprendimiento Free: Sesiones Mentoria Mensuales'
+vertical: emprendimiento
+plan: free
+feature_key: mentoring_sessions_monthly
+limit_value: 0
+description: 'Mentoria no incluida en plan gratuito Emprendimiento.'
+upgrade_message: 'La mentoria no esta disponible en el plan gratuito. Actualiza a Starter para acceder a 2 sesiones mensuales con mentores expertos.'
+expected_conversion: 0.22
+weight: 413
+status: true

@@ -1,0 +1,11 @@
+id: comercioconecta_free_seo_local_audit
+label: 'ComercioConecta Free: Auditoria SEO Local'
+vertical: comercioconecta
+plan: free
+feature_key: seo_local_audit
+limit_value: 0
+description: 'Auditoria SEO local no disponible en plan gratuito ComercioConecta.'
+upgrade_message: 'La auditoria SEO local te ayuda a posicionar tu negocio en Google Maps. Disponible desde Profesional.'
+expected_conversion: 0.18
+weight: 130
+status: true

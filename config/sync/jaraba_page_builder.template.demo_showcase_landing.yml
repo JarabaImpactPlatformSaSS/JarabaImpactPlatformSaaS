@@ -1,0 +1,128 @@
+# S4-02: Plantilla Demo Showcase Landing
+# Landing page para demostración interactiva del SaaS PLG.
+
+langcode: es
+status: true
+dependencies: {}
+id: demo_showcase_landing
+label: 'Demo Showcase Landing'
+description: 'Landing page completa para la experiencia demo interactiva. Incluye selector de perfil, métricas, playground IA y CTA de conversión.'
+category: demo
+twig_template: '@jaraba_page_builder/blocks/demo/demo-showcase-landing.html.twig'
+fields_schema:
+  type: object
+  title: 'Demo Showcase Landing'
+  properties:
+    hero_title:
+      type: string
+      title: 'Título Hero'
+      maxLength: 150
+      ui:widget: text
+      ui:placeholder: 'Prueba la plataforma sin registro'
+    hero_subtitle:
+      type: string
+      title: 'Subtítulo Hero'
+      maxLength: 300
+      ui:widget: textarea
+      ui:placeholder: 'Experimenta todas las funcionalidades en menos de 60 segundos'
+    profiles_title:
+      type: string
+      title: 'Título Sección Perfiles'
+      maxLength: 100
+      ui:widget: text
+      default: 'Elige tu sector'
+    profiles:
+      type: array
+      title: 'Perfiles Demo'
+      maxItems: 12
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: 'Nombre del perfil'
+            maxLength: 50
+          vertical:
+            type: string
+            title: 'Vertical'
+            enum:
+              - agroconecta
+              - comercioconecta
+              - empleabilidad
+              - emprendimiento
+              - jarabalex
+              - serviciosconecta
+              - andalucia_ei
+              - jaraba_content_hub
+              - formacion
+            enumLabels:
+              agroconecta: 'AgroConecta'
+              comercioconecta: 'ComercioConecta'
+              empleabilidad: 'Empleabilidad'
+              emprendimiento: 'Emprendimiento'
+              jarabalex: 'JarabaLex'
+              serviciosconecta: 'ServiciosConecta'
+              andalucia_ei: 'Andalucía e+i'
+              jaraba_content_hub: 'Content Hub'
+              formacion: 'Formación'
+          description:
+            type: string
+            title: 'Descripción corta'
+            maxLength: 150
+          icon_color:
+            type: string
+            title: 'Color del icono'
+            ui:widget: color
+            default: '#233D63'
+    cta_text:
+      type: string
+      title: 'Texto CTA Principal'
+      maxLength: 50
+      default: 'Crear cuenta gratis'
+    cta_url:
+      type: string
+      format: uri
+      title: 'URL CTA Principal'
+    metrics_enabled:
+      type: boolean
+      title: 'Mostrar sección de métricas'
+      default: true
+    ai_playground_enabled:
+      type: boolean
+      title: 'Mostrar playground IA'
+      default: true
+  required:
+    - hero_title
+    - profiles
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/demo-showcase-landing.png'
+weight: 0
+preview_data:
+  hero_title: 'Prueba la plataforma sin registro'
+  hero_subtitle: 'Experimenta todas las funcionalidades en menos de 60 segundos'
+  profiles_title: 'Elige tu sector'
+  profiles:
+    - name: 'AgroConecta'
+      vertical: 'agroconecta'
+      description: 'Productores, bodegas y cooperativas agroalimentarias'
+      icon_color: '#556B2F'
+    - name: 'ComercioConecta'
+      vertical: 'comercioconecta'
+      description: 'Tiendas, marketplace y comercio digital'
+      icon_color: '#233D63'
+    - name: 'Empleabilidad'
+      vertical: 'empleabilidad'
+      description: 'Bolsas de empleo y selección de talento'
+      icon_color: '#00A9A5'
+    - name: 'Emprendimiento'
+      vertical: 'emprendimiento'
+      description: 'Startups, incubadoras y aceleradoras'
+      icon_color: '#FF8C42'
+  cta_text: 'Crear cuenta gratis'
+  cta_url: '#register'
+  metrics_enabled: true
+  ai_playground_enabled: true

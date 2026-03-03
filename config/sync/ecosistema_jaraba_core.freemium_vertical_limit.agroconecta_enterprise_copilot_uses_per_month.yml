@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_copilot_uses_per_month
+label: 'AgroConecta Enterprise: Copilot IA'
+vertical: agroconecta
+plan: enterprise
+feature_key: copilot_uses_per_month
+limit_value: -1
+description: 'Usos ilimitados del Copilot IA en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 204
+status: true

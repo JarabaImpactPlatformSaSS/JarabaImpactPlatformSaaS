@@ -1,0 +1,11 @@
+id: jarabalex_starter_max_alerts
+label: 'JarabaLex Starter: Alertas'
+vertical: jarabalex
+plan: starter
+feature_key: max_alerts
+limit_value: 5
+description: 'Maximo 5 alertas juridicas activas en plan Starter JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 304
+status: true

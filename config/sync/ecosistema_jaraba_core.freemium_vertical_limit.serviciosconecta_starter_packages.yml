@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_packages
+label: 'ServiciosConecta Starter: Paquetes de sesiones'
+vertical: serviciosconecta
+plan: starter
+feature_key: packages
+limit_value: 0
+description: 'Paquetes de sesiones no disponibles en plan Starter ServiciosConecta.'
+upgrade_message: 'Los paquetes de sesiones no estan disponibles en tu plan actual. Actualiza a Profesional para crear hasta 10 paquetes.'
+expected_conversion: 0.28
+weight: 221
+status: true

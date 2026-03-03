@@ -74,7 +74,7 @@ class AdminStructureController extends ControllerBase
             'label' => 'Contenido & Medios',
             'icon' => '📝',
             'description' => 'Blog, eventos, LMS, contenido multimedia',
-            'providers' => ['jaraba_blog', 'jaraba_events', 'jaraba_lms', 'jaraba_content_hub', 'jaraba_page_builder'],
+            'providers' => ['jaraba_events', 'jaraba_lms', 'jaraba_content_hub', 'jaraba_page_builder'],
         ],
         'billing_commerce' => [
             'label' => 'Facturación & Comercio',

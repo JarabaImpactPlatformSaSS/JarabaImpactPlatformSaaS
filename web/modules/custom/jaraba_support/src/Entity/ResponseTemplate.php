@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_support\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -54,7 +55,7 @@ use Drupal\user\EntityOwnerTrait;
  *   },
  * )
  */
-class ResponseTemplate extends ContentEntityBase implements EntityOwnerInterface {
+class ResponseTemplate extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;

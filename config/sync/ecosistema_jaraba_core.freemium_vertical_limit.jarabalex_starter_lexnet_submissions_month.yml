@@ -1,0 +1,11 @@
+id: jarabalex_starter_lexnet_submissions_month
+label: 'JarabaLex Starter: Presentaciones LexNET por mes'
+vertical: jarabalex
+plan: starter
+feature_key: lexnet_submissions_month
+limit_value: 10
+description: 'Maximo 10 presentaciones LexNET por mes en plan Starter JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 10 presentaciones LexNET mensuales. Actualiza a Profesional para presentaciones ilimitadas.'
+expected_conversion: 0.45
+weight: 353
+status: true

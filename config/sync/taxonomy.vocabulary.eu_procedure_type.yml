@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Tipo de Procedimiento UE'
+vid: eu_procedure_type
+description: 'Tipos de procedimientos ante el TJUE: Cuestion prejudicial, Recurso por incumplimiento, Recurso de anulacion, Accion por omision.'
+weight: 0

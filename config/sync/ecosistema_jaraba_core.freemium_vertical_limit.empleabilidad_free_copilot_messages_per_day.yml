@@ -1,0 +1,11 @@
+id: empleabilidad_free_copilot_messages_per_day
+label: 'Empleabilidad Free: Mensajes Copilot diarios'
+vertical: empleabilidad
+plan: free
+feature_key: copilot_messages_per_day
+limit_value: 5
+description: '5 mensajes al copilot por día en plan gratuito Empleabilidad.'
+upgrade_message: 'Has alcanzado el límite de 5 mensajes diarios al copilot. Actualiza a Starter para 25 mensajes por día.'
+expected_conversion: 0.32
+weight: 350
+status: true

@@ -1,0 +1,8 @@
+id: sales_agent
+label: 'Sales Agent AgroConecta'
+description: 'Asistente IA de ventas para consumidores del marketplace AgroConecta.'
+service_id: jaraba_ai_agents.sales_agent
+icon: shopping-cart
+color: '#34a853'
+weight: 0
+status: true

@@ -1,0 +1,16 @@
+ecosistema_jaraba_core.design_token_config.vertical_jarabalex:
+  id: vertical_jarabalex
+  label: 'Vertical JarabaLex — Inteligencia Legal'
+  description: 'Tokens de diseño del vertical JarabaLex — Legal Intelligence Hub. Paleta juridica formal con azul profundo y oro justicia. Hereda de platform_defaults.'
+  scope: vertical
+  vertical_id: jarabalex
+  plan_id: ''
+  tenant_id: ''
+  preset_id: jarabalex_legal
+  weight: 100
+  status: true
+  color_tokens: '{"primary":"#1E3A5F","secondary":"#C8A96E","accent":"#C8A96E","background":"#F5F3EF","surface":"#FFFFFF","text":"#1A1A2E","text-muted":"#6B7280","border":"#E5E7EB","success":"#2D6A4F","warning":"#D4A843","error":"#9B2335","eu-blue":"#003399","eu-gold":"#FFCC00"}'
+  typography_tokens: '{"family-heading":"Outfit, system-ui, sans-serif","family-body":"Outfit, system-ui, sans-serif","size-base":"1rem","weight-heading":"700"}'
+  spacing_tokens: '{"unit":"0.25rem","radius-base":"8px","radius-xl":"16px"}'
+  effect_tokens: '{"glass-bg":"color-mix(in srgb, white 94%, transparent)","glass-blur":"14px","shadow-card":"0 2px 8px color-mix(in srgb, #1E3A5F 12%, transparent)","gradient-primary":"linear-gradient(135deg, #1E3A5F, #0F1F33)","animation-speed":"0.2s"}'
+  component_variants: '{"header":"sticky_glass","card":"elevated","hero":"gradient_corporate","footer":"dark"}'

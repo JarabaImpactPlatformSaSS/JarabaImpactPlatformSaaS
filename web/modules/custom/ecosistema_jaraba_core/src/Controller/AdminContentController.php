@@ -104,7 +104,7 @@ class AdminContentController extends ControllerBase
             'label' => 'Contenido & Blog',
             'icon' => '📝',
             'description' => 'Artículos, noticias, categorías de contenido',
-            'providers' => ['jaraba_content_hub', 'jaraba_blog'],
+            'providers' => ['jaraba_content_hub'],
         ],
         'resources' => [
             'label' => 'Recursos',

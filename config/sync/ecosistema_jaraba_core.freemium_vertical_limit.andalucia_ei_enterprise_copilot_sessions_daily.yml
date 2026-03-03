@@ -1,0 +1,11 @@
+id: andalucia_ei_enterprise_copilot_sessions_daily
+label: 'Andalucía +ei Enterprise: Sesiones Copiloto Diarias'
+vertical: andalucia_ei
+plan: enterprise
+feature_key: copilot_sessions_daily
+limit_value: -1
+description: 'Sesiones diarias de tutor IA ilimitadas en plan Enterprise.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 512
+status: true

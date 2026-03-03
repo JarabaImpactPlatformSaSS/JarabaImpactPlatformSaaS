@@ -1,0 +1,11 @@
+id: eca_mkt_006
+label: 'Referral Conversion'
+description: 'Al completarse una orden con codigo de referido, se acredita la recompensa al referidor (credito en cuenta o descuento) y se notifica a ambas partes.'
+domain: MKT
+trigger_event: 'hook_entity_insert(order) + ref_code'
+module: jaraba_referral
+hook_function: jaraba_referral_order_complete
+spec_reference: 157_Referral
+implementation_status: implemented
+weight: 35
+status: true

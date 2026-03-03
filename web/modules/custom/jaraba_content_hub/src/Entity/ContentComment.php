@@ -59,7 +59,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.content_comment.settings",
  * )
  */
-class ContentComment extends ContentEntityBase implements ContentCommentInterface {
+class ContentComment extends ContentEntityBase implements ContentCommentInterface, EntityOwnerInterface, EntityChangedInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;

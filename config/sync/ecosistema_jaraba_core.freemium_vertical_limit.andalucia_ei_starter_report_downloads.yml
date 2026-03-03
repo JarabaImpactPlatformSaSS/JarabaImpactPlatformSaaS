@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_report_downloads
+label: 'Andalucía +ei Starter: Descargas Informes'
+vertical: andalucia_ei
+plan: starter
+feature_key: report_downloads
+limit_value: 5
+description: 'Hasta 5 descargas de informes mensuales en plan Starter.'
+upgrade_message: 'Has alcanzado el limite de descargas en Starter. Actualiza a Profesional para descargas ilimitadas.'
+expected_conversion: 0
+weight: 554
+status: true

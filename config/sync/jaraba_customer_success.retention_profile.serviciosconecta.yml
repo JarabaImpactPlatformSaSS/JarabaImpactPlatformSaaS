@@ -1,0 +1,60 @@
+vertical_id: serviciosconecta
+label: 'ServiciosConecta'
+max_inactivity_days: 30
+health_score_weights:
+  engagement: 30
+  adoption: 25
+  satisfaction: 25
+  support: 10
+  growth: 10
+seasonality_calendar:
+  - { month: 1, risk_level: medium, label: 'Inicio de ano / baja demanda', adjustment: 0.05 }
+  - { month: 2, risk_level: medium, label: 'Recuperacion lenta', adjustment: 0.05 }
+  - { month: 3, risk_level: low, label: 'Primavera - demanda crece', adjustment: -0.05 }
+  - { month: 4, risk_level: low, label: 'Servicios primaverales', adjustment: -0.10 }
+  - { month: 5, risk_level: low, label: 'Alta actividad', adjustment: -0.10 }
+  - { month: 6, risk_level: low, label: 'Pre-verano activo', adjustment: -0.05 }
+  - { month: 7, risk_level: medium, label: 'Vacaciones - baja leve', adjustment: 0.05 }
+  - { month: 8, risk_level: high, label: 'Agosto - paralizacion', adjustment: 0.15 }
+  - { month: 9, risk_level: low, label: 'Vuelta actividad', adjustment: -0.10 }
+  - { month: 10, risk_level: low, label: 'Otono activo', adjustment: -0.10 }
+  - { month: 11, risk_level: low, label: 'Pre-navidad - servicios altos', adjustment: -0.05 }
+  - { month: 12, risk_level: medium, label: 'Navidad - servicios mixtos', adjustment: 0.05 }
+churn_risk_signals:
+  - { signal_id: no_bookings_21d, metric: bookings_created, operator: '==', threshold: 0, lookback_days: 21, weight: 0.30, description: 'Sin reservas en 21 dias' }
+  - { signal_id: no_quotes_30d, metric: quotes_sent, operator: '==', threshold: 0, lookback_days: 30, weight: 0.25, description: 'Sin presupuestos enviados en 30 dias' }
+  - { signal_id: trust_inbox_unread_7d, metric: trust_inbox_unread, operator: '>', threshold: 0, lookback_days: 7, weight: 0.25, description: 'Buzon de Confianza sin responder en 7 dias' }
+  - { signal_id: no_login_21d, metric: last_login_days, operator: '>', threshold: 21, lookback_days: 21, weight: 0.20, description: 'Sin login en 21 dias' }
+critical_features:
+  - booking_management
+  - quote_generator
+  - trust_inbox
+  - client_reviews
+  - portfolio_showcase
+reengagement_triggers:
+  - { trigger: roi_report, message_template: monthly_roi, delay_days: 0 }
+  - { trigger: new_reviews, message_template: review_notification, delay_days: 1 }
+  - { trigger: booking_reminder, message_template: booking_setup, delay_days: 3 }
+upsell_signals:
+  - { signal: high_booking_volume, recommended_plan: premium_services, message: 'Automatiza la gestion de tus reservas' }
+  - { signal: positive_reviews_growth, recommended_plan: featured_listing, message: 'Destaca tu perfil con resenas positivas' }
+seasonal_offers:
+  - { months: [3, 4], offer_type: spring_visibility, description: 'Impulso de visibilidad primavera' }
+  - { months: [9, 10], offer_type: autumn_relaunch, description: 'Relanzamiento de otono' }
+expected_usage_pattern:
+  1: medium
+  2: medium
+  3: high
+  4: high
+  5: high
+  6: high
+  7: medium
+  8: low
+  9: high
+  10: high
+  11: high
+  12: medium
+playbook_overrides:
+  health_drop: 5
+  churn_risk: 9
+  expansion: 14

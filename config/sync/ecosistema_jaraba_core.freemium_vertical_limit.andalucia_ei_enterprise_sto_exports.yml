@@ -1,0 +1,11 @@
+id: andalucia_ei_enterprise_sto_exports
+label: 'Andalucía +ei Enterprise: Exportaciones STO'
+vertical: andalucia_ei
+plan: enterprise
+feature_key: sto_exports
+limit_value: -1
+description: 'Exportaciones STO ilimitadas en plan Enterprise.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 529
+status: true

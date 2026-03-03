@@ -1,0 +1,11 @@
+id: serviciosconecta_profesional_reviews_visible
+label: 'ServiciosConecta Profesional: Resenas visibles'
+vertical: serviciosconecta
+plan: profesional
+feature_key: reviews_visible
+limit_value: -1
+description: 'Resenas ilimitadas visibles en plan Profesional ServiciosConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 242
+status: true

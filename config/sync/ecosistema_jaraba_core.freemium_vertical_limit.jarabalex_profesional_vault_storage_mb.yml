@@ -1,0 +1,11 @@
+id: jarabalex_profesional_vault_storage_mb
+label: 'JarabaLex Profesional: Boveda documental (MB)'
+vertical: jarabalex
+plan: profesional
+feature_key: vault_storage_mb
+limit_value: 5120
+description: '5 GB de almacenamiento en boveda documental en plan Profesional.'
+upgrade_message: 'Has alcanzado los 5 GB de almacenamiento. Contacta con ventas para almacenamiento Enterprise.'
+expected_conversion: 0
+weight: 345
+status: true

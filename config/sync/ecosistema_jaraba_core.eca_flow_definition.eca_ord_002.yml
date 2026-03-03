@@ -1,0 +1,11 @@
+id: eca_ord_002
+label: 'Carrito Abandonado'
+description: 'Cron job que detecta carritos con items sin completar tras 24h. Genera email de recuperacion con resumen del carrito, descuento incentivo y enlace directo a checkout.'
+domain: ORD
+trigger_event: 'cron:abandoned_cart_24h'
+module: jaraba_agroconecta_core
+hook_function: jaraba_agroconecta_core_cron_abandoned_carts
+spec_reference: 49_Order
+implementation_status: pending
+weight: 41
+status: true

@@ -1,0 +1,11 @@
+id: andalucia_ei_enterprise_diagnostic_access
+label: 'Andalucía +ei Enterprise: Acceso Diagnóstico DIME'
+vertical: andalucia_ei
+plan: enterprise
+feature_key: diagnostic_access
+limit_value: -1
+description: 'Acceso ilimitado al diagnostico DIME en plan Enterprise.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 549
+status: true

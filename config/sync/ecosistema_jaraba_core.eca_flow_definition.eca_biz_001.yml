@@ -1,0 +1,11 @@
+id: eca_biz_001
+label: 'Hypothesis Created'
+description: 'Al crear una hipotesis de negocio en el modulo de emprendimiento, se registra en el BMC Canvas del proyecto y se sugieren experimentos de validacion via Copilot IA.'
+domain: BIZ
+trigger_event: 'hook_entity_insert(hypothesis)'
+module: jaraba_copilot_v2
+hook_function: jaraba_copilot_v2_hypothesis_insert
+spec_reference: 40_Emprendimiento
+implementation_status: implemented
+weight: 70
+status: true

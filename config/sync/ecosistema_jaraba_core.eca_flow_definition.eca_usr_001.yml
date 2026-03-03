@@ -1,0 +1,11 @@
+id: eca_usr_001
+label: 'Onboarding Usuario Nuevo'
+description: 'Al registrarse un nuevo usuario, se asigna rol basico, se genera perfil inicial, se dispara secuencia de bienvenida y se vincula al tenant correspondiente.'
+domain: USR
+trigger_event: hook_user_insert
+module: ecosistema_jaraba_core
+hook_function: ecosistema_jaraba_core_user_insert
+spec_reference: 06_Core
+implementation_status: implemented
+weight: 0
+status: true

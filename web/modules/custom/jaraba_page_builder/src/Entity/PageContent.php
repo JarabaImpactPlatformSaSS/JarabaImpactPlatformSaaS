@@ -4,10 +4,12 @@ namespace Drupal\jaraba_page_builder\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\jaraba_page_builder\PageContentInterface;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -80,7 +82,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.page_content.collection",
  * )
  */
-class PageContent extends ContentEntityBase implements PageContentInterface
+class PageContent extends ContentEntityBase implements PageContentInterface, EntityOwnerInterface, EntityChangedInterface
 {
 
     use EntityChangedTrait;

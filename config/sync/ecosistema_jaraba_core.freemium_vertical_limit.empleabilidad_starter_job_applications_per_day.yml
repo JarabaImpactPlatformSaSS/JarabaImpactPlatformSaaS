@@ -1,0 +1,11 @@
+id: empleabilidad_starter_job_applications_per_day
+label: 'Empleabilidad Starter: Candidaturas diarias'
+vertical: empleabilidad
+plan: starter
+feature_key: job_applications_per_day
+limit_value: 15
+description: '15 candidaturas diarias en plan Starter Empleabilidad.'
+upgrade_message: 'Has alcanzado el limite de 15 candidaturas diarias. Actualiza a Profesional para candidaturas ilimitadas.'
+expected_conversion: 0.30
+weight: 341
+status: true

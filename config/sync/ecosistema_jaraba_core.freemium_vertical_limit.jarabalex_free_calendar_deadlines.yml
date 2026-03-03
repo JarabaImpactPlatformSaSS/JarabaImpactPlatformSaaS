@@ -1,0 +1,11 @@
+id: jarabalex_free_calendar_deadlines
+label: 'JarabaLex Free: Plazos en agenda'
+vertical: jarabalex
+plan: free
+feature_key: calendar_deadlines
+limit_value: 10
+description: 'Maximo 10 plazos activos en agenda en plan gratuito JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 10 plazos. Actualiza a Starter para gestionar hasta 100 plazos con alertas.'
+expected_conversion: 0.25
+weight: 346
+status: true

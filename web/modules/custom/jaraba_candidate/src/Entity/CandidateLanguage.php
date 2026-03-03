@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\jaraba_candidate\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -52,7 +54,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.candidate_language.settings",
  * )
  */
-class CandidateLanguage extends ContentEntityBase implements CandidateLanguageInterface
+class CandidateLanguage extends ContentEntityBase implements CandidateLanguageInterface, EntityOwnerInterface, EntityChangedInterface
 {
 
     use EntityChangedTrait;

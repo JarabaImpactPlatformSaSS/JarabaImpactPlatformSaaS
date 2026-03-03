@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_traceability_qr
+label: 'AgroConecta Enterprise: Trazabilidad QR'
+vertical: agroconecta
+plan: enterprise
+feature_key: traceability_qr
+limit_value: -1
+description: 'QR de trazabilidad ilimitados en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 207
+status: true

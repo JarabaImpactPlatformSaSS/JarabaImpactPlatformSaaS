@@ -1,0 +1,60 @@
+vertical_id: comercioconecta
+label: 'ComercioConecta'
+max_inactivity_days: 21
+health_score_weights:
+  engagement: 30
+  adoption: 20
+  satisfaction: 20
+  support: 10
+  growth: 20
+seasonality_calendar:
+  - { month: 1, risk_level: medium, label: 'Post-rebajas invierno', adjustment: 0.05 }
+  - { month: 2, risk_level: high, label: 'Valle post-navidad', adjustment: 0.15 }
+  - { month: 3, risk_level: high, label: 'Valle pre-primavera', adjustment: 0.10 }
+  - { month: 4, risk_level: medium, label: 'Inicio primavera', adjustment: 0.0 }
+  - { month: 5, risk_level: low, label: 'Dia de la Madre / primavera', adjustment: -0.05 }
+  - { month: 6, risk_level: low, label: 'Rebajas verano inicio', adjustment: -0.15 }
+  - { month: 7, risk_level: low, label: 'Rebajas verano pleno', adjustment: -0.20 }
+  - { month: 8, risk_level: high, label: 'Valle agosto', adjustment: 0.10 }
+  - { month: 9, risk_level: medium, label: 'Vuelta al cole', adjustment: 0.0 }
+  - { month: 10, risk_level: low, label: 'Pre-Black Friday', adjustment: -0.05 }
+  - { month: 11, risk_level: low, label: 'Black Friday / Singles Day', adjustment: -0.25 }
+  - { month: 12, risk_level: low, label: 'Campana Navidad', adjustment: -0.20 }
+churn_risk_signals:
+  - { signal_id: no_flash_offers_30d, metric: flash_offers_created, operator: '==', threshold: 0, lookback_days: 30, weight: 0.25, description: 'Sin Flash Offers creadas en 30 dias' }
+  - { signal_id: qr_no_scans, metric: qr_scans, operator: '==', threshold: 0, lookback_days: 21, weight: 0.20, description: 'QR generados sin escaneos en 21 dias' }
+  - { signal_id: no_pos_transactions_21d, metric: pos_transactions, operator: '==', threshold: 0, lookback_days: 21, weight: 0.30, description: 'Sin transacciones POS en 21 dias' }
+  - { signal_id: no_login_14d, metric: last_login_days, operator: '>', threshold: 14, lookback_days: 14, weight: 0.25, description: 'Sin login en 14 dias' }
+critical_features:
+  - flash_offers
+  - qr_codes
+  - pos_integration
+  - customer_loyalty
+  - inventory_management
+reengagement_triggers:
+  - { trigger: seasonal_sale, message_template: sale_prep_kit, delay_days: 0 }
+  - { trigger: competitor_event, message_template: competitive_advantage, delay_days: 0 }
+  - { trigger: low_pos_usage, message_template: pos_training, delay_days: 3 }
+upsell_signals:
+  - { signal: transaction_volume_high, recommended_plan: premium_commerce, message: 'Tus ventas justifican funciones premium' }
+  - { signal: multi_location, recommended_plan: enterprise_commerce, message: 'Gestiona multiples puntos de venta' }
+seasonal_offers:
+  - { months: [10, 11], offer_type: black_friday_kit, description: 'Kit Black Friday para tu comercio' }
+  - { months: [6, 7], offer_type: summer_boost, description: 'Impulso rebajas de verano' }
+expected_usage_pattern:
+  1: medium
+  2: low
+  3: low
+  4: medium
+  5: medium
+  6: high
+  7: high
+  8: low
+  9: medium
+  10: high
+  11: high
+  12: high
+playbook_overrides:
+  health_drop: 4
+  churn_risk: 8
+  expansion: 13

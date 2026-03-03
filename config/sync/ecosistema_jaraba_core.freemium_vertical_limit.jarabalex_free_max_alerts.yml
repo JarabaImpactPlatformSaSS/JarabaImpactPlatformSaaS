@@ -1,0 +1,11 @@
+id: jarabalex_free_max_alerts
+label: 'JarabaLex Free: Alertas'
+vertical: jarabalex
+plan: free
+feature_key: max_alerts
+limit_value: 1
+description: 'Maximo 1 alerta juridica activa en plan gratuito JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 1 alerta. Actualiza a Starter para configurar hasta 5 alertas.'
+expected_conversion: 0.30
+weight: 301
+status: true

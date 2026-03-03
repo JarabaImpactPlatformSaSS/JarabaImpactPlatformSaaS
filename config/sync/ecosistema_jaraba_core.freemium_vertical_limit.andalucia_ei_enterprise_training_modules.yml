@@ -1,0 +1,11 @@
+id: andalucia_ei_enterprise_training_modules
+label: 'Andalucía +ei Enterprise: Módulos Formación'
+vertical: andalucia_ei
+plan: enterprise
+feature_key: training_modules
+limit_value: -1
+description: 'Acceso ilimitado a todos los modulos formativos en plan Enterprise.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 539
+status: true

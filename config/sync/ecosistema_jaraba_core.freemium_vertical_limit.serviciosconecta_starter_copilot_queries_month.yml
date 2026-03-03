@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_copilot_queries_month
+label: 'ServiciosConecta Starter: Consultas Copilot IA por mes'
+vertical: serviciosconecta
+plan: starter
+feature_key: copilot_queries_month
+limit_value: 25
+description: 'Maximo 25 consultas al Copilot IA por mes en plan Starter ServiciosConecta.'
+upgrade_message: 'Has alcanzado el limite de 25 consultas IA mensuales. Actualiza a Profesional para 100 consultas/mes.'
+expected_conversion: 0.30
+weight: 231
+status: true

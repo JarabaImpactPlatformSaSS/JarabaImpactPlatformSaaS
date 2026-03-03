@@ -1,0 +1,33 @@
+# Plan SaaS Empleabilidad Enterprise - Para empresas y reclutadores
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'Empleabilidad Enterprise'
+price_monthly: '199.00'
+price_yearly: '1990.00'
+features:
+  - diagnostico_competencias
+  - cv_builder_ia
+  - matching_inteligente
+  - simulador_entrevistas
+  - credenciales_digitales
+  - health_score
+  - copilot_ia_6_modos
+  - job_alerts_email
+  - rutas_formativas
+  - journey_personalizado
+  - portal_empleo_completo
+  - importacion_linkedin
+  - email_nurturing
+  - lms_gamificado
+  - notificaciones_push
+  - dashboard_empresas
+  - analytics
+  - api_access
+  - white_label
+  - premium_blocks
+  - soporte_dedicado
+limits: '{"diagnostics": -1, "cv_builder": -1, "job_applications_per_day": -1, "copilot_messages_per_day": -1, "job_alerts": -1, "offers_visible_per_day": -1}'
+stripe_price_id: ''
+weight: 30

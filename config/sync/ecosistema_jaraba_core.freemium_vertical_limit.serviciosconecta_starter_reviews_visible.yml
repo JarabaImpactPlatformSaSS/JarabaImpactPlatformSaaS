@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_reviews_visible
+label: 'ServiciosConecta Starter: Resenas visibles'
+vertical: serviciosconecta
+plan: starter
+feature_key: reviews_visible
+limit_value: 10
+description: 'Maximo 10 resenas visibles en perfil en plan Starter ServiciosConecta.'
+upgrade_message: 'Solo tus 10 resenas mas recientes son visibles. Actualiza a Profesional para resenas ilimitadas.'
+expected_conversion: 0.20
+weight: 241
+status: true

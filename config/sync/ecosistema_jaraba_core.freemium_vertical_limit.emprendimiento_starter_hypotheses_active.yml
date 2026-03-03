@@ -1,0 +1,11 @@
+id: emprendimiento_starter_hypotheses_active
+label: 'Emprendimiento Starter: Hipotesis Activas'
+vertical: emprendimiento
+plan: starter
+feature_key: hypotheses_active
+limit_value: 20
+description: 'Hasta 20 hipotesis activas en plan Starter Emprendimiento.'
+upgrade_message: 'Has alcanzado el limite de hipotesis activas en Starter. Actualiza a Profesional para hipotesis ilimitadas.'
+expected_conversion: 0
+weight: 414
+status: true

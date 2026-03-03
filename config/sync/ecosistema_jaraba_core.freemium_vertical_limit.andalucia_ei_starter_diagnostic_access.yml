@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_diagnostic_access
+label: 'Andalucía +ei Starter: Acceso Diagnóstico DIME'
+vertical: andalucia_ei
+plan: starter
+feature_key: diagnostic_access
+limit_value: 3
+description: 'Hasta 3 accesos al diagnostico DIME en plan Starter.'
+upgrade_message: 'Has alcanzado el limite de diagnosticos en Starter. Actualiza a Profesional para acceso ilimitado.'
+expected_conversion: 0
+weight: 544
+status: true

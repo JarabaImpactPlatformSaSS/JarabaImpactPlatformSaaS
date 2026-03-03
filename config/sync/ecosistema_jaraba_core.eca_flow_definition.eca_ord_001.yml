@@ -1,0 +1,11 @@
+id: eca_ord_001
+label: 'Orden Completada'
+description: 'Al completarse una orden de Commerce, se notifica al productor, se actualiza inventario, se genera factura, se calcula comision y se dispara el split de pago via Stripe Connect.'
+domain: ORD
+trigger_event: 'commerce_order.place.post_transition'
+module: jaraba_agroconecta_core
+hook_function: jaraba_agroconecta_core_commerce_order_place
+spec_reference: 49_Order
+implementation_status: implemented
+weight: 40
+status: true

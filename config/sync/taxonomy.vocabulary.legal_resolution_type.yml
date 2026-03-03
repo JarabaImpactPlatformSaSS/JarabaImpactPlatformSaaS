@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Tipo de Resolucion Legal'
+vid: legal_resolution_type
+description: 'Tipos de resoluciones juridicas: sentencias, autos, consultas vinculantes, directivas, reglamentos, etc.'
+weight: 0

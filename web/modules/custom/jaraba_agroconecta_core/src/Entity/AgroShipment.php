@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agroconecta_core\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -60,7 +62,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.agro_shipment.collection",
  * )
  */
-class AgroShipment extends ContentEntityBase implements AgroShipmentInterface {
+class AgroShipment extends ContentEntityBase implements AgroShipmentInterface, EntityOwnerInterface, EntityChangedInterface {
 
   use EntityChangedTrait;
   use EntityOwnerTrait;

@@ -1,0 +1,11 @@
+id: comercioconecta_profesional_flash_offers_active
+label: 'ComercioConecta Profesional: Ofertas flash activas'
+vertical: comercioconecta
+plan: profesional
+feature_key: flash_offers_active
+limit_value: -1
+description: 'Ofertas flash ilimitadas en plan Profesional ComercioConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 122
+status: true

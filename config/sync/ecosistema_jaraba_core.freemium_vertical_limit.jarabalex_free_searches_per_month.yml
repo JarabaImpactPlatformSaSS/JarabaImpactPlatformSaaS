@@ -1,0 +1,11 @@
+id: jarabalex_free_searches_per_month
+label: 'JarabaLex Free: Busquedas por mes'
+vertical: jarabalex
+plan: free
+feature_key: searches_per_month
+limit_value: 10
+description: 'Maximo 10 busquedas juridicas por mes en plan gratuito JarabaLex.'
+upgrade_message: 'Has alcanzado el limite de 10 busquedas mensuales. Actualiza a Starter para 50 busquedas/mes.'
+expected_conversion: 0.40
+weight: 300
+status: true

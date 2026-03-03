@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_commission_pct
+label: 'AgroConecta Enterprise: Comision'
+vertical: agroconecta
+plan: enterprise
+feature_key: commission_pct
+limit_value: 3
+description: 'Comision del 3% por transaccion en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 202
+status: true

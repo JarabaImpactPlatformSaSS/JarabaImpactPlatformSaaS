@@ -1,0 +1,11 @@
+id: eca_job_003
+label: 'Embedding Auto-Index'
+description: 'Al crear o actualizar una oferta de empleo, se genera automaticamente el embedding vectorial (via Qdrant) para habilitar busqueda semantica y matching por IA.'
+domain: JOB
+trigger_event: 'hook_entity_insert/update(job_posting)'
+module: jaraba_candidate
+hook_function: jaraba_candidate_job_posting_presave
+spec_reference: 35_JobBoard
+implementation_status: implemented
+weight: 62
+status: true

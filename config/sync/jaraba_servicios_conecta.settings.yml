@@ -1,0 +1,12 @@
+booking_buffer_minutes: 15
+max_advance_booking_days: 60
+require_prepayment: false
+auto_cancel_hours: 24
+reminder_hours:
+  - 24
+  - 1
+commission_rate: 10
+stripe_connect_mode: 'express'
+min_service_price: 0
+max_services_display: 50
+review_auto_approve: false

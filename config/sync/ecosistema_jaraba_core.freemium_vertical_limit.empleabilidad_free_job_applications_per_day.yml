@@ -1,0 +1,11 @@
+id: empleabilidad_free_job_applications_per_day
+label: 'Empleabilidad Free: Candidaturas diarias'
+vertical: empleabilidad
+plan: free
+feature_key: job_applications_per_day
+limit_value: 3
+description: '3 candidaturas diarias en plan gratuito Empleabilidad.'
+upgrade_message: 'Has alcanzado el límite de 3 candidaturas diarias. Actualiza a Starter para hasta 15 candidaturas al día.'
+expected_conversion: 0.35
+weight: 340
+status: true

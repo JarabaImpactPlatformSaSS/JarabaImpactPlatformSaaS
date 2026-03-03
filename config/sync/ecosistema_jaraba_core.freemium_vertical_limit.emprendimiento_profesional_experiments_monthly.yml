@@ -1,0 +1,11 @@
+id: emprendimiento_profesional_experiments_monthly
+label: 'Emprendimiento Profesional: Experimentos Mensuales'
+vertical: emprendimiento
+plan: profesional
+feature_key: experiments_monthly
+limit_value: -1
+description: 'Experimentos mensuales ilimitados en plan Profesional Emprendimiento.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 419
+status: true

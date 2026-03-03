@@ -1,0 +1,11 @@
+id: empleabilidad_starter_copilot_messages_per_day
+label: 'Empleabilidad Starter: Mensajes Copilot diarios'
+vertical: empleabilidad
+plan: starter
+feature_key: copilot_messages_per_day
+limit_value: 25
+description: '25 mensajes al copilot por dia en plan Starter Empleabilidad.'
+upgrade_message: 'Has alcanzado el limite de 25 mensajes diarios. Actualiza a Profesional para mensajes ilimitados.'
+expected_conversion: 0.28
+weight: 351
+status: true

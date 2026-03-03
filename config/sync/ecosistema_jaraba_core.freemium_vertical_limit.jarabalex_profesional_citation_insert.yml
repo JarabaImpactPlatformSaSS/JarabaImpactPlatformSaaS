@@ -1,0 +1,11 @@
+id: jarabalex_profesional_citation_insert
+label: 'JarabaLex Profesional: Inserciones de citas'
+vertical: jarabalex
+plan: profesional
+feature_key: citation_insert
+limit_value: -1
+description: 'Citas automatizadas ilimitadas en plan Profesional JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 316
+status: true

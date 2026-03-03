@@ -1,0 +1,80 @@
+# Fuentes de datos configuradas del Legal Intelligence Hub.
+# Cada fuente tiene su propio spider, frecuencia y estado.
+# Se pueden activar/desactivar individualmente desde la UI.
+
+sources:
+  # === FUENTES NACIONALES (ES) ===
+  cendoj:
+    name: 'CENDOJ'
+    description: 'Centro de Documentacion Judicial - Jurisprudencia del TS, AN, TSJ, AP'
+    base_url: 'https://www.poderjudicial.es/search/'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\CendojSpider'
+    frequency: 'daily'
+    is_active: true
+    priority: 1
+    scope: 'national'
+  boe:
+    name: 'BOE'
+    description: 'Boletin Oficial del Estado - Legislacion y disposiciones'
+    base_url: 'https://www.boe.es/datosabiertos/api/'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\BoeSpider'
+    frequency: 'daily'
+    is_active: true
+    priority: 2
+    scope: 'national'
+  dgt:
+    name: 'DGT'
+    description: 'Direccion General de Tributos - Consultas vinculantes'
+    base_url: 'https://petete.tributos.hacienda.gob.es/'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\DgtSpider'
+    frequency: 'weekly'
+    is_active: true
+    priority: 3
+    scope: 'national'
+  teac:
+    name: 'TEAC'
+    description: 'Tribunal Economico-Administrativo Central - Resoluciones'
+    base_url: 'https://serviciostelematicosext.hacienda.gob.es/TEAC/'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\TeacSpider'
+    frequency: 'weekly'
+    is_active: true
+    priority: 4
+    scope: 'national'
+
+  # === FUENTES EUROPEAS (UE/CEDH) - Fase 4 ===
+  eurlex:
+    name: 'EUR-Lex'
+    description: 'EUR-Lex Cellar - Legislacion y jurisprudencia UE via SPARQL'
+    base_url: 'https://publications.europa.eu/webapi/rdf/sparql'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\EurLexSpider'
+    frequency: 'weekly'
+    is_active: false
+    priority: 5
+    scope: 'eu'
+  curia:
+    name: 'CURIA/TJUE'
+    description: 'Tribunal de Justicia de la Union Europea - Sentencias'
+    base_url: 'https://curia.europa.eu/juris/'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\CuriaSpider'
+    frequency: 'weekly'
+    is_active: false
+    priority: 6
+    scope: 'eu'
+  hudoc:
+    name: 'HUDOC/TEDH'
+    description: 'Tribunal Europeo de Derechos Humanos - Sentencias'
+    base_url: 'https://hudoc.echr.coe.int/eng'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\HudocSpider'
+    frequency: 'weekly'
+    is_active: false
+    priority: 7
+    scope: 'eu'
+  edpb:
+    name: 'EDPB'
+    description: 'European Data Protection Board - Directrices RGPD'
+    base_url: 'https://edpb.europa.eu/'
+    spider_class: 'Drupal\jaraba_legal_intelligence\Service\Spider\EdpbSpider'
+    frequency: 'monthly'
+    is_active: false
+    priority: 8
+    scope: 'eu'

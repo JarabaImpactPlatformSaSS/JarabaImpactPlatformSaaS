@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_analytics_advanced
+label: 'AgroConecta Enterprise: Analytics Avanzados'
+vertical: agroconecta
+plan: enterprise
+feature_key: analytics_advanced
+limit_value: -1
+description: 'Analytics avanzados ilimitados en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 205
+status: true

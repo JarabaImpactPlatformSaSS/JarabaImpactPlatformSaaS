@@ -1,0 +1,11 @@
+id: serviciosconecta_free_presupuestador_ai
+label: 'ServiciosConecta Free: Presupuestador IA'
+vertical: serviciosconecta
+plan: free
+feature_key: presupuestador_ai
+limit_value: 0
+description: 'Presupuestador IA no disponible en plan gratuito ServiciosConecta.'
+upgrade_message: 'El presupuestador automatico con IA esta disponible desde el plan Starter. Genera presupuestos personalizados en segundos.'
+expected_conversion: 0.30
+weight: 250
+status: true

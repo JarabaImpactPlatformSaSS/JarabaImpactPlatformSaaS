@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_comercio_conecta
+name: 'Categorías Comercio'
+vid: comercio_category
+description: 'Categorías jerárquicas de productos para el marketplace ComercioConecta. Hasta 3 niveles de profundidad.'
+weight: 0

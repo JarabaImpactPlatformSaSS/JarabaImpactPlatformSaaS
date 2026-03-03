@@ -11,7 +11,7 @@
 #
 # DISENADO PARA: IONOS Shared Hosting
 # PLATAFORMA: Drupal 11.x + MariaDB + Qdrant + Stripe
-# MODULOS: 51 modulos custom
+# MODULOS: 93+ modulos custom (conteo dinamico via MODULE-ORPHAN-001)
 # =============================================================================
 
 set -euo pipefail
@@ -372,84 +372,59 @@ check_stripe_api() {
     fi
 }
 
-# ---------- 12. ALL MODULES ENABLED ----------
+# ---------- 12. ALL MODULES ENABLED (dynamic count) ----------
 check_modules_enabled() {
-    local expected_modules=(
-        "ecosistema_jaraba_core"
-        "jaraba_ab_testing"
-        "jaraba_addons"
-        "jaraba_ads"
-        "jaraba_agroconecta_core"
-        "jaraba_ai_agents"
-        "jaraba_analytics"
-        "jaraba_andalucia_ei"
-        "jaraba_billing"
-        "jaraba_business_tools"
-        "jaraba_candidate"
-        "jaraba_comercio_conecta"
-        "jaraba_commerce"
-        "jaraba_content_hub"
-        "jaraba_copilot_v2"
-        "jaraba_credentials"
-        "jaraba_crm"
-        "jaraba_customer_success"
-        "jaraba_diagnostic"
-        "jaraba_email"
-        "jaraba_events"
-        "jaraba_foc"
-        "jaraba_geo"
-        "jaraba_groups"
-        "jaraba_heatmap"
-        "jaraba_i18n"
-        "jaraba_integrations"
-        "jaraba_interactive"
-        "jaraba_job_board"
-        "jaraba_journey"
-        "jaraba_lms"
-        "jaraba_matching"
-        "jaraba_mentoring"
-        "jaraba_page_builder"
-        "jaraba_paths"
-        "jaraba_performance"
-        "jaraba_pixels"
-        "jaraba_rag"
-        "jaraba_referral"
-        "jaraba_resources"
-        "jaraba_self_discovery"
-        "jaraba_sepe_teleformacion"
-        "jaraba_servicios_conecta"
-        "jaraba_site_builder"
-        "jaraba_skills"
-        "jaraba_social"
-        "jaraba_social_commerce"
-        "jaraba_tenant_knowledge"
-        "jaraba_theming"
-        "jaraba_training"
-        "ai_provider_google_gemini"
-    )
+    # MODULE-ORPHAN-001: Conteo dinamico en vez de lista hardcoded.
+    # Deprecated modules to exclude from disk count.
+    local deprecated_modules="jaraba_blog"
 
-    local enabled_modules
-    enabled_modules=$(cd "$PROJECT_DIR" && $DRUSH pm:list --status=enabled --format=list 2>/dev/null) || {
-        log_fail "Modules enabled" "drush pm:list fallo"
+    local config_file="$PROJECT_DIR/config/sync/core.extension.yml"
+    local modules_dir="$PROJECT_DIR/web/modules/custom"
+
+    if [ ! -f "$config_file" ]; then
+        log_fail "Modules enabled" "config/sync/core.extension.yml no encontrado"
         return
-    }
+    fi
 
-    local missing=0
-    local missing_names=""
-    for mod in "${expected_modules[@]}"; do
-        if ! echo "$enabled_modules" | grep -q "^${mod}$"; then
-            missing=$((missing + 1))
-            missing_names="${missing_names} ${mod}"
+    # Count jaraba_* + ecosistema_* modules in core.extension.yml
+    local active_count
+    active_count=$(grep -cE '^\s+(jaraba_|ecosistema_)' "$config_file" 2>/dev/null || echo "0")
+
+    # Count jaraba_* + ecosistema_* modules on disk (excluding deprecated)
+    local disk_count=0
+    while IFS= read -r info_yml; do
+        local mod_name
+        mod_name=$(basename "$info_yml" .info.yml)
+        # Skip deprecated
+        if echo "$deprecated_modules" | grep -qw "$mod_name"; then
+            continue
         fi
-    done
+        # Only count jaraba_* and ecosistema_*
+        case "$mod_name" in
+            jaraba_*|ecosistema_*)
+                disk_count=$((disk_count + 1))
+                ;;
+        esac
+    done < <(find "$modules_dir" -name "*.info.yml" -type f 2>/dev/null)
 
-    local total=${#expected_modules[@]}
-    local enabled=$((total - missing))
-
-    if [ "$missing" -eq 0 ]; then
-        log_pass "Modules enabled" "${total}/${total} modulos habilitados"
+    if [ "$active_count" -eq "$disk_count" ]; then
+        log_pass "Modules enabled" "${active_count} custom modules (disco=$disk_count, activos=$active_count)"
+    elif [ "$active_count" -lt "$disk_count" ]; then
+        local orphans=$((disk_count - active_count))
+        log_fail "Modules enabled" "${orphans} modulos en disco sin activar (disco=$disk_count, activos=$active_count)"
     else
-        log_fail "Modules enabled" "${enabled}/${total} - Faltan:${missing_names}"
+        local ghosts=$((active_count - disk_count))
+        log_warn "Modules enabled" "${ghosts} modulos activos sin codigo (disco=$disk_count, activos=$active_count)"
+    fi
+
+    # Also run the full consistency check if script exists
+    local check_script="$PROJECT_DIR/scripts/maintenance/check-module-consistency.sh"
+    if [ -f "$check_script" ]; then
+        if ! bash "$check_script" > /dev/null 2>&1; then
+            log_fail "Module consistency" "Discrepancias detectadas. Ejecutar: bash scripts/maintenance/check-module-consistency.sh"
+        else
+            log_pass "Module consistency" "Sin discrepancias (MODULE-ORPHAN-001)"
+        fi
     fi
 }
 

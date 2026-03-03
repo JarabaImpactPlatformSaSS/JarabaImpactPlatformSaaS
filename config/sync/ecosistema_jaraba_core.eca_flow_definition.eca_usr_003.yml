@@ -1,0 +1,11 @@
+id: eca_usr_003
+label: 'Welcome Email'
+description: 'Envia email de bienvenida personalizado al usuario recien registrado con datos del tenant, vertical y proximos pasos recomendados.'
+domain: USR
+trigger_event: hook_user_insert
+module: jaraba_email
+hook_function: jaraba_email_user_insert
+spec_reference: 06_Core
+implementation_status: implemented
+weight: 2
+status: true

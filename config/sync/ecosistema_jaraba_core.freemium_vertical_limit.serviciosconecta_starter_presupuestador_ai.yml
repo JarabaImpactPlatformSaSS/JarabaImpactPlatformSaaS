@@ -1,0 +1,11 @@
+id: serviciosconecta_starter_presupuestador_ai
+label: 'ServiciosConecta Starter: Presupuestador IA'
+vertical: serviciosconecta
+plan: starter
+feature_key: presupuestador_ai
+limit_value: -1
+description: 'Presupuestador IA disponible en plan Starter ServiciosConecta.'
+upgrade_message: 'Ya tienes acceso al presupuestador IA. Actualiza a Profesional para funciones avanzadas.'
+expected_conversion: 0.15
+weight: 251
+status: true

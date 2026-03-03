@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Organo Emisor Legal'
+vid: legal_issuing_body
+description: 'Organos emisores de resoluciones: TS, TC, AN, TSJ, AP, DGT, TEAC, IGAE, ICAC, DGRN, AEPD, TJUE, TEDH, EDPB.'
+weight: 0

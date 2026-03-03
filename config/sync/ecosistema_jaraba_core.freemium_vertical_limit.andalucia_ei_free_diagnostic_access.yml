@@ -1,0 +1,11 @@
+id: andalucia_ei_free_diagnostic_access
+label: 'Andalucía +ei Free: Acceso Diagnóstico DIME'
+vertical: andalucia_ei
+plan: free
+feature_key: diagnostic_access
+limit_value: 1
+description: '1 acceso al diagnostico DIME en plan gratuito.'
+upgrade_message: 'Has usado tu acceso gratuito al diagnostico. Actualiza a Starter para 3 diagnosticos.'
+expected_conversion: 0.22
+weight: 540
+status: true

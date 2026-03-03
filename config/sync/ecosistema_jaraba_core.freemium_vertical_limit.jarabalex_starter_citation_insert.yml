@@ -1,0 +1,11 @@
+id: jarabalex_starter_citation_insert
+label: 'JarabaLex Starter: Inserciones de citas'
+vertical: jarabalex
+plan: starter
+feature_key: citation_insert
+limit_value: -1
+description: 'Citas automatizadas ilimitadas en plan Starter JarabaLex.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 313
+status: true

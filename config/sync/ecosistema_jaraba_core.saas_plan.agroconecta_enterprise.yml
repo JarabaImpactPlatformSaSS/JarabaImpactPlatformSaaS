@@ -1,0 +1,33 @@
+# Plan SaaS AgroConecta Enterprise - Para cooperativas y cadenas agroalimentarias
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'AgroConecta Enterprise'
+price_monthly: '149.00'
+price_yearly: '1490.00'
+features:
+  - catalog
+  - traceability_qr
+  - shipping_mrw_seur
+  - stripe_payments
+  - copilot_ia
+  - whatsapp_orders
+  - certifications
+  - reviews
+  - promotions
+  - cart_recovery
+  - analytics_dashboard
+  - demand_forecaster
+  - market_intelligence
+  - cross_sell
+  - notifications_multichannel
+  - partner_hub
+  - api_access
+  - white_label
+  - soporte_email
+  - soporte_chat
+  - soporte_dedicado
+limits: '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": -1, "photos_per_product": -1, "commission_pct": 3, "traceability_qr": -1, "analytics_advanced": -1, "demand_forecaster": -1, "partner_hub": -1}'
+stripe_price_id: ''
+weight: 12

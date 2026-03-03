@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_copilot_sessions_daily
+label: 'Andalucía +ei Starter: Sesiones Copiloto Diarias'
+vertical: andalucia_ei
+plan: starter
+feature_key: copilot_sessions_daily
+limit_value: 15
+description: 'Hasta 15 sesiones diarias con el tutor IA en plan Starter.'
+upgrade_message: 'Has alcanzado el limite diario del tutor IA en Starter. Actualiza a Profesional para uso ilimitado.'
+expected_conversion: 0
+weight: 504
+status: true

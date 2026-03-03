@@ -1,0 +1,113 @@
+# S4-02: Plantilla Demo Vertical Comparison
+# Tabla comparativa de funcionalidades por vertical.
+
+langcode: es
+status: true
+dependencies: {}
+id: demo_vertical_comparison
+label: 'Comparativa de Verticales Demo'
+description: 'Tabla comparativa interactiva que muestra las funcionalidades disponibles en cada vertical del ecosistema.'
+category: demo
+twig_template: '@jaraba_page_builder/blocks/demo/demo-vertical-comparison.html.twig'
+fields_schema:
+  type: object
+  title: 'Comparativa de Verticales'
+  properties:
+    title:
+      type: string
+      title: 'Título'
+      maxLength: 100
+      ui:widget: text
+      default: 'Encuentra tu vertical ideal'
+    subtitle:
+      type: string
+      title: 'Subtítulo'
+      maxLength: 200
+      ui:widget: textarea
+    verticals:
+      type: array
+      title: 'Verticales a comparar'
+      maxItems: 6
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: 'Nombre'
+            maxLength: 30
+          color:
+            type: string
+            title: 'Color'
+            ui:widget: color
+    features:
+      type: array
+      title: 'Funcionalidades'
+      maxItems: 15
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            title: 'Nombre de la funcionalidad'
+            maxLength: 50
+          availability:
+            type: array
+            title: 'Disponibilidad por vertical'
+            items:
+              type: boolean
+    cta_text:
+      type: string
+      title: 'Texto CTA'
+      maxLength: 50
+      default: 'Probar demo'
+    cta_url:
+      type: string
+      format: uri
+      title: 'URL CTA'
+    background:
+      type: string
+      title: 'Fondo'
+      enum:
+        - white
+        - light
+        - gradient
+      enumLabels:
+        white: 'Blanco'
+        light: 'Gris claro'
+        gradient: 'Gradiente'
+      default: white
+  required:
+    - title
+    - verticals
+    - features
+plans_required:
+  - starter
+  - professional
+  - enterprise
+is_premium: false
+preview_image: '/modules/custom/jaraba_page_builder/images/previews/demo-vertical-comparison.png'
+weight: 1
+preview_data:
+  title: 'Encuentra tu vertical ideal'
+  subtitle: 'Compara funcionalidades por sector para elegir la solución perfecta'
+  verticals:
+    - name: 'AgroConecta'
+      color: '#556B2F'
+    - name: 'ComercioConecta'
+      color: '#233D63'
+    - name: 'Empleabilidad'
+      color: '#00A9A5'
+  features:
+    - name: 'Marketplace'
+      availability: [true, true, true]
+    - name: 'IA Generativa'
+      availability: [true, true, true]
+    - name: 'Trazabilidad'
+      availability: [true, false, false]
+    - name: 'Bolsa de Empleo'
+      availability: [false, false, true]
+    - name: 'Page Builder'
+      availability: [true, true, true]
+  cta_text: 'Probar demo'
+  cta_url: '#demo'
+  background: white

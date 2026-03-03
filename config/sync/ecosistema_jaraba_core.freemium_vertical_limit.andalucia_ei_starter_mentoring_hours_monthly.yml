@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_mentoring_hours_monthly
+label: 'Andalucía +ei Starter: Horas Mentoría Mensual'
+vertical: andalucia_ei
+plan: starter
+feature_key: mentoring_hours_monthly
+limit_value: 5
+description: 'Hasta 5 horas mensuales de mentoria humana en plan Starter.'
+upgrade_message: 'Has alcanzado el limite de mentoria mensual en Starter. Actualiza a Profesional para horas ilimitadas.'
+expected_conversion: 0
+weight: 514
+status: true

@@ -1,0 +1,22 @@
+# Plan SaaS Empleabilidad Starter - Para profesionales individuales
+# Se importa al instalar el modulo
+
+langcode: es
+status: true
+name: 'Empleabilidad Starter'
+price_monthly: '29.00'
+price_yearly: '290.00'
+features:
+  - diagnostico_competencias
+  - cv_builder_ia
+  - matching_inteligente
+  - simulador_entrevistas
+  - credenciales_digitales
+  - health_score
+  - copilot_ia
+  - job_alerts_email
+  - rutas_formativas
+  - soporte_email
+limits: '{"diagnostics": 3, "cv_builder": 5, "job_applications_per_day": 15, "copilot_messages_per_day": 25, "job_alerts": 5, "offers_visible_per_day": 25}'
+stripe_price_id: ''
+weight: 10

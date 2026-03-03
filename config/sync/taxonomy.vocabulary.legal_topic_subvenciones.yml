@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Materia Subvenciones'
+vid: legal_topic_subvenciones
+description: 'Materias de subvenciones y ayudas publicas: Justificacion, Reintegro, Auditoria, Bases reguladoras, Convocatoria.'
+weight: 0

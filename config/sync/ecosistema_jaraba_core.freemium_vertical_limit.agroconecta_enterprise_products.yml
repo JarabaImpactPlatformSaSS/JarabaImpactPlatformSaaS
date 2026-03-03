@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_products
+label: 'AgroConecta Enterprise: Productos'
+vertical: agroconecta
+plan: enterprise
+feature_key: products
+limit_value: -1
+description: 'Productos ilimitados en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 200
+status: true

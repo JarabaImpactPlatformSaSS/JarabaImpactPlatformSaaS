@@ -1,0 +1,11 @@
+id: agroconecta_enterprise_partner_hub
+label: 'AgroConecta Enterprise: Hub B2B Partners'
+vertical: agroconecta
+plan: enterprise
+feature_key: partner_hub
+limit_value: -1
+description: 'Hub B2B Partners ilimitado en plan Enterprise AgroConecta.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 208
+status: true

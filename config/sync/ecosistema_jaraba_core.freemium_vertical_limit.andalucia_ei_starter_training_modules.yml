@@ -1,0 +1,11 @@
+id: andalucia_ei_starter_training_modules
+label: 'Andalucía +ei Starter: Módulos Formación'
+vertical: andalucia_ei
+plan: starter
+feature_key: training_modules
+limit_value: 10
+description: 'Acceso a hasta 10 modulos formativos en plan Starter.'
+upgrade_message: 'Has alcanzado el limite de modulos en Starter. Actualiza a Profesional para acceso ilimitado.'
+expected_conversion: 0
+weight: 534
+status: true

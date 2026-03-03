@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Materia Laboral'
+vid: legal_topic_laboral
+description: 'Materias de derecho laboral: Despido, Salarios, Seguridad Social, Prevencion, Negociacion colectiva, ERE/ERTE.'
+weight: 0

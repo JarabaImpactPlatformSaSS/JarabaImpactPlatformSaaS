@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - jaraba_legal_intelligence
+name: 'Jurisdiccion Legal'
+vid: legal_jurisdiction
+description: 'Jurisdicciones del sistema judicial espanol y europeo.'
+weight: 0

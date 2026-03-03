@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\jaraba_business_tools\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -59,7 +61,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.business_model_canvas.settings",
  * )
  */
-class BusinessModelCanvas extends ContentEntityBase implements BusinessModelCanvasInterface
+class BusinessModelCanvas extends ContentEntityBase implements BusinessModelCanvasInterface, EntityOwnerInterface, EntityChangedInterface
 {
 
     use EntityChangedTrait;

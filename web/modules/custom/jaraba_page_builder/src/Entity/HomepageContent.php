@@ -4,6 +4,7 @@ namespace Drupal\jaraba_page_builder\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -61,7 +62,7 @@ use Drupal\user\EntityOwnerTrait;
  *   field_ui_base_route = "entity.homepage_content.settings",
  * )
  */
-class HomepageContent extends ContentEntityBase implements EntityOwnerInterface
+class HomepageContent extends ContentEntityBase implements EntityOwnerInterface, EntityChangedInterface
 {
 
     use EntityChangedTrait;
