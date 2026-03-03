@@ -1,0 +1,11 @@
+uuid: 212b43f2-4d76-4e97-8cef-c55f69cd8919
+langcode: es
+status: true
+dependencies: {  }
+id: jarabaimpact_jaraba_saas_lndo_site
+domain_id: 2913749
+hostname: jarabaimpact.jaraba-saas.lndo.site
+name: 'Jaraba Impact (Dev)'
+scheme: https
+weight: 10
+is_default: false
