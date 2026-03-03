@@ -2131,3 +2131,32 @@ function ecosistema_jaraba_core_update_9023(): string {
 
   return 'S7-01: Tabla demo_analytics ya existía.';
 }
+
+/**
+ * Install SaaS Plan Tier, Feature Flag, Review Tenant Settings, SaaS Plan Features config entity types.
+ */
+function ecosistema_jaraba_core_update_9024(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $installed = [];
+
+  $types = [
+    'saas_plan_tier',
+    'feature_flag',
+    'review_tenant_settings',
+    'saas_plan_features',
+  ];
+
+  foreach ($types as $type_id) {
+    if (!$update_manager->getEntityType($type_id)) {
+      $entity_type_manager->clearCachedDefinitions();
+      $definition = $entity_type_manager->getDefinition($type_id, FALSE);
+      if ($definition) {
+        $update_manager->installEntityType($definition);
+        $installed[] = $type_id;
+      }
+    }
+  }
+
+  return 'Installed config entity types: ' . (empty($installed) ? 'none (already existed)' : implode(', ', $installed));
+}

@@ -181,3 +181,31 @@ function jaraba_mentoring_update_10003(): void {
     \Drupal::logger('jaraba_mentoring')->info('Updated session_review entity type definition.');
   }
 }
+
+/**
+ * Install ReviewableEntityTrait fields on session_review: flag_reason, flag_reporter_uid, flag_count, owner_response, owner_response_at, verified_purchase.
+ */
+function jaraba_mentoring_update_10004(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = $update_manager->getEntityType('session_review');
+  if (!$entity_type) {
+    return 'session_review entity type not installed yet.';
+  }
+
+  $fields = \Drupal\jaraba_mentoring\Entity\SessionReview::baseFieldDefinitions($entity_type);
+  $installed = [];
+  $target_fields = ['flag_reason', 'flag_reporter_uid', 'flag_count', 'owner_response', 'owner_response_at', 'verified_purchase'];
+
+  foreach ($target_fields as $field_name) {
+    if (!isset($fields[$field_name])) {
+      continue;
+    }
+    $existing = $update_manager->getFieldStorageDefinition($field_name, 'session_review');
+    if (!$existing) {
+      $update_manager->installFieldStorageDefinition($field_name, 'session_review', 'jaraba_mentoring', $fields[$field_name]);
+      $installed[] = $field_name;
+    }
+  }
+
+  return 'Installed fields on session_review: ' . (empty($installed) ? 'none needed' : implode(', ', $installed));
+}

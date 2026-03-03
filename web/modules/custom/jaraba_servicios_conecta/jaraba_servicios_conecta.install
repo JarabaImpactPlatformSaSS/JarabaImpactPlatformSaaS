@@ -291,3 +291,46 @@ function jaraba_servicios_conecta_update_10003(): void {
     \Drupal::logger('jaraba_servicios_conecta')->info('Installed conversation_uuid field on booking.');
   }
 }
+
+/**
+ * Uninstall orphaned fields from review_servicios + sync booking field definitions.
+ */
+function jaraba_servicios_conecta_update_10004(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $messages = [];
+
+  // 1. Uninstall orphaned fields from review_servicios.
+  $removed = [];
+  foreach (['sentiment', 'authenticity_score', 'not_helpful_count', 'wilson_score'] as $field_name) {
+    $field = $update_manager->getFieldStorageDefinition($field_name, 'review_servicios');
+    if ($field) {
+      $update_manager->uninstallFieldStorageDefinition($field);
+      $removed[] = $field_name;
+    }
+  }
+  $messages[] = 'review_servicios uninstalled: ' . (empty($removed) ? 'none' : implode(', ', $removed));
+
+  // 2. Ensure booking fields are installed with current definitions.
+  $entity_type = $update_manager->getEntityType('booking');
+  if ($entity_type) {
+    $fields = \Drupal\jaraba_servicios_conecta\Entity\Booking::baseFieldDefinitions($entity_type);
+    $synced = [];
+    foreach (['quote_id', 'contract_document_id', 'conversation_uuid'] as $field_name) {
+      if (!isset($fields[$field_name])) {
+        continue;
+      }
+      $existing = $update_manager->getFieldStorageDefinition($field_name, 'booking');
+      if (!$existing) {
+        $update_manager->installFieldStorageDefinition($field_name, 'booking', 'jaraba_servicios_conecta', $fields[$field_name]);
+        $synced[] = $field_name . ' (installed)';
+      }
+      else {
+        $update_manager->updateFieldStorageDefinition($fields[$field_name]);
+        $synced[] = $field_name . ' (updated)';
+      }
+    }
+    $messages[] = 'booking fields: ' . (empty($synced) ? 'none' : implode(', ', $synced));
+  }
+
+  return implode('. ', $messages);
+}

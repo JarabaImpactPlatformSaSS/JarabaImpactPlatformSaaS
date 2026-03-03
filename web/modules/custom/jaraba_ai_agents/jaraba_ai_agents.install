@@ -322,3 +322,33 @@ function jaraba_ai_agents_update_10008(&$sandbox): string {
     '@result' => implode('. ', $messages) ?: 'No entities needed installation.',
   ]);
 }
+
+/**
+ * Install AI Feedback, Agent Benchmark Result, Brand Voice Profile, Prompt Template, AI Risk Assessment entity types.
+ */
+function jaraba_ai_agents_update_10009(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $installed = [];
+
+  $types = [
+    'ai_feedback',
+    'agent_benchmark_result',
+    'brand_voice_profile',
+    'prompt_template',
+    'ai_risk_assessment',
+  ];
+
+  foreach ($types as $type_id) {
+    if (!$update_manager->getEntityType($type_id)) {
+      $entity_type_manager->clearCachedDefinitions();
+      $definition = $entity_type_manager->getDefinition($type_id, FALSE);
+      if ($definition) {
+        $update_manager->installEntityType($definition);
+        $installed[] = $type_id;
+      }
+    }
+  }
+
+  return 'Installed entity types: ' . (empty($installed) ? 'none (already existed)' : implode(', ', $installed));
+}

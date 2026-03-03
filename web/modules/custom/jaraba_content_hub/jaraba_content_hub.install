@@ -429,3 +429,21 @@ function _jaraba_content_hub_migrate_tenant_field(string $entity_type_id): strin
     '@count' => $restored,
   ]);
 }
+
+/**
+ * Uninstall orphaned fields from content_comment: sentiment, authenticity_score, not_helpful_count, wilson_score.
+ */
+function jaraba_content_hub_update_10011(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $removed = [];
+
+  foreach (['sentiment', 'authenticity_score', 'not_helpful_count', 'wilson_score'] as $field_name) {
+    $field = $update_manager->getFieldStorageDefinition($field_name, 'content_comment');
+    if ($field) {
+      $update_manager->uninstallFieldStorageDefinition($field);
+      $removed[] = $field_name;
+    }
+  }
+
+  return 'Uninstalled fields from content_comment: ' . (empty($removed) ? 'none needed' : implode(', ', $removed));
+}

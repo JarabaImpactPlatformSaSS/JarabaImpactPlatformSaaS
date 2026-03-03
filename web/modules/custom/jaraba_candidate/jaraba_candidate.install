@@ -142,3 +142,36 @@ function jaraba_candidate_update_10006(): void {
   $entity_type = \Drupal::entityTypeManager()->getDefinition('candidate_language');
   \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
 }
+
+/**
+ * Update start_date and end_date field definitions on candidate_education and candidate_experience.
+ */
+function jaraba_candidate_update_10007(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $updated = [];
+
+  $entity_classes = [
+    'candidate_education' => \Drupal\jaraba_candidate\Entity\CandidateEducation::class,
+    'candidate_experience' => \Drupal\jaraba_candidate\Entity\CandidateExperience::class,
+  ];
+
+  foreach ($entity_classes as $entity_type_id => $class) {
+    $entity_type = $update_manager->getEntityType($entity_type_id);
+    if (!$entity_type) {
+      continue;
+    }
+    $fields = $class::baseFieldDefinitions($entity_type);
+    foreach (['start_date', 'end_date'] as $field_name) {
+      if (!isset($fields[$field_name])) {
+        continue;
+      }
+      $existing = $update_manager->getFieldStorageDefinition($field_name, $entity_type_id);
+      if ($existing) {
+        $update_manager->updateFieldStorageDefinition($fields[$field_name]);
+        $updated[] = "$entity_type_id.$field_name";
+      }
+    }
+  }
+
+  return 'Updated field definitions: ' . (empty($updated) ? 'none needed' : implode(', ', $updated));
+}

@@ -413,3 +413,21 @@ function jaraba_comercio_conecta_update_10005(): void {
     \Drupal::logger('jaraba_comercio_conecta')->info('Migrated comercio_review tenant_id to group reference.');
   }
 }
+
+/**
+ * Uninstall orphaned fields from comercio_review: sentiment, authenticity_score, not_helpful_count, wilson_score.
+ */
+function jaraba_comercio_conecta_update_10006(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $removed = [];
+
+  foreach (['sentiment', 'authenticity_score', 'not_helpful_count', 'wilson_score'] as $field_name) {
+    $field = $update_manager->getFieldStorageDefinition($field_name, 'comercio_review');
+    if ($field) {
+      $update_manager->uninstallFieldStorageDefinition($field);
+      $removed[] = $field_name;
+    }
+  }
+
+  return 'Uninstalled fields from comercio_review: ' . (empty($removed) ? 'none needed' : implode(', ', $removed));
+}

@@ -196,3 +196,21 @@ function jaraba_agroconecta_core_update_10003(): void {
     \Drupal::logger('jaraba_agroconecta_core')->info('Migrated review_agro tenant_id to group reference.');
   }
 }
+
+/**
+ * Uninstall orphaned fields from review_agro: sentiment, authenticity_score, not_helpful_count, wilson_score.
+ */
+function jaraba_agroconecta_core_update_10004(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $removed = [];
+
+  foreach (['sentiment', 'authenticity_score', 'not_helpful_count', 'wilson_score'] as $field_name) {
+    $field = $update_manager->getFieldStorageDefinition($field_name, 'review_agro');
+    if ($field) {
+      $update_manager->uninstallFieldStorageDefinition($field);
+      $removed[] = $field_name;
+    }
+  }
+
+  return 'Uninstalled fields from review_agro: ' . (empty($removed) ? 'none needed' : implode(', ', $removed));
+}
