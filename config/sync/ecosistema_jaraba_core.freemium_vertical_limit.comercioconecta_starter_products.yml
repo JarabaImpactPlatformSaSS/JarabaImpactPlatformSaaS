@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_starter_products
+label: 'ComercioConecta Starter: Productos'
+vertical: comercioconecta
+plan: starter
+feature_key: products
+limit_value: 100
+description: '100 productos en Starter ComercioConecta.'
+upgrade_message: 'Productos ilimitados con Profesional.'
+expected_conversion: 0.25
+weight: 0

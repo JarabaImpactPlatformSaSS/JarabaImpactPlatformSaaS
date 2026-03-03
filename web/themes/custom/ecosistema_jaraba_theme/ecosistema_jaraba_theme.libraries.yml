@@ -244,12 +244,26 @@ lead-magnet:
     - core/drupal
     - core/once
 
-# Pricing Page — /planes (178_MetaSite_Remediation)
+# Pricing Page — /planes and /{vertical}/planes (178_MetaSite_Remediation)
 pricing-page:
-  version: 1.0.0
+  version: 1.1.0
+  js:
+    js/pricing-toggle.js: {}
   css:
     theme:
       css/components/pricing-page.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - ecosistema_jaraba_theme/global-styling
+    - ecosistema_jaraba_theme/scroll-animations
+
+# Pricing Hub — /planes hub comparativo de verticales
+pricing-hub:
+  version: 1.0.0
+  css:
+    theme:
+      css/components/pricing-hub.css: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_theme/scroll-animations

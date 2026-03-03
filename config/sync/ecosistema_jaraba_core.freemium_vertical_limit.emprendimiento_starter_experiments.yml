@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_starter_experiments
+label: 'Emprendimiento Starter: Experimentos'
+vertical: emprendimiento
+plan: starter
+feature_key: experiments
+limit_value: 10
+description: '10 experimentos al mes en Starter.'
+upgrade_message: 'Experimentos ilimitados con Profesional.'
+expected_conversion: 0.2
+weight: 0

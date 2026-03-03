@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_starter_orders
+label: 'ComercioConecta Starter: Pedidos'
+vertical: comercioconecta
+plan: starter
+feature_key: orders
+limit_value: 100
+description: '100 pedidos al mes en Starter.'
+upgrade_message: 'Pedidos ilimitados con Profesional.'
+expected_conversion: 0.2
+weight: 0

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_profesional_copilot_uses
+label: 'ComercioConecta Profesional: Usos Copilot'
+vertical: comercioconecta
+plan: profesional
+feature_key: copilot_uses
+limit_value: -1
+description: 'Copilot ilimitado en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

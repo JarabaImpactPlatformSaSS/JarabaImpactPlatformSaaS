@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_starter_courses
+label: 'Formacion Starter: Cursos'
+vertical: formacion
+plan: starter
+feature_key: courses
+limit_value: 3
+description: '3 cursos en Starter Formacion.'
+upgrade_message: 'Cursos ilimitados con Profesional.'
+expected_conversion: 0.25
+weight: 0

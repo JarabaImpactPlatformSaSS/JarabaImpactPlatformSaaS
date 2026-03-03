@@ -677,7 +677,7 @@ class VerticalLandingController extends ControllerBase
         'currency' => 'EUR',
         'period' => $this->t('mes'),
         'cta_text' => $this->t('Ver todos los planes'),
-        'cta_url' => '/planes',
+        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.vertical', ['vertical_key' => 'jarabalex'])->toString(),
         'features_preview' => [
           $this->t('5 expedientes gratis'),
           $this->t('10 búsquedas/mes en CENDOJ y BOE'),
@@ -917,7 +917,7 @@ class VerticalLandingController extends ControllerBase
         ],
         'cta_secondary' => [
           'text' => $this->t('Ver planes'),
-          'url' => '/planes',
+          'url' => Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString(),
         ],
       ],
       'pain_points' => [
@@ -970,6 +970,110 @@ class VerticalLandingController extends ControllerBase
         'cta' => [
           'text' => $this->t('Solicitar demo'),
           'url' => '/contacto',
+        ],
+      ],
+    ]);
+  }
+
+  /**
+   * Landing Formación — Academia online con IA y gamificación.
+   *
+   * Ruta: /formacion
+   */
+  public function formacion(): array
+  {
+    return $this->buildLanding([
+      'key' => 'formacion',
+      'color' => 'innovation',
+      'hero' => [
+        'headline' => $this->t('Crea tu academia online con IA'),
+        'subheadline' => $this->t('Constructor de cursos intuitivo, rutas de aprendizaje adaptativas, gamificación, certificaciones verificables, seguimiento xAPI y copilot pedagógico. Todo en una plataforma SaaS.'),
+        'icon' => ['category' => 'verticals', 'name' => 'formacion'],
+        'cta' => [
+          'text' => $this->t('Crea tu primer curso gratis'),
+          'url' => Url::fromRoute('user.register')->toString() . '?vertical=formacion',
+        ],
+        'cta_secondary' => [
+          'text' => $this->t('Ya tengo cuenta'),
+          'url' => Url::fromRoute('user.login')->toString(),
+        ],
+      ],
+      'pain_points' => [
+        ['icon' => ['category' => 'ui', 'name' => 'alert-circle'], 'text' => $this->t('Las plataformas de formación son caras y difíciles de personalizar')],
+        ['icon' => ['category' => 'ui', 'name' => 'settings'], 'text' => $this->t('Crear cursos atractivos requiere un equipo técnico')],
+        ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'text' => $this->t('No tienes datos reales sobre el aprendizaje de tus alumnos')],
+        ['icon' => ['category' => 'business', 'name' => 'target'], 'text' => $this->t('Tus certificaciones no tienen validez verificable')],
+      ],
+      'steps' => [
+        ['title' => $this->t('Crea cursos con IA'), 'description' => $this->t('El constructor drag & drop genera estructura, lecciones y actividades. El copilot pedagógico sugiere contenido, evalúa dificultad y genera quizzes automáticamente.')],
+        ['title' => $this->t('Personaliza el aprendizaje'), 'description' => $this->t('Rutas adaptativas que ajustan contenido al nivel de cada alumno. Gamificación con badges, XP y leaderboards. Seguimiento xAPI para datos reales.')],
+        ['title' => $this->t('Certifica y monetiza'), 'description' => $this->t('Certificados automáticos verificables con OpenBadge. Vende cursos individuales o suscripciones. Analytics de engagement y completitud.')],
+      ],
+      'features' => [
+        ['icon' => ['category' => 'business', 'name' => 'canvas'], 'title' => $this->t('Constructor de Cursos Drag & Drop'), 'description' => $this->t('Crea cursos con módulos, lecciones, vídeos, documentos y actividades. Interfaz visual intuitiva sin necesidad de conocimientos técnicos.')],
+        ['icon' => ['category' => 'ai', 'name' => 'brain'], 'title' => $this->t('Copilot Pedagógico con IA'), 'description' => $this->t('Genera estructura de cursos, sugiere contenido, crea quizzes y evalúa la dificultad de tus materiales. 3 modos: diseñador, tutor y evaluador.')],
+        ['icon' => ['category' => 'business', 'name' => 'path'], 'title' => $this->t('Rutas de Aprendizaje Adaptativas'), 'description' => $this->t('El motor adaptativo ajusta contenido, ritmo y dificultad al nivel de cada alumno. Prerequisitos inteligentes y recomendaciones personalizadas.')],
+        ['icon' => ['category' => 'ui', 'name' => 'star'], 'title' => $this->t('Gamificación Completa'), 'description' => $this->t('Badges por logros, puntos XP, niveles de progresión, leaderboards por curso y globales. Los alumnos compiten y se motivan mientras aprenden.')],
+        ['icon' => ['category' => 'business', 'name' => 'certificate'], 'title' => $this->t('Certificaciones OpenBadge'), 'description' => $this->t('Certificados verificables con un clic. Cada curso completado genera una credencial digital con validez real. Integrable en LinkedIn.')],
+        ['icon' => ['category' => 'analytics', 'name' => 'dashboard'], 'title' => $this->t('Seguimiento xAPI'), 'description' => $this->t('Trazabilidad completa del aprendizaje: tiempo en cada lección, intentos en quizzes, interacciones con contenido. Datos exportables y conformes con xAPI/SCORM.')],
+        ['icon' => ['category' => 'ui', 'name' => 'users'], 'title' => $this->t('Portal del Alumno'), 'description' => $this->t('Dashboard personalizado para cada alumno: progreso, certificados, próximos cursos, historial. Perfil público con credenciales verificables.')],
+        ['icon' => ['category' => 'business', 'name' => 'money'], 'title' => $this->t('Monetización Integrada'), 'description' => $this->t('Vende cursos individuales, paquetes o suscripciones. Pagos con Stripe, cupones de descuento, períodos de prueba y facturación automática.')],
+        ['icon' => ['category' => 'ui', 'name' => 'share-2'], 'title' => $this->t('Marca Blanca Completa'), 'description' => $this->t('Tu academia con tu logo, colores, dominio y estilo. Los alumnos nunca ven la plataforma subyacente. Emails y certificados con tu marca.')],
+        ['icon' => ['category' => 'analytics', 'name' => 'chart'], 'title' => $this->t('Analytics de Formación'), 'description' => $this->t('Tasas de completitud, engagement por módulo, tiempo promedio, NPS de cursos, top alumnos y proyecciones de matrícula. Datos para tomar decisiones.')],
+        ['icon' => ['category' => 'ui', 'name' => 'mail'], 'title' => $this->t('Email Nurturing Educativo'), 'description' => $this->t('Secuencias automatizadas: bienvenida, recordatorios de curso, felicitación por logros, recomendaciones de siguiente curso y reactivación de inactivos.')],
+        ['icon' => ['category' => 'ui', 'name' => 'link'], 'title' => $this->t('Integraciones LMS'), 'description' => $this->t('xAPI, SCORM, LTI para integración con otras plataformas. Webhooks para conectar con tu CRM, email marketing o sistemas internos.')],
+      ],
+      'social_proof' => [
+        'testimonials' => [
+          ['quote' => $this->t('Monté mi academia en una tarde. El copilot me generó la estructura del curso y los quizzes. Los alumnos adoran las badges y el leaderboard.'), 'author' => 'María', 'role' => $this->t('formadora en Madrid')],
+          ['quote' => $this->t('Las rutas adaptativas cambiaron todo. Cada alumno avanza a su ritmo y los certificados OpenBadge les dan algo tangible que compartir en LinkedIn.'), 'author' => 'David', 'role' => $this->t('empresa de formación en Barcelona')],
+          ['quote' => $this->t('El seguimiento xAPI me da datos que antes no tenía. Sé exactamente dónde se atascan los alumnos y puedo mejorar el contenido con datos reales.'), 'author' => 'Lucía', 'role' => $this->t('consultora educativa en Sevilla')],
+        ],
+        'metrics' => [
+          ['value' => '92%', 'label' => $this->t('tasa de completitud')],
+          ['value' => '3.2x', 'label' => $this->t('engagement vs LMS tradicional')],
+          ['value' => '15min', 'label' => $this->t('crear un curso básico')],
+          ['value' => '12', 'label' => $this->t('funcionalidades LMS integradas')],
+        ],
+      ],
+      'lead_magnet' => [
+        'title' => $this->t('Crea tu primer curso gratis'),
+        'description' => $this->t('Prueba el constructor de cursos con IA. Sube contenido, genera quizzes automáticos y publica tu primer curso en minutos.'),
+        'url' => Url::fromRoute('user.register')->toString() . '?vertical=formacion',
+        'cta_text' => $this->t('Empezar ahora'),
+        'icon' => ['category' => 'business', 'name' => 'canvas'],
+      ],
+      'pricing' => [
+        'headline' => $this->t('Planes para tu academia'),
+        'from_price' => '0',
+        'currency' => 'EUR',
+        'period' => $this->t('mes'),
+        'cta_text' => $this->t('Ver todos los planes'),
+        'cta_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.vertical', ['vertical_key' => 'formacion'])->toString(),
+        'features_preview' => [
+          $this->t('1 curso con constructor drag & drop'),
+          $this->t('Copilot pedagógico con IA'),
+          $this->t('Gamificación con badges y XP'),
+          $this->t('Certificados OpenBadge verificables'),
+          $this->t('Portal del alumno personalizado'),
+          $this->t('Analytics básicas de formación'),
+        ],
+      ],
+      'faq' => [
+        ['question' => $this->t('¿Puedo crear cursos sin conocimientos técnicos?'), 'answer' => $this->t('Sí. El constructor drag & drop es visual e intuitivo. El copilot pedagógico con IA te ayuda a generar la estructura, crear quizzes y evaluar la dificultad de tus materiales automáticamente.')],
+        ['question' => $this->t('¿Cómo funcionan las rutas adaptativas?'), 'answer' => $this->t('El motor de aprendizaje adaptativo ajusta el contenido, ritmo y dificultad según el rendimiento de cada alumno. Si un alumno domina un tema, avanza. Si tiene dificultades, refuerza con contenido adicional.')],
+        ['question' => $this->t('¿Los certificados tienen validez real?'), 'answer' => $this->t('Sí. Usamos el estándar OpenBadge, reconocido internacionalmente. Los certificados son verificables con un clic y se pueden compartir en LinkedIn, portafolios y currículums.')],
+        ['question' => $this->t('¿Puedo monetizar mis cursos?'), 'answer' => $this->t('Sí, desde el plan Profesional. Vende cursos individuales, paquetes o suscripciones. Pagos seguros con Stripe, cupones de descuento, períodos de prueba y facturación automática recurrente.')],
+        ['question' => $this->t('¿Qué datos de seguimiento obtengo?'), 'answer' => $this->t('Seguimiento completo xAPI: tiempo en cada lección, intentos en quizzes, interacciones con contenido multimedia, tasas de completitud por módulo, engagement por hora del día y progresión por alumno.')],
+        ['question' => $this->t('¿Puedo usar mi propia marca?'), 'answer' => $this->t('Sí. Marca blanca completa desde el plan Profesional: tu logo, colores, dominio personalizado (academia.tudominio.com), emails y certificados con tu identidad visual.')],
+        ['question' => $this->t('¿Se integra con otras plataformas?'), 'answer' => $this->t('Sí. Compatible con xAPI, SCORM y LTI para integración con otros LMS. Webhooks para conectar con tu CRM, email marketing o sistemas de gestión internos.')],
+        ['question' => $this->t('¿Qué incluye el plan gratuito?'), 'answer' => $this->t('1 curso con hasta 10 alumnos, constructor drag & drop, copilot pedagógico (limitado), gamificación con badges, 5 certificados automáticos al mes, portal del alumno y analytics básicas. Sin tarjeta de crédito.')],
+      ],
+      'final_cta' => [
+        'headline' => $this->t('Tu academia online, lista en minutos'),
+        'cta' => [
+          'text' => $this->t('Crear mi academia gratis'),
+          'url' => Url::fromRoute('user.register')->toString() . '?vertical=formacion',
         ],
       ],
     ]);

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_profesional_job_applications
+label: 'Empleabilidad Profesional: Aplicaciones empleo'
+vertical: empleabilidad
+plan: profesional
+feature_key: job_applications
+limit_value: -1
+description: 'Aplicaciones ilimitadas en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

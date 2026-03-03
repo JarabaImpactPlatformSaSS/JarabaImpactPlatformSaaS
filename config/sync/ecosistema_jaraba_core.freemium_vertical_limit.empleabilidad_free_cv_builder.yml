@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_free_cv_builder
+label: 'Empleabilidad Free: CV Builder'
+vertical: empleabilidad
+plan: free
+feature_key: cv_builder
+limit_value: 1
+description: '1 CV en plan gratuito Empleabilidad.'
+upgrade_message: 'Crea CVs ilimitados con IA. Disponible desde Starter.'
+expected_conversion: 0.35
+weight: 0

@@ -1,37 +1,45 @@
 {#
 /**
  * @file pricing-page.html.twig
- * Página /planes — Pricing dinámico desde SaasPlanTier/SaasPlanFeatures.
+ * Pricing page — Dynamic data from SaasPlanTier/SaasPlanFeatures cascade.
+ *
+ * Used for both /planes (hub fallback) and /{vertical}/planes (vertical-specific).
  *
  * VARIABLES:
- * - tiers: Array de tiers con:
+ * - tiers: Array of tiers with:
  *   - tier_key: string (e.g. 'starter', 'professional', 'enterprise')
- *   - label: string (nombre legible del plan)
+ *   - label: string (display name)
  *   - description: string
- *   - features: string[] (lista de features habilitadas)
- *   - limits: object (key → int)
- *   - is_recommended: bool (TRUE para 'professional')
+ *   - features: string[] (list of enabled features)
+ *   - limits: object (key -> int, -1 = unlimited)
+ *   - is_recommended: bool (TRUE for 'professional')
+ *   - price_monthly: float (EUR, 0 for free)
+ *   - price_yearly: float (EUR annual total)
  * - page_title: string
  * - page_subtitle: string
  * - guarantee_text: string
- * - faq_items: array de {question, answer}
+ * - faq_items: array of {question, answer}
+ * - vertical_key: string (machine name, empty for hub/default)
+ * - vertical_label: string (display name, empty for hub/default)
  *
- * DIRECTRICES:
- * - i18n: {% trans %} en todos los textos estáticos
+ * DIRECTIVES:
+ * - i18n: {% trans %} on all static text
  * - ICON-CONVENTION-001: jaraba_icon('category', 'name', {variant: 'duotone'})
- * - ICON-COLOR-001: Colores de paleta Jaraba (naranja-impulso, verde-innovacion)
- * - CSS: var(--ej-*) con fallbacks inline
- * - BRAND-FONT-001: Outfit como font-family principal
- * - TWIG-XSS-001: Todos los datos con autoescaping, NUNCA |raw
+ * - ICON-COLOR-001: Jaraba palette colors only
+ * - CSS-VAR-ALL-COLORS-001: var(--ej-*) with inline fallbacks
+ * - BRAND-FONT-001: Outfit as primary font-family
+ * - TWIG-XSS-001: All data with autoescaping, NEVER |raw
+ * - ROUTE-LANGPREFIX-001: URLs via path() / url(), never hardcoded
  *
- * DATOS DINÁMICOS:
- * Los tiers y features provienen de SaasPlanTier y SaasPlanFeatures
- * ConfigEntities vía MetaSitePricingService → PlanResolverService cascade:
+ * DYNAMIC DATA:
+ * Tiers and features from SaasPlanTier and SaasPlanFeatures ConfigEntities
+ * via MetaSitePricingService -> PlanResolverService cascade:
  *   1. Specific: {vertical}_{tier}
  *   2. Default: _default_{tier}
- *   3. Fallback: datos hardcoded del servicio
+ *   3. Fallback: hardcoded service data
  *
  * @see \Drupal\ecosistema_jaraba_core\Controller\PricingController::pricingPage()
+ * @see \Drupal\ecosistema_jaraba_core\Controller\PricingController::verticalPricingPage()
  * @see \Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService
  */
 #}
@@ -46,6 +54,23 @@
     <p class="pricing-hero__subtitle">
       {{ page_subtitle }}
     </p>
+
+    {# === BILLING TOGGLE (Monthly / Annual) === #}
+    <div class="pricing-toggle" role="radiogroup" aria-label="{% trans %}Frecuencia de facturación{% endtrans %}">
+      <button type="button"
+              class="pricing-toggle__option pricing-toggle__option--active"
+              data-billing="monthly"
+              aria-pressed="true">
+        {% trans %}Mensual{% endtrans %}
+      </button>
+      <button type="button"
+              class="pricing-toggle__option"
+              data-billing="yearly"
+              aria-pressed="false">
+        {% trans %}Anual{% endtrans %}
+        <span class="pricing-toggle__badge">-17%</span>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -53,11 +78,19 @@
 <section class="pricing-grid reveal-element reveal-fade-up" aria-label="{% trans %}Comparar planes{% endtrans %}">
   <div class="pricing-grid__container">
     {% for tier in tiers %}
+      {# Calculate annual monthly equivalent for display #}
+      {% set yearly_monthly = tier.price_yearly > 0 ? (tier.price_yearly / 12)|round(0) : 0 %}
+      {% set savings_pct = tier.price_monthly > 0 ? (((tier.price_monthly * 12 - tier.price_yearly) / (tier.price_monthly * 12)) * 100)|round(0) : 0 %}
+
       <article class="pricing-card{% if tier.is_recommended %} pricing-card--recommended{% endif %}"
                id="plan-{{ tier.tier_key }}"
-               aria-labelledby="plan-title-{{ tier.tier_key }}">
+               aria-labelledby="plan-title-{{ tier.tier_key }}"
+               data-tier="{{ tier.tier_key }}"
+               data-price-monthly="{{ tier.price_monthly }}"
+               data-price-yearly="{{ tier.price_yearly }}"
+               data-price-yearly-monthly="{{ yearly_monthly }}">
 
-        {# Badge "Más popular" para plan recomendado #}
+        {# Badge "Most popular" for recommended plan #}
         {% if tier.is_recommended %}
           <div class="pricing-card__badge" aria-label="{% trans %}Plan más popular{% endtrans %}">
             {% trans %}Más popular{% endtrans %}
@@ -72,19 +105,52 @@
           <p class="pricing-card__description">{{ tier.description }}</p>
         </div>
 
-        {# Price display #}
+        {# Price display — dynamic from cascade data #}
         <div class="pricing-card__price">
-          {% if tier.tier_key == 'starter' %}
+          {% if tier.tier_key == 'starter' or tier.price_monthly <= 0 %}
             <span class="pricing-card__amount">{% trans %}Gratis{% endtrans %}</span>
             <span class="pricing-card__period">{% trans %}para siempre{% endtrans %}</span>
-          {% elseif tier.tier_key == 'enterprise' %}
-            <span class="pricing-card__amount">{% trans %}A medida{% endtrans %}</span>
-            <span class="pricing-card__period">{% trans %}contactar{% endtrans %}</span>
           {% else %}
-            <span class="pricing-card__amount">{% trans %}Desde 29€{% endtrans %}</span>
+            {# Monthly price (shown by default) #}
+            <span class="pricing-card__amount pricing-card__amount--monthly">
+              {{ tier.price_monthly|number_format(0, ',', '.') }}&euro;
+            </span>
+            {# Annual monthly equivalent (hidden by default) #}
+            <span class="pricing-card__amount pricing-card__amount--yearly" hidden>
+              {{ yearly_monthly|number_format(0, ',', '.') }}&euro;
+            </span>
             <span class="pricing-card__period">/{% trans %}mes{% endtrans %}</span>
+            {# Annual billing note (hidden by default) #}
+            <span class="pricing-card__billing-note pricing-card__billing-note--yearly" hidden>
+              {% trans %}Facturado anualmente{% endtrans %}
+              {% if savings_pct > 0 %}
+                <strong>({% trans %}-{{ savings_pct }}%{% endtrans %})</strong>
+              {% endif %}
+            </span>
           {% endif %}
         </div>
+
+        {# Limits display — key limits from cascade #}
+        {% if tier.limits is not empty %}
+          <div class="pricing-card__limits">
+            {% for limit_key, limit_value in tier.limits %}
+              {% if limit_value != 0 %}
+                <div class="pricing-card__limit">
+                  {% if limit_value == -1 %}
+                    <span class="pricing-card__limit-value pricing-card__limit-value--unlimited">
+                      {% trans %}Ilimitado{% endtrans %}
+                    </span>
+                  {% else %}
+                    <span class="pricing-card__limit-value">{{ limit_value }}</span>
+                  {% endif %}
+                  <span class="pricing-card__limit-label">
+                    {{ limit_key|replace({'_': ' '})|capitalize|t }}
+                  </span>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
 
         {# Features list #}
         {% if tier.features is not empty %}
@@ -100,27 +166,38 @@
           </ul>
         {% endif %}
 
-        {# CTA button #}
+        {# CTA button — vertical-aware URLs via Drupal path() #}
         <div class="pricing-card__cta">
           {% if tier.tier_key == 'starter' %}
-            <a href="/user/register?plan=starter"
+            {% if vertical_key %}
+              <a href="{{ path('user.register') }}?plan=starter&vertical={{ vertical_key }}"
+            {% else %}
+              <a href="{{ path('user.register') }}?plan=starter"
+            {% endif %}
                class="btn btn--primary btn--lg pricing-card__btn"
                data-track-cta="pricing_starter"
-               data-track-position="pricing_page">
+               data-track-position="pricing_page"
+               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
               {% trans %}Empezar gratis{% endtrans %}
             </a>
           {% elseif tier.tier_key == 'enterprise' %}
-            <a href="/contacto?asunto=plan-empresa"
+            <a href="{{ path('ecosistema_jaraba_core.contact') }}?asunto=plan-empresa{% if vertical_key %}&vertical={{ vertical_key }}{% endif %}"
                class="btn btn--outline btn--lg pricing-card__btn"
                data-track-cta="pricing_enterprise"
-               data-track-position="pricing_page">
+               data-track-position="pricing_page"
+               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
               {% trans %}Contactar{% endtrans %}
             </a>
           {% else %}
-            <a href="/user/register?plan={{ tier.tier_key }}"
+            {% if vertical_key %}
+              <a href="{{ path('user.register') }}?plan={{ tier.tier_key }}&vertical={{ vertical_key }}"
+            {% else %}
+              <a href="{{ path('user.register') }}?plan={{ tier.tier_key }}"
+            {% endif %}
                class="btn btn--primary btn--lg pricing-card__btn"
                data-track-cta="pricing_{{ tier.tier_key }}"
-               data-track-position="pricing_page">
+               data-track-position="pricing_page"
+               {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
               {% trans %}Empezar ahora{% endtrans %}
             </a>
           {% endif %}
@@ -177,46 +254,37 @@
     <p class="pricing-final-cta__subtitle">
       {% trans %}Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.{% endtrans %}
     </p>
-    <a href="/user/register"
+    <a href="{{ path('user.register') }}{% if vertical_key %}?vertical={{ vertical_key }}{% endif %}"
        class="btn btn--primary btn--xl pricing-final-cta__btn"
        data-track-cta="pricing_final_cta"
-       data-track-position="pricing_page_bottom">
+       data-track-position="pricing_page_bottom"
+       {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
       {% trans %}Crear cuenta gratuita{% endtrans %}
     </a>
   </div>
 </section>
 
-{# === SCHEMA.ORG STRUCTURED DATA (Enhanced Sprint 4) === #}
-{# SoftwareApplication + Offer per tier + availability + aggregateRating #}
+{# === SCHEMA.ORG STRUCTURED DATA === #}
+{# SoftwareApplication + dynamic Offer per tier + availability #}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Jaraba Impact Platform",
+  "name": "Jaraba Impact Platform{% if vertical_label %} — {{ vertical_label }}{% endif %}",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
-  "url": "{{ url('<front>', {}, {absolute: true}) }}planes",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "ratingCount": "47",
-    "bestRating": "5"
-  },
+  {% if vertical_key %}
+  "url": "{{ url('ecosistema_jaraba_core.pricing.vertical', {vertical_key: vertical_key}, {absolute: true}) }}",
+  {% else %}
+  "url": "{{ url('ecosistema_jaraba_core.pricing.page', {}, {absolute: true}) }}",
+  {% endif %}
   "offers": [
     {% for tier in tiers %}
     {
       "@type": "Offer",
       "name": {{ tier.label|json_encode(constant('JSON_UNESCAPED_UNICODE')) }},
       "priceCurrency": "EUR",
-      {% if tier.tier_key == 'starter' %}
-      "price": "0",
-      {% elseif tier.tier_key == 'professional' %}
-      "price": "29",
-      {% elseif tier.tier_key == 'enterprise' %}
-      "price": "99",
-      {% else %}
-      "price": "0",
-      {% endif %}
+      "price": "{{ tier.price_monthly|default(0) }}",
       "priceValidUntil": "2027-12-31",
       "availability": "https://schema.org/InStock",
       "url": "{{ url('user.register', {}, {absolute: true}) }}",
@@ -227,4 +295,3 @@
   ]
 }
 </script>
-

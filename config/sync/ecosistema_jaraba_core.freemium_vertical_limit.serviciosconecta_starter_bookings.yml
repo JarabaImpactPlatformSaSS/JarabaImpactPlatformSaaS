@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_starter_bookings
+label: 'ServiciosConecta Starter: Reservas'
+vertical: serviciosconecta
+plan: starter
+feature_key: bookings
+limit_value: 100
+description: '100 reservas al mes en Starter.'
+upgrade_message: 'Reservas ilimitadas con Profesional.'
+expected_conversion: 0.2
+weight: 0

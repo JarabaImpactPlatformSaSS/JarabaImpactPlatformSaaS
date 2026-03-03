@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_profesional_vault_mb
+label: 'JarabaLex Profesional: Boveda documental (MB)'
+vertical: jarabalex
+plan: profesional
+feature_key: vault_mb
+limit_value: -1
+description: 'Almacenamiento ilimitado en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

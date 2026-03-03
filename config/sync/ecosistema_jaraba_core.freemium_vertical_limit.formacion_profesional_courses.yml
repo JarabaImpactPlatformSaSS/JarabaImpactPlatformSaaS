@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_profesional_courses
+label: 'Formacion Profesional: Cursos'
+vertical: formacion
+plan: profesional
+feature_key: courses
+limit_value: -1
+description: 'Cursos ilimitados en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_free_experiments
+label: 'Emprendimiento Free: Experimentos'
+vertical: emprendimiento
+plan: free
+feature_key: experiments
+limit_value: 2
+description: '2 experimentos al mes en plan gratuito.'
+upgrade_message: 'Experimenta sin limites. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

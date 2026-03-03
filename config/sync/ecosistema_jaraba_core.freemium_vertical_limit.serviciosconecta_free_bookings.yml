@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_free_bookings
+label: 'ServiciosConecta Free: Reservas'
+vertical: serviciosconecta
+plan: free
+feature_key: bookings
+limit_value: 10
+description: '10 reservas al mes en plan gratuito.'
+upgrade_message: 'Mas reservas. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

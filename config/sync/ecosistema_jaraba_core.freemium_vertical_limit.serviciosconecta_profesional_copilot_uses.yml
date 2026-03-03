@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_profesional_copilot_uses
+label: 'ServiciosConecta Profesional: Usos Copilot'
+vertical: serviciosconecta
+plan: profesional
+feature_key: copilot_uses
+limit_value: -1
+description: 'Copilot ilimitado en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_free_cases
+label: 'JarabaLex Free: Expedientes'
+vertical: jarabalex
+plan: free
+feature_key: cases
+limit_value: 5
+description: '5 expedientes en plan gratuito JarabaLex.'
+upgrade_message: 'Gestiona mas expedientes. Disponible desde Starter.'
+expected_conversion: 0.35
+weight: 0

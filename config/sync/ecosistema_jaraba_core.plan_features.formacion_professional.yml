@@ -1,0 +1,25 @@
+id: formacion_professional
+label: 'Formacion - Professional'
+vertical: formacion
+tier: professional
+features:
+  - course_builder
+  - student_portal
+  - basic_certificates
+  - copilot_ia
+  - learning_paths
+  - gamification
+  - seo_advanced
+  - analytics
+  - premium_blocks
+limits:
+  courses: 10
+  students_per_course: 500
+  certifications_month: -1
+  learning_paths: -1
+  xapi_tracking: 0
+  gamification: -1
+  copilot_uses_per_month: -1
+  storage_gb: 25
+description: 'Limites del tier Professional para la vertical Formacion.'
+status: true

@@ -1,0 +1,204 @@
+{#
+/**
+ * @file pricing-hub-page.html.twig
+ * Hub page /planes — Vertical comparator linking to /{vertical}/planes.
+ *
+ * Displays a grid of 7 priority verticals, each with starting price,
+ * icon, tagline and CTA to its vertical pricing page.
+ *
+ * VARIABLES:
+ * - verticals: Array of vertical data with:
+ *   - key: string (machine_name)
+ *   - label: string (display name)
+ *   - tagline: string (short description)
+ *   - icon_category: string (for jaraba_icon)
+ *   - icon_name: string (for jaraba_icon)
+ *   - from_price: string (e.g. '0€/mes')
+ *   - from_label: string (e.g. 'Empieza gratis')
+ *   - plans_url: string (URL to /{vertical}/planes)
+ * - page_title: string
+ * - page_subtitle: string
+ * - faq_items: array of {question, answer}
+ * - guarantee_text: string
+ *
+ * DIRECTIVES:
+ * - ZERO-REGION-001: Clean template, no page.content
+ * - i18n: {% trans %} on all static text
+ * - ICON-CONVENTION-001: jaraba_icon with variant duotone
+ * - CSS-VAR-ALL-COLORS-001: var(--ej-*) with fallbacks
+ * - ROUTE-LANGPREFIX-001: All URLs via path()/url()
+ *
+ * @see \Drupal\ecosistema_jaraba_core\Controller\PricingController::pricingPage()
+ */
+#}
+
+{# === HERO SECTION === #}
+<section class="pricing-hub-hero reveal-element reveal-fade-up" aria-labelledby="hub-title">
+  <div class="pricing-hub-hero__container">
+    <span class="pricing-hub-hero__eyebrow">{% trans %}Planes y Precios{% endtrans %}</span>
+    <h1 id="hub-title" class="pricing-hub-hero__title">
+      {{ page_title }}
+    </h1>
+    <p class="pricing-hub-hero__subtitle">
+      {{ page_subtitle }}
+    </p>
+  </div>
+</section>
+
+{# === VERTICALS GRID === #}
+<section class="pricing-hub-grid reveal-element reveal-fade-up" aria-label="{% trans %}Verticales disponibles{% endtrans %}">
+  <div class="pricing-hub-grid__container">
+    {% for vertical in verticals %}
+      <article class="pricing-hub-card"
+               aria-labelledby="hub-card-{{ vertical.key }}">
+        <div class="pricing-hub-card__icon">
+          {{ jaraba_icon(vertical.icon_category, vertical.icon_name, { variant: 'duotone', size: '40px', color: 'naranja-impulso' }) }}
+        </div>
+        <h2 id="hub-card-{{ vertical.key }}" class="pricing-hub-card__name">
+          {{ vertical.label }}
+        </h2>
+        <p class="pricing-hub-card__tagline">{{ vertical.tagline }}</p>
+        <div class="pricing-hub-card__price">
+          <span class="pricing-hub-card__from-label">{{ vertical.from_label }}</span>
+        </div>
+        <a href="{{ vertical.plans_url }}"
+           class="btn btn--primary btn--md pricing-hub-card__cta"
+           data-track-cta="hub_{{ vertical.key }}"
+           data-track-position="pricing_hub">
+          {% trans %}Ver planes{% endtrans %}
+        </a>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# === TIERS OVERVIEW === #}
+<section class="pricing-hub-overview reveal-element reveal-fade-up" aria-labelledby="hub-overview-title">
+  <div class="pricing-hub-overview__container">
+    <h2 id="hub-overview-title" class="pricing-hub-overview__title">
+      {% trans %}3 niveles para cada vertical{% endtrans %}
+    </h2>
+    <p class="pricing-hub-overview__subtitle">
+      {% trans %}Todos los verticales ofrecen 3 planes adaptados a tu nivel de necesidad.{% endtrans %}
+    </p>
+
+    <div class="pricing-hub-overview__tiers">
+      <div class="pricing-hub-overview__tier">
+        <h3 class="pricing-hub-overview__tier-name">{% trans %}Starter{% endtrans %}</h3>
+        <p class="pricing-hub-overview__tier-price">{% trans %}Gratis{% endtrans %}</p>
+        <p class="pricing-hub-overview__tier-desc">
+          {% trans %}Explora la plataforma sin compromiso. Perfecto para evaluar y empezar.{% endtrans %}
+        </p>
+      </div>
+      <div class="pricing-hub-overview__tier pricing-hub-overview__tier--recommended">
+        <span class="pricing-hub-overview__tier-badge">{% trans %}Más popular{% endtrans %}</span>
+        <h3 class="pricing-hub-overview__tier-name">{% trans %}Profesional{% endtrans %}</h3>
+        <p class="pricing-hub-overview__tier-price">{% trans %}Desde 29€/mes{% endtrans %}</p>
+        <p class="pricing-hub-overview__tier-desc">
+          {% trans %}Para profesionales y negocios en crecimiento. IA integrada y analytics.{% endtrans %}
+        </p>
+      </div>
+      <div class="pricing-hub-overview__tier">
+        <h3 class="pricing-hub-overview__tier-name">{% trans %}Empresa{% endtrans %}</h3>
+        <p class="pricing-hub-overview__tier-price">{% trans %}A medida{% endtrans %}</p>
+        <p class="pricing-hub-overview__tier-desc">
+          {% trans %}Para instituciones y organizaciones. SLA, soporte dedicado y onboarding.{% endtrans %}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === GUARANTEE === #}
+<section class="pricing-guarantee reveal-element reveal-fade-up">
+  <div class="pricing-guarantee__container">
+    <svg class="pricing-guarantee__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="pricing-guarantee__text">{{ guarantee_text }}</p>
+  </div>
+</section>
+
+{# === FAQ === #}
+{% if faq_items is not empty %}
+  <section class="pricing-faq reveal-element reveal-fade-up" aria-labelledby="hub-faq-title">
+    <div class="pricing-faq__container">
+      <h2 id="hub-faq-title" class="pricing-faq__title">
+        {% trans %}Preguntas frecuentes{% endtrans %}
+      </h2>
+      <div class="pricing-faq__list" itemscope itemtype="https://schema.org/FAQPage">
+        {% for item in faq_items %}
+          <details class="pricing-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <summary class="pricing-faq__question" itemprop="name">
+              {{ item.question }}
+              <svg class="pricing-faq__chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </summary>
+            <div class="pricing-faq__answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text">{{ item.answer }}</p>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# === FINAL CTA === #}
+<section class="pricing-final-cta reveal-element reveal-fade-up">
+  <div class="pricing-final-cta__container">
+    <h2 class="pricing-final-cta__title">
+      {% trans %}¿Listo para empezar?{% endtrans %}
+    </h2>
+    <p class="pricing-final-cta__subtitle">
+      {% trans %}Crea tu cuenta gratis en menos de 2 minutos. Sin tarjeta de crédito.{% endtrans %}
+    </p>
+    <a href="{{ path('user.register') }}"
+       class="btn btn--primary btn--xl pricing-final-cta__btn"
+       data-track-cta="hub_final_cta"
+       data-track-position="pricing_hub_bottom">
+      {% trans %}Crear cuenta gratuita{% endtrans %}
+    </a>
+  </div>
+</section>
+
+{# === SCHEMA.ORG === #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Jaraba Impact Platform",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "url": "{{ url('ecosistema_jaraba_core.pricing.page', {}, {absolute: true}) }}",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Starter",
+      "priceCurrency": "EUR",
+      "price": "0",
+      "availability": "https://schema.org/InStock",
+      "description": "Plan gratuito para explorar la plataforma"
+    },
+    {
+      "@type": "AggregateOffer",
+      "name": "Profesional",
+      "priceCurrency": "EUR",
+      "lowPrice": "29",
+      "highPrice": "59",
+      "availability": "https://schema.org/InStock",
+      "description": "Para profesionales y negocios en crecimiento"
+    },
+    {
+      "@type": "Offer",
+      "name": "Empresa",
+      "priceCurrency": "EUR",
+      "price": "0",
+      "availability": "https://schema.org/InStock",
+      "description": "Precios personalizados para instituciones"
+    }
+  ]
+}
+</script>

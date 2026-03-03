@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_free_reviews
+label: 'ServiciosConecta Free: Resenas'
+vertical: serviciosconecta
+plan: free
+feature_key: reviews
+limit_value: 5
+description: '5 resenas visibles en plan gratuito.'
+upgrade_message: 'Resenas ilimitadas. Disponible desde Starter.'
+expected_conversion: 0.2
+weight: 0

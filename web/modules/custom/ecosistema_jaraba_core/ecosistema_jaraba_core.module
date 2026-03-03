@@ -736,12 +736,25 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     ],
 
     // =========================================================================
-    // PRICING PAGE (178_MetaSite_Remediation)
+    // PRICING PAGES (178_MetaSite_Remediation + Verticalizacion)
     // =========================================================================
 
-    // Página pública de planes y precios /planes.
-    // Datos dinámicos desde SaasPlanTier/Features vía MetaSitePricingService.
-    // DIRECTRIZ: LEGAL-ROUTE-001, PLAN-CASCADE-001, i18n
+    // Hub /planes — Grid comparativo de verticales con enlace a /{vertical}/planes.
+    'pricing_hub_page' => [
+      'variables' => [
+        'verticals' => [],
+        'page_title' => '',
+        'page_subtitle' => '',
+        'guarantee_text' => '',
+        'faq_items' => [],
+      ],
+      'template' => 'pricing-hub-page',
+      'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
+    ],
+
+    // Página /{vertical}/planes — Pricing dinámico por vertical.
+    // Datos desde SaasPlanTier/Features vía MetaSitePricingService cascade.
+    // DIRECTRIZ: PLAN-CASCADE-001, i18n
     'pricing_page' => [
       'variables' => [
         'tiers' => [],
@@ -749,6 +762,8 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'page_subtitle' => '',
         'guarantee_text' => '',
         'faq_items' => [],
+        'vertical_key' => '',
+        'vertical_label' => '',
       ],
       'template' => 'pricing-page',
       'path' => \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme') . '/templates',
@@ -3356,6 +3371,22 @@ function ecosistema_jaraba_core_preprocess_html(&$variables) {
   if ($route_name === 'ecosistema_jaraba_core.fiscal.dashboard') {
     $variables['attributes']['class'][] = 'page--fiscal-dashboard';
     $variables['attributes']['class'][] = 'page--fiscal';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+
+  // Pricing pages: body classes for /planes (hub) and /{vertical}/planes.
+  if ($route_name === 'ecosistema_jaraba_core.pricing.page') {
+    $variables['attributes']['class'][] = 'page--pricing';
+    $variables['attributes']['class'][] = 'page--pricing-hub';
+    $variables['attributes']['class'][] = 'page--clean-layout';
+  }
+  if ($route_name === 'ecosistema_jaraba_core.pricing.vertical') {
+    $variables['attributes']['class'][] = 'page--pricing';
+    $variables['attributes']['class'][] = 'page--vertical-pricing';
+    $vertical_key = \Drupal::routeMatch()->getParameter('vertical_key');
+    if ($vertical_key) {
+      $variables['attributes']['class'][] = 'page--vertical-pricing--' . $vertical_key;
+    }
     $variables['attributes']['class'][] = 'page--clean-layout';
   }
 }

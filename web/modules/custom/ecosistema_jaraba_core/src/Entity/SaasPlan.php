@@ -153,6 +153,22 @@ class SaasPlan extends ContentEntityBase implements SaasPlanInterface
     /**
      * {@inheritdoc}
      */
+    public function getMonthlyPrice(): float
+    {
+        return $this->getPriceMonthly();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getYearlyPrice(): float
+    {
+        return $this->getPriceYearly();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
     {
         $fields = parent::baseFieldDefinitions($entity_type);

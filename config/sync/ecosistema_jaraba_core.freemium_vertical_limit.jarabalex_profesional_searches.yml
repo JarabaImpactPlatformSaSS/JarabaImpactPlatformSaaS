@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_profesional_searches
+label: 'JarabaLex Profesional: Busquedas legales'
+vertical: jarabalex
+plan: profesional
+feature_key: searches
+limit_value: -1
+description: 'Busquedas ilimitadas en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_starter_diagnostics
+label: 'Empleabilidad Starter: Diagnosticos'
+vertical: empleabilidad
+plan: starter
+feature_key: diagnostics
+limit_value: 3
+description: '3 diagnosticos en Starter Empleabilidad.'
+upgrade_message: 'Diagnosticos ilimitados con Profesional.'
+expected_conversion: 0.2
+weight: 0

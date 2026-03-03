@@ -1,0 +1,20 @@
+id: empleabilidad_enterprise
+label: 'Empleabilidad - Enterprise'
+vertical: empleabilidad
+tier: enterprise
+features:
+  - seo_advanced
+  - analytics
+  - copilot_unlimited
+  - api_access
+  - white_label
+  - premium_blocks
+limits:
+  cv_builder: -1
+  job_applications_per_day: -1
+  copilot_messages_per_day: -1
+  job_alerts: -1
+  offers_visible_per_day: -1
+  diagnostics: -1
+description: 'Limites del tier Enterprise para la vertical Empleabilidad (ilimitado).'
+status: true

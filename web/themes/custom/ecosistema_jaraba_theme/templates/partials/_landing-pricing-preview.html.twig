@@ -55,10 +55,11 @@
         {% trans %}Plan gratuito disponible. Sin tarjeta de credito.{% endtrans %}
       </p>
 
-      <a href="{{ price.cta_url|default('/planes') }}"
+      <a href="{{ price.cta_url|default(path('ecosistema_jaraba_core.pricing.page')) }}"
          class="btn btn--primary btn--lg"
          data-track-cta="pricing_{{ vertical_key|default('') }}"
-         data-track-position="landing_pricing">
+         data-track-position="landing_pricing"
+         {% if vertical_key %}data-track-vertical="{{ vertical_key }}"{% endif %}>
         {{ price.cta_text|default('Ver todos los planes'|t) }}
       </a>
     </div>

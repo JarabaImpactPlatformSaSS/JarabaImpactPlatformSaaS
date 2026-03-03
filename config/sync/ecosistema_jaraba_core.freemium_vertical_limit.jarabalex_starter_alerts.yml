@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_starter_alerts
+label: 'JarabaLex Starter: Alertas juridicas'
+vertical: jarabalex
+plan: starter
+feature_key: alerts
+limit_value: 5
+description: '5 alertas juridicas en Starter.'
+upgrade_message: 'Alertas ilimitadas con Profesional.'
+expected_conversion: 0.2
+weight: 0

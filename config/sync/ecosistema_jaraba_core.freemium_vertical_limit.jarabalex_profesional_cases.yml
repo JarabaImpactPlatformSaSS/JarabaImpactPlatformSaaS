@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_profesional_cases
+label: 'JarabaLex Profesional: Expedientes'
+vertical: jarabalex
+plan: profesional
+feature_key: cases
+limit_value: -1
+description: 'Expedientes ilimitados en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

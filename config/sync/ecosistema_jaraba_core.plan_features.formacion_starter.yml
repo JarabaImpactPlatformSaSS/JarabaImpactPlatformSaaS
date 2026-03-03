@@ -1,0 +1,20 @@
+id: formacion_starter
+label: 'Formacion - Starter'
+vertical: formacion
+tier: starter
+features:
+  - course_builder
+  - student_portal
+  - basic_certificates
+  - copilot_ia
+limits:
+  courses: 3
+  students_per_course: 50
+  certifications_month: 50
+  learning_paths: 0
+  xapi_tracking: 0
+  gamification: 0
+  copilot_uses_per_month: 30
+  storage_gb: 5
+description: 'Limites del tier Starter para la vertical Formacion.'
+status: true

@@ -100,4 +100,26 @@ interface SaasPlanInterface extends ContentEntityInterface
      */
     public function isFree(): bool;
 
+    /**
+     * Alias for getPriceMonthly().
+     *
+     * Ensures compatibility with PricingController and external consumers
+     * that use the alternative method name convention.
+     *
+     * @return float
+     *   The monthly price in EUR.
+     */
+    public function getMonthlyPrice(): float;
+
+    /**
+     * Alias for getPriceYearly().
+     *
+     * Ensures compatibility with PricingController and external consumers
+     * that use the alternative method name convention.
+     *
+     * @return float
+     *   The yearly price in EUR.
+     */
+    public function getYearlyPrice(): float;
+
 }

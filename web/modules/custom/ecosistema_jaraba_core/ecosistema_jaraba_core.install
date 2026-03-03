@@ -2160,3 +2160,201 @@ function ecosistema_jaraba_core_update_9024(): string {
 
   return 'Installed config entity types: ' . (empty($installed) ? 'none (already existed)' : implode(', ', $installed));
 }
+
+/**
+ * VERT-PRICING-001: Create missing Vertical ContentEntities for all 10 canonical verticals.
+ *
+ * Idempotent: checks loadByProperties before creating each entity.
+ * The 2 existing verticals (agroconecta, jarabalex) are skipped.
+ *
+ * @see docs/implementacion/2026-03-03_Plan_Implementacion_Verticalizacion_Planes_Precios_SaaS_Clase_Mundial_v1.md
+ */
+function ecosistema_jaraba_core_update_9025(): string {
+  $storage = \Drupal::entityTypeManager()->getStorage('vertical');
+  $created = [];
+
+  $verticals = [
+    [
+      'name' => 'Empleabilidad',
+      'machine_name' => 'empleabilidad',
+      'description' => "Plataforma de empleo, formacion y desarrollo de carrera.\nConecta buscadores de empleo con oportunidades, formacion certificada y herramientas de IA para impulsar su carrera profesional.",
+      'theme_settings' => '{"color_primario": "#1565C0", "color_secundario": "#0D47A1", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'Emprendimiento',
+      'machine_name' => 'emprendimiento',
+      'description' => "Plataforma de apoyo a emprendedores con diagnosticos, planes de accion y mentoria.\nValidacion de ideas, Business Model Canvas con IA y conexion con el ecosistema emprendedor.",
+      'theme_settings' => '{"color_primario": "#f59e0b", "color_secundario": "#d97706", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'ComercioConecta',
+      'machine_name' => 'comercioconecta',
+      'description' => "Sistema operativo de barrio para comercio de proximidad con experiencia phygital.\nCatalogo digital, flash offers, QR dinamicos, pagos Stripe y copiloto IA para comerciantes.",
+      'theme_settings' => '{"color_primario": "#7C3AED", "color_secundario": "#5B21B6", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'JarabaLex',
+      'machine_name' => 'jarabalex',
+      'description' => "Inteligencia legal con IA para despachos de abogados.\nBusqueda legal inteligente, gestion de expedientes, boveda documental, calendario de plazos y facturacion legal.",
+      'theme_settings' => '{"color_primario": "#1E3A5F", "color_secundario": "#15294a", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'ServiciosConecta',
+      'machine_name' => 'serviciosconecta',
+      'description' => "Plataforma para profesionales de servicios con reservas, facturacion y gestion documental.\nBooking engine, firma digital, buzon de confianza y presupuestador con IA.",
+      'theme_settings' => '{"color_primario": "#0891B2", "color_secundario": "#0E7490", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'Formacion',
+      'machine_name' => 'formacion',
+      'description' => "Crea tu academia online con IA.\nCursos adaptativos, learning paths inteligentes, gamificacion, certificaciones y seguimiento xAPI integrado.",
+      'theme_settings' => '{"color_primario": "#059669", "color_secundario": "#047857", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'Andalucia +ei',
+      'machine_name' => 'andalucia_ei',
+      'description' => "Programa institucional de empleo e inclusion social.\nFormacion certificada, expediente digital, mentoria y copiloto IA para participantes del programa.",
+      'theme_settings' => '{"color_primario": "#DC2626", "color_secundario": "#B91C1C", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'Content Hub',
+      'machine_name' => 'jaraba_content_hub',
+      'description' => "Hub de contenidos editoriales con blog, articulos y SEO.\nPublicacion, categorias, autores, RSS y optimizacion SEO automatizada con IA.",
+      'theme_settings' => '{"color_primario": "#233D63", "color_secundario": "#1a2d4a", "tipografia": "Inter"}',
+    ],
+    [
+      'name' => 'Demo',
+      'machine_name' => 'demo',
+      'description' => "Vertical de demostracion para prospects y evaluadores.\nMuestra las capacidades de la plataforma sin compromiso, con datos de ejemplo y sesiones temporales.",
+      'theme_settings' => '{"color_primario": "#6366F1", "color_secundario": "#4F46E5", "tipografia": "Inter"}',
+    ],
+  ];
+
+  foreach ($verticals as $data) {
+    $existing = $storage->loadByProperties(['machine_name' => $data['machine_name']]);
+    if (!empty($existing)) {
+      continue;
+    }
+
+    $entity = $storage->create([
+      'name' => $data['name'],
+      'machine_name' => $data['machine_name'],
+      'description' => ['value' => $data['description'], 'format' => 'basic_html'],
+      'theme_settings' => $data['theme_settings'],
+      'status' => TRUE,
+    ]);
+    $entity->save();
+    $created[] = $data['machine_name'];
+  }
+
+  return 'VERT-PRICING-001: Created Vertical entities: ' . (empty($created) ? 'none (all existed)' : implode(', ', $created));
+}
+
+/**
+ * VERT-PRICING-001: Create per-vertical SaasPlan ContentEntities from config/install seed data.
+ *
+ * Creates 24 SaasPlan entities (8 verticals x 3 tiers) using data from
+ * config/install YAML files. Also creates 3 formacion plans (no seed exists).
+ * Deactivates the 3 generic plans (basico, profesional, enterprise).
+ *
+ * Idempotent: checks for existing plans by name before creating.
+ * Depends on update_9025 (Vertical entities must exist for FK).
+ *
+ * @see docs/implementacion/2026-03-03_Plan_Implementacion_Verticalizacion_Planes_Precios_SaaS_Clase_Mundial_v1.md
+ */
+function ecosistema_jaraba_core_update_9026(): string {
+  $verticalStorage = \Drupal::entityTypeManager()->getStorage('vertical');
+  $planStorage = \Drupal::entityTypeManager()->getStorage('saas_plan');
+  $created = [];
+  $deactivated = [];
+
+  // Map of machine_name -> SaasPlan seed data.
+  // Prices from the Vertical Pricing Matrix (VERT-PRICING-001).
+  // All 7 priority verticals: Starter = Free (0€).
+  // Andalucia_ei is institutional — Starter is paid.
+  $plans = [
+    // --- EMPLEABILIDAD: Free / 29€ / 79€ ---
+    ['vertical' => 'empleabilidad', 'name' => 'Empleabilidad Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"diagnostics": 1, "cv_builder": 1, "job_applications_per_day": 3, "copilot_messages_per_day": 5, "job_alerts": 1, "offers_visible_per_day": 5}'],
+    ['vertical' => 'empleabilidad', 'name' => 'Empleabilidad Profesional', 'price_monthly' => '29.00', 'price_yearly' => '290.00', 'weight' => 20, 'limits' => '{"diagnostics": 3, "cv_builder": 5, "job_applications_per_day": 15, "copilot_messages_per_day": 25, "job_alerts": 5, "offers_visible_per_day": 25}'],
+    ['vertical' => 'empleabilidad', 'name' => 'Empleabilidad Enterprise', 'price_monthly' => '79.00', 'price_yearly' => '790.00', 'weight' => 30, 'limits' => '{"diagnostics": -1, "cv_builder": -1, "job_applications_per_day": -1, "copilot_messages_per_day": -1, "job_alerts": -1, "offers_visible_per_day": -1}'],
+    // --- EMPRENDIMIENTO: Free / 29€ / 99€ ---
+    ['vertical' => 'emprendimiento', 'name' => 'Emprendimiento Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"hypotheses_active": 3, "experiments_monthly": 2, "copilot_sessions_daily": 5, "mentoring_sessions_monthly": 0, "bmc_drafts": 1, "calculadora_uses": 3}'],
+    ['vertical' => 'emprendimiento', 'name' => 'Emprendimiento Profesional', 'price_monthly' => '29.00', 'price_yearly' => '290.00', 'weight' => 20, 'limits' => '{"hypotheses_active": 20, "experiments_monthly": 10, "copilot_sessions_daily": 50, "mentoring_sessions_monthly": 2, "bmc_drafts": -1, "calculadora_uses": -1}'],
+    ['vertical' => 'emprendimiento', 'name' => 'Emprendimiento Enterprise', 'price_monthly' => '99.00', 'price_yearly' => '990.00', 'weight' => 30, 'limits' => '{"hypotheses_active": -1, "experiments_monthly": -1, "copilot_sessions_daily": -1, "mentoring_sessions_monthly": -1, "bmc_drafts": -1, "calculadora_uses": -1}'],
+    // --- COMERCIOCONECTA: Free / 59€ / 199€ ---
+    ['vertical' => 'comercioconecta', 'name' => 'ComercioConecta Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"products": 10, "flash_offers_active": 1, "copilot_uses_per_month": 20, "qr_codes": 2, "seo_local_audit": 0, "analytics_advanced": 0, "pos_integration": 0}'],
+    ['vertical' => 'comercioconecta', 'name' => 'ComercioConecta Profesional', 'price_monthly' => '59.00', 'price_yearly' => '590.00', 'weight' => 20, 'limits' => '{"products": -1, "flash_offers_active": -1, "copilot_uses_per_month": -1, "qr_codes": -1, "seo_local_audit": -1, "analytics_advanced": -1, "pos_integration": 0}'],
+    ['vertical' => 'comercioconecta', 'name' => 'ComercioConecta Enterprise', 'price_monthly' => '199.00', 'price_yearly' => '1990.00', 'weight' => 30, 'limits' => '{"products": -1, "flash_offers_active": -1, "copilot_uses_per_month": -1, "qr_codes": -1, "seo_local_audit": -1, "analytics_advanced": -1, "pos_integration": -1}'],
+    // --- AGROCONECTA: Free / 29€ / 99€ ---
+    ['vertical' => 'agroconecta', 'name' => 'AgroConecta Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"products": 10, "orders_per_month": 10, "copilot_uses_per_month": 5, "photos_per_product": 2, "commission_pct": 12, "traceability_qr": 1, "analytics_advanced": 0, "demand_forecaster": 0, "partner_hub": 0}'],
+    ['vertical' => 'agroconecta', 'name' => 'AgroConecta Profesional', 'price_monthly' => '29.00', 'price_yearly' => '290.00', 'weight' => 20, 'limits' => '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": 30, "photos_per_product": 5, "commission_pct": 8, "traceability_qr": 5, "analytics_advanced": 0, "demand_forecaster": 0, "partner_hub": 0}'],
+    ['vertical' => 'agroconecta', 'name' => 'AgroConecta Enterprise', 'price_monthly' => '99.00', 'price_yearly' => '990.00', 'weight' => 30, 'limits' => '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": -1, "photos_per_product": -1, "commission_pct": 3, "traceability_qr": -1, "analytics_advanced": -1, "demand_forecaster": -1, "partner_hub": -1}'],
+    // --- JARABALEX: Free / 49€ / 199€ ---
+    ['vertical' => 'jarabalex', 'name' => 'JarabaLex Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"searches_per_month": 10, "max_alerts": 1, "max_bookmarks": 20, "max_cases": 5, "vault_storage_mb": 100, "calendar_deadlines": 10, "billing_invoices_month": 3, "lexnet_submissions_month": 0, "template_generations_month": 1}'],
+    ['vertical' => 'jarabalex', 'name' => 'JarabaLex Profesional', 'price_monthly' => '49.00', 'price_yearly' => '490.00', 'weight' => 20, 'limits' => '{"searches_per_month": 50, "max_alerts": 5, "max_bookmarks": 100, "max_cases": 50, "vault_storage_mb": 500, "calendar_deadlines": 100, "billing_invoices_month": 20, "lexnet_submissions_month": 10, "template_generations_month": 5}'],
+    ['vertical' => 'jarabalex', 'name' => 'JarabaLex Enterprise', 'price_monthly' => '199.00', 'price_yearly' => '1990.00', 'weight' => 30, 'limits' => '{"searches_per_month": -1, "max_alerts": -1, "max_bookmarks": -1, "max_cases": -1, "vault_storage_mb": -1, "calendar_deadlines": -1, "billing_invoices_month": -1, "lexnet_submissions_month": -1, "template_generations_month": -1}'],
+    // --- SERVICIOSCONECTA: Free / 39€ / 149€ ---
+    ['vertical' => 'serviciosconecta', 'name' => 'ServiciosConecta Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"services": 3, "bookings_per_month": 10, "packages": 0, "copilot_queries_month": 10, "reviews_visible": 5, "video_conferencing": 0, "analytics_dashboard": 0}'],
+    ['vertical' => 'serviciosconecta', 'name' => 'ServiciosConecta Profesional', 'price_monthly' => '39.00', 'price_yearly' => '390.00', 'weight' => 20, 'limits' => '{"services": 15, "bookings_per_month": 100, "packages": 5, "copilot_queries_month": 50, "reviews_visible": -1, "video_conferencing": 1, "analytics_dashboard": 0, "calendar_sync": 1}'],
+    ['vertical' => 'serviciosconecta', 'name' => 'ServiciosConecta Enterprise', 'price_monthly' => '149.00', 'price_yearly' => '1490.00', 'weight' => 30, 'limits' => '{"services": -1, "bookings_per_month": -1, "packages": -1, "copilot_queries_month": -1, "reviews_visible": -1, "video_conferencing": 1, "analytics_dashboard": 1, "calendar_sync": 1}'],
+    // --- ANDALUCIA_EI (institutional, no free tier) ---
+    ['vertical' => 'andalucia_ei', 'name' => 'Andalucia +ei Starter', 'price_monthly' => '49.00', 'price_yearly' => '490.00', 'weight' => 10, 'limits' => '{"copilot_sessions_daily": 15, "mentoring_hours_monthly": 5, "sto_exports": 10, "training_modules": 10, "diagnostic_access": 3, "report_downloads": 5}'],
+    ['vertical' => 'andalucia_ei', 'name' => 'Andalucia +ei Profesional', 'price_monthly' => '99.00', 'price_yearly' => '990.00', 'weight' => 20, 'limits' => '{"copilot_sessions_daily": -1, "mentoring_hours_monthly": -1, "sto_exports": -1, "training_modules": -1, "diagnostic_access": -1, "report_downloads": -1}'],
+    ['vertical' => 'andalucia_ei', 'name' => 'Andalucia +ei Enterprise', 'price_monthly' => '249.00', 'price_yearly' => '2490.00', 'weight' => 30, 'limits' => '{"copilot_sessions_daily": -1, "mentoring_hours_monthly": -1, "sto_exports": -1, "training_modules": -1, "diagnostic_access": -1, "report_downloads": -1}'],
+    // --- FORMACION: Free / 39€ / 149€ ---
+    ['vertical' => 'formacion', 'name' => 'Formacion Starter', 'price_monthly' => '0.00', 'price_yearly' => '0.00', 'weight' => 10, 'limits' => '{"courses": 1, "students_per_course": 10, "certifications_month": 5, "learning_paths": 0, "xapi_tracking": 0, "gamification": 0, "copilot_uses_per_month": 5, "storage_gb": 1}'],
+    ['vertical' => 'formacion', 'name' => 'Formacion Profesional', 'price_monthly' => '39.00', 'price_yearly' => '390.00', 'weight' => 20, 'limits' => '{"courses": 10, "students_per_course": 500, "certifications_month": -1, "learning_paths": -1, "xapi_tracking": 0, "gamification": -1, "copilot_uses_per_month": -1, "storage_gb": 25}'],
+    ['vertical' => 'formacion', 'name' => 'Formacion Enterprise', 'price_monthly' => '149.00', 'price_yearly' => '1490.00', 'weight' => 30, 'limits' => '{"courses": -1, "students_per_course": -1, "certifications_month": -1, "learning_paths": -1, "xapi_tracking": -1, "gamification": -1, "copilot_uses_per_month": -1, "storage_gb": -1}'],
+  ];
+
+  // Resolve vertical entity IDs by machine_name.
+  $verticalMap = [];
+  $allVerticals = $verticalStorage->loadMultiple();
+  foreach ($allVerticals as $vertical) {
+    $verticalMap[$vertical->getMachineName()] = $vertical->id();
+  }
+
+  foreach ($plans as $planData) {
+    $verticalMachine = $planData['vertical'];
+    if (!isset($verticalMap[$verticalMachine])) {
+      continue;
+    }
+
+    // Check if plan already exists (idempotent by name).
+    $existing = $planStorage->loadByProperties(['name' => $planData['name']]);
+    if (!empty($existing)) {
+      continue;
+    }
+
+    $entity = $planStorage->create([
+      'name' => $planData['name'],
+      'vertical' => $verticalMap[$verticalMachine],
+      'price_monthly' => $planData['price_monthly'],
+      'price_yearly' => $planData['price_yearly'],
+      'limits' => $planData['limits'],
+      'weight' => $planData['weight'],
+      'status' => TRUE,
+    ]);
+    $entity->save();
+    $created[] = $planData['name'];
+  }
+
+  // Deactivate generic plans (basico, profesional, enterprise) that have no vertical.
+  $genericPlans = $planStorage->getQuery()
+    ->accessCheck(FALSE)
+    ->notExists('vertical')
+    ->condition('status', TRUE)
+    ->execute();
+
+  foreach ($planStorage->loadMultiple($genericPlans) as $genericPlan) {
+    $genericPlan->set('status', FALSE);
+    $genericPlan->save();
+    $deactivated[] = $genericPlan->getName();
+  }
+
+  $msg = 'VERT-PRICING-001: Created SaasPlan entities: ' . (empty($created) ? 'none' : implode(', ', $created));
+  if (!empty($deactivated)) {
+    $msg .= '. Deactivated generic plans: ' . implode(', ', $deactivated);
+  }
+  return $msg;
+}

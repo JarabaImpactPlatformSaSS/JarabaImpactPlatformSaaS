@@ -1,0 +1,17 @@
+id: empleabilidad_professional
+label: 'Empleabilidad - Professional'
+vertical: empleabilidad
+tier: professional
+features:
+  - seo_advanced
+  - analytics
+  - copilot_unlimited
+limits:
+  cv_builder: -1
+  job_applications_per_day: -1
+  copilot_messages_per_day: -1
+  job_alerts: -1
+  offers_visible_per_day: -1
+  diagnostics: -1
+description: 'Limites del tier Professional para la vertical Empleabilidad.'
+status: true

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_profesional_experiments
+label: 'Emprendimiento Profesional: Experimentos'
+vertical: emprendimiento
+plan: profesional
+feature_key: experiments
+limit_value: -1
+description: 'Experimentos ilimitados en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

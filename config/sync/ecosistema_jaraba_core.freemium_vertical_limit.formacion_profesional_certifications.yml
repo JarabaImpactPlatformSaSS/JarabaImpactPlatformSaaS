@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_profesional_certifications
+label: 'Formacion Profesional: Certificaciones'
+vertical: formacion
+plan: profesional
+feature_key: certifications
+limit_value: -1
+description: 'Certificaciones ilimitadas en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

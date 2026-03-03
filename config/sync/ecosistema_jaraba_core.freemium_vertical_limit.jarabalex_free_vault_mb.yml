@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_free_vault_mb
+label: 'JarabaLex Free: Boveda documental (MB)'
+vertical: jarabalex
+plan: free
+feature_key: vault_mb
+limit_value: 100
+description: '100 MB de boveda documental en plan gratuito.'
+upgrade_message: 'Mas almacenamiento. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

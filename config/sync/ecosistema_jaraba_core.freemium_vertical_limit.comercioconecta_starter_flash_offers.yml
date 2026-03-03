@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_starter_flash_offers
+label: 'ComercioConecta Starter: Ofertas flash'
+vertical: comercioconecta
+plan: starter
+feature_key: flash_offers
+limit_value: 5
+description: '5 ofertas flash en Starter.'
+upgrade_message: 'Ofertas ilimitadas con Profesional.'
+expected_conversion: 0.2
+weight: 0

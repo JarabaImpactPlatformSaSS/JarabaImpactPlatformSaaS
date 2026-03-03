@@ -1,0 +1,21 @@
+id: emprendimiento_enterprise
+label: 'Emprendimiento - Enterprise'
+vertical: emprendimiento
+tier: enterprise
+features:
+  - seo_advanced
+  - analytics
+  - ab_testing
+  - copilot_unlimited
+  - api_access
+  - white_label
+  - premium_blocks
+limits:
+  hypotheses_active: -1
+  experiments_monthly: -1
+  copilot_sessions_daily: -1
+  mentoring_sessions_monthly: -1
+  bmc_drafts: -1
+  calculadora_uses: -1
+description: 'Limites del tier Enterprise para la vertical Emprendimiento (ilimitado).'
+status: true

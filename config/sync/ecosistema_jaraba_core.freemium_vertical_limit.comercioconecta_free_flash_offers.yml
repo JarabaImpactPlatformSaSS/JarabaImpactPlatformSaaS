@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_free_flash_offers
+label: 'ComercioConecta Free: Ofertas flash'
+vertical: comercioconecta
+plan: free
+feature_key: flash_offers
+limit_value: 1
+description: '1 oferta flash en plan gratuito.'
+upgrade_message: 'Mas ofertas flash. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

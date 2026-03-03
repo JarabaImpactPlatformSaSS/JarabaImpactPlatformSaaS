@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_starter_services
+label: 'ServiciosConecta Starter: Servicios'
+vertical: serviciosconecta
+plan: starter
+feature_key: services
+limit_value: 15
+description: '15 servicios en Starter ServiciosConecta.'
+upgrade_message: 'Servicios ilimitados con Profesional.'
+expected_conversion: 0.25
+weight: 0

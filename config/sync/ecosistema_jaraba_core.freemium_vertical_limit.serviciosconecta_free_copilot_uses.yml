@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_free_copilot_uses
+label: 'ServiciosConecta Free: Usos Copilot'
+vertical: serviciosconecta
+plan: free
+feature_key: copilot_uses
+limit_value: 10
+description: '10 usos de copilot al mes en plan gratuito.'
+upgrade_message: 'Copilot ilimitado. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

@@ -1,0 +1,19 @@
+id: comercioconecta_professional
+label: 'ComercioConecta - Professional'
+vertical: comercioconecta
+tier: professional
+features:
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - seo_local_audit
+limits:
+  products: -1
+  flash_offers_active: -1
+  copilot_uses_per_month: -1
+  qr_codes: -1
+  seo_local_audit: -1
+  analytics_advanced: -1
+  pos_integration: 0
+description: 'Limites del tier Professional para la vertical ComercioConecta.'
+status: true

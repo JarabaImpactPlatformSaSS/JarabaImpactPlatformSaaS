@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_starter_hypotheses
+label: 'Emprendimiento Starter: Hipotesis'
+vertical: emprendimiento
+plan: starter
+feature_key: hypotheses
+limit_value: 10
+description: '10 hipotesis activas en Starter.'
+upgrade_message: 'Hipotesis ilimitadas con Profesional.'
+expected_conversion: 0.2
+weight: 0

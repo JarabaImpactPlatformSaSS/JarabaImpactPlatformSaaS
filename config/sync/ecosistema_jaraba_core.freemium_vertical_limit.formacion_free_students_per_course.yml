@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_free_students_per_course
+label: 'Formacion Free: Alumnos por curso'
+vertical: formacion
+plan: free
+feature_key: students_per_course
+limit_value: 10
+description: '10 alumnos por curso en plan gratuito.'
+upgrade_message: 'Mas alumnos. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

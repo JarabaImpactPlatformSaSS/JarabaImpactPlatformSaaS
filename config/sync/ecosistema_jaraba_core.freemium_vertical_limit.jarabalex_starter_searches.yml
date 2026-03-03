@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_starter_searches
+label: 'JarabaLex Starter: Busquedas legales'
+vertical: jarabalex
+plan: starter
+feature_key: searches
+limit_value: 50
+description: '50 busquedas al mes en Starter.'
+upgrade_message: 'Busquedas ilimitadas con Profesional.'
+expected_conversion: 0.2
+weight: 0

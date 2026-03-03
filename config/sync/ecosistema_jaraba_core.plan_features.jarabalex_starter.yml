@@ -1,0 +1,22 @@
+id: jarabalex_starter
+label: 'JarabaLex - Starter'
+vertical: jarabalex
+tier: starter
+features:
+  - legal_search
+  - legal_calendar
+  - legal_vault
+  - legal_templates
+  - legal_lexnet
+limits:
+  searches_per_month: 50
+  max_alerts: 5
+  max_bookmarks: 100
+  max_cases: 50
+  vault_storage_mb: 500
+  calendar_deadlines: 100
+  billing_invoices_month: 20
+  lexnet_submissions_month: 10
+  template_generations_month: 5
+description: 'Limites del tier Starter para la vertical JarabaLex.'
+status: true

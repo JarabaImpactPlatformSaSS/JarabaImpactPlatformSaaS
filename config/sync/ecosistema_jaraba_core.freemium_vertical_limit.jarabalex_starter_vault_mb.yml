@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_starter_vault_mb
+label: 'JarabaLex Starter: Boveda documental (MB)'
+vertical: jarabalex
+plan: starter
+feature_key: vault_mb
+limit_value: 500
+description: '500 MB de boveda en Starter.'
+upgrade_message: 'Almacenamiento ilimitado con Profesional.'
+expected_conversion: 0.2
+weight: 0

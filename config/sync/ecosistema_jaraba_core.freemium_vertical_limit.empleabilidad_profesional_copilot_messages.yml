@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_profesional_copilot_messages
+label: 'Empleabilidad Profesional: Mensajes Copilot'
+vertical: empleabilidad
+plan: profesional
+feature_key: copilot_messages
+limit_value: -1
+description: 'Copilot ilimitado en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

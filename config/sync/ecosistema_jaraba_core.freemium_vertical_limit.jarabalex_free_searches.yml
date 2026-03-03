@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_free_searches
+label: 'JarabaLex Free: Busquedas legales'
+vertical: jarabalex
+plan: free
+feature_key: searches
+limit_value: 10
+description: '10 busquedas legales al mes en plan gratuito.'
+upgrade_message: 'Busquedas ilimitadas. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

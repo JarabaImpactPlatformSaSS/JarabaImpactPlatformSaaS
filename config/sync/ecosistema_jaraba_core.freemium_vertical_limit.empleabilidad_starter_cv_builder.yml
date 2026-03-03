@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_starter_cv_builder
+label: 'Empleabilidad Starter: CV Builder'
+vertical: empleabilidad
+plan: starter
+feature_key: cv_builder
+limit_value: 5
+description: '5 CVs en plan Starter Empleabilidad.'
+upgrade_message: 'CVs ilimitados con Profesional.'
+expected_conversion: 0.25
+weight: 0

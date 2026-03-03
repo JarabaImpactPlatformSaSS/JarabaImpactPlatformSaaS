@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_free_copilot_uses
+label: 'Formacion Free: Usos Copilot'
+vertical: formacion
+plan: free
+feature_key: copilot_uses
+limit_value: 10
+description: '10 usos de copilot pedagogico al mes.'
+upgrade_message: 'Copilot ilimitado. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

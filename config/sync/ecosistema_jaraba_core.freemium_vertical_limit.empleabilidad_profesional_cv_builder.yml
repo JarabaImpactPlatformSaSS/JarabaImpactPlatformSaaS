@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_profesional_cv_builder
+label: 'Empleabilidad Profesional: CV Builder'
+vertical: empleabilidad
+plan: profesional
+feature_key: cv_builder
+limit_value: -1
+description: 'CV Builder ilimitado en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

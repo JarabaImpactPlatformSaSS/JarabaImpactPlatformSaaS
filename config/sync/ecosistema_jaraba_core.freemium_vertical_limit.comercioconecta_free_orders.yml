@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_free_orders
+label: 'ComercioConecta Free: Pedidos'
+vertical: comercioconecta
+plan: free
+feature_key: orders
+limit_value: 10
+description: '10 pedidos al mes en plan gratuito.'
+upgrade_message: 'Pedidos ilimitados. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

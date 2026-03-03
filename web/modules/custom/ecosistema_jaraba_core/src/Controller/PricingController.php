@@ -5,6 +5,7 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Entity\VerticalInterface;
 use Drupal\ecosistema_jaraba_core\Service\MetaSitePricingService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -275,36 +276,109 @@ class PricingController extends ControllerBase
     }
 
     /**
-     * Renders the /planes pricing page with dynamic data from ConfigEntities.
+     * Renders the /planes hub page with a grid of verticals.
      *
-     * Loads all SaasPlanTier entities sorted by weight, enriches each with
-     * features/limits from SaasPlanFeatures (via cascade resolution),
-     * and passes the data to the pricing_page theme.
+     * Each vertical card shows the starting price and links to /{vertical}/planes.
+     * This replaces the generic 3-tier view to guide users to vertical-specific
+     * pricing pages where cascade resolution provides accurate data.
      *
-     * The template renders:
-     * - Hero section with headline and subheadline
-     * - Grid of 3 pricing cards (Free / Pro / Enterprise)
-     * - Feature comparison table
-     * - FAQ section
-     * - Guarantee and final CTA
+     * @return array
+     *   Render array with pricing_hub_page theme.
+     */
+    public function pricingPage(): array
+    {
+        $verticalLabels = $this->getVerticalLabels();
+        $verticalTaglines = $this->getVerticalTaglines();
+        $verticalIcons = $this->getVerticalIcons();
+
+        // 7 priority verticals with public pricing pages.
+        $priorityVerticals = [
+            'empleabilidad', 'emprendimiento', 'comercioconecta',
+            'agroconecta', 'jarabalex', 'serviciosconecta', 'formacion',
+        ];
+
+        $verticals = [];
+        foreach ($priorityVerticals as $key) {
+            $fromPrice = $this->pricingService
+                ? $this->pricingService->getFromPrice($key)
+                : ['from_label' => $this->t('Empieza gratis')];
+
+            $icon = $verticalIcons[$key] ?? ['category' => 'verticals', 'name' => $key];
+
+            $verticals[] = [
+                'key' => $key,
+                'label' => $verticalLabels[$key] ?? ucfirst($key),
+                'tagline' => $verticalTaglines[$key] ?? '',
+                'icon_category' => $icon['category'],
+                'icon_name' => $icon['name'],
+                'from_label' => $fromPrice['from_label'] ?? $this->t('Empieza gratis'),
+                'from_price' => $fromPrice['from_price'] ?? $this->t('0€/mes'),
+                'plans_url' => Url::fromRoute('ecosistema_jaraba_core.pricing.vertical', ['vertical_key' => $key])->toString(),
+            ];
+        }
+
+        return [
+            '#theme' => 'pricing_hub_page',
+            '#verticals' => $verticals,
+            '#page_title' => $this->t('Elige tu vertical y encuentra el plan perfecto'),
+            '#page_subtitle' => $this->t('7 soluciones verticalizadas. Todas empiezan gratis. Sin permanencia.'),
+            '#guarantee_text' => $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.'),
+            '#faq_items' => $this->getPricingFaq(),
+            '#attached' => [
+                'library' => [
+                    'ecosistema_jaraba_core/global',
+                    'ecosistema_jaraba_theme/pricing-hub',
+                    'ecosistema_jaraba_theme/pricing-page',
+                ],
+            ],
+            '#cache' => [
+                'tags' => [
+                    'config:saas_plan_tier_list',
+                    'config:saas_plan_features_list',
+                    'saas_plan_list',
+                ],
+                'contexts' => ['languages:language_content'],
+                'max-age' => 3600,
+            ],
+        ];
+    }
+
+    /**
+     * Renders the /planes/{vertical_key} pricing page for a specific vertical.
+     *
+     * Loads all SaasPlanTier entities and enriches each with features/limits
+     * specific to the given vertical via PlanResolverService cascade.
+     * Includes EUR prices from SaasPlan ContentEntities.
+     *
+     * VERT-PRICING-001: Route defined in ecosistema_jaraba_core.routing.yml
+     * with regex constraint for the 7 priority verticals.
+     *
+     * @param string $vertical_key
+     *   Machine name of the vertical (e.g. 'agroconecta', 'jarabalex').
      *
      * @return array
      *   Render array with pricing_page theme.
      */
-    public function pricingPage(): array
+    public function verticalPricingPage(string $vertical_key): array
     {
-        // Get all tiers with features (using _default vertical for meta-site).
+        // Get tiers with vertical-specific features via cascade resolution.
         $tiers = $this->pricingService
-            ? $this->pricingService->getPricingPreview('_default')
+            ? $this->pricingService->getPricingPreview($vertical_key)
             : [];
+
+        // Vertical display names for SEO and UX.
+        $verticalLabels = $this->getVerticalLabels();
+        $verticalLabel = $verticalLabels[$vertical_key] ?? ucfirst($vertical_key);
 
         return [
             '#theme' => 'pricing_page',
             '#tiers' => $tiers,
-            '#page_title' => $this->t('Elige el plan que se adapta a ti'),
-            '#page_subtitle' => $this->t('Empieza gratis. Actualiza cuando lo necesites. Sin permanencia.'),
+            '#vertical_key' => $vertical_key,
+            '#vertical_label' => $verticalLabel,
+            '#page_title' => $this->t('Planes @vertical', ['@vertical' => $verticalLabel]),
+            '#page_subtitle' => $this->t('Elige el plan que mejor se adapta a tu negocio. Empieza gratis, sin permanencia.'),
             '#guarantee_text' => $this->t('Sin tarjeta de crédito. Sin permanencia. Cancela cuando quieras.'),
-            '#faq_items' => $this->getPricingFaq(),
+            '#faq_items' => $this->getVerticalPricingFaq($vertical_key),
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/global',
@@ -312,11 +386,119 @@ class PricingController extends ControllerBase
                 ],
             ],
             '#cache' => [
-                'tags' => ['config:saas_plan_tier_list', 'config:saas_plan_features_list'],
-                'contexts' => ['languages:language_content'],
+                'tags' => [
+                    'config:saas_plan_tier_list',
+                    'config:saas_plan_features_list',
+                    'saas_plan_list',
+                ],
+                'contexts' => ['languages:language_content', 'url.path'],
                 'max-age' => 3600,
             ],
         ];
+    }
+
+    /**
+     * Title callback for the vertical pricing page.
+     *
+     * @param string $vertical_key
+     *   Machine name of the vertical.
+     *
+     * @return string
+     *   Page title.
+     */
+    public function verticalPricingTitle(string $vertical_key): string
+    {
+        $labels = $this->getVerticalLabels();
+        $label = $labels[$vertical_key] ?? ucfirst($vertical_key);
+        return (string) $this->t('Planes y Precios — @vertical', ['@vertical' => $label]);
+    }
+
+    /**
+     * Returns the canonical display labels for each vertical.
+     *
+     * @return array
+     *   Map of machine_name => display label.
+     */
+    protected function getVerticalLabels(): array
+    {
+        return [
+            'empleabilidad' => 'Empleabilidad',
+            'emprendimiento' => 'Emprendimiento',
+            'comercioconecta' => 'ComercioConecta',
+            'agroconecta' => 'AgroConecta',
+            'jarabalex' => 'JarabaLex',
+            'serviciosconecta' => 'ServiciosConecta',
+            'formacion' => 'Formación',
+            'andalucia_ei' => 'Andalucía +ei',
+            'jaraba_content_hub' => 'Content Hub',
+            'demo' => 'Demo',
+        ];
+    }
+
+    /**
+     * Returns taglines for each vertical.
+     *
+     * @return array
+     *   Map of machine_name => tagline string.
+     */
+    protected function getVerticalTaglines(): array
+    {
+        return [
+            'empleabilidad' => (string) $this->t('Impulsa tu carrera profesional con IA'),
+            'emprendimiento' => (string) $this->t('Valida y lanza tu idea de negocio'),
+            'comercioconecta' => (string) $this->t('Tu tienda online con marketplace integrado'),
+            'agroconecta' => (string) $this->t('Trazabilidad y comercio agroalimentario'),
+            'jarabalex' => (string) $this->t('Gestión legal inteligente para despachos'),
+            'serviciosconecta' => (string) $this->t('Gestiona y promociona tus servicios'),
+            'formacion' => (string) $this->t('Tu academia online con IA y gamificación'),
+        ];
+    }
+
+    /**
+     * Returns icon references for each vertical.
+     *
+     * @return array
+     *   Map of machine_name => ['category' => string, 'name' => string].
+     */
+    protected function getVerticalIcons(): array
+    {
+        return [
+            'empleabilidad' => ['category' => 'verticals', 'name' => 'empleabilidad'],
+            'emprendimiento' => ['category' => 'verticals', 'name' => 'emprendimiento'],
+            'comercioconecta' => ['category' => 'verticals', 'name' => 'comercioconecta'],
+            'agroconecta' => ['category' => 'verticals', 'name' => 'agroconecta'],
+            'jarabalex' => ['category' => 'verticals', 'name' => 'jarabalex'],
+            'serviciosconecta' => ['category' => 'verticals', 'name' => 'serviciosconecta'],
+            'formacion' => ['category' => 'verticals', 'name' => 'formacion'],
+        ];
+    }
+
+    /**
+     * Builds FAQ items specific to a vertical pricing page.
+     *
+     * Includes the general FAQ plus vertical-specific questions.
+     *
+     * @param string $vertical_key
+     *   Machine name of the vertical.
+     *
+     * @return array
+     *   Array of FAQ items with 'question' and 'answer' keys.
+     */
+    protected function getVerticalPricingFaq(string $vertical_key): array
+    {
+        // Start with general FAQ items.
+        $faq = $this->getPricingFaq();
+
+        // Add vertical-specific question.
+        $verticalLabels = $this->getVerticalLabels();
+        $label = $verticalLabels[$vertical_key] ?? ucfirst($vertical_key);
+
+        $faq[] = [
+            'question' => $this->t('¿Puedo combinar @vertical con otros verticales?', ['@vertical' => $label]),
+            'answer' => $this->t('Sí. Tu cuenta te da acceso a la plataforma completa. Puedes activar funcionalidades de otros verticales según tu plan.'),
+        ];
+
+        return $faq;
     }
 
     /**

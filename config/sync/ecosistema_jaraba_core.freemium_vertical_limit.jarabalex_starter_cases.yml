@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_starter_cases
+label: 'JarabaLex Starter: Expedientes'
+vertical: jarabalex
+plan: starter
+feature_key: cases
+limit_value: 50
+description: '50 expedientes en Starter JarabaLex.'
+upgrade_message: 'Expedientes ilimitados con Profesional.'
+expected_conversion: 0.25
+weight: 0

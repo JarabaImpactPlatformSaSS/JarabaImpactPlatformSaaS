@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_starter_copilot_messages
+label: 'Emprendimiento Starter: Mensajes Copilot'
+vertical: emprendimiento
+plan: starter
+feature_key: copilot_messages
+limit_value: 25
+description: '25 mensajes al dia en Starter.'
+upgrade_message: 'Copilot ilimitado con Profesional.'
+expected_conversion: 0.2
+weight: 0

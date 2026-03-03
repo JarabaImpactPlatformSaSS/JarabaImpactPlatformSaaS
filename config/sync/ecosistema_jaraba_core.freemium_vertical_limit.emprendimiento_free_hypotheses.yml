@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_free_hypotheses
+label: 'Emprendimiento Free: Hipotesis'
+vertical: emprendimiento
+plan: free
+feature_key: hypotheses
+limit_value: 3
+description: '3 hipotesis activas en plan gratuito.'
+upgrade_message: 'Hipotesis ilimitadas. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

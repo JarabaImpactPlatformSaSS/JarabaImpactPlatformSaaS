@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_free_job_applications
+label: 'Empleabilidad Free: Aplicaciones empleo'
+vertical: empleabilidad
+plan: free
+feature_key: job_applications
+limit_value: 3
+description: '3 aplicaciones de empleo al dia en plan gratuito.'
+upgrade_message: 'Aplica a mas ofertas. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

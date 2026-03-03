@@ -1,0 +1,29 @@
+id: formacion_enterprise
+label: 'Formacion - Enterprise'
+vertical: formacion
+tier: enterprise
+features:
+  - course_builder
+  - student_portal
+  - basic_certificates
+  - copilot_ia
+  - learning_paths
+  - gamification
+  - xapi_tracking
+  - seo_advanced
+  - analytics
+  - premium_blocks
+  - api_access
+  - white_label
+  - schema_org
+limits:
+  courses: -1
+  students_per_course: -1
+  certifications_month: -1
+  learning_paths: -1
+  xapi_tracking: -1
+  gamification: -1
+  copilot_uses_per_month: -1
+  storage_gb: -1
+description: 'Limites del tier Enterprise para la vertical Formacion.'
+status: true

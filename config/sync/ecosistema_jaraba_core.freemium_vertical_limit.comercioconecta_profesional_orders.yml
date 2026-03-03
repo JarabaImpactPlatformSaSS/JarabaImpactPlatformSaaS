@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: comercioconecta_profesional_orders
+label: 'ComercioConecta Profesional: Pedidos'
+vertical: comercioconecta
+plan: profesional
+feature_key: orders
+limit_value: -1
+description: 'Pedidos ilimitados en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_starter_students_per_course
+label: 'Formacion Starter: Alumnos por curso'
+vertical: formacion
+plan: starter
+feature_key: students_per_course
+limit_value: 50
+description: '50 alumnos por curso en Starter.'
+upgrade_message: 'Alumnos ilimitados con Profesional.'
+expected_conversion: 0.2
+weight: 0

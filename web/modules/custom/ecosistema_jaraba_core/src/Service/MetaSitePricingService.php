@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Url;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanTierInterface;
 
 /**
@@ -79,6 +80,9 @@ class MetaSitePricingService
         // Sort by weight ascending.
         uasort($tiers, static fn(SaasPlanTierInterface $a, SaasPlanTierInterface $b) => $a->getWeight() <=> $b->getWeight());
 
+        // Load SaasPlan ContentEntities for this vertical to get EUR prices.
+        $priceMap = $this->loadVerticalPrices($vertical);
+
         $pricing = [];
         foreach ($tiers as $tier) {
             $tierKey = $tier->getTierKey();
@@ -91,6 +95,9 @@ class MetaSitePricingService
                 $rawFeatures = ['basic_profile', 'community', 'one_vertical', 'email_support'];
             }
 
+            // EUR prices from SaasPlan ContentEntities (indicative, Stripe is financial truth).
+            $tierPrices = $priceMap[$tierKey] ?? [];
+
             $pricing[] = [
                 'tier_key' => $tierKey,
                 'label' => (string) $tier->label(),
@@ -101,6 +108,8 @@ class MetaSitePricingService
                 'is_recommended' => ($tierKey === 'professional'),
                 'stripe_price_monthly' => $tier->getStripePriceMonthly(),
                 'stripe_price_yearly' => $tier->getStripePriceYearly(),
+                'price_monthly' => $tierPrices['price_monthly'] ?? 0.0,
+                'price_yearly' => $tierPrices['price_yearly'] ?? 0.0,
             ];
         }
 
@@ -132,11 +141,31 @@ class MetaSitePricingService
             ? array_slice($starterFeatures->getFeatures(), 0, 4)
             : [];
 
+        // Load the cheapest starter price for display.
+        $priceMap = $this->loadVerticalPrices($vertical);
+        $starterPrice = $priceMap['starter']['price_monthly'] ?? 0.0;
+        $fromPrice = $starterPrice > 0
+            ? (string) $this->t('@price€/mes', ['@price' => number_format($starterPrice, 0)])
+            : (string) $this->t('0€/mes');
+        $fromLabel = $starterPrice > 0
+            ? (string) $this->t('Desde @price€/mes', ['@price' => number_format($starterPrice, 0)])
+            : (string) $this->t('Empieza gratis');
+
+        // ROUTE-LANGPREFIX-001: Always use Url::fromRoute(), never hardcoded paths.
+        $validVerticals = ['empleabilidad', 'emprendimiento', 'comercioconecta', 'agroconecta', 'jarabalex', 'serviciosconecta', 'formacion'];
+        if (in_array($vertical, $validVerticals, TRUE)) {
+            $ctaUrl = Url::fromRoute('ecosistema_jaraba_core.pricing.vertical', ['vertical_key' => $vertical])->toString();
+        }
+        else {
+            $ctaUrl = Url::fromRoute('ecosistema_jaraba_core.pricing.page')->toString();
+        }
+
         return [
-            'from_price' => (string) $this->t('0€/mes'),
-            'from_label' => (string) $this->t('Empieza gratis'),
+            'from_price' => $fromPrice,
+            'from_price_display' => number_format($starterPrice, 0),
+            'from_label' => $fromLabel,
             'features_highlights' => $this->formatFeatureLabels($highlights),
-            'cta_url' => '/planes',
+            'cta_url' => $ctaUrl,
         ];
     }
 
@@ -204,6 +233,67 @@ class MetaSitePricingService
     }
 
     /**
+     * Loads SaasPlan ContentEntities for a vertical and returns price map by tier weight.
+     *
+     * Maps each tier to its EUR prices by matching SaasPlan weight ranges
+     * to tier keys: weight 0-9 = starter, 10-19 = starter/professional (lowest),
+     * 20+ = professional/enterprise.
+     *
+     * @param string $vertical
+     *   Machine name of the vertical.
+     *
+     * @return array
+     *   Map of tier_key => ['price_monthly' => float, 'price_yearly' => float].
+     */
+    protected function loadVerticalPrices(string $vertical): array
+    {
+        $priceMap = [];
+
+        try {
+            // Resolve vertical entity by machine_name.
+            $verticals = $this->entityTypeManager->getStorage('vertical')
+                ->loadByProperties(['machine_name' => $vertical, 'status' => TRUE]);
+
+            if (empty($verticals)) {
+                return $priceMap;
+            }
+
+            $verticalEntity = reset($verticals);
+
+            // Load active plans for this vertical, sorted by weight.
+            $planIds = $this->entityTypeManager->getStorage('saas_plan')
+                ->getQuery()
+                ->accessCheck(FALSE)
+                ->condition('vertical', $verticalEntity->id())
+                ->condition('status', TRUE)
+                ->sort('weight', 'ASC')
+                ->execute();
+
+            $plans = $this->entityTypeManager->getStorage('saas_plan')
+                ->loadMultiple($planIds);
+
+            // Assign plans to tiers by position (1st = starter, 2nd = professional, 3rd = enterprise).
+            $tierKeys = ['starter', 'professional', 'enterprise'];
+            $index = 0;
+            foreach ($plans as $plan) {
+                if ($index >= count($tierKeys)) {
+                    break;
+                }
+                $priceMap[$tierKeys[$index]] = [
+                    'price_monthly' => (float) $plan->getPriceMonthly(),
+                    'price_yearly' => (float) $plan->getPriceYearly(),
+                ];
+                $index++;
+            }
+        }
+        catch (\Exception $e) {
+            // PRESAVE-RESILIENCE-001: pricing data is non-critical, never crash.
+        }
+
+        return $priceMap;
+    }
+
+    /**
      * Maps feature machine names to translated human-readable labels.
      *
      * Centraliza el mapeo de nombres técnicos → labels de UI para que tanto
@@ -254,6 +344,50 @@ class MetaSitePricingService
             'legal_ai' => $this->t('Investigación legal IA'),
             'marketplace' => $this->t('Marketplace incluido'),
             'ecommerce' => $this->t('Tienda online'),
+            // JarabaLex features.
+            'legal_search' => $this->t('Búsqueda legal inteligente'),
+            'legal_alerts' => $this->t('Alertas jurídicas'),
+            'legal_citations' => $this->t('Citaciones cruzadas'),
+            'legal_calendar' => $this->t('Agenda de plazos'),
+            'legal_vault' => $this->t('Bóveda documental'),
+            'legal_billing' => $this->t('Facturación legal'),
+            'legal_templates' => $this->t('Plantillas de documentos'),
+            'legal_lexnet' => $this->t('Integración LexNET'),
+            // Formacion / LMS features.
+            'course_builder' => $this->t('Constructor de cursos'),
+            'student_portal' => $this->t('Portal del alumno'),
+            'basic_certificates' => $this->t('Certificados automáticos'),
+            'learning_paths' => $this->t('Rutas de aprendizaje'),
+            'gamification' => $this->t('Gamificación'),
+            'xapi_tracking' => $this->t('Seguimiento xAPI'),
+            // Empleabilidad features.
+            'cv_builder_advanced' => $this->t('CV Builder avanzado'),
+            'job_alerts_email' => $this->t('Alertas de empleo'),
+            'diagnostico_competencias' => $this->t('Diagnóstico de competencias'),
+            'cv_builder_ia' => $this->t('CV Builder con IA'),
+            'matching_inteligente' => $this->t('Matching inteligente'),
+            'simulador_entrevistas' => $this->t('Simulador de entrevistas'),
+            'credenciales_digitales' => $this->t('Credenciales digitales'),
+            'health_score' => $this->t('Health Score profesional'),
+            'copilot_ia' => $this->t('Copiloto IA'),
+            'rutas_formativas' => $this->t('Rutas formativas'),
+            // Emprendimiento features.
+            'calculadora_madurez' => $this->t('Calculadora de madurez'),
+            'bmc_ia' => $this->t('Business Model Canvas con IA'),
+            'validacion_mvp' => $this->t('Validación MVP'),
+            'mentoring_1a1' => $this->t('Mentoría 1 a 1'),
+            // Andalucia +ei features.
+            'formacion_certificada' => $this->t('Formación certificada'),
+            'expediente_digital' => $this->t('Expediente digital'),
+            // Shared features.
+            'soporte_email' => $this->t('Soporte por email'),
+            'soporte_chat' => $this->t('Soporte por chat'),
+            'soporte_dedicado' => $this->t('Soporte dedicado'),
+            // Comercio/Agro features.
+            'calendar_sync' => $this->t('Sincronización de calendario'),
+            'buzon_confianza' => $this->t('Buzón de confianza'),
+            'traceability_qr' => $this->t('Trazabilidad QR'),
+            'seo_local_audit' => $this->t('Auditoría SEO local'),
         ];
 
         $labels = [];

@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: empleabilidad_free_diagnostics
+label: 'Empleabilidad Free: Diagnosticos'
+vertical: empleabilidad
+plan: free
+feature_key: diagnostics
+limit_value: 1
+description: '1 diagnostico en plan gratuito Empleabilidad.'
+upgrade_message: 'Diagnosticos ilimitados con PDF. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

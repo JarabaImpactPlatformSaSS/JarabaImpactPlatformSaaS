@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: jarabalex_free_alerts
+label: 'JarabaLex Free: Alertas juridicas'
+vertical: jarabalex
+plan: free
+feature_key: alerts
+limit_value: 1
+description: '1 alerta juridica en plan gratuito.'
+upgrade_message: 'Alertas ilimitadas. Disponible desde Starter.'
+expected_conversion: 0.25
+weight: 0

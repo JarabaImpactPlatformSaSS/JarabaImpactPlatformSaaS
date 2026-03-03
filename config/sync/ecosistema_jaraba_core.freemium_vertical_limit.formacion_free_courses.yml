@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: formacion_free_courses
+label: 'Formacion Free: Cursos'
+vertical: formacion
+plan: free
+feature_key: courses
+limit_value: 1
+description: '1 curso en plan gratuito Formacion.'
+upgrade_message: 'Crea mas cursos. Disponible desde Starter.'
+expected_conversion: 0.35
+weight: 0

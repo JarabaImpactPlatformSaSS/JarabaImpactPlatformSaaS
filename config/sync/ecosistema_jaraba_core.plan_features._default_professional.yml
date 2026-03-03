@@ -1,0 +1,24 @@
+id: _default_professional
+label: 'Default - Professional'
+vertical: _default
+tier: professional
+features:
+  - seo_advanced
+  - ab_testing
+  - analytics
+  - premium_blocks
+limits:
+  max_pages: 25
+  basic_templates: 25
+  premium_templates: 8
+  basic_blocks: 35
+  premium_blocks: 10
+  ab_test_limit: 3
+  max_products: 100
+  orders_per_month: 500
+  copilot_uses_per_month: 200
+  storage_gb: 10
+  ai_queries: 500
+  productores: 20
+description: 'Limites por defecto para el tier Professional.'
+status: true

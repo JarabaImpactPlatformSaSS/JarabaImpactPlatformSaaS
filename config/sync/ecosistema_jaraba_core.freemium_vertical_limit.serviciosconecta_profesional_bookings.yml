@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_profesional_bookings
+label: 'ServiciosConecta Profesional: Reservas'
+vertical: serviciosconecta
+plan: profesional
+feature_key: bookings
+limit_value: -1
+description: 'Reservas ilimitadas en Profesional.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

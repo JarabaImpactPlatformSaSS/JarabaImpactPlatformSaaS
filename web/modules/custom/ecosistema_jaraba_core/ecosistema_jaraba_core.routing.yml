@@ -1428,6 +1428,15 @@ ecosistema_jaraba_core.landing.jarabalex:
   requirements:
     _access: 'TRUE'
 
+# Landing Formación — Academia online con IA y gamificación
+ecosistema_jaraba_core.landing.formacion:
+  path: '/formacion'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\VerticalLandingController::formacion'
+    _title: 'Formación - Tu academia online con IA'
+  requirements:
+    _access: 'TRUE'
+
 # Landing Despachos — Digitalización de despachos de abogados
 # Complementa JarabaLex (investigación legal): gestión del despacho.
 ecosistema_jaraba_core.landing.despachos:
@@ -1462,6 +1471,29 @@ ecosistema_jaraba_core.pricing.page:
     _title: 'Planes y Precios'
   requirements:
     _access: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# /PLANES/{VERTICAL} — VERTICAL-SPECIFIC PRICING PAGE (VERT-PRICING-001)
+# =============================================================================
+# Pagina de precios por vertical con datos de SaasPlanTier + SaasPlanFeatures
+# + SaasPlan (EUR prices). Reutiliza el template pricing-page.html.twig.
+#
+# NOTA: El literal 'planes' DEBE ir primero en el path. Drupal RouteProvider
+# no genera candidatos /%/literal para paths de 2 segmentos, asi que rutas
+# como /{variable}/planes no se resuelven. Esto es una limitacion del
+# getCandidateOutlines() en Drupal\Core\Routing\RouteProvider.
+#
+# DIRECTRIZ: ROUTE-LANGPREFIX-001, PLAN-CASCADE-001
+
+ecosistema_jaraba_core.pricing.vertical:
+  path: '/planes/{vertical_key}'
+  defaults:
+    _controller: '\Drupal\ecosistema_jaraba_core\Controller\PricingController::verticalPricingPage'
+    _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\PricingController::verticalPricingTitle'
+  requirements:
+    _access: 'TRUE'
+    vertical_key: 'empleabilidad|emprendimiento|comercioconecta|agroconecta|jarabalex|serviciosconecta|formacion'
   options:
     _admin_route: FALSE
 

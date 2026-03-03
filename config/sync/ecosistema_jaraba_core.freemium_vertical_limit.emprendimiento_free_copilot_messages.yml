@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_free_copilot_messages
+label: 'Emprendimiento Free: Mensajes Copilot'
+vertical: emprendimiento
+plan: free
+feature_key: copilot_messages
+limit_value: 5
+description: '5 mensajes de copilot al dia en plan gratuito.'
+upgrade_message: 'Mas mensajes de copilot IA. Disponible desde Starter.'
+expected_conversion: 0.3
+weight: 0

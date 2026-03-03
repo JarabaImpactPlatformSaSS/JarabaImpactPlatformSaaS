@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_free_bmc_drafts
+label: 'Emprendimiento Free: Borradores BMC'
+vertical: emprendimiento
+plan: free
+feature_key: bmc_drafts
+limit_value: 1
+description: '1 Business Model Canvas en plan gratuito.'
+upgrade_message: 'Crea canvas ilimitados. Disponible desde Starter.'
+expected_conversion: 0.35
+weight: 0

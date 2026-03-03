@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: serviciosconecta_starter_reviews
+label: 'ServiciosConecta Starter: Resenas'
+vertical: serviciosconecta
+plan: starter
+feature_key: reviews
+limit_value: -1
+description: 'Resenas ilimitadas en Starter.'
+upgrade_message: ''
+expected_conversion: 0.0
+weight: 0

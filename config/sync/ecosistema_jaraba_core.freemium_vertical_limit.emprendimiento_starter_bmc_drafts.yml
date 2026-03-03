@@ -1,0 +1,12 @@
+langcode: es
+status: true
+id: emprendimiento_starter_bmc_drafts
+label: 'Emprendimiento Starter: Borradores BMC'
+vertical: emprendimiento
+plan: starter
+feature_key: bmc_drafts
+limit_value: 3
+description: '3 canvas en Starter Emprendimiento.'
+upgrade_message: 'Canvas ilimitados con Profesional.'
+expected_conversion: 0.25
+weight: 0

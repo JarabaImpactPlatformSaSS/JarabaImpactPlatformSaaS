@@ -1,0 +1,13 @@
+id: professional
+label: 'Professional'
+tier_key: professional
+aliases:
+  - professional
+  - profesional
+  - pro
+  - business
+stripe_price_monthly: ''
+stripe_price_yearly: ''
+description: 'Plan profesional con funcionalidades avanzadas.'
+weight: 10
+status: true
