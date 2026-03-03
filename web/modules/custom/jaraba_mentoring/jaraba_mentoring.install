@@ -187,22 +187,41 @@ function jaraba_mentoring_update_10003(): void {
  */
 function jaraba_mentoring_update_10004(): string {
   $update_manager = \Drupal::entityDefinitionUpdateManager();
-  $entity_type = $update_manager->getEntityType('session_review');
-  if (!$entity_type) {
+  if (!$update_manager->getEntityType('session_review')) {
     return 'session_review entity type not installed yet.';
   }
 
-  $fields = \Drupal\jaraba_mentoring\Entity\SessionReview::baseFieldDefinitions($entity_type);
-  $installed = [];
-  $target_fields = ['flag_reason', 'flag_reporter_uid', 'flag_count', 'owner_response', 'owner_response_at', 'verified_purchase'];
+  // Define fields inline to avoid baseFieldDefinitions() owner entity key check.
+  $field_defs = [
+    'flag_reason' => \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setLabel(t('Razon de reporte'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('view', TRUE),
+    'flag_reporter_uid' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('UID del reportante'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE),
+    'flag_count' => \Drupal\Core\Field\BaseFieldDefinition::create('integer')
+      ->setLabel(t('Numero de reportes'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE),
+    'owner_response' => \Drupal\Core\Field\BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Respuesta del propietario'))
+      ->setDisplayConfigurable('view', TRUE),
+    'owner_response_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha de respuesta'))
+      ->setDisplayConfigurable('view', TRUE),
+    'verified_purchase' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Compra verificada'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('view', TRUE),
+  ];
 
-  foreach ($target_fields as $field_name) {
-    if (!isset($fields[$field_name])) {
-      continue;
-    }
+  $installed = [];
+  foreach ($field_defs as $field_name => $definition) {
     $existing = $update_manager->getFieldStorageDefinition($field_name, 'session_review');
     if (!$existing) {
-      $update_manager->installFieldStorageDefinition($field_name, 'session_review', 'jaraba_mentoring', $fields[$field_name]);
+      $update_manager->installFieldStorageDefinition($field_name, 'session_review', 'jaraba_mentoring', $definition);
       $installed[] = $field_name;
     }
   }

@@ -2045,7 +2045,7 @@ function ecosistema_jaraba_core_update_9021(): string {
       $gamification->getUserPoints(0);
       $tables_created += 2;
     }
-    catch (\Exception) {}
+    catch (\Throwable) {}
   }
 
   // B-15: A/B testing table.
@@ -2055,7 +2055,7 @@ function ecosistema_jaraba_core_update_9021(): string {
       $abTest->getResults();
       $tables_created++;
     }
-    catch (\Exception) {}
+    catch (\Throwable) {}
   }
 
   // B-18: Webhook tables.
@@ -2065,7 +2065,7 @@ function ecosistema_jaraba_core_update_9021(): string {
       $webhook->getWebhooks();
       $tables_created++;
     }
-    catch (\Exception) {}
+    catch (\Throwable) {}
   }
 
   return "B-13/B-15/B-18: {$tables_created} tables created (gamification, A/B testing, webhooks).";

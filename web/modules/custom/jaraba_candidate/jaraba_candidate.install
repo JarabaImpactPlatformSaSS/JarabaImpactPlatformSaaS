@@ -167,7 +167,10 @@ function jaraba_candidate_update_10007(): string {
       }
       $existing = $update_manager->getFieldStorageDefinition($field_name, $entity_type_id);
       if ($existing) {
-        $update_manager->updateFieldStorageDefinition($fields[$field_name]);
+        $field_def = $fields[$field_name];
+        $field_def->setName($field_name);
+        $field_def->setTargetEntityTypeId($entity_type_id);
+        $update_manager->updateFieldStorageDefinition($field_def);
         $updated[] = "$entity_type_id.$field_name";
       }
     }

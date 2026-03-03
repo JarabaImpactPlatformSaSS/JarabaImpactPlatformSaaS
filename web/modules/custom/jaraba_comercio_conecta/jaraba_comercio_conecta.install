@@ -402,15 +402,21 @@ function jaraba_comercio_conecta_update_10005(): void {
     }
 
     // Now update the field definition target_type.
-    $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Tenant'))
-      ->setRequired(TRUE)
-      ->setSetting('target_type', 'group')
-      ->setDisplayOptions('form', ['weight' => 0])
-      ->setDisplayConfigurable('form', TRUE)
-      ->setTargetEntityTypeId($entity_type_id);
-    $update_manager->updateFieldStorageDefinition($new_field);
-    \Drupal::logger('jaraba_comercio_conecta')->info('Migrated comercio_review tenant_id to group reference.');
+    try {
+      $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Tenant'))
+        ->setName('tenant_id')
+        ->setRequired(TRUE)
+        ->setSetting('target_type', 'group')
+        ->setDisplayOptions('form', ['weight' => 0])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setTargetEntityTypeId($entity_type_id);
+      $update_manager->updateFieldStorageDefinition($new_field);
+      \Drupal::logger('jaraba_comercio_conecta')->info('Migrated comercio_review tenant_id to group reference.');
+    }
+    catch (\Throwable) {
+      \Drupal::logger('jaraba_comercio_conecta')->warning('Could not update tenant_id field — skipping.');
+    }
   }
 }
 

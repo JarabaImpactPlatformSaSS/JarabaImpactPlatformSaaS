@@ -186,14 +186,20 @@ function jaraba_agroconecta_core_update_10003(): void {
       }
     }
 
-    $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Tenant'))
-      ->setRequired(TRUE)
-      ->setSetting('target_type', 'group')
-      ->setDisplayConfigurable('form', TRUE)
-      ->setTargetEntityTypeId($entity_type_id);
-    $update_manager->updateFieldStorageDefinition($new_field);
-    \Drupal::logger('jaraba_agroconecta_core')->info('Migrated review_agro tenant_id to group reference.');
+    try {
+      $new_field = \Drupal\Core\Field\BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Tenant'))
+        ->setName('tenant_id')
+        ->setRequired(TRUE)
+        ->setSetting('target_type', 'group')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setTargetEntityTypeId($entity_type_id);
+      $update_manager->updateFieldStorageDefinition($new_field);
+      \Drupal::logger('jaraba_agroconecta_core')->info('Migrated review_agro tenant_id to group reference.');
+    }
+    catch (\Throwable) {
+      \Drupal::logger('jaraba_agroconecta_core')->warning('Could not update tenant_id field — skipping.');
+    }
   }
 }
 

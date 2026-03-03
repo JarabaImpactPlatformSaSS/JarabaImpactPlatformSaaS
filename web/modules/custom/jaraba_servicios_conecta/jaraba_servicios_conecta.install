@@ -225,18 +225,24 @@ function jaraba_servicios_conecta_update_10002(): void {
   if ($status_field) {
     $allowed_values = $status_field->getSetting('allowed_values') ?? [];
     if (!isset($allowed_values['flagged'])) {
-      $allowed_values['flagged'] = t('Marcada');
-      $new_status = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
-        ->setLabel(t('Estado'))
-        ->setRequired(TRUE)
-        ->setDefaultValue('pending')
-        ->setSetting('allowed_values', $allowed_values)
-        ->setDisplayOptions('form', ['weight' => 20])
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE)
-        ->setTargetEntityTypeId($entity_type_id);
-      $update_manager->updateFieldStorageDefinition($new_status);
-      \Drupal::logger('jaraba_servicios_conecta')->info('Added flagged status to review_servicios.');
+      try {
+        $allowed_values['flagged'] = t('Marcada');
+        $new_status = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+          ->setLabel(t('Estado'))
+          ->setName('status')
+          ->setRequired(TRUE)
+          ->setDefaultValue('pending')
+          ->setSetting('allowed_values', $allowed_values)
+          ->setDisplayOptions('form', ['weight' => 20])
+          ->setDisplayConfigurable('form', TRUE)
+          ->setDisplayConfigurable('view', TRUE)
+          ->setTargetEntityTypeId($entity_type_id);
+        $update_manager->updateFieldStorageDefinition($new_status);
+        \Drupal::logger('jaraba_servicios_conecta')->info('Added flagged status to review_servicios.');
+      }
+      catch (\Throwable) {
+        \Drupal::logger('jaraba_servicios_conecta')->warning('Could not update status field — skipping.');
+      }
     }
   }
 }
@@ -325,7 +331,10 @@ function jaraba_servicios_conecta_update_10004(): string {
         $synced[] = $field_name . ' (installed)';
       }
       else {
-        $update_manager->updateFieldStorageDefinition($fields[$field_name]);
+        $field_def = $fields[$field_name];
+        $field_def->setName($field_name);
+        $field_def->setTargetEntityTypeId('booking');
+        $update_manager->updateFieldStorageDefinition($field_def);
         $synced[] = $field_name . ' (updated)';
       }
     }
