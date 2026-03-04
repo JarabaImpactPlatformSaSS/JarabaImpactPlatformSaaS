@@ -45,7 +45,7 @@ services:
     class: Drupal\jaraba_i18n\Service\AITranslationService
     arguments:
       - '@?jaraba_ai_agents.orchestrator'
-      - '@jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.model_router'
       - '@config.factory'
       - '@logger.channel.jaraba_i18n'
       - '@?ecosistema_jaraba_core.tenant_context'

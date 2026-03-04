@@ -12,7 +12,7 @@ services:
       - '@entity_type.manager'
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@?jaraba_integrations.connector_registry'
-      - '@jaraba_integrations.connector_installer'
+      - '@?jaraba_integrations.connector_installer'
 
   jaraba_connector_sdk.revenue_share:
     class: Drupal\jaraba_connector_sdk\Service\RevenueShareService

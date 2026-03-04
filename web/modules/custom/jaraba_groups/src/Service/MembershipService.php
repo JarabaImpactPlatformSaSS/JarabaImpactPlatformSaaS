@@ -37,11 +37,11 @@ class MembershipService
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
         AccountProxyInterface $currentUser,
-        $loggerFactory
+        LoggerInterface $logger,
     ) {
         $this->entityTypeManager = $entityTypeManager;
         $this->currentUser = $currentUser;
-        $this->logger = $loggerFactory->get('jaraba_groups');
+        $this->logger = $logger;
     }
 
     /**

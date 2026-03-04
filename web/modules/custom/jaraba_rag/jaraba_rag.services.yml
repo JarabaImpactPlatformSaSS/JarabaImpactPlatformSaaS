@@ -95,6 +95,6 @@ services:
     class: Drupal\jaraba_rag\Service\LlmReRankerService
     arguments:
       - '@ai.provider'
-      - '@jaraba_ai_agents.model_router'
+      - '@?jaraba_ai_agents.model_router'
       - '@?logger.channel.jaraba_ai_agents'
 

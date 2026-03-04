@@ -131,6 +131,12 @@ run_check "QUERY-CHAIN-001" "Dangerous query method chaining" \
 run_check "CONTAINER-DEPS-001" "Container dependency integrity (fast)" \
   php "$SCRIPT_DIR/validate-container-deps.php"
 
+run_check "CONTAINER-DEPS-002" "Circular reference detection (fast)" \
+  php "$SCRIPT_DIR/validate-circular-deps.php"
+
+run_check "LOGGER-INJECT-001" "Logger injection consistency (fast)" \
+  php "$SCRIPT_DIR/validate-logger-injection.php"
+
 # Full-only checks.
 if [ "$MODE" = "full" ]; then
   run_check "DI-TYPE-001" "Service DI type consistency" \
@@ -157,6 +163,9 @@ if [ "$MODE" = "full" ]; then
   run_check "TEST-COVERAGE-MAP-001" "Test coverage map" \
     php "$SCRIPT_DIR/validate-test-coverage-map.php"
 
+  run_check "OPTIONAL-CROSSMODULE-001" "Cross-module hard dependency detection" \
+    php "$SCRIPT_DIR/validate-optional-deps.php"
+
 else
   skip_check "DI-TYPE-001" "Service DI type consistency"
   skip_check "ENTITY-INTEG-001" "Entity convention compliance"
@@ -165,6 +174,7 @@ else
   skip_check "ASSET-FRESHNESS-001" "Compiled asset freshness"
   skip_check "TENANT-CHECK-001" "Tenant isolation verification"
   skip_check "TEST-COVERAGE-MAP-001" "Test coverage map"
+  skip_check "OPTIONAL-CROSSMODULE-001" "Cross-module hard dependency detection"
 fi
 
 fi  # End of non-checklist mode guard.

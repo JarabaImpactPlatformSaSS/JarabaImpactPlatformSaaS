@@ -100,6 +100,18 @@ jobs:
       - name: Validate container dependencies
         run: php scripts/validation/validate-container-deps.php
 
+      # CONTAINER-DEPS-002: Circular reference detection (blocking).
+      - name: Validate circular dependencies
+        run: php scripts/validation/validate-circular-deps.php
+
+      # LOGGER-INJECT-001: Logger injection mismatch detection (blocking).
+      - name: Validate logger injection consistency
+        run: php scripts/validation/validate-logger-injection.php
+
+      # OPTIONAL-CROSSMODULE-001: Cross-module hard deps (blocking).
+      - name: Validate cross-module optional deps
+        run: php scripts/validation/validate-optional-deps.php
+
   # ===========================================
   # JOB 2: TESTS UNITARIOS
   # ===========================================

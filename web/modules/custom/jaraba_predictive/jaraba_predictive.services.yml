@@ -70,4 +70,4 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_predictive'
       - '@?jaraba_pwa.push'
-      - '@jaraba_content_hub.newsletter_bridge'
+      - '@?jaraba_content_hub.newsletter_bridge'

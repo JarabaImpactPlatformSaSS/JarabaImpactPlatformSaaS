@@ -41,6 +41,9 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - Core transversal: ecosistema_jaraba_core
 - Services: inyeccion de dependencias SIEMPRE. \Drupal::service() solo en .module y hooks procedurales
 - Optional services: `@?service_name` en services.yml, constructor acepta `?ServiceInterface $service = NULL`
+- OPTIONAL-CROSSMODULE-001: Toda referencia cross-modulo en services.yml DEBE usar `@?` (opcional). Solo `ecosistema_jaraba_core` y submodulos propios permiten `@` hard. Validacion: `php scripts/validation/validate-optional-deps.php`
+- CONTAINER-DEPS-002: NUNCA crear dependencias circulares en services.yml. Si A necesita B y B necesita A, una direccion DEBE ser `@?` o lazy-load via `\Drupal::service()`. Validacion: `php scripts/validation/validate-circular-deps.php`
+- LOGGER-INJECT-001: Si services.yml inyecta `@logger.channel.X`, el constructor PHP DEBE aceptar `LoggerInterface $logger` directamente (NO llamar `->get('channel')`). `->get()` solo es valido con `@logger.factory`. Validacion: `php scripts/validation/validate-logger-injection.php`
 
 ### PHP
 - PHP 8.4 — respeta sus restricciones:
@@ -271,6 +274,9 @@ Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
 - `php scripts/validation/validate-compiled-assets.php` (ASSET-FRESHNESS-001)
 - `php scripts/validation/validate-tenant-isolation.php` (TENANT-CHECK-001)
 - `php scripts/validation/validate-test-coverage-map.php` (TEST-COVERAGE-MAP-001)
+- `php scripts/validation/validate-circular-deps.php` (CONTAINER-DEPS-002)
+- `php scripts/validation/validate-optional-deps.php` (OPTIONAL-CROSSMODULE-001)
+- `php scripts/validation/validate-logger-injection.php` (LOGGER-INJECT-001)
 
 ## SAFEGUARD SYSTEM — 5 Capas de Defensa
 
