@@ -343,3 +343,43 @@ ecosistema_jaraba_core.firma_settings:
     output_directory:
       type: string
       label: 'Output directory for signed certificates'
+
+ecosistema_jaraba_core.demo_settings:
+  type: config_object
+  label: 'Demo experience settings'
+  mapping:
+    rate_limits:
+      type: mapping
+      label: 'Rate limits per endpoint'
+      mapping:
+        start:
+          type: integer
+          label: 'Start endpoint limit'
+        track:
+          type: integer
+          label: 'Track endpoint limit'
+        session:
+          type: integer
+          label: 'Session endpoint limit'
+        convert:
+          type: integer
+          label: 'Convert endpoint limit'
+    session_ttl:
+      type: integer
+      label: 'Session TTL in seconds'
+    feature_limits:
+      type: mapping
+      label: 'Per-session feature limits'
+      mapping:
+        demo_sessions_per_hour:
+          type: integer
+          label: 'Max demo sessions per hour'
+        ai_messages_per_session:
+          type: integer
+          label: 'Max AI messages per session'
+        story_generations_per_session:
+          type: integer
+          label: 'Max story generations per session'
+        products_viewed_per_session:
+          type: integer
+          label: 'Max products viewed per session'

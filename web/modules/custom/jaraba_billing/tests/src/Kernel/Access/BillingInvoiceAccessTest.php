@@ -30,6 +30,7 @@ class BillingInvoiceAccessTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'datetime',
     'group',
     'flexible_permissions',
     'ecosistema_jaraba_core',

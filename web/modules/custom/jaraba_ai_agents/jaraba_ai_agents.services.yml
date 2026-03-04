@@ -363,9 +363,10 @@ services:
   #
   # Alias: cualquier codigo que pida jaraba_ai_agents.jarabalex_copilot
   # recibira el agente canonico de jaraba_legal_intelligence.
-  jaraba_ai_agents.jarabalex_copilot:
-    alias: jaraba_legal_intelligence.legal_copilot_agent
-    deprecated: 'The "%alias_id%" service is deprecated. Use "jaraba_legal_intelligence.legal_copilot_agent" directly. See FIX-016.'
+  # REMOVED: Cross-module alias causes ServiceNotFoundException when
+  # jaraba_legal_intelligence is not installed. Use the canonical service directly.
+  # jaraba_ai_agents.jarabalex_copilot:
+  #   alias: jaraba_legal_intelligence.legal_copilot_agent
 
   # GAP-AUD-011 + GAP-AUD-013: MultiModal Bridge — Voice + Vision AI
   # HAL-AI-17: Guardrails MANDATORY for multimodal processing.

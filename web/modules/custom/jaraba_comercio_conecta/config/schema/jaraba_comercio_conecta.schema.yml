@@ -1,0 +1,25 @@
+jaraba_comercio_conecta.settings:
+  type: config_object
+  label: 'ComercioConecta settings'
+  mapping:
+    orders_per_page:
+      type: integer
+      label: 'Orders per page'
+    search_results_per_page:
+      type: integer
+      label: 'Search results per page'
+    flash_offers_per_page:
+      type: integer
+      label: 'Flash offers per page'
+    reviews_per_page:
+      type: integer
+      label: 'Reviews per page'
+    notifications_per_page:
+      type: integer
+      label: 'Notifications per page'
+    merchant_orders_per_page:
+      type: integer
+      label: 'Merchant orders per page'
+    nearby_radius_default:
+      type: integer
+      label: 'Default nearby search radius (km)'

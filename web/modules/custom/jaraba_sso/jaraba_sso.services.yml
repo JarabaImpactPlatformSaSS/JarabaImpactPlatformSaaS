@@ -30,7 +30,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@?ecosistema_jaraba_core.tenant_context'
-      - '@user.auth'
+      - '@?user.auth'
       - '@logger.channel.jaraba_sso'
 
   jaraba_sso.mfa_enforcer:

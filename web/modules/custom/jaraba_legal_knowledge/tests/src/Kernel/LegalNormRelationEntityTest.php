@@ -7,7 +7,6 @@ namespace Drupal\Tests\jaraba_legal_knowledge\Kernel;
 use Drupal\jaraba_legal_knowledge\Entity\LegalNorm;
 use Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation;
 use Drupal\KernelTests\KernelTestBase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Kernel tests for the LegalNormRelation entity.
@@ -30,31 +29,22 @@ class LegalNormRelationEntityTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'group',
+    'flexible_permissions',
+    'ecosistema_jaraba_core',
     'jaraba_legal_knowledge',
   ];
 
   /**
    * {@inheritdoc}
-   *
-   * KERNEL-SYNTH-001: Register synthetic services for unloaded modules.
    */
-  public function register(ContainerBuilder $container): void {
-    parent::register($container);
-    $container->register('ecosistema_jaraba_core.tenant_context')->setSynthetic(TRUE);
-  }
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
     parent::setUp();
-
-    $this->container->set(
-      'ecosistema_jaraba_core.tenant_context',
-      $this->getMockBuilder('Drupal\ecosistema_jaraba_core\Service\TenantContextService')
-        ->disableOriginalConstructor()
-        ->getMock()
-    );
 
     $this->installEntitySchema('user');
     $this->installEntitySchema('legal_norm');

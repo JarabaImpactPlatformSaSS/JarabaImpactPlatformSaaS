@@ -33,7 +33,11 @@ class ProductRetailAccessTest extends KernelTestBase {
     'text',
     'options',
     'datetime',
+    'image',
+    'file',
     'taxonomy',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_comercio_conecta',
   ];

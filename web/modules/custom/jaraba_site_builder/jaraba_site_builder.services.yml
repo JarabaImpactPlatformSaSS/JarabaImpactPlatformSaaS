@@ -120,7 +120,7 @@ services:
   jaraba_site_builder.seo_ai_assistant:
     class: Drupal\jaraba_site_builder\Service\SeoAiAssistantService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@entity_type.manager'
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'

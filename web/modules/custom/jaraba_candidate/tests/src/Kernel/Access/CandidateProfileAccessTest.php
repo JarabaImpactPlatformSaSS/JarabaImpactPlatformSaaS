@@ -30,6 +30,11 @@ class CandidateProfileAccessTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'datetime',
+    'image',
+    'file',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_candidate',
   ];

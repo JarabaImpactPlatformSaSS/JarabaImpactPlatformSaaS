@@ -30,3 +30,15 @@ ecosistema_jaraba_core.ai_agent.*:
     status:
       type: boolean
       label: 'Status'
+    autonomy_level:
+      type: integer
+      label: 'Autonomy Level'
+    requires_approval:
+      type: boolean
+      label: 'Requires Approval'
+    max_daily_auto_actions:
+      type: integer
+      label: 'Max Daily Auto Actions'
+    allowed_actions:
+      type: string
+      label: 'Allowed Actions (JSON)'
