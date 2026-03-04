@@ -29,6 +29,7 @@ class TenantCandidateIsolationTest extends TenantIsolationBaseTest {
     'datetime',
     'image',
     'file',
+    'geofield',
     'group',
     'flexible_permissions',
     'ecosistema_jaraba_core',
