@@ -256,17 +256,25 @@ class EmailVerificationService {
    */
   public function cleanupExpiredTokens(): int {
     $deleted = 0;
-    $results = $this->database->select('key_value', 'kv')
-      ->fields('kv', ['name', 'value'])
+
+    // Query key names from the key_value table, then read values
+    // via State API to avoid calling unserialize() directly.
+    $names = $this->database->select('key_value', 'kv')
+      ->fields('kv', ['name'])
       ->condition('collection', 'state')
       ->condition('name', self::STATE_PREFIX . '%', 'LIKE')
-      ->execute();
+      ->execute()
+      ->fetchCol();
+
+    if (empty($names)) {
+      return 0;
+    }
 
     $now = time();
-    foreach ($results as $row) {
-      $data = unserialize($row->value, ['allowed_classes' => FALSE]);
+    $values = $this->state->getMultiple($names);
+    foreach ($values as $name => $data) {
       if (is_array($data) && isset($data['expires']) && $now > $data['expires']) {
-        $this->state->delete($row->name);
+        $this->state->delete($name);
         $deleted++;
       }
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -219,6 +220,10 @@ class FacetedSearchService {
     $results = [];
 
     foreach ($entities as $entity) {
+      if (!$entity instanceof ContentEntityInterface) {
+        continue;
+      }
+
       $title = '';
       if ($titleField && $entity->hasField($titleField)) {
         $title = $entity->get($titleField)->value ?? '';

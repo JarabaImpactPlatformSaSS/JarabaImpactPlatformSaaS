@@ -83,6 +83,7 @@ class FairUsePolicyTest extends KernelTestBase {
     $policy->save();
 
     // Read.
+    /** @var \Drupal\ecosistema_jaraba_core\Entity\FairUsePolicy|null $loaded */
     $loaded = $storage->load('test_policy');
     $this->assertNotNull($loaded);
     $this->assertInstanceOf(FairUsePolicy::class, $loaded);
@@ -108,6 +109,7 @@ class FairUsePolicyTest extends KernelTestBase {
     $loaded->setGracePeriodHours(24);
     $loaded->save();
 
+    /** @var \Drupal\ecosistema_jaraba_core\Entity\FairUsePolicy $reloaded */
     $reloaded = $storage->load('test_policy');
     $this->assertEquals(10, $reloaded->getBurstTolerancePct());
     $this->assertEquals(24, $reloaded->getGracePeriodHours());
@@ -154,6 +156,7 @@ class FairUsePolicyTest extends KernelTestBase {
     ]);
     $policy->save();
 
+    /** @var \Drupal\ecosistema_jaraba_core\Entity\FairUsePolicy $loaded */
     $loaded = $storage->load('fallback_test');
 
     // Resource not specified → falls back to _default.
@@ -177,6 +180,7 @@ class FairUsePolicyTest extends KernelTestBase {
     ]);
     $policy->save();
 
+    /** @var \Drupal\ecosistema_jaraba_core\Entity\FairUsePolicy $loaded */
     $loaded = $storage->load('sort_test');
     $this->assertEquals([70, 85, 95], $loaded->getWarningThresholds());
   }

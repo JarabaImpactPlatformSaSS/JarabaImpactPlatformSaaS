@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -68,7 +69,7 @@ class CurrencyService {
     try {
       $storage = $this->entityTypeManager->getStorage('tenant');
       $tenant = $storage->load($tenantId);
-      if ($tenant && $tenant->hasField('currency')) {
+      if ($tenant instanceof ContentEntityInterface && $tenant->hasField('currency')) {
         return $tenant->get('currency')->value ?? 'EUR';
       }
     }

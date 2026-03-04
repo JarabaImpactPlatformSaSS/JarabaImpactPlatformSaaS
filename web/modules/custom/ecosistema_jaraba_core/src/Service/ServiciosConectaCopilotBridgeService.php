@@ -31,6 +31,26 @@ class ServiciosConectaCopilotBridgeService implements CopilotBridgeInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getRelevantContext(int $userId): array {
+    return $this->getVerticalContext($userId);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSoftSuggestion(int $userId): ?array {
+    $actions = $this->getSuggestedActions($userId);
+    if (empty($actions)) {
+      return NULL;
+    }
+    // Return the highest priority suggestion.
+    usort($actions, fn(array $a, array $b) => ($a['priority'] ?? 0) <=> ($b['priority'] ?? 0));
+    return reset($actions) ?: NULL;
+  }
+
+  /**
    * Obtiene el contexto vertical para inyectar en el copilot.
    */
   public function getVerticalContext(int $userId): array {

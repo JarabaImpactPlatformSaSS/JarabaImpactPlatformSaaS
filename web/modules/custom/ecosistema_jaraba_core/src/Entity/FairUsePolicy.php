@@ -134,7 +134,7 @@ class FairUsePolicy extends ConfigEntityBase {
    * Obtiene el tier.
    */
   public function getTier(): string {
-    return $this->tier ?? '_global';
+    return $this->tier;
   }
 
   /**
@@ -152,7 +152,7 @@ class FairUsePolicy extends ConfigEntityBase {
    *   Lista de porcentajes ordenados ascendente.
    */
   public function getWarningThresholds(): array {
-    $thresholds = $this->warning_thresholds ?? [];
+    $thresholds = $this->warning_thresholds;
     sort($thresholds);
     return $thresholds;
   }
@@ -172,7 +172,7 @@ class FairUsePolicy extends ConfigEntityBase {
    *   Map de recurso => {warning => accion, critical => accion, exceeded => accion}.
    */
   public function getEnforcementActions(): array {
-    return $this->enforcement_actions ?? [];
+    return $this->enforcement_actions;
   }
 
   /**
@@ -207,7 +207,7 @@ class FairUsePolicy extends ConfigEntityBase {
    *   Map de metrica => precio EUR.
    */
   public function getOverageUnitPrices(): array {
-    return $this->overage_unit_prices ?? [];
+    return $this->overage_unit_prices;
   }
 
   /**
@@ -237,7 +237,7 @@ class FairUsePolicy extends ConfigEntityBase {
    * Obtiene el porcentaje de tolerancia burst.
    */
   public function getBurstTolerancePct(): int {
-    return $this->burst_tolerance_pct ?? 0;
+    return $this->burst_tolerance_pct;
   }
 
   /**
@@ -252,7 +252,7 @@ class FairUsePolicy extends ConfigEntityBase {
    * Obtiene las horas de gracia.
    */
   public function getGracePeriodHours(): int {
-    return $this->grace_period_hours ?? 6;
+    return $this->grace_period_hours;
   }
 
   /**
@@ -267,7 +267,7 @@ class FairUsePolicy extends ConfigEntityBase {
    * Obtiene la descripcion.
    */
   public function getDescription(): string {
-    return $this->description ?? '';
+    return $this->description;
   }
 
   /**

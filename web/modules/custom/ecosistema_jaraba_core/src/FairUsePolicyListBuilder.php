@@ -16,6 +16,7 @@ class FairUsePolicyListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader(): array {
+    $header = [];
     $header['id'] = $this->t('ID');
     $header['label'] = $this->t('Label');
     $header['tier'] = $this->t('Tier');
@@ -30,6 +31,7 @@ class FairUsePolicyListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity): array {
     /** @var \Drupal\ecosistema_jaraba_core\Entity\FairUsePolicy $entity */
+    $row = [];
     $row['id'] = $entity->id();
     $row['label'] = $entity->label();
     $row['tier'] = $entity->getTier();

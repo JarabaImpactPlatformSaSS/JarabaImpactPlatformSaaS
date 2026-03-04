@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -40,7 +41,7 @@ class TenantTimezoneService {
     try {
       $storage = $this->entityTypeManager->getStorage('tenant');
       $tenant = $storage->load($tenantId);
-      if ($tenant && $tenant->hasField('timezone')) {
+      if ($tenant instanceof ContentEntityInterface && $tenant->hasField('timezone')) {
         $tz = $tenant->get('timezone')->value;
         if ($tz && $this->isValidTimezone($tz)) {
           return $tz;

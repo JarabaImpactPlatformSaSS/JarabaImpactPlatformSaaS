@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_multiregion\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -45,7 +46,7 @@ class ViesValidationAccessControlHandler extends DefaultEntityAccessControlHandl
    *
    * SINTAXIS: Retorna AccessResult con metadata de cache por permisos.
    */
-  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface {
     // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
     $parentResult = parent::checkAccess($entity, $operation, $account);
     if ($parentResult->isForbidden()) {
