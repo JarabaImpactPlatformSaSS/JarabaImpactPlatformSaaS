@@ -146,8 +146,10 @@ if [ "$MODE" = "full" ]; then
   run_check "SERVICE-ORPHAN-001" "Orphaned service detection" \
     php "$SCRIPT_DIR/validate-service-consumers.php"
 
-  run_check "ASSET-FRESHNESS-001" "Compiled asset freshness" \
-    php "$SCRIPT_DIR/validate-compiled-assets.php"
+  # ASSET-FRESHNESS-001: Skipped in CI (--full). Timestamp-based check is
+  # unreliable after git checkout (all files get same mtime). The authoritative
+  # check is SCSS-COMPILE-VERIFY-001 which runs later with npm build + git diff.
+  skip_check "ASSET-FRESHNESS-001" "Compiled asset freshness (deferred to SCSS-COMPILE-VERIFY-001)"
 
   run_check "TENANT-CHECK-001" "Tenant isolation verification" \
     php "$SCRIPT_DIR/validate-tenant-isolation.php"
