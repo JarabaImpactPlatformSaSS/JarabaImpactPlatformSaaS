@@ -243,7 +243,7 @@ services:
     class: Drupal\jaraba_ai_agents\Tool\ToolRegistry
     arguments:
       - '@?logger.channel.jaraba_ai_agents'
-      - '@ecosistema_jaraba_core.ai_guardrails'
+      - '@?ecosistema_jaraba_core.ai_guardrails'
 
   # SendEmailTool - Envío de emails
   jaraba_ai_agents.tool.send_email:
@@ -375,7 +375,7 @@ services:
     arguments:
       - '@?logger.channel.jaraba_ai_agents'
       - '@?ai.provider'
-      - '@ecosistema_jaraba_core.ai_guardrails'
+      - '@?ecosistema_jaraba_core.ai_guardrails'
 
   # ========================================
   # FIX-029-051 — Elevacion IA Nivel 5/5
