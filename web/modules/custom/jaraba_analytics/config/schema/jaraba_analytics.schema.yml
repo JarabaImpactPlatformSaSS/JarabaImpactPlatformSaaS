@@ -76,3 +76,43 @@ jaraba_analytics.activation_criteria.*:
     churn_threshold:
       type: float
       label: 'Churn threshold (0-1)'
+
+# Schema for FunnelDefinition config entity.
+jaraba_analytics.funnel_definition.*:
+  type: config_entity
+  label: 'Funnel Definition configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    vertical:
+      type: string
+      label: 'Vertical machine name'
+    steps:
+      type: sequence
+      label: 'Funnel steps'
+      sequence:
+        type: mapping
+        label: 'Step'
+        mapping:
+          key:
+            type: string
+            label: 'Step key'
+          label:
+            type: string
+            label: 'Step label'
+          event:
+            type: string
+            label: 'Event type'
+    conversion_window_hours:
+      type: integer
+      label: 'Conversion window in hours'
+    is_active:
+      type: boolean
+      label: 'Is active'

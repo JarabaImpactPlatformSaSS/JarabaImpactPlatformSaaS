@@ -1,0 +1,47 @@
+ecosistema_jaraba_core.ab_tests:
+  type: config_object
+  label: 'A/B Tests Configuration'
+  mapping:
+    tests:
+      type: mapping
+      label: 'A/B Tests'
+      mapping:
+        homepage_hero_cta:
+          type: ecosistema_jaraba_core.ab_test_definition
+          label: 'Homepage hero CTA test'
+        pricing_layout:
+          type: ecosistema_jaraba_core.ab_test_definition
+          label: 'Pricing layout test'
+        social_proof_position:
+          type: ecosistema_jaraba_core.ab_test_definition
+          label: 'Social proof position test'
+        lead_magnet_cta:
+          type: ecosistema_jaraba_core.ab_test_definition
+          label: 'Lead magnet CTA test'
+
+ecosistema_jaraba_core.ab_test_definition:
+  type: mapping
+  label: 'A/B Test Definition'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enabled'
+    split:
+      type: integer
+      label: 'Traffic split percentage for variant A'
+    description:
+      type: string
+      label: 'Description'
+    variants:
+      type: mapping
+      label: 'Variants'
+      mapping:
+        A:
+          type: string
+          label: 'Variant A (control)'
+        B:
+          type: string
+          label: 'Variant B'
+    goal:
+      type: string
+      label: 'Conversion goal event'
