@@ -17,7 +17,7 @@ services:
     class: Drupal\jaraba_sla\Service\SlaCreditEngineService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@logger.channel.jaraba_sla'
   jaraba_sla.postmortem:

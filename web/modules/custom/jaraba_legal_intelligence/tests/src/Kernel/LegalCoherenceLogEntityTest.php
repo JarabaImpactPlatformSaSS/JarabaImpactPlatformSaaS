@@ -30,10 +30,19 @@ class LegalCoherenceLogEntityTest extends KernelTestBase {
     'text',
     'options',
     'datetime',
+    'file',
+    'image',
     'taxonomy',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_legal_intelligence',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

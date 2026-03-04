@@ -10,7 +10,7 @@ services:
     class: Drupal\jaraba_connector_sdk\Service\MarketplaceService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@jaraba_integrations.connector_registry'
       - '@jaraba_integrations.connector_installer'
 

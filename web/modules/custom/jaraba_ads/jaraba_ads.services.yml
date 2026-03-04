@@ -30,7 +30,7 @@ services:
     class: Drupal\jaraba_ads\Service\AdsAnalyticsService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_ads'
 
   # =====================================================================

@@ -17,7 +17,7 @@ services:
 
   jaraba_insights_hub.error_tracking:
     class: Drupal\jaraba_insights_hub\Service\ErrorTrackingService
-    arguments: ['@entity_type.manager', '@ecosistema_jaraba_core.tenant_context', '@logger.channel.jaraba_insights_hub']
+    arguments: ['@entity_type.manager', '@?ecosistema_jaraba_core.tenant_context', '@logger.channel.jaraba_insights_hub']
 
   jaraba_insights_hub.uptime_monitor:
     class: Drupal\jaraba_insights_hub\Service\UptimeMonitorService

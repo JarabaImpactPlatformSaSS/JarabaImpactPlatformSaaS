@@ -23,10 +23,11 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "access" = "Drupal\jaraba_paths\DigitalizationPathAccessControlHandler",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "add" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_paths\Form\PathStepForm",
+ *       "add" = "Drupal\jaraba_paths\Form\PathStepForm",
+ *       "edit" = "Drupal\jaraba_paths\Form\PathStepForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "views_data" = "Drupal\views\EntityViewsData",

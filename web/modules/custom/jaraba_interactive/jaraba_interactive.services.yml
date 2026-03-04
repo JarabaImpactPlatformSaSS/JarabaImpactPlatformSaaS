@@ -24,7 +24,7 @@ services:
   jaraba_interactive.xapi_emitter:
     class: Drupal\jaraba_interactive\Service\XApiEmitter
     arguments:
-      - '@jaraba_lms.xapi'
+      - '@?jaraba_lms.xapi'
       - '@current_user'
       - '@logger.channel.jaraba_interactive'
 

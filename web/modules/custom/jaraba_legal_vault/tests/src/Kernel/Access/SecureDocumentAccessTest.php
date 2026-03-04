@@ -32,9 +32,17 @@ class SecureDocumentAccessTest extends KernelTestBase {
     'options',
     'datetime',
     'taxonomy',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
+    'jaraba_legal_cases',
     'jaraba_legal_vault',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

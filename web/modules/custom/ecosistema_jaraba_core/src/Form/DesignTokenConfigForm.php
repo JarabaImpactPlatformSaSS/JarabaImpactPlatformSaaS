@@ -75,10 +75,10 @@ class DesignTokenConfigForm extends EntityForm
             '#type' => 'select',
             '#title' => $this->t('Nivel de cascada'),
             '#options' => [
-                'platform' => $this->t('🌐 Platform (defaults globales)'),
-                'vertical' => $this->t('📂 Vertical (personalización por vertical)'),
-                'plan' => $this->t('💎 Plan (personalización por plan SaaS)'),
-                'tenant' => $this->t('🏢 Tenant (personalización individual)'),
+                'platform' => $this->t('Platform (defaults globales)'),
+                'vertical' => $this->t('Vertical (personalización por vertical)'),
+                'plan' => $this->t('Plan (personalización por plan SaaS)'),
+                'tenant' => $this->t('Tenant (personalización individual)'),
             ],
             '#default_value' => $entity->getScope(),
             '#required' => TRUE,
@@ -136,7 +136,7 @@ class DesignTokenConfigForm extends EntityForm
         // =========================================================================
         $form['colors'] = [
             '#type' => 'details',
-            '#title' => $this->t('🎨 Tokens de Color'),
+            '#title' => $this->t('Tokens de Color'),
             '#open' => FALSE,
             '#description' => $this->t('Variables CSS: --ej-color-{key}. Usar formato HEX (#FF8C42) o HSL.'),
         ];
@@ -170,7 +170,7 @@ class DesignTokenConfigForm extends EntityForm
         // =========================================================================
         $form['typography'] = [
             '#type' => 'details',
-            '#title' => $this->t('🔤 Tokens de Tipografía'),
+            '#title' => $this->t('Tokens de Tipografía'),
             '#open' => FALSE,
             '#description' => $this->t('Variables CSS: --ej-font-{key}.'),
         ];
@@ -217,7 +217,7 @@ class DesignTokenConfigForm extends EntityForm
         // =========================================================================
         $form['spacing'] = [
             '#type' => 'details',
-            '#title' => $this->t('📐 Tokens de Espaciado'),
+            '#title' => $this->t('Tokens de Espaciado'),
             '#open' => FALSE,
         ];
 
@@ -249,7 +249,7 @@ class DesignTokenConfigForm extends EntityForm
         // =========================================================================
         $form['effects'] = [
             '#type' => 'details',
-            '#title' => $this->t('✨ Tokens de Efectos'),
+            '#title' => $this->t('Tokens de Efectos'),
             '#open' => FALSE,
             '#description' => $this->t('Glassmorphism, sombras, gradientes y animaciones premium.'),
         ];
@@ -296,7 +296,7 @@ class DesignTokenConfigForm extends EntityForm
         // =========================================================================
         $form['variants'] = [
             '#type' => 'details',
-            '#title' => $this->t('🧩 Variantes de Componentes'),
+            '#title' => $this->t('Variantes de Componentes'),
             '#open' => FALSE,
             '#description' => $this->t('Selección de variantes SDC para los componentes principales.'),
         ];

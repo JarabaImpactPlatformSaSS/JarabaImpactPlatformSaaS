@@ -30,9 +30,16 @@ class BillingInvoiceAccessTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_billing',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

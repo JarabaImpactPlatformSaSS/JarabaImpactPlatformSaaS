@@ -40,15 +40,12 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@jaraba_lms.enrollment'
-      - '@logger.factory'
-      - '@queue'
 
   jaraba_lms.xapi:
     class: Drupal\jaraba_lms\Service\XApiService
     arguments:
       - '@http_client'
       - '@config.factory'
-      - '@logger.factory'
 
   # ============================================================================
   # AGENTES IA

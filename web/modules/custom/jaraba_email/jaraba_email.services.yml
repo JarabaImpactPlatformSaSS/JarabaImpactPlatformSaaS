@@ -53,7 +53,7 @@ services:
   jaraba_email.ai_service:
     class: Drupal\jaraba_email\Service\EmailAIService
     arguments:
-      - '@jaraba_ai_agents.orchestrator'
+      - '@?jaraba_ai_agents.orchestrator'
       - '@logger.channel.jaraba_email'
 
   # SendGrid Client Service - Integracion con SendGrid API

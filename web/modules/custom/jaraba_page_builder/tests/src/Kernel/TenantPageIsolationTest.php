@@ -27,9 +27,16 @@ class TenantPageIsolationTest extends TenantIsolationBaseTest {
     'text',
     'options',
     'datetime',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_page_builder',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

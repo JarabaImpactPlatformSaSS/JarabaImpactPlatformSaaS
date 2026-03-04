@@ -20,7 +20,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_predictive'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_predictive.forecast_engine:
     class: Drupal\jaraba_predictive\Service\ForecastEngineService

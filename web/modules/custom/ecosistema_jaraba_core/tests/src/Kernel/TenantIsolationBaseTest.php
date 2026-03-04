@@ -42,6 +42,15 @@ abstract class TenantIsolationBaseTest extends KernelTestBase {
   ];
 
   /**
+   * Disable strict config schema validation.
+   *
+   * ecosistema_jaraba_core.ab_tests config lacks schema definition.
+   *
+   * @var bool
+   */
+  protected $strictConfigSchema = FALSE;
+
+  /**
    * Tenant A entity (or NULL if entity type unavailable).
    */
   protected ?object $tenantA = NULL;

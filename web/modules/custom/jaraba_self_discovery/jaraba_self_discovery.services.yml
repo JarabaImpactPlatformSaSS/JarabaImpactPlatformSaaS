@@ -35,7 +35,7 @@ services:
     class: Drupal\jaraba_self_discovery\Service\SelfDiscoveryContextService
     arguments:
       - '@current_user'
-      - '@user.data'
+      - '@?user.data'
       - '@entity_type.manager'
       - '@jaraba_self_discovery.life_wheel'
       - '@jaraba_self_discovery.timeline_analysis'

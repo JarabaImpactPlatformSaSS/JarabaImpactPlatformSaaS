@@ -30,10 +30,18 @@ class CourseAccessTest extends KernelTestBase {
     'text',
     'options',
     'datetime',
+    'file',
     'taxonomy',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_lms',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

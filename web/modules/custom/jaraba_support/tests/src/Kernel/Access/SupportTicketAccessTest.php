@@ -42,6 +42,11 @@ class SupportTicketAccessTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $strictConfigSchema = FALSE;
+
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('user');

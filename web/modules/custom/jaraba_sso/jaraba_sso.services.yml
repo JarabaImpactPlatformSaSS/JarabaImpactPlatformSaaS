@@ -21,7 +21,7 @@ services:
     class: Drupal\jaraba_sso\Service\ScimHandlerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@current_user'
       - '@logger.channel.jaraba_sso'
 

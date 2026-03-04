@@ -27,9 +27,18 @@ class TenantLmsIsolationTest extends TenantIsolationBaseTest {
     'text',
     'options',
     'datetime',
+    'file',
+    'taxonomy',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_lms',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

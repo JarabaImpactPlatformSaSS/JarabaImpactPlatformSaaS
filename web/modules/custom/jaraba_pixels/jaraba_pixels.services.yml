@@ -11,7 +11,7 @@ services:
       - '@?jaraba_analytics.consent'
       - '@logger.factory'
       - '@http_client'
-      - '@jaraba_ads.conversion_tracking'
+      - '@?jaraba_ads.conversion_tracking'
       - '@?jaraba_pixels.consent_management'
 
   # =========================================================================

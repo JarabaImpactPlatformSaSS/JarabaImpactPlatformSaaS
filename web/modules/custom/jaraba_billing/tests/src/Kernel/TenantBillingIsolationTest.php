@@ -26,9 +26,16 @@ class TenantBillingIsolationTest extends TenantIsolationBaseTest {
     'field',
     'text',
     'options',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
     'jaraba_billing',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}

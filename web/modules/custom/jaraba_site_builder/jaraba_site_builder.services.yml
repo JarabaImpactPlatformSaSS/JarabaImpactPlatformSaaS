@@ -35,7 +35,7 @@ services:
     class: Drupal\jaraba_site_builder\Service\SiteAnalyticsService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@jaraba_site_builder.structure'
       - '@jaraba_site_builder.seo_auditor'
 
