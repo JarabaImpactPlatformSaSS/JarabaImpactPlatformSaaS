@@ -42,7 +42,7 @@ class NotificationLogAgroListBuilder extends EntityListBuilder
         $row['recipient'] = $entity->get('recipient_email')->value ?: $this->t('User #@id', ['@id' => $entity->get('recipient_id')->value]);
         $row['subject'] = $entity->get('subject')->value;
         $row['status'] = $entity->getStatusLabel();
-        $row['opened'] = $entity->wasOpened() ? '✅' : '—';
+        $row['opened'] = $entity->wasOpened() ? $this->t('Sí') : '—';
         $row['created'] = \Drupal::service('date.formatter')->format($entity->get('created')->value, 'short');
         return $row + parent::buildRow($entity);
     }

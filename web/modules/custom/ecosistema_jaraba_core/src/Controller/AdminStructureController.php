@@ -29,62 +29,62 @@ class AdminStructureController extends ControllerBase
     protected const CATEGORIES = [
         'saas_platform' => [
             'label' => 'Plataforma SaaS',
-            'icon' => '🏢',
+            'icon' => ['category' => 'ui', 'name' => 'building'],
             'description' => 'Entidades y configuración del núcleo SaaS multi-tenant',
             'providers' => ['ecosistema_jaraba_core'],
         ],
         'agroconecta' => [
             'label' => 'AgroConecta',
-            'icon' => '🌾',
+            'icon' => ['category' => 'verticals', 'name' => 'leaf'],
             'description' => 'Marketplace agroalimentario — productos, pedidos, trazabilidad',
             'providers' => ['jaraba_agroconecta_core'],
         ],
         'site_builder' => [
             'label' => 'Site Builder',
-            'icon' => '🌐',
+            'icon' => ['category' => 'ui', 'name' => 'globe'],
             'description' => 'Estructura del sitio — menús, headers, footers, SEO',
             'providers' => ['jaraba_site_builder'],
         ],
         // FIX-027: Canonical vertical names (no underscores).
         'comercioconecta' => [
             'label' => 'ComercioConecta',
-            'icon' => '🛍️',
+            'icon' => ['category' => 'commerce', 'name' => 'cart'],
             'description' => 'Marketplace de comercio local',
             'providers' => ['jaraba_comercio_conecta'],
         ],
         'serviciosconecta' => [
             'label' => 'ServiciosConecta',
-            'icon' => '🔧',
+            'icon' => ['category' => 'ui', 'name' => 'wrench'],
             'description' => 'Marketplace de servicios profesionales',
             'providers' => ['jaraba_servicios_conecta'],
         ],
         'crm' => [
             'label' => 'CRM & Candidatos',
-            'icon' => '👥',
+            'icon' => ['category' => 'ui', 'name' => 'users'],
             'description' => 'Gestión de relaciones y candidatos',
             'providers' => ['jaraba_crm', 'jaraba_candidate'],
         ],
         'ia_agents' => [
             'label' => 'IA & Agentes',
-            'icon' => '🤖',
+            'icon' => ['category' => 'ai', 'name' => 'robot'],
             'description' => 'Agentes IA, flujos automatizados y RAG',
             'providers' => ['jaraba_ai_agents', 'jaraba_agent_flows', 'jaraba_rag', 'jaraba_copilot_v2'],
         ],
         'content_media' => [
             'label' => 'Contenido & Medios',
-            'icon' => '📝',
+            'icon' => ['category' => 'ui', 'name' => 'edit'],
             'description' => 'Blog, eventos, LMS, contenido multimedia',
             'providers' => ['jaraba_events', 'jaraba_lms', 'jaraba_content_hub', 'jaraba_page_builder'],
         ],
         'billing_commerce' => [
             'label' => 'Facturación & Comercio',
-            'icon' => '💰',
+            'icon' => ['category' => 'business', 'name' => 'chart-bar'],
             'description' => 'Billing, planes de precios, addons, ads',
             'providers' => ['jaraba_billing', 'jaraba_usage_billing', 'jaraba_commerce', 'jaraba_addons', 'jaraba_ads', 'jaraba_funding'],
         ],
         'drupal_core' => [
             'label' => 'Estructura Drupal',
-            'icon' => '🧩',
+            'icon' => ['category' => 'ui', 'name' => 'settings'],
             'description' => 'Componentes del core de Drupal — tipos de contenido, taxonomía, vistas',
             'providers' => [
                 'block',
@@ -101,7 +101,7 @@ class AdminStructureController extends ControllerBase
         ],
         'other' => [
             'label' => 'Otros Módulos',
-            'icon' => '📦',
+            'icon' => ['category' => 'ui', 'name' => 'box'],
             'description' => 'Módulos adicionales de la plataforma',
             'providers' => [],
         ],

@@ -29,10 +29,10 @@ class AlertRuleAgroListBuilder extends EntityListBuilder
         $conditions = ['lt' => '<', 'lte' => '≤', 'gt' => '>', 'gte' => '≥', 'drop_pct' => '↓%'];
         $row['condition'] = $conditions[$entity->getCondition()] ?? $entity->getCondition();
         $row['threshold'] = $entity->getThreshold();
-        $severities = ['info' => 'ℹ', 'warning' => '⚠', 'critical' => '🔴'];
+        $severities = ['info' => $this->t('Info'), 'warning' => $this->t('Aviso'), 'critical' => $this->t('Crítico')];
         $row['severity'] = $severities[$entity->getSeverity()] ?? $entity->getSeverity();
         $row['triggers'] = $entity->get('trigger_count')->value ?? 0;
-        $row['status'] = $entity->isActive() ? '✅' : '⏸';
+        $row['status'] = $entity->isActive() ? $this->t('Activo') : $this->t('Inactivo');
         return $row + parent::buildRow($entity);
     }
 }

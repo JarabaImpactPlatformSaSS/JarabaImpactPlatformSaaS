@@ -37,10 +37,10 @@ class DesignTokenConfigListBuilder extends ConfigEntityListBuilder
 
         // Etiquetas y badges visuales por scope.
         $scopeLabels = [
-            'platform' => '🌐 Platform',
-            'vertical' => '📂 Vertical',
-            'plan' => '💎 Plan',
-            'tenant' => '🏢 Tenant',
+            'platform' => $this->t('Platform (global)'),
+            'vertical' => $this->t('Vertical'),
+            'plan' => $this->t('Plan'),
+            'tenant' => $this->t('Tenant'),
         ];
         $scope = $entity->getScope();
 
@@ -60,7 +60,7 @@ class DesignTokenConfigListBuilder extends ConfigEntityListBuilder
             '@variants' => $variantCount,
         ]);
 
-        $row['status'] = $entity->status() ? $this->t('✅ Activo') : $this->t('❌ Inactivo');
+        $row['status'] = $entity->status() ? $this->t('Activo') : $this->t('Inactivo');
 
         return $row + parent::buildRow($entity);
     }

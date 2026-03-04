@@ -25,7 +25,7 @@ class AgroBatchListBuilder extends EntityListBuilder
         $product = $entity->get('product_id')->entity;
         $row['product'] = $product ? $product->label() : '—';
         $row['origin'] = $entity->get('origin')->value ?? '—';
-        $statuses = ['active' => '🟢 Activo', 'sealed' => '🔒 Sellado', 'archived' => '📦 Archivado'];
+        $statuses = ['active' => $this->t('Activo'), 'sealed' => $this->t('Sellado'), 'archived' => $this->t('Archivado')];
         $row['status'] = $statuses[$entity->getStatus()] ?? $entity->getStatus();
         return $row + parent::buildRow($entity);
     }

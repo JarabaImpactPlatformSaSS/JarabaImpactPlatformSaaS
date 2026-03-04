@@ -15,9 +15,9 @@ features:
   - analytics
   - premium_blocks
 limits:
-  searches_per_month: 0
+  searches_per_month: 250
   max_alerts: 20
-  max_bookmarks: 0
+  max_bookmarks: 500
   max_cases: -1
   vault_storage_mb: 5120
   calendar_deadlines: -1

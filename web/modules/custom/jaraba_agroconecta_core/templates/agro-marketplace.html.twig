@@ -57,7 +57,8 @@
 
           {% if product.origin.value %}
             <p class="agro-product-card__origin">
-              📍 {{ product.origin.value }}
+              <span aria-hidden="true">{{ jaraba_icon('ui', 'map-pin', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }}</span>
+              {{ product.origin.value }}
             </p>
           {% endif %}
 

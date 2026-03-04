@@ -51,12 +51,12 @@
   <div class="programa-dashboard__kpis">
     {% for key, kpi in program_kpis %}
       <div class="programa-kpi programa-kpi--{{ key }}">
-        <span class="programa-kpi__icon">
-          {% if kpi.icon == 'users' %}👥
-          {% elseif kpi.icon == 'check-circle' %}✅
-          {% elseif kpi.icon == 'briefcase' %}💼
-          {% elseif kpi.icon == 'star' %}⭐
-          {% else %}📊
+        <span class="programa-kpi__icon" aria-hidden="true">
+          {% if kpi.icon == 'users' %}{{ jaraba_icon('ui', 'users', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}
+          {% elseif kpi.icon == 'check-circle' %}{{ jaraba_icon('actions', 'check-circle', {variant: 'duotone', color: 'verde-innovacion', size: '24px'}) }}
+          {% elseif kpi.icon == 'briefcase' %}{{ jaraba_icon('ui', 'briefcase', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}
+          {% elseif kpi.icon == 'star' %}{{ jaraba_icon('ui', 'star', {variant: 'duotone', color: 'naranja-impulso', size: '24px'}) }}
+          {% else %}{{ jaraba_icon('analytics', 'chart-bar', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}
           {% endif %}
         </span>
         <div class="programa-kpi__content">
@@ -209,13 +209,13 @@
       <div class="programa-report-list">
         {% for key, report in report_types %}
           <div class="programa-report-card" data-report-type="{{ key }}">
-            <span class="programa-report-card__icon">
-              {% if report.icon == 'calendar' %}📅
-              {% elseif report.icon == 'dollar-sign' %}💰
-              {% elseif report.icon == 'trending-up' %}📈
-              {% elseif report.icon == 'file-text' %}📄
-              {% elseif report.icon == 'award' %}🏅
-              {% else %}📋
+            <span class="programa-report-card__icon" aria-hidden="true">
+              {% if report.icon == 'calendar' %}{{ jaraba_icon('ui', 'calendar', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}
+              {% elseif report.icon == 'dollar-sign' %}{{ jaraba_icon('finance', 'coins', {variant: 'duotone', color: 'verde-innovacion', size: '24px'}) }}
+              {% elseif report.icon == 'trending-up' %}{{ jaraba_icon('analytics', 'trending-up', {variant: 'duotone', color: 'verde-innovacion', size: '24px'}) }}
+              {% elseif report.icon == 'file-text' %}{{ jaraba_icon('ui', 'file-text', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}
+              {% elseif report.icon == 'award' %}{{ jaraba_icon('ui', 'award', {variant: 'duotone', color: 'naranja-impulso', size: '24px'}) }}
+              {% else %}{{ jaraba_icon('ui', 'clipboard', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}
               {% endif %}
             </span>
             <div class="programa-report-card__content">

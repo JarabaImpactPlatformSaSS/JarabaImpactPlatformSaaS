@@ -20,12 +20,13 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label = @Translation("Configuración de Tema"),
  *   label_collection = @Translation("Configuraciones de Tema"),
  *   handlers = {
+ *     "access" = "Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "form" = {
- *       "default" = "Drupal\Core\Entity\ContentEntityForm",
- *       "add" = "Drupal\Core\Entity\ContentEntityForm",
- *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "default" = "Drupal\jaraba_theming\Form\TenantThemeConfigForm",
+ *       "add" = "Drupal\jaraba_theming\Form\TenantThemeConfigForm",
+ *       "edit" = "Drupal\jaraba_theming\Form\TenantThemeConfigForm",
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "route_provider" = {

@@ -28,7 +28,7 @@ class QrCodeAgroListBuilder extends EntityListBuilder
         $row['scans'] = $entity->getScanCount();
         $row['unique'] = $entity->get('unique_scan_count')->value ?? 0;
         $row['conv'] = $entity->get('conversion_count')->value ?? 0;
-        $row['status'] = $entity->isActive() ? '✅' : '⏸';
+        $row['status'] = $entity->isActive() ? $this->t('Activo') : $this->t('Inactivo');
         return $row + parent::buildRow($entity);
     }
 }

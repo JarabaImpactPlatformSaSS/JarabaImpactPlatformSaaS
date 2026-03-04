@@ -35,7 +35,7 @@ class ShippingZoneAgroListBuilder extends EntityListBuilder
         $row['country'] = $entity->getCountry();
         $regions = $entity->getRegions();
         $row['regions'] = !empty($regions) ? implode(', ', array_slice($regions, 0, 5)) . (count($regions) > 5 ? '…' : '') : $this->t('Todo');
-        $row['status'] = $entity->isActive() ? $this->t('✅ Activa') : $this->t('⏸ Inactiva');
+        $row['status'] = $entity->isActive() ? $this->t('Activa') : $this->t('Inactiva');
         return $row + parent::buildRow($entity);
     }
 

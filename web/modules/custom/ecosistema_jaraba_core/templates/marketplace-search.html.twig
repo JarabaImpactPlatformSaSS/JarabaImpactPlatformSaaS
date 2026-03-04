@@ -73,7 +73,9 @@
         {% if category %}
         <input type="hidden" name="category" value="{{ category }}">
         {% endif %}
-        <button type="submit" class="marketplace-search-bar__btn">🔍</button>
+        <button type="submit" class="marketplace-search-bar__btn" aria-label="{% trans %}Buscar{% endtrans %}">
+          {{ jaraba_icon('ui', 'search', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }}
+        </button>
         {% if query or category %}
         <a href="{{ path('ecosistema_jaraba_core.marketplace.search') }}" class="marketplace-search-bar__clear" title="{{ 'Limpiar filtros'|t }}">✕</a>
         {% endif %}
@@ -106,13 +108,13 @@
       </div>
       {% else %}
       <div class="marketplace-no-results">
-        <span class="marketplace-no-results__icon">🔍</span>
-        <h2 class="marketplace-no-results__title">{{ 'No se encontraron productos'|t }}</h2>
+        <span class="marketplace-no-results__icon" aria-hidden="true">{{ jaraba_icon('ui', 'search', {variant: 'duotone', color: 'azul-corporativo', size: '48px'}) }}</span>
+        <h2 class="marketplace-no-results__title">{% trans %}No se encontraron productos{% endtrans %}</h2>
         <p class="marketplace-no-results__text">
-          {{ 'Intenta con otros términos de búsqueda o explora las categorías'|t }}
+          {% trans %}Intenta con otros términos de búsqueda o explora las categorías{% endtrans %}
         </p>
         <a href="{{ path('ecosistema_jaraba_core.marketplace.landing') }}" class="marketplace-btn marketplace-btn--primary">
-          {{ 'Ver todos los productos'|t }}
+          {% trans %}Ver todos los productos{% endtrans %}
         </a>
       </div>
       {% endif %}

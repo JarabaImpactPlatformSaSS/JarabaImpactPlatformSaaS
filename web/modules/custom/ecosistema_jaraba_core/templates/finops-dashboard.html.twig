@@ -196,7 +196,7 @@
       <div class="resource-card">
         <div class="resource-card__header">
           <span class="resource-card__icon">
-            {% if provider == 'anthropic' %}🟣{% elseif provider == 'openai' %}🟢{% elseif provider == 'google_gemini' %}🔵{% else %}⚪{% endif %}
+            {% if provider == 'anthropic' %}{{ jaraba_icon('ai', 'sparkles', {variant: 'duotone', color: 'naranja-impulso', size: '20px'}) }}{% elseif provider == 'openai' %}{{ jaraba_icon('ai', 'robot', {variant: 'duotone', color: 'verde-innovacion', size: '20px'}) }}{% elseif provider == 'google_gemini' %}{{ jaraba_icon('ai', 'brain', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }}{% else %}{{ jaraba_icon('ai', 'automation', {variant: 'duotone', color: 'neutral', size: '20px'}) }}{% endif %}
           </span>
           <span class="resource-card__title">{{ provider|replace({'_': ' '})|capitalize }}</span>
         </div>
@@ -757,7 +757,7 @@
           <span class="metric-card__label">{% trans %}Ratio LTV:CAC Promedio{% endtrans %}</span>
         </div>
         <span class="metric-card__badge {% if unit_economics.summary.avg_ltv_cac_ratio >= 3 %}metric-card__badge--success{% else %}metric-card__badge--warning{% endif %}">
-          {% if unit_economics.summary.avg_ltv_cac_ratio >= 3 %}✓ {% trans %}Saludable{% endtrans %}{% else %}⚠ {% trans %}Bajo{% endtrans %}{% endif %}
+          {% if unit_economics.summary.avg_ltv_cac_ratio >= 3 %}<span aria-hidden="true">{{ jaraba_icon('status', 'check-circle', {variant: 'duotone', color: 'verde-innovacion', size: '14px'}) }}</span> {% trans %}Saludable{% endtrans %}{% else %}<span aria-hidden="true">{{ jaraba_icon('status', 'alert-triangle', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }}</span> {% trans %}Bajo{% endtrans %}{% endif %}
         </span>
       </div>
 
@@ -824,13 +824,13 @@
             <td class="text-right">{{ tenant.payback_months }} {% trans %}meses{% endtrans %}</td>
             <td class="text-center">
               {% if tenant.status == 'vip' %}
-                <span class="status-badge status-badge--vip">⭐ {% trans %}VIP{% endtrans %}</span>
+                <span class="status-badge status-badge--vip">{{ jaraba_icon('ui', 'star', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }} {% trans %}VIP{% endtrans %}</span>
               {% elseif tenant.status == 'healthy' %}
-                <span class="status-badge status-badge--success">✓ {% trans %}Saludable{% endtrans %}</span>
+                <span class="status-badge status-badge--success"><span aria-hidden="true">{{ jaraba_icon('status', 'check-circle', {variant: 'duotone', color: 'verde-innovacion', size: '14px'}) }}</span> {% trans %}Saludable{% endtrans %}</span>
               {% elseif tenant.status == 'at_risk' %}
-                <span class="status-badge status-badge--warning">⚠ {% trans %}En Riesgo{% endtrans %}</span>
+                <span class="status-badge status-badge--warning"><span aria-hidden="true">{{ jaraba_icon('status', 'alert-triangle', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }}</span> {% trans %}En Riesgo{% endtrans %}</span>
               {% else %}
-                <span class="status-badge status-badge--critical">⛔ {% trans %}Pérdida{% endtrans %}</span>
+                <span class="status-badge status-badge--critical"><span aria-hidden="true">{{ jaraba_icon('status', 'x-circle', {variant: 'duotone', color: 'neutral', size: '14px'}) }}</span> {% trans %}Pérdida{% endtrans %}</span>
               {% endif %}
             </td>
           </tr>
@@ -886,13 +886,13 @@
           </div>
           <div class="vertical-card__status">
             {% if vertical.status == 'star' %}
-              <span class="status-badge status-badge--star">⭐ {% trans %}Estrella{% endtrans %}</span>
+              <span class="status-badge status-badge--star">{{ jaraba_icon('ui', 'star', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }} {% trans %}Estrella{% endtrans %}</span>
             {% elseif vertical.status == 'healthy' %}
-              <span class="status-badge status-badge--success">✓ {% trans %}OK{% endtrans %}</span>
+              <span class="status-badge status-badge--success"><span aria-hidden="true">{{ jaraba_icon('status', 'check-circle', {variant: 'duotone', color: 'verde-innovacion', size: '14px'}) }}</span> {% trans %}OK{% endtrans %}</span>
             {% elseif vertical.status == 'warning' %}
-              <span class="status-badge status-badge--warning">⚠ {% trans %}Bajo{% endtrans %}</span>
+              <span class="status-badge status-badge--warning"><span aria-hidden="true">{{ jaraba_icon('status', 'alert-triangle', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }}</span> {% trans %}Bajo{% endtrans %}</span>
             {% else %}
-              <span class="status-badge status-badge--critical">⛔ {% trans %}Pérdida{% endtrans %}</span>
+              <span class="status-badge status-badge--critical"><span aria-hidden="true">{{ jaraba_icon('status', 'x-circle', {variant: 'duotone', color: 'neutral', size: '14px'}) }}</span> {% trans %}Pérdida{% endtrans %}</span>
             {% endif %}
           </div>
         </div>

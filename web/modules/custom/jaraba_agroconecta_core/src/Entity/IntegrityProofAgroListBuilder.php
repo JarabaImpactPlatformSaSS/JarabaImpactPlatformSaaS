@@ -25,7 +25,7 @@ class IntegrityProofAgroListBuilder extends EntityListBuilder
         $row['batch'] = $batch ? $batch->label() : '—';
         $row['type'] = $entity->getAnchorType();
         $row['events'] = $entity->get('event_count')->value ?? 0;
-        $statuses = ['pending' => '⏳', 'verified' => '✅', 'failed' => '❌'];
+        $statuses = ['pending' => $this->t('Pendiente'), 'verified' => $this->t('Verificado'), 'failed' => $this->t('Fallido')];
         $s = $entity->get('verification_status')->value ?? 'pending';
         $row['status'] = $statuses[$s] ?? $s;
         return $row + parent::buildRow($entity);

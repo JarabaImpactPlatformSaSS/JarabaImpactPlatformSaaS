@@ -101,7 +101,10 @@
 
   {# === TIPS SECTION === #}
   <aside class="knowledge-dashboard__tips">
-    <h4>{{ '💡 Consejos para entrenar tu Copiloto'|t }}</h4>
+    <h4>
+      <span aria-hidden="true">{{ jaraba_icon('ai', 'lightbulb', {variant: 'duotone', color: 'naranja-impulso', size: '20px'}) }}</span>
+      {% trans %}Consejos para entrenar tu Copiloto{% endtrans %}
+    </h4>
     <ul>
       <li>{{ 'Completa primero la información básica del negocio'|t }}</li>
       <li>{{ 'Añade las 10-15 preguntas más frecuentes de tus clientes'|t }}</li>

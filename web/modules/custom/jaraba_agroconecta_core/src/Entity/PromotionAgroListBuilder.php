@@ -51,7 +51,7 @@ class PromotionAgroListBuilder extends EntityListBuilder
 
         // Estado.
         $active = $entity->isActive() && $entity->isWithinDateRange() && $entity->hasUsesRemaining();
-        $row['status'] = $active ? $this->t('✅ Activa') : $this->t('⏸ Inactiva');
+        $row['status'] = $active ? $this->t('Activa') : $this->t('Inactiva');
 
         return $row + parent::buildRow($entity);
     }

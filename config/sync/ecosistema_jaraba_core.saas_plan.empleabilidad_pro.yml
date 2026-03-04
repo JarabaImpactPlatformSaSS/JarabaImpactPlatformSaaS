@@ -24,6 +24,6 @@ features:
   - notificaciones_push
   - analytics
   - soporte_chat
-limits: '{"diagnostics": -1, "cv_builder": -1, "job_applications_per_day": -1, "copilot_messages_per_day": -1, "job_alerts": -1, "offers_visible_per_day": -1}'
+limits: '{"diagnostics": 15, "cv_builder": 25, "job_applications_per_day": 50, "copilot_messages_per_day": 100, "job_alerts": 25, "offers_visible_per_day": 100}'
 stripe_price_id: ''
 weight: 20

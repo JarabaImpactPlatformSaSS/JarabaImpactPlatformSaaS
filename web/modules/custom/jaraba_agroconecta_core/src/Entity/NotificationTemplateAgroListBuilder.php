@@ -38,7 +38,7 @@ class NotificationTemplateAgroListBuilder extends EntityListBuilder
         $row['type'] = $entity->get('type')->value;
         $row['channel'] = $entity->getChannelLabel();
         $row['language'] = $entity->get('language')->value;
-        $row['is_active'] = $entity->isActive() ? '✅' : '❌';
+        $row['is_active'] = $entity->isActive() ? $this->t('Sí') : $this->t('No');
         return $row + parent::buildRow($entity);
     }
 

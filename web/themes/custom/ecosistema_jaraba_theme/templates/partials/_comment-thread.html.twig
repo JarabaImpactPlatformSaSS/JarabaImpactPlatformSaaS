@@ -9,11 +9,11 @@
  #
  # REV-PHASE5: Hilo de comentarios con threading.
  #}
-<section class="comment-thread" aria-label="{{ 'Comentarios'|t }}">
+<section class="comment-thread" aria-label="{% trans %}Comentarios{% endtrans %}">
   <div class="comment-thread__header">
     <h3 class="comment-thread__title">
-      <span aria-hidden="true">💬</span>
-      {{ 'Comentarios'|t }}
+      <span aria-hidden="true">{{ jaraba_icon('ui', 'chat', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }}</span>
+      {% trans %}Comentarios{% endtrans %}
       {% if comments|length > 0 %}
         <span class="comment-thread__count">({{ comments|length }})</span>
       {% endif %}
@@ -21,7 +21,7 @@
 
     {% if can_comment and comment_form_url %}
       <a href="{{ comment_form_url }}" class="btn btn--outline comment-thread__add js-slide-panel-trigger">
-        {{ 'Anadir comentario'|t }}
+        {% trans %}Añadir comentario{% endtrans %}
       </a>
     {% endif %}
   </div>
@@ -34,7 +34,7 @@
     </div>
   {% else %}
     <div class="comment-thread__empty">
-      <p>{{ 'Aun no hay comentarios. Se el primero en comentar.'|t }}</p>
+      <p>{% trans %}Aún no hay comentarios. Sé el primero en comentar.{% endtrans %}</p>
     </div>
   {% endif %}
 </section>

@@ -48,7 +48,7 @@ class CouponAgroListBuilder extends EntityListBuilder
         $row['dates'] = $start . ' → ' . $end;
 
         $active = $entity->isActive() && $entity->isWithinDateRange() && $entity->hasUsesRemaining();
-        $row['status'] = $active ? $this->t('✅ Activo') : $this->t('⏸ Inactivo');
+        $row['status'] = $active ? $this->t('Activo') : $this->t('Inactivo');
 
         return $row + parent::buildRow($entity);
     }

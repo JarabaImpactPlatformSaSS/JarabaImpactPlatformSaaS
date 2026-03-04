@@ -34,7 +34,7 @@ class AIWorkflowListBuilder extends ConfigEntityListBuilder
         $row['label'] = $entity->label();
         $row['description'] = $entity->getDescription();
         $row['steps'] = count($entity->getSteps());
-        $row['status'] = $entity->status() ? '✅ Active' : '❌ Disabled';
+        $row['status'] = $entity->status() ? $this->t('Active') : $this->t('Disabled');
         return $row + parent::buildRow($entity);
     }
 

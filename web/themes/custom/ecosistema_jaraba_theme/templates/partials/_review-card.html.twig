@@ -26,7 +26,7 @@
     </div>
     {% if review.verified_purchase %}
       <span class="review-card__badge review-card__badge--verified">
-        {{ 'Compra verificada'|t }}
+        {% trans %}Compra verificada{% endtrans %}
       </span>
     {% endif %}
   </header>
@@ -50,15 +50,15 @@
   {% if review.photos is not empty %}
     <div class="review-card__photos">
       {% for photo in review.photos %}
-        <img class="review-card__photo" src="{{ photo }}" alt="{{ 'Foto de la resena'|t }}" loading="lazy" width="120" height="120">
+        <img class="review-card__photo" src="{{ photo }}" alt="{% trans %}Foto de la reseña{% endtrans %}" loading="lazy" width="120" height="120">
       {% endfor %}
     </div>
   {% endif %}
 
   <footer class="review-card__footer">
     <button type="button" class="review-card__helpful js-review-helpful" data-review-id="{{ review.id }}">
-      <span aria-hidden="true">👍</span>
-      {{ 'Util'|t }} ({{ review.helpful_count|default(0) }})
+      <span aria-hidden="true">{{ jaraba_icon('status', 'thumbs-up', {variant: 'duotone', color: 'verde-innovacion', size: '16px'}) }}</span>
+      {% trans %}Útil{% endtrans %} ({{ review.helpful_count|default(0) }})
     </button>
   </footer>
 

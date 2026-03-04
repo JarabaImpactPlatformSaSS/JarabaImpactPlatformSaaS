@@ -18,6 +18,6 @@ features:
   - revision_ia_documentos
   - mensajeria_mentores
   - soporte_chat
-limits: '{"copilot_sessions_daily": -1, "mentoring_hours_monthly": -1, "sto_exports": -1, "training_modules": -1, "diagnostic_access": -1, "report_downloads": -1}'
+limits: '{"copilot_sessions_daily": 60, "mentoring_hours_monthly": 25, "sto_exports": 50, "training_modules": 50, "diagnostic_access": 15, "report_downloads": 25}'
 stripe_price_id: ''
 weight: 20

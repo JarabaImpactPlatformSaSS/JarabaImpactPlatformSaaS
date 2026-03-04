@@ -328,3 +328,109 @@ ecosistema_jaraba_theme.settings:
     enable_avatar_nav:
       type: integer
       label: 'Activar navegación avatar'
+
+    # ── Command Bar ──
+    command_bar_enabled:
+      type: integer
+      label: 'Activar command bar'
+
+    # ── Legal Pages ──
+    legal_privacy_content:
+      type: string
+      label: 'Contenido política de privacidad'
+    legal_privacy_updated:
+      type: string
+      label: 'Fecha actualización privacidad'
+    legal_terms_content:
+      type: string
+      label: 'Contenido términos de servicio'
+    legal_terms_updated:
+      type: string
+      label: 'Fecha actualización términos'
+    legal_cookies_content:
+      type: string
+      label: 'Contenido política de cookies'
+    legal_cookies_updated:
+      type: string
+      label: 'Fecha actualización cookies'
+    legal_dpa_content:
+      type: string
+      label: 'Contenido acuerdo procesamiento datos'
+    legal_dpa_updated:
+      type: string
+      label: 'Fecha actualización DPA'
+
+    # ── About / Contact ──
+    about_content:
+      type: string
+      label: 'Contenido página sobre nosotros'
+    contact_email:
+      type: string
+      label: 'Email de contacto'
+    contact_phone:
+      type: string
+      label: 'Teléfono de contacto'
+    contact_address:
+      type: string
+      label: 'Dirección de contacto'
+    contact_content:
+      type: string
+      label: 'Contenido página de contacto'
+
+    # ── Hero Content ──
+    hero_eyebrow:
+      type: string
+      label: 'Eyebrow del hero'
+    hero_headline:
+      type: string
+      label: 'Titular del hero'
+    hero_subtitle:
+      type: string
+      label: 'Subtítulo del hero'
+    hero_cta_primary_text:
+      type: string
+      label: 'Texto CTA primario hero'
+    hero_cta_secondary_text:
+      type: string
+      label: 'Texto CTA secundario hero'
+    hero_cta_secondary_url:
+      type: string
+      label: 'URL CTA secundario hero'
+
+    # ── Stats Section ──
+    stat_value_1:
+      type: string
+      label: 'Valor estadística 1'
+    stat_suffix_1:
+      type: string
+      label: 'Sufijo estadística 1'
+    stat_label_1:
+      type: string
+      label: 'Etiqueta estadística 1'
+    stat_value_2:
+      type: string
+      label: 'Valor estadística 2'
+    stat_suffix_2:
+      type: string
+      label: 'Sufijo estadística 2'
+    stat_label_2:
+      type: string
+      label: 'Etiqueta estadística 2'
+    stat_value_3:
+      type: string
+      label: 'Valor estadística 3'
+    stat_suffix_3:
+      type: string
+      label: 'Sufijo estadística 3'
+    stat_label_3:
+      type: string
+      label: 'Etiqueta estadística 3'
+    stat_value_4:
+      type: string
+      label: 'Valor estadística 4'
+    stat_suffix_4:
+      type: string
+      label: 'Sufijo estadística 4'
+    stat_label_4:
+      type: string
+      label: 'Etiqueta estadística 4'

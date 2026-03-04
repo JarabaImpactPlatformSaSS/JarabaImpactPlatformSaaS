@@ -38,8 +38,8 @@ class AgroCollectionListBuilder extends EntityListBuilder
         $row['name'] = $entity->label();
         $row['slug'] = $entity->getSlug();
         $row['type'] = $entity->getTypeLabel();
-        $row['is_featured'] = $entity->isFeatured() ? '⭐' : '—';
-        $row['is_active'] = $entity->isActive() ? '✅' : '❌';
+        $row['is_featured'] = $entity->isFeatured() ? $this->t('Sí') : '—';
+        $row['is_active'] = $entity->isActive() ? $this->t('Sí') : $this->t('No');
         $row['position'] = (int) $entity->get('position')->value;
         return $row + parent::buildRow($entity);
     }

@@ -27,7 +27,7 @@ class QrLeadCaptureListBuilder extends EntityListBuilder
         $row['name'] = $entity->get('name')->value ?? '—';
         $row['source'] = $entity->get('source')->value ?? '—';
         $row['discount'] = $entity->get('discount_code')->value ?? '—';
-        $row['consent'] = $entity->get('consent_given')->value ? '✅' : '❌';
+        $row['consent'] = $entity->get('consent_given')->value ? $this->t('Sí') : $this->t('No');
         $row['date'] = date('Y-m-d', (int) $entity->get('created')->value);
         return $row + parent::buildRow($entity);
     }

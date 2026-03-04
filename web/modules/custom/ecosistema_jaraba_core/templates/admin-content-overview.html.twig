@@ -41,7 +41,7 @@
       </button>
       {% for cat_key, category in categories %}
         <button class="ej-admin-structure__tab" data-target="{{ cat_key }}" type="button">
-          <span class="ej-admin-structure__tab-icon">{{ category.icon }}</span>
+          <span class="ej-admin-structure__tab-icon" aria-hidden="true">{{ jaraba_icon(category.icon.category, category.icon.name, {variant: 'duotone', color: 'azul-corporativo', size: '18px'}) }}</span>
           {{ category.label }}
         </button>
       {% endfor %}
@@ -52,7 +52,7 @@
   {% for cat_key, category in categories %}
     <section class="ej-admin-structure__section" data-category="{{ cat_key }}">
       <div class="ej-admin-structure__section-header">
-        <span class="ej-admin-structure__section-icon">{{ category.icon }}</span>
+        <span class="ej-admin-structure__section-icon" aria-hidden="true">{{ jaraba_icon(category.icon.category, category.icon.name, {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
         <h2 class="ej-admin-structure__section-title">{{ category.label }}</h2>
         <span class="ej-admin-structure__section-count">{{ category.items|length }}</span>
         <span class="ej-admin-structure__section-desc">{{ category.description }}</span>

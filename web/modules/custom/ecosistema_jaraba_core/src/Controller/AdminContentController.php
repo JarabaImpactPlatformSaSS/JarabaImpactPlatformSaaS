@@ -39,7 +39,7 @@ class AdminContentController extends ControllerBase
     protected const CATEGORIES = [
         'lms_training' => [
             'label' => 'Formación & LMS',
-            'icon' => '🎓',
+            'icon' => ['category' => 'ui', 'name' => 'book'],
             'description' => 'Cursos, rutas de aprendizaje, certificados, gamificación',
             'providers' => [
                 'jaraba_lms',
@@ -51,19 +51,19 @@ class AdminContentController extends ControllerBase
         ],
         'mentoring' => [
             'label' => 'Mentoría',
-            'icon' => '🤝',
+            'icon' => ['category' => 'ui', 'name' => 'handshake'],
             'description' => 'Sesiones de mentoría, mentores, programas',
             'providers' => ['jaraba_mentoring'],
         ],
         'knowledge_base' => [
             'label' => 'Base de Conocimiento',
-            'icon' => '📚',
+            'icon' => ['category' => 'ui', 'name' => 'database'],
             'description' => 'Conocimiento del tenant, documentación legal, artículos',
             'providers' => ['jaraba_tenant_knowledge', 'jaraba_legal_knowledge'],
         ],
         'employability' => [
             'label' => 'Empleabilidad & Candidatos',
-            'icon' => '🎯',
+            'icon' => ['category' => 'actions', 'name' => 'target'],
             'description' => 'Empleos, candidaturas, skills, competencias IA',
             'providers' => [
                 'jaraba_job_board',
@@ -74,19 +74,19 @@ class AdminContentController extends ControllerBase
         ],
         'crm_sales' => [
             'label' => 'CRM & Ventas',
-            'icon' => '📇',
+            'icon' => ['category' => 'business', 'name' => 'briefcase'],
             'description' => 'Empresas, contactos, oportunidades, actividades comerciales',
             'providers' => ['jaraba_crm'],
         ],
         'agroconecta' => [
             'label' => 'AgroConecta',
-            'icon' => '🌾',
+            'icon' => ['category' => 'verticals', 'name' => 'leaf'],
             'description' => 'Productos agro, productores, pedidos, trazabilidad, certificaciones',
             'providers' => ['jaraba_agroconecta_core'],
         ],
         'comercio_marketplace' => [
             'label' => 'Comercio & Marketplace',
-            'icon' => '🛒',
+            'icon' => ['category' => 'commerce', 'name' => 'cart'],
             'description' => 'Productos, variaciones, pedidos, comerciantes, social commerce',
             'providers' => [
                 'jaraba_commerce',
@@ -96,43 +96,43 @@ class AdminContentController extends ControllerBase
         ],
         'servicios' => [
             'label' => 'Servicios & Reservas',
-            'icon' => '🗓️',
+            'icon' => ['category' => 'ui', 'name' => 'calendar'],
             'description' => 'Paquetes de servicios, reservas, disponibilidad',
             'providers' => ['jaraba_servicios_conecta'],
         ],
         'content_media' => [
             'label' => 'Contenido & Blog',
-            'icon' => '📝',
+            'icon' => ['category' => 'ui', 'name' => 'edit'],
             'description' => 'Artículos, noticias, categorías de contenido',
             'providers' => ['jaraba_content_hub'],
         ],
         'resources' => [
             'label' => 'Recursos',
-            'icon' => '📁',
+            'icon' => ['category' => 'ui', 'name' => 'folder'],
             'description' => 'Recursos descargables, kits digitales, documentos',
             'providers' => ['jaraba_resources'],
         ],
         'groups_community' => [
             'label' => 'Grupos & Comunidad',
-            'icon' => '👥',
+            'icon' => ['category' => 'ui', 'name' => 'users'],
             'description' => 'Grupos, foros, comunidades de práctica, social',
             'providers' => ['jaraba_groups', 'jaraba_social', 'jaraba_referral'],
         ],
         'events' => [
             'label' => 'Eventos',
-            'icon' => '📅',
+            'icon' => ['category' => 'ui', 'name' => 'calendar'],
             'description' => 'Eventos, sesiones, inscripciones',
             'providers' => ['jaraba_events'],
         ],
         'onboarding' => [
             'label' => 'Onboarding',
-            'icon' => '🚀',
+            'icon' => ['category' => 'actions', 'name' => 'rocket'],
             'description' => 'Flujos de bienvenida, guías de inicio, journeys',
             'providers' => ['jaraba_onboarding', 'jaraba_journey', 'jaraba_customer_success'],
         ],
         'business_tools' => [
             'label' => 'Herramientas de Negocio',
-            'icon' => '🧰',
+            'icon' => ['category' => 'business', 'name' => 'clipboard'],
             'description' => 'Canvas, DAFO, business plans, emprendimiento',
             'providers' => [
                 'jaraba_business_tools',
@@ -142,7 +142,7 @@ class AdminContentController extends ControllerBase
         ],
         'ai_agents' => [
             'label' => 'IA & Agentes',
-            'icon' => '🤖',
+            'icon' => ['category' => 'ai', 'name' => 'robot'],
             'description' => 'Agentes IA, flujos automatizados, experimentos A/B',
             'providers' => [
                 'jaraba_ai_agents',
@@ -152,7 +152,7 @@ class AdminContentController extends ControllerBase
         ],
         'billing_usage' => [
             'label' => 'Facturación & Uso',
-            'icon' => '💰',
+            'icon' => ['category' => 'business', 'name' => 'chart-bar'],
             'description' => 'Facturas, planes, consumo de servicios, add-ons',
             'providers' => [
                 'jaraba_billing',
@@ -163,7 +163,7 @@ class AdminContentController extends ControllerBase
         ],
         'analytics' => [
             'label' => 'Analítica & Datos',
-            'icon' => '📊',
+            'icon' => ['category' => 'analytics', 'name' => 'chart-line'],
             'description' => 'Heatmaps, insights, dashboards, analítica avanzada',
             'providers' => [
                 'jaraba_heatmap',
@@ -174,13 +174,13 @@ class AdminContentController extends ControllerBase
         ],
         'andalucia_ei' => [
             'label' => 'Andalucía +ei',
-            'icon' => '🏛️',
+            'icon' => ['category' => 'business', 'name' => 'building'],
             'description' => 'Programa Andalucía Emprende e Innova',
             'providers' => ['jaraba_andalucia_ei'],
         ],
         'site_builder' => [
             'label' => 'Site Builder',
-            'icon' => '🌐',
+            'icon' => ['category' => 'ui', 'name' => 'globe'],
             'description' => 'Páginas, bloques de contenido, SEO, theming',
             'providers' => [
                 'jaraba_site_builder',
@@ -193,25 +193,25 @@ class AdminContentController extends ControllerBase
         ],
         'security' => [
             'label' => 'Seguridad & Compliance',
-            'icon' => '🔒',
+            'icon' => ['category' => 'ui', 'name' => 'lock'],
             'description' => 'Auditoría, seguridad, cumplimiento normativo',
             'providers' => ['jaraba_security_compliance'],
         ],
         'pwa_mobile' => [
             'label' => 'PWA & Notificaciones',
-            'icon' => '📱',
+            'icon' => ['category' => 'ui', 'name' => 'device-phone'],
             'description' => 'Push notifications, configuración PWA, geolocalización',
             'providers' => ['jaraba_pwa', 'jaraba_geo'],
         ],
         'performance' => [
             'label' => 'Rendimiento',
-            'icon' => '⚡',
+            'icon' => ['category' => 'analytics', 'name' => 'gauge'],
             'description' => 'Optimización, caché, rendimiento del sistema',
             'providers' => ['jaraba_performance'],
         ],
         'drupal_core' => [
             'label' => 'Contenido Drupal',
-            'icon' => '⚙️',
+            'icon' => ['category' => 'ui', 'name' => 'settings'],
             'description' => 'Nodos, comentarios, archivos, medios, bloques',
             'providers' => [
                 'node',
@@ -231,7 +231,7 @@ class AdminContentController extends ControllerBase
         ],
         'other' => [
             'label' => 'Otros',
-            'icon' => '📦',
+            'icon' => ['category' => 'ui', 'name' => 'box'],
             'description' => 'Módulos adicionales de la plataforma',
             'providers' => [],
         ],

@@ -41,7 +41,7 @@ class ReviewAgroListBuilder extends EntityListBuilder
         $row['target'] = $entity->get('target_entity_type')->value . ':' . $entity->get('target_entity_id')->value;
         $row['author'] = $entity->getOwner() ? $entity->getOwner()->getDisplayName() : $this->t('Anónimo');
         $row['rating'] = $entity->getRatingStars();
-        $row['verified'] = $entity->get('verified_purchase')->value ? '✅' : '—';
+        $row['verified'] = $entity->get('verified_purchase')->value ? $this->t('Sí') : '—';
         $row['state'] = $entity->getStateLabel();
         $row['created'] = \Drupal::service('date.formatter')->format($entity->get('created')->value, 'short');
         return $row + parent::buildRow($entity);

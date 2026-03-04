@@ -11,11 +11,11 @@ features:
   - revision_ia_documentos
   - mensajeria_mentores
 limits:
-  copilot_sessions_daily: -1
-  mentoring_hours_monthly: -1
-  sto_exports: -1
-  training_modules: -1
-  diagnostic_access: -1
-  report_downloads: -1
+  copilot_sessions_daily: 60
+  mentoring_hours_monthly: 25
+  sto_exports: 50
+  training_modules: 50
+  diagnostic_access: 15
+  report_downloads: 25
 description: 'Limites del tier Professional para el vertical Andalucia +ei (institucional).'
 status: true

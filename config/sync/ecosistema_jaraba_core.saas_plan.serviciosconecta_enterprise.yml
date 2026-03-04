@@ -21,6 +21,6 @@ features:
   - soporte_email
   - soporte_chat
   - soporte_dedicado
-limits: '{"services": -1, "bookings_per_month": -1, "packages": -1, "copilot_queries_month": -1, "reviews_visible": -1, "video_conferencing": 1, "analytics_dashboard": 1, "calendar_sync": 1}'
+limits: '{"services": -1, "bookings_per_month": 10000, "packages": -1, "copilot_queries_month": 10000, "reviews_visible": -1, "video_conferencing": 1, "analytics_dashboard": 1, "calendar_sync": 1}'
 stripe_price_id: ''
 weight: 12

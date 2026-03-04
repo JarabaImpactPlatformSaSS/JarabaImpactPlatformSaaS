@@ -56,7 +56,7 @@
       {% endfor %}
     {% else %}
       <div class="agro-search-empty">
-        <span class="agro-search-empty__icon">📦</span>
+        <span class="agro-search-empty__icon" aria-hidden="true">{{ jaraba_icon('ui', 'package', {variant: 'duotone', color: 'naranja-impulso', size: '48px'}) }}</span>
         <p>{% trans %}Esta colección no tiene productos todavía.{% endtrans %}</p>
       </div>
     {% endif %}

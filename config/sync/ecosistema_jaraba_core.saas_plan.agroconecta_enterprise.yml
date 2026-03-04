@@ -28,6 +28,6 @@ features:
   - soporte_email
   - soporte_chat
   - soporte_dedicado
-limits: '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": -1, "photos_per_product": -1, "commission_pct": 3, "traceability_qr": -1, "analytics_advanced": -1, "demand_forecaster": -1, "partner_hub": -1}'
+limits: '{"products": -1, "orders_per_month": -1, "copilot_uses_per_month": 10000, "photos_per_product": -1, "commission_pct": 3, "traceability_qr": -1, "analytics_advanced": -1, "demand_forecaster": -1, "partner_hub": -1}'
 stripe_price_id: ''
 weight: 12

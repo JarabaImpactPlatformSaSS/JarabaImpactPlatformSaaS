@@ -49,8 +49,8 @@ class ShippingMethodAgroListBuilder extends EntityListBuilder
         $row['free_from'] = $free > 0 ? number_format($free, 2, ',', '.') . ' €' : '—';
 
         $row['delivery'] = $entity->getDeliveryEstimate() ?: '—';
-        $row['cold'] = $entity->requiresColdChain() ? '❄️' : '—';
-        $row['status'] = $entity->isActive() ? $this->t('✅ Activo') : $this->t('⏸ Inactivo');
+        $row['cold'] = $entity->requiresColdChain() ? $this->t('Sí') : '—';
+        $row['status'] = $entity->isActive() ? $this->t('Activo') : $this->t('Inactivo');
 
         return $row + parent::buildRow($entity);
     }

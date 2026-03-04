@@ -172,10 +172,12 @@
               <div class="review-card" itemprop="review" itemscope itemtype="https://schema.org/Review">
                 <div class="review-card__header">
                   <span class="review-card__author" itemprop="author">{{ review.author }}</span>
-                  <span class="review-card__rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
-                    {% for i in 1..5 %}
-                      {% if i <= review.rating %}⭐{% else %}☆{% endif %}
-                    {% endfor %}
+                  <span class="review-card__rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating" aria-label="{{ review.rating }}/5">
+                    {% include '@ecosistema_jaraba_theme/partials/_star-rating-display.html.twig' with {
+                      rating: review.rating,
+                      size: 'sm',
+                      show_count: false
+                    } only %}
                     <meta itemprop="ratingValue" content="{{ review.rating }}">
                   </span>
                 </div>

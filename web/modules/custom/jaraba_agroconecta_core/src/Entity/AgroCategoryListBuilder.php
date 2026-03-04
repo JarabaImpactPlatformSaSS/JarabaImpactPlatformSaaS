@@ -41,8 +41,8 @@ class AgroCategoryListBuilder extends EntityListBuilder
         $parent = $entity->getParent();
         $row['parent'] = $parent ? $parent->label() : '—';
         $row['product_count'] = $entity->getProductCount();
-        $row['is_featured'] = $entity->isFeatured() ? '⭐' : '—';
-        $row['is_active'] = $entity->isActive() ? '✅' : '❌';
+        $row['is_featured'] = $entity->isFeatured() ? $this->t('Sí') : '—';
+        $row['is_active'] = $entity->isActive() ? $this->t('Sí') : $this->t('No');
         $row['position'] = (int) $entity->get('position')->value;
         return $row + parent::buildRow($entity);
     }

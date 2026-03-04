@@ -136,8 +136,8 @@
               <td class="check-row__result">
                 <span class="result-badge result-badge--{{ check.result }}">
                   {% if check.result == 'pass' %}{{ jaraba_icon('actions', 'check', { color: 'success', size: '18px' }) }}{% endif %}
-                  {% if check.result == 'fail' %}❌{% endif %}
-                  {% if check.result == 'recovery' %}🔄{% endif %}
+                  {% if check.result == 'fail' %}<span aria-hidden="true">{{ jaraba_icon('status', 'x-circle', { color: 'neutral', size: '18px' }) }}</span>{% endif %}
+                  {% if check.result == 'recovery' %}<span aria-hidden="true">{{ jaraba_icon('actions', 'refresh', { color: 'azul-corporativo', size: '18px' }) }}</span>{% endif %}
                   {{ check.result|upper }}
                 </span>
               </td>
@@ -157,7 +157,7 @@
     </h2>
     <div class="quick-actions">
       <a href="/admin/config/development/performance" class="action-btn action-btn--primary">
-        <span class="action-btn__icon">🗑️</span>
+        <span class="action-btn__icon" aria-hidden="true">{{ jaraba_icon('actions', 'trash', { color: 'neutral', size: '18px' }) }}</span>
         {% trans %}Limpiar Caché{% endtrans %}
       </a>
       <a href="/admin/reports/status" class="action-btn action-btn--secondary">

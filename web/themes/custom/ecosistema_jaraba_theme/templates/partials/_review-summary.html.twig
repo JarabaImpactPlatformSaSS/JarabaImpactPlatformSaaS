@@ -9,8 +9,8 @@
 {% if summary %}
 <div class="review-summary">
   <div class="review-summary__header">
-    <span class="review-summary__icon" aria-hidden="true">✨</span>
-    <span class="review-summary__label">{{ 'Resumen generado con IA'|t }}</span>
+    <span class="review-summary__icon" aria-hidden="true">{{ jaraba_icon('ai', 'sparkles', {variant: 'duotone', color: 'azul-corporativo', size: '18px'}) }}</span>
+    <span class="review-summary__label">{% trans %}Resumen generado con IA{% endtrans %}</span>
   </div>
   <p class="review-summary__text">{{ summary }}</p>
 </div>

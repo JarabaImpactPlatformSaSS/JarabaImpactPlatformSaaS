@@ -19,6 +19,6 @@ features:
   - soporte_email
   - soporte_chat
   - soporte_dedicado
-limits: '{"searches_per_month": 0, "max_alerts": 0, "max_bookmarks": 0, "max_cases": -1, "vault_storage_mb": -1, "calendar_deadlines": -1, "billing_invoices_month": -1, "lexnet_submissions_month": -1, "template_generations_month": -1}'
+limits: '{"searches_per_month": 10000, "max_alerts": -1, "max_bookmarks": -1, "max_cases": -1, "vault_storage_mb": 51200, "calendar_deadlines": -1, "billing_invoices_month": -1, "lexnet_submissions_month": 500, "template_generations_month": 10000}'
 stripe_price_id: ''
 weight: 12

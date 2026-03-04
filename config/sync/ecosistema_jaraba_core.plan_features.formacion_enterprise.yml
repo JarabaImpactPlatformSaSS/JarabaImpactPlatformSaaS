@@ -23,7 +23,7 @@ limits:
   learning_paths: -1
   xapi_tracking: -1
   gamification: -1
-  copilot_uses_per_month: -1
-  storage_gb: -1
+  copilot_uses_per_month: 10000
+  storage_gb: 500
 description: 'Limites del tier Enterprise para la vertical Formacion.'
 status: true

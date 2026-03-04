@@ -31,7 +31,7 @@
       </div>
     {% endif %}
     {% if case.featured %}
-      <span class="sc-card__badge sc-card__badge--featured" title="{% trans %}Destacado{% endtrans %}">⭐</span>
+      <span class="sc-card__badge sc-card__badge--featured" title="{% trans %}Destacado{% endtrans %}" aria-hidden="true">{{ jaraba_icon('ui', 'star', {variant: 'duotone', color: 'naranja-impulso', size: '16px'}) }}</span>
     {% endif %}
   </div>
 

@@ -85,14 +85,14 @@ class BrandVoiceSettingsForm extends ConfigFormBase
             '#title' => $this->t('Brand Archetype'),
             '#description' => $this->t('Select the personality archetype that best represents your brand.'),
             '#options' => [
-                'professional' => $this->t('🏢 Professional - Corporate, trustworthy, formal'),
-                'artisan' => $this->t('🎨 Artisan - Authentic, traditional, quality-focused'),
-                'innovative' => $this->t('🚀 Innovative - Modern, tech-forward, cutting-edge'),
-                'friendly' => $this->t('😊 Friendly - Warm, approachable, neighborly'),
-                'expert' => $this->t('📚 Expert - Authoritative, knowledgeable, educational'),
-                'playful' => $this->t('🎉 Playful - Fun, energetic, youthful'),
-                'luxury' => $this->t('💎 Luxury - Premium, exclusive, sophisticated'),
-                'eco' => $this->t('🌱 Eco-Conscious - Sustainable, ethical, green'),
+                'professional' => $this->t('Professional - Corporate, trustworthy, formal'),
+                'artisan' => $this->t('Artisan - Authentic, traditional, quality-focused'),
+                'innovative' => $this->t('Innovative - Modern, tech-forward, cutting-edge'),
+                'friendly' => $this->t('Friendly - Warm, approachable, neighborly'),
+                'expert' => $this->t('Expert - Authoritative, knowledgeable, educational'),
+                'playful' => $this->t('Playful - Fun, energetic, youthful'),
+                'luxury' => $this->t('Luxury - Premium, exclusive, sophisticated'),
+                'eco' => $this->t('Eco-Conscious - Sustainable, ethical, green'),
             ],
             '#default_value' => $config->get('archetype') ?? 'professional',
             '#required' => TRUE,
@@ -152,7 +152,7 @@ class BrandVoiceSettingsForm extends ConfigFormBase
 
             $form['brand_voice']['examples'][$i]['good'] = [
                 '#type' => 'textarea',
-                '#title' => $this->t('✅ Good Example'),
+                '#title' => $this->t('Good Example'),
                 '#default_value' => $examples[$i]['good'] ?? '',
                 '#rows' => 2,
                 '#placeholder' => $this->t('How you WANT the AI to respond'),
@@ -160,7 +160,7 @@ class BrandVoiceSettingsForm extends ConfigFormBase
 
             $form['brand_voice']['examples'][$i]['bad'] = [
                 '#type' => 'textarea',
-                '#title' => $this->t('❌ Bad Example'),
+                '#title' => $this->t('Bad Example'),
                 '#default_value' => $examples[$i]['bad'] ?? '',
                 '#rows' => 2,
                 '#placeholder' => $this->t('How you DO NOT want the AI to respond'),
@@ -231,7 +231,7 @@ class BrandVoiceSettingsForm extends ConfigFormBase
 
         $form['preview']['generate_preview'] = [
             '#type' => 'submit',
-            '#value' => $this->t('🔮 Generate Preview'),
+            '#value' => $this->t('Generate Preview'),
             '#submit' => ['::generatePreview'],
             '#ajax' => [
                 'callback' => '::ajaxPreviewResponse',

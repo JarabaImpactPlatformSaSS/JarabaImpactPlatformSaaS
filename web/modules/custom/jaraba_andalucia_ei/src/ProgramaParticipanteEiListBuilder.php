@@ -44,15 +44,15 @@ class ProgramaParticipanteEiListBuilder extends EntityListBuilder
         ];
 
         $faseLabels = [
-            'atencion' => '🟡 ' . $this->t('Atención'),
-            'insercion' => '🟢 ' . $this->t('Inserción'),
-            'baja' => '🔴 ' . $this->t('Baja'),
+            'atencion' => $this->t('Atención'),
+            'insercion' => $this->t('Inserción'),
+            'baja' => $this->t('Baja'),
         ];
 
         $stoLabels = [
-            'pending' => '⏳',
-            'synced' => '✅',
-            'error' => '❌',
+            'pending' => $this->t('Pendiente'),
+            'synced' => $this->t('Sincronizado'),
+            'error' => $this->t('Error'),
         ];
 
         $row['dni_nie'] = $entity->getDniNie();

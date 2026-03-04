@@ -12,9 +12,9 @@ features:
   - premium_blocks
 limits:
   hypotheses_active: -1
-  experiments_monthly: -1
-  copilot_sessions_daily: -1
-  mentoring_sessions_monthly: -1
+  experiments_monthly: 10000
+  copilot_sessions_daily: 10000
+  mentoring_sessions_monthly: 50
   bmc_drafts: -1
   calculadora_uses: -1
 description: 'Limites del tier Enterprise para la vertical Emprendimiento (ilimitado).'

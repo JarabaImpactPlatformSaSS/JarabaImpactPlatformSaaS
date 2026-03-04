@@ -28,7 +28,7 @@
     </div>
     <div class="tenant-dashboard__actions">
       <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.settings') }}" class="tenant-btn tenant-btn--secondary">
-        ⚙️ {{ 'Configuración'|t }}
+        {{ jaraba_icon('ui', 'settings', {variant: 'duotone', color: 'azul-corporativo', size: '16px'}) }} {% trans %}Configuración{% endtrans %}
       </a>
     </div>
   </header>
@@ -80,7 +80,7 @@
     
     {# Gráfico de Ventas #}
     <section class="tenant-chart-section">
-      <h2 class="tenant-section-title">📈 {{ 'Ventas (últimos 30 días)'|t }}</h2>
+      <h2 class="tenant-section-title">{{ jaraba_icon('analytics', 'trending-up', {variant: 'duotone', color: 'verde-innovacion', size: '20px'}) }} {% trans %}Ventas (últimos 30 días){% endtrans %}</h2>
       <div class="tenant-chart-container" data-chart-type="sales" data-chart-id="sales-trend">
         <div class="tenant-chart-canvas-wrapper">
           <canvas id="sales-trend-chart" height="250"></canvas>
@@ -91,7 +91,7 @@
 
     {# Gráfico de MRR #}
     <section class="tenant-chart-section">
-      <h2 class="tenant-section-title">💰 {{ 'MRR (últimos 6 meses)'|t }}</h2>
+      <h2 class="tenant-section-title">{{ jaraba_icon('finance', 'coins', {variant: 'duotone', color: 'verde-innovacion', size: '20px'}) }} {% trans %}MRR (últimos 6 meses){% endtrans %}</h2>
       <div class="tenant-chart-container" data-chart-type="mrr" data-chart-id="mrr-trend">
         <div class="tenant-chart-canvas-wrapper">
           <canvas id="mrr-trend-chart" height="250"></canvas>
@@ -107,7 +107,7 @@
     
     {# Actividad Reciente #}
     <section class="tenant-activity-section">
-      <h2 class="tenant-section-title">📋 {{ 'Actividad Reciente'|t }}</h2>
+      <h2 class="tenant-section-title">{{ jaraba_icon('ui', 'clipboard', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }} {% trans %}Actividad Reciente{% endtrans %}</h2>
       <div class="tenant-activity-list">
         {% for activity in recent_activity %}
         <div class="tenant-activity-item tenant-activity-item--{{ activity.type }}">
@@ -127,7 +127,7 @@
 
     {# Gráfico de Clientes #}
     <section class="tenant-chart-section">
-      <h2 class="tenant-section-title">👥 {{ 'Clientes por Semana'|t }}</h2>
+      <h2 class="tenant-section-title">{{ jaraba_icon('ui', 'users', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }} {% trans %}Clientes por Semana{% endtrans %}</h2>
       <div class="tenant-chart-container" data-chart-type="customers" data-chart-id="customers-trend">
         <div class="tenant-chart-canvas-wrapper">
           <canvas id="customers-trend-chart" height="250"></canvas>
@@ -142,20 +142,20 @@
     <h2 class="tenant-section-title">{{ 'Acciones Rápidas'|t }}</h2>
     <div class="tenant-quick-links__grid">
       <a href="{{ path('ecosistema_jaraba_core.tenant.change_plan') }}" class="tenant-quick-link">
-        <span class="tenant-quick-link__icon">💳</span>
-        <span class="tenant-quick-link__label">{{ 'Cambiar Plan'|t }}</span>
+        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'wallet', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
+        <span class="tenant-quick-link__label">{% trans %}Cambiar Plan{% endtrans %}</span>
       </a>
       <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.settings') }}" class="tenant-quick-link">
-        <span class="tenant-quick-link__icon">⚙️</span>
-        <span class="tenant-quick-link__label">{{ 'Configuración'|t }}</span>
+        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'settings', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
+        <span class="tenant-quick-link__label">{% trans %}Configuración{% endtrans %}</span>
       </a>
       <a href="#" class="tenant-quick-link tenant-quick-link--disabled">
-        <span class="tenant-quick-link__icon">📦</span>
-        <span class="tenant-quick-link__label">{{ 'Mis Productos'|t }}</span>
+        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'package', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
+        <span class="tenant-quick-link__label">{% trans %}Mis Productos{% endtrans %}</span>
       </a>
       <a href="#" class="tenant-quick-link tenant-quick-link--disabled">
-        <span class="tenant-quick-link__icon">💬</span>
-        <span class="tenant-quick-link__label">{{ 'Soporte'|t }}</span>
+        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'chat', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
+        <span class="tenant-quick-link__label">{% trans %}Soporte{% endtrans %}</span>
       </a>
     </div>
   </section>

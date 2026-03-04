@@ -45,7 +45,7 @@
         
         {% if kit.is_featured.value %}
           <span class="ej-kit-card__badge ej-kit-card__badge--featured">
-            ⭐ {{ 'Destacado'|t }}
+            {{ jaraba_icon('ui', 'star', {variant: 'duotone', color: 'naranja-impulso', size: '14px'}) }} {% trans %}Destacado{% endtrans %}
           </span>
         {% endif %}
       </div>

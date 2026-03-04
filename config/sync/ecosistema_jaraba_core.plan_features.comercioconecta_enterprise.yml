@@ -13,7 +13,7 @@ features:
 limits:
   products: -1
   flash_offers_active: -1
-  copilot_uses_per_month: -1
+  copilot_uses_per_month: 10000
   qr_codes: -1
   seo_local_audit: -1
   analytics_advanced: -1

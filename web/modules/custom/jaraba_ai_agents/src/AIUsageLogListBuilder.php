@@ -40,7 +40,7 @@ class AIUsageLogListBuilder extends EntityListBuilder
         $row['tier'] = $entity->getTier();
         $row['cost'] = '$' . number_format($entity->getCost(), 6);
         $row['duration_ms'] = $entity->get('duration_ms')->value . 'ms';
-        $row['success'] = $entity->isSuccessful() ? '✅' : '❌';
+        $row['success'] = $entity->isSuccessful() ? $this->t('Sí') : $this->t('No');
         return $row + parent::buildRow($entity);
     }
 

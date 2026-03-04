@@ -48,8 +48,8 @@
   {% if savings %}
   <div class="ai-dashboard__savings-card">
     <div class="ai-dashboard__savings-header">
-      <span class="ai-dashboard__savings-icon">💰</span>
-      <span class="ai-dashboard__savings-title">{{ 'Model Routing Savings'|t }}</span>
+      <span class="ai-dashboard__savings-icon" aria-hidden="true">{{ jaraba_icon('finance', 'coins', {variant: 'duotone', color: 'verde-innovacion', size: '24px'}) }}</span>
+      <span class="ai-dashboard__savings-title">{% trans %}Model Routing Savings{% endtrans %}</span>
     </div>
     <div class="ai-dashboard__savings-content">
       <div class="ai-dashboard__savings-stat">
@@ -83,7 +83,7 @@
         {% if total_cost > 0 %}
           <div class="ai-dashboard__tier-bar">
             <div class="ai-dashboard__tier-label">
-              <span class="ai-dashboard__tier-name">⚡ Fast</span>
+              <span class="ai-dashboard__tier-name">{{ jaraba_icon('actions', 'rocket', {variant: 'duotone', color: 'verde-innovacion', size: '16px'}) }} Fast</span>
               <span class="ai-dashboard__tier-cost">${{ cost_by_tier.fast|number_format(4) }}</span>
             </div>
             <div class="ai-dashboard__tier-progress">
@@ -92,7 +92,7 @@
           </div>
           <div class="ai-dashboard__tier-bar">
             <div class="ai-dashboard__tier-label">
-              <span class="ai-dashboard__tier-name">⚖️ Balanced</span>
+              <span class="ai-dashboard__tier-name">{{ jaraba_icon('business', 'chart-bar', {variant: 'duotone', color: 'azul-corporativo', size: '16px'}) }} Balanced</span>
               <span class="ai-dashboard__tier-cost">${{ cost_by_tier.balanced|number_format(4) }}</span>
             </div>
             <div class="ai-dashboard__tier-progress">
@@ -101,7 +101,7 @@
           </div>
           <div class="ai-dashboard__tier-bar">
             <div class="ai-dashboard__tier-label">
-              <span class="ai-dashboard__tier-name">🚀 Premium</span>
+              <span class="ai-dashboard__tier-name">{{ jaraba_icon('ai', 'sparkles', {variant: 'duotone', color: 'naranja-impulso', size: '16px'}) }} Premium</span>
               <span class="ai-dashboard__tier-cost">${{ cost_by_tier.premium|number_format(4) }}</span>
             </div>
             <div class="ai-dashboard__tier-progress">

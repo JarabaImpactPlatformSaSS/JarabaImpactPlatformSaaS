@@ -37,10 +37,10 @@ class NotificationPreferenceAgroListBuilder extends EntityListBuilder
         /** @var \Drupal\jaraba_agroconecta_core\Entity\NotificationPreferenceAgro $entity */
         $row['user'] = $entity->getOwner() ? $entity->getOwner()->getDisplayName() : $this->t('—');
         $row['notification_type'] = $entity->get('notification_type')->value;
-        $row['email'] = $entity->isChannelEnabled('email') ? '✅' : '❌';
-        $row['push'] = $entity->isChannelEnabled('push') ? '✅' : '❌';
-        $row['sms'] = $entity->isChannelEnabled('sms') ? '✅' : '❌';
-        $row['in_app'] = $entity->isChannelEnabled('in_app') ? '✅' : '❌';
+        $row['email'] = $entity->isChannelEnabled('email') ? $this->t('Sí') : $this->t('No');
+        $row['push'] = $entity->isChannelEnabled('push') ? $this->t('Sí') : $this->t('No');
+        $row['sms'] = $entity->isChannelEnabled('sms') ? $this->t('Sí') : $this->t('No');
+        $row['in_app'] = $entity->isChannelEnabled('in_app') ? $this->t('Sí') : $this->t('No');
         return $row + parent::buildRow($entity);
     }
 

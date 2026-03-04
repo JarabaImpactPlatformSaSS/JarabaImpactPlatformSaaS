@@ -142,11 +142,11 @@
   
   document.getElementById('btn-add-cart')?.addEventListener('click', function(e) {
     e.preventDefault();
-    showToast('✅ ¡Demo! "{{ product.title }}" añadido al carrito simulado');
-    this.innerHTML = '✓ {{ "Añadido"|t }}';
+    showToast('{{ "¡Demo! añadido al carrito simulado"|t }}');
+    this.innerHTML = '{{ "✓ Añadido"|t }}';
     this.style.background = 'linear-gradient(135deg, #16a34a, #15803d)';
     setTimeout(() => {
-      this.innerHTML = '🛒 {{ "Añadir al Carrito"|t }}';
+      this.innerHTML = '{{ "Añadir al Carrito"|t }}';
       this.style.background = '';
     }, 2000);
   });
@@ -156,12 +156,12 @@
     const btn = this;
     if (btn.classList.contains('saved')) {
       btn.classList.remove('saved');
-      btn.innerHTML = '❤️ {{ "Guardar"|t }}';
-      showToast('Producto eliminado de favoritos');
+      btn.innerHTML = '{{ "Guardar"|t }}';
+      showToast('{{ "Producto eliminado de favoritos"|t }}');
     } else {
       btn.classList.add('saved');
-      btn.innerHTML = '💖 {{ "Guardado"|t }}';
-      showToast('💖 ¡Demo! "{{ product.title }}" guardado en favoritos');
+      btn.innerHTML = '{{ "Guardado"|t }}';
+      showToast('{{ "¡Demo! guardado en favoritos"|t }}');
     }
   });
 })();

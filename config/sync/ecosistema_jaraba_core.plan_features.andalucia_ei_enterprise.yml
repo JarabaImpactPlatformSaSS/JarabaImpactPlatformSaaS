@@ -14,11 +14,11 @@ features:
   - white_label
   - sto_sync_bidireccional
 limits:
-  copilot_sessions_daily: -1
-  mentoring_hours_monthly: -1
-  sto_exports: -1
+  copilot_sessions_daily: 10000
+  mentoring_hours_monthly: 200
+  sto_exports: 10000
   training_modules: -1
-  diagnostic_access: -1
-  report_downloads: -1
+  diagnostic_access: 10000
+  report_downloads: 10000
 description: 'Limites del tier Enterprise para el vertical Andalucia +ei (institucional, ilimitado).'
 status: true

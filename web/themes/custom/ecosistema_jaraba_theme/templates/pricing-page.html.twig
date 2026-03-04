@@ -136,7 +136,7 @@
             {% for limit_key, limit_value in tier.limits %}
               {% if limit_value != 0 %}
                 <div class="pricing-card__limit">
-                  {% if limit_value == -1 %}
+                  {% if limit_value == -1 or limit_value >= 9999 %}
                     <span class="pricing-card__limit-value pricing-card__limit-value--unlimited">
                       {% trans %}Ilimitado{% endtrans %}
                     </span>

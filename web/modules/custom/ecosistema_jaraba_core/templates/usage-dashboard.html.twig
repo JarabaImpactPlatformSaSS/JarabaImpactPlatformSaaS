@@ -39,7 +39,7 @@
       {% for alert in alerts %}
         <div class="usage-alert usage-alert--{{ alert.type }}">
           <span class="usage-alert__icon">
-            {% if alert.type == 'critical' %}⚠{% else %}ℹ{% endif %}
+            {% if alert.type == 'critical' %}{{ jaraba_icon('status', 'alert-triangle', {variant: 'duotone', color: 'naranja-impulso', size: '20px'}) }}{% else %}{{ jaraba_icon('ui', 'info', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }}{% endif %}
           </span>
           <span class="usage-alert__message">{{ alert.message }}</span>
         </div>
