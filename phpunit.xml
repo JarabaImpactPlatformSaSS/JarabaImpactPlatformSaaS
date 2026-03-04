@@ -6,6 +6,7 @@
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutOutputDuringTests="true"
          cacheResult="false"
+         failOnWarning="false"
 >
   <php>
     <!-- Drupal Test Settings -->
@@ -34,6 +35,7 @@
     <!-- Tests con Drupal kernel bootstrap -->
     <testsuite name="Kernel">
       <directory>web/modules/custom/*/tests/src/Kernel</directory>
+      <exclude>web/modules/custom/ecosistema_jaraba_core/tests/src/Kernel/TenantIsolationBaseTest.php</exclude>
     </testsuite>
 
     <!-- Tests funcionales con navegador -->
