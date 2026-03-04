@@ -44,6 +44,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - OPTIONAL-CROSSMODULE-001: Toda referencia cross-modulo en services.yml DEBE usar `@?` (opcional). Solo `ecosistema_jaraba_core` y submodulos propios permiten `@` hard. Validacion: `php scripts/validation/validate-optional-deps.php`
 - CONTAINER-DEPS-002: NUNCA crear dependencias circulares en services.yml. Si A necesita B y B necesita A, una direccion DEBE ser `@?` o lazy-load via `\Drupal::service()`. Validacion: `php scripts/validation/validate-circular-deps.php`
 - LOGGER-INJECT-001: Si services.yml inyecta `@logger.channel.X`, el constructor PHP DEBE aceptar `LoggerInterface $logger` directamente (NO llamar `->get('channel')`). `->get()` solo es valido con `@logger.factory`. Validacion: `php scripts/validation/validate-logger-injection.php`
+- PHANTOM-ARG-001: args en services.yml DEBEN coincidir exactamente con params del constructor PHP. Args extra/faltantes causan errores silenciosos en runtime
+- STRIPE-ENV-UNIFY-001: Secrets de Stripe via `getenv()` en settings.secrets.php. NUNCA en config/sync/. Multiples config namespaces (core.stripe, foc.settings, legal_billing.settings) via un solo fichero
 
 ### PHP
 - PHP 8.4 — respeta sus restricciones:
@@ -51,7 +53,8 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
   - DRUPAL11-001: Hijos NO pueden redeclarar typed properties del padre. Asignar manualmente en constructor body
   - TRAIT-CONST-001: No acceder constantes de trait via `TraitName::CONSTANT`. Usar instancia de clase que usa el trait
 - declare(strict_types=1) en archivos nuevos (93% cobertura actual)
-- PHPStan: Level 6 con baseline (phpstan.neon + phpstan-security.neon + phpstan-baseline.neon)
+- PHPStan: Level 6 con baseline (phpstan.neon + phpstan-security.neon + phpstan-baseline.neon). Baseline 41K+ entradas. Regenerar con `--generate-baseline` si se corrigen errores en lote
+- ACCESS-RETURN-TYPE-001: checkAccess() DEBE declarar `: AccessResultInterface` (NO `: AccessResult`). parent::checkAccess() devuelve AccessResultInterface; return type mas restrictivo causa PHPStan error
 - Drupal Coding Standards + DrupalPractice (PHPCS en CI)
 
 ### Entity Forms — PREMIUM-FORMS-PATTERN-001
@@ -180,12 +183,18 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - AI-GUARDRAILS-PII-001: Detecta DNI, NIE, IBAN ES, NIF/CIF, +34. Bidireccional (input + output)
 - SERVICE-CALL-CONTRACT-001: Firmas de metodo DEBEN coincidir exactamente. hasService() NO protege contra TypeError
 
+### Legal Coherence Intelligence System (LCIS)
+- LCIS-AUDIT-001: Audit trail obligatorio para EU AI Act Art. 12. Toda respuesta legal trazable
+- LCIS-GRAPH-001: Normative graph con derogaciones/modificaciones entre normas juridicas
+- 9 capas: KB → IntentClassifier → NormativeGraph → PromptRule → Response → Validator → Verifier → Disclaimer → Feedback
+
 ### Servicios Clave IA
 - ModelRouterService, ProviderFallbackService (circuit breaker), ContextWindowManager
 - ReActLoopService, HandoffDecisionService, ToolRegistry (tagged services)
 - StreamingOrchestratorService (SSE via PHP Generator), TraceContextService
 - SemanticCacheService (Qdrant), AgentLongTermMemoryService, AgentBenchmarkService
 - AutoDiagnosticService (self-healing via State API), PromptVersionService
+- FairUsePolicyService: enforcement de limites por plan, burst tolerance, grace period
 
 ## GRAPESJS / PAGE BUILDER
 
@@ -223,12 +232,12 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - COMMIT-SCOPE-001: Commits de master docs SEPARADOS de codigo. Prefijo `docs:`
 
 ### Versiones Actuales
-- DIRECTRICES: v102.0.0
-- ARQUITECTURA: v91.0.0
-- INDICE: v131.0.0
-- FLUJO: v55.0.0
-- Ultimo aprendizaje: #152
-- Ultima golden rule: #89
+- DIRECTRICES: v110.0.0
+- ARQUITECTURA: v99.0.0
+- INDICE: v139.0.0
+- FLUJO: v63.0.0
+- Ultimo aprendizaje: #160
+- Ultima golden rule: #101
 
 ## RUNTIME-VERIFY-001 — VERIFICACION POST-IMPLEMENTACION
 Tras completar un feature, verificar 5 dependencias runtime:
