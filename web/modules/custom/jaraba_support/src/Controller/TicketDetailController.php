@@ -11,6 +11,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\jaraba_support\Entity\SupportTicketInterface;
 use Drupal\jaraba_support\Service\TicketService;
+use Drupal\jaraba_support\Service\TicketSummarizationService;
 use Drupal\jaraba_support\Service\SlaEngineService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,6 +35,7 @@ class TicketDetailController extends ControllerBase {
     protected TicketService $ticketService,
     protected SlaEngineService $slaEngine,
     protected DateFormatterInterface $dateFormatter,
+    protected ?TicketSummarizationService $summarization = NULL,
   ) {}
 
   /**
@@ -44,6 +46,7 @@ class TicketDetailController extends ControllerBase {
       $container->get('jaraba_support.ticket'),
       $container->get('jaraba_support.sla_engine'),
       $container->get('date.formatter'),
+      $container->get('jaraba_support.summarization'),
     );
   }
 

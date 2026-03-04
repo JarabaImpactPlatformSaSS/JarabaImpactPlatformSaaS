@@ -10,6 +10,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\jaraba_support\Entity\SupportTicketInterface;
+use Drupal\jaraba_support\Service\TicketRoutingService;
 use Drupal\jaraba_support\Service\TicketService;
 use Drupal\jaraba_support\Service\SupportAnalyticsService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -34,6 +35,7 @@ class AgentDashboardController extends ControllerBase {
     protected TicketService $ticketService,
     protected SupportAnalyticsService $analytics,
     protected DateFormatterInterface $dateFormatter,
+    protected ?TicketRoutingService $ticketRouting = NULL,
   ) {}
 
   /**
@@ -44,6 +46,7 @@ class AgentDashboardController extends ControllerBase {
       $container->get('jaraba_support.ticket'),
       $container->get('jaraba_support.analytics'),
       $container->get('date.formatter'),
+      $container->get('jaraba_support.routing'),
     );
   }
 
