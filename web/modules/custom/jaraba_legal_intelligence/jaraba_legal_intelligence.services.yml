@@ -8,7 +8,7 @@ services:
   jaraba_legal_intelligence.search:
     class: Drupal\jaraba_legal_intelligence\Service\LegalSearchService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@?ecosistema_jaraba_core.tenant_context'
       - '@entity_type.manager'
       - '@http_client'
@@ -31,7 +31,7 @@ services:
   jaraba_legal_intelligence.nlp_pipeline:
     class: Drupal\jaraba_legal_intelligence\Service\LegalNlpPipelineService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@http_client'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'

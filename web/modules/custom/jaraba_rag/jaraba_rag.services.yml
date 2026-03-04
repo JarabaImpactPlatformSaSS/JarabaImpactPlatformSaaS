@@ -28,7 +28,7 @@ services:
       - '@jaraba_rag.tenant_filter'
       - '@jaraba_rag.grounding_validator'
       - '@jaraba_rag.query_analytics'
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@?jaraba_rag.qdrant_client'
       - '@entity_type.manager'
       - '@logger.factory'
@@ -44,7 +44,7 @@ services:
   jaraba_rag.tenant_filter:
     class: Drupal\jaraba_rag\Service\RagTenantFilterService
     arguments:
-      - '@group.membership_loader'
+      - '@?group.membership_loader'
       - '@current_user'
       - '@config.factory'
 
@@ -54,7 +54,7 @@ services:
   jaraba_rag.grounding_validator:
     class: Drupal\jaraba_rag\Service\GroundingValidator
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@logger.factory'
 
   # ---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ services:
   jaraba_rag.indexer:
     class: Drupal\jaraba_rag\Service\KbIndexerService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@?jaraba_rag.qdrant_client'
       - '@jaraba_rag.tenant_filter'
       - '@entity_type.manager'
@@ -94,7 +94,7 @@ services:
   jaraba_rag.llm_reranker:
     class: Drupal\jaraba_rag\Service\LlmReRankerService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@?jaraba_ai_agents.model_router'
       - '@?logger.channel.jaraba_ai_agents'
 

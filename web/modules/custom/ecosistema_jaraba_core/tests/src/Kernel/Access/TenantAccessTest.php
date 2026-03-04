@@ -34,8 +34,15 @@ class TenantAccessTest extends KernelTestBase {
     'text',
     'options',
     'datetime',
+    'group',
+    'flexible_permissions',
     'ecosistema_jaraba_core',
   ];
+
+  /**
+   * Cross-module config install files (funnel_definition) lack schema locally.
+   */
+  protected $strictConfigSchema = FALSE;
 
   /**
    * {@inheritdoc}
