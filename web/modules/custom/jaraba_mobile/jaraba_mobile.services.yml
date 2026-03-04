@@ -22,6 +22,6 @@ services:
   jaraba_mobile.deep_link_resolver:
     class: Drupal\jaraba_mobile\Service\DeepLinkResolverService
     arguments:
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@router.route_provider'
       - '@request_stack'

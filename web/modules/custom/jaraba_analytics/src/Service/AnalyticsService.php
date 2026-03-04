@@ -77,7 +77,7 @@ class AnalyticsService
         AccountProxyInterface $current_user,
         RequestStack $request_stack,
         CacheBackendInterface $cache,
-        $logger_factory,
+        LoggerInterface $logger,
         TenantContextService $tenant_context,
     ) {
         $this->database = $database;
@@ -85,7 +85,7 @@ class AnalyticsService
         $this->currentUser = $current_user;
         $this->requestStack = $request_stack;
         $this->cache = $cache;
-        $this->logger = $logger_factory->get('jaraba_analytics');
+        $this->logger = $logger;
         $this->tenantContext = $tenant_context;
     }
 

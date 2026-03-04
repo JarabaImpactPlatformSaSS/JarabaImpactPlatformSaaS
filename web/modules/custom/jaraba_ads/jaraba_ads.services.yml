@@ -69,7 +69,7 @@ services:
     class: Drupal\jaraba_ads\Service\AdsAudienceSyncService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_crm.contact'
+      - '@?jaraba_crm.contact'
       - '@logger.channel.jaraba_ads'
 
   # =====================================================================

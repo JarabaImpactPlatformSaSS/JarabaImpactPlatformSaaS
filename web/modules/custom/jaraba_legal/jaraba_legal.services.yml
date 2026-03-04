@@ -32,7 +32,7 @@ services:
     class: Drupal\jaraba_legal\Service\AupEnforcerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@logger.channel.jaraba_legal'
 
@@ -40,7 +40,7 @@ services:
     class: Drupal\jaraba_legal\Service\OffboardingManagerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@file_system'
       - '@plugin.manager.mail'
@@ -50,7 +50,7 @@ services:
     class: Drupal\jaraba_legal\Service\WhistleblowerChannelService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_legal'

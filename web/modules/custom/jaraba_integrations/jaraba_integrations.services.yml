@@ -17,7 +17,7 @@ services:
     class: Drupal\jaraba_integrations\Service\ConnectorInstallerService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_integrations.connector_registry'
+      - '@?jaraba_integrations.connector_registry'
       - '@current_user'
       - '@logger.channel.jaraba_integrations'
 

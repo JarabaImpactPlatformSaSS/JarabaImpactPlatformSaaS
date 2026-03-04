@@ -50,7 +50,7 @@ services:
     class: Drupal\jaraba_privacy\Service\BreachNotificationService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@plugin.manager.mail'
       - '@queue'

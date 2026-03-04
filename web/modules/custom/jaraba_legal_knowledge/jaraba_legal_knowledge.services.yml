@@ -50,7 +50,7 @@ services:
     arguments:
       - '@jaraba_legal_knowledge.rag'
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@current_user'
       - '@logger.channel.jaraba_legal_knowledge'
 
@@ -59,7 +59,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@plugin.manager.mail'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_legal_knowledge'
 
   jaraba_legal_knowledge.tax_calculator:

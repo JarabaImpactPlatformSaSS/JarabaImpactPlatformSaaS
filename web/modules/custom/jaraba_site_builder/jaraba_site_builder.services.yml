@@ -54,7 +54,7 @@ services:
     class: Drupal\jaraba_site_builder\Service\HeaderVariantService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@renderer'
       - '@jaraba_site_builder.structure'
 
@@ -62,7 +62,7 @@ services:
     class: Drupal\jaraba_site_builder\Service\FooterVariantService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@renderer'
       - '@jaraba_site_builder.structure'
 
@@ -72,14 +72,14 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
 
   jaraba_site_builder.navigation_render:
     class: Drupal\jaraba_site_builder\Service\NavigationRenderService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@jaraba_site_builder.menu'
       - '@file_url_generator'
 
@@ -91,7 +91,7 @@ services:
     class: Drupal\jaraba_site_builder\Service\SeoManagerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@jaraba_site_builder.seo_auditor'
       - '@logger.channel.jaraba_site_builder'
 
@@ -99,14 +99,14 @@ services:
     class: Drupal\jaraba_site_builder\Service\SchemaGeneratorService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
 
   jaraba_site_builder.hreflang_manager:
     class: Drupal\jaraba_site_builder\Service\HreflangManagerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@language_manager'
       - '@logger.channel.jaraba_site_builder'
 
@@ -114,7 +114,7 @@ services:
     class: Drupal\jaraba_site_builder\Service\GeoTargetingService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
 
   jaraba_site_builder.seo_ai_assistant:
@@ -122,7 +122,7 @@ services:
     arguments:
       - '@ai.provider'
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
 
   # Meta-Site Resolver: contexto compartido para meta-sitios (SiteConfig + nav).

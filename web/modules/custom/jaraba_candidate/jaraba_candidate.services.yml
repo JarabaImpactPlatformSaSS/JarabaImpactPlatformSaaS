@@ -23,7 +23,7 @@ services:
       - '@renderer'
       - '@file_system'
       - '@logger.factory'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_candidate.skills:
     class: Drupal\jaraba_candidate\Service\SkillsService
@@ -80,7 +80,7 @@ services:
     arguments:
       - '@?ai.provider'
       - '@config.factory'
-      - '@logger.channel.jaraba_ai_agents'
+      - '@?logger.channel.jaraba_ai_agents'
       - '@?jaraba_ai_agents.tenant_brand_voice'
       - '@?jaraba_ai_agents.observability'
       - '@?jaraba_ai_agents.model_router'

@@ -7,33 +7,33 @@ services:
     class: Drupal\jaraba_funding\Service\OpportunityTrackerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_funding'
 
   jaraba_funding.application_manager:
     class: Drupal\jaraba_funding\Service\ApplicationManagerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_funding'
 
   jaraba_funding.report_generator:
     class: Drupal\jaraba_funding\Service\ReportGeneratorService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_funding'
 
   jaraba_funding.budget_analyzer:
     class: Drupal\jaraba_funding\Service\BudgetAnalyzerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_funding'
 
   jaraba_funding.impact_calculator:
     class: Drupal\jaraba_funding\Service\ImpactCalculatorService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_funding'

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Servicio de webhooks salientes con firma HMAC.
@@ -71,11 +71,11 @@ class WebhookService
     public function __construct(
         ClientInterface $http_client,
         ConfigFactoryInterface $config_factory,
-        LoggerChannelFactoryInterface $logger_factory
+        LoggerInterface $logger,
     ) {
         $this->httpClient = $http_client;
         $this->configFactory = $config_factory;
-        $this->logger = $logger_factory->get('jaraba_webhooks');
+        $this->logger = $logger;
     }
 
     /**

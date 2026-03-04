@@ -32,7 +32,7 @@ services:
   jaraba_interactive.content_generator:
     class: Drupal\jaraba_interactive\Service\ContentGenerator
     arguments:
-      - '@jaraba_ai_agents.orchestrator'
+      - '@?jaraba_ai_agents.orchestrator'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_interactive'
 

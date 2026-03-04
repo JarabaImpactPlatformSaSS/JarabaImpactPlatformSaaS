@@ -57,5 +57,5 @@ services:
     class: Drupal\jaraba_events\Service\EventLandingService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_events'

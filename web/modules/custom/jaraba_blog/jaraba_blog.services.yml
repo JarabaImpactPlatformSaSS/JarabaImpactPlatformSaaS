@@ -11,7 +11,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_blog'
 
   # Servicio de RSS
@@ -19,7 +19,7 @@ services:
     class: Drupal\jaraba_blog\Service\BlogRssService
     arguments:
       - '@jaraba_blog.blog'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_blog'
 
   # Servicio de SEO
@@ -27,5 +27,5 @@ services:
     class: Drupal\jaraba_blog\Service\BlogSeoService
     arguments:
       - '@jaraba_blog.blog'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_blog'

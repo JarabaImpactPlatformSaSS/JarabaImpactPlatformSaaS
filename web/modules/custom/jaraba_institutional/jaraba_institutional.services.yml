@@ -8,14 +8,14 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_institutional'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_institutional.participant_tracker:
     class: Drupal\jaraba_institutional\Service\ParticipantTrackerService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_institutional'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_institutional.sto_generator:
     class: Drupal\jaraba_institutional\Service\StoFichaGeneratorService

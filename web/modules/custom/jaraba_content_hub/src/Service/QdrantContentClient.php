@@ -57,11 +57,11 @@ class QdrantContentClient
     public function __construct(
         ClientInterface $http_client,
         ConfigFactoryInterface $config_factory,
-        $logger_factory,
+        LoggerInterface $logger,
     ) {
         $this->httpClient = $http_client;
         $this->configFactory = $config_factory;
-        $this->logger = $logger_factory->get('jaraba_content_hub');
+        $this->logger = $logger;
     }
 
     /**

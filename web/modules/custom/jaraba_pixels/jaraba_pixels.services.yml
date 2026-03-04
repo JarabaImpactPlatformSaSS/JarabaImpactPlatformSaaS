@@ -61,7 +61,7 @@ services:
     class: Drupal\jaraba_pixels\Service\CredentialManagerService
     arguments:
       - '@database'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   # =========================================================================
   # Clientes HTTP por Plataforma

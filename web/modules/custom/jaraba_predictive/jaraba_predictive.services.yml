@@ -35,7 +35,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_predictive'
-      - '@jaraba_billing.tenant_metering'
+      - '@?jaraba_billing.tenant_metering'
 
   jaraba_predictive.security_guardian:
     class: Drupal\jaraba_predictive\Service\SecurityGuardianService

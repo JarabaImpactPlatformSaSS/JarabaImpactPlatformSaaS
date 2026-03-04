@@ -71,19 +71,19 @@ class RecommendationService
      *   El servicio de embeddings.
      * @param \Drupal\jaraba_content_hub\Service\QdrantContentClient $qdrant_client
      *   El cliente de Qdrant.
-     * @param object $logger_factory
-     *   La factoría de loggers.
+     * @param \Psr\Log\LoggerInterface $logger
+     *   El logger.
      */
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
         ContentEmbeddingService $embedding_service,
         QdrantContentClient $qdrant_client,
-        $logger_factory,
+        LoggerInterface $logger,
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->embeddingService = $embedding_service;
         $this->qdrantClient = $qdrant_client;
-        $this->logger = $logger_factory->get('jaraba_content_hub');
+        $this->logger = $logger;
     }
 
     /**

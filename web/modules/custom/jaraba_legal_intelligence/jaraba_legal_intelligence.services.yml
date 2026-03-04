@@ -9,7 +9,7 @@ services:
     class: Drupal\jaraba_legal_intelligence\Service\LegalSearchService
     arguments:
       - '@ai.provider'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@entity_type.manager'
       - '@http_client'
       - '@config.factory'
@@ -43,7 +43,7 @@ services:
     class: Drupal\jaraba_legal_intelligence\Service\LegalAlertService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_legal_intelligence'
       - '@ecosistema_jaraba_core.jarabalex_feature_gate'
@@ -53,7 +53,7 @@ services:
     class: Drupal\jaraba_legal_intelligence\Service\LegalCitationService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_legal_intelligence'
       - '@ecosistema_jaraba_core.jarabalex_feature_gate'
 
@@ -64,7 +64,7 @@ services:
       - '@entity_type.manager'
       - '@jaraba_legal_intelligence.search'
       - '@plugin.manager.mail'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_intelligence'
       - '@ecosistema_jaraba_core.jarabalex_feature_gate'

@@ -68,14 +68,14 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_agents.agent_router:
     class: Drupal\jaraba_agents\Service\AgentRouterService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_agents.handoff_manager:
     class: Drupal\jaraba_agents\Service\HandoffManagerService
@@ -96,7 +96,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_agents.observer:
     class: Drupal\jaraba_agents\Service\AgentObserverService

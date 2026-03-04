@@ -29,7 +29,7 @@ services:
     class: Drupal\jaraba_sso\Service\JitProvisionerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@user.auth'
       - '@logger.channel.jaraba_sso'
 
@@ -37,7 +37,7 @@ services:
     class: Drupal\jaraba_sso\Service\MfaEnforcerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
 
   logger.channel.jaraba_sso:

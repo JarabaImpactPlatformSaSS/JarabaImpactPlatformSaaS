@@ -45,7 +45,7 @@ services:
     class: Drupal\jaraba_governance\Service\DataLineageService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@current_user'
       - '@database'
 
@@ -59,7 +59,7 @@ services:
     class: Drupal\jaraba_governance\Service\ErasureService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@database'
       - '@logger.channel.jaraba_governance'
       - '@file_system'

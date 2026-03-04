@@ -24,7 +24,7 @@ services:
     class: Drupal\jaraba_sla\Service\PostmortemService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@current_user'
   logger.channel.jaraba_sla:
     parent: logger.channel_base
