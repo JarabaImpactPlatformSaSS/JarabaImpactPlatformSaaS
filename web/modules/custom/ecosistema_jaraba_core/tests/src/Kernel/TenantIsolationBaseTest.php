@@ -37,6 +37,7 @@ abstract class TenantIsolationBaseTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'datetime',
     'ecosistema_jaraba_core',
   ];
 

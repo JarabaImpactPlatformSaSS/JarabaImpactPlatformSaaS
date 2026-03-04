@@ -30,6 +30,8 @@ class SecureDocumentAccessTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'datetime',
+    'taxonomy',
     'ecosistema_jaraba_core',
     'jaraba_legal_vault',
   ];

@@ -51,12 +51,12 @@ class AnalyticsAggregatorService
         Connection $database,
         EntityTypeManagerInterface $entity_type_manager,
         CacheBackendInterface $cache,
-        $logger_factory,
+        LoggerInterface $logger,
     ) {
         $this->database = $database;
         $this->entityTypeManager = $entity_type_manager;
         $this->cache = $cache;
-        $this->logger = $logger_factory->get('jaraba_analytics');
+        $this->logger = $logger;
     }
 
     /**

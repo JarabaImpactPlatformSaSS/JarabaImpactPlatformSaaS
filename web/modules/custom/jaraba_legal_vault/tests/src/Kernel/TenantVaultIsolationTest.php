@@ -26,6 +26,7 @@ class TenantVaultIsolationTest extends TenantIsolationBaseTest {
     'field',
     'text',
     'options',
+    'datetime',
     'ecosistema_jaraba_core',
     'jaraba_legal_vault',
   ];

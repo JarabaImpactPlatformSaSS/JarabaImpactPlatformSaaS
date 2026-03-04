@@ -33,6 +33,8 @@ class ContentArticleAccessTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'datetime',
+    'file',
     'ecosistema_jaraba_core',
     'jaraba_content_hub',
   ];

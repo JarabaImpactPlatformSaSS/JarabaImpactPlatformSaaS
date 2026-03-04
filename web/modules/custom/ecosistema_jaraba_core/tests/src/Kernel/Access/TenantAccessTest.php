@@ -33,6 +33,7 @@ class TenantAccessTest extends KernelTestBase {
     'field',
     'text',
     'options',
+    'datetime',
     'ecosistema_jaraba_core',
   ];
 

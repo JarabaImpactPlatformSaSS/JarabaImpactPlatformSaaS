@@ -40,7 +40,7 @@ services:
       - '@jaraba_legal_knowledge.embedding'
       - '@jaraba_legal_knowledge.citation'
       - '@jaraba_legal_knowledge.disclaimer'
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@entity_type.manager'
       - '@config.factory'
       - '@logger.channel.jaraba_legal_knowledge'

@@ -32,6 +32,7 @@ class NormativeGraphEnricherIntegrationTest extends KernelTestBase {
     'options',
     'datetime',
     'taxonomy',
+    'ecosistema_jaraba_core',
     'jaraba_legal_knowledge',
     'jaraba_legal_intelligence',
   ];

@@ -30,7 +30,7 @@ services:
     class: Drupal\jaraba_referral\Service\RewardProcessingService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_foc.stripe_connect'
+      - '@?jaraba_foc.stripe_connect'
       - '@logger.channel.jaraba_referral'
 
   # =====================================================================

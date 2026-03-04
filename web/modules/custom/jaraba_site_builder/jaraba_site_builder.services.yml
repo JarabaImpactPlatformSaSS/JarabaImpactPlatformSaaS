@@ -21,7 +21,7 @@ services:
       - '@jaraba_site_builder.structure'
       - '@entity_type.manager'
       - '@file_url_generator'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_site_builder.access_check:
     class: Drupal\jaraba_site_builder\Access\SiteBuilderAccessCheck

@@ -107,7 +107,7 @@ services:
   jaraba_billing.stripe_customer:
     class: Drupal\jaraba_billing\Service\StripeCustomerService
     arguments:
-      - '@jaraba_foc.stripe_connect'
+      - '@?jaraba_foc.stripe_connect'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
       - '@lock'
@@ -117,7 +117,7 @@ services:
   jaraba_billing.stripe_subscription:
     class: Drupal\jaraba_billing\Service\StripeSubscriptionService
     arguments:
-      - '@jaraba_foc.stripe_connect'
+      - '@?jaraba_foc.stripe_connect'
       - '@jaraba_billing.tenant_subscription'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
@@ -128,7 +128,7 @@ services:
   jaraba_billing.stripe_invoice:
     class: Drupal\jaraba_billing\Service\StripeInvoiceService
     arguments:
-      - '@jaraba_foc.stripe_connect'
+      - '@?jaraba_foc.stripe_connect'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
       - '@lock'
@@ -137,7 +137,7 @@ services:
   jaraba_billing.proration:
     class: Drupal\jaraba_billing\Service\ProrationService
     arguments:
-      - '@jaraba_foc.stripe_connect'
+      - '@?jaraba_foc.stripe_connect'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
 

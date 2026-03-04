@@ -36,7 +36,7 @@ services:
   jaraba_usage_billing.stripe_sync:
     class: Drupal\jaraba_usage_billing\Service\UsageStripeSyncService
     arguments:
-      - '@jaraba_billing.stripe_subscription'
+      - '@?jaraba_billing.stripe_subscription'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_usage_billing'
 

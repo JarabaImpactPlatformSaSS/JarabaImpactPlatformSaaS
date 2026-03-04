@@ -26,6 +26,7 @@ class TenantLmsIsolationTest extends TenantIsolationBaseTest {
     'field',
     'text',
     'options',
+    'datetime',
     'ecosistema_jaraba_core',
     'jaraba_lms',
   ];

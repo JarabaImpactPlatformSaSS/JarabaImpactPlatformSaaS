@@ -31,6 +31,7 @@ class LegalCoherenceLogEntityTest extends KernelTestBase {
     'options',
     'datetime',
     'taxonomy',
+    'ecosistema_jaraba_core',
     'jaraba_legal_intelligence',
   ];
 

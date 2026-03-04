@@ -26,6 +26,7 @@ class TenantPageIsolationTest extends TenantIsolationBaseTest {
     'field',
     'text',
     'options',
+    'datetime',
     'ecosistema_jaraba_core',
     'jaraba_page_builder',
   ];

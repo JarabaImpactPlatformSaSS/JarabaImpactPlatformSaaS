@@ -27,7 +27,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@user.data'
+      - '@?user.data'
       - '@logger.channel.jaraba_self_discovery'
 
   # Servicio agregador de contexto (delega a servicios especializados)
