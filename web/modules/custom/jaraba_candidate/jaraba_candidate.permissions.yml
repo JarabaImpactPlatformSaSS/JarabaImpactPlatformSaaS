@@ -22,6 +22,25 @@ view candidate profiles:
   title: 'View candidate profiles'
   description: 'View public candidate profiles (employers)'
 
+view private candidate profiles:
+  title: 'View private candidate profiles'
+  description: 'View candidate profiles marked as private (recruiters)'
+  restrict access: true
+
+create candidate profile:
+  title: 'Create candidate profile'
+  description: 'Create new candidate profiles'
+
+edit any candidate profiles:
+  title: 'Edit any candidate profiles'
+  description: 'Edit any candidate profile regardless of ownership'
+  restrict access: true
+
+delete candidate profiles:
+  title: 'Delete candidate profiles'
+  description: 'Delete candidate profiles'
+  restrict access: true
+
 # --- Permisos de CV ---
 build own cv:
   title: 'Build own CV'

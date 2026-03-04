@@ -56,8 +56,17 @@ class ContentArticleAccessControlHandler extends EntityAccessControlHandler
             }
         }
 
+        // ACCESS-STRICT-001: Owner check with strict int comparison.
+        $isOwner = (int) $entity->getOwnerId() === (int) $account->id();
+
         switch ($operation) {
             case 'view':
+                // Owners can always view their own articles.
+                if ($isOwner) {
+                    return AccessResult::allowed()
+                        ->cachePerUser()
+                        ->addCacheableDependency($entity);
+                }
                 // Los artículos publicados son públicos.
                 if ($entity->isPublished()) {
                     return AccessResult::allowedIfHasPermission($account, 'access content')
@@ -69,7 +78,7 @@ class ContentArticleAccessControlHandler extends EntityAccessControlHandler
 
             case 'update':
                 // Verificar si es el propietario del artículo.
-                if ($entity->getOwnerId() === $account->id()) {
+                if ($isOwner) {
                     return AccessResult::allowedIfHasPermission($account, 'edit own content article')
                         ->cachePerUser()
                         ->addCacheableDependency($entity);
@@ -79,7 +88,7 @@ class ContentArticleAccessControlHandler extends EntityAccessControlHandler
 
             case 'delete':
                 // Verificar si es el propietario del artículo.
-                if ($entity->getOwnerId() === $account->id()) {
+                if ($isOwner) {
                     return AccessResult::allowedIfHasPermission($account, 'delete own content article')
                         ->cachePerUser()
                         ->addCacheableDependency($entity);

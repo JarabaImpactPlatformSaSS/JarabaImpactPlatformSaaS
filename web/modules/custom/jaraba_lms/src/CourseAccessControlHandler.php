@@ -20,11 +20,18 @@ class CourseAccessControlHandler extends DefaultEntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
     {
-      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
-      $parentResult = parent::checkAccess($entity, $operation, $account);
-      if ($parentResult->isForbidden()) {
-        return $parentResult;
-      }
+        // Admin bypass via admin_permission.
+        if ($account->hasPermission('administer lms courses')) {
+            return AccessResult::allowed()->cachePerPermissions();
+        }
+
+        // TENANT-ISOLATION-ACCESS-001: Tenant isolation for update/delete.
+        if (in_array($operation, ['update', 'delete'], TRUE)) {
+            $tenantCheck = $this->checkTenantIsolation($entity, $account);
+            if ($tenantCheck !== NULL) {
+                return $tenantCheck;
+            }
+        }
 
         switch ($operation) {
             case 'view':

@@ -24,6 +24,10 @@ view published courses:
   title: 'View published courses'
   description: 'View published course listings and details'
 
+view unpublished courses:
+  title: 'View unpublished courses'
+  description: 'View unpublished/draft courses'
+
 view own enrollments:
   title: 'View own enrollments'
   description: 'View own course enrollments and progress'
@@ -31,6 +35,14 @@ view own enrollments:
 create courses:
   title: 'Create courses'
   description: 'Create new courses'
+
+edit courses:
+  title: 'Edit courses'
+  description: 'Edit any course'
+
+delete courses:
+  title: 'Delete courses'
+  description: 'Delete any course'
 
 edit own courses:
   title: 'Edit own courses'
