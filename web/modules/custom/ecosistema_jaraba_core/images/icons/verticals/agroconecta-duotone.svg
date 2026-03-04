@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Duotone fill: leaf body -->
+  <path d="M20 2c0 4-3 7-7 7c4 0 7-3 7-7z" fill="currentColor" opacity="0.25"/>
+  <path d="M14 14h4v4h-4z" fill="currentColor" opacity="0.2"/>
+  <!-- Leaf -->
+  <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 8A13 13 0 0 1 5.71 22" stroke="currentColor" stroke-width="2"/>
+  <path d="M20 2c0 4-3 7-7 7" stroke="currentColor" stroke-width="2"/>
+  <path d="M20 2c-4 0-7 3-7 7" stroke="currentColor" stroke-width="2"/>
+  <!-- Circuit trace -->
+  <path d="M14 14h4v4h-4z" stroke="currentColor" stroke-width="2"/>
+  <path d="M18 16h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M16 18v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>

@@ -532,6 +532,26 @@ class PricingController extends ControllerBase
                 'question' => $this->t('¿Ofrecéis descuento para instituciones o grandes organizaciones?'),
                 'answer' => $this->t('Sí. El plan Empresa incluye precios personalizados según volumen. Contacta con nosotros para recibir una propuesta a medida.'),
             ],
+            [
+                'question' => $this->t('¿Mis datos están seguros?'),
+                'answer' => $this->t('Totalmente. Cumplimos el RGPD al 100%%. Nuestros servidores están en la Unión Europea (IONOS, Alemania), con cifrado SSL en tránsito, backups diarios y aislamiento por tenant.'),
+            ],
+            [
+                'question' => $this->t('¿Puedo exportar mis datos?'),
+                'answer' => $this->t('Sí. Desde tu panel de control puedes exportar tus datos en formato CSV y JSON en cualquier momento. El plan Empresa incluye además acceso completo a la API REST.'),
+            ],
+            [
+                'question' => $this->t('¿Qué soporte técnico incluye cada plan?'),
+                'answer' => $this->t('Starter: documentación y comunidad. Profesional: email y chat con respuesta en 24h. Empresa: gestor dedicado, soporte telefónico y SLA garantizado.'),
+            ],
+            [
+                'question' => $this->t('¿Cómo funciona la facturación?'),
+                'answer' => $this->t('Procesamos los pagos de forma segura a través de Stripe. Recibirás facturas automáticas en PDF cada mes o año según tu ciclo. Aceptamos tarjeta de crédito/débito y SEPA.'),
+            ],
+            [
+                'question' => $this->t('¿Puedo probar el plan Profesional gratis?'),
+                'answer' => $this->t('Sí. Ofrecemos 14 días de prueba del plan Profesional sin necesidad de tarjeta de crédito. Al terminar, puedes continuar con el plan de pago o bajar al Starter gratuito.'),
+            ],
         ];
     }
 

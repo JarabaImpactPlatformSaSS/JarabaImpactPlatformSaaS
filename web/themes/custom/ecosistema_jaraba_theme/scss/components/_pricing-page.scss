@@ -150,19 +150,53 @@
     padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                border-color 0.3s ease;
     color: var(--ej-color-text-inverse, #fff);
+    overflow: hidden;
+
+    // Shine effect
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, white 8%, transparent),
+            transparent
+        );
+        transition: left 0.6s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
 
     &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        transform: translateY(-8px);
+        box-shadow:
+            0 8px 16px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent),
+            0 16px 40px color-mix(in srgb, black 30%, transparent);
+
+        &::before {
+            left: 150%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+        &::before { display: none; }
     }
 
     // ── Recommended modifier ──
     &--recommended {
         border-color: var(--ej-color-naranja-impulso, #FF8C42);
-        box-shadow: 0 0 30px rgba(255, 140, 66, 0.15);
+        box-shadow: 0 0 40px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 20%, transparent);
         transform: scale(1);
+        animation: pricing-glow 3s ease-in-out infinite;
 
         @media (min-width: 768px) {
             transform: scale(1.05);
@@ -170,8 +204,15 @@
         }
 
         &:hover {
-            transform: scale(1.05) translateY(-4px);
-            box-shadow: 0 16px 50px rgba(255, 140, 66, 0.25);
+            transform: scale(1.05) translateY(-8px);
+            box-shadow:
+                0 0 40px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 25%, transparent),
+                0 16px 50px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent);
+            animation: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            animation: none;
         }
     }
 
@@ -325,6 +366,16 @@
     &__btn {
         width: 100%;
         justify-content: center;
+    }
+}
+
+// Glow pulse animation for recommended card
+@keyframes pricing-glow {
+    0%, 100% {
+        box-shadow: 0 0 30px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 15%, transparent);
+    }
+    50% {
+        box-shadow: 0 0 50px color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 25%, transparent);
     }
 }
 

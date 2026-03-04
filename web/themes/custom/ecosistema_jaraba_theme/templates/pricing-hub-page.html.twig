@@ -112,10 +112,9 @@
 {# === GUARANTEE === #}
 <section class="pricing-guarantee reveal-element reveal-fade-up">
   <div class="pricing-guarantee__container">
-    <svg class="pricing-guarantee__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    <span class="pricing-guarantee__icon" aria-hidden="true">
+      {{ jaraba_icon('ui', 'shield', { variant: 'duotone', size: '24px', color: 'verde-innovacion' }) }}
+    </span>
     <p class="pricing-guarantee__text">{{ guarantee_text }}</p>
   </div>
 </section>
@@ -132,9 +131,9 @@
           <details class="pricing-faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
             <summary class="pricing-faq__question" itemprop="name">
               {{ item.question }}
-              <svg class="pricing-faq__chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span class="pricing-faq__chevron" aria-hidden="true">
+                {{ jaraba_icon('ui', 'chevron-down', { size: '20px' }) }}
+              </span>
             </summary>
             <div class="pricing-faq__answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
               <p itemprop="text">{{ item.answer }}</p>

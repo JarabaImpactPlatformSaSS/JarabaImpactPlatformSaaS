@@ -103,12 +103,45 @@
     border: 1px solid color-mix(in srgb, white 10%, transparent);
     border-radius: var(--ej-radius-xl, 1.25rem);
     color: var(--ej-color-text-inverse, #fff);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                border-color 0.3s ease;
+    overflow: hidden;
+
+    // Shine effect
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, white 6%, transparent),
+            transparent
+        );
+        transition: left 0.6s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
 
     &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        transform: translateY(-6px);
+        box-shadow:
+            0 8px 16px color-mix(in srgb, var(--ej-color-azul-corporativo, #233D63) 15%, transparent),
+            0 12px 40px color-mix(in srgb, black 25%, transparent);
         border-color: color-mix(in srgb, var(--ej-color-naranja-impulso, #FF8C42) 40%, transparent);
+
+        &::before {
+            left: 150%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+        &::before { display: none; }
     }
 
     &__icon {
@@ -118,6 +151,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    &:hover &__icon {
+        transform: scale(1.1);
     }
 
     &__name {

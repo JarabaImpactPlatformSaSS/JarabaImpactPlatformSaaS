@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Person head -->
+  <circle cx="10" cy="5" r="2.5"/>
+  <!-- Person body -->
+  <path d="M4 19v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+  <!-- Ascending arrow (career growth) -->
+  <path d="M18 10V4"/>
+  <path d="M15 7l3-3 3 3"/>
+</svg>
