@@ -9,7 +9,7 @@ services:
 
   jaraba_insights_hub.web_vitals_collector:
     class: Drupal\jaraba_insights_hub\Service\WebVitalsCollectorService
-    arguments: ['@entity_type.manager', '@ecosistema_jaraba_core.tenant_context', '@logger.channel.jaraba_insights_hub']
+    arguments: ['@entity_type.manager', '@?ecosistema_jaraba_core.tenant_context', '@logger.channel.jaraba_insights_hub']
 
   jaraba_insights_hub.web_vitals_aggregator:
     class: Drupal\jaraba_insights_hub\Service\WebVitalsAggregatorService

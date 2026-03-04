@@ -67,7 +67,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.channel.jaraba_agroconecta_core'
+      - '@logger.factory'
 
   # AUDIT-CONS-N05: jaraba_agroconecta.notification_service -> jaraba_agroconecta_core.notification_service
   jaraba_agroconecta_core.notification_service:
@@ -76,7 +76,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@plugin.manager.mail'
-      - '@logger.channel.jaraba_agroconecta_core'
+      - '@logger.factory'
 
   # Fase 5: Search & Discovery
 
@@ -86,7 +86,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.channel.jaraba_agroconecta_core'
+      - '@logger.factory'
 
   # Fase 5: Promotions & Coupons
 

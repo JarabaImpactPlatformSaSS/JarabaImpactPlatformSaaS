@@ -3,7 +3,7 @@ services:
     class: Drupal\jaraba_sla\Service\SlaCalculatorService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@database'
   jaraba_sla.uptime_monitor:
     class: Drupal\jaraba_sla\Service\UptimeMonitorService

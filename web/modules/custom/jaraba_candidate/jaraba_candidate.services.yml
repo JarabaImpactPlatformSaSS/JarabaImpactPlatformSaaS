@@ -30,21 +30,18 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@logger.factory'
 
   jaraba_candidate.profile_completion:
     class: Drupal\jaraba_candidate\Service\ProfileCompletionService
     arguments:
       - '@entity_type.manager'
       - '@jaraba_candidate.profile'
-      - '@logger.factory'
 
   jaraba_candidate.import:
     class: Drupal\jaraba_candidate\Service\LinkedInImportService
     arguments:
       - '@http_client'
       - '@jaraba_candidate.profile'
-      - '@logger.factory'
 
   # GAP-AUD-018: AI-powered skill inference from unstructured text.
   jaraba_candidate.skill_inference:

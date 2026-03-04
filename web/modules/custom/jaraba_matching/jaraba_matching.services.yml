@@ -11,7 +11,7 @@ services:
   jaraba_matching.embedding_service:
     class: Drupal\jaraba_matching\Service\EmbeddingService
     arguments:
-      - '@ai.provider'
+      - '@?ai.provider'
       - '@logger.factory'
 
   jaraba_matching.qdrant_client:

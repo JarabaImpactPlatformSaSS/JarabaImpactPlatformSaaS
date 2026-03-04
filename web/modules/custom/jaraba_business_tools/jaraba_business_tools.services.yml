@@ -4,32 +4,28 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.channel.default'
-      - '@?jaraba_business_tools.mvp_validation_service'
-      - '@?jaraba_business_tools.projection_service'
-      - '@?jaraba_business_tools.sroi_calculator'
-      - '@?jaraba_business_tools.competitor_analysis'
+      - '@logger.factory'
 
   jaraba_business_tools.canvas_ai_service:
     class: Drupal\jaraba_business_tools\Service\CanvasAiService
     arguments:
       - '@config.factory'
       - '@http_client'
-      - '@logger.channel.default'
+      - '@logger.factory'
 
   jaraba_business_tools.mvp_validation_service:
     class: Drupal\jaraba_business_tools\Service\MvpValidationService
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.channel.default'
+      - '@logger.factory'
 
   jaraba_business_tools.projection_service:
     class: Drupal\jaraba_business_tools\Service\ProjectionService
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.channel.default'
+      - '@logger.factory'
 
   jaraba_business_tools.template_service:
     class: Drupal\jaraba_business_tools\Service\CanvasTemplateService

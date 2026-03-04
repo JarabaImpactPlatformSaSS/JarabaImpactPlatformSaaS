@@ -11,8 +11,8 @@ services:
     class: Drupal\jaraba_skills\Service\SkillEmbeddingService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_rag.qdrant_client'
-      - '@ai.provider'
+      - '@?jaraba_rag.qdrant_client'
+      - '@?ai.provider'
       - '@logger.channel.jaraba_skills'
 
   logger.channel.jaraba_skills:

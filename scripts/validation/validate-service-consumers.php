@@ -348,6 +348,21 @@ $terminalIdPatterns = [
   'jaraba_whitelabel.branded_pdf',
   // Copilot agent services (consumed by CopilotBridgeRegistry).
   '_copilot_agent',
+  // Services with circular-dep fix: args removed from services.yml, consumed lazily at runtime.
+  'ecosistema_jaraba_core.tenant_theme',
+  'ecosistema_jaraba_core.preset_applicator',
+  'jaraba_email.newsletter_service',
+  'jaraba_email.ai_service',
+  'jaraba_foc.forecasting',
+  'jaraba_interactive.scorer',
+  'jaraba_lms.learning_path',
+  'jaraba_lms.adaptive_learning',
+  'jaraba_resources.kit_service',
+  // Internal business tools services (consumed within module context).
+  'jaraba_business_tools.mvp_validation_service',
+  'jaraba_business_tools.projection_service',
+  'jaraba_business_tools.sroi_calculator',
+  'jaraba_business_tools.competitor_analysis',
 ];
 
 /**

@@ -29,7 +29,7 @@ services:
     class: Drupal\jaraba_usage_billing\Service\UsagePricingService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_billing.pricing_engine'
+      - '@?jaraba_billing.pricing_engine'
       - '@logger.channel.jaraba_usage_billing'
 
   # Sincronización de uso con Stripe Metered Billing.

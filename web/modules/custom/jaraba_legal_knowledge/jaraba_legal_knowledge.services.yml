@@ -13,7 +13,7 @@ services:
 
   jaraba_legal_knowledge.embedding:
     class: Drupal\jaraba_legal_knowledge\Service\LegalEmbeddingService
-    arguments: ['@ai.provider', '@config.factory', '@logger.channel.jaraba_legal_knowledge']
+    arguments: ['@?ai.provider', '@config.factory', '@logger.channel.jaraba_legal_knowledge']
 
   jaraba_legal_knowledge.ingestion:
     class: Drupal\jaraba_legal_knowledge\Service\LegalIngestionService

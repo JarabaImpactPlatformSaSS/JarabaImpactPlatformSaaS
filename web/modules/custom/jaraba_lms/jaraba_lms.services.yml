@@ -10,8 +10,6 @@ services:
       - '@current_user'
       - '@database'
       - '@logger.factory'
-      - '@?jaraba_lms.learning_path'
-      - '@?jaraba_lms.adaptive_learning'
 
   jaraba_lms.enrollment:
     class: Drupal\jaraba_lms\Service\EnrollmentService

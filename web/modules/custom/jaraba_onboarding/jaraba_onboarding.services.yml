@@ -21,7 +21,7 @@ services:
     class: Drupal\jaraba_onboarding\Service\OnboardingOrchestratorService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_onboarding'
+      - '@?ecosistema_jaraba_core.tenant_onboarding'
       - '@logger.channel.jaraba_onboarding'
       - '@?jaraba_onboarding.ai_recommender'
 

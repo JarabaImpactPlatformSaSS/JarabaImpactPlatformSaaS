@@ -8,8 +8,8 @@ services:
       - '@database'
       - '@jaraba_pixels.event_mapper'
       - '@jaraba_pixels.credential_manager'
-      - '@jaraba_analytics.consent'
-      - '@logger.channel.jaraba_pixels'
+      - '@?jaraba_analytics.consent'
+      - '@logger.factory'
       - '@http_client'
       - '@jaraba_ads.conversion_tracking'
       - '@?jaraba_pixels.consent_management'
@@ -21,7 +21,7 @@ services:
     class: Drupal\jaraba_pixels\Service\RedisQueueService
     arguments:
       - '@?redis.factory'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
 
   # =========================================================================
   # Servicio: Batch Processor (V2)
@@ -32,7 +32,7 @@ services:
       - '@jaraba_pixels.queue'
       - '@jaraba_pixels.dispatcher'
       - '@entity_type.manager'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
 
   # =========================================================================
   # Servicio: Verificación de Tokens (V2)
@@ -43,7 +43,7 @@ services:
       - '@jaraba_pixels.credential_manager'
       - '@plugin.manager.mail'
       - '@state'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
       - '@http_client'
 
   # =========================================================================
@@ -70,25 +70,25 @@ services:
     class: Drupal\jaraba_pixels\Client\MetaCapiClient
     arguments:
       - '@http_client'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
 
   jaraba_pixels.google_client:
     class: Drupal\jaraba_pixels\Client\GoogleMeasurementClient
     arguments:
       - '@http_client'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
 
   jaraba_pixels.linkedin_client:
     class: Drupal\jaraba_pixels\Client\LinkedInCapiClient
     arguments:
       - '@http_client'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
 
   jaraba_pixels.tiktok_client:
     class: Drupal\jaraba_pixels\Client\TikTokEventsClient
     arguments:
       - '@http_client'
-      - '@logger.channel.jaraba_pixels'
+      - '@logger.factory'
 
   # =========================================================================
   # Servicio: Health Check de Píxeles

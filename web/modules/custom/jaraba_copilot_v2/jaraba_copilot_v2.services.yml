@@ -33,7 +33,7 @@ services:
     class: Drupal\jaraba_copilot_v2\Service\ClaudeApiService
     arguments:
       - '@config.factory'
-      - '@key.repository'
+      - '@?key.repository'
       - '@http_client'
       - '@logger.channel.jaraba_copilot_v2'
       - '@jaraba_copilot_v2.feature_unlock'

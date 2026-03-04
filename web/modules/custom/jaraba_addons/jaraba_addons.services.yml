@@ -17,7 +17,7 @@ services:
     class: Drupal\jaraba_addons\Service\AddonCatalogService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_addons'
 
   # =====================================================================

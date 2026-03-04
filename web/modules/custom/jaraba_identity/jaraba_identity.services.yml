@@ -3,5 +3,5 @@ services:
     class: Drupal\jaraba_identity\Service\DidManagerService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_credentials.cryptography'
+      - '@?jaraba_credentials.cryptography'
       - '@logger.channel.default'

@@ -3,7 +3,7 @@ services:
     class: Drupal\jaraba_sso\Service\SamlHandlerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@http_client'
       - '@config.factory'
       - '@logger.channel.jaraba_sso'

@@ -54,7 +54,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_agents'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_agents.planning_agent:
     class: Drupal\jaraba_agents\Service\PlanningAgentService

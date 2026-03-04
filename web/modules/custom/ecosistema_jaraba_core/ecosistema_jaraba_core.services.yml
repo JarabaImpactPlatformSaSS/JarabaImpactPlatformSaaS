@@ -74,8 +74,6 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
-      - '@?ecosistema_jaraba_core.tenant_theme'
-      - '@?ecosistema_jaraba_core.preset_applicator'
 
   # Servicio de aplicación de Style Presets a tenants (f-101/f-102)
   # Crea DesignTokenConfig scope=tenant a partir del preset seleccionado.

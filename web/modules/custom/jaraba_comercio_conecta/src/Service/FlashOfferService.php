@@ -33,7 +33,7 @@ class FlashOfferService {
    * @return array
    *   Lista de entidades de ofertas activas.
    */
-  public function getActiveOffers(float $lat = NULL, float $lng = NULL, float $radiusKm = 10, int $limit = 20): array {
+  public function getActiveOffers(?float $lat = NULL, ?float $lng = NULL, float $radiusKm = 10, int $limit = 20): array {
     $storage = $this->entityTypeManager->getStorage('comercio_flash_offer');
     $now = \Drupal::time()->getRequestTime();
 

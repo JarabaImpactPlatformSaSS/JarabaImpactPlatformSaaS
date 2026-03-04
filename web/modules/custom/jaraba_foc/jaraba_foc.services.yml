@@ -12,7 +12,6 @@ services:
       - '@datetime.time'
       - '@logger.channel.jaraba_foc'
       - '@cache.default'
-      - '@?jaraba_foc.forecasting'
 
   # Métricas SaaS 2.0 (MRR, ARR, NRR, GRR, LTV, CAC, ARPU)
   jaraba_foc.saas_metrics:

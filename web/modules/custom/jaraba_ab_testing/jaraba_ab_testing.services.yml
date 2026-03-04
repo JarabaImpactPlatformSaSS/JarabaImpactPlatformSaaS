@@ -42,7 +42,7 @@ services:
     class: Drupal\jaraba_ab_testing\Service\ExperimentAggregatorService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@jaraba_ab_testing.statistical_engine'
       - '@logger.channel.jaraba_ab_testing'
 

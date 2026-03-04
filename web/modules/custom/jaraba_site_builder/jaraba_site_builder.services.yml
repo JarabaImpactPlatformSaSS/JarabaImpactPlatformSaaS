@@ -4,7 +4,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@database'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_site_builder'
       - '@jaraba_site_builder.redirect'
 

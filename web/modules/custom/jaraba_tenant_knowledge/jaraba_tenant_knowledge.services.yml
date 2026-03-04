@@ -3,7 +3,7 @@ services:
     class: Drupal\jaraba_tenant_knowledge\Service\TenantKnowledgeManager
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_rag.qdrant_client'
+      - '@?jaraba_rag.qdrant_client'
       - '@ai.provider'
       - '@logger.channel.jaraba_tenant_knowledge'
       - '@ecosistema_jaraba_core.tenant_context'

@@ -19,7 +19,7 @@ services:
     class: Drupal\jaraba_agent_flows\Service\AgentFlowExecutionService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_ai_agents.workflow_executor'
+      - '@?jaraba_ai_agents.workflow_executor'
       - '@logger.channel.jaraba_agent_flows'
 
   # Servicio de gestion de triggers (cron, webhook, event).

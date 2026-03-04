@@ -15,7 +15,7 @@ services:
     class: Drupal\jaraba_legal\Service\TosManagerService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@config.factory'
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_legal'

@@ -7,7 +7,7 @@ services:
     class: Drupal\jaraba_mobile\Service\DeviceRegistryService
     arguments:
       - '@entity_type.manager'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@current_user'
 
   jaraba_mobile.push_sender:

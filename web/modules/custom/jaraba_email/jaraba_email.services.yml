@@ -26,8 +26,6 @@ services:
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_email'
       - '@?jaraba_email.unsubscribe_token'
-      - '@?jaraba_email.newsletter_service'
-      - '@?jaraba_email.ai_service'
 
   # MJML Compiler Service
   jaraba_email.mjml_compiler:

@@ -18,9 +18,9 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.tenant_context'
       - '@logger.channel.jaraba_events'
-      - '@jaraba_email.sequence_manager'
+      - '@?jaraba_email.sequence_manager'
 
   # =====================================================================
   # EventAnalyticsService: Métricas y analítica de eventos

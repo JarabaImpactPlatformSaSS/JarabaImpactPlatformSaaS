@@ -21,6 +21,6 @@ services:
     class: Drupal\jaraba_paths\Service\PathRecommendationService
     arguments:
       - '@entity_type.manager'
-      - '@jaraba_diagnostic.scoring'
+      - '@?jaraba_diagnostic.scoring'
       - '@logger.channel.default'
 

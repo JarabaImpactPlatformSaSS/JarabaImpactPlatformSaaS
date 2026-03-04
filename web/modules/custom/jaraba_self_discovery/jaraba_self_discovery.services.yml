@@ -19,7 +19,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@user.data'
+      - '@?user.data'
       - '@logger.channel.jaraba_self_discovery'
 
   jaraba_self_discovery.strength_analysis:

@@ -28,7 +28,6 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
-      - '@logger.factory'
 
   jaraba_job_board.matching:
     class: Drupal\jaraba_job_board\Service\MatchingService
