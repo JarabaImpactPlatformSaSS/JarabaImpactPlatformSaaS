@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_customer_success\Access;
 
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
@@ -17,12 +17,18 @@ use Drupal\Core\Access\AccessResult;
  * - Update/Delete: requiere 'administer customer success'.
  * - Create: solo el sistema vía ChurnPredictionService.
  */
-class ChurnPredictionAccessControlHandler extends EntityAccessControlHandler {
+class ChurnPredictionAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     return match($operation) {
       'view' => AccessResult::allowedIfHasPermission($account, 'view churn predictions'),
       'update', 'delete' => AccessResult::allowedIfHasPermission($account, 'administer customer success'),

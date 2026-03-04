@@ -161,7 +161,7 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
                     'error' => $this->t('Configuración de suscripción no válida.')->__toString(),
                 ], 400);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Si la entidad tenant no existe en el schema, usar el ID tal cual.
             $this->logger->notice('Tenant entity not available, using raw tenant_id @id', ['@id' => $tenantId]);
         }
@@ -201,8 +201,8 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
                   $metaSiteSequence->enrollInWelcome((int) $result['id']);
                 }
               }
-              catch (\Exception $e) {
-                // No debe romper la suscripción principal.
+              catch (\Throwable $e) {
+                // No debe romper la suscripcion principal.
                 $this->logger->warning('MetaSite enroll failed for @email: @error', [
                   '@email' => $email,
                   '@error' => $e->getMessage(),
@@ -214,7 +214,7 @@ class PublicSubscribeController extends ControllerBase implements ContainerInjec
                 'success' => TRUE,
                 'data' => $result,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('Public subscribe error: @error', ['@error' => $e->getMessage()]);
             return new JsonResponse([
                 'success' => FALSE,

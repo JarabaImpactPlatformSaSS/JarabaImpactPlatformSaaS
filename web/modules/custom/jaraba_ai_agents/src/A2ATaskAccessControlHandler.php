@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace Drupal\jaraba_ai_agents;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
  * GAP-AUD-012: Access control for A2A Task entities.
  */
-class A2ATaskAccessControlHandler extends EntityAccessControlHandler {
+class A2ATaskAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     if ($account->hasPermission('administer ai agents')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

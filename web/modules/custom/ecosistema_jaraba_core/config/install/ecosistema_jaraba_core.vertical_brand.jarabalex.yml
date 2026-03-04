@@ -1,0 +1,19 @@
+id: jarabalex
+label: 'JarabaLex'
+vertical: jarabalex
+public_name: 'JarabaLex'
+tagline: 'Inteligencia legal al alcance de todos'
+description: 'Plataforma de servicios juridicos con inteligencia artificial y gestion de despachos.'
+icon_category: vertical
+icon_name: jarabalex
+primary_color: '#1B4332'
+secondary_color: '#233D63'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | JarabaLex'
+seo_description: 'Servicios juridicos inteligentes con JarabaLex. IA legal, gestion de casos y documentos.'
+schema_org_type: LegalService
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.jarabalex
+enabled: true
+status: true

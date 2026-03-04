@@ -706,6 +706,45 @@ class Tenant extends ContentEntityBase implements TenantInterface
             ->setDescription(t('Indica si ya se envió el recordatorio de fin de trial.'))
             ->setDefaultValue(FALSE);
 
+        // GAP-CURRENCY: ISO 4217 currency code.
+        $fields['currency'] = BaseFieldDefinition::create('list_string')
+            ->setLabel(t('Moneda'))
+            ->setDescription(t('Moneda principal del tenant (ISO 4217).'))
+            ->setDefaultValue('EUR')
+            ->setSetting('allowed_values', [
+                'EUR' => 'EUR — Euro',
+                'USD' => 'USD — US Dollar',
+                'GBP' => 'GBP — British Pound',
+                'BRL' => 'BRL — Real Brasileño',
+                'MXN' => 'MXN — Peso Mexicano',
+                'COP' => 'COP — Peso Colombiano',
+                'ARS' => 'ARS — Peso Argentino',
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'options_select',
+                'weight' => 24,
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'list_default',
+                'weight' => 24,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
+        // GAP-TIMEZONE: IANA timezone.
+        $fields['timezone'] = BaseFieldDefinition::create('string')
+            ->setLabel(t('Zona horaria'))
+            ->setDescription(t('Zona horaria IANA del tenant (ej: Europe/Madrid).'))
+            ->setDefaultValue('Europe/Madrid')
+            ->setSetting('max_length', 64)
+            ->setDisplayOptions('form', [
+                'type' => 'string_textfield',
+                'weight' => 25,
+            ])
+            ->setDisplayConfigurable('form', TRUE)
+            ->setDisplayConfigurable('view', TRUE);
+
         // Timestamps.
         $fields['created'] = BaseFieldDefinition::create('created')
             ->setLabel(t('Fecha de creación'))

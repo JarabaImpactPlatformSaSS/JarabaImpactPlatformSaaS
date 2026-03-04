@@ -12,6 +12,7 @@ services:
       - '@logger.channel.jaraba_pixels'
       - '@http_client'
       - '@jaraba_ads.conversion_tracking'
+      - '@?jaraba_pixels.consent_management'
 
   # =========================================================================
   # Servicio: Cola Redis Asíncrona (V2)

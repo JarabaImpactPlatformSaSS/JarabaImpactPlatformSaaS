@@ -49,6 +49,10 @@
     --ej-shadow-sm: #{$ej-shadow-sm};
     --ej-shadow-md: #{$ej-shadow-md};
     --ej-shadow-lg: #{$ej-shadow-lg};
+
+    // RTL direction tokens (overridden from PHP for RTL languages)
+    --ej-dir-start: left;
+    --ej-dir-end: right;
 }
 
 html {
@@ -93,4 +97,39 @@ a {
 :focus-visible {
     outline: 2px solid var(--ej-color-primary, #FF8C42);
     outline-offset: 2px;
+}
+
+// === RTL SUPPORT (GAP-RTL) ===
+// CSS logical properties for bidirectional layouts.
+// --ej-dir-start / --ej-dir-end are injected from preprocess_html().
+// Modern browsers support logical properties natively; these rules
+// ensure consistent behavior across all components.
+
+html[dir="rtl"] {
+    // Flip text alignment for body content.
+    body {
+        text-align: right;
+    }
+
+    // Lists: flip padding from left to right.
+    ul,
+    ol {
+        padding-inline-start: 2em;
+        padding-inline-end: 0;
+    }
+
+    // Tables: align header text.
+    th {
+        text-align: right;
+    }
+
+    // Blockquotes: flip border.
+    blockquote {
+        border-inline-start: 4px solid var(--ej-color-primary, #FF8C42);
+        border-inline-end: none;
+        margin-inline-start: 0;
+        margin-inline-end: 1em;
+        padding-inline-start: 1em;
+        padding-inline-end: 0;
+    }
 }

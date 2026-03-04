@@ -148,6 +148,7 @@ jaraba_legal_calendar.api.connections.delete:
     _controller: '\Drupal\jaraba_legal_calendar\Controller\CalendarApiController::deleteConnection'
   requirements:
     _permission: 'manage calendar connections'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
   methods: [DELETE]
 

@@ -1,0 +1,19 @@
+id: comercioconecta
+label: 'ComercioConecta'
+vertical: comercioconecta
+public_name: 'Jaraba Comercio'
+tagline: 'Tu tienda online en minutos'
+description: 'Marketplace y herramientas de comercio electronico para pymes y comerciantes locales.'
+icon_category: vertical
+icon_name: comercioconecta
+primary_color: '#233D63'
+secondary_color: '#FF8C42'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Comercio'
+seo_description: 'Vende online con Jaraba Comercio. Marketplace, pagos integrados y herramientas de gestion.'
+schema_org_type: Store
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.comercioconecta
+enabled: true
+status: true

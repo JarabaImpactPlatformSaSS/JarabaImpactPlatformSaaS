@@ -1,0 +1,157 @@
+/**
+ * @file
+ * Revenue Dashboard styles.
+ *
+ * GAP-REVENUE-DASH: Admin revenue metrics dashboard.
+ * CSS-VAR-ALL-COLORS-001: All colors via var(--ej-*, fallback).
+ */
+
+.ej-revenue-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ej-spacing-lg, 1.5rem);
+}
+
+/* KPI Cards */
+.ej-revenue-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.ej-revenue-kpi-card {
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-card-radius, 12px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 2px rgba(0,0,0,.05));
+  display: flex;
+  flex-direction: column;
+  gap: var(--ej-spacing-xs, 0.25rem);
+  border-top: 3px solid var(--ej-color-neutral, #64748B);
+}
+
+.ej-revenue-kpi--mrr {
+  border-top-color: var(--ej-color-primary, #FF8C42);
+}
+
+.ej-revenue-kpi--arr {
+  border-top-color: var(--ej-color-corporate, #233D63);
+}
+
+.ej-revenue-kpi--subscriptions {
+  border-top-color: var(--ej-color-success, #10B981);
+}
+
+.ej-revenue-kpi--churn {
+  border-top-color: var(--ej-color-danger, #EF4444);
+}
+
+.ej-revenue-kpi__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-color-neutral, #64748B);
+}
+
+.ej-revenue-kpi__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-family: var(--ej-font-headings, "Outfit", sans-serif);
+  color: var(--ej-color-headings, #1A1A2E);
+}
+
+.ej-revenue-kpi__sub {
+  font-size: 0.8rem;
+  color: var(--ej-color-neutral, #64748B);
+}
+
+/* Charts */
+.ej-revenue-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--ej-spacing-md, 1rem);
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.ej-revenue-chart-card {
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-card-radius, 12px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 2px rgba(0,0,0,.05));
+}
+
+.ej-revenue-chart-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--ej-spacing-md, 1rem) 0;
+  color: var(--ej-color-headings, #1A1A2E);
+}
+
+.ej-revenue-chart-card__body {
+  position: relative;
+  min-height: 280px;
+}
+
+/* Revenue by Plan Table */
+.ej-revenue-plan-table {
+  background: var(--ej-bg-surface, #fff);
+  border-radius: var(--ej-card-radius, 12px);
+  padding: var(--ej-spacing-lg, 1.5rem);
+  box-shadow: var(--ej-shadow-sm, 0 1px 2px rgba(0,0,0,.05));
+  margin-bottom: var(--ej-spacing-xl, 2rem);
+}
+
+.ej-revenue-plan-table__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--ej-spacing-md, 1rem) 0;
+  color: var(--ej-color-headings, #1A1A2E);
+}
+
+.ej-revenue-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ej-revenue-table th {
+  text-align: var(--ej-dir-start, left);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ej-color-neutral, #64748B);
+  padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+  border-bottom: 2px solid var(--ej-border-color, #E5E7EB);
+}
+
+.ej-revenue-table td {
+  padding: var(--ej-spacing-sm, 0.5rem) var(--ej-spacing-md, 1rem);
+  border-bottom: 1px solid var(--ej-border-color, #E5E7EB);
+  font-size: 0.9rem;
+  color: var(--ej-color-body, #334155);
+}
+
+.ej-revenue-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ej-revenue-timestamp {
+  font-size: 0.75rem;
+  color: var(--ej-color-neutral, #64748B);
+  text-align: var(--ej-dir-end, right);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ej-revenue-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ej-revenue-charts {
+    grid-template-columns: 1fr;
+  }
+  .ej-revenue-kpi__value {
+    font-size: 1.5rem;
+  }
+}

@@ -32,3 +32,32 @@ function jaraba_mobile_preprocess_html(array &$variables): void {
     $variables['attributes']['class'][] = 'page-mobile-admin';
   }
 }
+
+
+/**
+ * Prepares variables for mobile_device templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mobile_preprocess_mobile_device(array &$variables): void {
+  $entity = $variables['elements']['#mobile_device'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mobile_device'] = $entity;
+}
+
+/**
+ * Prepares variables for push_notification templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mobile_preprocess_push_notification(array &$variables): void {
+  $entity = $variables['elements']['#push_notification'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['push_notification'] = $entity;
+}

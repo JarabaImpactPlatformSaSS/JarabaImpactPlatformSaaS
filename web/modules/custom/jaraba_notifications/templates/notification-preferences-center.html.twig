@@ -1,0 +1,64 @@
+{#
+/**
+ * @file
+ * Template for the notification preferences center.
+ *
+ * Available variables:
+ * - preferences: Array of preference objects with type, label, description,
+ *   email, push, in_app booleans.
+ * - channels: Array of channel definitions [{key, label}].
+ *
+ * CSS-VAR-ALL-COLORS-001: All colors use var(--ej-*, fallback).
+ * AUDIT-SEC-003: All user content is pre-sanitized in controller.
+ */
+#}
+<div class="ej-notif-prefs">
+  <div class="ej-notif-prefs__header">
+    <h2 class="ej-notif-prefs__title">{% trans %}Preferencias de notificaciones{% endtrans %}</h2>
+    <p class="ej-notif-prefs__subtitle">{% trans %}Configura como quieres recibir las notificaciones por tipo y canal.{% endtrans %}</p>
+  </div>
+
+  <div class="ej-notif-prefs__table" role="table" aria-label="{% trans %}Preferencias de notificaciones{% endtrans %}">
+    {# Header row #}
+    <div class="ej-notif-prefs__row ej-notif-prefs__row--header" role="row">
+      <div class="ej-notif-prefs__cell ej-notif-prefs__cell--type" role="columnheader">
+        {% trans %}Tipo{% endtrans %}
+      </div>
+      {% for channel in channels %}
+        <div class="ej-notif-prefs__cell ej-notif-prefs__cell--channel" role="columnheader">
+          {{ channel.label }}
+        </div>
+      {% endfor %}
+    </div>
+
+    {# Preference rows #}
+    {% for pref in preferences %}
+      <div class="ej-notif-prefs__row" role="row" data-pref-type="{{ pref.type }}">
+        <div class="ej-notif-prefs__cell ej-notif-prefs__cell--type" role="cell">
+          <span class="ej-notif-prefs__type-label">{{ pref.label }}</span>
+          <span class="ej-notif-prefs__type-desc">{{ pref.description }}</span>
+        </div>
+        {% for channel in channels %}
+          {% set is_enabled = attribute(pref, channel.key) %}
+          <div class="ej-notif-prefs__cell ej-notif-prefs__cell--toggle" role="cell">
+            <label class="ej-notif-prefs__toggle">
+              <input type="checkbox"
+                     class="ej-notif-prefs__checkbox js-notif-pref-toggle"
+                     data-type="{{ pref.type }}"
+                     data-channel="{{ channel.key }}"
+                     {{ is_enabled ? 'checked' : '' }}
+                     aria-label="{{ pref.label }} — {{ channel.label }}">
+              <span class="ej-notif-prefs__slider" aria-hidden="true"></span>
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="ej-notif-prefs__footer">
+    <p class="ej-notif-prefs__note">
+      {% trans %}Las notificaciones del sistema criticas no pueden desactivarse.{% endtrans %}
+    </p>
+  </div>
+</div>

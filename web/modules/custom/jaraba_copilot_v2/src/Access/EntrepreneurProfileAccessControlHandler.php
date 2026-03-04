@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_copilot_v2\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -15,12 +15,18 @@ use Drupal\Core\Session\AccountInterface;
  * Administradores con 'administer entrepreneur profiles' tienen acceso total.
  * Usuarios autenticados pueden ver y editar su propio perfil.
  */
-class EntrepreneurProfileAccessControlHandler extends EntityAccessControlHandler {
+class EntrepreneurProfileAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     /** @var \Drupal\jaraba_copilot_v2\Entity\EntrepreneurProfile $entity */
     if ($account->hasPermission('administer entrepreneur profiles')) {
       return AccessResult::allowed()->cachePerPermissions();

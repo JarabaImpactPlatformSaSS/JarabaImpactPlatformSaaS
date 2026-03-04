@@ -83,7 +83,8 @@ class StripeConnectService
      */
     public function getSecretKey(): ?string
     {
-        return $this->getConfig()->get('stripe_secret_key');
+        return $this->getConfig()->get('stripe_secret_key')
+            ?: (getenv('STRIPE_SECRET_KEY') ?: NULL);
     }
 
     /**
@@ -285,7 +286,8 @@ class StripeConnectService
      */
     public function verifyWebhookSignature(string $payload, string $sigHeader): bool
     {
-        $secret = $this->getConfig()->get('stripe_webhook_secret');
+        $secret = $this->getConfig()->get('stripe_webhook_secret')
+            ?: (getenv('STRIPE_FOC_WEBHOOK_SECRET') ?: (getenv('STRIPE_WEBHOOK_SECRET') ?: NULL));
         if (!$secret) {
             $this->logger->warning('Webhook secret no configurado.');
             return FALSE;

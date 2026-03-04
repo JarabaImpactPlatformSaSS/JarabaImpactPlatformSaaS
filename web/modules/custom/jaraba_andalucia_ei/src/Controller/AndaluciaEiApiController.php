@@ -244,4 +244,246 @@ class AndaluciaEiApiController extends ControllerBase
         ]);
     }
 
+    /**
+     * Lista solicitudes con filtros.
+     *
+     * GET /api/v1/andalucia-ei/solicitudes
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   La peticion con parametros de filtrado.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con la lista de solicitudes.
+     */
+    public function listSolicitudes(Request $request): JsonResponse
+    {
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = min(50, max(1, (int) $request->query->get('limit', 20)));
+        $offset = ($page - 1) * $limit;
+        $estado = $request->query->get('estado');
+        $provincia = $request->query->get('provincia');
+        $colectivo = $request->query->get('colectivo');
+
+        $storage = $this->entityTypeManager->getStorage('solicitud_ei');
+
+        $query = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->sort('created', 'DESC')
+            ->range($offset, $limit);
+
+        if ($estado) {
+            $query->condition('estado', $estado);
+        }
+        if ($provincia) {
+            $query->condition('provincia', $provincia);
+        }
+        if ($colectivo) {
+            $query->condition('colectivo_inferido', $colectivo);
+        }
+
+        $ids = $query->execute();
+
+        $countQuery = $storage->getQuery()->accessCheck(TRUE)->count();
+        if ($estado) {
+            $countQuery->condition('estado', $estado);
+        }
+        if ($provincia) {
+            $countQuery->condition('provincia', $provincia);
+        }
+        if ($colectivo) {
+            $countQuery->condition('colectivo_inferido', $colectivo);
+        }
+        $total = (int) $countQuery->execute();
+
+        $items = [];
+        if (!empty($ids)) {
+            foreach ($storage->loadMultiple($ids) as $entity) {
+                $items[] = [
+                    'id' => $entity->id(),
+                    'nombre' => $entity->getNombre(),
+                    'email' => $entity->getEmail(),
+                    'provincia' => $entity->getProvincia(),
+                    'estado' => $entity->getEstado(),
+                    'colectivo_inferido' => $entity->getColectivoInferido(),
+                    'ai_score' => $entity->get('ai_score')->value,
+                    'ai_recomendacion' => $entity->get('ai_recomendacion')->value ?? '',
+                    'created' => $entity->get('created')->value,
+                ];
+            }
+        }
+
+        return new JsonResponse([
+            'items' => $items,
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
+        ]);
+    }
+
+    /**
+     * Obtiene datos de una solicitud especifica.
+     *
+     * GET /api/v1/andalucia-ei/solicitud/{id}
+     *
+     * @param int $id
+     *   El ID de la solicitud.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con los datos de la solicitud.
+     */
+    public function getSolicitud(int $id): JsonResponse
+    {
+        $entity = $this->entityTypeManager->getStorage('solicitud_ei')->load($id);
+
+        if (!$entity) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => 'Solicitud no encontrada.'],
+            ], 404);
+        }
+
+        return new JsonResponse([
+            'id' => $entity->id(),
+            'nombre' => $entity->getNombre(),
+            'email' => $entity->getEmail(),
+            'telefono' => $entity->getTelefono(),
+            'provincia' => $entity->getProvincia(),
+            'municipio' => $entity->get('municipio')->value ?? '',
+            'situacion_laboral' => $entity->get('situacion_laboral')->value ?? '',
+            'tiempo_desempleo' => $entity->get('tiempo_desempleo')->value ?? '',
+            'nivel_estudios' => $entity->get('nivel_estudios')->value ?? '',
+            'es_migrante' => (bool) ($entity->get('es_migrante')->value ?? FALSE),
+            'percibe_prestacion' => (bool) ($entity->get('percibe_prestacion')->value ?? FALSE),
+            'experiencia_sector' => $entity->get('experiencia_sector')->value ?? '',
+            'motivacion' => $entity->get('motivacion')->value ?? '',
+            'estado' => $entity->getEstado(),
+            'colectivo_inferido' => $entity->getColectivoInferido(),
+            'ai_score' => $entity->get('ai_score')->value,
+            'ai_recomendacion' => $entity->get('ai_recomendacion')->value ?? '',
+            'ai_justificacion' => $entity->get('ai_justificacion')->value ?? '',
+            'notas_admin' => $entity->get('notas_admin')->value ?? '',
+            'created' => $entity->get('created')->value,
+            'changed' => $entity->get('changed')->value,
+        ]);
+    }
+
+    /**
+     * Devuelve metricas de impacto del programa.
+     *
+     * GET /api/v1/andalucia-ei/metrics
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con KPIs agregados.
+     */
+    public function getMetrics(): JsonResponse
+    {
+        $participanteStorage = $this->entityTypeManager->getStorage('programa_participante_ei');
+        $solicitudStorage = $this->entityTypeManager->getStorage('solicitud_ei');
+
+        // Participantes por fase.
+        $fases = ['orientacion', 'formacion', 'mentoria', 'insercion'];
+        $porFase = [];
+        foreach ($fases as $fase) {
+            $porFase[$fase] = (int) $participanteStorage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('fase_actual', $fase)
+                ->count()
+                ->execute();
+        }
+
+        $totalParticipantes = array_sum($porFase);
+
+        // Solicitudes por estado.
+        $estados = ['pendiente', 'contactado', 'admitido', 'rechazado', 'lista_espera'];
+        $solicitudesPorEstado = [];
+        foreach ($estados as $estado) {
+            $solicitudesPorEstado[$estado] = (int) $solicitudStorage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('estado', $estado)
+                ->count()
+                ->execute();
+        }
+
+        $totalSolicitudes = array_sum($solicitudesPorEstado);
+
+        // Colectivos.
+        $colectivos = ['larga_duracion', 'mayores_45', 'migrantes', 'perceptores_prestaciones', 'otros'];
+        $porColectivo = [];
+        foreach ($colectivos as $col) {
+            $porColectivo[$col] = (int) $participanteStorage->getQuery()
+                ->accessCheck(TRUE)
+                ->condition('colectivo', $col)
+                ->count()
+                ->execute();
+        }
+
+        // Tasa de insercion.
+        $insertados = $porFase['insercion'] ?? 0;
+        $tasaInsercion = $totalParticipantes > 0
+            ? round(($insertados / $totalParticipantes) * 100, 1)
+            : 0;
+
+        return new JsonResponse([
+            'total_participantes' => $totalParticipantes,
+            'participantes_por_fase' => $porFase,
+            'total_solicitudes' => $totalSolicitudes,
+            'solicitudes_por_estado' => $solicitudesPorEstado,
+            'participantes_por_colectivo' => $porColectivo,
+            'tasa_insercion' => $tasaInsercion,
+            'timestamp' => \Drupal::time()->getRequestTime(),
+        ]);
+    }
+
+    /**
+     * Lista documentos de expediente de un participante.
+     *
+     * GET /api/v1/andalucia-ei/expediente/{participante_id}/documentos
+     *
+     * @param int $participante_id
+     *   El ID del participante.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     *   JSON con la lista de documentos.
+     */
+    public function listExpedienteDocumentos(int $participante_id): JsonResponse
+    {
+        // Verify participant exists.
+        $participante = $this->entityTypeManager
+            ->getStorage('programa_participante_ei')
+            ->load($participante_id);
+
+        if (!$participante) {
+            return new JsonResponse([
+                'success' => FALSE,
+                'error' => ['code' => 'NOT_FOUND', 'message' => 'Participante no encontrado.'],
+            ], 404);
+        }
+
+        $storage = $this->entityTypeManager->getStorage('expediente_documento');
+        $ids = $storage->getQuery()
+            ->accessCheck(TRUE)
+            ->condition('participante_id', $participante_id)
+            ->sort('created', 'DESC')
+            ->execute();
+
+        $items = [];
+        if (!empty($ids)) {
+            foreach ($storage->loadMultiple($ids) as $doc) {
+                $items[] = [
+                    'id' => $doc->id(),
+                    'tipo_documento' => $doc->get('tipo_documento')->value ?? '',
+                    'estado' => $doc->get('estado')->value ?? 'pendiente',
+                    'filename' => $doc->get('filename')->value ?? '',
+                    'created' => $doc->get('created')->value,
+                ];
+            }
+        }
+
+        return new JsonResponse([
+            'participante_id' => $participante_id,
+            'documentos' => $items,
+            'total' => count($items),
+        ]);
+    }
+
 }

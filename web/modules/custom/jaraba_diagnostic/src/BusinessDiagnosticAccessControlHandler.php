@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_diagnostic;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -16,7 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  * - Los usuarios pueden ver/editar sus propios diagnósticos
  * - Administradores pueden gestionar todos
  */
-class BusinessDiagnosticAccessControlHandler extends EntityAccessControlHandler
+class BusinessDiagnosticAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -24,6 +24,12 @@ class BusinessDiagnosticAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         /** @var \Drupal\jaraba_diagnostic\Entity\BusinessDiagnosticInterface $entity */
 
         // Admin tiene acceso total

@@ -1,0 +1,163 @@
+{#
+/**
+ * @file
+ * Global cross-vertical search page.
+ *
+ * GAP-SEARCH-FACET: Public search at /buscar with faceted filtering.
+ *
+ * Variables:
+ * - query: Search query string.
+ * - results: Array of search result items.
+ * - facets: Facet aggregation (verticals, types).
+ * - total: Total results count.
+ * - current_page: Current page number.
+ * - total_pages: Total number of pages.
+ * - active_vertical: Currently filtered vertical (or null).
+ * - available_verticals: Map of vertical_key => label.
+ */
+#}
+<div class="global-search" data-global-search>
+  {# Search form #}
+  <div class="global-search__form-wrapper">
+    <form class="global-search__form" action="{{ path('ecosistema_jaraba_core.search') }}" method="get" role="search" aria-label="{% trans %}Buscar en la plataforma{% endtrans %}">
+      <div class="global-search__input-group">
+        <input
+          type="search"
+          name="q"
+          class="global-search__input"
+          value="{{ query }}"
+          placeholder="{% trans %}Buscar cursos, productos, servicios, ofertas...{% endtrans %}"
+          aria-label="{% trans %}Término de búsqueda{% endtrans %}"
+          autocomplete="off"
+          data-search-input
+        >
+        <button type="submit" class="global-search__submit" aria-label="{% trans %}Buscar{% endtrans %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </div>
+      {% if active_vertical %}
+        <input type="hidden" name="vertical" value="{{ active_vertical }}">
+      {% endif %}
+    </form>
+
+    {# Autocomplete dropdown #}
+    <div class="global-search__autocomplete" data-search-autocomplete role="listbox" aria-label="{% trans %}Sugerencias{% endtrans %}" hidden></div>
+  </div>
+
+  {% if query %}
+    <div class="global-search__results-wrapper">
+      {# Facet sidebar #}
+      <aside class="global-search__facets" aria-label="{% trans %}Filtros{% endtrans %}">
+        <h3 class="global-search__facets-title">{% trans %}Verticales{% endtrans %}</h3>
+        <ul class="global-search__facet-list">
+          <li>
+            <a href="{{ path('ecosistema_jaraba_core.search', {'q': query}) }}"
+               class="global-search__facet-link{% if not active_vertical %} global-search__facet-link--active{% endif %}"
+               aria-current="{{ not active_vertical ? 'true' : 'false' }}">
+              {% trans %}Todos{% endtrans %}
+              <span class="global-search__facet-count">{{ total }}</span>
+            </a>
+          </li>
+          {% for key, label in available_verticals %}
+            {% set count = facets.verticals[key] | default(0) %}
+            <li>
+              <a href="{{ path('ecosistema_jaraba_core.search', {'q': query, 'vertical': key}) }}"
+                 class="global-search__facet-link{% if active_vertical == key %} global-search__facet-link--active{% endif %}"
+                 aria-current="{{ active_vertical == key ? 'true' : 'false' }}">
+                {{ label }}
+                <span class="global-search__facet-count">{{ count }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </aside>
+
+      {# Results area #}
+      <div class="global-search__main">
+        <div class="global-search__meta">
+          {% if total > 0 %}
+            <p class="global-search__count">
+              {% trans %}{{ total }} resultado(s) para{% endtrans %} <strong>&ldquo;{{ query }}&rdquo;</strong>
+              {% if active_vertical and available_verticals[active_vertical] is defined %}
+                {% trans %}en{% endtrans %} <strong>{{ available_verticals[active_vertical] }}</strong>
+              {% endif %}
+            </p>
+          {% else %}
+            <div class="global-search__empty">
+              <p>{% trans %}No se encontraron resultados para{% endtrans %} <strong>&ldquo;{{ query }}&rdquo;</strong></p>
+              <p class="global-search__empty-hint">{% trans %}Prueba con otros términos o quita los filtros activos.{% endtrans %}</p>
+            </div>
+          {% endif %}
+        </div>
+
+        {# Results list #}
+        {% if results|length > 0 %}
+          <ul class="global-search__list" role="list">
+            {% for item in results %}
+              <li class="global-search__item">
+                <a href="{{ item.url }}" class="global-search__item-link">
+                  <div class="global-search__item-header">
+                    <span class="global-search__item-vertical">{{ available_verticals[item.vertical] | default(item.vertical) }}</span>
+                    <span class="global-search__item-type">{{ item.entity_type | replace({'_': ' '}) }}</span>
+                  </div>
+                  <h3 class="global-search__item-title">{{ item.title }}</h3>
+                  {% if item.snippet %}
+                    <p class="global-search__item-snippet">{{ item.snippet }}</p>
+                  {% endif %}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {# Pagination #}
+        {% if total_pages > 1 %}
+          <nav class="global-search__pagination" aria-label="{% trans %}Paginación de resultados{% endtrans %}">
+            {% if current_page > 1 %}
+              <a href="{{ path('ecosistema_jaraba_core.search', {'q': query, 'vertical': active_vertical, 'page': current_page - 1}) }}"
+                 class="global-search__page-link global-search__page-link--prev"
+                 aria-label="{% trans %}Página anterior{% endtrans %}">
+                &laquo; {% trans %}Anterior{% endtrans %}
+              </a>
+            {% endif %}
+
+            {% for p in 1..total_pages %}
+              {% if p == current_page %}
+                <span class="global-search__page-link global-search__page-link--current" aria-current="page">{{ p }}</span>
+              {% elseif (p - current_page)|abs <= 2 or p == 1 or p == total_pages %}
+                <a href="{{ path('ecosistema_jaraba_core.search', {'q': query, 'vertical': active_vertical, 'page': p}) }}"
+                   class="global-search__page-link">{{ p }}</a>
+              {% elseif (p - current_page)|abs == 3 %}
+                <span class="global-search__page-ellipsis">&hellip;</span>
+              {% endif %}
+            {% endfor %}
+
+            {% if current_page < total_pages %}
+              <a href="{{ path('ecosistema_jaraba_core.search', {'q': query, 'vertical': active_vertical, 'page': current_page + 1}) }}"
+                 class="global-search__page-link global-search__page-link--next"
+                 aria-label="{% trans %}Página siguiente{% endtrans %}">
+                {% trans %}Siguiente{% endtrans %} &raquo;
+              </a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    {# Empty state before search #}
+    <div class="global-search__welcome">
+      <p class="global-search__welcome-text">{% trans %}Busca en todas las verticales de la plataforma: cursos, productos, servicios, ofertas de empleo y más.{% endtrans %}</p>
+      <div class="global-search__verticals-grid">
+        {% for key, label in available_verticals %}
+          <a href="{{ path('ecosistema_jaraba_core.search', {'vertical': key}) }}"
+             class="global-search__vertical-card">
+            {{ label }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>

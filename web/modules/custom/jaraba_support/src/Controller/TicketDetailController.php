@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_support\Controller;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\jaraba_support\Entity\SupportTicketInterface;
 use Drupal\jaraba_support\Service\TicketService;
 use Drupal\jaraba_support\Service\SlaEngineService;
@@ -18,9 +21,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class TicketDetailController extends ControllerBase {
 
+  /**
+   * HTML tags allowed in message body output.
+   */
+  private const ALLOWED_TAGS = [
+    'b', 'i', 'strong', 'em', 'a', 'br', 'p',
+    'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
+    'h2', 'h3', 'h4',
+  ];
+
   public function __construct(
     protected TicketService $ticketService,
     protected SlaEngineService $slaEngine,
+    protected DateFormatterInterface $dateFormatter,
   ) {}
 
   /**
@@ -30,6 +43,7 @@ class TicketDetailController extends ControllerBase {
     return new static(
       $container->get('jaraba_support.ticket'),
       $container->get('jaraba_support.sla_engine'),
+      $container->get('date.formatter'),
     );
   }
 
@@ -39,7 +53,7 @@ class TicketDetailController extends ControllerBase {
   public function view(SupportTicketInterface $support_ticket): array {
     $isAgent = $this->currentUser()->hasPermission('use support agent dashboard');
     $messages = $this->ticketService->getMessages($support_ticket, $isAgent);
-    $dateFormatter = \Drupal::service('date.formatter');
+    $dateFormatter = $this->dateFormatter;
 
     $formattedMessages = [];
     foreach ($messages as $message) {
@@ -59,7 +73,7 @@ class TicketDetailController extends ControllerBase {
 
       $formattedMessages[] = [
         'id' => $message->id(),
-        'body' => $message->get('body')->value ?? '',
+        'body' => Xss::filter($message->get('body')->value ?? '', self::ALLOWED_TAGS),
         'author' => $authorName,
         'author_role' => $type,
         'is_internal_note' => $message->isInternalNote(),
@@ -79,7 +93,7 @@ class TicketDetailController extends ControllerBase {
     // Format ticket as array for template.
     $ticketData = $this->formatTicketForTemplate($support_ticket, $dateFormatter);
 
-    $apiBase = \Drupal\Core\Url::fromRoute('jaraba_support.api.tickets.list')->toString();
+    $apiBase = Url::fromRoute('jaraba_support.api.tickets.list')->toString();
 
     return [
       '#theme' => 'support_ticket_detail',
@@ -99,7 +113,7 @@ class TicketDetailController extends ControllerBase {
           'jarabaSupport' => [
             'ticketId' => $support_ticket->id(),
             'apiBaseUrl' => $apiBase,
-            'sseUrl' => \Drupal\Core\Url::fromRoute('jaraba_support.stream')->toString(),
+            'sseUrl' => Url::fromRoute('jaraba_support.stream')->toString(),
           ],
         ],
       ],
@@ -127,8 +141,8 @@ class TicketDetailController extends ControllerBase {
     return [
       'id' => $ticket->id(),
       'ticket_number' => $ticket->getTicketNumber(),
-      'subject' => $ticket->label(),
-      'description' => $ticket->get('description')->value ?? '',
+      'subject' => Xss::filter($ticket->label() ?? '', []),
+      'description' => Xss::filter($ticket->get('description')->value ?? '', self::ALLOWED_TAGS),
       'status' => $ticket->getStatus(),
       'priority' => $ticket->getPriority(),
       'category' => $ticket->get('category')->value ?? '',

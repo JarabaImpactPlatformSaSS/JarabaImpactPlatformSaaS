@@ -315,3 +315,46 @@ function _jaraba_training_process_expiration_reminders(): void {
     ['@count' => count($ids)]
   );
 }
+
+
+/**
+ * Prepares variables for certification_program templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_training_preprocess_certification_program(array &$variables): void {
+  $entity = $variables['elements']['#certification_program'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['certification_program'] = $entity;
+}
+
+/**
+ * Prepares variables for training_product templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_training_preprocess_training_product(array &$variables): void {
+  $entity = $variables['elements']['#training_product'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['training_product'] = $entity;
+}
+
+/**
+ * Prepares variables for user_certification templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_training_preprocess_user_certification(array &$variables): void {
+  $entity = $variables['elements']['#user_certification'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['user_certification'] = $entity;
+}

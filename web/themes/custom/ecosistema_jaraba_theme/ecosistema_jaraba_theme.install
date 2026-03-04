@@ -1,0 +1,87 @@
+<?php
+
+/**
+ * @file
+ * Install and requirements for Ecosistema Jaraba Theme.
+ */
+
+/**
+ * Implements hook_requirements().
+ *
+ * Runtime checks for theme asset health visible at /admin/reports/status.
+ */
+function ecosistema_jaraba_theme_requirements($phase) {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  $theme_path = \Drupal::service('extension.list.theme')->getPath('ecosistema_jaraba_theme');
+
+  // Check 1: CSS freshness — main CSS vs SCSS.
+  $main_scss = DRUPAL_ROOT . '/' . $theme_path . '/scss/main.scss';
+  $main_css = DRUPAL_ROOT . '/' . $theme_path . '/css/ecosistema-jaraba-theme.css';
+
+  if (file_exists($main_scss) && file_exists($main_css)) {
+    $scss_mtime = filemtime($main_scss);
+    $css_mtime = filemtime($main_css);
+
+    if ($css_mtime < $scss_mtime) {
+      $requirements['ecosistema_jaraba_theme_css'] = [
+        'title' => t('Ecosistema Jaraba Theme - CSS Freshness'),
+        'value' => t('Stale (SCSS: @scss, CSS: @css)', [
+          '@scss' => date('Y-m-d H:i', $scss_mtime),
+          '@css' => date('Y-m-d H:i', $css_mtime),
+        ]),
+        'description' => t('The compiled CSS is older than the SCSS source. Run "npm run build" in the theme directory.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_theme_css'] = [
+        'title' => t('Ecosistema Jaraba Theme - CSS Freshness'),
+        'value' => t('Up to date'),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+  }
+  elseif (!file_exists($main_css)) {
+    $requirements['ecosistema_jaraba_theme_css'] = [
+      'title' => t('Ecosistema Jaraba Theme - CSS Freshness'),
+      'value' => t('Missing'),
+      'description' => t('The compiled CSS file does not exist. Run "npm run build" in the theme directory.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+
+  // Check 2: Required vendor libraries accessible.
+  $vendor_js = [
+    'js/vendor/grapes.min.js' => 'GrapesJS',
+  ];
+
+  $missing_libs = [];
+  foreach ($vendor_js as $path => $name) {
+    $full_path = DRUPAL_ROOT . '/' . $theme_path . '/' . $path;
+    if (!file_exists($full_path)) {
+      $missing_libs[] = $name;
+    }
+  }
+
+  if (!empty($missing_libs)) {
+    $requirements['ecosistema_jaraba_theme_libs'] = [
+      'title' => t('Ecosistema Jaraba Theme - Vendor Libraries'),
+      'value' => t('Missing: @libs', ['@libs' => implode(', ', $missing_libs)]),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+  else {
+    $requirements['ecosistema_jaraba_theme_libs'] = [
+      'title' => t('Ecosistema Jaraba Theme - Vendor Libraries'),
+      'value' => t('All vendor libraries available'),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  return $requirements;
+}

@@ -102,3 +102,18 @@ function jaraba_theming_theme_suggestions_alter(array &$suggestions, array $vari
     }
   }
 }
+
+
+/**
+ * Prepares variables for tenant_theme_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_theming_preprocess_tenant_theme_config(array &$variables): void {
+  $entity = $variables['elements']['#tenant_theme_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_theme_config'] = $entity;
+}

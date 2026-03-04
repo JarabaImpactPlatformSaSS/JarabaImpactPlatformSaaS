@@ -1,0 +1,19 @@
+id: andalucia_ei
+label: 'Andalucia EI'
+vertical: andalucia_ei
+public_name: 'Andalucia Emprende e Innova'
+tagline: 'Ecosistema de innovacion andaluz'
+description: 'Plataforma de apoyo al emprendimiento e innovacion en Andalucia.'
+icon_category: vertical
+icon_name: andalucia_ei
+primary_color: '#006341'
+secondary_color: '#FF8C42'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Andalucia Emprende e Innova'
+seo_description: 'Impulsa tu proyecto en Andalucia. Formacion, financiacion y red de contactos.'
+schema_org_type: GovernmentOrganization
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.andalucia_ei
+enabled: true
+status: true

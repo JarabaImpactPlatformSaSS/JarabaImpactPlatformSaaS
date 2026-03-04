@@ -11,23 +11,12 @@ use Psr\Log\LoggerInterface;
  * Cost Alert Service (FIX-051).
  *
  * Monitors AI token usage per tenant and sends proactive alerts
- * when approaching quota thresholds (80%, 95%).
+ * when approaching quota thresholds. Thresholds and limits are
+ * delegated to FairUsePolicyService and PlanResolverService
+ * (no hardcoded values).
  */
 class CostAlertService
 {
-
-    /**
-     * Alert thresholds as percentages.
-     */
-    protected const THRESHOLDS = [
-        'warning' => 80,
-        'critical' => 95,
-    ];
-
-    /**
-     * Default monthly token limit per tenant.
-     */
-    protected const DEFAULT_MONTHLY_LIMIT = 1000000;
 
     /**
      * Constructor.
@@ -35,6 +24,7 @@ class CostAlertService
     public function __construct(
         protected EntityTypeManagerInterface $entityTypeManager,
         protected LoggerInterface $logger,
+        protected ?FairUsePolicyService $fairUsePolicyService = NULL,
     ) {
     }
 
@@ -59,12 +49,13 @@ class CostAlertService
         }
 
         $usagePct = ($usage / $limit) * 100;
+        $thresholds = $this->getConfiguredThresholds($tenantId);
         $level = 'none';
 
-        if ($usagePct >= self::THRESHOLDS['critical']) {
+        if ($usagePct >= $thresholds['critical']) {
             $level = 'critical';
         }
-        elseif ($usagePct >= self::THRESHOLDS['warning']) {
+        elseif ($usagePct >= $thresholds['warning']) {
             $level = 'warning';
         }
 
@@ -129,7 +120,7 @@ class CostAlertService
      */
     protected function getTenantLimit(string $tenantId): int
     {
-        // Try to resolve from plan features.
+        // Try to resolve from plan features via PlanResolverService.
         if (\Drupal::hasService('ecosistema_jaraba_core.plan_resolver')) {
             try {
                 $resolver = \Drupal::service('ecosistema_jaraba_core.plan_resolver');
@@ -139,12 +130,60 @@ class CostAlertService
                         return (int) $limit;
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Fall through to default.
             }
         }
 
-        return self::DEFAULT_MONTHLY_LIMIT;
+        // Reasonable default: 100K tokens/month.
+        return 100000;
+    }
+
+    /**
+     * Gets configured alert thresholds for a tenant.
+     *
+     * Delegates to FairUsePolicyService when available, with sensible
+     * defaults (80/95) as fallback.
+     *
+     * @return array
+     *   Associative array with 'warning' and 'critical' keys.
+     */
+    protected function getConfiguredThresholds(string $tenantId): array
+    {
+        if ($this->fairUsePolicyService) {
+            try {
+                $tier = $this->resolveTenantTier($tenantId);
+                $thresholds = $this->fairUsePolicyService->getThresholds($tier);
+                if (count($thresholds) >= 2) {
+                    return [
+                        'warning' => $thresholds[0],
+                        'critical' => $thresholds[count($thresholds) - 1],
+                    ];
+                }
+            } catch (\Throwable $e) {
+                // Fall through to defaults.
+            }
+        }
+
+        return ['warning' => 80, 'critical' => 95];
+    }
+
+    /**
+     * Resolves the tier key for a tenant.
+     */
+    protected function resolveTenantTier(string $tenantId): string
+    {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_subscription')) {
+            try {
+                $subscription = \Drupal::service('ecosistema_jaraba_core.tenant_subscription');
+                if (method_exists($subscription, 'getTenantTier')) {
+                    return $subscription->getTenantTier($tenantId) ?: 'starter';
+                }
+            } catch (\Throwable $e) {
+                // Fall through.
+            }
+        }
+        return 'starter';
     }
 
     /**

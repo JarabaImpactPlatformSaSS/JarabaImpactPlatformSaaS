@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Drupal\jaraba_matching;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
  * Access controller for MatchResult entity.
  */
-class MatchResultAccessControlHandler extends EntityAccessControlHandler
+class MatchResultAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -20,6 +20,12 @@ class MatchResultAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         switch ($operation) {
             case 'view':
                 // Admins can view all

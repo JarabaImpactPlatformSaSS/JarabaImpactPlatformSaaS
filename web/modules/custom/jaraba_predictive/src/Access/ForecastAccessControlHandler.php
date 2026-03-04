@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_predictive\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -19,12 +19,18 @@ use Drupal\Core\Session\AccountInterface;
  *   Solo creacion para usuarios con 'execute predictions' o 'administer predictions'.
  *   Delete solo para administradores.
  */
-class ForecastAccessControlHandler extends EntityAccessControlHandler {
+class ForecastAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     // Acceso completo de lectura para administradores.
     if ($account->hasPermission('administer predictions')) {
       return AccessResult::allowed()->cachePerPermissions();

@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace Drupal\jaraba_governance\Entity;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
  * Access control handler for ErasureRequest entities.
  */
-class ErasureRequestAccessControlHandler extends EntityAccessControlHandler {
+class ErasureRequestAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     /** @var \Drupal\jaraba_governance\Entity\ErasureRequestInterface $entity */
 
     if ($account->hasPermission('administer data governance')) {

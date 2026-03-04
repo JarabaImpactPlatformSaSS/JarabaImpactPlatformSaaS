@@ -8,8 +8,14 @@ effects:
   643b7c40-e0eb-43d1-b8de-34f867ef9bde:
     uuid: 643b7c40-e0eb-43d1-b8de-34f867ef9bde
     id: image_scale_and_crop
-    weight: null
+    weight: 0
     data:
       width: 600
       height: 400
       anchor: center-center
+  a1b2c3d4-card-avif-0003-000000000003:
+    uuid: a1b2c3d4-card-avif-0003-000000000003
+    id: image_convert_avif
+    weight: 2
+    data:
+      extension: webp

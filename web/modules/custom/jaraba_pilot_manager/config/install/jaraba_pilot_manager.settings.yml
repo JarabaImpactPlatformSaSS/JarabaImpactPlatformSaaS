@@ -1,0 +1,3 @@
+default_pilot_duration_days: 30
+max_tenants_per_pilot: 50
+auto_evaluate_on_complete: true

@@ -9,3 +9,64 @@
  */
 
 declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\user\UserInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_notifications_theme(): array {
+  return [
+    'notification_preferences_center' => [
+      'variables' => [
+        'preferences' => [],
+        'channels' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_user_insert().
+ *
+ * PRESAVE-RESILIENCE-001: Inicializa preferencias de notificacion
+ * por defecto para usuarios nuevos. Fail-open si el servicio no
+ * esta disponible.
+ */
+function jaraba_notifications_user_insert(EntityInterface $entity): void {
+  if (!$entity instanceof UserInterface) {
+    return;
+  }
+
+  if (!\Drupal::hasService('jaraba_notifications.preference')) {
+    return;
+  }
+
+  try {
+    /** @var \Drupal\jaraba_notifications\Service\NotificationPreferenceService $prefService */
+    $prefService = \Drupal::service('jaraba_notifications.preference');
+    $prefService->initializeDefaults((int) $entity->id());
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_notifications')->warning(
+      'Failed to initialize notification preferences for user @uid: @error',
+      ['@uid' => $entity->id(), '@error' => $e->getMessage()]
+    );
+  }
+}
+
+
+/**
+ * Prepares variables for notification templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_notifications_preprocess_notification(array &$variables): void {
+  $entity = $variables['elements']['#notification'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['notification'] = $entity;
+}

@@ -79,6 +79,27 @@ jobs:
       - name: Module consistency check (MODULE-ORPHAN-001)
         run: bash scripts/maintenance/check-module-consistency.sh
 
+      - name: Architectural validation (DI, routing, entities, queries)
+        run: bash scripts/validation/validate-all.sh --full
+
+      # SERVICE-ORPHAN-001: Detect orphaned services (standalone for clarity).
+      - name: Validate service consumers
+        run: php scripts/validation/validate-service-consumers.php
+        continue-on-error: true
+
+      # ASSET-FRESHNESS-001: Compiled CSS must be up-to-date.
+      - name: Validate compiled assets freshness
+        run: php scripts/validation/validate-compiled-assets.php
+
+      # TEST-COVERAGE-MAP-001: Critical modules must have tests.
+      - name: Validate test coverage map
+        run: php scripts/validation/validate-test-coverage-map.php
+        continue-on-error: true
+
+      # CONTAINER-DEPS-001: Service container dependency integrity (blocking).
+      - name: Validate container dependencies
+        run: php scripts/validation/validate-container-deps.php
+
   # ===========================================
   # JOB 2: TESTS UNITARIOS
   # ===========================================

@@ -42,6 +42,20 @@ services:
   # para evitar errores cuando jaraba_billing no está instalado.
   # ===========================================
 
+  # GAP-CURRENCY: Tenant-aware currency resolution + formatting.
+  ecosistema_jaraba_core.currency:
+    class: Drupal\ecosistema_jaraba_core\Service\CurrencyService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # GAP-TIMEZONE: Tenant-aware timezone resolution + formatting.
+  ecosistema_jaraba_core.tenant_timezone:
+    class: Drupal\ecosistema_jaraba_core\Service\TenantTimezoneService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
   ecosistema_jaraba_core.tenant_domain:
     class: Drupal\ecosistema_jaraba_core\Service\TenantDomainService
     arguments:
@@ -60,6 +74,8 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.tenant_theme'
+      - '@?ecosistema_jaraba_core.preset_applicator'
 
   # Servicio de aplicación de Style Presets a tenants (f-101/f-102)
   # Crea DesignTokenConfig scope=tenant a partir del preset seleccionado.
@@ -101,6 +117,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.tenant_timezone'
 
   # TENANT-BRIDGE-001: Bridge entre Tenant entities (billing) y Group entities
   # (content isolation). Todo servicio que necesite resolver entre ambos DEBE
@@ -110,6 +127,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.tenant_collaboration'
 
   # S5-09 (HAL-AI-20): Motor de personalización unificado.
   # Orquesta 6 servicios de recomendación dispersos en módulos verticales
@@ -119,6 +137,7 @@ services:
     arguments:
       - '@logger.channel.ecosistema_jaraba_core'
       - '@?ecosistema_jaraba_core.tenant_context'
+      - '@?ecosistema_jaraba_core.marketplace_recommendations'
 
 
   # ===========================================
@@ -352,12 +371,24 @@ services:
       - '@config.factory'
       - '@logger.channel.ecosistema_jaraba_core'
 
-  # FIX-051: Cost Alert — monitors AI token usage per tenant, alerts at 80%/95%
+  # Fair Use Policy Service — central enforcement for resource limits.
+  # Reads thresholds, burst tolerance, grace period and overage prices
+  # from FairUsePolicy ConfigEntity (no hardcoded values).
+  ecosistema_jaraba_core.fair_use_policy:
+    class: Drupal\ecosistema_jaraba_core\Service\FairUsePolicyService
+    arguments:
+      - '@entity_type.manager'
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # FIX-051: Cost Alert — monitors AI token usage per tenant.
+  # Thresholds delegated to FairUsePolicyService (no hardcoded constants).
   ecosistema_jaraba_core.cost_alert:
     class: Drupal\ecosistema_jaraba_core\Service\CostAlertService
     arguments:
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.fair_use_policy'
 
   # Unified Prompt Builder — combines skills + tenant knowledge + RAG into XML prompt
   ecosistema_jaraba_core.unified_prompt_builder:
@@ -763,6 +794,39 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
 
   # ===========================================
+  # FORMACION (LMS) FEATURE GATE (GAP-FVL-LMS)
+  # ===========================================
+
+  # Feature gating por plan para el vertical Formacion (LMS).
+  # Verifica limites de uso (courses_limit, learning_paths_limit,
+  # certificates_limit, enrollments_limit, copilot_uses_per_month)
+  # consultando FreemiumVerticalLimit y tabla formacion_feature_usage.
+  ecosistema_jaraba_core.formacion_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\FormacionFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  # ===========================================
+  # CONTENT HUB FEATURE GATE (GAP-FVL-HUB)
+  # ===========================================
+
+  # Feature gating por plan para el vertical Content Hub.
+  # Verifica limites de uso (articles_limit, categories_limit, authors_limit)
+  # consultando FreemiumVerticalLimit y tabla content_hub_feature_usage.
+  ecosistema_jaraba_core.content_hub_feature_gate:
+    class: Drupal\ecosistema_jaraba_core\Service\ContentHubFeatureGateService
+    arguments:
+      - '@ecosistema_jaraba_core.upgrade_trigger'
+      - '@database'
+      - '@current_user'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@ecosistema_jaraba_core.tenant_context'
+
+  # ===========================================
   # JARABALEX FEATURE GATE (Plan Elevación JarabaLex v1 — Fase 4)
   # ===========================================
 
@@ -1015,6 +1079,18 @@ services:
       - '@config.factory'
       - '@entity_type.manager'
       - '@logger.channel.ecosistema_jaraba_core'
+      - '@?ecosistema_jaraba_core.personalization_engine'
+      - '@?ecosistema_jaraba_core.user_intent_classifier'
+      - '@?ecosistema_jaraba_core.ttfv'
+      - '@?ecosistema_jaraba_core.in_app_messaging'
+      - '@?ecosistema_jaraba_core.referral_program'
+      - '@?ecosistema_jaraba_core.pricing_recommendations'
+      - '@?ecosistema_jaraba_core.ai_ab_testing'
+      - '@?ecosistema_jaraba_core.self_healing'
+      - '@?ecosistema_jaraba_core.ai_value_dashboard'
+      - '@?ecosistema_jaraba_core.aiops'
+      - '@?ecosistema_jaraba_core.video_geo'
+      - '@?ecosistema_jaraba_core.multilingual_geo'
 
   # ===========================================
   # ADMIN STRUCTURE UX OVERRIDE
@@ -1576,6 +1652,21 @@ services:
       - '@logger.channel.ecosistema_jaraba_core'
       - '@ecosistema_jaraba_core.review_aggregation'
 
+  # GAP-SEARCH-FACET: Cross-vertical faceted search.
+  ecosistema_jaraba_core.faceted_search:
+    class: Drupal\ecosistema_jaraba_core\Service\FacetedSearchService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.ecosistema_jaraba_core'
+
+  # GAP-QUEUE-MON: Queue monitoring for admin dashboard.
+  ecosistema_jaraba_core.queue_monitor:
+    class: Drupal\ecosistema_jaraba_core\Service\QueueMonitorService
+    arguments:
+      - '@plugin.manager.queue_worker'
+      - '@queue'
+      - '@logger.channel.ecosistema_jaraba_core'
+
   ecosistema_jaraba_core.review_schema_org:
     class: Drupal\ecosistema_jaraba_core\Service\ReviewSchemaOrgService
     arguments:
@@ -1663,6 +1754,18 @@ services:
       - '@file_system'
       - '@logger.channel.ecosistema_jaraba_core'
 
+  # GAP-EMAIL-VERIFY: Email verification service (HMAC tokens + State API).
+  ecosistema_jaraba_core.email_verification:
+    class: Drupal\ecosistema_jaraba_core\Service\EmailVerificationService
+    arguments:
+      - '@state'
+      - '@logger.channel.ecosistema_jaraba_core'
+      - '@plugin.manager.mail'
+      - '@user.data'
+      - '@flood'
+      - '@database'
+      - '@?jaraba_email.template_loader'
+
   # B-18: Review Webhooks
   ecosistema_jaraba_core.review_webhook:
     class: Drupal\ecosistema_jaraba_core\Service\ReviewWebhookService
@@ -1670,3 +1773,36 @@ services:
       - '@database'
       - '@queue'
       - '@logger.channel.ecosistema_jaraba_core'
+
+  # ===========================================
+  # FEATURE GATE ROUTER (Item 3 — Twig feature_allowed)
+  # ===========================================
+
+  # Despacha feature gate checks a los 10 servicios verticales existentes.
+  ecosistema_jaraba_core.feature_gate_router:
+    class: Drupal\ecosistema_jaraba_core\Service\FeatureGateRouterService
+
+  # ===========================================
+  # VERTICAL BRAND SUBSYSTEM (Item 1 — Submarinas con Periscopio)
+  # ===========================================
+
+  # Determina nivel de revelacion (landing/trial/expansion/enterprise).
+  ecosistema_jaraba_core.revelation_level:
+    class: Drupal\ecosistema_jaraba_core\Service\RevelationLevelService
+    arguments:
+      - '@config.factory'
+      - '@ecosistema_jaraba_core.tenant_context'
+      - '@current_user'
+
+  # Filtra items de navegacion segun nivel de revelacion.
+  ecosistema_jaraba_core.navigation_filter:
+    class: Drupal\ecosistema_jaraba_core\Service\NavigationFilterService
+    arguments:
+      - '@ecosistema_jaraba_core.revelation_level'
+      - '@config.factory'
+
+  # Genera meta tags SEO basados en VerticalBrandConfig.
+  ecosistema_jaraba_core.vertical_brand_seo:
+    class: Drupal\ecosistema_jaraba_core\Service\VerticalBrandSeoService
+    arguments:
+      - '@config.factory'

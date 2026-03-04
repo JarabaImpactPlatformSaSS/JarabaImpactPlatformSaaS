@@ -67,7 +67,7 @@
         {% if actions %}
           <div class="card__actions">
             {% for action in actions %}
-              <button class="btn btn--icon btn--ghost" title="{{ action.label }}">
+              <button class="btn btn--icon btn--ghost" title="{{ action.label }}" aria-label="{{ action.label }}">
                 {{ jaraba_icon('actions', action.icon, { size: '20px' }) }}
               </button>
             {% endfor %}

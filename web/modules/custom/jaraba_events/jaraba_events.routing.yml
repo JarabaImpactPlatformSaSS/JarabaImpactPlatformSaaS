@@ -112,6 +112,7 @@ jaraba_events.api.events.delete:
   methods: [DELETE]
   requirements:
     _permission: 'delete events'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_events.api.events.registrations:
   path: '/api/v1/events/{id}/registrations'

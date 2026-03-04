@@ -478,3 +478,130 @@ function jaraba_tenant_knowledge_tenant_document_delete(EntityInterface $entity)
     }
   }
 }
+
+
+/**
+ * Prepares variables for kb_article templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_kb_article(array &$variables): void {
+  $entity = $variables['elements']['#kb_article'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['kb_article'] = $entity;
+}
+
+/**
+ * Prepares variables for kb_category templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_kb_category(array &$variables): void {
+  $entity = $variables['elements']['#kb_category'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['kb_category'] = $entity;
+}
+
+/**
+ * Prepares variables for kb_video templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_kb_video(array &$variables): void {
+  $entity = $variables['elements']['#kb_video'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['kb_video'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant_ai_correction templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_tenant_ai_correction(array &$variables): void {
+  $entity = $variables['elements']['#tenant_ai_correction'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_ai_correction'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant_document templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_tenant_document(array &$variables): void {
+  $entity = $variables['elements']['#tenant_document'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_document'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant_faq templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_tenant_faq(array &$variables): void {
+  $entity = $variables['elements']['#tenant_faq'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_faq'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant_knowledge_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_tenant_knowledge_config(array &$variables): void {
+  $entity = $variables['elements']['#tenant_knowledge_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_knowledge_config'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant_policy templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_tenant_policy(array &$variables): void {
+  $entity = $variables['elements']['#tenant_policy'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_policy'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant_product_enrichment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_tenant_knowledge_preprocess_tenant_product_enrichment(array &$variables): void {
+  $entity = $variables['elements']['#tenant_product_enrichment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant_product_enrichment'] = $entity;
+}

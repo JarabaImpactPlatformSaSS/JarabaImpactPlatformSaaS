@@ -55,3 +55,37 @@ jaraba_notifications.api.dismiss:
     _user_is_logged_in: 'TRUE'
     _csrf_request_header_token: 'TRUE'
     notification: '\d+'
+
+# ═══════════════════════════════════════════════════════════
+# GAP-NOTIF-PREFS: Centro de Preferencias de Notificaciones
+# ═══════════════════════════════════════════════════════════
+
+# Pagina frontend de preferencias.
+jaraba_notifications.preferences:
+  path: '/mi-cuenta/notificaciones'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationPreferenceController::preferences'
+    _title: 'Preferencias de notificaciones'
+  requirements:
+    _user_is_logged_in: 'TRUE'
+  options:
+    _admin_route: FALSE
+
+# API: Obtener preferencias del usuario.
+jaraba_notifications.api.preferences.get:
+  path: '/api/v1/user/notification-preferences'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationPreferenceController::apiGet'
+  methods: [GET]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+
+# API: Actualizar una preferencia individual.
+jaraba_notifications.api.preferences.update:
+  path: '/api/v1/user/notification-preferences'
+  defaults:
+    _controller: '\Drupal\jaraba_notifications\Controller\NotificationPreferenceController::apiUpdate'
+  methods: [PATCH]
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _csrf_request_header_token: 'TRUE'

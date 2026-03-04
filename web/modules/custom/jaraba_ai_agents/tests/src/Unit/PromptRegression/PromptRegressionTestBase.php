@@ -80,4 +80,65 @@ abstract class PromptRegressionTestBase extends TestCase
         return preg_replace('/\s+/', ' ', trim($prompt));
     }
 
+    /**
+     * Asserts that a text does not contain Spanish PII patterns.
+     *
+     * AI-GUARDRAILS-PII-001: Prompts must never contain personal data.
+     *
+     * @param string $text
+     *   The text to scan for PII patterns.
+     */
+    protected function assertNoPiiPatterns(string $text): void
+    {
+        $patterns = [
+            '/\b\d{8}[A-Z]\b/' => 'DNI',
+            '/\b[XYZ]\d{7}[A-Z]\b/' => 'NIE',
+            '/\bES\d{22}\b/' => 'IBAN ES',
+            '/\b[A-H]\d{8}\b/' => 'NIF/CIF',
+            '/\+34\s?\d{9}\b/' => 'Telefono +34',
+        ];
+
+        foreach ($patterns as $pattern => $label) {
+            $this->assertDoesNotMatchRegularExpression(
+                $pattern,
+                $text,
+                "Prompt contains PII pattern ({$label}). AI-GUARDRAILS-PII-001 violation."
+            );
+        }
+    }
+
+    /**
+     * Creates an agent instance without constructor for testing.
+     *
+     * Uses ReflectionClass::newInstanceWithoutConstructor() to bypass
+     * the 6-10 arg constructor since prompt regression tests only need
+     * access to getDefaultBrandVoice() and getAgentId().
+     *
+     * @param string $className
+     *   Fully qualified class name.
+     *
+     * @return object
+     *   Agent instance (uninitialized).
+     */
+    protected function createAgentWithoutConstructor(string $className): object
+    {
+        return (new \ReflectionClass($className))->newInstanceWithoutConstructor();
+    }
+
+    /**
+     * Reads a protected/private constant from a class via reflection.
+     *
+     * @param string $className
+     *   Fully qualified class name.
+     * @param string $constantName
+     *   The constant name.
+     *
+     * @return mixed
+     *   The constant value.
+     */
+    protected function getClassConstant(string $className, string $constantName): mixed
+    {
+        return (new \ReflectionClass($className))->getConstant($constantName);
+    }
+
 }

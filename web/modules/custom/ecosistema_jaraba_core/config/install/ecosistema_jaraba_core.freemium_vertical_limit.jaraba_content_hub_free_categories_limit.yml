@@ -1,0 +1,11 @@
+id: jaraba_content_hub_free_categories_limit
+label: 'Content Hub Free: Categorias'
+vertical: jaraba_content_hub
+plan: free
+feature_key: categories_limit
+limit_value: 3
+description: 'Maximo 3 categorias en plan gratuito Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 3 categorias. Actualiza a Starter para hasta 10.'
+expected_conversion: 0.20
+weight: 1
+status: true

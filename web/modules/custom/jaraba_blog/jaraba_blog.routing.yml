@@ -129,6 +129,7 @@ jaraba_blog.api.posts.delete:
   methods: [DELETE]
   requirements:
     _permission: 'manage blog posts'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 jaraba_blog.api.posts.publish:
@@ -201,6 +202,7 @@ jaraba_blog.api.categories.delete:
   methods: [DELETE]
   requirements:
     _permission: 'manage blog categories'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 # --- Authors API ---

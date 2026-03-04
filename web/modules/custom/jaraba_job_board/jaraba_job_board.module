@@ -1183,3 +1183,46 @@ function _jaraba_job_board_ensure_crm_contact(int $userId): ?int {
 
 
 
+
+
+/**
+ * Prepares variables for employer_profile templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_job_board_preprocess_employer_profile(array &$variables): void {
+  $entity = $variables['elements']['#employer_profile'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['employer_profile'] = $entity;
+}
+
+/**
+ * Prepares variables for job_application templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_job_board_preprocess_job_application(array &$variables): void {
+  $entity = $variables['elements']['#job_application'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['job_application'] = $entity;
+}
+
+/**
+ * Prepares variables for job_posting templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_job_board_preprocess_job_posting(array &$variables): void {
+  $entity = $variables['elements']['#job_posting'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['job_posting'] = $entity;
+}

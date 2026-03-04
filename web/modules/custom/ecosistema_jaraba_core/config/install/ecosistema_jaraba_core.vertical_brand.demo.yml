@@ -1,0 +1,19 @@
+id: demo
+label: 'Demo'
+vertical: demo
+public_name: 'Jaraba Demo'
+tagline: 'Descubre todo el ecosistema'
+description: 'Entorno de demostracion con acceso a todas las funcionalidades del ecosistema.'
+icon_category: vertical
+icon_name: demo
+primary_color: '#233D63'
+secondary_color: '#FF8C42'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Demo'
+seo_description: 'Explora el ecosistema Jaraba con nuestra demo interactiva.'
+schema_org_type: WebApplication
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.demo_landing
+enabled: true
+status: true

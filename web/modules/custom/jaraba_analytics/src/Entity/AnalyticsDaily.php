@@ -29,6 +29,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   base_table = "analytics_daily",
+ *   admin_permission = "administer analytics",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",

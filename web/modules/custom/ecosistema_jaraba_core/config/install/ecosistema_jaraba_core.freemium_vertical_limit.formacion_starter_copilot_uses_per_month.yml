@@ -1,0 +1,11 @@
+id: formacion_starter_copilot_uses_per_month
+label: 'Formacion Starter: Copilot mensual'
+vertical: formacion
+plan: starter
+feature_key: copilot_uses_per_month
+limit_value: 30
+description: 'Maximo 30 consultas al copilot IA mensuales en plan Starter Formacion.'
+upgrade_message: 'Has alcanzado el limite de 30 consultas IA este mes. Actualiza a Profesional para hasta 100.'
+expected_conversion: 0.35
+weight: 14
+status: true

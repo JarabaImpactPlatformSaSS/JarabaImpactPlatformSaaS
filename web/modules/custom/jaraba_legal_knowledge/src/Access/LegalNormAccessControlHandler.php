@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_knowledge\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -25,12 +25,18 @@ use Drupal\Core\Session\AccountInterface;
  * - LegalNormAccessControlHandler -> Legal entities (controla acceso)
  * - LegalNormAccessControlHandler <- Drupal core (invocado por)
  */
-class LegalNormAccessControlHandler extends EntityAccessControlHandler {
+class LegalNormAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     if ($account->hasPermission('administer legal knowledge')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

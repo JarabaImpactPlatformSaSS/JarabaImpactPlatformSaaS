@@ -6,6 +6,7 @@ namespace Drupal\jaraba_billing\Service;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\ecosistema_jaraba_core\Service\FairUsePolicyService;
 use Drupal\jaraba_billing\Service\WalletService;
 
 /**
@@ -14,6 +15,9 @@ use Drupal\jaraba_billing\Service\WalletService;
  * PROPÓSITO:
  * Rastrea y mide el uso detallado de recursos por tenant
  * para permitir facturación basada en uso (usage-based pricing).
+ *
+ * Unit prices are read from FairUsePolicy ConfigEntity via
+ * FairUsePolicyService (no hardcoded values).
  *
  * Q4 2026 - Sprint 13-14: Outcome-Based Pricing
  */
@@ -33,17 +37,17 @@ class TenantMeteringService
     public const METRIC_BANDWIDTH_GB = 'bandwidth_gb';
 
     /**
-     * Precios por unidad (para outcome-based pricing).
+     * Fallback unit prices — used when FairUsePolicyService unavailable.
      */
-    protected const UNIT_PRICES = [
-        self::METRIC_API_CALLS => 0.0001,    // €0.0001/call
-        self::METRIC_AI_TOKENS => 0.00002,   // €0.00002/token
-        self::METRIC_STORAGE_MB => 0.001,    // €0.001/MB/month
-        self::METRIC_ORDERS => 0.50,         // €0.50/order
-        self::METRIC_PRODUCTS => 0.10,       // €0.10/product/month
-        self::METRIC_CUSTOMERS => 0.05,      // €0.05/customer/month
-        self::METRIC_EMAILS_SENT => 0.001,   // €0.001/email
-        self::METRIC_BANDWIDTH_GB => 0.05,   // €0.05/GB
+    protected const FALLBACK_UNIT_PRICES = [
+        self::METRIC_API_CALLS => 0.0001,
+        self::METRIC_AI_TOKENS => 0.00002,
+        self::METRIC_STORAGE_MB => 0.001,
+        self::METRIC_ORDERS => 0.50,
+        self::METRIC_PRODUCTS => 0.10,
+        self::METRIC_CUSTOMERS => 0.05,
+        self::METRIC_EMAILS_SENT => 0.001,
+        self::METRIC_BANDWIDTH_GB => 0.05,
     ];
 
     /**
@@ -53,6 +57,7 @@ class TenantMeteringService
         protected Connection $database,
         protected CacheBackendInterface $cache,
         protected WalletService $walletService,
+        protected ?FairUsePolicyService $fairUsePolicyService = NULL,
     ) {
     }
 
@@ -62,7 +67,7 @@ class TenantMeteringService
     public function record(string $tenantId, string $metric, float $value, array $metadata = []): void
     {
         // 1. Calcular coste.
-        $unitPrice = self::UNIT_PRICES[$metric] ?? 0;
+        $unitPrice = $this->getUnitPrice($metric, $tenantId);
         $cost = $value * $unitPrice;
 
         // 2. Intentar deducir del Wallet (Prepago).
@@ -131,10 +136,11 @@ class TenantMeteringService
 
         $usage = [];
         foreach ($results as $metric => $total) {
+            $price = $this->getUnitPrice($metric, $tenantId);
             $usage[$metric] = [
                 'total' => (float) $total,
-                'unit_price' => self::UNIT_PRICES[$metric] ?? 0,
-                'cost' => (float) $total * (self::UNIT_PRICES[$metric] ?? 0),
+                'unit_price' => $price,
+                'cost' => (float) $total * $price,
             ];
         }
 
@@ -213,7 +219,7 @@ class TenantMeteringService
             'subtotal' => $subtotal,
             'tax' => $tax,
             'total' => $subtotal + $tax,
-            'currency' => 'EUR',
+            'currency' => $this->resolveTenantCurrency($tenantId),
         ];
     }
 
@@ -290,6 +296,74 @@ class TenantMeteringService
         }
 
         return $alerts;
+    }
+
+    /**
+     * Gets the unit price for a metric, optionally per-tenant tier.
+     *
+     * Delegates to FairUsePolicyService when available; falls back to
+     * built-in defaults. The FALLBACK_UNIT_PRICES constant is used only
+     * when the FairUsePolicy ConfigEntity is not yet installed.
+     *
+     * @param string $metric
+     *   The metric key (e.g. 'ai_tokens', 'api_calls').
+     * @param int|string $tenantId
+     *   The tenant ID (used to resolve tier for tier-specific pricing).
+     *
+     * @return float
+     *   Unit price in EUR.
+     */
+    public function getUnitPrice(string $metric, int|string $tenantId = 0): float {
+        if ($this->fairUsePolicyService) {
+            try {
+                $tier = $this->resolveTenantTier($tenantId);
+                return $this->fairUsePolicyService->getUnitPrice($metric, $tier);
+            }
+            catch (\Throwable) {
+                // Fallback below.
+            }
+        }
+
+        return self::FALLBACK_UNIT_PRICES[$metric] ?? 0.0;
+    }
+
+    /**
+     * Resolves the tier key for a tenant.
+     */
+    protected function resolveTenantTier(int|string $tenantId): string {
+        if (\Drupal::hasService('ecosistema_jaraba_core.tenant_subscription')) {
+            try {
+                $subscription = \Drupal::service('ecosistema_jaraba_core.tenant_subscription');
+                if (method_exists($subscription, 'getTenantTier')) {
+                    return $subscription->getTenantTier((string) $tenantId) ?: 'starter';
+                }
+            }
+            catch (\Throwable) {
+                // Fallback below.
+            }
+        }
+        return 'starter';
+    }
+
+    /**
+     * GAP-CURRENCY: Resolves currency for a specific tenant.
+     *
+     * @param int|string $tenantId
+     *   The tenant ID.
+     *
+     * @return string
+     *   ISO 4217 currency code.
+     */
+    protected function resolveTenantCurrency(int|string $tenantId): string {
+        if (\Drupal::hasService('ecosistema_jaraba_core.currency')) {
+            try {
+                return \Drupal::service('ecosistema_jaraba_core.currency')->getTenantCurrency($tenantId);
+            }
+            catch (\Throwable) {
+                // Fallback below.
+            }
+        }
+        return 'EUR';
     }
 
 }

@@ -37,7 +37,7 @@ jaraba_groups.api.groups.join:
   methods: [POST]
   requirements:
     _permission: 'join collaboration group'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: \d+
   options:
     _format: json
@@ -49,7 +49,7 @@ jaraba_groups.api.groups.leave:
   methods: [POST]
   requirements:
     _permission: 'join collaboration group'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: \d+
   options:
     _format: json

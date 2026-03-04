@@ -1,0 +1,11 @@
+id: formacion_free_enrollments_limit
+label: 'Formacion Free: Matriculas activas'
+vertical: formacion
+plan: free
+feature_key: enrollments_limit
+limit_value: 20
+description: 'Maximo 20 matriculas activas en plan gratuito Formacion.'
+upgrade_message: 'Has alcanzado el limite de 20 matriculas activas. Actualiza a Starter para hasta 100.'
+expected_conversion: 0.35
+weight: 3
+status: true

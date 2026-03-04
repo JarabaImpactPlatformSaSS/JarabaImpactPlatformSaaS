@@ -28,6 +28,7 @@ jaraba_pwa.api.push.unsubscribe:
     _controller: '\Drupal\jaraba_pwa\Controller\PwaApiController::unsubscribe'
   requirements:
     _permission: 'receive push notifications'
+    _csrf_request_header_token: 'TRUE'
   methods: [DELETE]
 
 # ==============================================

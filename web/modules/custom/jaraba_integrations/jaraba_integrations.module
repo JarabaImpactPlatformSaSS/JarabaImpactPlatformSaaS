@@ -113,3 +113,60 @@ function jaraba_integrations_preprocess_html(array &$variables): void {
     }
   }
 }
+
+
+/**
+ * Prepares variables for connector templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_integrations_preprocess_connector(array &$variables): void {
+  $entity = $variables['elements']['#connector'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['connector'] = $entity;
+}
+
+/**
+ * Prepares variables for connector_installation templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_integrations_preprocess_connector_installation(array &$variables): void {
+  $entity = $variables['elements']['#connector_installation'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['connector_installation'] = $entity;
+}
+
+/**
+ * Prepares variables for oauth_client templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_integrations_preprocess_oauth_client(array &$variables): void {
+  $entity = $variables['elements']['#oauth_client'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['oauth_client'] = $entity;
+}
+
+/**
+ * Prepares variables for webhook_subscription templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_integrations_preprocess_webhook_subscription(array &$variables): void {
+  $entity = $variables['elements']['#webhook_subscription'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['webhook_subscription'] = $entity;
+}

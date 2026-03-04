@@ -1,0 +1,11 @@
+id: jaraba_content_hub_starter_categories_limit
+label: 'Content Hub Starter: Categorias'
+vertical: jaraba_content_hub
+plan: starter
+feature_key: categories_limit
+limit_value: 10
+description: 'Maximo 10 categorias en plan Starter Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 10 categorias. Actualiza a Profesional para hasta 30.'
+expected_conversion: 0.15
+weight: 11
+status: true

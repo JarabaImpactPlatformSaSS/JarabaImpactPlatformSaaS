@@ -245,7 +245,7 @@ jaraba_email.api.lists.create:
   methods: [POST]
   requirements:
     _permission: 'administer email lists'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # --- Suscriptores ---
 
@@ -264,7 +264,7 @@ jaraba_email.api.subscribers.create:
   methods: [POST]
   requirements:
     _permission: 'administer email subscribers'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_email.api.subscribers.unsubscribe:
   path: '/api/v1/email/subscribers/{id}'
@@ -273,6 +273,7 @@ jaraba_email.api.subscribers.unsubscribe:
   methods: [DELETE]
   requirements:
     _permission: 'administer email subscribers'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 # --- Campanas ---
@@ -292,7 +293,7 @@ jaraba_email.api.campaigns.send:
   methods: [POST]
   requirements:
     _permission: 'send email campaigns'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 jaraba_email.api.campaigns.stats:
@@ -331,7 +332,7 @@ jaraba_email.api.sequences.enroll:
   methods: [POST]
   requirements:
     _permission: 'administer email sequences'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 # --- Public Subscribe (Lead Magnets) ---
@@ -356,6 +357,30 @@ jaraba_email.api.webhooks.sendgrid:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+# =============================================================================
+# GAP-UNSUBSCRIBE: Public unsubscribe pages (RFC 8058)
+# =============================================================================
+
+jaraba_email.public_unsubscribe:
+  path: '/email/unsubscribe/{email}/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\PublicUnsubscribeController::confirm'
+    _title: 'Darse de baja'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-f0-9]{64}'
+
+jaraba_email.public_unsubscribe.process:
+  path: '/email/unsubscribe/{email}/{token}'
+  defaults:
+    _controller: '\Drupal\jaraba_email\Controller\PublicUnsubscribeController::process'
+    _title: 'Confirmar baja'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    token: '[a-f0-9]{64}'
 
 entity.email_campaign.settings:
   path: '/admin/structure/email-campaign/settings'

@@ -6,6 +6,7 @@ namespace Drupal\jaraba_comercio_conecta\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\jaraba_copilot_v2\Service\CopilotBridgeInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -22,13 +23,20 @@ use Psr\Log\LoggerInterface;
  *
  * @see \Drupal\jaraba_ai_agents\Agent\BaseAgent
  */
-class ComercioConectaCopilotBridgeService {
+class ComercioConectaCopilotBridgeService implements CopilotBridgeInterface {
 
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly AccountProxyInterface $currentUser,
     protected readonly LoggerInterface $logger,
   ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getVerticalKey(): string {
+    return 'comercioconecta';
+  }
 
   /**
    * Obtiene contexto relevante del comerciante para el copiloto.

@@ -16,5 +16,7 @@ limits:
   storage_gb: 1
   ai_queries: 50
   productores: 3
+  emails_per_month: 1000
+  api_calls_per_month: 2000
 description: 'Limites por defecto para el tier Starter.'
 status: true

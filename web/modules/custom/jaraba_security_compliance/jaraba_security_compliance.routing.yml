@@ -72,7 +72,7 @@ jaraba_security_compliance.api.risk_assessment:
     _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::createRiskAssessment'
   requirements:
     _permission: 'manage risk assessments'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_security_compliance.api.ens_measures:
@@ -89,7 +89,7 @@ jaraba_security_compliance.api.ens_seed:
     _controller: '\Drupal\jaraba_security_compliance\Controller\ComplianceApiController::seedEnsMeasures'
   requirements:
     _permission: 'administer security compliance'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_security_compliance.api.soc2_controls:

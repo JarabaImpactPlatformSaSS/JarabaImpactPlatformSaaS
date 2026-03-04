@@ -126,3 +126,11 @@ entity.norm_change_alert.settings:
     _title: 'Norm Change Alert settings'
   requirements:
     _permission: 'administer legal knowledge'
+
+entity.legal_norm_relation.settings:
+  path: '/admin/structure/legal-norm-relation/settings'
+  defaults:
+    _form: 'Drupal\jaraba_legal_knowledge\Form\LegalNormRelationSettingsForm'
+    _title: 'Legal Norm Relation settings'
+  requirements:
+    _permission: 'administer legal knowledge'

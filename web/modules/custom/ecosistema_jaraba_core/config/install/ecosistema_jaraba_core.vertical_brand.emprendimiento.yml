@@ -1,0 +1,19 @@
+id: emprendimiento
+label: 'Emprendimiento'
+vertical: emprendimiento
+public_name: 'Jaraba Emprende'
+tagline: 'Impulsa tu negocio desde el primer dia'
+description: 'Suite completa para emprendedores: plan de negocio, herramientas financieras y mentoria.'
+icon_category: vertical
+icon_name: emprendimiento
+primary_color: '#FF8C42'
+secondary_color: '#233D63'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Emprende'
+seo_description: 'Lanza tu negocio con Jaraba Emprende. Plan de negocio, herramientas financieras y mentoria personalizada.'
+schema_org_type: Organization
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.emprendimiento
+enabled: true
+status: true

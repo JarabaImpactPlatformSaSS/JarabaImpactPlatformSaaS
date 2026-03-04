@@ -1,0 +1,61 @@
+# Pilot Programs collection.
+entity.pilot_program.collection:
+  path: '/admin/content/pilot-programs'
+  defaults:
+    _entity_list: 'pilot_program'
+    _title: 'Pilot Programs'
+  requirements:
+    _permission: 'administer pilot programs'
+
+entity.pilot_program.settings:
+  path: '/admin/structure/pilot-program/settings'
+  defaults:
+    _form: 'Drupal\jaraba_pilot_manager\Form\PilotProgramSettingsForm'
+    _title: 'Pilot Program settings'
+  requirements:
+    _permission: 'administer pilot programs'
+
+# Pilot Tenants collection.
+entity.pilot_tenant.collection:
+  path: '/admin/content/pilot-tenants'
+  defaults:
+    _entity_list: 'pilot_tenant'
+    _title: 'Pilot Tenants'
+  requirements:
+    _permission: 'administer pilot programs'
+
+entity.pilot_tenant.settings:
+  path: '/admin/structure/pilot-tenant/settings'
+  defaults:
+    _form: 'Drupal\jaraba_pilot_manager\Form\PilotTenantSettingsForm'
+    _title: 'Pilot Tenant settings'
+  requirements:
+    _permission: 'administer pilot programs'
+
+# Pilot Feedback collection.
+entity.pilot_feedback.collection:
+  path: '/admin/content/pilot-feedback'
+  defaults:
+    _entity_list: 'pilot_feedback'
+    _title: 'Pilot Feedback'
+  requirements:
+    _permission: 'administer pilot programs'
+
+entity.pilot_feedback.settings:
+  path: '/admin/structure/pilot-feedback/settings'
+  defaults:
+    _form: 'Drupal\jaraba_pilot_manager\Form\PilotFeedbackSettingsForm'
+    _title: 'Pilot Feedback settings'
+  requirements:
+    _permission: 'administer pilot programs'
+
+# Pilot Dashboard.
+jaraba_pilot_manager.dashboard:
+  path: '/admin/content/pilot-dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_pilot_manager\Controller\PilotDashboardController::dashboard'
+    _title: 'Pilot Dashboard'
+  requirements:
+    _permission: 'view pilot programs'
+  options:
+    _admin_route: TRUE

@@ -1,0 +1,11 @@
+id: formacion_starter_enrollments_limit
+label: 'Formacion Starter: Matriculas activas'
+vertical: formacion
+plan: starter
+feature_key: enrollments_limit
+limit_value: 100
+description: 'Maximo 100 matriculas activas en plan Starter Formacion.'
+upgrade_message: 'Has alcanzado el limite de 100 matriculas. Actualiza a Profesional para hasta 500.'
+expected_conversion: 0.30
+weight: 13
+status: true

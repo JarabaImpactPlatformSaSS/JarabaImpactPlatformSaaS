@@ -6,6 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Service\AgroConectaFeatureGateService;
+use Drupal\jaraba_copilot_v2\Service\CopilotBridgeInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -16,13 +17,20 @@ use Psr\Log\LoggerInterface;
  *
  * Plan Elevacion AgroConecta Clase Mundial v1 — Fase 2
  */
-class AgroConectaCopilotBridgeService {
+class AgroConectaCopilotBridgeService implements CopilotBridgeInterface {
 
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly ?AgroConectaFeatureGateService $featureGate = NULL,
     protected readonly LoggerInterface $logger,
   ) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getVerticalKey(): string {
+    return 'agroconecta';
   }
 
   /**

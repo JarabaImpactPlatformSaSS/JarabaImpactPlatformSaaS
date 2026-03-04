@@ -283,6 +283,97 @@ class ProgramParticipant extends ContentEntityBase implements EntityOwnerInterfa
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // --- piil_registration_number ---
+    $fields['piil_registration_number'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Numero Registro PIIL'))
+      ->setDescription(t('Numero de registro en el programa PIIL.'))
+      ->setSettings(['max_length' => 64])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'string', 'weight' => 50])
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => 50])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- fundae_group_id ---
+    $fields['fundae_group_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('ID Grupo FUNDAE'))
+      ->setDescription(t('Identificador del grupo formativo FUNDAE.'))
+      ->setSettings(['max_length' => 64])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'string', 'weight' => 51])
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => 51])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- fse_plus_indicator ---
+    $fields['fse_plus_indicator'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Indicador FSE+'))
+      ->setDescription(t('Objetivo Estrategico FSE+.'))
+      ->setSettings([
+        'allowed_values' => [
+          'OE1' => 'OE1 - Acceso al empleo',
+          'OE2' => 'OE2 - Modernizar mercado trabajo',
+          'OE3' => 'OE3 - Educacion y formacion',
+          'OE4' => 'OE4 - Inclusion social',
+        ],
+      ])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'list_default', 'weight' => 52])
+      ->setDisplayOptions('form', ['type' => 'options_select', 'weight' => 52])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- certification_date ---
+    $fields['certification_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Fecha Certificacion'))
+      ->setDescription(t('Fecha de obtencion del certificado.'))
+      ->setSetting('datetime_type', 'date')
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'datetime_default', 'weight' => 53])
+      ->setDisplayOptions('form', ['type' => 'datetime_default', 'weight' => 53])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- certification_type ---
+    $fields['certification_type'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Tipo Certificacion'))
+      ->setSettings([
+        'allowed_values' => [
+          'attendance' => 'Asistencia',
+          'competency' => 'Competencia',
+          'accredited' => 'Acreditada',
+        ],
+      ])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'list_default', 'weight' => 54])
+      ->setDisplayOptions('form', ['type' => 'options_select', 'weight' => 54])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- digital_skills_level ---
+    $fields['digital_skills_level'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Nivel Competencia Digital'))
+      ->setDescription(t('Nivel segun DigComp 2.2.'))
+      ->setSettings([
+        'allowed_values' => [
+          'A1' => 'A1 - Basico',
+          'A2' => 'A2 - Basico avanzado',
+          'B1' => 'B1 - Intermedio',
+          'B2' => 'B2 - Intermedio avanzado',
+          'C1' => 'C1 - Avanzado',
+          'C2' => 'C2 - Muy avanzado',
+        ],
+      ])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'list_default', 'weight' => 55])
+      ->setDisplayOptions('form', ['type' => 'options_select', 'weight' => 55])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- employment_sector ---
+    $fields['employment_sector'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Sector Empleo'))
+      ->setDescription(t('Codigo CNAE del sector de empleo.'))
+      ->setSettings(['max_length' => 10])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'string', 'weight' => 56])
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => 56])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // --- created ---
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de creacion'))

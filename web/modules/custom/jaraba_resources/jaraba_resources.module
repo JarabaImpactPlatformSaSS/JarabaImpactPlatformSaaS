@@ -325,3 +325,46 @@ function _jaraba_resources_create_default_plans(): void {
   
   \Drupal::logger('jaraba_resources')->info('Created @count default membership plans', ['@count' => count($plans)]);
 }
+
+
+/**
+ * Prepares variables for digital_kit templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_resources_preprocess_digital_kit(array &$variables): void {
+  $entity = $variables['elements']['#digital_kit'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['digital_kit'] = $entity;
+}
+
+/**
+ * Prepares variables for membership_plan templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_resources_preprocess_membership_plan(array &$variables): void {
+  $entity = $variables['elements']['#membership_plan'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['membership_plan'] = $entity;
+}
+
+/**
+ * Prepares variables for user_subscription templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_resources_preprocess_user_subscription(array &$variables): void {
+  $entity = $variables['elements']['#user_subscription'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['user_subscription'] = $entity;
+}

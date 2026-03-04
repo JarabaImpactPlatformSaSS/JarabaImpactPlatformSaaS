@@ -7,6 +7,9 @@ services:
       - '@logger.channel.jaraba_andalucia_ei'
       - '@config.factory'
       - '@datetime.time'
+      - '@?jaraba_andalucia_ei.documento_revision_ia'
+      - '@?jaraba_andalucia_ei.adaptive_difficulty'
+      - '@?jaraba_andalucia_ei.mensajeria_integration'
 
   jaraba_andalucia_ei.sto_export:
     class: Drupal\jaraba_andalucia_ei\Service\StoExportService
@@ -78,6 +81,14 @@ services:
       - '@entity_type.manager'
       - '@?jaraba_messaging.messaging'
       - '@logger.channel.jaraba_andalucia_ei'
+
+  # Copilot Bridge: Contexto vertical Andalucia EI para Copilot IA
+  jaraba_andalucia_ei.copilot_bridge:
+    class: Drupal\jaraba_andalucia_ei\Service\AndaluciaEiCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_andalucia_ei'
+      - '@?jaraba_andalucia_ei.copilot_context_provider'
 
   jaraba_andalucia_ei.participante_access_check:
     class: Drupal\jaraba_andalucia_ei\Access\ParticipanteAccessCheck

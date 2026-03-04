@@ -1081,3 +1081,46 @@ function jaraba_andalucia_ei_simple_sitemap_links_alter(array &$links, $sitemap_
     'lastmod' => date('Y-m-d'),
   ];
 }
+
+
+/**
+ * Prepares variables for expediente_documento templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_andalucia_ei_preprocess_expediente_documento(array &$variables): void {
+  $entity = $variables['elements']['#expediente_documento'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['expediente_documento'] = $entity;
+}
+
+/**
+ * Prepares variables for programa_participante_ei templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_andalucia_ei_preprocess_programa_participante_ei(array &$variables): void {
+  $entity = $variables['elements']['#programa_participante_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['programa_participante_ei'] = $entity;
+}
+
+/**
+ * Prepares variables for solicitud_ei templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_andalucia_ei_preprocess_solicitud_ei(array &$variables): void {
+  $entity = $variables['elements']['#solicitud_ei'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['solicitud_ei'] = $entity;
+}

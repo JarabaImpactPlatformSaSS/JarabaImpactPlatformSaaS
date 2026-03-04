@@ -6,7 +6,7 @@ jaraba_mobile.api.device.register:
   methods: [POST]
   requirements:
     _user_is_logged_in: 'TRUE'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_mobile.api.device.unregister:
   path: '/api/v1/mobile/devices/unregister'
@@ -15,7 +15,7 @@ jaraba_mobile.api.device.unregister:
   methods: [DELETE]
   requirements:
     _user_is_logged_in: 'TRUE'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_mobile.api.device.update_token:
   path: '/api/v1/mobile/devices/token'
@@ -24,7 +24,7 @@ jaraba_mobile.api.device.update_token:
   methods: [PUT]
   requirements:
     _user_is_logged_in: 'TRUE'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_mobile.api.device.list:
   path: '/api/v1/mobile/devices'
@@ -42,7 +42,7 @@ jaraba_mobile.api.push.send:
   methods: [POST]
   requirements:
     _permission: 'send push notifications'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_mobile.api.push.batch:
   path: '/api/v1/mobile/push/batch'
@@ -51,7 +51,7 @@ jaraba_mobile.api.push.batch:
   methods: [POST]
   requirements:
     _permission: 'send push notifications'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_mobile.api.push.history:
   path: '/api/v1/mobile/push/history'

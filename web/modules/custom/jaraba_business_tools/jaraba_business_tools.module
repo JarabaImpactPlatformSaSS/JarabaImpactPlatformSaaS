@@ -364,7 +364,7 @@ function _jaraba_business_tools_notify_pending_experiments(): void {
 /**
  * Implements hook_page_attachments_alter().
  *
- * Adds Open Graph meta tags for public business tools pages.
+ * Adds Open Graph meta tags and Schema.org JSON-LD for business tools pages.
  */
 function jaraba_business_tools_page_attachments_alter(array &$attachments): void {
   $route_match = \Drupal::routeMatch();
@@ -394,6 +394,73 @@ function jaraba_business_tools_page_attachments_alter(array &$attachments): void
         'jaraba_bt_' . str_replace(':', '_', $property),
       ];
     }
+
+    // Schema.org Organization JSON-LD (GAP-SCHEMA-8).
+    $siteName = \Drupal::config('system.site')->get('name') ?: 'Jaraba Impact Platform';
+    $siteUrl = \Drupal::request()->getSchemeAndHttpHost();
+
+    $schema = [
+      '@context' => 'https://schema.org',
+      '@type' => 'Organization',
+      'name' => (string) $siteName,
+      'url' => $siteUrl,
+      'description' => (string) $description,
+    ];
+
+    // Tenant-specific data if available.
+    try {
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_context')) {
+        $tenantContext = \Drupal::service('ecosistema_jaraba_core.tenant_context');
+        $group = $tenantContext->getCurrentGroup();
+        if ($group) {
+          $schema['name'] = $group->label() ?: (string) $siteName;
+          if ($group->hasField('field_description') && !$group->get('field_description')->isEmpty()) {
+            $schema['description'] = mb_substr(strip_tags($group->get('field_description')->value), 0, 300);
+          }
+        }
+      }
+    }
+    catch (\Exception $e) {
+      // Graceful degradation: use defaults.
+    }
+
+    // Service offerings.
+    $schema['makesOffer'] = [
+      [
+        '@type' => 'Offer',
+        'itemOffered' => [
+          '@type' => 'Service',
+          'name' => 'Business Model Canvas',
+          'description' => 'Herramienta visual para diseñar modelos de negocio.',
+        ],
+      ],
+      [
+        '@type' => 'Offer',
+        'itemOffered' => [
+          '@type' => 'Service',
+          'name' => 'Diagnóstico Empresarial',
+          'description' => 'Evaluación integral del estado de tu negocio.',
+        ],
+      ],
+      [
+        '@type' => 'Offer',
+        'itemOffered' => [
+          '@type' => 'Service',
+          'name' => 'Proyecciones Financieras',
+          'description' => 'Calculadora de escenarios y métricas clave de negocio.',
+        ],
+      ],
+    ];
+
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#attributes' => ['type' => 'application/ld+json'],
+        '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+      ],
+      'schema_org_organization',
+    ];
   }
 }
 
@@ -415,4 +482,154 @@ function jaraba_business_tools_mail($key, &$message, $params): void {
       $message['body'][] = Url::fromRoute('entity.mvp_hypothesis.edit_form', ['mvp_hypothesis' => $hypothesis->id()])->setAbsolute()->toString();
       break;
   }
+}
+
+/**
+ * Implements template_preprocess_HOOK() for business_model_canvas.
+ *
+ * ENTITY-PREPROCESS-001: Extract canvas data, resolve references.
+ * No entity objects in templates (ZERO-REGION-002).
+ */
+function template_preprocess_business_model_canvas(array &$variables): void {
+  try {
+    /** @var \Drupal\jaraba_business_tools\Entity\BusinessModelCanvas $entity */
+    $entity = $variables['elements']['#business_model_canvas'] ?? NULL;
+    if (!$entity) {
+      return;
+    }
+
+    // Primitives.
+    $canvas = [
+      'id' => $entity->id(),
+      'label' => $entity->label() ?? '',
+      'user_id' => NULL,
+      'created' => $entity->get('created')->value ?? 0,
+      'changed' => $entity->get('changed')->value ?? 0,
+      'status' => $entity->get('status')->value ?? 'draft',
+    ];
+
+    // Additional metadata fields.
+    $metaFields = [
+      'description', 'sector', 'business_stage', 'version',
+      'completeness_score', 'coherence_score', 'is_template',
+      'last_ai_analysis', 'seo_slug',
+    ];
+    foreach ($metaFields as $field) {
+      if ($entity->hasField($field)) {
+        $canvas[$field] = $entity->get($field)->value;
+      }
+    }
+
+    // Extract BMC 9 canvas section fields.
+    $sections = [
+      'key_partners', 'key_activities', 'key_resources',
+      'value_propositions', 'customer_relationships', 'channels',
+      'customer_segments', 'cost_structure', 'revenue_streams',
+    ];
+    foreach ($sections as $section) {
+      if ($entity->hasField($section)) {
+        $canvas[$section] = $entity->get($section)->value ?? '';
+      }
+    }
+
+    // Resolve owner (user entity) for display name.
+    if ($entity->hasField('user_id') && !$entity->get('user_id')->isEmpty()) {
+      $owner = $entity->get('user_id')->entity;
+      if ($owner) {
+        $canvas['user_id'] = (int) $owner->id();
+        $canvas['owner_name'] = $owner->getDisplayName();
+      }
+    }
+
+    $variables['canvas'] = $canvas;
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_business_tools')->error(
+      'Error in template_preprocess_business_model_canvas: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+  }
+}
+
+/**
+ * Implements template_preprocess_HOOK() for financial_projection.
+ *
+ * ENTITY-PREPROCESS-001: Extract financial projection data.
+ */
+function template_preprocess_financial_projection(array &$variables): void {
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $entity = $variables['elements']['#financial_projection'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $variables['projection'] = [
+    'id' => $entity->id(),
+    'title' => $entity->label() ?? '',
+    'status' => $entity->get('status')->value ?? 'draft',
+    'created' => $entity->get('created')->value ?? 0,
+  ];
+
+  // Extract financial fields safely.
+  $fields = [
+    'scenario_type', 'period_months', 'initial_investment',
+    'monthly_revenue', 'monthly_costs', 'break_even_month',
+  ];
+
+  foreach ($fields as $field) {
+    if ($entity->hasField($field)) {
+      $variables['projection'][$field] = $entity->get($field)->value ?? '';
+    }
+  }
+
+  // Owner.
+  if ($entity->hasField('uid') && !$entity->get('uid')->isEmpty()) {
+    $owner = $entity->get('uid')->entity;
+    if ($owner) {
+      $variables['projection']['owner_name'] = $owner->getDisplayName();
+    }
+  }
+}
+
+
+/**
+ * Prepares variables for canvas_block templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_business_tools_preprocess_canvas_block(array &$variables): void {
+  $entity = $variables['elements']['#canvas_block'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['canvas_block'] = $entity;
+}
+
+/**
+ * Prepares variables for canvas_version templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_business_tools_preprocess_canvas_version(array &$variables): void {
+  $entity = $variables['elements']['#canvas_version'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['canvas_version'] = $entity;
+}
+
+/**
+ * Prepares variables for mvp_hypothesis templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_business_tools_preprocess_mvp_hypothesis(array &$variables): void {
+  $entity = $variables['elements']['#mvp_hypothesis'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mvp_hypothesis'] = $entity;
 }

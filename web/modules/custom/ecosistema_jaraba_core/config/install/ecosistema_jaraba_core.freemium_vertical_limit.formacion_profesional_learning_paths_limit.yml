@@ -1,0 +1,11 @@
+id: formacion_profesional_learning_paths_limit
+label: 'Formacion Profesional: Rutas de aprendizaje'
+vertical: formacion
+plan: profesional
+feature_key: learning_paths_limit
+limit_value: 20
+description: 'Maximo 20 rutas de aprendizaje en plan Profesional Formacion.'
+upgrade_message: 'Has alcanzado el limite de 20 rutas. Actualiza a Business para rutas ilimitadas.'
+expected_conversion: 0.15
+weight: 21
+status: true

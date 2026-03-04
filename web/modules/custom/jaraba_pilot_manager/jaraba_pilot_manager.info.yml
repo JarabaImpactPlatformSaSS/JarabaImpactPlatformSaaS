@@ -1,0 +1,15 @@
+name: 'Jaraba Pilot Manager'
+type: module
+description: 'Gestion de programas piloto: evaluacion, conversion y feedback de tenants en fase de prueba.'
+package: Jaraba
+core_version_requirement: ^11
+php: 8.4
+dependencies:
+  - drupal:system
+  - drupal:user
+  - drupal:field
+  - drupal:text
+  - drupal:options
+  - drupal:datetime
+  - drupal:views
+  - ecosistema_jaraba_core:ecosistema_jaraba_core

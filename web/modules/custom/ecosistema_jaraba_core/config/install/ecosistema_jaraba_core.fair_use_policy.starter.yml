@@ -1,0 +1,45 @@
+id: starter
+label: 'Fair Use Policy - Starter'
+tier: starter
+warning_thresholds:
+  - 70
+  - 85
+  - 95
+enforcement_actions:
+  _default:
+    warning: warn
+    critical: soft_block
+    exceeded: hard_block
+  ai_queries:
+    warning: warn
+    critical: soft_block
+    exceeded: hard_block
+  copilot_uses_per_month:
+    warning: warn
+    critical: soft_block
+    exceeded: hard_block
+  storage_gb:
+    warning: warn
+    critical: warn
+    exceeded: hard_block
+  emails_per_month:
+    warning: warn
+    critical: soft_block
+    exceeded: hard_block
+  api_calls_per_month:
+    warning: warn
+    critical: soft_block
+    exceeded: hard_block
+overage_unit_prices:
+  api_calls: 0.0001
+  ai_tokens: 0.00002
+  storage_mb: 0.001
+  orders: 0.50
+  products: 0.10
+  customers: 0.05
+  emails_sent: 0.001
+  bandwidth_gb: 0.05
+burst_tolerance_pct: 0
+grace_period_hours: 6
+description: 'Starter: sin tolerancia burst, bloqueo duro al exceder, 6h de gracia.'
+status: true

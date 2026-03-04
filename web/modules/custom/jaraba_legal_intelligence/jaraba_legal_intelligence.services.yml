@@ -132,6 +132,7 @@ services:
     class: Drupal\jaraba_legal_intelligence\LegalCoherence\LegalCoherenceValidatorService
     arguments:
       - '@logger.channel.jaraba_legal_intelligence'
+      - '@?entity_type.manager'
 
   # CAPA 7: Verifier — verificacion semantica profunda via LLM.
   jaraba_legal_intelligence.legal_coherence_verifier:
@@ -141,6 +142,7 @@ services:
       - '@?jaraba_ai_agents.model_router'
       - '@logger.channel.jaraba_legal_intelligence'
       - '@?jaraba_ai_agents.observability'
+      - '@?entity_type.manager'
 
   # CAPA 8: Disclaimer Enforcement — no-eliminable.
   jaraba_legal_intelligence.legal_disclaimer_enforcement:

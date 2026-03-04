@@ -1,0 +1,8 @@
+administer notifications:
+  title: 'Administer notifications'
+  description: 'Full access to notification entities and settings.'
+  restrict access: true
+
+manage own notification preferences:
+  title: 'Manage own notification preferences'
+  description: 'Allows users to configure their notification delivery channels.'

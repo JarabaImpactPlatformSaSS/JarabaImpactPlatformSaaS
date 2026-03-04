@@ -63,6 +63,19 @@ services:
       - '@current_user'
       - '@logger.channel.jaraba_copilot_v2'
 
+  # GAP-COPILOT-5: Registry that collects vertical-specific bridges.
+  jaraba_copilot_v2.bridge_registry:
+    class: Drupal\jaraba_copilot_v2\Service\CopilotBridgeRegistry
+    calls:
+      - [addBridge, ['@?jaraba_candidate.copilot_bridge']]
+      - [addBridge, ['@?jaraba_business_tools.copilot_bridge']]
+      - [addBridge, ['@?jaraba_content_hub.copilot_bridge']]
+      - [addBridge, ['@?jaraba_lms.copilot_bridge']]
+      - [addBridge, ['@?jaraba_andalucia_ei.copilot_bridge']]
+      - [addBridge, ['@?jaraba_comercio_conecta.copilot_bridge']]
+      - [addBridge, ['@?jaraba_agroconecta_core.copilot_bridge']]
+      - [addBridge, ['@?ecosistema_jaraba_core.serviciosconecta_copilot_bridge']]
+
   jaraba_copilot_v2.copilot_orchestrator:
     class: Drupal\jaraba_copilot_v2\Service\CopilotOrchestratorService
     arguments:
@@ -78,6 +91,14 @@ services:
       - '@jaraba_self_discovery.context'
       - '@ecosistema_jaraba_core.tenant_context'
       - '@?jaraba_copilot_v2.semantic_cache'
+      - '@?jaraba_copilot_v2.copilot_session'
+      - '@?jaraba_copilot_v2.claude_api'
+      - '@?jaraba_copilot_v2.value_proposition_canvas'
+      - '@?jaraba_copilot_v2.business_pattern_detector'
+      - '@?jaraba_copilot_v2.pivot_detector'
+      - '@?jaraba_copilot_v2.customer_discovery_gamification'
+    calls:
+      - [setBridgeRegistry, ['@jaraba_copilot_v2.bridge_registry']]
 
   # GAP-01: Streaming real token-by-token via ChatInput::setStreamedOutput()
   jaraba_copilot_v2.streaming_orchestrator:

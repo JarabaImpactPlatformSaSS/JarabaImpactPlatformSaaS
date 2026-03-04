@@ -1,0 +1,11 @@
+id: jaraba_content_hub_business_authors_limit
+label: 'Content Hub Business: Autores'
+vertical: jaraba_content_hub
+plan: business
+feature_key: authors_limit
+limit_value: -1
+description: 'Autores ilimitados en plan Business Content Hub.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 32
+status: true

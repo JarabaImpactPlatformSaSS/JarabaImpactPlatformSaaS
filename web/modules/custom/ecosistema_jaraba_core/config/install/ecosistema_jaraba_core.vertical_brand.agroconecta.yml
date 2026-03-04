@@ -1,0 +1,19 @@
+id: agroconecta
+label: 'AgroConecta'
+vertical: agroconecta
+public_name: 'Jaraba Agro'
+tagline: 'Del campo a tu mesa, sin intermediarios'
+description: 'Plataforma de venta directa para productores agroalimentarios.'
+icon_category: vertical
+icon_name: agroconecta
+primary_color: '#2D6A4F'
+secondary_color: '#FF8C42'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Agro'
+seo_description: 'Conecta directamente con productores locales. Productos frescos del campo a tu mesa.'
+schema_org_type: LocalBusiness
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.agroconecta
+enabled: true
+status: true

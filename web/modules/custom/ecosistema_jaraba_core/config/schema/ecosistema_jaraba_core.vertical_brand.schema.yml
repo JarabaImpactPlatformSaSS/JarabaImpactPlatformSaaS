@@ -1,0 +1,65 @@
+# Schema for VerticalBrandConfig entity (Item 1 — Submarinas con Periscopio).
+ecosistema_jaraba_core.vertical_brand.*:
+  type: config_entity
+  label: 'Vertical Brand configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    vertical:
+      type: string
+      label: 'Vertical machine name'
+    public_name:
+      type: string
+      label: 'Public name'
+    tagline:
+      type: string
+      label: 'Tagline'
+    description:
+      type: text
+      label: 'Description'
+    icon_category:
+      type: string
+      label: 'Icon category'
+    icon_name:
+      type: string
+      label: 'Icon name'
+    primary_color:
+      type: string
+      label: 'Primary color hex'
+    secondary_color:
+      type: string
+      label: 'Secondary color hex'
+    hero_image_url:
+      type: string
+      label: 'Hero image URL'
+    og_image_url:
+      type: string
+      label: 'OpenGraph image URL'
+    seo_title_template:
+      type: string
+      label: 'SEO title template'
+    seo_description:
+      type: text
+      label: 'SEO meta description'
+    schema_org_type:
+      type: string
+      label: 'Schema.org type'
+    revelation_level:
+      type: string
+      label: 'Default revelation level'
+    landing_route:
+      type: string
+      label: 'Landing route name'
+    enabled:
+      type: boolean
+      label: 'Enabled'
+    status:
+      type: boolean
+      label: 'Status'

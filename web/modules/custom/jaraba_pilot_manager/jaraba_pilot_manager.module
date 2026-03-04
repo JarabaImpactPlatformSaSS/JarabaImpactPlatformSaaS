@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Jaraba Pilot Manager.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function jaraba_pilot_manager_theme() {
+  return [];
+}
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * Dispatches ECA events when pilot status changes.
+ */
+function jaraba_pilot_manager_entity_presave(EntityInterface $entity) {
+  // Dispatch events on pilot program status changes.
+  if ($entity->getEntityTypeId() === 'pilot_program' && !$entity->isNew()) {
+    $original = $entity->original ?? NULL;
+    if ($original) {
+      $oldStatus = $original->get('status')->value ?? '';
+      $newStatus = $entity->get('status')->value ?? '';
+      if ($oldStatus !== $newStatus && $newStatus === 'active') {
+        _jaraba_pilot_manager_dispatch_event('jaraba_pilot_manager.pilot_started', $entity);
+      }
+      if ($oldStatus !== $newStatus && $newStatus === 'completed') {
+        _jaraba_pilot_manager_dispatch_event('jaraba_pilot_manager.pilot_completed', $entity);
+      }
+    }
+  }
+
+  // Dispatch events on pilot tenant status changes.
+  if ($entity->getEntityTypeId() === 'pilot_tenant' && !$entity->isNew()) {
+    $original = $entity->original ?? NULL;
+    if ($original) {
+      $oldStatus = $original->get('status')->value ?? '';
+      $newStatus = $entity->get('status')->value ?? '';
+      if ($oldStatus !== $newStatus && $newStatus === 'converted') {
+        _jaraba_pilot_manager_dispatch_event('jaraba_pilot_manager.pilot_converted', $entity);
+      }
+      if ($oldStatus !== $newStatus && $newStatus === 'abandoned') {
+        _jaraba_pilot_manager_dispatch_event('jaraba_pilot_manager.pilot_abandoned', $entity);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function jaraba_pilot_manager_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'pilot_feedback') {
+    _jaraba_pilot_manager_dispatch_event('jaraba_pilot_manager.pilot_feedback_submitted', $entity);
+  }
+}
+
+/**
+ * Helper to dispatch events.
+ */
+function _jaraba_pilot_manager_dispatch_event(string $event_name, EntityInterface $entity): void {
+  try {
+    if (\Drupal::hasService('event_dispatcher')) {
+      $event = new \Drupal\Component\EventDispatcher\Event();
+      \Drupal::service('event_dispatcher')->dispatch($event, $event_name);
+    }
+  }
+  catch (\Throwable) {
+    // Event dispatch should never break entity operations.
+  }
+}

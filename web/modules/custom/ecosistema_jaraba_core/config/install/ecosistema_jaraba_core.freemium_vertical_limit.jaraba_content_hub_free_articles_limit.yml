@@ -1,0 +1,11 @@
+id: jaraba_content_hub_free_articles_limit
+label: 'Content Hub Free: Articulos'
+vertical: jaraba_content_hub
+plan: free
+feature_key: articles_limit
+limit_value: 10
+description: 'Maximo 10 articulos publicados en plan gratuito Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 10 articulos. Actualiza a Starter para publicar hasta 50.'
+expected_conversion: 0.30
+weight: 0
+status: true

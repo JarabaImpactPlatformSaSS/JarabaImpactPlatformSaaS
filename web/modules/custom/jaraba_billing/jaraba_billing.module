@@ -20,5 +20,11 @@ function jaraba_billing_theme(): array {
       ],
       'template' => 'financial-dashboard',
     ],
+    'revenue_dashboard' => [
+      'variables' => [
+        'snapshot' => [],
+      ],
+      'template' => 'revenue-dashboard',
+    ],
   ];
 }

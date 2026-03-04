@@ -93,3 +93,32 @@ function jaraba_matching_handle_entity_change(EntityInterface $entity): void {
     );
   }
 }
+
+
+/**
+ * Prepares variables for match_feedback templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_matching_preprocess_match_feedback(array &$variables): void {
+  $entity = $variables['elements']['#match_feedback'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['match_feedback'] = $entity;
+}
+
+/**
+ * Prepares variables for match_result templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_matching_preprocess_match_result(array &$variables): void {
+  $entity = $variables['elements']['#match_result'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['match_result'] = $entity;
+}

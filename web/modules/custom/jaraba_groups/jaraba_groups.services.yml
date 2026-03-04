@@ -16,6 +16,9 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_groups'
+      - '@?jaraba_groups.group_service'
+      - '@?jaraba_groups.activity_service'
+      - '@?jaraba_groups.notification_service'
 
   jaraba_groups.activity_service:
     class: Drupal\jaraba_groups\Service\ActivityService

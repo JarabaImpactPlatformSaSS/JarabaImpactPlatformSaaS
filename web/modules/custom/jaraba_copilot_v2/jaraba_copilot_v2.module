@@ -545,3 +545,74 @@ function _jaraba_copilot_v2_ensure_crm_contact(int $userId): ?int {
     return NULL;
   }
 }
+
+
+/**
+ * Prepares variables for entrepreneur_learning templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_copilot_v2_preprocess_entrepreneur_learning(array &$variables): void {
+  $entity = $variables['elements']['#entrepreneur_learning'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['entrepreneur_learning'] = $entity;
+}
+
+/**
+ * Prepares variables for entrepreneur_profile templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_copilot_v2_preprocess_entrepreneur_profile(array &$variables): void {
+  $entity = $variables['elements']['#entrepreneur_profile'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['entrepreneur_profile'] = $entity;
+}
+
+/**
+ * Prepares variables for experiment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_copilot_v2_preprocess_experiment(array &$variables): void {
+  $entity = $variables['elements']['#experiment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['experiment'] = $entity;
+}
+
+/**
+ * Prepares variables for field_exit templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_copilot_v2_preprocess_field_exit(array &$variables): void {
+  $entity = $variables['elements']['#field_exit'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['field_exit'] = $entity;
+}
+
+/**
+ * Prepares variables for hypothesis templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_copilot_v2_preprocess_hypothesis(array &$variables): void {
+  $entity = $variables['elements']['#hypothesis'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['hypothesis'] = $entity;
+}

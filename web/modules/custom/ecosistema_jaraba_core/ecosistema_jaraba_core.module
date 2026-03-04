@@ -246,6 +246,43 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
       'path' => $path . '/templates',
     ],
 
+    // GAP-API-KEYS: API key self-service management page.
+    'api_key_management' => [
+      'variables' => [
+        'keys' => [],
+        'scopes' => [],
+      ],
+      'template' => 'api-key-management',
+      'path' => $path . '/templates',
+    ],
+
+    // GAP-SEARCH-FACET: Global cross-vertical search page.
+    'global_search_page' => [
+      'variables' => [
+        'query' => '',
+        'results' => [],
+        'facets' => [],
+        'total' => 0,
+        'current_page' => 1,
+        'total_pages' => 0,
+        'active_vertical' => NULL,
+        'available_verticals' => [],
+      ],
+      'template' => 'global-search-page',
+      'path' => $path . '/templates',
+    ],
+
+    // GAP-QUEUE-MON: Queue monitoring dashboard.
+    'queue_monitoring_dashboard' => [
+      'variables' => [
+        'summary' => [],
+        'queues' => [],
+        'queues_by_module' => [],
+      ],
+      'template' => 'queue-monitoring-dashboard',
+      'path' => $path . '/templates',
+    ],
+
     // Dashboard FinOps (Cost Optimization)
     // Ruta: /admin/finops
     // Muestra costes por tenant, proyecciones y recomendaciones de ahorro
@@ -1180,6 +1217,12 @@ function ecosistema_jaraba_core_mail($key, &$message, $params) {
       $message['body'][] = t('Jaraba Impact Platform - Formulario de Contacto');
       break;
 
+    // GAP-EMAIL-VERIFY: Fallback plain text verification email.
+    case 'email_verification':
+      $message['subject'] = $params['subject'] ?? (string) t('Verifica tu email — Jaraba');
+      $message['body'][] = $params['body'] ?? '';
+      break;
+
     // =========================================================================
     // LEAD MAGNET EMAILS (F3 Doc 178)
     // =========================================================================
@@ -1575,6 +1618,26 @@ function ecosistema_jaraba_core_cron() {
 
   // 9. Tareas extendidas: health checks, costes IA periódicos, verificaciones 6h.
   _ecosistema_jaraba_core_cron_extended();
+
+  // 10. GAP-EMAIL-VERIFY: Cleanup expired email verification tokens.
+  if (\Drupal::hasService('ecosistema_jaraba_core.email_verification')) {
+    try {
+      $deleted = \Drupal::service('ecosistema_jaraba_core.email_verification')
+        ->cleanupExpiredTokens();
+      if ($deleted > 0) {
+        \Drupal::logger('ecosistema_jaraba_core')->info(
+          'Email verification: @count expired tokens cleaned up.',
+          ['@count' => $deleted]
+        );
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('ecosistema_jaraba_core')->error(
+        'Email verification cleanup error: @message',
+        ['@message' => $e->getMessage()]
+      );
+    }
+  }
 }
 
 /**
@@ -2850,6 +2913,21 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
       }
     }
 
+    // 5. Email verification (GAP-EMAIL-VERIFY, PRESAVE-RESILIENCE-001).
+    if (\Drupal::hasService('ecosistema_jaraba_core.email_verification')) {
+      try {
+        $emailVerification = \Drupal::service('ecosistema_jaraba_core.email_verification');
+        $token = $emailVerification->generateToken($account);
+        $emailVerification->sendVerificationEmail($account, $token);
+      }
+      catch (\Throwable $e) {
+        $logger->warning('Email verification failed for @uid: @error', [
+          '@uid' => $account->id(),
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
     $logger->info('USR-001: Usuario @uid registrado. Avatar: @avatar, Vertical: @vertical, Source: @source', [
       '@uid' => $account->id(),
       '@avatar' => $avatarType,
@@ -2857,10 +2935,64 @@ function ecosistema_jaraba_core_user_insert(\Drupal\user\UserInterface $account)
       '@source' => $detectionSource,
     ]);
   }
-  catch (\Exception $e) {
+  catch (\Throwable $e) {
+    // UPDATE-HOOK-CATCH-001: \Throwable catches both \Exception and \Error (TypeError in PHP 8.4).
     $logger->error('Error en hook_user_insert: @error', [
       '@error' => $e->getMessage(),
     ]);
+  }
+}
+
+/**
+ * Implements hook_user_presave().
+ *
+ * GAP-EMAIL-VERIFY: Reset email verification when email changes.
+ * If the user's email is modified, any previous verification is invalidated
+ * and a new verification email is sent (PRESAVE-RESILIENCE-001).
+ */
+function ecosistema_jaraba_core_user_presave(\Drupal\user\UserInterface $account): void {
+  // Only act on existing users (not new accounts — hook_user_insert handles that).
+  if ($account->isNew()) {
+    return;
+  }
+
+  // Detect email change by comparing with original.
+  $originalEmail = $account->original?->getEmail() ?? '';
+  $newEmail = $account->getEmail() ?? '';
+
+  if ($originalEmail === $newEmail || empty($newEmail)) {
+    return;
+  }
+
+  if (\Drupal::hasService('ecosistema_jaraba_core.email_verification')) {
+    try {
+      $emailVerification = \Drupal::service('ecosistema_jaraba_core.email_verification');
+
+      // Reset verification status for this user.
+      $emailVerification->resetVerification((int) $account->id());
+
+      // Generate new token and send verification email.
+      $token = $emailVerification->generateToken($account);
+      $emailVerification->sendVerificationEmail($account, $token);
+
+      \Drupal::logger('ecosistema_jaraba_core')->info(
+        'Email changed for uid @uid (@old → @new). Verification reset, new email sent.',
+        [
+          '@uid' => $account->id(),
+          '@old' => $originalEmail,
+          '@new' => $newEmail,
+        ]
+      );
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('ecosistema_jaraba_core')->warning(
+        'Email verification reset failed for uid @uid: @error',
+        [
+          '@uid' => $account->id(),
+          '@error' => $e->getMessage(),
+        ]
+      );
+    }
   }
 }
 
@@ -3935,4 +4067,103 @@ function _ecosistema_jaraba_core_review_webhook_trigger(\Drupal\Core\Entity\Enti
       ['@type' => $entity->getEntityTypeId(), '@id' => $entity->id(), '@msg' => $e->getMessage()]
     );
   }
+}
+
+
+/**
+ * Prepares variables for alert_rule templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_alert_rule(array &$variables): void {
+  $entity = $variables['elements']['#alert_rule'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['alert_rule'] = $entity;
+}
+
+/**
+ * Prepares variables for impersonation_audit_log templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_impersonation_audit_log(array &$variables): void {
+  $entity = $variables['elements']['#impersonation_audit_log'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['impersonation_audit_log'] = $entity;
+}
+
+/**
+ * Prepares variables for pricing_rule templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_pricing_rule(array &$variables): void {
+  $entity = $variables['elements']['#pricing_rule'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['pricing_rule'] = $entity;
+}
+
+/**
+ * Prepares variables for saas_plan templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_saas_plan(array &$variables): void {
+  $entity = $variables['elements']['#saas_plan'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['saas_plan'] = $entity;
+}
+
+/**
+ * Prepares variables for scheduled_report templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_scheduled_report(array &$variables): void {
+  $entity = $variables['elements']['#scheduled_report'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['scheduled_report'] = $entity;
+}
+
+/**
+ * Prepares variables for tenant templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_tenant(array &$variables): void {
+  $entity = $variables['elements']['#tenant'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['tenant'] = $entity;
+}
+
+/**
+ * Prepares variables for vertical templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function ecosistema_jaraba_core_preprocess_vertical(array &$variables): void {
+  $entity = $variables['elements']['#vertical'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['vertical'] = $entity;
 }

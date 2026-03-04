@@ -254,3 +254,46 @@ function jaraba_sepe_teleformacion_cron(): void {
     );
   }
 }
+
+
+/**
+ * Prepares variables for sepe_accion_formativa templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_sepe_teleformacion_preprocess_sepe_accion_formativa(array &$variables): void {
+  $entity = $variables['elements']['#sepe_accion_formativa'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sepe_accion_formativa'] = $entity;
+}
+
+/**
+ * Prepares variables for sepe_centro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_sepe_teleformacion_preprocess_sepe_centro(array &$variables): void {
+  $entity = $variables['elements']['#sepe_centro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sepe_centro'] = $entity;
+}
+
+/**
+ * Prepares variables for sepe_participante templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_sepe_teleformacion_preprocess_sepe_participante(array &$variables): void {
+  $entity = $variables['elements']['#sepe_participante'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sepe_participante'] = $entity;
+}

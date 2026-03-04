@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\jaraba_copilot_v2\Service\CopilotBridgeInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -15,12 +16,19 @@ use Psr\Log\LoggerInterface;
  *
  * Plan Elevacion ServiciosConecta Clase Mundial v1 — Fase 2.
  */
-class ServiciosConectaCopilotBridgeService {
+class ServiciosConectaCopilotBridgeService implements CopilotBridgeInterface {
 
   public function __construct(
     protected readonly EntityTypeManagerInterface $entityTypeManager,
     protected readonly LoggerInterface $logger,
   ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getVerticalKey(): string {
+    return 'serviciosconecta';
+  }
 
   /**
    * Obtiene el contexto vertical para inyectar en el copilot.

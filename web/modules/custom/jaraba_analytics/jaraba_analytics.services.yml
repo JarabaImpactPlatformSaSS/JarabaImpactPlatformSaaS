@@ -83,3 +83,36 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_analytics'
 
+  # Pre-PMF Metrics (Item 2)
+  jaraba_analytics.activation_tracking:
+    class: Drupal\jaraba_analytics\Service\ActivationTrackingService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+
+  jaraba_analytics.retention_calculator:
+    class: Drupal\jaraba_analytics\Service\RetentionCalculatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
+  jaraba_analytics.nps_survey:
+    class: Drupal\jaraba_analytics\Service\NpsSurveyService
+    arguments:
+      - '@entity_type.manager'
+
+  jaraba_analytics.kill_criteria_alert:
+    class: Drupal\jaraba_analytics\Service\KillCriteriaAlertService
+    arguments:
+      - '@config.factory'
+      - '@logger.channel.jaraba_analytics'
+
+  jaraba_analytics.product_metrics_aggregator:
+    class: Drupal\jaraba_analytics\Service\ProductMetricsAggregatorService
+    arguments:
+      - '@jaraba_analytics.activation_tracking'
+      - '@jaraba_analytics.retention_calculator'
+      - '@jaraba_analytics.nps_survey'
+      - '@jaraba_analytics.kill_criteria_alert'
+      - '@entity_type.manager'
+

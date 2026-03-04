@@ -239,12 +239,82 @@ jobs:
           fi
 
   # ===========================================
-  # JOB 5: FITNESS REPORT
+  # JOB 5: SERVICE & TENANT INTEGRITY
+  # ===========================================
+  service-integrity:
+    name: 🔗 Service & Tenant Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: Orphaned services check (SERVICE-ORPHAN-001)
+        id: orphan-check
+        run: |
+          echo "## 🔗 Service Integrity Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          php scripts/validation/validate-service-consumers.php 2>&1 | tee orphan-output.txt
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ **No orphaned services**" >> $GITHUB_STEP_SUMMARY
+          else
+            ORPHAN_COUNT=$(grep "orphaned service" orphan-output.txt | grep -oP '\d+' | head -1)
+            echo "⚠️ **$ORPHAN_COUNT orphaned service(s) found**" >> $GITHUB_STEP_SUMMARY
+          fi
+        continue-on-error: true
+
+      - name: Tenant isolation check (TENANT-CHECK-001)
+        id: tenant-check
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔒 Tenant Isolation Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          php scripts/validation/validate-tenant-isolation.php 2>&1 | tee tenant-output.txt
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ **All tenant entities have isolation checks**" >> $GITHUB_STEP_SUMMARY
+          else
+            LEAK_COUNT=$(grep "potential tenant isolation" tenant-output.txt | grep -oP '\d+' | head -1)
+            echo "⚠️ **$LEAK_COUNT potential tenant isolation gap(s)**" >> $GITHUB_STEP_SUMMARY
+          fi
+        continue-on-error: true
+
+      - name: Asset freshness check (ASSET-FRESHNESS-001)
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎨 Asset Freshness Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if php scripts/validation/validate-compiled-assets.php 2>&1; then
+            echo "✅ **All compiled assets are fresh**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Stale compiled assets detected**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Container dependencies check (CONTAINER-DEPS-001)
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔌 Container Dependencies" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if php scripts/validation/validate-container-deps.php 2>&1; then
+            echo "✅ **All service dependencies resolve**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Broken container dependencies detected**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  # ===========================================
+  # JOB 6: FITNESS REPORT
   # ===========================================
   fitness-report:
     name: 📊 Fitness Report
     runs-on: ubuntu-latest
-    needs: [phpstan, dependency-freshness, module-structure, architecture-patterns]
+    needs: [phpstan, dependency-freshness, module-structure, architecture-patterns, service-integrity]
     if: always()
     
     steps:
@@ -264,6 +334,7 @@ jobs:
           echo "| Dependency Freshness | ${{ needs.dependency-freshness.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Module Structure | ${{ needs.module-structure.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Architecture Patterns | ${{ needs.architecture-patterns.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Service & Tenant Integrity | ${{ needs.service-integrity.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Overall status

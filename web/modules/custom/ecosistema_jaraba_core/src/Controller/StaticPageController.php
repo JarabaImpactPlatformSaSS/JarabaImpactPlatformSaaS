@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\ecosistema_jaraba_core\Controller;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 
 /**
@@ -35,6 +36,20 @@ class StaticPageController extends ControllerBase {
   }
 
   /**
+   * Sanitizes admin-provided HTML content.
+   *
+   * AUDIT-SEC-003: Even though content comes from trusted admin settings,
+   * we sanitize with Xss::filterAdmin() before passing to templates
+   * that use |raw. This prevents stored XSS if admin config is compromised.
+   */
+  protected function sanitizeContent(string $content): string {
+    if (empty($content)) {
+      return '';
+    }
+    return Xss::filterAdmin($content);
+  }
+
+  /**
    * Renders the /contacto page.
    *
    * @return array
@@ -45,7 +60,7 @@ class StaticPageController extends ControllerBase {
 
     return [
       '#theme' => 'info_page_contact',
-      '#content' => $config['contact_content'] ?? '',
+      '#content' => $this->sanitizeContent($config['contact_content'] ?? ''),
       '#contact_email' => $config['contact_email'] ?? 'info@jarabaimpact.com',
       '#contact_phone' => $config['contact_phone'] ?? '+34 623 174 304',
       '#contact_address' => $config['contact_address'] ?? '',
@@ -67,7 +82,7 @@ class StaticPageController extends ControllerBase {
 
     return [
       '#theme' => 'info_page_about',
-      '#content' => $config['about_content'] ?? '',
+      '#content' => $this->sanitizeContent($config['about_content'] ?? ''),
       '#cache' => [
         'tags' => ['config:ecosistema_jaraba_theme.settings'],
         'max-age' => 3600,
@@ -88,7 +103,7 @@ class StaticPageController extends ControllerBase {
       '#theme' => 'legal_page',
       '#page_type' => 'privacy',
       '#title' => $this->t('Política de privacidad'),
-      '#content' => $config['legal_privacy_content'] ?? '',
+      '#content' => $this->sanitizeContent($config['legal_privacy_content'] ?? ''),
       '#last_updated' => $config['legal_privacy_updated'] ?? '',
       '#cache' => [
         'tags' => ['config:ecosistema_jaraba_theme.settings'],
@@ -110,7 +125,7 @@ class StaticPageController extends ControllerBase {
       '#theme' => 'legal_page',
       '#page_type' => 'terms',
       '#title' => $this->t('Términos de uso'),
-      '#content' => $config['legal_terms_content'] ?? '',
+      '#content' => $this->sanitizeContent($config['legal_terms_content'] ?? ''),
       '#last_updated' => $config['legal_terms_updated'] ?? '',
       '#cache' => [
         'tags' => ['config:ecosistema_jaraba_theme.settings'],
@@ -132,7 +147,7 @@ class StaticPageController extends ControllerBase {
       '#theme' => 'legal_page',
       '#page_type' => 'cookies',
       '#title' => $this->t('Política de cookies'),
-      '#content' => $config['legal_cookies_content'] ?? '',
+      '#content' => $this->sanitizeContent($config['legal_cookies_content'] ?? ''),
       '#last_updated' => $config['legal_cookies_updated'] ?? '',
       '#cache' => [
         'tags' => ['config:ecosistema_jaraba_theme.settings'],
@@ -140,6 +155,28 @@ class StaticPageController extends ControllerBase {
       ],
     ];
   }
+  /**
+   * Renders the /acuerdo-procesamiento-datos (DPA) page.
+   *
+   * @return array
+   *   Render array using legal_page theme hook.
+   */
+  public function dpa(): array {
+    $config = $this->getThemeConfig();
+
+    return [
+      '#theme' => 'legal_page',
+      '#page_type' => 'dpa',
+      '#title' => $this->t('Acuerdo de procesamiento de datos'),
+      '#content' => $this->sanitizeContent($config['legal_dpa_content'] ?? ''),
+      '#last_updated' => $config['legal_dpa_updated'] ?? '',
+      '#cache' => [
+        'tags' => ['config:ecosistema_jaraba_theme.settings'],
+        'max-age' => 3600,
+      ],
+    ];
+  }
+
   /**
    * Renders the /blog placeholder page.
    *

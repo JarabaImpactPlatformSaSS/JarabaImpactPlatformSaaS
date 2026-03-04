@@ -128,3 +128,18 @@ function jaraba_messaging_mail(string $key, array &$message, array $params): voi
       break;
   }
 }
+
+
+/**
+ * Prepares variables for secure_conversation templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_messaging_preprocess_secure_conversation(array &$variables): void {
+  $entity = $variables['elements']['#secure_conversation'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['secure_conversation'] = $entity;
+}

@@ -1,0 +1,145 @@
+/**
+ * @file
+ * Queue Monitoring Dashboard styles.
+ * GAP-QUEUE-MON
+ */
+
+.queue-monitoring {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.queue-monitoring__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.queue-monitoring__stat {
+  text-align: center;
+  padding: 1.25rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+.queue-monitoring__stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.queue-monitoring__stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.queue-monitoring__stat--total .queue-monitoring__stat-value { color: #233D63; }
+.queue-monitoring__stat--pending .queue-monitoring__stat-value { color: #FF8C42; }
+.queue-monitoring__stat--healthy .queue-monitoring__stat-value { color: #00A9A5; }
+.queue-monitoring__stat--warning .queue-monitoring__stat-value { color: #e6a817; }
+.queue-monitoring__stat--error .queue-monitoring__stat-value { color: #d32f2f; }
+
+.queue-monitoring__module {
+  margin-bottom: 2rem;
+}
+
+.queue-monitoring__module-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #233D63;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #233D63;
+}
+
+.queue-monitoring__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.queue-monitoring__table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+}
+
+.queue-monitoring__table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.queue-monitoring__row--critical { background: #fff3f3; }
+.queue-monitoring__row--warning { background: #fffde7; }
+.queue-monitoring__row--error { background: #fce4ec; }
+
+.queue-monitoring__queue-name {
+  font-family: monospace;
+  font-size: 0.8125rem;
+}
+
+.queue-monitoring__queue-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.queue-monitoring__badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.queue-monitoring__badge--healthy {
+  background: #e0f2f1;
+  color: #00897b;
+}
+
+.queue-monitoring__badge--warning {
+  background: #fff8e1;
+  color: #f9a825;
+}
+
+.queue-monitoring__badge--critical {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.queue-monitoring__badge--error {
+  background: #fce4ec;
+  color: #d32f2f;
+}
+
+.queue-monitoring__error-text {
+  color: #d32f2f;
+  font-style: italic;
+}
+
+.queue-monitoring__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.queue-monitoring__timestamp {
+  font-size: 0.8125rem;
+  color: #888;
+}

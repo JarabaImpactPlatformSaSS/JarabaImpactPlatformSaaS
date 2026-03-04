@@ -40,7 +40,7 @@ jaraba_governance.api.classifications.save:
     _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::saveClassification'
   requirements:
     _permission: 'administer data governance'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # ============================================
@@ -61,7 +61,7 @@ jaraba_governance.api.retention.execute:
     _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::executeRetention'
   requirements:
     _permission: 'administer data governance'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # ============================================
@@ -88,7 +88,7 @@ jaraba_governance.api.erasure.create:
     _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::createErasureRequest'
   requirements:
     _permission: 'export user data'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_governance.api.erasure.list:
@@ -105,7 +105,7 @@ jaraba_governance.api.erasure.process:
     _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::processErasureRequest'
   requirements:
     _permission: 'process erasure requests'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     request_id: '\d+'
   methods: [POST]
 
@@ -132,7 +132,7 @@ jaraba_governance.api.masking.execute:
     _controller: '\Drupal\jaraba_governance\Controller\GovernanceApiController::executeMasking'
   requirements:
     _permission: 'run data masking'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 # ============================================

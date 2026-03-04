@@ -1,0 +1,35 @@
+{
+  "name": "@jaraba/sdk",
+  "version": "1.0.0",
+  "description": "Official JavaScript/TypeScript SDK for Jaraba Impact Platform API",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "files": [
+    "src/"
+  ],
+  "scripts": {
+    "test": "node --test tests/"
+  },
+  "keywords": [
+    "jaraba",
+    "impact-platform",
+    "api",
+    "sdk"
+  ],
+  "author": "Jaraba Impact Platform <api@plataformadeecosistemas.es>",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaraba/jaraba-sdk-js"
+  }
+}

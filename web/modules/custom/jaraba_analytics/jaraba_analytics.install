@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall hooks for jaraba_analytics.
+ */
+
+/**
+ * Install ProductMetricSnapshot entity type.
+ */
+function jaraba_analytics_update_10003(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('product_metric_snapshot');
+
+    if ($entity_type && !$update_manager->getEntityType('product_metric_snapshot')) {
+      $update_manager->installEntityType($entity_type);
+      return 'ProductMetricSnapshot entity type installed.';
+    }
+    return 'ProductMetricSnapshot entity type already installed.';
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_analytics')->error(
+      'Update 10003 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install ActivationCriteriaConfig entity type.
+ */
+function jaraba_analytics_update_10004(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('activation_criteria');
+
+    if ($entity_type && !$update_manager->getEntityType('activation_criteria')) {
+      $update_manager->installEntityType($entity_type);
+      return 'ActivationCriteriaConfig entity type installed.';
+    }
+    return 'ActivationCriteriaConfig entity type already installed.';
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_analytics')->error(
+      'Update 10004 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}

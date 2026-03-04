@@ -1,0 +1,6 @@
+jaraba_pilot_manager.admin:
+  title: 'Pilot Programs'
+  description: 'Manage pilot programs, tenants, and feedback.'
+  route_name: entity.pilot_program.collection
+  parent: system.admin_content
+  weight: 50

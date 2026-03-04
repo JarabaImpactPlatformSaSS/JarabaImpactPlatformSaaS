@@ -1,0 +1,90 @@
+{#
+/**
+ * @file
+ * Queue Monitoring Dashboard template.
+ *
+ * GAP-QUEUE-MON: Admin dashboard for monitoring 31+ queue workers.
+ *
+ * Variables:
+ * - summary: Overall metrics (total_queues, total_pending, healthy, warning, error).
+ * - queues: Flat list of all queue metrics.
+ * - queues_by_module: Queues grouped by provider module.
+ */
+#}
+<div class="queue-monitoring" data-api-url="{{ path('ecosistema_jaraba_core.queue_monitoring.api') }}">
+
+  {# Summary Cards #}
+  <div class="queue-monitoring__summary">
+    <div class="queue-monitoring__stat queue-monitoring__stat--total">
+      <span class="queue-monitoring__stat-value">{{ summary.total_queues }}</span>
+      <span class="queue-monitoring__stat-label">{% trans %}Total Queues{% endtrans %}</span>
+    </div>
+    <div class="queue-monitoring__stat queue-monitoring__stat--pending">
+      <span class="queue-monitoring__stat-value">{{ summary.total_pending }}</span>
+      <span class="queue-monitoring__stat-label">{% trans %}Pending Items{% endtrans %}</span>
+    </div>
+    <div class="queue-monitoring__stat queue-monitoring__stat--healthy">
+      <span class="queue-monitoring__stat-value">{{ summary.healthy }}</span>
+      <span class="queue-monitoring__stat-label">{% trans %}Healthy{% endtrans %}</span>
+    </div>
+    <div class="queue-monitoring__stat queue-monitoring__stat--warning">
+      <span class="queue-monitoring__stat-value">{{ summary.warning }}</span>
+      <span class="queue-monitoring__stat-label">{% trans %}Warning{% endtrans %}</span>
+    </div>
+    <div class="queue-monitoring__stat queue-monitoring__stat--error">
+      <span class="queue-monitoring__stat-value">{{ summary.error }}</span>
+      <span class="queue-monitoring__stat-label">{% trans %}Error{% endtrans %}</span>
+    </div>
+  </div>
+
+  {# Queue Table by Module #}
+  {% for module, module_queues in queues_by_module %}
+    <div class="queue-monitoring__module">
+      <h3 class="queue-monitoring__module-title">{{ module }}</h3>
+      <table class="queue-monitoring__table">
+        <thead>
+          <tr>
+            <th>{% trans %}Queue{% endtrans %}</th>
+            <th>{% trans %}Pending{% endtrans %}</th>
+            <th>{% trans %}Cron Time{% endtrans %}</th>
+            <th>{% trans %}Status{% endtrans %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for queue in module_queues %}
+            <tr class="queue-monitoring__row queue-monitoring__row--{{ queue.status }}">
+              <td class="queue-monitoring__cell-id">
+                <span class="queue-monitoring__queue-name">{{ queue.id }}</span>
+                {% if queue.label != queue.id %}
+                  <span class="queue-monitoring__queue-label">{{ queue.label }}</span>
+                {% endif %}
+              </td>
+              <td class="queue-monitoring__cell-pending">
+                {% if queue.pending >= 0 %}
+                  {{ queue.pending }}
+                {% else %}
+                  <span class="queue-monitoring__error-text">{% trans %}Error{% endtrans %}</span>
+                {% endif %}
+              </td>
+              <td class="queue-monitoring__cell-cron">{{ queue.cron_time }}s</td>
+              <td class="queue-monitoring__cell-status">
+                <span class="queue-monitoring__badge queue-monitoring__badge--{{ queue.status }}">
+                  {{ queue.status }}
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endfor %}
+
+  <div class="queue-monitoring__footer">
+    <span class="queue-monitoring__timestamp">
+      {% trans %}Last updated{% endtrans %}: {{ summary.timestamp|date('Y-m-d H:i:s') }}
+    </span>
+    <button class="queue-monitoring__refresh button button--primary" type="button">
+      {% trans %}Refresh{% endtrans %}
+    </button>
+  </div>
+</div>

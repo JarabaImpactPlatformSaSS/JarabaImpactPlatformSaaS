@@ -1,0 +1,11 @@
+id: jaraba_content_hub_free_authors_limit
+label: 'Content Hub Free: Autores'
+vertical: jaraba_content_hub
+plan: free
+feature_key: authors_limit
+limit_value: 1
+description: 'Maximo 1 autor editorial en plan gratuito Content Hub.'
+upgrade_message: 'Has alcanzado el limite de autores. Actualiza a Starter para hasta 5.'
+expected_conversion: 0.15
+weight: 2
+status: true

@@ -1,0 +1,11 @@
+id: formacion_profesional_copilot_uses_per_month
+label: 'Formacion Profesional: Copilot mensual'
+vertical: formacion
+plan: profesional
+feature_key: copilot_uses_per_month
+limit_value: 100
+description: 'Maximo 100 consultas al copilot IA mensuales en plan Profesional Formacion.'
+upgrade_message: 'Has alcanzado el limite de 100 consultas IA este mes. Actualiza a Business para ilimitadas.'
+expected_conversion: 0.25
+weight: 24
+status: true

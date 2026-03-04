@@ -326,3 +326,74 @@ function jaraba_diagnostic_theme(): array {
     ],
   ];
 }
+
+
+/**
+ * Prepares variables for business_diagnostic templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_diagnostic_preprocess_business_diagnostic(array &$variables): void {
+  $entity = $variables['elements']['#business_diagnostic'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['business_diagnostic'] = $entity;
+}
+
+/**
+ * Prepares variables for diagnostic_question templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_diagnostic_preprocess_diagnostic_question(array &$variables): void {
+  $entity = $variables['elements']['#diagnostic_question'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['diagnostic_question'] = $entity;
+}
+
+/**
+ * Prepares variables for diagnostic_recommendation templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_diagnostic_preprocess_diagnostic_recommendation(array &$variables): void {
+  $entity = $variables['elements']['#diagnostic_recommendation'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['diagnostic_recommendation'] = $entity;
+}
+
+/**
+ * Prepares variables for diagnostic_section templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_diagnostic_preprocess_diagnostic_section(array &$variables): void {
+  $entity = $variables['elements']['#diagnostic_section'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['diagnostic_section'] = $entity;
+}
+
+/**
+ * Prepares variables for employability_diagnostic templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_diagnostic_preprocess_employability_diagnostic(array &$variables): void {
+  $entity = $variables['elements']['#employability_diagnostic'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['employability_diagnostic'] = $entity;
+}

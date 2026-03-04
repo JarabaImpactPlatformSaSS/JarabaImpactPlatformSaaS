@@ -1,0 +1,11 @@
+id: jaraba_content_hub_starter_authors_limit
+label: 'Content Hub Starter: Autores'
+vertical: jaraba_content_hub
+plan: starter
+feature_key: authors_limit
+limit_value: 5
+description: 'Maximo 5 autores editoriales en plan Starter Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 5 autores. Actualiza a Profesional para hasta 20.'
+expected_conversion: 0.10
+weight: 12
+status: true

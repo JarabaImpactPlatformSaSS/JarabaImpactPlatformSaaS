@@ -1,0 +1,11 @@
+id: formacion_business_courses_limit
+label: 'Formacion Business: Cursos'
+vertical: formacion
+plan: business
+feature_key: courses_limit
+limit_value: -1
+description: 'Cursos ilimitados en plan Business Formacion.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 30
+status: true

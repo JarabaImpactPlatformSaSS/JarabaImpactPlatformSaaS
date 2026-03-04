@@ -291,6 +291,71 @@ class InstitutionalProgram extends ContentEntityBase implements EntityOwnerInter
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // --- piil_program_code ---
+    $fields['piil_program_code'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Codigo Programa PIIL'))
+      ->setDescription(t('Codigo oficial del programa en PIIL.'))
+      ->setSettings(['max_length' => 64])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'string', 'weight' => 50])
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => 50])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- fundae_action_id ---
+    $fields['fundae_action_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('ID Accion FUNDAE'))
+      ->setDescription(t('Identificador de la accion formativa FUNDAE.'))
+      ->setSettings(['max_length' => 64])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'string', 'weight' => 51])
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => 51])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- fse_plus_priority_axis ---
+    $fields['fse_plus_priority_axis'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Eje Prioritario FSE+'))
+      ->setDescription(t('Eje prioritario del Fondo Social Europeo Plus.'))
+      ->setSettings(['max_length' => 128])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'string', 'weight' => 52])
+      ->setDisplayOptions('form', ['type' => 'string_textfield', 'weight' => 52])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- cofinancing_rate ---
+    $fields['cofinancing_rate'] = BaseFieldDefinition::create('float')
+      ->setLabel(t('Tasa Cofinanciacion'))
+      ->setDescription(t('Tasa de cofinanciacion EU (0-100).'))
+      ->setDefaultValue(0.0)
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'number_decimal', 'weight' => 53])
+      ->setDisplayOptions('form', ['type' => 'number', 'weight' => 53])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- target_employment_rate ---
+    $fields['target_employment_rate'] = BaseFieldDefinition::create('float')
+      ->setLabel(t('Objetivo Insercion Laboral'))
+      ->setDescription(t('Objetivo de tasa de insercion laboral (0-100).'))
+      ->setDefaultValue(0.0)
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'number_decimal', 'weight' => 54])
+      ->setDisplayOptions('form', ['type' => 'number', 'weight' => 54])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- reporting_frequency ---
+    $fields['reporting_frequency'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Frecuencia Informes'))
+      ->setSettings([
+        'allowed_values' => [
+          'monthly' => 'Mensual',
+          'quarterly' => 'Trimestral',
+          'annual' => 'Anual',
+        ],
+      ])
+      ->setDisplayOptions('view', ['label' => 'inline', 'type' => 'list_default', 'weight' => 55])
+      ->setDisplayOptions('form', ['type' => 'options_select', 'weight' => 55])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
     // --- created ---
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(new \Drupal\Core\StringTranslation\TranslatableMarkup('Fecha de creacion'))

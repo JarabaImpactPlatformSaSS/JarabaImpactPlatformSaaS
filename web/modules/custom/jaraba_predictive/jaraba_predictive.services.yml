@@ -12,6 +12,8 @@ services:
       - '@ecosistema_jaraba_core.tenant_context'
       - '@jaraba_predictive.feature_store'
       - '@jaraba_predictive.retention_workflow'
+      - '@?jaraba_predictive.security_guardian'
+      - '@?jaraba_predictive.prediction_bridge'
 
   jaraba_predictive.lead_scorer:
     class: Drupal\jaraba_predictive\Service\LeadScorerService

@@ -137,7 +137,7 @@ jaraba_site_builder.api.redirects_import:
   methods: [POST]
   requirements:
     _permission: 'manage site redirects'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_site_builder.api.redirects_export:
   path: '/api/v1/site/redirects/export'
@@ -204,7 +204,7 @@ jaraba_site_builder.api.tree_reorder:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # Añadir página al árbol
 jaraba_site_builder.api.pages_add:
@@ -214,7 +214,7 @@ jaraba_site_builder.api.pages_add:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # Obtener páginas disponibles del Page Builder
 jaraba_site_builder.api.pages_available:
@@ -243,6 +243,7 @@ jaraba_site_builder.api.pages_delete:
   methods: [DELETE]
   requirements:
     _permission: 'administer site structure'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 # Mover página a otro padre
@@ -253,7 +254,7 @@ jaraba_site_builder.api.pages_move:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 # Formulario de edición de nodo del árbol via AJAX (slide-panel)
@@ -274,7 +275,7 @@ jaraba_site_builder.api.pages_bulk_status:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # Obtener configuración global
 jaraba_site_builder.api.config:
@@ -302,7 +303,7 @@ jaraba_site_builder.api.config_logo:
   methods: [POST]
   requirements:
     _permission: 'edit site config'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # ========================================================================
 # Canvas v2: Variantes Header/Footer
@@ -316,7 +317,7 @@ jaraba_site_builder.api.header_variant:
   methods: [POST]
   requirements:
     _permission: 'edit site config'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # Cambiar variante de footer
 jaraba_site_builder.api.footer_variant:
@@ -326,7 +327,7 @@ jaraba_site_builder.api.footer_variant:
   methods: [POST]
   requirements:
     _permission: 'edit site config'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # ========================================================================
 # Fase 1 Doc 177: Sistema de Navegación Global - API REST
@@ -357,7 +358,7 @@ jaraba_site_builder.api.header_logo_upload:
   methods: [POST]
   requirements:
     _permission: 'edit site config'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_site_builder.api.header_logo_delete:
   path: '/api/v1/site/header/logo'
@@ -366,6 +367,7 @@ jaraba_site_builder.api.header_logo_delete:
   methods: [DELETE]
   requirements:
     _permission: 'edit site config'
+    _csrf_request_header_token: 'TRUE'
 
 # --- Footer API ---
 
@@ -392,7 +394,7 @@ jaraba_site_builder.api.footer_logo_upload:
   methods: [POST]
   requirements:
     _permission: 'edit site config'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # --- Menus API ---
 
@@ -411,7 +413,7 @@ jaraba_site_builder.api.menus_create:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_site_builder.api.menus_get:
   path: '/api/v1/site/menus/{id}'
@@ -429,6 +431,7 @@ jaraba_site_builder.api.menus_delete:
   methods: [DELETE]
   requirements:
     _permission: 'administer site structure'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 jaraba_site_builder.api.menus_tree:
@@ -447,7 +450,7 @@ jaraba_site_builder.api.menus_add_item:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 jaraba_site_builder.api.menus_update_item:
@@ -467,6 +470,7 @@ jaraba_site_builder.api.menus_delete_item:
   methods: [DELETE]
   requirements:
     _permission: 'administer site structure'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
     itemId: '\d+'
 
@@ -477,7 +481,7 @@ jaraba_site_builder.api.menus_reorder:
   methods: [POST]
   requirements:
     _permission: 'administer site structure'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 # --- Breadcrumbs API ---
@@ -532,7 +536,7 @@ jaraba_site_builder.seo.suggest:
   methods: [POST]
   requirements:
     _permission: 'use seo ai assistant'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_site_builder.seo.audit:
   path: '/api/v1/seo/audit/{page_id}'
@@ -541,7 +545,7 @@ jaraba_site_builder.seo.audit:
   methods: [POST]
   requirements:
     _permission: 'view seo audit'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     page_id: '\d+'
 
 jaraba_site_builder.seo.schema_get:
@@ -596,7 +600,7 @@ jaraba_site_builder.seo.bulk_audit:
   methods: [POST]
   requirements:
     _permission: 'view seo audit'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 entity.site_config.collection:
   path: '/admin/content/site-configs'

@@ -189,6 +189,14 @@ jaraba_legal.citation.settings:
   requirements:
     _permission: 'administer legal intelligence'
 
+entity.legal_coherence_log.settings:
+  path: '/admin/structure/legal-coherence-log/settings'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Legal Coherence Log Settings'
+  requirements:
+    _permission: 'administer legal intelligence'
+
 # ============================================
 # API REST /api/v1/legal/*
 # ============================================

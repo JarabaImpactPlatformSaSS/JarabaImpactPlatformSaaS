@@ -1,0 +1,11 @@
+id: jaraba_content_hub_business_articles_limit
+label: 'Content Hub Business: Articulos'
+vertical: jaraba_content_hub
+plan: business
+feature_key: articles_limit
+limit_value: -1
+description: 'Articulos ilimitados en plan Business Content Hub.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 30
+status: true

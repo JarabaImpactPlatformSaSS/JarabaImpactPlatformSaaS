@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_legal_intelligence\LegalCoherence;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -61,6 +62,7 @@ final class LegalCoherenceValidatorService {
 
   public function __construct(
     protected readonly LoggerInterface $logger,
+    protected readonly ?EntityTypeManagerInterface $entityTypeManager = NULL,
   ) {}
 
   /**
@@ -169,6 +171,9 @@ final class LegalCoherenceValidatorService {
         '@retry' => $retryCount,
       ]);
     }
+
+    // EU AI Act Art. 12: crear audit log de la validacion.
+    $this->createCoherenceLog($output, $context, $score, $violations, $warnings, $action, $retryCount);
 
     return [
       'passed' => $passed,
@@ -679,6 +684,77 @@ final class LegalCoherenceValidatorService {
     }
 
     return mb_substr($text, $start, $end - $start + 1);
+  }
+
+  /**
+   * Crea un registro de audit trail en legal_coherence_log.
+   *
+   * EU AI Act Art. 12: Todas las validaciones de coherencia deben ser
+   * registradas para auditoria. Fail-safe: si el log falla, no se
+   * interrumpe la validacion.
+   *
+   * @param string $output
+   *   Texto validado.
+   * @param array $context
+   *   Contexto de la validacion.
+   * @param float $score
+   *   Score de coherencia.
+   * @param array $violations
+   *   Violaciones detectadas.
+   * @param array $warnings
+   *   Advertencias detectadas.
+   * @param string $action
+   *   Accion resultante (allow, warn, regenerate, block).
+   * @param int $retryCount
+   *   Numero de reintentos.
+   */
+  protected function createCoherenceLog(
+    string $output,
+    array $context,
+    float $score,
+    array $violations,
+    array $warnings,
+    string $action,
+    int $retryCount,
+  ): void {
+    if ($this->entityTypeManager === NULL) {
+      return;
+    }
+
+    try {
+      if (!$this->entityTypeManager->hasDefinition('legal_coherence_log')) {
+        return;
+      }
+
+      $storage = $this->entityTypeManager->getStorage('legal_coherence_log');
+      $log = $storage->create([
+        'query_text' => mb_substr($context['user_query'] ?? '', 0, 5000),
+        'intent_type' => 'legal',
+        'coherence_score' => $score,
+        'validator_results' => json_encode([
+          'violations' => $violations,
+          'warnings' => $warnings,
+          'action' => $action,
+        ]),
+        'disclaimer_appended' => $action === 'warn',
+        'retries_needed' => $retryCount,
+        'blocked' => $action === 'block',
+        'block_reason' => $action === 'block'
+          ? implode('; ', array_column($violations, 'description'))
+          : '',
+        'response_snippet' => mb_substr($output, 0, 500),
+        'vertical' => $context['vertical'] ?? 'jarabalex',
+        'tenant_id' => $context['tenant_id'] ?? NULL,
+        'trace_id' => $context['trace_id'] ?? '',
+      ]);
+      $log->save();
+    }
+    catch (\Throwable $e) {
+      // Fail-safe: log creation failure must not break validation.
+      $this->logger->warning('Failed to create LegalCoherenceLog: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
   }
 
 }

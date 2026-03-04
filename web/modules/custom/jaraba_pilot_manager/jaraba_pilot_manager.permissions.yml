@@ -1,0 +1,8 @@
+administer pilot programs:
+  title: 'Administer pilot programs'
+  description: 'Create, edit, and delete pilot programs, tenants, and feedback.'
+  restrict access: true
+
+view pilot programs:
+  title: 'View pilot programs'
+  description: 'View pilot program data and dashboards.'

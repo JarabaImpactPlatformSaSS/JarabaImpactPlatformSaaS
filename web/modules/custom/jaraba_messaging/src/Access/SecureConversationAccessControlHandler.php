@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_messaging\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -17,12 +17,18 @@ use Drupal\Core\Session\AccountInterface;
  * - Update/Delete: requiere 'administer jaraba messaging'.
  * - Create: requiere 'create conversations'.
  */
-class SecureConversationAccessControlHandler extends EntityAccessControlHandler {
+class SecureConversationAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     return match ($operation) {
       'view' => AccessResult::allowedIfHasPermissions($account, [
         'view own conversations',

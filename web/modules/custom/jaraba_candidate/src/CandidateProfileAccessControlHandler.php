@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Drupal\jaraba_candidate;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
  * Access controller for the CandidateProfile entity.
  */
-class CandidateProfileAccessControlHandler extends EntityAccessControlHandler
+class CandidateProfileAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -20,6 +20,12 @@ class CandidateProfileAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         switch ($operation) {
             case 'view':
                 // Owners can always view their own profile

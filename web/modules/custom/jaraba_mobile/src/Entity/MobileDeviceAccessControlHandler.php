@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_mobile\Entity;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -16,12 +16,18 @@ use Drupal\Core\Session\AccountInterface;
  * Users with 'manage mobile devices' can manage all devices.
  * Admin permission grants full access.
  */
-class MobileDeviceAccessControlHandler extends EntityAccessControlHandler {
+class MobileDeviceAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     $admin_permission = $this->entityType->getAdminPermission();
 
     // Full admin access.

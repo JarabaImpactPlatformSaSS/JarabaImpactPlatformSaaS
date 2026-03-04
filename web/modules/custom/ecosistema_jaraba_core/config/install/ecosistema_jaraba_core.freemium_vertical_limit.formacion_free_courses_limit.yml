@@ -1,0 +1,11 @@
+id: formacion_free_courses_limit
+label: 'Formacion Free: Cursos'
+vertical: formacion
+plan: free
+feature_key: courses_limit
+limit_value: 3
+description: 'Maximo 3 cursos en plan gratuito Formacion.'
+upgrade_message: 'Has alcanzado el limite de 3 cursos. Actualiza a Starter para crear hasta 15 cursos.'
+expected_conversion: 0.30
+weight: 0
+status: true

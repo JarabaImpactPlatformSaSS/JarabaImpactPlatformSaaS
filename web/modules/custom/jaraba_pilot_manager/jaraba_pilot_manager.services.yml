@@ -1,0 +1,13 @@
+services:
+  jaraba_pilot_manager.pilot_evaluator:
+    class: Drupal\jaraba_pilot_manager\Service\PilotEvaluatorService
+    arguments:
+      - '@entity_type.manager'
+      - '@?jaraba_analytics.activation_tracking'
+      - '@?jaraba_analytics.retention_calculator'
+      - '@logger.channel.jaraba_pilot_manager'
+
+  logger.channel.jaraba_pilot_manager:
+    class: Drupal\Core\Logger\LoggerChannel
+    factory: logger.factory:get
+    arguments: ['jaraba_pilot_manager']

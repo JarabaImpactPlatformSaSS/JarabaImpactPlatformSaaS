@@ -90,6 +90,7 @@ jaraba_legal_billing.api.time.delete:
   methods: [DELETE]
   requirements:
     _permission: 'manage time entries'
+    _csrf_request_header_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 # --- API REST — Invoices ---

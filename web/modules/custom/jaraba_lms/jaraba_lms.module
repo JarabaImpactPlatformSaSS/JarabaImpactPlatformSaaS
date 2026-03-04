@@ -451,3 +451,146 @@ function jaraba_lms_mail($key, &$message, $params): void {
     $message['body'][] = t('Jaraba Impact Platform - Formación Digital');
   }
 }
+
+/**
+ * Implements template_preprocess_HOOK() for lms_course.
+ *
+ * ENTITY-PREPROCESS-001: Extract primitives, resolve references,
+ * generate responsive image URLs. No entity objects in templates.
+ */
+function template_preprocess_lms_course(array &$variables): void {
+  /** @var \Drupal\jaraba_lms\Entity\Course $entity */
+  $entity = $variables['elements']['#lms_course'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $course = [
+    'id' => $entity->id(),
+    'title' => $entity->label() ?? '',
+    'description' => $entity->get('description')->value ?? '',
+    'summary' => $entity->get('summary')->value ?? '',
+    'duration_minutes' => (int) ($entity->get('duration_minutes')->value ?? 0),
+    'difficulty_level' => $entity->get('difficulty_level')->value ?? 'beginner',
+    'is_published' => (bool) ($entity->get('is_published')->value ?? FALSE),
+    'is_premium' => (bool) ($entity->get('is_premium')->value ?? FALSE),
+    'price' => $entity->get('price')->value ?? '0.00',
+    'currency' => $entity->get('currency')->value ?? 'EUR',
+    'completion_credits' => (int) ($entity->get('completion_credits')->value ?? 0),
+    'machine_name' => $entity->get('machine_name')->value ?? '',
+  ];
+
+  // Duration formatted.
+  $hours = floor($course['duration_minutes'] / 60);
+  $mins = $course['duration_minutes'] % 60;
+  $course['duration_formatted'] = $hours > 0
+    ? $hours . 'h ' . ($mins > 0 ? $mins . 'min' : '')
+    : $mins . 'min';
+
+  // Author/instructor.
+  if ($entity->hasField('author_id') && !$entity->get('author_id')->isEmpty()) {
+    $author = $entity->get('author_id')->entity;
+    if ($author) {
+      $course['instructor_name'] = $author->getDisplayName();
+    }
+  }
+
+  // Category.
+  if ($entity->hasField('field_category') && !$entity->get('field_category')->isEmpty()) {
+    $category = $entity->get('field_category')->entity;
+    if ($category) {
+      $course['category_name'] = $category->label() ?? '';
+    }
+  }
+
+  // Thumbnail image.
+  if ($entity->hasField('thumbnail') && !$entity->get('thumbnail')->isEmpty()) {
+    $file = $entity->get('thumbnail')->entity;
+    if ($file) {
+      $style = \Drupal\image\Entity\ImageStyle::load('medium');
+      $course['thumbnail_url'] = $style
+        ? $style->buildUrl($file->getFileUri())
+        : \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+    }
+  }
+
+  // Prerequisites.
+  $course['prerequisites'] = [];
+  $prereqJson = $entity->get('prerequisites')->value ?? '';
+  if (!empty($prereqJson)) {
+    $prereqIds = json_decode($prereqJson, TRUE);
+    if (is_array($prereqIds)) {
+      $course['prerequisites'] = $prereqIds;
+    }
+  }
+
+  $variables['course'] = $course;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for lms_lesson.
+ *
+ * ENTITY-PREPROCESS-001: Extract primitives for lesson templates.
+ */
+function template_preprocess_lms_lesson(array &$variables): void {
+  /** @var \Drupal\jaraba_lms\Entity\Lesson $entity */
+  $entity = $variables['elements']['#lms_lesson'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $variables['lesson'] = [
+    'id' => $entity->id(),
+    'title' => $entity->label() ?? '',
+    'lesson_type' => $entity->get('lesson_type')->value ?? 'text',
+    'content' => $entity->get('content')->value ?? '',
+    'video_url' => $entity->get('video_url')->value ?? '',
+    'video_provider' => $entity->get('video_provider')->value ?? '',
+    'estimated_duration' => (int) ($entity->get('estimated_duration')->value ?? 10),
+    'completion_threshold' => (int) ($entity->get('completion_threshold')->value ?? 90),
+    'weight' => (int) ($entity->get('weight')->value ?? 0),
+    'is_video' => ($entity->get('lesson_type')->value ?? '') === 'video',
+    'is_h5p' => ($entity->get('lesson_type')->value ?? '') === 'h5p',
+    'h5p_content_id' => (int) ($entity->get('h5p_content_id')->value ?? 0),
+  ];
+
+  // YouTube video ID extraction.
+  if ($variables['lesson']['is_video'] && !empty($variables['lesson']['video_url'])) {
+    if (method_exists($entity, 'getYouTubeVideoId')) {
+      $variables['lesson']['youtube_id'] = $entity->getYouTubeVideoId();
+    }
+  }
+
+  // Formatted duration.
+  $mins = $variables['lesson']['estimated_duration'];
+  $variables['lesson']['duration_formatted'] = $mins . ' min';
+}
+
+
+/**
+ * Prepares variables for course_review templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_lms_preprocess_course_review(array &$variables): void {
+  $entity = $variables['elements']['#course_review'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['course_review'] = $entity;
+}
+
+/**
+ * Prepares variables for lms_enrollment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_lms_preprocess_lms_enrollment(array &$variables): void {
+  $entity = $variables['elements']['#lms_enrollment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['lms_enrollment'] = $entity;
+}

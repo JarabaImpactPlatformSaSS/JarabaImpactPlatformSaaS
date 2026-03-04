@@ -102,3 +102,158 @@ function jaraba_ai_agents_theme(): array {
     ],
   ];
 }
+
+
+/**
+ * Prepares variables for ai_usage_log templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_ai_usage_log(array &$variables): void {
+  $entity = $variables['elements']['#ai_usage_log'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_usage_log'] = $entity;
+}
+
+/**
+ * Prepares variables for aggregated_insight templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_aggregated_insight(array &$variables): void {
+  $entity = $variables['elements']['#aggregated_insight'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['aggregated_insight'] = $entity;
+}
+
+/**
+ * Prepares variables for ai_audit_entry templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_ai_audit_entry(array &$variables): void {
+  $entity = $variables['elements']['#ai_audit_entry'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_audit_entry'] = $entity;
+}
+
+/**
+ * Prepares variables for ai_feedback templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_ai_feedback(array &$variables): void {
+  $entity = $variables['elements']['#ai_feedback'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_feedback'] = $entity;
+}
+
+/**
+ * Prepares variables for autonomous_session templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_autonomous_session(array &$variables): void {
+  $entity = $variables['elements']['#autonomous_session'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['autonomous_session'] = $entity;
+}
+
+/**
+ * Prepares variables for browser_task templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_browser_task(array &$variables): void {
+  $entity = $variables['elements']['#browser_task'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['browser_task'] = $entity;
+}
+
+/**
+ * Prepares variables for causal_analysis templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_causal_analysis(array &$variables): void {
+  $entity = $variables['elements']['#causal_analysis'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['causal_analysis'] = $entity;
+}
+
+/**
+ * Prepares variables for proactive_insight templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_proactive_insight(array &$variables): void {
+  $entity = $variables['elements']['#proactive_insight'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['proactive_insight'] = $entity;
+}
+
+/**
+ * Prepares variables for prompt_improvement templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_prompt_improvement(array &$variables): void {
+  $entity = $variables['elements']['#prompt_improvement'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['prompt_improvement'] = $entity;
+}
+
+/**
+ * Prepares variables for remediation_log templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_remediation_log(array &$variables): void {
+  $entity = $variables['elements']['#remediation_log'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['remediation_log'] = $entity;
+}
+
+/**
+ * Prepares variables for verification_result templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_ai_agents_preprocess_verification_result(array &$variables): void {
+  $entity = $variables['elements']['#verification_result'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['verification_result'] = $entity;
+}

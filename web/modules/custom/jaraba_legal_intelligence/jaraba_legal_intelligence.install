@@ -455,6 +455,26 @@ function jaraba_legal_intelligence_update_10004(): void {
 }
 
 /**
+ * Instala el tipo de entidad legal_coherence_log (LCIS spec 179 G2).
+ *
+ * Crea la tabla de audit trail para las validaciones de coherencia juridica
+ * del LCIS. Cumplimiento EU AI Act Art. 12.
+ */
+function jaraba_legal_intelligence_update_10005(): void {
+  try {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('legal_coherence_log');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+    \Drupal::messenger()->addStatus(t('Entity type legal_coherence_log installed successfully.'));
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error(
+      'Failed to install legal_coherence_log entity type: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
  * Implements hook_uninstall().
  *
  * Limpia las entradas de State API usadas para rate limiting del cron

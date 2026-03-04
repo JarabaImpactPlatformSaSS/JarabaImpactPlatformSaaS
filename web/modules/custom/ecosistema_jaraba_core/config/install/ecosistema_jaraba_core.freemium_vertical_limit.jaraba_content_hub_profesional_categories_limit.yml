@@ -1,0 +1,11 @@
+id: jaraba_content_hub_profesional_categories_limit
+label: 'Content Hub Profesional: Categorias'
+vertical: jaraba_content_hub
+plan: profesional
+feature_key: categories_limit
+limit_value: 30
+description: 'Maximo 30 categorias en plan Profesional Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 30 categorias. Actualiza a Business para ilimitadas.'
+expected_conversion: 0.10
+weight: 21
+status: true

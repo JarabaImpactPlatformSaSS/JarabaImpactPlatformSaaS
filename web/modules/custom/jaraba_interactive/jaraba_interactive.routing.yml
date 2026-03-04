@@ -219,6 +219,7 @@ jaraba_interactive.api.content.delete:
   methods: [DELETE]
   requirements:
     _permission: 'delete any interactive content'
+    _csrf_request_header_token: 'TRUE'
   options:
     parameters:
       interactive_content:

@@ -48,6 +48,23 @@ jaraba_billing.financial_dashboard:
   requirements:
     _permission: 'view own billing information'
 
+# GAP-REVENUE-DASH: Admin revenue dashboard.
+jaraba_billing.revenue_dashboard:
+  path: '/admin/jaraba/revenue-dashboard'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\RevenueDashboardController::page'
+    _title: 'Revenue Dashboard'
+  requirements:
+    _permission: 'administer billing'
+
+jaraba_billing.api.revenue_snapshot:
+  path: '/api/v1/revenue/snapshot'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\RevenueDashboardController::apiSnapshot'
+  methods: [GET]
+  requirements:
+    _permission: 'administer billing'
+
 # Webhook endpoint for Stripe billing events.
 jaraba_billing.stripe_webhook:
   path: '/api/v1/billing/stripe-webhook'
@@ -75,7 +92,7 @@ jaraba_billing.api.subscription.create:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::createSubscription'
   requirements:
     _permission: 'manage subscriptions'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.subscription.change_plan:
@@ -86,12 +103,22 @@ jaraba_billing.api.subscription.change_plan:
     _permission: 'manage subscriptions'
   methods: [PATCH]
 
+# GAP-PRORATION: Preview proration before confirming plan change.
+jaraba_billing.api.proration_preview:
+  path: '/api/v1/billing/proration-preview'
+  defaults:
+    _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::prorationPreview'
+  requirements:
+    _permission: 'manage subscriptions'
+  methods: [GET]
+
 jaraba_billing.api.subscription.cancel:
   path: '/api/v1/billing/subscription'
   defaults:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::cancelSubscription'
   requirements:
     _permission: 'manage subscriptions'
+    _csrf_request_header_token: 'TRUE'
   methods: [DELETE]
 
 jaraba_billing.api.subscription.reactivate:
@@ -100,7 +127,7 @@ jaraba_billing.api.subscription.reactivate:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::reactivateSubscription'
   requirements:
     _permission: 'manage subscriptions'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.invoices.list:
@@ -134,7 +161,7 @@ jaraba_billing.api.portal_session:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::createPortalSession'
   requirements:
     _permission: 'manage payment methods'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.payment_methods.list:
@@ -151,7 +178,7 @@ jaraba_billing.api.payment_methods.add:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::addPaymentMethod'
   requirements:
     _permission: 'manage payment methods'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.payment_methods.delete:
@@ -160,6 +187,7 @@ jaraba_billing.api.payment_methods.delete:
     _controller: '\Drupal\jaraba_billing\Controller\BillingApiController::deletePaymentMethod'
   requirements:
     _permission: 'manage payment methods'
+    _csrf_request_header_token: 'TRUE'
     id: '.+'
   methods: [DELETE]
 
@@ -181,7 +209,7 @@ jaraba_billing.api.usage.record:
     _controller: '\Drupal\jaraba_billing\Controller\UsageBillingApiController::recordUsage'
   requirements:
     _permission: 'view billing usage'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.usage.current:
@@ -258,7 +286,7 @@ jaraba_billing.api.addon.activate:
     _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::activateAddon'
   requirements:
     _permission: 'manage tenant addons'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.addon.cancel:
@@ -267,6 +295,7 @@ jaraba_billing.api.addon.cancel:
     _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::cancelAddon'
   requirements:
     _permission: 'manage tenant addons'
+    _csrf_request_header_token: 'TRUE'
     code: '[a-z_]+'
   methods: [DELETE]
 
@@ -276,7 +305,7 @@ jaraba_billing.api.addon.upgrade:
     _controller: '\Drupal\jaraba_billing\Controller\AddonApiController::upgradePlan'
   requirements:
     _permission: 'manage subscriptions'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_billing.api.addon.upcoming_invoice:

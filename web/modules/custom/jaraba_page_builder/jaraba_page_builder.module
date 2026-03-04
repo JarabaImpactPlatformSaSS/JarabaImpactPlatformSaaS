@@ -1174,3 +1174,102 @@ function _jaraba_page_builder_get_course_category($course): ?string {
   return $category ? $category->label() : NULL;
 }
 
+
+
+/**
+ * Prepares variables for experiment_variant templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_experiment_variant(array &$variables): void {
+  $entity = $variables['elements']['#experiment_variant'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['experiment_variant'] = $entity;
+}
+
+/**
+ * Prepares variables for feature_card templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_feature_card(array &$variables): void {
+  $entity = $variables['elements']['#feature_card'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['feature_card'] = $entity;
+}
+
+/**
+ * Prepares variables for homepage_content templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_homepage_content(array &$variables): void {
+  $entity = $variables['elements']['#homepage_content'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['homepage_content'] = $entity;
+}
+
+/**
+ * Prepares variables for intention_card templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_intention_card(array &$variables): void {
+  $entity = $variables['elements']['#intention_card'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['intention_card'] = $entity;
+}
+
+/**
+ * Prepares variables for page_content templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_page_content(array &$variables): void {
+  $entity = $variables['elements']['#page_content'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['page_content'] = $entity;
+}
+
+/**
+ * Prepares variables for page_experiment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_page_experiment(array &$variables): void {
+  $entity = $variables['elements']['#page_experiment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['page_experiment'] = $entity;
+}
+
+/**
+ * Prepares variables for stat_item templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_page_builder_preprocess_stat_item(array &$variables): void {
+  $entity = $variables['elements']['#stat_item'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['stat_item'] = $entity;
+}

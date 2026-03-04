@@ -81,6 +81,34 @@ function jaraba_legal_knowledge_preprocess_html(array &$variables): void {
 }
 
 /**
+ * Implements template_preprocess_legal_norm_relation().
+ *
+ * ENTITY-PREPROCESS-001: Extracts primitives from the entity for Twig.
+ */
+function template_preprocess_legal_norm_relation(array &$variables): void {
+  /** @var \Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation $entity */
+  $entity = $variables['elements']['#legal_norm_relation'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $variables['relation_type'] = $entity->get('relation_type')->value;
+  $variables['relation_type_label'] = \Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation::RELATION_TYPES[$variables['relation_type']] ?? $variables['relation_type'];
+  $variables['effective_date'] = $entity->get('effective_date')->value
+    ? date('Y-m-d', (int) $entity->get('effective_date')->value)
+    : NULL;
+  $variables['affected_articles'] = $entity->get('affected_articles')->value
+    ? json_decode($entity->get('affected_articles')->value, TRUE)
+    : [];
+
+  // Resolve referenced norms.
+  $sourceNorm = $entity->get('source_norm_id')->entity;
+  $targetNorm = $entity->get('target_norm_id')->entity;
+  $variables['source_norm_label'] = $sourceNorm ? ($sourceNorm->label() ?? '') : '';
+  $variables['target_norm_label'] = $targetNorm ? ($targetNorm->label() ?? '') : '';
+}
+
+/**
  * Implements hook_theme().
  */
 function jaraba_legal_knowledge_theme(): array {

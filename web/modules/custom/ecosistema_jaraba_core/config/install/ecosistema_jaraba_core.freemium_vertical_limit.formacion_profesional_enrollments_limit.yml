@@ -1,0 +1,11 @@
+id: formacion_profesional_enrollments_limit
+label: 'Formacion Profesional: Matriculas activas'
+vertical: formacion
+plan: profesional
+feature_key: enrollments_limit
+limit_value: 500
+description: 'Maximo 500 matriculas activas en plan Profesional Formacion.'
+upgrade_message: 'Has alcanzado el limite de 500 matriculas. Actualiza a Business para ilimitadas.'
+expected_conversion: 0.20
+weight: 23
+status: true

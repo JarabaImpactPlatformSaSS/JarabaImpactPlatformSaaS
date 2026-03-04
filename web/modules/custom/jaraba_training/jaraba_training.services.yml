@@ -4,6 +4,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
+      - '@?jaraba_training.upsell_engine'
 
   jaraba_training.upsell_engine:
     class: Drupal\jaraba_training\Service\UpsellEngine

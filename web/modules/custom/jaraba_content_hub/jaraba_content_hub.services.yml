@@ -124,6 +124,13 @@ services:
       - '@?jaraba_pwa.push'
       - '@logger.channel.jaraba_content_hub'
 
+  # Copilot Bridge: Contexto vertical Content Hub para Copilot IA
+  jaraba_content_hub.copilot_bridge:
+    class: Drupal\jaraba_content_hub\Service\ContentHubCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_content_hub'
+
   # RSS Feed Service
   jaraba_content_hub.rss_service:
     class: Drupal\jaraba_content_hub\Service\RssService

@@ -1,0 +1,11 @@
+id: jaraba_content_hub_profesional_articles_limit
+label: 'Content Hub Profesional: Articulos'
+vertical: jaraba_content_hub
+plan: profesional
+feature_key: articles_limit
+limit_value: 200
+description: 'Maximo 200 articulos publicados en plan Profesional Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 200 articulos. Actualiza a Business para ilimitados.'
+expected_conversion: 0.15
+weight: 20
+status: true

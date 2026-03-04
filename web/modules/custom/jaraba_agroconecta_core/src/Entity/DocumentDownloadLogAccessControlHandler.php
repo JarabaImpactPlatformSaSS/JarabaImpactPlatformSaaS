@@ -6,7 +6,7 @@ namespace Drupal\jaraba_agroconecta_core\Entity;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -15,7 +15,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * Solo lectura — no permite crear ni editar manualmente.
  */
-class DocumentDownloadLogAccessControlHandler extends EntityAccessControlHandler
+class DocumentDownloadLogAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -23,6 +23,12 @@ class DocumentDownloadLogAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResultInterface
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         if ($operation === 'view' && $account->hasPermission('administer agroconecta')) {
             return AccessResult::allowed()->cachePerPermissions();
         }

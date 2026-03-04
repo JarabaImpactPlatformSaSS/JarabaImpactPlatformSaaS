@@ -1,0 +1,11 @@
+id: formacion_profesional_certificates_limit
+label: 'Formacion Profesional: Certificados mensuales'
+vertical: formacion
+plan: profesional
+feature_key: certificates_limit
+limit_value: 200
+description: 'Maximo 200 certificados mensuales en plan Profesional Formacion.'
+upgrade_message: 'Has alcanzado el limite de 200 certificados este mes. Actualiza a Business para ilimitados.'
+expected_conversion: 0.10
+weight: 22
+status: true

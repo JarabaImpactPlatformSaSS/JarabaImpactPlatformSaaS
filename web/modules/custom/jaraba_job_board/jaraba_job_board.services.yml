@@ -11,6 +11,7 @@ services:
       - '@database'
       - '@logger.factory'
       - '@event_dispatcher'
+      - '@?jaraba_job_board.employer'
 
   jaraba_job_board.application:
     class: Drupal\jaraba_job_board\Service\ApplicationService

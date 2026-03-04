@@ -20,5 +20,7 @@ limits:
   storage_gb: 10
   ai_queries: 500
   productores: 20
+  emails_per_month: 5000
+  api_calls_per_month: 10000
 description: 'Limites por defecto para el tier Professional.'
 status: true

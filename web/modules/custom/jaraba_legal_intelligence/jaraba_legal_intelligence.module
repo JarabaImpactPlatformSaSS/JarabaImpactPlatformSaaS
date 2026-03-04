@@ -512,3 +512,109 @@ function jaraba_legal_intelligence_theme(): array {
     ],
   ];
 }
+
+/**
+ * Implements template_preprocess_HOOK() for legal_resolution.
+ *
+ * ENTITY-PREPROCESS-001: Extract resolution data, resolve references.
+ * No entity objects in templates (ZERO-REGION-002).
+ */
+function template_preprocess_legal_resolution(array &$variables): void {
+  try {
+    /** @var \Drupal\jaraba_legal_intelligence\Entity\LegalResolution $entity */
+    $entity = $variables['elements']['#legal_resolution'] ?? NULL;
+    if (!$entity) {
+      return;
+    }
+
+    // Primitives: identification and timestamps.
+    $resolution = [
+      'id' => $entity->id(),
+      'label' => $entity->label() ?? '',
+      'user_id' => NULL,
+      'created' => $entity->get('created')->value ?? 0,
+      'changed' => $entity->get('changed')->value ?? 0,
+      'status_legal' => $entity->get('status_legal')->value ?? 'vigente',
+    ];
+
+    // Core metadata fields.
+    $coreFields = [
+      'source_id', 'external_ref', 'content_hash',
+      'resolution_type', 'issuing_body', 'jurisdiction',
+      'date_issued', 'date_published',
+    ];
+    foreach ($coreFields as $field) {
+      if ($entity->hasField($field)) {
+        $resolution[$field] = $entity->get($field)->value;
+      }
+    }
+
+    // Full text and URL.
+    if ($entity->hasField('full_text')) {
+      $resolution['full_text'] = $entity->get('full_text')->value;
+    }
+    if ($entity->hasField('original_url')) {
+      $resolution['original_url'] = $entity->get('original_url')->value;
+    }
+
+    // AI-generated fields.
+    $aiFields = ['abstract_ai', 'key_holdings'];
+    foreach ($aiFields as $field) {
+      if ($entity->hasField($field)) {
+        $resolution[$field] = $entity->get($field)->value;
+      }
+    }
+
+    // JSON array fields — decode for template use.
+    $resolution['topics'] = $entity->getTopics();
+    $resolution['cited_legislation'] = $entity->getCitedLegislation();
+
+    // EU-specific fields (Doc 178A).
+    $euFields = [
+      'celex_number', 'ecli', 'case_number', 'procedure_type',
+      'respondent_state', 'advocate_general', 'importance_level',
+      'language_original', 'impact_spain',
+    ];
+    foreach ($euFields as $field) {
+      if ($entity->hasField($field)) {
+        $resolution[$field] = $entity->get($field)->value;
+      }
+    }
+    $resolution['cedh_articles'] = $entity->getCedhArticles();
+    $resolution['eu_legal_basis'] = $entity->getEuLegalBasis();
+    $resolution['is_eu_source'] = $entity->isEuSource();
+
+    // SEO slug.
+    if ($entity->hasField('seo_slug')) {
+      $resolution['seo_slug'] = $entity->get('seo_slug')->value;
+    }
+
+    // Qdrant reference fields.
+    if ($entity->hasField('qdrant_collection')) {
+      $resolution['qdrant_collection'] = $entity->get('qdrant_collection')->value;
+    }
+    $resolution['vector_ids'] = $entity->getVectorIds();
+
+    // NLP processing timestamp.
+    if ($entity->hasField('last_nlp_processed')) {
+      $resolution['last_nlp_processed'] = $entity->get('last_nlp_processed')->value;
+    }
+
+    // Resolve owner (user entity) for display name.
+    if ($entity->hasField('uid') && !$entity->get('uid')->isEmpty()) {
+      $owner = $entity->get('uid')->entity;
+      if ($owner) {
+        $resolution['user_id'] = (int) $owner->id();
+        $resolution['owner_name'] = $owner->getDisplayName();
+      }
+    }
+
+    $variables['resolution'] = $resolution;
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('jaraba_legal_intelligence')->error(
+      'Error in template_preprocess_legal_resolution: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+  }
+}

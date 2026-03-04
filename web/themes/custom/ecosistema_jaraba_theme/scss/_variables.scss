@@ -79,6 +79,19 @@ $ej-breakpoint-lg: 992px;
 $ej-breakpoint-xl: 1200px;
 $ej-breakpoint-2xl: 1440px;
 
+// === RTL SUPPORT (GAP-RTL) ===
+// CSS custom properties that flip for RTL layouts.
+// Consumed via: var(--ej-dir-start, left) / var(--ej-dir-end, right)
+// Set by html[dir="rtl"] selector in _base.scss or preprocess_html().
+// When using CSS logical properties directly, these are not needed.
+
+// Mixin for RTL-specific overrides.
+@mixin rtl {
+  [dir="rtl"] & {
+    @content;
+  }
+}
+
 // === HELPER MIXINS ===
 
 // PERF-05: Responsive breakpoint mixins

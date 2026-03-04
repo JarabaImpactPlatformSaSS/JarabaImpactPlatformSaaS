@@ -3,7 +3,7 @@
 namespace Drupal\jaraba_referral\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -21,12 +21,18 @@ use Drupal\Core\Session\AccountInterface;
  * - ReferralAccessControlHandler -> Referral entity (controla acceso)
  * - ReferralAccessControlHandler <- Drupal core (invocado por)
  */
-class ReferralAccessControlHandler extends EntityAccessControlHandler {
+class ReferralAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     if ($account->hasPermission('administer referral settings')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

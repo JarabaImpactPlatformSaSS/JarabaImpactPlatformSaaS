@@ -1,0 +1,18 @@
+{
+  "name": "jaraba-impact-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jaraba Impact Platform SaaS — root package for dev tooling",
+  "scripts": {
+    "prepare": "husky",
+    "lint:js": "echo 'JS lint delegated to theme'",
+    "lint:css": "echo 'CSS lint delegated to theme'",
+    "build": "cd web/themes/custom/ecosistema_jaraba_theme && npm run build",
+    "validate": "bash scripts/validation/validate-all.sh --full",
+    "validate:fast": "bash scripts/validation/validate-all.sh --fast"
+  },
+  "devDependencies": {
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0"
+  }
+}

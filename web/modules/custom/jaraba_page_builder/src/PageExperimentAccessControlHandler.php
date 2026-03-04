@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_page_builder;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -20,7 +20,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @package Drupal\jaraba_page_builder
  */
-class PageExperimentAccessControlHandler extends EntityAccessControlHandler
+class PageExperimentAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -35,6 +35,12 @@ class PageExperimentAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         // Los administradores tienen acceso total.
         if ($account->hasPermission('administer page builder')) {
             return AccessResult::allowed()->cachePerPermissions();

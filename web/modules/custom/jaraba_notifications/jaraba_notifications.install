@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for jaraba_notifications.
+ */
+
+declare(strict_types=1);
+
+/**
+ * GAP-NOTIF-PREFS: Install the notification_preference entity type.
+ */
+function jaraba_notifications_update_10001(): string {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  if ($update_manager->getEntityType('notification_preference')) {
+    return 'Entity type notification_preference already installed.';
+  }
+
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('notification_preference');
+  if (!$entity_type) {
+    return 'Entity type notification_preference not found in code.';
+  }
+
+  try {
+    $update_manager->installEntityType($entity_type);
+  }
+  catch (\Throwable $e) {
+    return 'Failed to install notification_preference: ' . $e->getMessage();
+  }
+
+  \Drupal::logger('jaraba_notifications')->notice('Installed notification_preference entity type (GAP-NOTIF-PREFS).');
+  return 'Installed notification_preference entity type.';
+}

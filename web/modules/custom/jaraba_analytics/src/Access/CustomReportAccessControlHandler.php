@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_analytics\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -19,12 +19,18 @@ use Drupal\Core\Session\AccountInterface;
  * - view: requiere 'access jaraba analytics'
  * - create/update/delete: requiere 'administer jaraba analytics'
  */
-class CustomReportAccessControlHandler extends EntityAccessControlHandler {
+class CustomReportAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     return match ($operation) {
       'view' => AccessResult::allowedIfHasPermission($account, 'access jaraba analytics'),
       'update', 'delete' => AccessResult::allowedIfHasPermission($account, 'administer jaraba analytics'),

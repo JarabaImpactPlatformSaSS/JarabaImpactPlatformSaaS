@@ -15,6 +15,26 @@ function jaraba_legal_knowledge_install(): void {
 }
 
 /**
+ * Instala el tipo de entidad legal_norm_relation (LCIS spec 179 G1).
+ *
+ * Crea la tabla de relaciones entre normas legales para el grafo normativo
+ * del Legal Coherence Intelligence System.
+ */
+function jaraba_legal_knowledge_update_10001(): void {
+  try {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('legal_norm_relation');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+    \Drupal::messenger()->addStatus(t('Entity type legal_norm_relation installed successfully.'));
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_legal_knowledge')->error(
+      'Failed to install legal_norm_relation entity type: @error',
+      ['@error' => $e->getMessage()]
+    );
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function jaraba_legal_knowledge_uninstall(): void {

@@ -1,0 +1,240 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Formación (LMS) routes.
+ *
+ * Covers: /courses, /my-learning, course player, certificates, gamification.
+ * Compile: sass scss/routes/formacion.scss css/routes/formacion.css --style=compressed
+ */
+@use 'sass:color';
+@use '../variables' as *;
+
+// Formacion/LMS — CSS-VAR-ALL-COLORS-001: ALL colors via var(--ej-*, fallback)
+
+.page-formacion {
+  .course-card {
+    background: var(--ej-bg-card, #{$ej-bg-card});
+    border-radius: var(--ej-radius-lg, #{$ej-radius-lg});
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--ej-shadow-lg, #{$ej-shadow-lg});
+    }
+
+    &__image {
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    &__body {
+      padding: $ej-spacing-lg;
+    }
+
+    &__title {
+      color: var(--ej-color-headings, #{$ej-color-headings});
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: $ej-spacing-sm;
+      line-height: 1.3;
+    }
+
+    &__instructor {
+      color: var(--ej-color-muted, #{$ej-color-muted});
+      font-size: 0.8125rem;
+      margin-bottom: $ej-spacing-sm;
+    }
+
+    &__meta {
+      display: flex;
+      align-items: center;
+      gap: $ej-spacing-md;
+      font-size: 0.8125rem;
+      color: var(--ej-color-muted, #{$ej-color-muted});
+    }
+
+    &__level {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.125rem $ej-spacing-sm;
+      border-radius: var(--ej-radius-sm, #{$ej-radius-sm});
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+
+      &--beginner {
+        background: color-mix(in srgb, var(--ej-color-success, #{$ej-color-success}) 12%, transparent);
+        color: var(--ej-color-success, #{$ej-color-success});
+      }
+
+      &--intermediate {
+        background: color-mix(in srgb, var(--ej-color-warning, #{$ej-color-warning}) 12%, transparent);
+        color: var(--ej-color-warning, #{$ej-color-warning});
+      }
+
+      &--advanced {
+        background: color-mix(in srgb, var(--ej-color-corporate, #{$ej-color-corporate}) 12%, transparent);
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+      }
+    }
+
+    &__price {
+      font-weight: 700;
+      color: var(--ej-color-corporate, #{$ej-color-corporate});
+
+      &--free {
+        color: var(--ej-color-success, #{$ej-color-success});
+      }
+    }
+  }
+
+  .learning-progress {
+    height: 6px;
+    background: var(--ej-bg-body, #{$ej-bg-body});
+    border-radius: 3px;
+    overflow: hidden;
+
+    &__fill {
+      height: 100%;
+      background: var(--ej-color-success, #{$ej-color-success});
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    &--large {
+      height: 10px;
+    }
+  }
+
+  .enrollment-card {
+    display: flex;
+    gap: $ej-spacing-md;
+    background: var(--ej-bg-card, #{$ej-bg-card});
+    border-radius: var(--ej-radius-lg, #{$ej-radius-lg});
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    padding: $ej-spacing-md;
+    align-items: center;
+
+    &__thumbnail {
+      width: 80px;
+      height: 60px;
+      border-radius: var(--ej-radius-sm, #{$ej-radius-sm});
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    &__info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__title {
+      font-weight: 600;
+      color: var(--ej-color-headings, #{$ej-color-headings});
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &__progress-text {
+      font-size: 0.8125rem;
+      color: var(--ej-color-muted, #{$ej-color-muted});
+      margin-top: $ej-spacing-xs;
+    }
+  }
+
+  .certificate-card {
+    background: var(--ej-bg-card, #{$ej-bg-card});
+    border: 2px solid color-mix(in srgb, var(--ej-color-corporate, #{$ej-color-corporate}) 20%, transparent);
+    border-radius: var(--ej-radius-lg, #{$ej-radius-lg});
+    padding: $ej-spacing-lg;
+    text-align: center;
+
+    &__title {
+      font-weight: 600;
+      color: var(--ej-color-headings, #{$ej-color-headings});
+    }
+
+    &__date {
+      font-size: 0.8125rem;
+      color: var(--ej-color-muted, #{$ej-color-muted});
+      margin-top: $ej-spacing-xs;
+    }
+
+    &__verify-link {
+      display: inline-block;
+      margin-top: $ej-spacing-sm;
+      color: var(--ej-color-corporate, #{$ej-color-corporate});
+      font-size: 0.8125rem;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .gamification-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: $ej-spacing-md;
+
+    &__item {
+      text-align: center;
+      padding: $ej-spacing-lg $ej-spacing-md;
+      background: var(--ej-bg-card, #{$ej-bg-card});
+      border-radius: var(--ej-radius-md, #{$ej-radius-md});
+      border: 1px solid var(--ej-border-color, #{$ej-border-color});
+
+      &-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+      }
+
+      &-label {
+        font-size: 0.75rem;
+        color: var(--ej-color-muted, #{$ej-color-muted});
+        margin-top: $ej-spacing-xs;
+      }
+    }
+  }
+
+  .leaderboard {
+    &__row {
+      display: flex;
+      align-items: center;
+      gap: $ej-spacing-md;
+      padding: $ej-spacing-sm $ej-spacing-md;
+      border-bottom: 1px solid var(--ej-border-color, #{$ej-border-color});
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &--current-user {
+        background: color-mix(in srgb, var(--ej-color-corporate, #{$ej-color-corporate}) 5%, transparent);
+        border-radius: var(--ej-radius-sm, #{$ej-radius-sm});
+      }
+    }
+
+    &__rank {
+      font-weight: 700;
+      min-width: 2rem;
+      color: var(--ej-color-headings, #{$ej-color-headings});
+    }
+
+    &__name {
+      flex: 1;
+      color: var(--ej-color-body, #{$ej-color-body});
+    }
+
+    &__points {
+      font-weight: 600;
+      color: var(--ej-color-corporate, #{$ej-color-corporate});
+    }
+  }
+}

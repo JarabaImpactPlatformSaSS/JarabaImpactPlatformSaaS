@@ -269,6 +269,18 @@ tooling:
     cmd: drush cr
 
   # ─────────────────────────────────────────────────────
+  # ARCHITECTURAL VALIDATION
+  # ─────────────────────────────────────────────────────
+  validate:
+    service: appserver
+    description: Run all architectural validation checks
+    cmd: bash /app/scripts/validation/validate-all.sh
+  validate-fast:
+    service: appserver
+    description: Run fast validation checks (pre-commit subset)
+    cmd: bash /app/scripts/validation/validate-all.sh --fast
+
+  # ─────────────────────────────────────────────────────
   # SELF-HEALING - Comandos de auto-recuperación
   # Basado en Game Day #1 (2026-01-11)
   # ─────────────────────────────────────────────────────

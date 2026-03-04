@@ -953,6 +953,25 @@ function ecosistema_jaraba_theme_form_system_theme_settings_alter(&$form, FormSt
     '#placeholder' => '23 de febrero de 2026',
   ];
 
+  // --- Acuerdo de Procesamiento de Datos (DPA) ---
+  $form['legal_pages']['dpa'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Acuerdo de Procesamiento de Datos (/acuerdo-procesamiento-datos)'),
+  ];
+  $form['legal_pages']['dpa']['legal_dpa_content'] = [
+    '#type' => 'textarea',
+    '#title' => t('Contenido HTML'),
+    '#default_value' => $config->get('legal_dpa_content') ?: '',
+    '#rows' => 10,
+    '#description' => t('HTML permitido. Describe las obligaciones de procesamiento de datos conforme al RGPD.'),
+  ];
+  $form['legal_pages']['dpa']['legal_dpa_updated'] = [
+    '#type' => 'textfield',
+    '#title' => t('Última actualización'),
+    '#default_value' => $config->get('legal_dpa_updated') ?: '',
+    '#placeholder' => '3 de marzo de 2026',
+  ];
+
   // --- Sobre Nosotros ---
   $form['legal_pages']['about'] = [
     '#type' => 'fieldset',
@@ -1190,6 +1209,42 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     ];
     if (isset($landing_vertical_map[$route])) {
       $variables['attributes']['class'][] = 'landing-page--' . $landing_vertical_map[$route];
+    }
+  }
+
+  // Item 1 — Vertical Brand: inject CSS custom properties + body class.
+  if (\Drupal::hasService('entity_type.manager')) {
+    try {
+      $entityTypeManager = \Drupal::entityTypeManager();
+      if ($entityTypeManager->hasDefinition('vertical_brand')) {
+        // Detect current vertical from route or landing map.
+        $currentVertical = $landing_vertical_map[$route] ?? '';
+        if ($currentVertical) {
+          $brands = $entityTypeManager->getStorage('vertical_brand')
+            ->loadByProperties(['vertical' => $currentVertical]);
+          if (!empty($brands)) {
+            /** @var \Drupal\ecosistema_jaraba_core\Entity\VerticalBrandConfig $brand */
+            $brand = reset($brands);
+            if ($brand->isEnabled()) {
+              $variables['attributes']['class'][] = 'vertical--' . $currentVertical;
+              // Inject CSS custom properties from VerticalBrandConfig.
+              $css_overrides = '';
+              if ($brand->getPrimaryColor()) {
+                $css_overrides .= '--ej-vertical-primary: ' . $brand->getPrimaryColor() . '; ';
+              }
+              if ($brand->getSecondaryColor()) {
+                $css_overrides .= '--ej-vertical-secondary: ' . $brand->getSecondaryColor() . '; ';
+              }
+              if ($css_overrides) {
+                $variables['vertical_brand_css'] = ':root { ' . $css_overrides . '}';
+              }
+            }
+          }
+        }
+      }
+    }
+    catch (\Throwable) {
+      // Theme preprocess should never crash.
     }
   }
 
@@ -2115,6 +2170,17 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
     ];
   }
 
+  // RTL support: directional CSS custom properties (GAP-RTL).
+  $dir = $language->getDirection();
+  if ($dir === 'rtl') {
+    $css_vars .= "--ej-dir-start: right;\n";
+    $css_vars .= "--ej-dir-end: left;\n";
+  }
+  else {
+    $css_vars .= "--ej-dir-start: left;\n";
+    $css_vars .= "--ej-dir-end: right;\n";
+  }
+
   // Inject CSS vars
   if (!empty($css_vars)) {
     $variables['#attached']['html_head'][] = [
@@ -2348,6 +2414,34 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
   $site_config = \Drupal::config('system.site');
   $variables['site_name'] = $site_config->get('name') ?: 'Jaraba Impact Platform';
   $variables['site_slogan'] = $site_config->get('slogan') ?: 'Impulsando el talento y la innovación';
+
+  // Item 1 — Vertical Brand: expose Twig variables for templates.
+  $variables['vertical_brand_name'] = '';
+  $variables['vertical_tagline'] = '';
+  $variables['vertical_icon'] = [];
+  try {
+    if (\Drupal::hasService('entity_type.manager')) {
+      $etm = \Drupal::entityTypeManager();
+      if ($etm->hasDefinition('vertical_brand')) {
+        $route = (string) \Drupal::routeMatch()->getRouteName();
+        $brands = $etm->getStorage('vertical_brand')->loadMultiple();
+        foreach ($brands as $brand) {
+          if ($brand->isEnabled() && $brand->getLandingRoute() === $route) {
+            $variables['vertical_brand_name'] = $brand->getPublicName();
+            $variables['vertical_tagline'] = $brand->getTagline();
+            $variables['vertical_icon'] = [
+              'category' => $brand->getIconCategory(),
+              'name' => $brand->getIconName(),
+            ];
+            break;
+          }
+        }
+      }
+    }
+  }
+  catch (\Throwable) {
+    // Theme must never crash.
+  }
 
   // =========================================================================
   // META-SITIO OVERRIDE (H4, H5) — Header/Footer/Nav tenant-aware
@@ -4350,6 +4444,7 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
     'jaraba_ai_agents.causal_analytics_dashboard' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/route-causal-analytics'],
     'jaraba_ai_agents.' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'jaraba_copilot' => ['ecosistema_jaraba_theme/route-ai-features', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
+    'ecosistema_jaraba_core.static.' => ['ecosistema_jaraba_theme/route-legal-pages'],
     'jaraba_candidate.jobseeker' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
     'jaraba_candidate.dashboard' => ['ecosistema_jaraba_theme/bundle-jobseeker-dashboard'],
     'jaraba_agents.' => ['ecosistema_jaraba_theme/bundle-agent-dashboard'],

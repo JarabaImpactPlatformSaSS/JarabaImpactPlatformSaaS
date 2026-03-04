@@ -45,7 +45,7 @@ jaraba_sla.api.postmortem_create:
     _controller: '\Drupal\jaraba_sla\Controller\SlaApiController::createPostmortem'
   requirements:
     _permission: 'manage postmortems'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   methods: [POST]
 
 jaraba_sla.api.postmortems:

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Drupal\ecosistema_jaraba_core\Twig;
 
 use Drupal\Component\Utility\Xss;
+use Drupal\ecosistema_jaraba_core\Service\FeatureGateRouterService;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use Twig\TwigTest;
 
 /**
  * Jaraba SaaS Twig Extension.
@@ -21,6 +23,11 @@ class JarabaTwigExtension extends AbstractExtension
      * FeatureFlagService (lazy-loaded to avoid circular deps).
      */
     protected mixed $featureFlagService = NULL;
+
+    /**
+     * FeatureGateRouterService (lazy-loaded).
+     */
+    protected mixed $featureGateRouter = NULL;
 
     /**
      * Brand color palette - Official Jaraba colors.
@@ -67,7 +74,37 @@ class JarabaTwigExtension extends AbstractExtension
             new TwigFilter('safe_html', [$this, 'filterSafeHtml'], [
                 'is_safe' => ['html'],
             ]),
+            new TwigFilter('currency', [$this, 'filterCurrency']),
         ];
+    }
+
+    /**
+     * GAP-CURRENCY: Formats a price with tenant-aware currency.
+     *
+     * Usage: {{ price|currency }} or {{ price|currency('USD') }}
+     *
+     * @param float|int|string|null $amount
+     *   The amount to format.
+     * @param string|null $currencyCode
+     *   Optional ISO 4217 code override.
+     *
+     * @return string
+     *   Formatted price string.
+     */
+    public function filterCurrency(float|int|string|null $amount, ?string $currencyCode = NULL): string {
+      if ($amount === NULL) {
+        return '';
+      }
+      if (\Drupal::hasService('ecosistema_jaraba_core.currency')) {
+        try {
+          return \Drupal::service('ecosistema_jaraba_core.currency')->formatPrice($amount, $currencyCode);
+        }
+        catch (\Throwable) {
+          // Fallback below.
+        }
+      }
+      // Minimal fallback if service unavailable.
+      return number_format((float) $amount, 2, ',', '.') . ' €';
     }
 
     /**
@@ -91,6 +128,65 @@ class JarabaTwigExtension extends AbstractExtension
             return '';
         }
         return Xss::filterAdmin($html);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTests(): array
+    {
+        return [
+            new TwigTest('feature_allowed', [$this, 'isFeatureAllowed']),
+        ];
+    }
+
+    /**
+     * Checks if a feature is allowed for the current user/tenant.
+     *
+     * Usage in Twig:
+     *   {% if 'courses_limit' is feature_allowed('formacion') %}
+     *     {# Show create course button #}
+     *   {% endif %}
+     *
+     * @param string $featureKey
+     *   The feature key to check.
+     * @param string $vertical
+     *   The vertical to check against (VERTICAL-CANONICAL-001).
+     *
+     * @return bool
+     *   TRUE if the feature is allowed.
+     */
+    public function isFeatureAllowed(string $featureKey, string $vertical = ''): bool
+    {
+        try {
+            if ($this->featureGateRouter === NULL) {
+                if (\Drupal::hasService('ecosistema_jaraba_core.feature_gate_router')) {
+                    $this->featureGateRouter = \Drupal::service('ecosistema_jaraba_core.feature_gate_router');
+                } else {
+                    $this->featureGateRouter = FALSE;
+                }
+            }
+
+            if ($this->featureGateRouter instanceof FeatureGateRouterService) {
+                // If vertical is empty, try to detect from avatar/context.
+                if ($vertical === '') {
+                    if (\Drupal::hasService('ecosistema_jaraba_core.avatar_detection')) {
+                        /** @var \Drupal\ecosistema_jaraba_core\Service\AvatarDetectionService $avatarService */
+                        $avatarService = \Drupal::service('ecosistema_jaraba_core.avatar_detection');
+                        $result = $avatarService->detect();
+                        $vertical = $result->vertical ?? 'demo';
+                    } else {
+                        $vertical = 'demo';
+                    }
+                }
+
+                $result = $this->featureGateRouter->check($vertical, $featureKey);
+                return $result->isAllowed();
+            }
+        } catch (\Throwable) {
+            // Graceful degradation: feature allowed by default.
+        }
+        return TRUE;
     }
 
     /**

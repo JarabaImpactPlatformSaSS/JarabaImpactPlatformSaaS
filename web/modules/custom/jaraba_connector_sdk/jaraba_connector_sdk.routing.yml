@@ -40,7 +40,7 @@ jaraba_connector_sdk.api.rate:
     _user_is_logged_in: 'TRUE'
     connector_id: \d+
   options:
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_connector_sdk.api.install:
   path: '/api/v1/connectors/{connector_id}/install'
@@ -51,7 +51,7 @@ jaraba_connector_sdk.api.install:
     _permission: 'use connector marketplace'
     connector_id: \d+
   options:
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_connector_sdk.api.uninstall:
   path: '/api/v1/connectors/{connector_id}/uninstall'
@@ -62,7 +62,7 @@ jaraba_connector_sdk.api.uninstall:
     _permission: 'use connector marketplace'
     connector_id: \d+
   options:
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_connector_sdk.api.configure:
   path: '/api/v1/connectors/{connector_id}/configure'
@@ -73,7 +73,7 @@ jaraba_connector_sdk.api.configure:
     _permission: 'use connector marketplace'
     connector_id: \d+
   options:
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_connector_sdk.api.status:
   path: '/api/v1/connectors/{connector_id}/status'
@@ -96,7 +96,7 @@ jaraba_connector_sdk.api.developer.submit:
   requirements:
     _permission: 'submit connector'
   options:
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_connector_sdk.api.developer.certify:
   path: '/api/v1/developer/certify/{connector_id}'
@@ -107,7 +107,7 @@ jaraba_connector_sdk.api.developer.certify:
     _permission: 'certify connector'
     connector_id: \d+
   options:
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # =============================================================================
 # ADMIN SETTINGS

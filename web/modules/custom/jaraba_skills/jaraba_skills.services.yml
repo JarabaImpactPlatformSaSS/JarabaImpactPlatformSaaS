@@ -5,6 +5,7 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_skills'
       - '@jaraba_skills.usage_service'
+      - '@?jaraba_skills.ab_testing'
 
   jaraba_skills.skill_embedding:
     class: Drupal\jaraba_skills\Service\SkillEmbeddingService

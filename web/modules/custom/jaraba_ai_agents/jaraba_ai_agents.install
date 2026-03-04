@@ -352,3 +352,107 @@ function jaraba_ai_agents_update_10009(): string {
 
   return 'Installed entity types: ' . (empty($installed) ? 'none (already existed)' : implode(', ', $installed));
 }
+
+/**
+ * Implements hook_requirements().
+ *
+ * Runtime checks for AI stack health visible at /admin/reports/status.
+ */
+function jaraba_ai_agents_requirements($phase) {
+  $requirements = [];
+
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  // Check 1: Model routing config exists.
+  $model_config = \Drupal::config('jaraba_ai_agents.model_routing');
+  if ($model_config->isNew() || empty($model_config->getRawData())) {
+    $requirements['jaraba_ai_model_routing'] = [
+      'title' => t('AI Agents - Model Routing'),
+      'value' => t('Not configured'),
+      'description' => t('The model routing configuration (jaraba_ai_agents.model_routing) is missing. AI agents cannot select the appropriate model tier.'),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  else {
+    $tiers = $model_config->get('tiers') ?? [];
+    $requirements['jaraba_ai_model_routing'] = [
+      'title' => t('AI Agents - Model Routing'),
+      'value' => t('@count tier(s) configured', ['@count' => count($tiers)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  // Check 2: At least one AI provider API key is configured.
+  // Canonical env var names match .env, deploy.yml secrets, and Key module.
+  $has_api_key = FALSE;
+  $env_vars = [
+    'ANTHROPIC_API_KEY' => 'Anthropic',
+    'GOOGLE_GEMINI_API_KEY' => 'Google Gemini',
+  ];
+  $configured_providers = [];
+  foreach ($env_vars as $env_var => $label) {
+    if (!empty(getenv($env_var))) {
+      $has_api_key = TRUE;
+      $configured_providers[] = $label;
+    }
+  }
+  // Also check Key module entities as fallback.
+  if (!$has_api_key) {
+    try {
+      $key_storage = \Drupal::entityTypeManager()->getStorage('key');
+      $key_ids = ['anthropic_api', 'google_gemini_api_key'];
+      foreach ($key_ids as $key_id) {
+        $key = $key_storage->load($key_id);
+        if ($key && !empty($key->getKeyValue())) {
+          $has_api_key = TRUE;
+          $configured_providers[] = $key->label();
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      // Key module may not be installed.
+    }
+  }
+
+  if (!$has_api_key) {
+    $requirements['jaraba_ai_api_keys'] = [
+      'title' => t('AI Agents - API Keys'),
+      'value' => t('No API keys configured'),
+      'description' => t('No AI provider API keys found. Set ANTHROPIC_API_KEY or GOOGLE_GEMINI_API_KEY in .env / environment.'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+  else {
+    $requirements['jaraba_ai_api_keys'] = [
+      'title' => t('AI Agents - API Keys'),
+      'value' => t('Configured: @providers', ['@providers' => implode(', ', $configured_providers)]),
+      'severity' => REQUIREMENT_OK,
+    ];
+  }
+
+  // Check 3: Agent count via tagged services.
+  try {
+    if (\Drupal::hasService('jaraba_ai_agents.tool_registry')) {
+      $requirements['jaraba_ai_agents_count'] = [
+        'title' => t('AI Agents - Tool Registry'),
+        'value' => t('ToolRegistry service available'),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+    else {
+      $requirements['jaraba_ai_agents_count'] = [
+        'title' => t('AI Agents - Tool Registry'),
+        'value' => t('ToolRegistry not available'),
+        'description' => t('The jaraba_ai_agents.tool_registry service is not registered.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+  }
+  catch (\Throwable $e) {
+    // Skip if container issue.
+  }
+
+  return $requirements;
+}

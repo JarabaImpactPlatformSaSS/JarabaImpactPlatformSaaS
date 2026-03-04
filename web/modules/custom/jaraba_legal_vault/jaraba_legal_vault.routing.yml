@@ -48,7 +48,7 @@ jaraba_legal_vault.api.documents.store:
   methods: [POST]
   requirements:
     _permission: 'manage vault documents'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_legal_vault.api.documents.detail:
   path: '/api/v1/vault/documents/{uuid}'
@@ -66,6 +66,7 @@ jaraba_legal_vault.api.documents.delete:
   methods: [DELETE]
   requirements:
     _permission: 'manage vault documents'
+    _csrf_request_header_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_vault.api.documents.versions.store:
@@ -75,7 +76,7 @@ jaraba_legal_vault.api.documents.versions.store:
   methods: [POST]
   requirements:
     _permission: 'manage vault documents'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_vault.api.documents.versions.list:
@@ -96,7 +97,7 @@ jaraba_legal_vault.api.documents.share:
   methods: [POST]
   requirements:
     _permission: 'manage document access'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 jaraba_legal_vault.api.documents.access.list:
@@ -115,6 +116,7 @@ jaraba_legal_vault.api.access.revoke:
   methods: [DELETE]
   requirements:
     _permission: 'manage document access'
+    _csrf_request_header_token: 'TRUE'
     id: '\d+'
 
 jaraba_legal_vault.api.access.revoke_all:
@@ -124,6 +126,7 @@ jaraba_legal_vault.api.access.revoke_all:
   methods: [DELETE]
   requirements:
     _permission: 'manage document access'
+    _csrf_request_header_token: 'TRUE'
     uuid: '[a-f0-9\-]+'
 
 # --- API REST — Auditoria ---

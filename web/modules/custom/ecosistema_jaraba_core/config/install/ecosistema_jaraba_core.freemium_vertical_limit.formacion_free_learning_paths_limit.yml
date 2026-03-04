@@ -1,0 +1,11 @@
+id: formacion_free_learning_paths_limit
+label: 'Formacion Free: Rutas de aprendizaje'
+vertical: formacion
+plan: free
+feature_key: learning_paths_limit
+limit_value: 1
+description: 'Maximo 1 ruta de aprendizaje en plan gratuito Formacion.'
+upgrade_message: 'Has alcanzado el limite de rutas de aprendizaje. Actualiza a Starter para crear hasta 5.'
+expected_conversion: 0.25
+weight: 1
+status: true

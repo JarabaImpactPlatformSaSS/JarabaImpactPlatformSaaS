@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_legal_cases\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -19,12 +19,18 @@ use Drupal\Core\Session\AccountInterface;
  *   acceso completo. Los abogados ven/gestionan sus expedientes
  *   asignados (assigned_to o uid = owner).
  */
-class ClientCaseAccessControlHandler extends EntityAccessControlHandler {
+class ClientCaseAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     if ($account->hasPermission('manage legal cases')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

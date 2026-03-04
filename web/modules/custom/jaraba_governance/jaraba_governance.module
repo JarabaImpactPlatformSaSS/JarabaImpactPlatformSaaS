@@ -39,3 +39,46 @@ function jaraba_governance_theme(): array {
     ],
   ];
 }
+
+
+/**
+ * Prepares variables for data_classification templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_governance_preprocess_data_classification(array &$variables): void {
+  $entity = $variables['elements']['#data_classification'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['data_classification'] = $entity;
+}
+
+/**
+ * Prepares variables for data_lineage_event templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_governance_preprocess_data_lineage_event(array &$variables): void {
+  $entity = $variables['elements']['#data_lineage_event'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['data_lineage_event'] = $entity;
+}
+
+/**
+ * Prepares variables for erasure_request templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_governance_preprocess_erasure_request(array &$variables): void {
+  $entity = $variables['elements']['#erasure_request'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['erasure_request'] = $entity;
+}

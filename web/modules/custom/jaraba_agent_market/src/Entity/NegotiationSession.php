@@ -22,6 +22,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   links = {
  *     "collection" = "/admin/content/negotiation-sessions",
  *   },
+ *   admin_permission = "administer agent market",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",

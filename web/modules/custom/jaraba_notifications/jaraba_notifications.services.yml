@@ -10,3 +10,11 @@ services:
       - '@current_user'
       - '@logger.channel.jaraba_notifications'
       - '@?ecosistema_jaraba_core.tenant_context'
+
+  # GAP-NOTIF-PREFS: Servicio de preferencias de notificacion.
+  jaraba_notifications.preference:
+    class: Drupal\jaraba_notifications\Service\NotificationPreferenceService
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@logger.channel.jaraba_notifications'

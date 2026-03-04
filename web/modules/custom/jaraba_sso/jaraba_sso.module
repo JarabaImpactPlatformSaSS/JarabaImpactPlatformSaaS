@@ -8,3 +8,32 @@ declare(strict_types=1);
  *
  * Doc 199 — N3 Enterprise Class.
  */
+
+
+/**
+ * Prepares variables for mfa_policy templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_sso_preprocess_mfa_policy(array &$variables): void {
+  $entity = $variables['elements']['#mfa_policy'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mfa_policy'] = $entity;
+}
+
+/**
+ * Prepares variables for sso_configuration templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_sso_preprocess_sso_configuration(array &$variables): void {
+  $entity = $variables['elements']['#sso_configuration'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sso_configuration'] = $entity;
+}

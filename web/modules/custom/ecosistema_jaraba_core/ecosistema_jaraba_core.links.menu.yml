@@ -230,3 +230,14 @@ entity.saas_plan_features.collection:
   route_name: entity.saas_plan_features.collection
   parent: system.admin_config
   weight: 56
+
+# ---------------------------------------------------------------------------
+# MENU DE CONFIGURACION - FAIR USE POLICIES
+# ---------------------------------------------------------------------------
+
+entity.fair_use_policy.collection:
+  title: 'Fair Use Policies'
+  description: 'Gestiona las politicas de Fair Use: umbrales, enforcement, precios overage, tolerancia burst y gracia por tier'
+  route_name: entity.fair_use_policy.collection
+  parent: system.admin_config
+  weight: 57

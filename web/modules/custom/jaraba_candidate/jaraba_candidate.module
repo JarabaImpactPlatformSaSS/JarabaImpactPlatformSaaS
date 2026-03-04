@@ -145,6 +145,7 @@ function jaraba_candidate_theme(): array {
  *
  * - Adjunta la librería modal-system a las rutas del módulo candidato.
  * - Adds Open Graph meta tags for public candidate profiles.
+ * - Injects Schema.org Person JSON-LD for public profiles (GAP-SCHEMA-8).
  */
 function jaraba_candidate_page_attachments_alter(array &$attachments): void {
   $route_match = \Drupal::routeMatch();
@@ -154,7 +155,7 @@ function jaraba_candidate_page_attachments_alter(array &$attachments): void {
     $attachments['#attached']['library'][] = 'jaraba_candidate/modal-actions';
   }
 
-  // Open Graph meta tags for public candidate profile.
+  // Open Graph meta tags + Schema.org for public candidate profile.
   if ($route === 'jaraba_candidate.profile_view') {
     $profile = $route_match->getParameter('candidate_profile');
     if ($profile && $profile->isPublic()) {
@@ -182,6 +183,73 @@ function jaraba_candidate_page_attachments_alter(array &$attachments): void {
         ];
         $attachments['#attached']['html_head'][] = [$tag, 'jaraba_cp_' . $property];
       }
+
+      // Schema.org Person JSON-LD (GAP-SCHEMA-8).
+      $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Person',
+        'name' => $profile->getFullName(),
+        'url' => $url,
+      ];
+
+      $headline = $profile->getHeadline();
+      if ($headline) {
+        $schema['jobTitle'] = $headline;
+      }
+
+      if ($description) {
+        $schema['description'] = $description;
+      }
+
+      // Address from city + country.
+      $city = $profile->get('city')->value ?? '';
+      $country = $profile->get('country')->value ?? '';
+      if ($city) {
+        $address = [
+          '@type' => 'PostalAddress',
+          'addressLocality' => $city,
+        ];
+        if ($country) {
+          $address['addressCountry'] = $country;
+        }
+        $schema['address'] = $address;
+      }
+
+      // sameAs: social/professional links.
+      $sameAs = [];
+      foreach (['linkedin_url', 'github_url', 'portfolio_url', 'website_url'] as $field) {
+        if ($profile->hasField($field) && !$profile->get($field)->isEmpty()) {
+          $sameAs[] = $profile->get($field)->value;
+        }
+      }
+      if (!empty($sameAs)) {
+        $schema['sameAs'] = $sameAs;
+      }
+
+      // Profile photo.
+      if ($profile->hasField('photo') && !$profile->get('photo')->isEmpty()) {
+        $file = $profile->get('photo')->entity;
+        if ($file) {
+          $schema['image'] = \Drupal::service('file_url_generator')
+            ->generateAbsoluteString($file->getFileUri());
+        }
+      }
+
+      // knowsAbout from experience level.
+      $experienceLevel = $profile->get('experience_level')->value ?? '';
+      if ($experienceLevel) {
+        $schema['knowsAbout'] = $experienceLevel;
+      }
+
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => ['type' => 'application/ld+json'],
+          '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        ],
+        'schema_org_person',
+      ];
     }
   }
 }
@@ -266,4 +334,156 @@ function jaraba_candidate_entity_presave(EntityInterface $entity): void {
       ['@address' => $address, '@error' => $e->getMessage()]
     );
   }
+}
+
+/**
+ * Implements template_preprocess_HOOK() for candidate_profile.
+ *
+ * ENTITY-PREPROCESS-001: Extract primitives, resolve references,
+ * generate photo URL. No entity objects in templates.
+ */
+function template_preprocess_candidate_profile(array &$variables): void {
+  /** @var \Drupal\jaraba_candidate\Entity\CandidateProfile $entity */
+  $entity = $variables['elements']['#candidate_profile'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $profile = [
+    'id' => $entity->id(),
+    'full_name' => method_exists($entity, 'getFullName') ? $entity->getFullName() : '',
+    'headline' => $entity->get('headline')->value ?? '',
+    'summary' => $entity->get('summary')->value ?? '',
+    'email' => $entity->get('email')->value ?? '',
+    'phone' => $entity->get('phone')->value ?? '',
+    'city' => $entity->get('city')->value ?? '',
+    'province' => $entity->get('province')->value ?? '',
+    'country' => $entity->get('country')->value ?? '',
+    'experience_years' => (int) ($entity->get('experience_years')->value ?? 0),
+    'experience_level' => $entity->get('experience_level')->value ?? '',
+    'education_level' => $entity->get('education_level')->value ?? '',
+    'availability_status' => $entity->get('availability_status')->value ?? 'not_specified',
+    'completion_percent' => (int) ($entity->get('completion_percent')->value ?? 0),
+    'is_public' => (bool) ($entity->get('is_public')->value ?? FALSE),
+    'is_verified' => (bool) ($entity->get('is_verified')->value ?? FALSE),
+    'linkedin_url' => $entity->get('linkedin_url')->value ?? '',
+    'github_url' => $entity->get('github_url')->value ?? '',
+    'portfolio_url' => $entity->get('portfolio_url')->value ?? '',
+    'website_url' => $entity->get('website_url')->value ?? '',
+  ];
+
+  // Photo URL.
+  if ($entity->hasField('photo') && !$entity->get('photo')->isEmpty()) {
+    $file = $entity->get('photo')->entity;
+    if ($file) {
+      $style = \Drupal\image\Entity\ImageStyle::load('thumbnail');
+      $profile['photo_url'] = $style
+        ? $style->buildUrl($file->getFileUri())
+        : \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+    }
+  }
+
+  // Preferred job types.
+  $profile['preferred_job_types'] = [];
+  $jobTypes = $entity->get('preferred_job_types')->value ?? '';
+  if (!empty($jobTypes)) {
+    $profile['preferred_job_types'] = array_filter(explode(',', $jobTypes));
+  }
+
+  $variables['profile'] = $profile;
+}
+
+/**
+ * Implements template_preprocess_HOOK() for candidate_experience.
+ *
+ * ENTITY-PREPROCESS-001: Extract work experience primitives.
+ */
+function template_preprocess_candidate_experience(array &$variables): void {
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $entity = $variables['elements']['#candidate_experience'] ?? NULL;
+  if (!$entity) {
+    return;
+  }
+
+  $variables['experience'] = [
+    'id' => $entity->id(),
+    'company_name' => $entity->get('company_name')->value ?? '',
+    'job_title' => $entity->get('job_title')->value ?? '',
+    'description' => $entity->get('description')->value ?? '',
+    'start_date' => $entity->get('start_date')->value ?? '',
+    'end_date' => $entity->get('end_date')->value ?? '',
+    'is_current' => (bool) ($entity->get('is_current')->value ?? FALSE),
+    'location' => $entity->get('location')->value ?? '',
+  ];
+}
+
+
+/**
+ * Prepares variables for candidate_education templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_candidate_preprocess_candidate_education(array &$variables): void {
+  $entity = $variables['elements']['#candidate_education'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['candidate_education'] = $entity;
+}
+
+/**
+ * Prepares variables for candidate_language templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_candidate_preprocess_candidate_language(array &$variables): void {
+  $entity = $variables['elements']['#candidate_language'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['candidate_language'] = $entity;
+}
+
+/**
+ * Prepares variables for candidate_skill templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_candidate_preprocess_candidate_skill(array &$variables): void {
+  $entity = $variables['elements']['#candidate_skill'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['candidate_skill'] = $entity;
+}
+
+/**
+ * Prepares variables for copilot_conversation templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_candidate_preprocess_copilot_conversation(array &$variables): void {
+  $entity = $variables['elements']['#copilot_conversation'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['copilot_conversation'] = $entity;
+}
+
+/**
+ * Prepares variables for copilot_message templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_candidate_preprocess_copilot_message(array &$variables): void {
+  $entity = $variables['elements']['#copilot_message'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['copilot_message'] = $entity;
 }

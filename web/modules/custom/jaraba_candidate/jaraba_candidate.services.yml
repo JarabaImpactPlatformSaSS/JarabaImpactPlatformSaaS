@@ -1,4 +1,8 @@
 services:
+  logger.channel.jaraba_candidate:
+    parent: logger.channel_base
+    arguments: ['jaraba_candidate']
+
   # ============================================================================
   # SERVICIOS PRINCIPALES DE CANDIDATO
   # ============================================================================
@@ -105,6 +109,16 @@ services:
   # ============================================================================
   # BREADCRUMBS
   # ============================================================================
+
+  # ============================================================================
+  # COPILOT BRIDGE: Contexto vertical Empleabilidad para Copilot IA
+  # ============================================================================
+
+  jaraba_candidate.copilot_bridge:
+    class: Drupal\jaraba_candidate\Service\EmpleabilidadCopilotBridgeService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_candidate'
 
   jaraba_candidate.breadcrumb:
     class: Drupal\jaraba_candidate\Breadcrumb\CandidateBreadcrumbBuilder

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_business_tools\Access;
 
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
@@ -12,7 +12,7 @@ use Drupal\Core\Access\AccessResult;
 /**
  * Access control handler for Business Model Canvas entities.
  */
-class BusinessModelCanvasAccessControlHandler extends EntityAccessControlHandler
+class BusinessModelCanvasAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -20,6 +20,12 @@ class BusinessModelCanvasAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         /** @var \Drupal\jaraba_business_tools\Entity\BusinessModelCanvasInterface $entity */
 
         // Admin permission grants full access.

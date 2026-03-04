@@ -216,7 +216,7 @@ class PricingRuleEngine
       'subtotal' => round($subtotal, 2),
       'tax' => $tax,
       'total' => round($subtotal + $tax, 2),
-      'currency' => 'EUR',
+      'currency' => $this->resolveTenantCurrency(),
     ];
   }
 
@@ -348,6 +348,24 @@ class PricingRuleEngine
     ];
 
     return (string) ($labels[$metric] ?? ucfirst(str_replace('_', ' ', $metric)));
+  }
+
+  /**
+   * GAP-CURRENCY: Resolves currency from current tenant context.
+   *
+   * @return string
+   *   ISO 4217 currency code.
+   */
+  protected function resolveTenantCurrency(): string {
+    if (\Drupal::hasService('ecosistema_jaraba_core.currency')) {
+      try {
+        return \Drupal::service('ecosistema_jaraba_core.currency')->getCurrentCurrency();
+      }
+      catch (\Throwable) {
+        // Fallback below.
+      }
+    }
+    return 'EUR';
   }
 
 }

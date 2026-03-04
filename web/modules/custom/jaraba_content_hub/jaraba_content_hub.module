@@ -1092,3 +1092,32 @@ function template_preprocess_content_author(array &$variables): void {
 
   $variables['author'] = $author;
 }
+
+
+/**
+ * Prepares variables for content_category templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_content_hub_preprocess_content_category(array &$variables): void {
+  $entity = $variables['elements']['#content_category'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['content_category'] = $entity;
+}
+
+/**
+ * Prepares variables for content_comment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_content_hub_preprocess_content_comment(array &$variables): void {
+  $entity = $variables['elements']['#content_comment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['content_comment'] = $entity;
+}

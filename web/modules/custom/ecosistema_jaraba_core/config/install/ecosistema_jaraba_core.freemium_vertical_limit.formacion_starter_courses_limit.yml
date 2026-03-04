@@ -1,0 +1,11 @@
+id: formacion_starter_courses_limit
+label: 'Formacion Starter: Cursos'
+vertical: formacion
+plan: starter
+feature_key: courses_limit
+limit_value: 15
+description: 'Maximo 15 cursos en plan Starter Formacion.'
+upgrade_message: 'Has alcanzado el limite de 15 cursos. Actualiza a Profesional para crear hasta 50.'
+expected_conversion: 0.25
+weight: 10
+status: true

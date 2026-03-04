@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * Template for email unsubscribe confirmation page.
+ *
+ * Available variables:
+ * - email: The email address being unsubscribed.
+ * - process_url: POST URL to confirm unsubscription.
+ *
+ * CSS-VAR-ALL-COLORS-001: All colors use var(--ej-*, fallback).
+ */
+#}
+{# CSS-VAR-ALL-COLORS-001: Inline <style> with var(--ej-*, fallback) tokens.
+   This page renders outside the full theme context (public, no session),
+   so we include minimal styles directly. #}
+<style>
+.ej-unsubscribe-confirm {
+  max-width: 500px;
+  margin: 3rem auto;
+  text-align: center;
+  padding: 2rem;
+}
+.ej-unsubscribe-confirm__title {
+  color: var(--ej-text-primary, #1e293b);
+}
+.ej-unsubscribe-confirm__email {
+  color: var(--ej-text-secondary, #64748b);
+  font-size: 0.875rem;
+}
+.ej-unsubscribe-confirm__btn {
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
+  background: var(--ej-azul-corporativo, #233d63);
+  color: var(--ej-text-on-primary, #fff);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: opacity 0.2s;
+}
+.ej-unsubscribe-confirm__btn:hover {
+  opacity: 0.9;
+}
+.ej-unsubscribe-confirm__btn:focus-visible {
+  outline: 2px solid var(--ej-naranja-impulso, #ff8c42);
+  outline-offset: 2px;
+}
+.ej-unsubscribe-confirm__disclaimer {
+  margin-top: 1.5rem;
+  font-size: 0.8125rem;
+  color: var(--ej-text-tertiary, #94a3b8);
+}
+</style>
+<div class="ej-unsubscribe-confirm">
+  <h2 class="ej-unsubscribe-confirm__title">{% trans %}Confirmar baja{% endtrans %}</h2>
+  <p class="ej-unsubscribe-confirm__text">{% trans %}¿Estás seguro de que deseas darte de baja de nuestras comunicaciones?{% endtrans %}</p>
+  <p class="ej-unsubscribe-confirm__email">{{ email }}</p>
+  <form method="post" action="{{ process_url }}">
+    <button type="submit" class="ej-unsubscribe-confirm__btn">
+      {% trans %}Confirmar baja{% endtrans %}
+    </button>
+  </form>
+  <p class="ej-unsubscribe-confirm__disclaimer">
+    {% trans %}Si no solicitaste esta baja, simplemente ignora esta página.{% endtrans %}
+  </p>
+</div>

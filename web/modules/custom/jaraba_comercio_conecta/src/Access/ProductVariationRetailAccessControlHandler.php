@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_comercio_conecta\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -20,7 +20,7 @@ use Drupal\Core\Session\AccountInterface;
  *   solo pueden modificar variaciones de sus propios productos.
  *   Cualquier usuario con 'view comercio products' puede ver las variaciones.
  */
-class ProductVariationRetailAccessControlHandler extends EntityAccessControlHandler {
+class ProductVariationRetailAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
@@ -36,6 +36,12 @@ class ProductVariationRetailAccessControlHandler extends EntityAccessControlHand
    *   Resultado de acceso permitido, denegado o neutral.
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     // Acceso completo para administradores del módulo
     if ($account->hasPermission('manage comercio products')) {
       return AccessResult::allowed()->cachePerPermissions();

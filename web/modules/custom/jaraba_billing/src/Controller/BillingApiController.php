@@ -529,4 +529,42 @@ class BillingApiController extends ControllerBase implements ContainerInjectionI
     }
   }
 
+  /**
+   * GET /api/v1/billing/proration-preview — Preview proration for plan change.
+   *
+   * GAP-PRORATION: Shows the user what they would pay/be credited
+   * before confirming an upgrade or downgrade.
+   *
+   * Query params: new_price_id (required).
+   */
+  public function prorationPreview(Request $request): JsonResponse {
+    $tenantId = $this->getCurrentTenantId();
+    if (!$tenantId) {
+      return new JsonResponse(['success' => FALSE, 'error' => 'Tenant not found'], 403);
+    }
+
+    $newPriceId = $request->query->get('new_price_id');
+    if (!$newPriceId) {
+      return new JsonResponse(['success' => FALSE, 'error' => 'new_price_id parameter required'], 400);
+    }
+
+    try {
+      $tenant = $this->entityTypeManager()->getStorage('tenant')->load($tenantId);
+      $subscriptionId = $tenant?->get('stripe_subscription_id')->value ?? NULL;
+
+      if (!$subscriptionId) {
+        return new JsonResponse(['success' => FALSE, 'error' => 'No active subscription'], 404);
+      }
+
+      $prorationService = \Drupal::service('jaraba_billing.proration');
+      $preview = $prorationService->previewProration($subscriptionId, $newPriceId);
+
+      return new JsonResponse(['success' => TRUE, 'data' => $preview]);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Proration preview error: @error', ['@error' => $e->getMessage()]);
+      return new JsonResponse(['success' => FALSE, 'error' => 'Se produjo un error al calcular el prorrateo.'], 500);
+    }
+  }
+
 }

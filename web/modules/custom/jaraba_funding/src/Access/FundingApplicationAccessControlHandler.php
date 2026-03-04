@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_funding\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -20,12 +20,18 @@ use Drupal\Core\Session\AccountInterface;
  *   puede ver y editar sus propias solicitudes. Otros usuarios
  *   necesitan permisos explicitos.
  */
-class FundingApplicationAccessControlHandler extends EntityAccessControlHandler {
+class FundingApplicationAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     if ($account->hasPermission('administer funding')) {
       return AccessResult::allowed()->cachePerPermissions();
     }

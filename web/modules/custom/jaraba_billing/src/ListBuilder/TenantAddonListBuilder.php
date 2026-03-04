@@ -52,7 +52,12 @@ class TenantAddonListBuilder extends EntityListBuilder {
 
     $row['addon_code'] = $addonLabels[$code] ?? $code;
     $row['tenant_id'] = $entity->get('tenant_id')->target_id ?? '-';
-    $row['price'] = $entity->get('price')->value . ' EUR';
+    $currency = 'EUR';
+    if (\Drupal::hasService('ecosistema_jaraba_core.currency')) {
+      $tenantId = $entity->get('tenant_id')->target_id;
+      $currency = \Drupal::service('ecosistema_jaraba_core.currency')->getTenantCurrency($tenantId);
+    }
+    $row['price'] = $entity->get('price')->value . ' ' . $currency;
     $row['status'] = $statusLabels[$status] ?? $status;
     $row['activated_at'] = $activatedAt ? date('d/m/Y', (int) $activatedAt) : '-';
     return $row + parent::buildRow($entity);

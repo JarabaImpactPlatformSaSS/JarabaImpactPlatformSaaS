@@ -128,3 +128,60 @@ function jaraba_foc_entity_type_build(array &$entity_types): void {
   // Las entidades se definen via anotaciones en las clases Entity,
   // este hook está disponible para ajustes dinámicos si es necesario.
 }
+
+
+/**
+ * Prepares variables for cost_allocation templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_foc_preprocess_cost_allocation(array &$variables): void {
+  $entity = $variables['elements']['#cost_allocation'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['cost_allocation'] = $entity;
+}
+
+/**
+ * Prepares variables for financial_transaction templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_foc_preprocess_financial_transaction(array &$variables): void {
+  $entity = $variables['elements']['#financial_transaction'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['financial_transaction'] = $entity;
+}
+
+/**
+ * Prepares variables for foc_alert templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_foc_preprocess_foc_alert(array &$variables): void {
+  $entity = $variables['elements']['#foc_alert'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['foc_alert'] = $entity;
+}
+
+/**
+ * Prepares variables for foc_metric_snapshot templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_foc_preprocess_foc_metric_snapshot(array &$variables): void {
+  $entity = $variables['elements']['#foc_metric_snapshot'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['foc_metric_snapshot'] = $entity;
+}

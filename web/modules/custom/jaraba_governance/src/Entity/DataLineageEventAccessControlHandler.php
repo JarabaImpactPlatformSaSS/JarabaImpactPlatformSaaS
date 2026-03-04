@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_governance\Entity;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -15,12 +15,18 @@ use Drupal\Core\Session\AccountInterface;
  * APPEND-ONLY: update and delete operations are ALWAYS denied.
  * Lineage events form an immutable audit trail.
  */
-class DataLineageEventAccessControlHandler extends EntityAccessControlHandler {
+class DataLineageEventAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     // APPEND-ONLY: deny update and delete unconditionally.
     if (in_array($operation, ['update', 'delete'], TRUE)) {
       return AccessResult::forbidden('Data lineage events are append-only and cannot be modified or deleted.');

@@ -116,3 +116,64 @@ function _jaraba_institutional_ensure_term(string $vid, string $name, int $weigh
     $term->save();
   }
 }
+
+/**
+ * Install PIIL fields on ProgramParticipant entity.
+ */
+function jaraba_institutional_update_10001() {
+  $entity_type_id = 'program_participant';
+  $new_fields = [
+    'piil_registration_number', 'fundae_group_id', 'fse_plus_indicator',
+    'certification_date', 'certification_type', 'digital_skills_level',
+    'employment_sector',
+  ];
+
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $fields = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions($entity_type_id);
+
+    foreach ($new_fields as $field_name) {
+      if (isset($fields[$field_name]) && !$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+        $field = $fields[$field_name];
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId required.
+        $field->setName($field_name);
+        $field->setTargetEntityTypeId($entity_type_id);
+        $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_institutional', $field);
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    // UPDATE-HOOK-CATCH-001: catch \Throwable not \Exception.
+    \Drupal::logger('jaraba_institutional')->error('Update 10001 failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Install PIIL fields on InstitutionalProgram entity.
+ */
+function jaraba_institutional_update_10002() {
+  $entity_type_id = 'institutional_program';
+  $new_fields = [
+    'piil_program_code', 'fundae_action_id', 'fse_plus_priority_axis',
+    'cofinancing_rate', 'target_employment_rate', 'reporting_frequency',
+  ];
+
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $fields = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions($entity_type_id);
+
+    foreach ($new_fields as $field_name) {
+      if (isset($fields[$field_name]) && !$update_manager->getFieldStorageDefinition($field_name, $entity_type_id)) {
+        $field = $fields[$field_name];
+        // UPDATE-FIELD-DEF-001: setName + setTargetEntityTypeId required.
+        $field->setName($field_name);
+        $field->setTargetEntityTypeId($entity_type_id);
+        $update_manager->installFieldStorageDefinition($field_name, $entity_type_id, 'jaraba_institutional', $field);
+      }
+    }
+  }
+  catch (\Throwable $e) {
+    // UPDATE-HOOK-CATCH-001: catch \Throwable not \Exception.
+    \Drupal::logger('jaraba_institutional')->error('Update 10002 failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}

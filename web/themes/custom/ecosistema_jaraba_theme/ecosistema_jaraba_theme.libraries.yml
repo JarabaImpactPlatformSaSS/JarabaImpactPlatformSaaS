@@ -450,6 +450,33 @@ route-causal-analytics:
   dependencies:
     - ecosistema_jaraba_theme/global-styling
 
+# GAP-SCSS-3: Emprendimiento vertical route CSS
+route-emprendimiento:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/emprendimiento.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# GAP-SCSS-3: Formación (LMS) vertical route CSS
+route-formacion:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/formacion.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
+# GAP-LEGAL-001: Legal & static pages route CSS
+route-legal-pages:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/legal-pages.css: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+
 # Legacy alias: AiComplianceDashboardController referenced this name
 bundle-ai-compliance:
   version: 1.0.0

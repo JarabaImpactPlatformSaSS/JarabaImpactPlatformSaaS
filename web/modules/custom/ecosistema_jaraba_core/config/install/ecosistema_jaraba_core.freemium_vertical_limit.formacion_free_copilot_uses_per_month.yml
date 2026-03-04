@@ -1,0 +1,11 @@
+id: formacion_free_copilot_uses_per_month
+label: 'Formacion Free: Copilot mensual'
+vertical: formacion
+plan: free
+feature_key: copilot_uses_per_month
+limit_value: 5
+description: 'Maximo 5 consultas al copilot IA mensuales en plan gratuito Formacion.'
+upgrade_message: 'Has alcanzado el limite de 5 consultas IA este mes. Actualiza a Starter para hasta 30.'
+expected_conversion: 0.40
+weight: 4
+status: true

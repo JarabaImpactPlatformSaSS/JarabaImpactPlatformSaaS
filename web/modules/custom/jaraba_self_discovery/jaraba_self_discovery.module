@@ -63,3 +63,60 @@ function jaraba_self_discovery_theme(): array {
     ],
   ];
 }
+
+
+/**
+ * Prepares variables for interest_profile templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_self_discovery_preprocess_interest_profile(array &$variables): void {
+  $entity = $variables['elements']['#interest_profile'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['interest_profile'] = $entity;
+}
+
+/**
+ * Prepares variables for life_timeline templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_self_discovery_preprocess_life_timeline(array &$variables): void {
+  $entity = $variables['elements']['#life_timeline'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['life_timeline'] = $entity;
+}
+
+/**
+ * Prepares variables for life_wheel_assessment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_self_discovery_preprocess_life_wheel_assessment(array &$variables): void {
+  $entity = $variables['elements']['#life_wheel_assessment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['life_wheel_assessment'] = $entity;
+}
+
+/**
+ * Prepares variables for strength_assessment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_self_discovery_preprocess_strength_assessment(array &$variables): void {
+  $entity = $variables['elements']['#strength_assessment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['strength_assessment'] = $entity;
+}

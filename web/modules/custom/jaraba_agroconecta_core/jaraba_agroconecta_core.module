@@ -510,6 +510,117 @@ function jaraba_agroconecta_core_page_attachments_alter(array &$attachments): vo
             'og_' . str_replace(':', '_', $tag['property']),
         ];
     }
+
+    // Schema.org Product JSON-LD for product detail pages (GAP-SCHEMA-8).
+    if ($route === 'jaraba_agroconecta_core.product_detail') {
+        $routeMatch = \Drupal::routeMatch();
+        $product = $routeMatch->getParameter('product_agro');
+        if ($product) {
+            $schema = [
+                '@context' => 'https://schema.org',
+                '@type' => 'Product',
+                'name' => $product->label() ?? '',
+                'url' => $siteUrl . \Drupal::request()->getRequestUri(),
+            ];
+
+            // Description.
+            if ($product->hasField('description_short') && !$product->get('description_short')->isEmpty()) {
+                $schema['description'] = $product->get('description_short')->value;
+            }
+            elseif ($product->hasField('description') && !$product->get('description')->isEmpty()) {
+                $schema['description'] = mb_substr(strip_tags($product->get('description')->value), 0, 300);
+            }
+
+            // SKU.
+            if ($product->hasField('sku') && !$product->get('sku')->isEmpty()) {
+                $schema['sku'] = $product->get('sku')->value;
+            }
+
+            // Category.
+            if ($product->hasField('category') && !$product->get('category')->isEmpty()) {
+                $schema['category'] = $product->get('category')->value;
+            }
+
+            // Image.
+            if ($product->hasField('image') && !$product->get('image')->isEmpty()) {
+                $file = $product->get('image')->entity;
+                if ($file) {
+                    $schema['image'] = \Drupal::service('file_url_generator')
+                        ->generateAbsoluteString($file->getFileUri());
+                }
+            }
+
+            // Producer as Brand.
+            if ($product->hasField('producer_id') && !$product->get('producer_id')->isEmpty()) {
+                $producer = $product->get('producer_id')->entity;
+                if ($producer) {
+                    $schema['brand'] = [
+                        '@type' => 'Brand',
+                        'name' => $producer->label() ?? '',
+                    ];
+                }
+            }
+
+            // Origin.
+            if ($product->hasField('origin') && !$product->get('origin')->isEmpty()) {
+                $schema['countryOfOrigin'] = [
+                    '@type' => 'Country',
+                    'name' => $product->get('origin')->value,
+                ];
+            }
+
+            // Offers (price + availability).
+            $offers = [
+                '@type' => 'Offer',
+                'url' => $schema['url'],
+                'priceCurrency' => 'EUR',
+            ];
+
+            if ($product->hasField('price') && !$product->get('price')->isEmpty()) {
+                $offers['price'] = (string) $product->get('price')->value;
+            }
+
+            if ($product->hasField('currency_code') && !$product->get('currency_code')->isEmpty()) {
+                $offers['priceCurrency'] = $product->get('currency_code')->value;
+            }
+
+            // Availability based on stock.
+            if ($product->hasField('stock')) {
+                $stock = (int) ($product->get('stock')->value ?? 0);
+                $offers['availability'] = $stock > 0
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock';
+            }
+
+            $schema['offers'] = $offers;
+
+            // AggregateRating from reviews.
+            try {
+                if (\Drupal::hasService('ecosistema_jaraba_core.review_schema_org')) {
+                    $reviewSchemaService = \Drupal::service('ecosistema_jaraba_core.review_schema_org');
+                    $aggregateRating = $reviewSchemaService->generateAggregateRating('review_agro', [
+                        'product_id' => $product->id(),
+                    ]);
+                    if (!empty($aggregateRating)) {
+                        $schema['aggregateRating'] = $aggregateRating;
+                    }
+                }
+            }
+            catch (\Exception $e) {
+                // Graceful degradation: skip reviews in schema.
+            }
+
+            $attachments['#attached']['html_head'][] = [
+                [
+                    '#type' => 'html_tag',
+                    '#tag' => 'script',
+                    '#attributes' => ['type' => 'application/ld+json'],
+                    '#value' => json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                ],
+                'schema_org_product',
+            ];
+        }
+    }
 }
 
 /**
@@ -560,4 +671,509 @@ function jaraba_agroconecta_core_theme_suggestions_page_alter(array &$suggestion
         $route_name === 'ecosistema_jaraba_core.landing.agroconecta') {
         $suggestions[] = 'page__agroconecta';
     }
+}
+
+
+/**
+ * Prepares variables for agro_batch templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_batch(array &$variables): void {
+  $entity = $variables['elements']['#agro_batch'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_batch'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_category templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_category(array &$variables): void {
+  $entity = $variables['elements']['#agro_category'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_category'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_certification templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_certification(array &$variables): void {
+  $entity = $variables['elements']['#agro_certification'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_certification'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_collection templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_collection(array &$variables): void {
+  $entity = $variables['elements']['#agro_collection'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_collection'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_shipment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_shipment(array &$variables): void {
+  $entity = $variables['elements']['#agro_shipment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_shipment'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_shipping_rate templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_shipping_rate(array &$variables): void {
+  $entity = $variables['elements']['#agro_shipping_rate'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_shipping_rate'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_shipping_zone templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_shipping_zone(array &$variables): void {
+  $entity = $variables['elements']['#agro_shipping_zone'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_shipping_zone'] = $entity;
+}
+
+/**
+ * Prepares variables for alert_rule_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_alert_rule_agro(array &$variables): void {
+  $entity = $variables['elements']['#alert_rule_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['alert_rule_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for analytics_daily_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_analytics_daily_agro(array &$variables): void {
+  $entity = $variables['elements']['#analytics_daily_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['analytics_daily_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for agro_carrier_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_agro_carrier_config(array &$variables): void {
+  $entity = $variables['elements']['#agro_carrier_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agro_carrier_config'] = $entity;
+}
+
+/**
+ * Prepares variables for copilot_conversation_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_copilot_conversation_agro(array &$variables): void {
+  $entity = $variables['elements']['#copilot_conversation_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['copilot_conversation_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for copilot_message_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_copilot_message_agro(array &$variables): void {
+  $entity = $variables['elements']['#copilot_message_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['copilot_message_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for coupon_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_coupon_agro(array &$variables): void {
+  $entity = $variables['elements']['#coupon_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['coupon_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for customer_preference_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_customer_preference_agro(array &$variables): void {
+  $entity = $variables['elements']['#customer_preference_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['customer_preference_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for document_download_log templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_document_download_log(array &$variables): void {
+  $entity = $variables['elements']['#document_download_log'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['document_download_log'] = $entity;
+}
+
+/**
+ * Prepares variables for integrity_proof_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_integrity_proof_agro(array &$variables): void {
+  $entity = $variables['elements']['#integrity_proof_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['integrity_proof_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for notification_log_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_notification_log_agro(array &$variables): void {
+  $entity = $variables['elements']['#notification_log_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['notification_log_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for notification_preference_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_notification_preference_agro(array &$variables): void {
+  $entity = $variables['elements']['#notification_preference_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['notification_preference_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for notification_template_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_notification_template_agro(array &$variables): void {
+  $entity = $variables['elements']['#notification_template_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['notification_template_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for order_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_order_agro(array &$variables): void {
+  $entity = $variables['elements']['#order_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['order_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for order_item_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_order_item_agro(array &$variables): void {
+  $entity = $variables['elements']['#order_item_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['order_item_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for partner_relationship templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_partner_relationship(array &$variables): void {
+  $entity = $variables['elements']['#partner_relationship'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['partner_relationship'] = $entity;
+}
+
+/**
+ * Prepares variables for producer_profile templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_producer_profile(array &$variables): void {
+  $entity = $variables['elements']['#producer_profile'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['producer_profile'] = $entity;
+}
+
+/**
+ * Prepares variables for product_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_product_agro(array &$variables): void {
+  $entity = $variables['elements']['#product_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['product_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for product_document templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_product_document(array &$variables): void {
+  $entity = $variables['elements']['#product_document'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['product_document'] = $entity;
+}
+
+/**
+ * Prepares variables for promotion_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_promotion_agro(array &$variables): void {
+  $entity = $variables['elements']['#promotion_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['promotion_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for qr_code_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_qr_code_agro(array &$variables): void {
+  $entity = $variables['elements']['#qr_code_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['qr_code_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for qr_lead_capture templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_qr_lead_capture(array &$variables): void {
+  $entity = $variables['elements']['#qr_lead_capture'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['qr_lead_capture'] = $entity;
+}
+
+/**
+ * Prepares variables for qr_scan_event templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_qr_scan_event(array &$variables): void {
+  $entity = $variables['elements']['#qr_scan_event'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['qr_scan_event'] = $entity;
+}
+
+/**
+ * Prepares variables for review_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_review_agro(array &$variables): void {
+  $entity = $variables['elements']['#review_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['review_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for sales_conversation_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_sales_conversation_agro(array &$variables): void {
+  $entity = $variables['elements']['#sales_conversation_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sales_conversation_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for sales_message_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_sales_message_agro(array &$variables): void {
+  $entity = $variables['elements']['#sales_message_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['sales_message_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for shipping_method_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_shipping_method_agro(array &$variables): void {
+  $entity = $variables['elements']['#shipping_method_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['shipping_method_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for shipping_zone_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_shipping_zone_agro(array &$variables): void {
+  $entity = $variables['elements']['#shipping_zone_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['shipping_zone_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for suborder_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_suborder_agro(array &$variables): void {
+  $entity = $variables['elements']['#suborder_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['suborder_agro'] = $entity;
+}
+
+/**
+ * Prepares variables for trace_event_agro templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_agroconecta_core_preprocess_trace_event_agro(array &$variables): void {
+  $entity = $variables['elements']['#trace_event_agro'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['trace_event_agro'] = $entity;
 }

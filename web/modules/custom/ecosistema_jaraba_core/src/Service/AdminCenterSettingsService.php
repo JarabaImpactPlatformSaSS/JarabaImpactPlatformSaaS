@@ -358,6 +358,90 @@ class AdminCenterSettingsService {
     return FALSE;
   }
 
+  /**
+   * GAP-API-KEYS: Rotate an API key (revoke old, create new with same label/scope).
+   *
+   * @param string $keyId
+   *   The key ID to rotate.
+   *
+   * @return array|null
+   *   The new key record with plaintext key, or NULL if not found.
+   */
+  public function rotateApiKey(string $keyId): ?array {
+    $config = $this->configFactory->getEditable(self::CONFIG_NAME);
+    $keys = $config->get('api_keys') ?: [];
+
+    $label = NULL;
+    $scope = 'read';
+
+    // Find and revoke the old key.
+    foreach ($keys as &$key) {
+      if ($key['id'] === $keyId && $key['status'] === 'active') {
+        $label = $key['label'];
+        $scope = $key['scope'] ?? 'read';
+        $key['status'] = 'revoked';
+        break;
+      }
+    }
+
+    if ($label === NULL) {
+      return NULL;
+    }
+
+    // Save revocation.
+    $config->set('api_keys', $keys)->save();
+
+    // Create new key with same label and scope.
+    $newRecord = $this->createApiKey($label . ' (rotated)', $scope);
+
+    $this->logger->info('API key rotated: @old_id → @new_id', [
+      '@old_id' => $keyId,
+      '@new_id' => $newRecord['id'],
+    ]);
+
+    return $newRecord;
+  }
+
+  /**
+   * GAP-API-KEYS: Validate an API key against stored hashes.
+   *
+   * SECRET-MGMT-001: Uses hash_equals for timing-safe comparison.
+   *
+   * @param string $apiKey
+   *   The plaintext API key to validate.
+   *
+   * @return array|null
+   *   The key record if valid and active, or NULL.
+   */
+  public function validateApiKey(string $apiKey): ?array {
+    if (strlen($apiKey) < 32 || !str_starts_with($apiKey, 'jrb_')) {
+      return NULL;
+    }
+
+    $hashedInput = hash('sha256', $apiKey);
+    $keys = $this->listApiKeys();
+
+    foreach ($keys as &$key) {
+      if ($key['status'] === 'active' && hash_equals($key['key_hash'], $hashedInput)) {
+        // Update last_used timestamp.
+        $key['last_used'] = date('c');
+        $config = $this->configFactory->getEditable(self::CONFIG_NAME);
+        $allKeys = $config->get('api_keys') ?: [];
+        foreach ($allKeys as &$stored) {
+          if ($stored['id'] === $key['id']) {
+            $stored['last_used'] = $key['last_used'];
+            break;
+          }
+        }
+        $config->set('api_keys', $allKeys)->save();
+
+        return $key;
+      }
+    }
+
+    return NULL;
+  }
+
   // ===========================================================================
   // FULL SETTINGS PAYLOAD
   // ===========================================================================

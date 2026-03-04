@@ -1,0 +1,19 @@
+id: jaraba_content_hub
+label: 'Content Hub'
+vertical: jaraba_content_hub
+public_name: 'Jaraba Content Hub'
+tagline: 'Crea, publica, conecta'
+description: 'Sistema de gestion de contenidos y blog con SEO avanzado.'
+icon_category: vertical
+icon_name: content_hub
+primary_color: '#233D63'
+secondary_color: '#00A9A5'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Content Hub'
+seo_description: 'Gestiona tu contenido digital con Jaraba Content Hub. Blog, SEO y distribucion.'
+schema_org_type: WebSite
+revelation_level: landing
+landing_route: jaraba_content_hub.blog
+enabled: true
+status: true

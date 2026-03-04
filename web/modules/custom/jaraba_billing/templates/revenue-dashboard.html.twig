@@ -1,0 +1,94 @@
+{#
+ # Revenue Dashboard — MRR/ARR/Churn KPIs.
+ #
+ # GAP-REVENUE-DASH: Admin-only real-time revenue metrics.
+ # CSS-VAR-ALL-COLORS-001: All colors via var(--ej-*, fallback).
+ #
+ # Variables:
+ #   - snapshot: Full revenue KPI snapshot from RevenueMetricsService.
+ #}
+
+<div class="ej-revenue-dashboard" data-revenue-dashboard>
+  {# === KPI Cards Row === #}
+  <div class="ej-revenue-kpis">
+    <div class="ej-revenue-kpi-card ej-revenue-kpi--mrr">
+      <span class="ej-revenue-kpi__label">{% trans %}MRR{% endtrans %}</span>
+      <span class="ej-revenue-kpi__value" data-metric="mrr">
+        {{ snapshot.mrr|default(0)|number_format(0, ',', '.') }} &euro;
+      </span>
+      <span class="ej-revenue-kpi__sub">{% trans %}Monthly Recurring Revenue{% endtrans %}</span>
+    </div>
+
+    <div class="ej-revenue-kpi-card ej-revenue-kpi--arr">
+      <span class="ej-revenue-kpi__label">{% trans %}ARR{% endtrans %}</span>
+      <span class="ej-revenue-kpi__value" data-metric="arr">
+        {{ snapshot.arr|default(0)|number_format(0, ',', '.') }} &euro;
+      </span>
+      <span class="ej-revenue-kpi__sub">{% trans %}Annual Recurring Revenue{% endtrans %}</span>
+    </div>
+
+    <div class="ej-revenue-kpi-card ej-revenue-kpi--subscriptions">
+      <span class="ej-revenue-kpi__label">{% trans %}Suscripciones{% endtrans %}</span>
+      <span class="ej-revenue-kpi__value" data-metric="active_subscriptions">
+        {{ snapshot.active_subscriptions|default(0) }}
+      </span>
+      <span class="ej-revenue-kpi__sub">{% trans %}Activas{% endtrans %}</span>
+    </div>
+
+    <div class="ej-revenue-kpi-card ej-revenue-kpi--churn">
+      <span class="ej-revenue-kpi__label">{% trans %}Churn Rate{% endtrans %}</span>
+      <span class="ej-revenue-kpi__value" data-metric="churn_rate">
+        {{ snapshot.churn_rate|default(0) }}%
+      </span>
+      <span class="ej-revenue-kpi__sub">
+        {{ snapshot.churned_tenants|default(0) }} {% trans %}bajas este mes{% endtrans %}
+      </span>
+    </div>
+  </div>
+
+  {# === Charts Row === #}
+  <div class="ej-revenue-charts">
+    <div class="ej-revenue-chart-card">
+      <h3 class="ej-revenue-chart-card__title">{% trans %}Evolución de Revenue{% endtrans %}</h3>
+      <div class="ej-revenue-chart-card__body">
+        <canvas id="revenueChart" height="280" aria-label="{% trans %}Gráfico de evolución del revenue mensual{% endtrans %}" role="img"></canvas>
+      </div>
+    </div>
+
+    <div class="ej-revenue-chart-card">
+      <h3 class="ej-revenue-chart-card__title">{% trans %}Distribución de Tenants{% endtrans %}</h3>
+      <div class="ej-revenue-chart-card__body">
+        <canvas id="distributionChart" height="280" aria-label="{% trans %}Gráfico de distribución de tenants por estado{% endtrans %}" role="img"></canvas>
+      </div>
+    </div>
+  </div>
+
+  {# === Revenue by Plan Table === #}
+  {% if snapshot.revenue_by_plan|default([])|length > 0 %}
+  <div class="ej-revenue-plan-table">
+    <h3 class="ej-revenue-plan-table__title">{% trans %}Revenue por Plan (30d){% endtrans %}</h3>
+    <table class="ej-revenue-table" role="table">
+      <thead>
+        <tr>
+          <th>{% trans %}Plan{% endtrans %}</th>
+          <th>{% trans %}Tenants{% endtrans %}</th>
+          <th>{% trans %}Revenue{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plan in snapshot.revenue_by_plan %}
+        <tr>
+          <td>{{ plan.name }}</td>
+          <td>{{ plan.count }}</td>
+          <td>{{ plan.revenue|number_format(2, ',', '.') }} &euro;</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <p class="ej-revenue-timestamp">
+    {% trans %}Generado:{% endtrans %} {{ snapshot.generated_at|default('—') }}
+  </p>
+</div>

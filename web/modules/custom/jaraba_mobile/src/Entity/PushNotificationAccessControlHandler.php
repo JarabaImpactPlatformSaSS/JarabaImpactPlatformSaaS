@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_mobile\Entity;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -18,12 +18,18 @@ use Drupal\Core\Session\AccountInterface;
  * - UPDATE and DELETE are DENIED for all roles (immutable audit trail).
  * - Admin with 'administer jaraba mobile' can view all.
  */
-class PushNotificationAccessControlHandler extends EntityAccessControlHandler {
+class PushNotificationAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     $admin_permission = $this->entityType->getAdminPermission();
 
     // Update and delete are ALWAYS denied — append-only pattern.

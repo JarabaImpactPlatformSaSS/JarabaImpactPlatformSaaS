@@ -1,0 +1,11 @@
+/**
+ * @file
+ * Route-specific CSS — Legal & static pages.
+ *
+ * Covers: /politica-privacidad, /terminos-uso, /politica-cookies,
+ *         /acuerdo-procesamiento-datos, /sobre-nosotros, /contacto.
+ * Compile: sass scss/routes/legal-pages.scss css/routes/legal-pages.css --style=compressed
+ */
+@use '../variables' as *;
+
+@use '../components/static-pages';

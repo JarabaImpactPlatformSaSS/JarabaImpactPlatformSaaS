@@ -121,6 +121,57 @@ health-dashboard:
     - core/once
 
 # ---------------------------------------------------------------------------
+# API KEY MANAGEMENT (GAP-API-KEYS)
+# ---------------------------------------------------------------------------
+# Self-service API key CRUD for tenants.
+# Consumed by ApiKeyManagementController at /mi-cuenta/api-keys.
+
+api-key-management:
+  version: 1.x
+  css:
+    theme:
+      css/api-key-management.css: {}
+  js:
+    js/api-key-management.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# GLOBAL SEARCH (GAP-SEARCH-FACET)
+# ---------------------------------------------------------------------------
+# Cross-vertical faceted search page with autocomplete.
+# Consumed by GlobalSearchController at /buscar.
+
+global-search:
+  version: 1.x
+  css:
+    theme:
+      css/global-search.css: {}
+  js:
+    js/global-search.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
+# QUEUE MONITORING DASHBOARD (GAP-QUEUE-MON)
+# ---------------------------------------------------------------------------
+queue-monitoring:
+  version: 1.x
+  css:
+    theme:
+      css/queue-monitoring.css: {}
+  js:
+    js/queue-monitoring.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+# ---------------------------------------------------------------------------
 # BIBLIOTECA DEL DASHBOARD FINOPS
 # ---------------------------------------------------------------------------
 # Dashboard de optimización de costes con métricas por tenant,

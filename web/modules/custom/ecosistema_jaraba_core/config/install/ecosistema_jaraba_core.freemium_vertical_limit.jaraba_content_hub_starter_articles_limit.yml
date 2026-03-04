@@ -1,0 +1,11 @@
+id: jaraba_content_hub_starter_articles_limit
+label: 'Content Hub Starter: Articulos'
+vertical: jaraba_content_hub
+plan: starter
+feature_key: articles_limit
+limit_value: 50
+description: 'Maximo 50 articulos publicados en plan Starter Content Hub.'
+upgrade_message: 'Has alcanzado el limite de 50 articulos. Actualiza a Profesional para hasta 200.'
+expected_conversion: 0.25
+weight: 10
+status: true

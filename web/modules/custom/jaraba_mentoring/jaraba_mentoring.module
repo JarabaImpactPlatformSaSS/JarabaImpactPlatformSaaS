@@ -646,3 +646,116 @@ function _jaraba_mentoring_queue_email(string $key, string $to, array $context):
   ]);
 }
 
+
+
+/**
+ * Prepares variables for availability_slot templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_availability_slot(array &$variables): void {
+  $entity = $variables['elements']['#availability_slot'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['availability_slot'] = $entity;
+}
+
+/**
+ * Prepares variables for mentor_profile templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_mentor_profile(array &$variables): void {
+  $entity = $variables['elements']['#mentor_profile'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mentor_profile'] = $entity;
+}
+
+/**
+ * Prepares variables for mentoring_engagement templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_mentoring_engagement(array &$variables): void {
+  $entity = $variables['elements']['#mentoring_engagement'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mentoring_engagement'] = $entity;
+}
+
+/**
+ * Prepares variables for mentoring_package templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_mentoring_package(array &$variables): void {
+  $entity = $variables['elements']['#mentoring_package'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mentoring_package'] = $entity;
+}
+
+/**
+ * Prepares variables for mentoring_session templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_mentoring_session(array &$variables): void {
+  $entity = $variables['elements']['#mentoring_session'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['mentoring_session'] = $entity;
+}
+
+/**
+ * Prepares variables for session_notes templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_session_notes(array &$variables): void {
+  $entity = $variables['elements']['#session_notes'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['session_notes'] = $entity;
+}
+
+/**
+ * Prepares variables for session_review templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_session_review(array &$variables): void {
+  $entity = $variables['elements']['#session_review'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['session_review'] = $entity;
+}
+
+/**
+ * Prepares variables for session_task templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_mentoring_preprocess_session_task(array &$variables): void {
+  $entity = $variables['elements']['#session_task'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['session_task'] = $entity;
+}

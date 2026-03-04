@@ -30,7 +30,7 @@ jaraba_analytics.api.event:
   methods: [POST]
   requirements:
     _permission: 'access content'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -42,7 +42,7 @@ jaraba_analytics.api.batch:
   methods: [POST]
   requirements:
     _permission: 'access content'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -112,7 +112,7 @@ jaraba_analytics.api.funnels.create:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba analytics'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -147,7 +147,7 @@ jaraba_analytics.api.cohorts.create:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba analytics'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -241,7 +241,7 @@ jaraba_analytics.api.reports.execute:
   methods: [POST]
   requirements:
     _permission: 'administer jaraba analytics'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     report_id: \d+
   options:
     no_cache: TRUE
@@ -301,7 +301,7 @@ jaraba_analytics.api.widgets.create:
   methods: [POST]
   requirements:
     _permission: 'manage analytics dashboards'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
     dashboardId: \d+
   options:
     no_cache: TRUE
@@ -326,6 +326,7 @@ jaraba_analytics.api.widgets.delete:
   methods: [DELETE]
   requirements:
     _permission: 'manage analytics dashboards'
+    _csrf_request_header_token: 'TRUE'
     widgetId: \d+
   options:
     no_cache: TRUE
@@ -393,7 +394,43 @@ jaraba_analytics.api.programa.reports.generate:
   methods: [POST]
   requirements:
     _permission: 'generate institutional reports'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
+
+# ==========================================================================
+# PRE-PMF METRICS (Item 2)
+# ==========================================================================
+
+# Dashboard Pre-PMF.
+jaraba_analytics.pre_pmf_dashboard:
+  path: '/admin/analytics/pre-pmf'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\PrePmfDashboardController::dashboard'
+    _title: 'Pre-PMF Metrics'
+  requirements:
+    _permission: 'administer jaraba analytics'
+  options:
+    _admin_route: TRUE
+
+# API: Registrar respuesta NPS.
+jaraba_analytics.nps_api:
+  path: '/api/v1/analytics/nps'
+  defaults:
+    _controller: '\Drupal\jaraba_analytics\Controller\PrePmfDashboardController::npsApi'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]
+  options:
+    _csrf_request_header_token: 'TRUE'
+    no_cache: TRUE
+
+# ProductMetricSnapshot collection.
+entity.product_metric_snapshot.collection:
+  path: '/admin/content/product-metric-snapshots'
+  defaults:
+    _entity_list: 'product_metric_snapshot'
+    _title: 'Product Metric Snapshots'
+  requirements:
+    _permission: 'administer jaraba analytics'
 
 entity.analytics_daily.collection:
   path: '/admin/content/analytics-daily'

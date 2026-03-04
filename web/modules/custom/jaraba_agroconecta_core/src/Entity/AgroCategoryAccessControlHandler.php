@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_agroconecta_core\Entity;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -15,7 +15,7 @@ use Drupal\Core\Session\AccountInterface;
  * Permisos granulares: manage agro categories (admin CRUD),
  * view agro categories (lectura pública para navegación y filtros).
  */
-class AgroCategoryAccessControlHandler extends EntityAccessControlHandler
+class AgroCategoryAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -23,6 +23,12 @@ class AgroCategoryAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         /** @var \Drupal\jaraba_agroconecta_core\Entity\AgroCategory $entity */
         $admin_permission = $this->entityType->getAdminPermission();
 

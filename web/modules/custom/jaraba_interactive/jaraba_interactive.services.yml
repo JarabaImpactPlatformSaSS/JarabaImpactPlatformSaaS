@@ -5,6 +5,8 @@ services:
     parent: default_plugin_manager
 
   # Servicio de scoring y evaluación
+    arguments:
+      - '@?jaraba_interactive.scorer'
   jaraba_interactive.scorer:
     class: Drupal\jaraba_interactive\Service\Scorer
     arguments:

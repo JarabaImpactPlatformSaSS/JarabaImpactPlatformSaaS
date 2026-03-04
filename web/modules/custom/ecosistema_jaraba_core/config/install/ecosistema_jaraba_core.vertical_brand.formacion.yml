@@ -1,0 +1,19 @@
+id: formacion
+label: 'Formacion'
+vertical: formacion
+public_name: 'Jaraba Formacion'
+tagline: 'Aprende, crece, transforma'
+description: 'LMS completo con cursos, learning paths, certificaciones y gamificacion.'
+icon_category: vertical
+icon_name: formacion
+primary_color: '#FF8C42'
+secondary_color: '#00A9A5'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Formacion'
+seo_description: 'Formacion online con Jaraba. Cursos, certificados y rutas de aprendizaje.'
+schema_org_type: EducationalOrganization
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.formacion
+enabled: true
+status: true

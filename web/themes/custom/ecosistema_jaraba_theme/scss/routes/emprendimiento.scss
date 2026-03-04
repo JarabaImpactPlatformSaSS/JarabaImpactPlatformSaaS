@@ -1,0 +1,149 @@
+/**
+ * @file
+ * S4-02: Route-specific CSS — Emprendimiento routes.
+ *
+ * Covers: /emprendimiento/*, business plan, startup profile, mentoring.
+ * Compile: sass scss/routes/emprendimiento.scss css/routes/emprendimiento.css --style=compressed
+ */
+@use 'sass:color';
+@use '../variables' as *;
+
+// Emprendimiento — CSS-VAR-ALL-COLORS-001: ALL colors via var(--ej-*, fallback)
+
+.page-emprendimiento {
+  .business-plan-card {
+    background: var(--ej-bg-card, #{$ej-bg-card});
+    border-radius: var(--ej-radius-lg, #{$ej-radius-lg});
+    border: 1px solid var(--ej-border-color, #{$ej-border-color});
+    padding: $ej-spacing-lg;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--ej-shadow-lg, #{$ej-shadow-lg});
+    }
+
+    &__title {
+      color: var(--ej-color-headings, #{$ej-color-headings});
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: $ej-spacing-sm;
+    }
+
+    &__status {
+      display: inline-flex;
+      align-items: center;
+      gap: $ej-spacing-xs;
+      padding: $ej-spacing-xs $ej-spacing-sm;
+      border-radius: var(--ej-radius-sm, #{$ej-radius-sm});
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      &--draft {
+        background: color-mix(in srgb, var(--ej-color-warning, #{$ej-color-warning}) 12%, transparent);
+        color: var(--ej-color-warning, #{$ej-color-warning});
+      }
+
+      &--active {
+        background: color-mix(in srgb, var(--ej-color-success, #{$ej-color-success}) 12%, transparent);
+        color: var(--ej-color-success, #{$ej-color-success});
+      }
+    }
+
+    &__progress {
+      height: 6px;
+      background: var(--ej-bg-body, #{$ej-bg-body});
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: $ej-spacing-md;
+
+      &-fill {
+        height: 100%;
+        background: var(--ej-color-primary, #{$ej-color-primary});
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+    }
+
+    &__meta {
+      display: flex;
+      gap: $ej-spacing-md;
+      margin-top: $ej-spacing-sm;
+      color: var(--ej-color-muted, #{$ej-color-muted});
+      font-size: 0.8125rem;
+    }
+  }
+
+  .startup-profile {
+    &__hero {
+      background: linear-gradient(
+        135deg,
+        var(--ej-color-corporate, #{$ej-color-corporate}),
+        color-mix(in srgb, var(--ej-color-corporate, #{$ej-color-corporate}) 70%, var(--ej-color-impulse, #{$ej-color-impulse}))
+      );
+      color: #fff;
+      padding: $ej-spacing-xl;
+      border-radius: var(--ej-radius-lg, #{$ej-radius-lg});
+    }
+
+    &__metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: $ej-spacing-md;
+      margin-top: $ej-spacing-lg;
+    }
+
+    &__metric {
+      text-align: center;
+      padding: $ej-spacing-md;
+      background: var(--ej-bg-card, #{$ej-bg-card});
+      border-radius: var(--ej-radius-md, #{$ej-radius-md});
+      border: 1px solid var(--ej-border-color, #{$ej-border-color});
+
+      &-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ej-color-corporate, #{$ej-color-corporate});
+      }
+
+      &-label {
+        font-size: 0.75rem;
+        color: var(--ej-color-muted, #{$ej-color-muted});
+        margin-top: $ej-spacing-xs;
+      }
+    }
+  }
+
+  .canvas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $ej-spacing-md;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    &__cell {
+      background: var(--ej-bg-card, #{$ej-bg-card});
+      border: 1px solid var(--ej-border-color, #{$ej-border-color});
+      border-radius: var(--ej-radius-md, #{$ej-radius-md});
+      padding: $ej-spacing-md;
+      min-height: 120px;
+
+      &-title {
+        font-weight: 600;
+        font-size: 0.8125rem;
+        color: var(--ej-color-headings, #{$ej-color-headings});
+        margin-bottom: $ej-spacing-sm;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      &-content {
+        font-size: 0.875rem;
+        color: var(--ej-color-body, #{$ej-color-body});
+        line-height: 1.5;
+      }
+    }
+  }
+}

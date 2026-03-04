@@ -128,6 +128,7 @@ module:
   jaraba_page_builder: 0
   jaraba_paths: 0
   jaraba_performance: 0
+  jaraba_pilot_manager: 0
   jaraba_pixels: 0
   jaraba_predictive: 0
   jaraba_privacy: 0

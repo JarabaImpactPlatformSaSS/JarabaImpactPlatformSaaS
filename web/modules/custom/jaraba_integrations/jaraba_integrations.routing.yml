@@ -277,3 +277,15 @@ entity.webhook_subscription.settings:
     _title: 'Webhook Subscription settings'
   requirements:
     _permission: 'administer integrations'
+
+# =============================================================================
+# OpenAPI 3.0 specification endpoint
+# =============================================================================
+
+jaraba_integrations.openapi:
+  path: '/api/v1/openapi.json'
+  defaults:
+    _controller: '\Drupal\jaraba_integrations\Controller\OpenApiController::getSpec'
+    _title: 'API Documentation'
+  requirements:
+    _permission: 'access content'

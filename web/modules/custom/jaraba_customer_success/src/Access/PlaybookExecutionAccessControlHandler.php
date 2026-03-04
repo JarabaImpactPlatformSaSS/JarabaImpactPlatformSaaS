@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_customer_success\Access;
 
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
@@ -17,12 +17,18 @@ use Drupal\Core\Access\AccessResult;
  * - Update: requiere 'manage playbooks' (para cancelar ejecuciones).
  * - Delete: requiere 'administer customer success'.
  */
-class PlaybookExecutionAccessControlHandler extends EntityAccessControlHandler {
+class PlaybookExecutionAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     return match($operation) {
       'view', 'update' => AccessResult::allowedIfHasPermission($account, 'manage playbooks'),
       'delete' => AccessResult::allowedIfHasPermission($account, 'administer customer success'),

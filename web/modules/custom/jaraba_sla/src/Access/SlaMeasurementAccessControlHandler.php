@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_sla\Access;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -16,12 +16,18 @@ use Drupal\Core\Session\AccountInterface;
  * Logic: View is allowed with 'view sla dashboard'. Update and delete are always
  *   denied to enforce the append-only audit trail. Only 'administer sla' can create.
  */
-class SlaMeasurementAccessControlHandler extends EntityAccessControlHandler {
+class SlaMeasurementAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account): AccessResult {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     if ($account->hasPermission('administer sla') && $operation === 'view') {
       return AccessResult::allowed()->cachePerPermissions();
     }

@@ -32,6 +32,7 @@
 
     {% if content %}
       <div class="static-page__content static-page__content--legal">
+        {# AUDIT-SEC-003: content is pre-sanitized with Xss::filterAdmin() in StaticPageController #}
         {{ content|raw }}
       </div>
     {% else %}
@@ -45,10 +46,11 @@
     <footer class="static-page__footer-nav">
       <nav aria-label="{% trans %}Páginas legales{% endtrans %}">
         <ul class="static-page__legal-links">
-          <li><a href="/politica-privacidad">{% trans %}Privacidad{% endtrans %}</a></li>
-          <li><a href="/terminos-uso">{% trans %}Términos{% endtrans %}</a></li>
-          <li><a href="/politica-cookies">{% trans %}Cookies{% endtrans %}</a></li>
-          <li><a href="/contacto">{% trans %}Contacto{% endtrans %}</a></li>
+          {# ROUTE-LANGPREFIX-001: use path() for proper /es/ prefix, NEVER hardcoded URLs #}
+          <li><a href="{{ path('ecosistema_jaraba_core.static.privacidad') }}">{% trans %}Privacidad{% endtrans %}</a></li>
+          <li><a href="{{ path('ecosistema_jaraba_core.static.terminos') }}">{% trans %}Términos{% endtrans %}</a></li>
+          <li><a href="{{ path('ecosistema_jaraba_core.static.cookies') }}">{% trans %}Cookies{% endtrans %}</a></li>
+          <li><a href="{{ path('ecosistema_jaraba_core.static.contacto') }}">{% trans %}Contacto{% endtrans %}</a></li>
         </ul>
       </nav>
     </footer>

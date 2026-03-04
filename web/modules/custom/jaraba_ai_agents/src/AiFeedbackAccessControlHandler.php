@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\jaraba_ai_agents;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -21,7 +21,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * FIX-034: AI Feedback entity and endpoint.
  */
-class AiFeedbackAccessControlHandler extends EntityAccessControlHandler
+class AiFeedbackAccessControlHandler extends DefaultEntityAccessControlHandler
 {
 
     /**
@@ -29,6 +29,12 @@ class AiFeedbackAccessControlHandler extends EntityAccessControlHandler
      */
     protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
     {
+      // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+      $parentResult = parent::checkAccess($entity, $operation, $account);
+      if ($parentResult->isForbidden()) {
+        return $parentResult;
+      }
+
         /** @var \Drupal\jaraba_ai_agents\Entity\AiFeedback $entity */
 
         // Admin bypass for all operations.

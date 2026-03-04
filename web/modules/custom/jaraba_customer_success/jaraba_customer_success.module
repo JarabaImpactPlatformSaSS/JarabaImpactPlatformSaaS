@@ -176,3 +176,102 @@ function jaraba_customer_success_preprocess_html(array &$variables): void {
     $variables['attributes']['class'][] = 'page-retention-dashboard';
   }
 }
+
+
+/**
+ * Prepares variables for churn_prediction templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_churn_prediction(array &$variables): void {
+  $entity = $variables['elements']['#churn_prediction'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['churn_prediction'] = $entity;
+}
+
+/**
+ * Prepares variables for cs_playbook templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_cs_playbook(array &$variables): void {
+  $entity = $variables['elements']['#cs_playbook'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['cs_playbook'] = $entity;
+}
+
+/**
+ * Prepares variables for customer_health templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_customer_health(array &$variables): void {
+  $entity = $variables['elements']['#customer_health'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['customer_health'] = $entity;
+}
+
+/**
+ * Prepares variables for expansion_signal templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_expansion_signal(array &$variables): void {
+  $entity = $variables['elements']['#expansion_signal'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['expansion_signal'] = $entity;
+}
+
+/**
+ * Prepares variables for playbook_execution templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_playbook_execution(array &$variables): void {
+  $entity = $variables['elements']['#playbook_execution'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['playbook_execution'] = $entity;
+}
+
+/**
+ * Prepares variables for seasonal_churn_prediction templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_seasonal_churn_prediction(array &$variables): void {
+  $entity = $variables['elements']['#seasonal_churn_prediction'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['seasonal_churn_prediction'] = $entity;
+}
+
+/**
+ * Prepares variables for vertical_retention_profile templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_customer_success_preprocess_vertical_retention_profile(array &$variables): void {
+  $entity = $variables['elements']['#vertical_retention_profile'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['vertical_retention_profile'] = $entity;
+}

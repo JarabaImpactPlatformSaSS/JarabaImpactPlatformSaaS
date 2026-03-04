@@ -7,6 +7,7 @@ namespace Drupal\jaraba_legal_intelligence\LegalCoherence;
 use Drupal\ai\AiProviderPluginManager;
 use Drupal\ai\OperationType\Chat\ChatInput;
 use Drupal\ai\OperationType\Chat\ChatMessage;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jaraba_ai_agents\Service\AIObservabilityService;
 use Drupal\jaraba_ai_agents\Service\ModelRouterService;
 use Psr\Log\LoggerInterface;
@@ -62,6 +63,7 @@ final class LegalCoherenceVerifierService {
     protected readonly ?ModelRouterService $modelRouter = NULL,
     protected readonly LoggerInterface $logger,
     protected readonly ?AIObservabilityService $observability = NULL,
+    protected readonly ?EntityTypeManagerInterface $entityTypeManager = NULL,
   ) {}
 
   /**
@@ -155,6 +157,9 @@ final class LegalCoherenceVerifierService {
         'success' => $passed,
         'quality_score' => $evaluation['score'],
       ]);
+
+      // EU AI Act Art. 12: audit log de la verificacion semantica.
+      $this->createVerificationLog($userInput, $agentOutput, $context, $evaluation, $passed);
 
       return [
         'verified' => TRUE,
@@ -338,6 +343,75 @@ PROMPT;
     $notice .= "\nSe recomienda verificar toda la respuesta con las fuentes oficiales antes de actuar.";
 
     return $agentOutput . $notice;
+  }
+
+  /**
+   * Crea un registro de audit trail de verificacion semantica.
+   *
+   * EU AI Act Art. 12: Logging de verificaciones de coherencia profunda.
+   *
+   * @param string $userInput
+   *   Consulta del usuario.
+   * @param string $agentOutput
+   *   Respuesta del agente.
+   * @param array $context
+   *   Contexto de la verificacion.
+   * @param array $evaluation
+   *   Resultado de la evaluacion.
+   * @param bool $passed
+   *   Si paso la verificacion.
+   */
+  protected function createVerificationLog(
+    string $userInput,
+    string $agentOutput,
+    array $context,
+    array $evaluation,
+    bool $passed,
+  ): void {
+    if ($this->entityTypeManager === NULL) {
+      return;
+    }
+
+    try {
+      if (!$this->entityTypeManager->hasDefinition('legal_coherence_log')) {
+        return;
+      }
+
+      $storage = $this->entityTypeManager->getStorage('legal_coherence_log');
+      $log = $storage->create([
+        'query_text' => mb_substr($userInput, 0, 5000),
+        'intent_type' => 'legal',
+        'coherence_score' => $evaluation['score'] ?? NULL,
+        'verifier_results' => json_encode([
+          'scores_detail' => $evaluation['scores_detail'] ?? [],
+          'issues' => $evaluation['issues'] ?? [],
+          'is_coherent' => $evaluation['is_coherent'] ?? TRUE,
+          'summary' => $evaluation['summary'] ?? '',
+          'premise_issues' => $evaluation['premise_issues'] ?? [],
+          'citation_alignment' => $evaluation['citation_alignment'] ?? [],
+        ]),
+        'norm_citations' => json_encode(
+          array_map(
+            static fn(array $ca): string => $ca['citation'] ?? '',
+            $evaluation['citation_alignment'] ?? [],
+          )
+        ),
+        'blocked' => !$passed,
+        'block_reason' => !$passed
+          ? ($evaluation['summary'] ?? 'Verification failed')
+          : '',
+        'response_snippet' => mb_substr($agentOutput, 0, 500),
+        'vertical' => $context['vertical'] ?? 'jarabalex',
+        'tenant_id' => $context['tenant_id'] ?? NULL,
+        'trace_id' => $context['trace_id'] ?? '',
+      ]);
+      $log->save();
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Failed to create LegalCoherenceLog (verifier): @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
   }
 
 }

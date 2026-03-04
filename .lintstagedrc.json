@@ -1,0 +1,17 @@
+{
+  "web/modules/custom/**/*.php": [
+    "php vendor/bin/phpstan analyse --no-progress --error-format=raw"
+  ],
+  "web/themes/custom/**/*.scss": [
+    "php scripts/validation/validate-compiled-assets.php"
+  ],
+  "docs/00_*.md": [
+    "bash scripts/maintenance/verify-doc-integrity.sh"
+  ],
+  "web/modules/custom/**/*.services.yml": [
+    "bash scripts/validation/validate-all.sh --fast"
+  ],
+  "web/modules/custom/**/*.routing.yml": [
+    "bash scripts/validation/validate-all.sh --fast"
+  ]
+}

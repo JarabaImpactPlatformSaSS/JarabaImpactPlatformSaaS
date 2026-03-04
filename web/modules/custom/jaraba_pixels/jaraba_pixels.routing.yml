@@ -43,6 +43,7 @@ jaraba_pixels.api.delete_credential:
   methods: [DELETE]
   requirements:
     _permission: 'administer pixels'
+    _csrf_request_header_token: 'TRUE'
     platform: 'meta|google|linkedin|tiktok'
 
 # API: Test de conexión

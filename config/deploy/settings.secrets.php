@@ -83,7 +83,13 @@ if ($stripe_public = getenv('STRIPE_PUBLIC_KEY')) {
 }
 if ($stripe_secret = getenv('STRIPE_SECRET_KEY')) {
   $config['ecosistema_jaraba_core.stripe']['secret_key'] = $stripe_secret;
+  // Unify: FOC (Connect/marketplace) and Legal Billing use the same secret key.
+  $config['jaraba_foc.settings']['stripe_secret_key'] = $stripe_secret;
+  $config['jaraba_legal_billing.settings']['stripe_secret_key'] = $stripe_secret;
 }
 if ($stripe_webhook = getenv('STRIPE_WEBHOOK_SECRET')) {
   $config['ecosistema_jaraba_core.stripe']['webhook_secret'] = $stripe_webhook;
+}
+if ($stripe_foc_webhook = getenv('STRIPE_FOC_WEBHOOK_SECRET')) {
+  $config['jaraba_foc.settings']['stripe_webhook_secret'] = $stripe_foc_webhook;
 }

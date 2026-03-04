@@ -6,6 +6,7 @@ services:
       - '@database'
       - '@cache.default'
       - '@logger.factory'
+      - '@?jaraba_matching.embedding_telemetry'
 
   jaraba_matching.embedding_service:
     class: Drupal\jaraba_matching\Service\EmbeddingService

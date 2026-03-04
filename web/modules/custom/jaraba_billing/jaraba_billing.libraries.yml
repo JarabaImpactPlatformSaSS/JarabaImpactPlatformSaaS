@@ -1,0 +1,14 @@
+revenue-dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/revenue-dashboard.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js:
+      type: external
+      minified: true
+    js/revenue-dashboard.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

@@ -37,3 +37,15 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_institutional'
       - '@jaraba_institutional.participant_tracker'
+
+  jaraba_institutional.piil_metrics:
+    class: Drupal\jaraba_institutional\Service\PiilMetricsService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+
+  jaraba_institutional.sto_sync:
+    class: Drupal\jaraba_institutional\Service\StoSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_institutional'

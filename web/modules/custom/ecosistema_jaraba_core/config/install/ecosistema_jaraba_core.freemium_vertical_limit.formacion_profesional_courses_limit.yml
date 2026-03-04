@@ -1,0 +1,11 @@
+id: formacion_profesional_courses_limit
+label: 'Formacion Profesional: Cursos'
+vertical: formacion
+plan: profesional
+feature_key: courses_limit
+limit_value: 50
+description: 'Maximo 50 cursos en plan Profesional Formacion.'
+upgrade_message: 'Has alcanzado el limite de 50 cursos. Actualiza a Business para cursos ilimitados.'
+expected_conversion: 0.20
+weight: 20
+status: true

@@ -127,6 +127,47 @@ jaraba_andalucia_ei.api.participant.delete:
     _format: 'json'
     id: '\d+'
 
+# === API: SOLICITUDES (GAP-REST-API) ===
+jaraba_andalucia_ei.api.solicitudes.list:
+  path: '/api/v1/andalucia-ei/solicitudes'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::listSolicitudes'
+  methods: [GET]
+  requirements:
+    _permission: 'view solicitud ei'
+    _format: 'json'
+
+jaraba_andalucia_ei.api.solicitud.get:
+  path: '/api/v1/andalucia-ei/solicitud/{id}'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::getSolicitud'
+  methods: [GET]
+  requirements:
+    _permission: 'view solicitud ei'
+    _format: 'json'
+    id: '\d+'
+
+# === API: MÉTRICAS DE IMPACTO (GAP-REST-API) ===
+jaraba_andalucia_ei.api.metrics:
+  path: '/api/v1/andalucia-ei/metrics'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::getMetrics'
+  methods: [GET]
+  requirements:
+    _permission: 'view programa participante ei'
+    _format: 'json'
+
+# === API: EXPEDIENTE DOCUMENTAL (GAP-REST-API) ===
+jaraba_andalucia_ei.api.expediente.documentos:
+  path: '/api/v1/andalucia-ei/expediente/{participante_id}/documentos'
+  defaults:
+    _controller: 'Drupal\jaraba_andalucia_ei\Controller\AndaluciaEiApiController::listExpedienteDocumentos'
+  methods: [GET]
+  requirements:
+    _permission: 'view expediente documento'
+    _format: 'json'
+    participante_id: '\d+'
+
 # === PORTAL DE PARTICIPANTE ===
 jaraba_andalucia_ei.participante_portal:
   path: '/andalucia-ei/mi-participacion'

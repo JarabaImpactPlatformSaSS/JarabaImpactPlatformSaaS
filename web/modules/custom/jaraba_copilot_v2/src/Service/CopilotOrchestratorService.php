@@ -147,6 +147,11 @@ class CopilotOrchestratorService
     protected ?SemanticCacheService $semanticCache = NULL;
 
     /**
+     * GAP-COPILOT-5: Registry of vertical-specific copilot bridges.
+     */
+    protected ?CopilotBridgeRegistry $bridgeRegistry = NULL;
+
+    /**
      * Constructor.
      */
     public function __construct(
@@ -175,6 +180,13 @@ class CopilotOrchestratorService
         $this->entrepreneurContext = $entrepreneurContext;
         $this->selfDiscoveryContext = $selfDiscoveryContext;
         $this->semanticCache = $semanticCache;
+    }
+
+    /**
+     * GAP-COPILOT-5: Sets the bridge registry (optional, via setter injection).
+     */
+    public function setBridgeRegistry(CopilotBridgeRegistry $bridgeRegistry): void {
+        $this->bridgeRegistry = $bridgeRegistry;
     }
 
     /**
@@ -1083,7 +1095,86 @@ PROMPT,
             }
         }
 
+        // GAP-COPILOT-5: Enrich with vertical-specific context from bridge.
+        $verticalContext = $this->resolveVerticalBridgeContext($context);
+        if ($verticalContext) {
+            $contextPrompt = $verticalContext . "\n\n" . $this->formatBasicContext($context);
+            return $this->truncateContext($contextPrompt);
+        }
+
         return $this->truncateContext($this->formatBasicContext($context));
+    }
+
+    /**
+     * GAP-COPILOT-5: Resolves vertical-specific context from bridge registry.
+     *
+     * @param array $context
+     *   The current copilot context.
+     *
+     * @return string|null
+     *   Formatted vertical context, or NULL if no bridge available.
+     */
+    protected function resolveVerticalBridgeContext(array $context): ?string {
+        if (!$this->bridgeRegistry) {
+            return NULL;
+        }
+
+        // Determine user's vertical from context or tenant.
+        $vertical = $context['vertical'] ?? NULL;
+        if (!$vertical && $this->tenantContext) {
+            try {
+                $group = $this->tenantContext->getCurrentTenant();
+                $vertical = $group?->get('field_vertical')->value ?? NULL;
+            }
+            catch (\Throwable) {
+                // Tenant resolution failed, skip vertical context.
+            }
+        }
+
+        if (!$vertical || !$this->bridgeRegistry->has($vertical)) {
+            return NULL;
+        }
+
+        $userId = (int) ($context['user_id'] ?? \Drupal::currentUser()->id());
+        if (!$userId) {
+            return NULL;
+        }
+
+        try {
+            $bridge = $this->bridgeRegistry->getBridge($vertical);
+            $verticalData = $bridge->getRelevantContext($userId);
+            if (empty($verticalData)) {
+                return NULL;
+            }
+
+            // Format as context section.
+            $lines = ["## Contexto del vertical: {$vertical}"];
+            foreach ($verticalData as $key => $value) {
+                if ($key === 'vertical') {
+                    continue;
+                }
+                $formatted = is_bool($value) ? ($value ? 'sí' : 'no') : (string) $value;
+                $label = str_replace('_', ' ', ucfirst($key));
+                $lines[] = "- {$label}: {$formatted}";
+            }
+
+            // Append soft suggestion if available.
+            $suggestion = $bridge->getSoftSuggestion($userId);
+            if ($suggestion) {
+                $lines[] = '';
+                $lines[] = '## Sugerencia de mejora';
+                $lines[] = $suggestion['message'] ?? '';
+            }
+
+            return implode("\n", $lines);
+        }
+        catch (\Throwable $e) {
+            $this->logger->warning('CopilotBridge error for vertical @v: @error', [
+                '@v' => $vertical,
+                '@error' => $e->getMessage(),
+            ]);
+            return NULL;
+        }
     }
 
     /**

@@ -341,7 +341,7 @@ jaraba_agroconecta_core.checkout_process:
   methods: [POST]
   requirements:
     _permission: 'access marketplace'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.checkout_confirm:
   path: '/checkout/confirm'
@@ -350,7 +350,7 @@ jaraba_agroconecta_core.checkout_confirm:
   methods: [POST]
   requirements:
     _permission: 'access marketplace'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.order_confirmation:
   path: '/pedido/{order_number}/confirmacion'
@@ -387,7 +387,7 @@ jaraba_agroconecta_core.api.orders.cancel:
   methods: [POST]
   requirements:
     _permission: 'access marketplace'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.producer.orders:
   path: '/api/v1/agro/producer/orders'
@@ -404,7 +404,7 @@ jaraba_agroconecta_core.api.producer.order.confirm:
   methods: [POST]
   requirements:
     _permission: 'manage producer profiles'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   options:
     parameters:
       suborder_agro:
@@ -417,7 +417,7 @@ jaraba_agroconecta_core.api.producer.order.ship:
   methods: [POST]
   requirements:
     _permission: 'manage producer profiles'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
   options:
     parameters:
       suborder_agro:
@@ -739,7 +739,7 @@ jaraba_agroconecta_core.api.reviews.create:
   methods: [POST]
   requirements:
     _permission: 'submit agro reviews'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.reviews.respond:
   path: '/api/v1/agro/reviews/{review_id}/respond'
@@ -748,7 +748,7 @@ jaraba_agroconecta_core.api.reviews.respond:
   methods: [POST]
   requirements:
     _permission: 'respond agro reviews'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.reviews.pending:
   path: '/api/v1/agro/reviews/pending'
@@ -765,7 +765,7 @@ jaraba_agroconecta_core.api.reviews.moderate:
   methods: [POST]
   requirements:
     _permission: 'manage agro reviews'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # ============================================
 # FASE 4: API REST — Notificaciones
@@ -786,7 +786,7 @@ jaraba_agroconecta_core.api.notifications.preferences.update:
   methods: [POST]
   requirements:
     _permission: 'access content'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.notifications.send:
   path: '/api/v1/agro/notifications/send'
@@ -795,7 +795,7 @@ jaraba_agroconecta_core.api.notifications.send:
   methods: [POST]
   requirements:
     _permission: 'manage agro notifications'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.notifications.logs:
   path: '/api/v1/agro/notifications/logs'
@@ -1131,7 +1131,7 @@ jaraba_agroconecta_core.api.promotions.evaluate:
   methods: [POST]
   requirements:
     _permission: 'access checkout'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.coupons.validate:
   path: '/api/v1/agro/coupons/validate'
@@ -1140,7 +1140,7 @@ jaraba_agroconecta_core.api.coupons.validate:
   methods: [POST]
   requirements:
     _permission: 'access checkout'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.coupons.redeem:
   path: '/api/v1/agro/coupons/redeem'
@@ -1149,7 +1149,7 @@ jaraba_agroconecta_core.api.coupons.redeem:
   methods: [POST]
   requirements:
     _permission: 'access checkout'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # ============================================
 # ZONAS DE ENVÍO (Fase 5: Shipping Core)
@@ -1282,7 +1282,7 @@ jaraba_agroconecta_core.api.shipping.calculate:
   methods: [POST]
   requirements:
     _permission: 'access checkout'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.shipping.detect_zone:
   path: '/api/v1/agro/shipping/detect-zone'
@@ -1291,7 +1291,7 @@ jaraba_agroconecta_core.api.shipping.detect_zone:
   methods: [POST]
   requirements:
     _permission: 'access checkout'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # ============================================
 # CONFIGURACIÓN TRANSPORTISTAS (Fase 5: Shipping Core)
@@ -1656,7 +1656,7 @@ jaraba_agroconecta_core.api.traceability.add_event:
   methods: [POST]
   requirements:
     _permission: 'manage agro traceability'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.traceability.verify:
   path: '/api/v1/agro/traceability/{batch_id}/verify'
@@ -1673,7 +1673,7 @@ jaraba_agroconecta_core.api.traceability.proof:
   methods: [POST]
   requirements:
     _permission: 'manage agro traceability'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.qr.generate:
   path: '/api/v1/agro/qr/generate'
@@ -1682,7 +1682,7 @@ jaraba_agroconecta_core.api.qr.generate:
   methods: [POST]
   requirements:
     _permission: 'manage agro qr'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.qr.scan:
   path: '/api/v1/agro/qr/scan'
@@ -1817,7 +1817,7 @@ jaraba_agroconecta_core.api.analytics.aggregate:
   methods: [POST]
   requirements:
     _permission: 'manage agro analytics'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.analytics.alerts:
   path: '/api/v1/agro/analytics/alerts'
@@ -1834,7 +1834,7 @@ jaraba_agroconecta_core.api.analytics.evaluate_alerts:
   methods: [POST]
   requirements:
     _permission: 'manage agro analytics'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 # ============================================
 # ADMIN PANEL (Fase 8: Doc 58)
@@ -1925,7 +1925,7 @@ jaraba_agroconecta_core.api.copilot.chat:
   methods: [POST]
   requirements:
     _permission: 'use agro copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.copilot.generate_description:
   path: '/api/v1/producer/copilot/generate/description'
@@ -1934,7 +1934,7 @@ jaraba_agroconecta_core.api.copilot.generate_description:
   methods: [POST]
   requirements:
     _permission: 'use agro copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.copilot.suggest_price:
   path: '/api/v1/producer/copilot/generate/price'
@@ -1943,7 +1943,7 @@ jaraba_agroconecta_core.api.copilot.suggest_price:
   methods: [POST]
   requirements:
     _permission: 'use agro copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.copilot.review_response:
   path: '/api/v1/producer/copilot/generate/review-response'
@@ -1952,7 +1952,7 @@ jaraba_agroconecta_core.api.copilot.review_response:
   methods: [POST]
   requirements:
     _permission: 'use agro copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.copilot.conversations:
   path: '/api/v1/producer/copilot/conversations'
@@ -1979,7 +1979,7 @@ jaraba_agroconecta_core.api.copilot.forecast_demand:
   methods: [POST]
   requirements:
     _permission: 'use agro copilot'
-    _csrf_token: 'TRUE'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.copilot.trending:
   path: '/api/v1/producer/copilot/market/trending'
@@ -2170,6 +2170,7 @@ jaraba_agroconecta_core.api.qr.delete:
   methods: [DELETE]
   requirements:
     _role: 'authenticated'
+    _csrf_request_header_token: 'TRUE'
     qr_id: '\d+'
 
 jaraba_agroconecta_core.api.qr.scans:
@@ -2244,6 +2245,7 @@ jaraba_agroconecta_core.api.leads.delete:
   methods: [DELETE]
   requirements:
     _role: 'authenticated'
+    _csrf_request_header_token: 'TRUE'
     lead_id: '\d+'
 
 jaraba_agroconecta_core.api.leads.export:
@@ -2317,6 +2319,7 @@ jaraba_agroconecta_core.api.hub.partners.revoke:
   methods: [DELETE]
   requirements:
     _role: 'authenticated'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.hub.documents.upload:
   path: '/api/v1/hub/documents'
@@ -2349,6 +2352,7 @@ jaraba_agroconecta_core.api.hub.documents.delete:
   methods: [DELETE]
   requirements:
     _role: 'authenticated'
+    _csrf_request_header_token: 'TRUE'
 
 jaraba_agroconecta_core.api.hub.analytics:
   path: '/api/v1/hub/analytics'

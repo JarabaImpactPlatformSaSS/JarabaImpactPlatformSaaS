@@ -1,0 +1,8 @@
+notification-preferences:
+  js:
+    js/notification-preferences.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.announce

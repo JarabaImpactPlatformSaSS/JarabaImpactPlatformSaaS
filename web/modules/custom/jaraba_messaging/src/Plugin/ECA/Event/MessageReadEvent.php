@@ -14,6 +14,7 @@ use Drupal\eca\Plugin\ECA\Event\EventBase;
  *   id = "jaraba_messaging_message_read",
  *   label = @Translation("Message read"),
  *   description = @Translation("Fires when messages in a conversation are marked as read."),
+ *   event_name = "jaraba_messaging.message_read",
  *   eca_version_introduced = "2.0.0",
  * )
  */

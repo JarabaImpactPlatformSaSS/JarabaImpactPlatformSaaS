@@ -308,6 +308,7 @@ jaraba_self_discovery.api.timeline.event.delete:
   methods: [DELETE]
   requirements:
     _permission: 'access self discovery tools'
+    _csrf_request_header_token: 'TRUE'
 
 # Endpoint para respuestas contextuales del Copilot
 jaraba_self_discovery.api.copilot.context:

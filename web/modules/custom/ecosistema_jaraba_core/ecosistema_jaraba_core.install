@@ -128,6 +128,109 @@ function ecosistema_jaraba_core_requirements($phase) {
         'severity' => REQUIREMENT_OK,
       ];
     }
+
+    // ─────────────────────────────────────────────────────────
+    // SALVAGUARDA: Verificar servicios criticos en container.
+    // ─────────────────────────────────────────────────────────
+    $critical_services = [
+      'ecosistema_jaraba_core.tenant_context' => 'TenantContextService',
+      'ecosistema_jaraba_core.tenant_bridge' => 'TenantBridgeService',
+      'ecosistema_jaraba_core.currency' => 'CurrencyService',
+      'ecosistema_jaraba_core.tenant_timezone' => 'TenantTimezoneService',
+    ];
+    $missing_services = [];
+    foreach ($critical_services as $service_id => $label) {
+      if (!\Drupal::hasService($service_id)) {
+        $missing_services[] = "$label ($service_id)";
+      }
+    }
+    if (!empty($missing_services)) {
+      $requirements['ecosistema_jaraba_critical_services'] = [
+        'title' => t('Ecosistema Jaraba - Critical Services'),
+        'value' => t('Missing: @services', ['@services' => implode(', ', $missing_services)]),
+        'description' => t('Critical platform services are not available in the container. Check services.yml and module installation.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+    else {
+      $requirements['ecosistema_jaraba_critical_services'] = [
+        'title' => t('Ecosistema Jaraba - Critical Services'),
+        'value' => t('All @count critical services available', ['@count' => count($critical_services)]),
+        'severity' => REQUIREMENT_OK,
+      ];
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // SALVAGUARDA: Verificar integridad Tenant<->Group.
+    // ─────────────────────────────────────────────────────────
+    try {
+      $tenant_storage = \Drupal::entityTypeManager()->getStorage('tenant');
+      $tenants = $tenant_storage->getQuery()
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $orphan_tenants = 0;
+      if (\Drupal::hasService('ecosistema_jaraba_core.tenant_bridge')) {
+        $bridge = \Drupal::service('ecosistema_jaraba_core.tenant_bridge');
+        foreach ($tenants as $tenant_id) {
+          try {
+            if (!$bridge->getGroupForTenant((int) $tenant_id)) {
+              $orphan_tenants++;
+            }
+          }
+          catch (\Throwable $e) {
+            $orphan_tenants++;
+          }
+        }
+      }
+
+      if ($orphan_tenants > 0) {
+        $requirements['ecosistema_jaraba_tenant_integrity'] = [
+          'title' => t('Ecosistema Jaraba - Tenant Integrity'),
+          'value' => t('@count tenant(s) sin Group asociado', ['@count' => $orphan_tenants]),
+          'description' => t('Algunos Tenants no tienen un Group asociado via TenantBridge. Esto puede causar errores de aislamiento.'),
+          'severity' => REQUIREMENT_WARNING,
+        ];
+      }
+      else {
+        $requirements['ecosistema_jaraba_tenant_integrity'] = [
+          'title' => t('Ecosistema Jaraba - Tenant Integrity'),
+          'value' => t('@count tenant(s), todos con Group asociado', ['@count' => count($tenants)]),
+          'severity' => REQUIREMENT_OK,
+        ];
+      }
+    }
+    catch (\Throwable $e) {
+      // Silently skip if entities not yet installed.
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // SALVAGUARDA: Verificar que entity definitions estan sync.
+    // ─────────────────────────────────────────────────────────
+    try {
+      $change_list = \Drupal::entityDefinitionUpdateManager()->getChangeList();
+      if (!empty($change_list)) {
+        $entity_types = array_keys($change_list);
+        $requirements['ecosistema_jaraba_schema_sync'] = [
+          'title' => t('Ecosistema Jaraba - Schema Sync'),
+          'value' => t('@count entity type(s) pending update', ['@count' => count($entity_types)]),
+          'description' => t('Entity definitions have changed but the database has not been updated. Run "drush updatedb" immediately. Affected: @types. The deploy pipeline auto-remediates this — if seen in production, check deploy logs.', [
+            '@types' => implode(', ', $entity_types),
+          ]),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+      else {
+        $requirements['ecosistema_jaraba_schema_sync'] = [
+          'title' => t('Ecosistema Jaraba - Schema Sync'),
+          'value' => t('All entity schemas are up to date'),
+          'severity' => REQUIREMENT_OK,
+        ];
+      }
+    }
+    catch (\Throwable $e) {
+      // Silently skip if not available.
+    }
   }
 
   return $requirements;
@@ -2357,4 +2460,267 @@ function ecosistema_jaraba_core_update_9026(): string {
     $msg .= '. Deactivated generic plans: ' . implode(', ', $deactivated);
   }
   return $msg;
+}
+
+/**
+ * GAP-FVL-LMS: Create formacion_feature_usage table.
+ */
+function ecosistema_jaraba_core_update_9027(): string {
+  $database = \Drupal::database();
+
+  if ($database->schema()->tableExists('formacion_feature_usage')) {
+    return 'Table formacion_feature_usage already exists.';
+  }
+
+  $database->schema()->createTable('formacion_feature_usage', [
+    'description' => 'Tracking de uso de features del vertical formacion.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'user_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+      'feature_key' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+      'usage_date' => ['type' => 'varchar', 'length' => 10, 'not null' => TRUE],
+      'usage_count' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'user_feature_date' => ['user_id', 'feature_key', 'usage_date'],
+      'feature_date' => ['feature_key', 'usage_date'],
+    ],
+  ]);
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice('Tabla formacion_feature_usage creada (GAP-FVL-LMS).');
+  return 'Created formacion_feature_usage table.';
+}
+
+/**
+ * GAP-FVL-HUB: Create content_hub_feature_usage table.
+ */
+function ecosistema_jaraba_core_update_9028(): string {
+  $database = \Drupal::database();
+
+  if ($database->schema()->tableExists('content_hub_feature_usage')) {
+    return 'Table content_hub_feature_usage already exists.';
+  }
+
+  $database->schema()->createTable('content_hub_feature_usage', [
+    'description' => 'Tracking de uso de features del vertical content hub.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'user_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+      'feature_key' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+      'usage_date' => ['type' => 'varchar', 'length' => 10, 'not null' => TRUE],
+      'usage_count' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'user_feature_date' => ['user_id', 'feature_key', 'usage_date'],
+      'feature_date' => ['feature_key', 'usage_date'],
+    ],
+  ]);
+
+  \Drupal::logger('ecosistema_jaraba_core')->notice('Tabla content_hub_feature_usage creada (GAP-FVL-HUB).');
+  return 'Created content_hub_feature_usage table.';
+}
+
+/**
+ * GAP-CURRENCY + GAP-TIMEZONE: Add currency and timezone fields to Tenant.
+ *
+ * UPDATE-HOOK-REQUIRED-001: New baseFieldDefinitions require update hook.
+ * UPDATE-HOOK-CATCH-001: \Throwable (not \Exception).
+ * UPDATE-FIELD-DEF-001: setName() + setTargetEntityTypeId() required.
+ */
+function ecosistema_jaraba_core_update_9029(): string {
+  $messages = [];
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+
+  // 1. Add currency field.
+  try {
+    $currencyField = \Drupal\Core\Field\BaseFieldDefinition::create('list_string')
+      ->setName('currency')
+      ->setTargetEntityTypeId('tenant')
+      ->setLabel(t('Moneda'))
+      ->setDescription(t('Moneda principal del tenant (ISO 4217).'))
+      ->setDefaultValue('EUR')
+      ->setSetting('allowed_values', [
+        'EUR' => 'EUR — Euro',
+        'USD' => 'USD — US Dollar',
+        'GBP' => 'GBP — British Pound',
+        'BRL' => 'BRL — Real Brasileño',
+        'MXN' => 'MXN — Peso Mexicano',
+        'COP' => 'COP — Peso Colombiano',
+        'ARS' => 'ARS — Peso Argentino',
+      ]);
+
+    if (!$updateManager->getFieldStorageDefinition('currency', 'tenant')) {
+      $updateManager->installFieldStorageDefinition('currency', 'tenant', 'ecosistema_jaraba_core', $currencyField);
+      $messages[] = 'Installed currency field on tenant entity.';
+    }
+    else {
+      $messages[] = 'Currency field already exists on tenant entity.';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error installing currency field: ' . $e->getMessage();
+    \Drupal::logger('ecosistema_jaraba_core')->error('Update 9029 currency error: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+
+  // 2. Add timezone field.
+  try {
+    $timezoneField = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+      ->setName('timezone')
+      ->setTargetEntityTypeId('tenant')
+      ->setLabel(t('Zona horaria'))
+      ->setDescription(t('Zona horaria IANA del tenant (ej: Europe/Madrid).'))
+      ->setDefaultValue('Europe/Madrid')
+      ->setSetting('max_length', 64);
+
+    if (!$updateManager->getFieldStorageDefinition('timezone', 'tenant')) {
+      $updateManager->installFieldStorageDefinition('timezone', 'tenant', 'ecosistema_jaraba_core', $timezoneField);
+      $messages[] = 'Installed timezone field on tenant entity.';
+    }
+    else {
+      $messages[] = 'Timezone field already exists on tenant entity.';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error installing timezone field: ' . $e->getMessage();
+    \Drupal::logger('ecosistema_jaraba_core')->error('Update 9029 timezone error: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Install VerticalBrandConfig entity type.
+ */
+function ecosistema_jaraba_core_update_9030(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('vertical_brand');
+
+    if ($entity_type && !$update_manager->getEntityType('vertical_brand')) {
+      $update_manager->installEntityType($entity_type);
+      return 'VerticalBrandConfig entity type installed.';
+    }
+    return 'VerticalBrandConfig entity type already installed.';
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Update 9030 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install FairUsePolicy ConfigEntity type and import default configs.
+ */
+function ecosistema_jaraba_core_update_9031(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('fair_use_policy');
+
+    if ($entity_type && !$update_manager->getEntityType('fair_use_policy')) {
+      $update_manager->installEntityType($entity_type);
+    }
+
+    // Import default FairUsePolicy configs.
+    $configs = [
+      '_global' => 'ecosistema_jaraba_core.fair_use_policy._global',
+      'starter' => 'ecosistema_jaraba_core.fair_use_policy.starter',
+      'professional' => 'ecosistema_jaraba_core.fair_use_policy.professional',
+      'enterprise' => 'ecosistema_jaraba_core.fair_use_policy.enterprise',
+    ];
+
+    $config_path = \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core') . '/config/install';
+    $imported = 0;
+
+    foreach ($configs as $id => $config_name) {
+      $existing = \Drupal::configFactory()->get($config_name);
+      if (!$existing->isNew()) {
+        continue;
+      }
+
+      $file = $config_path . '/' . $config_name . '.yml';
+      if (!file_exists($file)) {
+        continue;
+      }
+
+      $data = \Symfony\Component\Yaml\Yaml::parseFile($file);
+      if (!is_array($data)) {
+        continue;
+      }
+
+      \Drupal::configFactory()->getEditable($config_name)->setData($data)->save();
+      $imported++;
+    }
+
+    return "FairUsePolicy entity type installed. {$imported} default configs imported.";
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Update 9031 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Update Enterprise plan limits: replace -1 with finite Fair Use limits.
+ *
+ * Also adds emails_per_month and api_calls_per_month to all tiers.
+ */
+function ecosistema_jaraba_core_update_9032(): string {
+  try {
+    $updates = [
+      'ecosistema_jaraba_core.plan_features._default_enterprise' => [
+        'copilot_uses_per_month' => 500,
+        'storage_gb' => 100,
+        'ai_queries' => 1000,
+        'emails_per_month' => 25000,
+        'api_calls_per_month' => 50000,
+      ],
+      'ecosistema_jaraba_core.plan_features._default_professional' => [
+        'emails_per_month' => 5000,
+        'api_calls_per_month' => 10000,
+      ],
+      'ecosistema_jaraba_core.plan_features._default_starter' => [
+        'emails_per_month' => 1000,
+        'api_calls_per_month' => 2000,
+      ],
+    ];
+
+    $updated = 0;
+    foreach ($updates as $config_name => $new_limits) {
+      $config = \Drupal::configFactory()->getEditable($config_name);
+      if ($config->isNew()) {
+        continue;
+      }
+
+      $limits = $config->get('limits') ?? [];
+      foreach ($new_limits as $key => $value) {
+        $limits[$key] = $value;
+      }
+      $config->set('limits', $limits)->save();
+      $updated++;
+    }
+
+    return "Updated {$updated} plan feature configs with Fair Use limits.";
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('ecosistema_jaraba_core')->error(
+      'Update 9032 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
 }

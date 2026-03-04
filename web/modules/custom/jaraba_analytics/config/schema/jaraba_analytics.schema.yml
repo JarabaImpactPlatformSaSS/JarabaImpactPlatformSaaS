@@ -30,3 +30,49 @@ jaraba_analytics.settings:
     cache_ttl:
       type: integer
       label: 'Cache TTL in seconds'
+
+# Schema for ActivationCriteriaConfig entity.
+jaraba_analytics.activation_criteria.*:
+  type: config_entity
+  label: 'Activation Criteria configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    vertical:
+      type: string
+      label: 'Vertical machine name'
+    criteria:
+      type: sequence
+      label: 'Activation criteria'
+      sequence:
+        type: mapping
+        label: 'Criterion'
+        mapping:
+          event_type:
+            type: string
+            label: 'Event type'
+          min_count:
+            type: integer
+            label: 'Minimum count'
+          within_days:
+            type: integer
+            label: 'Within days'
+    activation_threshold:
+      type: float
+      label: 'Activation threshold (0-1)'
+    retention_d30_threshold:
+      type: float
+      label: 'Retention D30 threshold (0-1)'
+    nps_threshold:
+      type: integer
+      label: 'NPS threshold (-100 to 100)'
+    churn_threshold:
+      type: float
+      label: 'Churn threshold (0-1)'

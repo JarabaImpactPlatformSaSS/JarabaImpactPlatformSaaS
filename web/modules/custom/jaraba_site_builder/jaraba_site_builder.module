@@ -415,3 +415,116 @@ function jaraba_site_builder_cron(): void {
     );
   }
 }
+
+
+/**
+ * Prepares variables for seo_page_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_seo_page_config(array &$variables): void {
+  $entity = $variables['elements']['#seo_page_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['seo_page_config'] = $entity;
+}
+
+/**
+ * Prepares variables for site_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_config(array &$variables): void {
+  $entity = $variables['elements']['#site_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_config'] = $entity;
+}
+
+/**
+ * Prepares variables for site_footer_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_footer_config(array &$variables): void {
+  $entity = $variables['elements']['#site_footer_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_footer_config'] = $entity;
+}
+
+/**
+ * Prepares variables for site_header_config templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_header_config(array &$variables): void {
+  $entity = $variables['elements']['#site_header_config'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_header_config'] = $entity;
+}
+
+/**
+ * Prepares variables for site_menu templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_menu(array &$variables): void {
+  $entity = $variables['elements']['#site_menu'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_menu'] = $entity;
+}
+
+/**
+ * Prepares variables for site_menu_item templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_menu_item(array &$variables): void {
+  $entity = $variables['elements']['#site_menu_item'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_menu_item'] = $entity;
+}
+
+/**
+ * Prepares variables for site_page_tree templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_page_tree(array &$variables): void {
+  $entity = $variables['elements']['#site_page_tree'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_page_tree'] = $entity;
+}
+
+/**
+ * Prepares variables for site_redirect templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_site_builder_preprocess_site_redirect(array &$variables): void {
+  $entity = $variables['elements']['#site_redirect'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['site_redirect'] = $entity;
+}

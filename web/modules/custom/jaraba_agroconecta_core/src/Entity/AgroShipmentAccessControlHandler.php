@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\jaraba_agroconecta_core\Entity;
 
-use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
@@ -14,12 +14,18 @@ use Drupal\Core\Access\AccessResult;
  *
  * @see AUDIT-CONS-001
  */
-class AgroShipmentAccessControlHandler extends EntityAccessControlHandler {
+class AgroShipmentAccessControlHandler extends DefaultEntityAccessControlHandler {
 
   /**
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // TENANT-ISOLATION-ACCESS-001: Tenant isolation via parent.
+    $parentResult = parent::checkAccess($entity, $operation, $account);
+    if ($parentResult->isForbidden()) {
+      return $parentResult;
+    }
+
     /** @var \Drupal\jaraba_agroconecta_core\Entity\AgroShipmentInterface $entity */
 
     // Admin siempre tiene acceso.

@@ -264,3 +264,74 @@ function jaraba_support_support_ticket_presave(\Drupal\Core\Entity\EntityInterfa
     }
   }
 }
+
+
+/**
+ * Prepares variables for agent_saved_view templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_support_preprocess_agent_saved_view(array &$variables): void {
+  $entity = $variables['elements']['#agent_saved_view'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['agent_saved_view'] = $entity;
+}
+
+/**
+ * Prepares variables for response_template templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_support_preprocess_response_template(array &$variables): void {
+  $entity = $variables['elements']['#response_template'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['response_template'] = $entity;
+}
+
+/**
+ * Prepares variables for ticket_attachment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_support_preprocess_ticket_attachment(array &$variables): void {
+  $entity = $variables['elements']['#ticket_attachment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ticket_attachment'] = $entity;
+}
+
+/**
+ * Prepares variables for ticket_event_log templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_support_preprocess_ticket_event_log(array &$variables): void {
+  $entity = $variables['elements']['#ticket_event_log'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ticket_event_log'] = $entity;
+}
+
+/**
+ * Prepares variables for ticket_watcher templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_support_preprocess_ticket_watcher(array &$variables): void {
+  $entity = $variables['elements']['#ticket_watcher'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ticket_watcher'] = $entity;
+}

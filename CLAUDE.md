@@ -1,5 +1,5 @@
 # JARABA IMPACT PLATFORM — CLAUDE.md
-# Ultima actualizacion: 2026-03-03 | Version: 1.1.0
+# Ultima actualizacion: 2026-03-04 | Version: 1.2.0
 # Ecosistema: 10 verticales, 178+ especificaciones, 80+ modulos custom, Drupal 11
 
 ## IDENTIDAD DEL PROYECTO
@@ -74,7 +74,7 @@ Source of truth: `BaseAgent::VERTICALS` en jaraba_ai_agents
 - DATETIME-ARITHMETIC-001: datetime = VARCHAR 'Y-m-d\TH:i:s', created/changed = INT Unix. Usar UNIX_TIMESTAMP(REPLACE(field,'T',' ')) para convertir
 - UPDATE-FIELD-DEF-001: updateFieldStorageDefinition() EXIGE setName($field_name) y setTargetEntityTypeId($entity_type_id) en el BaseFieldDefinition. baseFieldDefinitions() NO los establece — estan en la key del array, no dentro del objeto
 - UPDATE-HOOK-CATCH-001: try-catch en hook_update_N() DEBE usar \Throwable (NO \Exception). PHP 8.4 TypeError extiende \Error, no \Exception. catch(\Exception) deja pasar TypeErrors y mata updatedb
-- UPDATE-HOOK-REQUIRED-001: TODO cambio en baseFieldDefinitions(), nueva entity, o campo modificado DEBE incluir hook_update_N() con EntityDefinitionUpdateManager. Sin el hook, CI pasa pero produccion diverge
+- UPDATE-HOOK-REQUIRED-001: TODO cambio en baseFieldDefinitions(), nueva entity (Content O Config), o campo modificado DEBE incluir hook_update_N() con EntityDefinitionUpdateManager::installEntityType(). INCLUYE ConfigEntities — Drupal trackea sus entity type definitions. Sin el hook, CI pasa pero produccion diverge con "entity type needs to be installed"
 - Raw SQL SOLO en .install hooks. En todo otro contexto: Entity Query o DB API
 
 ### JavaScript
@@ -237,3 +237,47 @@ Tras completar un feature, verificar 5 dependencias runtime:
 
 > La diferencia entre "el codigo existe" y "el usuario lo experimenta" requiere
 > verificacion en CADA capa: PHP -> Twig -> SCSS -> CSS compilado -> JS -> drupalSettings -> DOM final.
+
+## IMPLEMENTATION-CHECKLIST-001 — Verificacion Post-Implementacion
+
+Tras completar CUALQUIER feature, verificar ANTES de considerar "terminado":
+
+### Complitud
+- Servicio registrado en services.yml Y consumido por al menos 1 otro servicio/controller
+- Rutas en routing.yml apuntan a clases/metodos existentes
+- Si entity nueva: AccessControlHandler, hook_theme, template_preprocess, Views data
+- Si SCSS nuevo: compilado, library registrada, hook_page_attachments_alter
+
+### Integridad
+- Tests existen: Unit para servicios, Kernel para entities, Functional para rutas
+- hook_update_N() si cambio baseFieldDefinitions o nueva entity (Content O Config). ConfigEntities tambien necesitan installEntityType()
+- Config export si nuevas config entities
+- Verificar: `php scripts/validation/validate-entity-integrity.php` (detecta entities sin hook_update_N)
+
+### Consistencia
+- Patron PREMIUM-FORMS-PATTERN-001 en forms
+- CONTROLLER-READONLY-001 en controllers
+- CSS-VAR-ALL-COLORS-001 en SCSS
+- TENANT-001 en queries
+
+### Coherencia
+- Documentacion actualizada (master docs si aplica)
+- CLAUDE.md actualizado si nueva regla descubierta
+- Memory files actualizados si patron nuevo
+
+### Automatizacion
+- `bash scripts/validation/validate-all.sh --checklist web/modules/custom/{modulo}`
+- `php scripts/validation/validate-service-consumers.php` (SERVICE-ORPHAN-001)
+- `php scripts/validation/validate-compiled-assets.php` (ASSET-FRESHNESS-001)
+- `php scripts/validation/validate-tenant-isolation.php` (TENANT-CHECK-001)
+- `php scripts/validation/validate-test-coverage-map.php` (TEST-COVERAGE-MAP-001)
+
+## SAFEGUARD SYSTEM — 5 Capas de Defensa
+
+| Capa | Mecanismo | Cuando |
+|------|-----------|--------|
+| 1 | Scripts validacion (scripts/validation/) | On demand, CI |
+| 2 | Pre-commit hooks (Husky + lint-staged) | Antes de cada commit |
+| 3 | CI Pipeline Gates (ci.yml + fitness-functions.yml) | En cada PR |
+| 4 | Runtime Self-Checks (hook_requirements) | En /admin/reports/status |
+| 5 | IMPLEMENTATION-CHECKLIST-001 (este doc) | Al completar features |

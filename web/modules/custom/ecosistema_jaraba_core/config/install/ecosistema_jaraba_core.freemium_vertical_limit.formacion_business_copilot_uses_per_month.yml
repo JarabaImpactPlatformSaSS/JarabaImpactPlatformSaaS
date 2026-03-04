@@ -1,0 +1,11 @@
+id: formacion_business_copilot_uses_per_month
+label: 'Formacion Business: Copilot mensual'
+vertical: formacion
+plan: business
+feature_key: copilot_uses_per_month
+limit_value: -1
+description: 'Copilot IA ilimitado en plan Business Formacion.'
+upgrade_message: ''
+expected_conversion: 0
+weight: 34
+status: true

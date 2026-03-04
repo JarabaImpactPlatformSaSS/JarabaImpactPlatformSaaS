@@ -70,6 +70,9 @@ jobs:
       - name: Module consistency check (MODULE-ORPHAN-001)
         run: bash scripts/maintenance/check-module-consistency.sh
 
+      - name: Architectural validation (DI, routing, entities, queries)
+        run: bash scripts/validation/validate-all.sh --full
+
       - name: Run PHPUnit Unit tests
         run: vendor/bin/phpunit --configuration phpunit.xml --no-progress --testsuite Unit
 
@@ -425,13 +428,53 @@ jobs:
             /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
           EOF
 
-      - name: Verify entity/field schema consistency (UPDATE-HOOK-REQUIRED-001)
+      - name: Auto-import missing config/install defaults (CONFIG-INSTALL-001)
         run: |
           ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
             cd ~/JarabaImpactPlatformSaaS
             export PATH="$HOME/bin_cli:$PATH"
             export DRUSH_PHP=/usr/bin/php8.4-cli
-            echo "=== Checking entity/field definition mismatches ==="
+            echo "=== Checking for missing config/install defaults ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php eval "
+              \$module_handler = \Drupal::moduleHandler();
+              \$config_factory = \Drupal::configFactory();
+              \$imported = 0;
+              foreach (\$module_handler->getModuleList() as \$module_name => \$extension) {
+                \$config_dir = \$extension->getPath() . '/config/install';
+                if (!is_dir(DRUPAL_ROOT . '/' . \$config_dir)) continue;
+                \$files = glob(DRUPAL_ROOT . '/' . \$config_dir . '/*.yml');
+                foreach (\$files as \$file) {
+                  \$config_name = basename(\$file, '.yml');
+                  // Only import configs owned by this module (prefix match).
+                  if (!str_starts_with(\$config_name, \$module_name . '.')) continue;
+                  \$config = \$config_factory->get(\$config_name);
+                  if (\$config->isNew()) {
+                    \$yaml = file_get_contents(\$file);
+                    \$data = \Symfony\Component\Yaml\Yaml::parse(\$yaml);
+                    if (\$data) {
+                      \$config_factory->getEditable(\$config_name)->setData(\$data)->save();
+                      echo \"  Imported: \$config_name\" . PHP_EOL;
+                      \$imported++;
+                    }
+                  }
+                }
+              }
+              if (\$imported > 0) {
+                echo \"Imported \$imported missing config(s).\" . PHP_EOL;
+              } else {
+                echo 'All config/install defaults already present.' . PHP_EOL;
+              }
+            " 2>&1
+          EOF
+
+      - name: Auto-remediate entity/field schema (UPDATE-HOOK-REQUIRED-001)
+        run: |
+          ssh ${{ env.IONOS_USER }}@${{ env.IONOS_HOST }} << 'EOF'
+            cd ~/JarabaImpactPlatformSaaS
+            export PATH="$HOME/bin_cli:$PATH"
+            export DRUSH_PHP=/usr/bin/php8.4-cli
+
+            echo "=== Phase 1: Detect entity/field definition mismatches ==="
             MISMATCHES=$(/usr/bin/php8.4-cli vendor/bin/drush.php eval "
               \$manager = \Drupal::entityDefinitionUpdateManager();
               \$changes = \$manager->getChangeList();
@@ -444,11 +487,90 @@ jobs:
               }
             " 2>&1)
             echo "$MISMATCHES"
+
             if echo "$MISMATCHES" | grep -q "CLEAN"; then
               echo "✅ Entity/field definitions match database schema"
+              exit 0
+            fi
+
+            echo ""
+            echo "=== Phase 2: Auto-remediate — applying entity definition updates ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php eval "
+              \$manager = \Drupal::entityDefinitionUpdateManager();
+              \$changes = \$manager->getChangeList();
+              \$applied = 0;
+              \$errors = [];
+
+              foreach (\$changes as \$entity_type_id => \$change_info) {
+                // Install new entity types.
+                if (isset(\$change_info['entity_type']) && \$change_info['entity_type'] === 'installed') {
+                  try {
+                    \$definition = \Drupal::entityTypeManager()->getDefinition(\$entity_type_id);
+                    \$manager->installEntityType(\$definition);
+                    echo \"  ✅ Installed entity type: \$entity_type_id\" . PHP_EOL;
+                    \$applied++;
+                  } catch (\Throwable \$e) {
+                    \$errors[] = \"Entity \$entity_type_id: \" . \$e->getMessage();
+                  }
+                }
+
+                // Install/update individual fields.
+                if (isset(\$change_info['field_storage_definitions'])) {
+                  \$field_definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions(\$entity_type_id);
+                  foreach (\$change_info['field_storage_definitions'] as \$field_name => \$change_type) {
+                    if (!isset(\$field_definitions[\$field_name])) continue;
+                    \$field_def = \$field_definitions[\$field_name];
+                    try {
+                      if (\$change_type === 'installed') {
+                        \$manager->installFieldStorageDefinition(\$field_name, \$entity_type_id, \$field_def->getProvider(), \$field_def);
+                        echo \"  ✅ Installed field: \$entity_type_id.\$field_name\" . PHP_EOL;
+                      } elseif (\$change_type === 'updated') {
+                        \$field_def->setName(\$field_name);
+                        \$field_def->setTargetEntityTypeId(\$entity_type_id);
+                        \$manager->updateFieldStorageDefinition(\$field_def);
+                        echo \"  ✅ Updated field: \$entity_type_id.\$field_name\" . PHP_EOL;
+                      }
+                      \$applied++;
+                    } catch (\Throwable \$e) {
+                      \$errors[] = \"Field \$entity_type_id.\$field_name: \" . \$e->getMessage();
+                    }
+                  }
+                }
+              }
+
+              echo PHP_EOL . \"Applied: \$applied changes\" . PHP_EOL;
+              if (!empty(\$errors)) {
+                echo 'Errors:' . PHP_EOL;
+                foreach (\$errors as \$err) { echo \"  ❌ \$err\" . PHP_EOL; }
+              }
+            " 2>&1
+            REMEDIATE_EXIT=$?
+
+            echo ""
+            echo "=== Phase 3: Post-remediation cache rebuild ==="
+            /usr/bin/php8.4-cli vendor/bin/drush.php cache:rebuild 2>&1
+
+            echo ""
+            echo "=== Phase 4: Final verification ==="
+            FINAL=$(/usr/bin/php8.4-cli vendor/bin/drush.php eval "
+              \$manager = \Drupal::entityDefinitionUpdateManager();
+              \$changes = \$manager->getChangeList();
+              if (empty(\$changes)) {
+                echo 'CLEAN';
+              } else {
+                foreach (\$changes as \$type => \$info) {
+                  echo \$type . ': ' . json_encode(\$info) . PHP_EOL;
+                }
+              }
+            " 2>&1)
+            echo "$FINAL"
+
+            if echo "$FINAL" | grep -q "CLEAN"; then
+              echo "✅ All schema mismatches auto-remediated successfully"
             else
-              echo "⚠️ Entity/field definition mismatches detected (non-blocking for now)"
-              echo "Missing update hooks — see /admin/reports/status for details"
+              echo "❌ BLOCKING: Schema mismatches persist after auto-remediation"
+              echo "Manual intervention required — check hook_update_N() coverage"
+              exit 1
             fi
           EOF
 

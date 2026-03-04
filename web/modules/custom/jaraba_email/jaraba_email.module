@@ -21,6 +21,12 @@ function jaraba_email_theme(): array {
         'preview_data' => [],
       ],
     ],
+    'jaraba_email_unsubscribe_confirm' => [
+      'variables' => [
+        'email' => NULL,
+        'process_url' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -36,6 +42,17 @@ function jaraba_email_mail(string $key, array &$message, array $params): void {
       $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
       if (!empty($params['from'])) {
         $message['from'] = $params['from'];
+      }
+      // GAP-UNSUBSCRIBE: RFC 8058 List-Unsubscribe headers.
+      if (\Drupal::hasService('jaraba_email.unsubscribe_token') && !empty($message['to'])) {
+        try {
+          $headers = \Drupal::service('jaraba_email.unsubscribe_token')
+            ->generateListUnsubscribeHeaders($message['to']);
+          $message['headers'] += $headers;
+        }
+        catch (\Throwable $e) {
+          // Non-fatal: email sends without unsubscribe headers.
+        }
       }
       break;
 

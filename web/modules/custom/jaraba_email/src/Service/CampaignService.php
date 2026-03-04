@@ -6,6 +6,7 @@ namespace Drupal\jaraba_email\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\jaraba_email\Service\UnsubscribeTokenService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -57,23 +58,34 @@ class CampaignService
     protected LoggerInterface $logger;
 
     /**
+     * Servicio de tokens de baja (opcional, @?).
+     *
+     * @var \Drupal\jaraba_email\Service\UnsubscribeTokenService|null
+     */
+    protected ?UnsubscribeTokenService $unsubscribeToken;
+
+    /**
      * Construye un CampaignService.
      *
      * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
      *   El gestor de tipos de entidad.
      * @param \Drupal\Core\Mail\MailManagerInterface $mailManager
-     *   El gestor de envío de emails.
+     *   El gestor de envio de emails.
      * @param \Psr\Log\LoggerInterface $logger
      *   El servicio de logging.
+     * @param \Drupal\jaraba_email\Service\UnsubscribeTokenService|null $unsubscribeToken
+     *   Servicio opcional de tokens de baja (GAP-UNSUBSCRIBE).
      */
     public function __construct(
         EntityTypeManagerInterface $entityTypeManager,
         MailManagerInterface $mailManager,
         LoggerInterface $logger,
+        ?UnsubscribeTokenService $unsubscribeToken = NULL,
     ) {
         $this->entityTypeManager = $entityTypeManager;
         $this->mailManager = $mailManager;
         $this->logger = $logger;
+        $this->unsubscribeToken = $unsubscribeToken;
     }
 
     /**
@@ -185,7 +197,8 @@ class CampaignService
                 } else {
                     $errors[] = $email;
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                // UPDATE-HOOK-CATCH-001: \Throwable catches TypeError in PHP 8.4.
                 $errors[] = $email;
                 $this->logger->error('Error al enviar a @email: @error', [
                     '@email' => $email,
@@ -231,12 +244,27 @@ class CampaignService
      */
     protected function personalizeContent(string $content, $subscriber): string
     {
+        $email = $subscriber->getEmail();
+        // GAP-UNSUBSCRIBE: Generate HMAC-signed unsubscribe URL via DI.
+        $unsubscribeUrl = '#';
+        if ($this->unsubscribeToken !== NULL) {
+            try {
+                $unsubscribeUrl = $this->unsubscribeToken->generateUnsubscribeUrl($email);
+            }
+            catch (\Throwable $e) {
+                $this->logger->warning(
+                    'Failed to generate unsubscribe URL for @email: @error',
+                    ['@email' => $email, '@error' => $e->getMessage()]
+                );
+            }
+        }
+
         $replacements = [
             '{{first_name}}' => $subscriber->get('first_name')->value ?? '',
             '{{last_name}}' => $subscriber->get('last_name')->value ?? '',
-            '{{email}}' => $subscriber->getEmail(),
+            '{{email}}' => $email,
             '{{full_name}}' => $subscriber->getFullName(),
-            '{{unsubscribe_url}}' => '/email/unsubscribe/' . $subscriber->uuid(),
+            '{{unsubscribe_url}}' => $unsubscribeUrl,
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $content);

@@ -108,6 +108,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
         'invoice.paid' => $this->handleInvoicePaid($eventData),
         'invoice.payment_failed' => $this->handleInvoicePaymentFailed($eventData),
         'invoice.finalized' => $this->handleInvoiceFinalized($eventData),
+        'invoice.updated' => $this->handleInvoiceUpdated($eventData),
         'customer.subscription.created' => $this->handleSubscriptionCreated($eventData),
         'customer.subscription.updated' => $this->handleSubscriptionUpdated($eventData),
         'customer.subscription.deleted' => $this->handleSubscriptionDeleted($eventData),
@@ -194,6 +195,32 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
 
     $this->billingLogger->info('Invoice finalizada sincronizada: @id', [
       '@id' => $data['id'] ?? 'unknown',
+    ]);
+
+    return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);
+  }
+
+  /**
+   * GAP-PRORATION: Invoice updated — sync proration line items.
+   *
+   * Triggered when Stripe updates an invoice (e.g., adding proration
+   * line items after a mid-cycle plan change).
+   */
+  protected function handleInvoiceUpdated(array $data): JsonResponse {
+    $this->invoiceService->syncInvoice($data);
+
+    // Log proration-specific info.
+    $hasProration = FALSE;
+    foreach (($data['lines']['data'] ?? []) as $line) {
+      if (!empty($line['proration'])) {
+        $hasProration = TRUE;
+        break;
+      }
+    }
+
+    $this->billingLogger->info('Invoice updated sincronizada: @id (proration: @proration)', [
+      '@id' => $data['id'] ?? 'unknown',
+      '@proration' => $hasProration ? 'yes' : 'no',
     ]);
 
     return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'processed'], 'meta' => ['timestamp' => time()]]);

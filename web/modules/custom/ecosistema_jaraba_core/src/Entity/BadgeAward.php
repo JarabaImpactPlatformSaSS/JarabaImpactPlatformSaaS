@@ -23,7 +23,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   label_plural = @Translation("otorgamientos de insignias"),
  *   handlers = {
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
- *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
+ *     "access" = "Drupal\ecosistema_jaraba_core\Access\DefaultEntityAccessControlHandler",
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },

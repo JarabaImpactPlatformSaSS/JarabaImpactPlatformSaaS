@@ -50,6 +50,26 @@ class NotificationService {
    *   La notificacion creada o NULL si falla.
    */
   public function send(int $userId, int $tenantId, string $type, string $title, string $message = '', string $link = ''): ?object {
+    // GAP-NOTIF-PREFS: Verificar preferencias del usuario para in_app.
+    // PRESAVE-RESILIENCE-001: Fail-open si el servicio de preferencias
+    // no esta disponible — enviar la notificacion igualmente.
+    try {
+      if (\Drupal::hasService('jaraba_notifications.preference')) {
+        /** @var \Drupal\jaraba_notifications\Service\NotificationPreferenceService $prefService */
+        $prefService = \Drupal::service('jaraba_notifications.preference');
+        if (!$prefService->isChannelEnabled($userId, $type, 'in_app')) {
+          $this->logger->info('Notification skipped (preference disabled): @type for user @user', [
+            '@type' => $type,
+            '@user' => $userId,
+          ]);
+          return NULL;
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      // Preferencias no disponibles — fail-open, enviar notificacion.
+    }
+
     try {
       $storage = $this->entityTypeManager->getStorage('notification');
       $notification = $storage->create([
@@ -66,7 +86,7 @@ class NotificationService {
 
       return $notification;
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       $this->logger->error('Error al crear notificacion: @message', [
         '@message' => $e->getMessage(),
       ]);

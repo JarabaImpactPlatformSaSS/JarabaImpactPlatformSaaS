@@ -1,0 +1,13 @@
+#!/bin/sh
+# =============================================================================
+# PRE-COMMIT HOOK — Jaraba Impact Platform
+#
+# Shift-left quality gates: runs fast checks on staged files before commit.
+# Only checks relevant to modified files are executed (~5-10s).
+#
+# Install: npx husky (from project root)
+# Skip (emergency): git commit --no-verify (NOT recommended)
+# =============================================================================
+
+# Run lint-staged on staged files.
+npx lint-staged

@@ -1,0 +1,19 @@
+id: empleabilidad
+label: 'Empleabilidad'
+vertical: empleabilidad
+public_name: 'Jaraba Empleo'
+tagline: 'Tu futuro profesional empieza aqui'
+description: 'Plataforma de empleabilidad con herramientas de busqueda de empleo, marca profesional y orientacion laboral.'
+icon_category: vertical
+icon_name: empleabilidad
+primary_color: '#00A9A5'
+secondary_color: '#233D63'
+hero_image_url: ''
+og_image_url: ''
+seo_title_template: '{page_title} | Jaraba Empleo'
+seo_description: 'Encuentra tu empleo ideal con Jaraba Empleo. Herramientas de busqueda, marca profesional y orientacion laboral.'
+schema_org_type: EmploymentAgency
+revelation_level: landing
+landing_route: ecosistema_jaraba_core.vertical.empleabilidad
+enabled: true
+status: true

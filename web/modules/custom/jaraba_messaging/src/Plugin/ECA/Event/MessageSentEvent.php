@@ -14,6 +14,7 @@ use Drupal\eca\Plugin\ECA\Event\EventBase;
  *   id = "jaraba_messaging_message_sent",
  *   label = @Translation("Message sent"),
  *   description = @Translation("Fires when a secure message is sent in a conversation."),
+ *   event_name = "jaraba_messaging.message_sent",
  *   eca_version_introduced = "2.0.0",
  * )
  */

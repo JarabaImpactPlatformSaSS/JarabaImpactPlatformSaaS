@@ -34,6 +34,35 @@ services:
       - '@jaraba_crm.opportunity'
       - '@logger.channel.jaraba_crm'
 
+  # ===========================================
+  # GAP-CRM: External CRM connectors (plugin system)
+  # ===========================================
+
+  # Orchestrator: resolves active connector, delegates sync.
+  jaraba_crm.sync_orchestrator:
+    class: Drupal\jaraba_crm\Service\CrmSyncOrchestratorService
+    arguments:
+      - '@logger.channel.jaraba_crm'
+    calls:
+      - [addConnector, ['@jaraba_crm.connector.hubspot']]
+      - [addConnector, ['@jaraba_crm.connector.salesforce']]
+
+  # HubSpot connector (API v3).
+  jaraba_crm.connector.hubspot:
+    class: Drupal\jaraba_crm\Service\HubSpotConnector
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_crm'
+
+  # Salesforce connector (REST API v59).
+  jaraba_crm.connector.salesforce:
+    class: Drupal\jaraba_crm\Service\SalesforceConnector
+    arguments:
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.jaraba_crm'
+
   # Servicio de forecasting y metricas de ventas.
   jaraba_crm.forecasting:
     class: Drupal\jaraba_crm\Service\CrmForecastingService

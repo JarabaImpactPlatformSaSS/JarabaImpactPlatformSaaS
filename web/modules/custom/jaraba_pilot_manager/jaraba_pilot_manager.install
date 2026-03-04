@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall hooks for jaraba_pilot_manager.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function jaraba_pilot_manager_install(): void {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  $entity_types = ['pilot_program', 'pilot_tenant', 'pilot_feedback'];
+  foreach ($entity_types as $entity_type_id) {
+    try {
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+      if ($entity_type && !$update_manager->getEntityType($entity_type_id)) {
+        $update_manager->installEntityType($entity_type);
+      }
+    }
+    // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_pilot_manager')->error(
+        'Failed to install @type: @msg',
+        ['@type' => $entity_type_id, '@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  \Drupal::logger('jaraba_pilot_manager')->notice('Jaraba Pilot Manager module installed.');
+}
+
+/**
+ * Install PilotProgram entity type.
+ */
+function jaraba_pilot_manager_update_10001(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('pilot_program');
+
+    if ($entity_type && !$update_manager->getEntityType('pilot_program')) {
+      $update_manager->installEntityType($entity_type);
+      return 'PilotProgram entity type installed.';
+    }
+    return 'PilotProgram entity type already installed.';
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_pilot_manager')->error(
+      'Update 10001 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install PilotTenant entity type.
+ */
+function jaraba_pilot_manager_update_10002(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('pilot_tenant');
+
+    if ($entity_type && !$update_manager->getEntityType('pilot_tenant')) {
+      $update_manager->installEntityType($entity_type);
+      return 'PilotTenant entity type installed.';
+    }
+    return 'PilotTenant entity type already installed.';
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_pilot_manager')->error(
+      'Update 10002 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}
+
+/**
+ * Install PilotFeedback entity type.
+ */
+function jaraba_pilot_manager_update_10003(): string {
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('pilot_feedback');
+
+    if ($entity_type && !$update_manager->getEntityType('pilot_feedback')) {
+      $update_manager->installEntityType($entity_type);
+      return 'PilotFeedback entity type installed.';
+    }
+    return 'PilotFeedback entity type already installed.';
+  }
+  // UPDATE-HOOK-CATCH-001: catch \Throwable, NOT \Exception.
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_pilot_manager')->error(
+      'Update 10003 failed: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+    return 'Error: ' . $e->getMessage();
+  }
+}

@@ -149,3 +149,32 @@ function jaraba_interactive_preprocess_html(array &$variables): void {
     $variables['attributes']['class'][] = 'zero-region-layout';
   }
 }
+
+
+/**
+ * Prepares variables for interactive_content templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_interactive_preprocess_interactive_content(array &$variables): void {
+  $entity = $variables['elements']['#interactive_content'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['interactive_content'] = $entity;
+}
+
+/**
+ * Prepares variables for interactive_result templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_interactive_preprocess_interactive_result(array &$variables): void {
+  $entity = $variables['elements']['#interactive_result'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['interactive_result'] = $entity;
+}

@@ -40,12 +40,14 @@ services:
       - '@logger.channel.jaraba_billing'
 
   # Metering avanzado por tenant (usage-based pricing)
+  # Prices read from FairUsePolicy ConfigEntity via FairUsePolicyService.
   jaraba_billing.tenant_metering:
     class: Drupal\jaraba_billing\Service\TenantMeteringService
     arguments:
       - '@database'
       - '@cache.default'
       - '@jaraba_billing.wallet'
+      - '@?ecosistema_jaraba_core.fair_use_policy'
 
   # Motor de cálculo de precios basado en PricingRule
   jaraba_billing.pricing_engine:
@@ -62,6 +64,15 @@ services:
       - '@logger.factory'
       - '@plugin.manager.mail'
       - '@state'
+
+  # GAP-REVENUE-DASH: Core SaaS revenue KPIs.
+  jaraba_billing.revenue_metrics:
+    class: Drupal\jaraba_billing\Service\RevenueMetricsService
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.channel.jaraba_billing'
+      - '@?jaraba_billing.synthetic_cfo'
 
   # Tracking de expansion revenue y PQA
   jaraba_billing.expansion_revenue:
@@ -121,6 +132,14 @@ services:
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
       - '@lock'
+
+  # GAP-PRORATION: Proration preview for plan changes.
+  jaraba_billing.proration:
+    class: Drupal\jaraba_billing\Service\ProrationService
+    arguments:
+      - '@jaraba_foc.stripe_connect'
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
 
   # ===========================================
   # DUNNING + FEATURE ACCESS — Servicios de clase mundial

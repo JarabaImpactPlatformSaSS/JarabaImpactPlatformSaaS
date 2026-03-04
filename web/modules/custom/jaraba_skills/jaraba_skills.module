@@ -233,3 +233,60 @@ function _jaraba_skills_regenerate_embedding(int $skillId): void {
     ]);
   }
 }
+
+
+/**
+ * Prepares variables for ai_skill templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_skills_preprocess_ai_skill(array &$variables): void {
+  $entity = $variables['elements']['#ai_skill'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_skill'] = $entity;
+}
+
+/**
+ * Prepares variables for ai_skill_embedding templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_skills_preprocess_ai_skill_embedding(array &$variables): void {
+  $entity = $variables['elements']['#ai_skill_embedding'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_skill_embedding'] = $entity;
+}
+
+/**
+ * Prepares variables for ai_skill_revision templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_skills_preprocess_ai_skill_revision(array &$variables): void {
+  $entity = $variables['elements']['#ai_skill_revision'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_skill_revision'] = $entity;
+}
+
+/**
+ * Prepares variables for ai_skill_usage templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_skills_preprocess_ai_skill_usage(array &$variables): void {
+  $entity = $variables['elements']['#ai_skill_usage'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['ai_skill_usage'] = $entity;
+}

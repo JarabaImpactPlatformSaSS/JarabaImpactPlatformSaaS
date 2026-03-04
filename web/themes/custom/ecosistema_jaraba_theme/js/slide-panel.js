@@ -19,6 +19,8 @@
 
   // Panel singleton - se crea una vez y se reutiliza
   let globalPanel = null;
+  // GAP-A11Y-MODAL: Track the element that opened the panel for focus restoration.
+  let previousActiveElement = null;
 
   /**
    * Crea el panel global si no existe.
@@ -27,7 +29,7 @@
     if (globalPanel) return globalPanel;
 
     const panelHtml = `
-      <div class="slide-panel slide-panel--large" id="global-slide-panel" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="slide-panel slide-panel--large" id="global-slide-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="global-slide-panel-title">
         <div class="slide-panel__overlay" data-close-panel="global-slide-panel"></div>
         <div class="slide-panel__content">
           <header class="slide-panel__header">
@@ -137,10 +139,16 @@
         </div>
       `;
 
+      // GAP-A11Y-MODAL: Save the currently focused element for restoration.
+      previousActiveElement = document.activeElement;
+
       // Abrir panel
       panel.classList.add('slide-panel--open');
       panel.setAttribute('aria-hidden', 'false');
       document.body.classList.add('slide-panel-open');
+
+      // GAP-A11Y-MODAL: Activate focus trap.
+      this._enableFocusTrap(panel);
 
       // Cargar contenido
       if (options.url) {
@@ -148,6 +156,8 @@
       } else if (options.content) {
         bodyEl.innerHTML = options.content;
         Drupal.attachBehaviors(bodyEl);
+        // Focus first interactive element.
+        this._focusFirstInteractive(panel);
       }
     },
 
@@ -157,9 +167,18 @@
     close: function () {
       if (!globalPanel) return;
 
+      // GAP-A11Y-MODAL: Disable focus trap.
+      this._disableFocusTrap();
+
       globalPanel.classList.remove('slide-panel--open');
       globalPanel.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('slide-panel-open');
+
+      // GAP-A11Y-MODAL: Restore focus to the element that opened the panel.
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus();
+        previousActiveElement = null;
+      }
 
       // Limpiar contenido después de animación
       setTimeout(() => {
@@ -187,15 +206,16 @@
     openById: function (panelId) {
       const panel = document.getElementById(panelId);
       if (panel) {
+        // GAP-A11Y-MODAL: Save focus for restoration.
+        previousActiveElement = document.activeElement;
+
         panel.classList.add('slide-panel--open');
         panel.setAttribute('aria-hidden', 'false');
         document.body.classList.add('slide-panel-open');
 
-        // Focus primer elemento interactivo.
-        const firstInput = panel.querySelector('input, select, textarea, button:not(.slide-panel__close)');
-        if (firstInput) {
-          setTimeout(() => firstInput.focus(), 100);
-        }
+        // GAP-A11Y-MODAL: Enable focus trap and focus first element.
+        this._enableFocusTrap(panel);
+        this._focusFirstInteractive(panel);
       }
     },
 
@@ -205,9 +225,18 @@
     closeById: function (panelId) {
       const panel = document.getElementById(panelId);
       if (panel) {
+        // GAP-A11Y-MODAL: Disable focus trap.
+        this._disableFocusTrap();
+
         panel.classList.remove('slide-panel--open');
         panel.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('slide-panel-open');
+
+        // GAP-A11Y-MODAL: Restore focus.
+        if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+          previousActiveElement.focus();
+          previousActiveElement = null;
+        }
       }
     },
 
@@ -233,9 +262,8 @@
           bodyEl.innerHTML = html;
           Drupal.attachBehaviors(bodyEl);
 
-          // Focus first input
-          const firstInput = bodyEl.querySelector('input, select, textarea');
-          if (firstInput) firstInput.focus();
+          // GAP-A11Y-MODAL: Focus first interactive element via unified method.
+          self._focusFirstInteractive(globalPanel);
 
           // Interceptar submit del formulario para cierre automático
           self.attachFormSubmitHandler(bodyEl, url);
@@ -423,6 +451,84 @@
       setTimeout(() => {
         window.location.reload();
       }, 500);
+    },
+
+    // =========================================================================
+    // GAP-A11Y-MODAL: Focus trap for WCAG 2.1 AA compliance.
+    // =========================================================================
+
+    /** @type {Function|null} Bound handler reference for cleanup. */
+    _focusTrapHandler: null,
+
+    /**
+     * Enables focus trap within the panel.
+     *
+     * Tab cycles through focusable elements inside the panel.
+     * Shift+Tab wraps from first to last.
+     *
+     * @param {HTMLElement} panel - The slide panel element.
+     */
+    _enableFocusTrap: function (panel) {
+      this._disableFocusTrap();
+
+      this._focusTrapHandler = function (e) {
+        if (e.key !== 'Tab') return;
+
+        var focusable = panel.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), ' +
+          'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (focusable.length === 0) return;
+
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+
+      document.addEventListener('keydown', this._focusTrapHandler);
+    },
+
+    /**
+     * Disables the focus trap.
+     */
+    _disableFocusTrap: function () {
+      if (this._focusTrapHandler) {
+        document.removeEventListener('keydown', this._focusTrapHandler);
+        this._focusTrapHandler = null;
+      }
+    },
+
+    /**
+     * Focuses the first interactive element in the panel.
+     *
+     * @param {HTMLElement} panel - The slide panel element.
+     */
+    _focusFirstInteractive: function (panel) {
+      var focusable = panel.querySelector(
+        'input:not([disabled]):not([type="hidden"]), select:not([disabled]), ' +
+        'textarea:not([disabled]), button:not(.slide-panel__close):not([disabled]), a[href]'
+      );
+      if (focusable) {
+        setTimeout(function () { focusable.focus(); }, 100);
+      } else {
+        // Fallback: focus the close button.
+        var closeBtn = panel.querySelector('.slide-panel__close');
+        if (closeBtn) {
+          setTimeout(function () { closeBtn.focus(); }, 100);
+        }
+      }
     }
   };
 

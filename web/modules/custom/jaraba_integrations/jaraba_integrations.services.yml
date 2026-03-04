@@ -69,3 +69,10 @@ services:
     class: Drupal\jaraba_integrations\Service\ConnectorSdkService
     arguments:
       - '@logger.channel.jaraba_integrations'
+
+  # Generador de especificacion OpenAPI 3.0
+  jaraba_integrations.openapi_spec:
+    class: Drupal\jaraba_integrations\Service\OpenApiSpecService
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_field.manager'

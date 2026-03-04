@@ -14,6 +14,7 @@ use Drupal\eca\Plugin\ECA\Event\EventBase;
  *   id = "jaraba_messaging_conversation_created",
  *   label = @Translation("Conversation created"),
  *   description = @Translation("Fires when a new secure conversation is created."),
+ *   event_name = "jaraba_messaging.conversation_created",
  *   eca_version_introduced = "2.0.0",
  * )
  */

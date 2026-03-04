@@ -329,3 +329,74 @@ function jaraba_groups_mail($key, &$message, $params): void {
       break;
   }
 }
+
+
+/**
+ * Prepares variables for collaboration_group templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_groups_preprocess_collaboration_group(array &$variables): void {
+  $entity = $variables['elements']['#collaboration_group'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['collaboration_group'] = $entity;
+}
+
+/**
+ * Prepares variables for group_discussion templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_groups_preprocess_group_discussion(array &$variables): void {
+  $entity = $variables['elements']['#group_discussion'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['group_discussion'] = $entity;
+}
+
+/**
+ * Prepares variables for group_event templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_groups_preprocess_group_event(array &$variables): void {
+  $entity = $variables['elements']['#group_event'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['group_event'] = $entity;
+}
+
+/**
+ * Prepares variables for group_membership templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_groups_preprocess_group_membership(array &$variables): void {
+  $entity = $variables['elements']['#group_membership'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['group_membership'] = $entity;
+}
+
+/**
+ * Prepares variables for group_resource templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_groups_preprocess_group_resource(array &$variables): void {
+  $entity = $variables['elements']['#group_resource'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['group_resource'] = $entity;
+}

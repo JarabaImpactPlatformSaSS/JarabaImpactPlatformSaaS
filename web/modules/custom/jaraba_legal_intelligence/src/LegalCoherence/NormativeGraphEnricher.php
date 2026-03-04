@@ -25,13 +25,14 @@ use Psr\Log\LoggerInterface;
  * - Llamado desde SmartLegalCopilotAgent::buildModePrompt() post-RAG.
  * - Llamado desde LegalRagService::query() post-search.
  *
- * NOTA: El Knowledge Graph completo con entidad legal_norm_relation
- * (derogaciones, modificaciones, transposiciones) se implementara en
- * una fase posterior. En v1, usamos metadatos de LegalResolution y
- * LegalNorm existentes para detectar jerarquia y vigencia.
+ * Knowledge Graph: Consulta entidades legal_norm_relation para detectar
+ * relaciones de derogacion, modificacion, transposicion y lex specialis
+ * entre normas. Complementa con metadatos de LegalResolution y LegalNorm
+ * para deteccion de jerarquia y vigencia.
  *
  * @see LegalCoherenceKnowledgeBase::HIERARCHY_WEIGHTS
  * @see LegalCoherenceKnowledgeBase::detectNormRank()
+ * @see \Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation
  */
 final class NormativeGraphEnricher {
 
@@ -118,8 +119,21 @@ final class NormativeGraphEnricher {
     foreach ($ragResults as $result) {
       $payload = $result['payload'] ?? [];
 
-      // 1. Filtro de vigencia: eliminar normas derogadas totalmente.
+      // 1. Filtro de vigencia: consultar legal_norm_relation para relaciones
+      // de derogacion total, complementando el campo status del payload.
       $status = $payload['status_legal'] ?? $payload['status'] ?? 'vigente';
+      $normId = $payload['norm_id'] ?? $payload['entity_id'] ?? NULL;
+
+      if ($normId && !in_array($status, self::DEROGATED_STATUSES, TRUE)) {
+        $graphStatus = $this->checkNormRelationStatus((int) $normId);
+        if ($graphStatus === 'derogada') {
+          $status = 'derogada';
+        }
+        elseif ($graphStatus === 'modificada' && !in_array($status, self::PARTIAL_DEROGATION_STATUSES, TRUE)) {
+          $status = 'modificada';
+        }
+      }
+
       if (in_array($status, self::DEROGATED_STATUSES, TRUE)) {
         $derogatedCount++;
         continue;
@@ -324,6 +338,130 @@ final class NormativeGraphEnricher {
     }
 
     return implode("\n", $annotations);
+  }
+
+  /**
+   * Consulta el grafo de relaciones para determinar si una norma fue derogada.
+   *
+   * Busca relaciones legal_norm_relation donde la norma es target_norm_id
+   * con relation_type = deroga_total o sustituye.
+   *
+   * @param int $normId
+   *   ID de la LegalNorm a verificar.
+   *
+   * @return string|null
+   *   'derogada' si hay derogacion total, 'modificada' si hay derogacion
+   *   parcial o modificacion, NULL si no hay relaciones de cambio.
+   */
+  protected function checkNormRelationStatus(int $normId): ?string {
+    if ($this->entityTypeManager === NULL) {
+      return NULL;
+    }
+
+    try {
+      if (!$this->entityTypeManager->hasDefinition('legal_norm_relation')) {
+        return NULL;
+      }
+
+      $storage = $this->entityTypeManager->getStorage('legal_norm_relation');
+
+      // Verificar derogacion total.
+      $totalDerogations = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('target_norm_id', $normId)
+        ->condition('relation_type', ['deroga_total', 'sustituye'], 'IN')
+        ->count()
+        ->execute();
+
+      if ($totalDerogations > 0) {
+        return 'derogada';
+      }
+
+      // Verificar modificacion parcial.
+      $modifications = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('target_norm_id', $normId)
+        ->condition('relation_type', ['deroga_parcial', 'modifica'], 'IN')
+        ->count()
+        ->execute();
+
+      if ($modifications > 0) {
+        return 'modificada';
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('NormativeGraphEnricher: Error consultando relaciones para norma @id: @error', [
+        '@id' => $normId,
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Obtiene relaciones normativas para un conjunto de normas.
+   *
+   * Util para enriquecer prompt annotations con informacion de relaciones
+   * lex specialis, transposiciones, etc.
+   *
+   * @param int[] $normIds
+   *   IDs de normas a consultar.
+   *
+   * @return array
+   *   Array de relaciones con source_norm_id, target_norm_id, relation_type.
+   */
+  /**
+   * Obtiene relaciones normativas para un conjunto de normas.
+   *
+   * Util para enriquecer prompt annotations con informacion de relaciones
+   * lex specialis, transposiciones, etc.
+   *
+   * @param int[] $normIds
+   *   IDs de normas a consultar.
+   *
+   * @return array<int, array<string, mixed>>
+   *   Array de relaciones con source_norm_id, target_norm_id, relation_type.
+   */
+  public function getRelationsForNorms(array $normIds): array {
+    if ($normIds === [] || $this->entityTypeManager === NULL) {
+      return [];
+    }
+
+    try {
+      if (!$this->entityTypeManager->hasDefinition('legal_norm_relation')) {
+        return [];
+      }
+
+      $storage = $this->entityTypeManager->getStorage('legal_norm_relation');
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('source_norm_id', $normIds, 'IN')
+        ->execute();
+
+      $relations = [];
+      foreach ($storage->loadMultiple($ids) as $relation) {
+        /** @var \Drupal\jaraba_legal_knowledge\Entity\LegalNormRelation $relation */
+        $affectedRaw = (string) ($relation->get('affected_articles')->value ?? '');
+        $relations[] = [
+          'source_norm_id' => (int) $relation->get('source_norm_id')->target_id,
+          'target_norm_id' => (int) $relation->get('target_norm_id')->target_id,
+          'relation_type' => $relation->get('relation_type')->value,
+          'affected_articles' => $affectedRaw !== ''
+            ? json_decode($affectedRaw, TRUE)
+            : [],
+        ];
+      }
+
+      return $relations;
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('NormativeGraphEnricher: Error obteniendo relaciones para @count normas: @error', [
+        '@count' => count($normIds),
+        '@error' => $e->getMessage(),
+      ]);
+      return [];
+    }
   }
 
 }

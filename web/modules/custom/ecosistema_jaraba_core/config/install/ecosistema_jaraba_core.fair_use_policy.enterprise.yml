@@ -1,0 +1,45 @@
+id: enterprise
+label: 'Fair Use Policy - Enterprise'
+tier: enterprise
+warning_thresholds:
+  - 70
+  - 85
+  - 95
+enforcement_actions:
+  _default:
+    warning: warn
+    critical: warn
+    exceeded: throttle
+  ai_queries:
+    warning: warn
+    critical: warn
+    exceeded: throttle
+  copilot_uses_per_month:
+    warning: warn
+    critical: warn
+    exceeded: throttle
+  storage_gb:
+    warning: warn
+    critical: warn
+    exceeded: soft_block
+  emails_per_month:
+    warning: warn
+    critical: throttle
+    exceeded: soft_block
+  api_calls_per_month:
+    warning: warn
+    critical: throttle
+    exceeded: soft_block
+overage_unit_prices:
+  api_calls: 0.0001
+  ai_tokens: 0.00002
+  storage_mb: 0.001
+  orders: 0.50
+  products: 0.10
+  customers: 0.05
+  emails_sent: 0.001
+  bandwidth_gb: 0.05
+burst_tolerance_pct: 15
+grace_period_hours: 48
+description: 'Enterprise: 15% tolerancia burst, solo warn+throttle (sin hard_block), 48h de gracia.'
+status: true

@@ -110,13 +110,15 @@ class ChurnPredictorService {
     $wInactivity = (float) ($weights['inactivity'] ?? 0.35);
     $wPayment = (float) ($weights['payment_failures'] ?? 0.30);
     $wSupport = (float) ($weights['support_tickets'] ?? 0.15);
-    $wAdoption = (float) ($weights['feature_adoption'] ?? 0.20);
+    $wAdoption = (float) ($weights['feature_adoption'] ?? 0.15);
+    $wContract = (float) ($weights['contract_age'] ?? 0.05);
 
     $riskScore = (int) round(
       ($inactivityScore * $wInactivity)
       + ($paymentScore * $wPayment)
       + ($supportScore * $wSupport)
       + ($adoptionScore * $wAdoption)
+      + ($contractScore * $wContract)
     );
 
     $riskScore = max(0, min(100, $riskScore));

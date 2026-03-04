@@ -1,0 +1,119 @@
+{#
+/**
+ * @file
+ * API Key self-service management page.
+ *
+ * GAP-API-KEYS: Allows tenants to manage their own API keys.
+ *
+ * Variables:
+ * - keys: Array of active API key records (id, label, scope, prefix, created, last_used).
+ * - scopes: Available scope labels keyed by machine name.
+ */
+#}
+<div class="api-keys" data-api-keys>
+  <div class="api-keys__header">
+    <p class="api-keys__description">
+      {% trans %}Gestiona tus API keys para acceder a la API de la plataforma. Las keys solo se muestran una vez al crearlas.{% endtrans %}
+    </p>
+    <button type="button" class="api-keys__create-btn" data-api-keys-create aria-label="{% trans %}Crear nueva API key{% endtrans %}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      {% trans %}Nueva API Key{% endtrans %}
+    </button>
+  </div>
+
+  {# Create form (hidden by default) #}
+  <div class="api-keys__create-form" data-api-keys-form hidden>
+    <div class="api-keys__form-field">
+      <label for="api-key-label">{% trans %}Nombre{% endtrans %}</label>
+      <input type="text" id="api-key-label" data-api-key-label maxlength="100"
+             placeholder="{% trans %}Ej: Integración CRM, App Móvil...{% endtrans %}" required>
+    </div>
+    <div class="api-keys__form-field">
+      <label for="api-key-scope">{% trans %}Permisos{% endtrans %}</label>
+      <select id="api-key-scope" data-api-key-scope>
+        {% for key, label in scopes %}
+          <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="api-keys__form-actions">
+      <button type="button" class="api-keys__btn api-keys__btn--primary" data-api-key-submit>
+        {% trans %}Generar Key{% endtrans %}
+      </button>
+      <button type="button" class="api-keys__btn api-keys__btn--secondary" data-api-key-cancel>
+        {% trans %}Cancelar{% endtrans %}
+      </button>
+    </div>
+  </div>
+
+  {# New key display (shown once after creation) #}
+  <div class="api-keys__new-key" data-api-keys-new hidden>
+    <div class="api-keys__new-key-warning">
+      {% trans %}Copia esta key ahora. No se mostrará de nuevo.{% endtrans %}
+    </div>
+    <div class="api-keys__new-key-value">
+      <code data-api-key-value></code>
+      <button type="button" class="api-keys__copy-btn" data-api-key-copy aria-label="{% trans %}Copiar al portapapeles{% endtrans %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+      </button>
+    </div>
+    <button type="button" class="api-keys__btn api-keys__btn--secondary" data-api-key-dismiss>
+      {% trans %}Entendido{% endtrans %}
+    </button>
+  </div>
+
+  {# Keys table #}
+  {% if keys|length > 0 %}
+    <table class="api-keys__table">
+      <thead>
+        <tr>
+          <th>{% trans %}Nombre{% endtrans %}</th>
+          <th>{% trans %}Key{% endtrans %}</th>
+          <th>{% trans %}Permisos{% endtrans %}</th>
+          <th>{% trans %}Creada{% endtrans %}</th>
+          <th>{% trans %}Último uso{% endtrans %}</th>
+          <th>{% trans %}Acciones{% endtrans %}</th>
+        </tr>
+      </thead>
+      <tbody data-api-keys-body>
+        {% for key in keys %}
+          <tr data-key-row="{{ key.id }}">
+            <td class="api-keys__label">{{ key.label }}</td>
+            <td class="api-keys__prefix"><code>{{ key.prefix }}</code></td>
+            <td>
+              <span class="api-keys__scope api-keys__scope--{{ key.scope }}">
+                {{ scopes[key.scope] | default(key.scope) }}
+              </span>
+            </td>
+            <td class="api-keys__date">{{ key.created }}</td>
+            <td class="api-keys__date">{{ key.last_used ? key.last_used : '-' }}</td>
+            <td class="api-keys__actions">
+              <button type="button" class="api-keys__action-btn" data-api-key-rotate="{{ key.id }}"
+                      aria-label="{% trans %}Rotar key{% endtrans %}" title="{% trans %}Rotar{% endtrans %}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M1 4v6h6"/><path d="M23 20v-6h-6"/>
+                  <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/>
+                </svg>
+              </button>
+              <button type="button" class="api-keys__action-btn api-keys__action-btn--danger" data-api-key-revoke="{{ key.id }}"
+                      aria-label="{% trans %}Revocar key{% endtrans %}" title="{% trans %}Revocar{% endtrans %}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="api-keys__empty" data-api-keys-empty>
+      <p>{% trans %}No tienes API keys. Crea una para empezar a usar la API.{% endtrans %}</p>
+    </div>
+  {% endif %}
+</div>

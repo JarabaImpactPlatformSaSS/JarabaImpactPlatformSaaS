@@ -108,3 +108,74 @@ function jaraba_paths_theme(): array {
     ],
   ];
 }
+
+
+/**
+ * Prepares variables for digitalization_path templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_paths_preprocess_digitalization_path(array &$variables): void {
+  $entity = $variables['elements']['#digitalization_path'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['digitalization_path'] = $entity;
+}
+
+/**
+ * Prepares variables for path_enrollment templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_paths_preprocess_path_enrollment(array &$variables): void {
+  $entity = $variables['elements']['#path_enrollment'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['path_enrollment'] = $entity;
+}
+
+/**
+ * Prepares variables for path_module templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_paths_preprocess_path_module(array &$variables): void {
+  $entity = $variables['elements']['#path_module'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['path_module'] = $entity;
+}
+
+/**
+ * Prepares variables for path_phase templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_paths_preprocess_path_phase(array &$variables): void {
+  $entity = $variables['elements']['#path_phase'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['path_phase'] = $entity;
+}
+
+/**
+ * Prepares variables for path_step templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_paths_preprocess_path_step(array &$variables): void {
+  $entity = $variables['elements']['#path_step'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['path_step'] = $entity;
+}

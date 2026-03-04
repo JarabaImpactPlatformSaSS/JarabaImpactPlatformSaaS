@@ -1,0 +1,144 @@
+ecosistema_jaraba_core.fair_use_policy.*:
+  type: config_entity
+  label: 'Fair Use Policy configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+      label: 'UUID'
+    tier:
+      type: string
+      label: 'Tier machine name'
+    warning_thresholds:
+      type: sequence
+      label: 'Warning thresholds (percentages)'
+      sequence:
+        type: integer
+        label: 'Threshold percentage'
+    enforcement_actions:
+      type: mapping
+      label: 'Enforcement actions per resource'
+      mapping:
+        _default:
+          type: mapping
+          label: 'Default enforcement actions'
+          mapping:
+            warning:
+              type: string
+              label: 'Warning action'
+            critical:
+              type: string
+              label: 'Critical action'
+            exceeded:
+              type: string
+              label: 'Exceeded action'
+        ai_queries:
+          type: mapping
+          label: 'AI queries enforcement'
+          mapping:
+            warning:
+              type: string
+              label: 'Warning action'
+            critical:
+              type: string
+              label: 'Critical action'
+            exceeded:
+              type: string
+              label: 'Exceeded action'
+        copilot_uses_per_month:
+          type: mapping
+          label: 'Copilot uses enforcement'
+          mapping:
+            warning:
+              type: string
+              label: 'Warning action'
+            critical:
+              type: string
+              label: 'Critical action'
+            exceeded:
+              type: string
+              label: 'Exceeded action'
+        storage_gb:
+          type: mapping
+          label: 'Storage enforcement'
+          mapping:
+            warning:
+              type: string
+              label: 'Warning action'
+            critical:
+              type: string
+              label: 'Critical action'
+            exceeded:
+              type: string
+              label: 'Exceeded action'
+        emails_per_month:
+          type: mapping
+          label: 'Emails enforcement'
+          mapping:
+            warning:
+              type: string
+              label: 'Warning action'
+            critical:
+              type: string
+              label: 'Critical action'
+            exceeded:
+              type: string
+              label: 'Exceeded action'
+        api_calls_per_month:
+          type: mapping
+          label: 'API calls enforcement'
+          mapping:
+            warning:
+              type: string
+              label: 'Warning action'
+            critical:
+              type: string
+              label: 'Critical action'
+            exceeded:
+              type: string
+              label: 'Exceeded action'
+    overage_unit_prices:
+      type: mapping
+      label: 'Overage unit prices (EUR)'
+      mapping:
+        api_calls:
+          type: float
+          label: 'Price per API call'
+        ai_tokens:
+          type: float
+          label: 'Price per AI token'
+        storage_mb:
+          type: float
+          label: 'Price per MB/month'
+        orders:
+          type: float
+          label: 'Price per order'
+        products:
+          type: float
+          label: 'Price per product/month'
+        customers:
+          type: float
+          label: 'Price per customer/month'
+        emails_sent:
+          type: float
+          label: 'Price per email'
+        bandwidth_gb:
+          type: float
+          label: 'Price per GB bandwidth'
+    burst_tolerance_pct:
+      type: integer
+      label: 'Burst tolerance percentage'
+    grace_period_hours:
+      type: integer
+      label: 'Grace period hours'
+    description:
+      type: text
+      label: 'Description'
+    status:
+      type: boolean
+      label: 'Status'

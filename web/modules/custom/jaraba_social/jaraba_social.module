@@ -51,3 +51,32 @@ function jaraba_social_theme_suggestions_page_alter(array &$suggestions, array $
     $suggestions[] = 'page__social';
   }
 }
+
+
+/**
+ * Prepares variables for social_account templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_social_preprocess_social_account(array &$variables): void {
+  $entity = $variables['elements']['#social_account'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['social_account'] = $entity;
+}
+
+/**
+ * Prepares variables for social_post templates.
+ *
+ * @param array $variables
+ *   An associative array containing entity data.
+ */
+function jaraba_social_preprocess_social_post(array &$variables): void {
+  $entity = $variables['elements']['#social_post'] ?? NULL;
+  if ($entity === NULL) {
+    return;
+  }
+  $variables['social_post'] = $entity;
+}

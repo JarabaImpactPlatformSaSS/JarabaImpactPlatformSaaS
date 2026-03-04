@@ -25,6 +25,9 @@ services:
       - '@entity_type.manager'
       - '@plugin.manager.mail'
       - '@logger.channel.jaraba_email'
+      - '@?jaraba_email.unsubscribe_token'
+      - '@?jaraba_email.newsletter_service'
+      - '@?jaraba_email.ai_service'
 
   # MJML Compiler Service
   jaraba_email.mjml_compiler:
@@ -60,6 +63,12 @@ services:
     class: Drupal\jaraba_email\Service\SendGridClientService
     arguments:
       - '@config.factory'
+      - '@logger.channel.jaraba_email'
+
+  # GAP-UNSUBSCRIBE: Unsubscribe token service (HMAC, RFC 8058).
+  jaraba_email.unsubscribe_token:
+    class: Drupal\jaraba_email\Service\UnsubscribeTokenService
+    arguments:
       - '@logger.channel.jaraba_email'
 
   # Sequence Manager Service - Gestion de secuencias automatizadas

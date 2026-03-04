@@ -8,8 +8,14 @@ effects:
   c5436800-c203-4eab-8de5-ea3f19dd7e28:
     uuid: c5436800-c203-4eab-8de5-ea3f19dd7e28
     id: image_scale_and_crop
-    weight: null
+    weight: 0
     data:
       width: 1200
       height: 600
       anchor: center-center
+  a1b2c3d4-feat-avif-0002-000000000002:
+    uuid: a1b2c3d4-feat-avif-0002-000000000002
+    id: image_convert_avif
+    weight: 2
+    data:
+      extension: webp
