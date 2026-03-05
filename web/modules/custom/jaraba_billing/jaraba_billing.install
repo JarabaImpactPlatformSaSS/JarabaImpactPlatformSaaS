@@ -236,47 +236,30 @@ function jaraba_billing_update_10003(): string {
 }
 
 /**
- * Sync billing_usage_record field definitions with code (install or update).
+ * Sync billing_usage_record entity type + field definitions with code.
+ *
+ * Fields synced_to_stripe and stripe_synced_at were added to
+ * baseFieldDefinitions() — this hook reconciles DB schema.
  */
-function jaraba_billing_update_10004(): string {
+function jaraba_billing_update_10004(array &$sandbox): void {
   $updateManager = \Drupal::entityDefinitionUpdateManager();
-  $results = [];
 
   try {
-    if (!$updateManager->getEntityType('billing_usage_record')) {
-      return 'billing_usage_record entity type not found — skipped.';
+    $entityType = \Drupal::entityTypeManager()->getDefinition('billing_usage_record');
+
+    /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $fieldManager */
+    $fieldManager = \Drupal::service('entity_field.manager');
+    $fieldManager->clearCachedFieldDefinitions();
+    $fieldDefs = $fieldManager->getBaseFieldDefinitions('billing_usage_record');
+
+    foreach ($fieldDefs as $name => $def) {
+      $def->setName($name);
+      $def->setTargetEntityTypeId('billing_usage_record');
     }
 
-    $fields = [
-      'synced_to_stripe' => \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
-        ->setName('synced_to_stripe')
-        ->setTargetEntityTypeId('billing_usage_record')
-        ->setLabel(t('Sincronizado con Stripe'))
-        ->setDefaultValue(FALSE),
-      'stripe_synced_at' => \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
-        ->setName('stripe_synced_at')
-        ->setTargetEntityTypeId('billing_usage_record')
-        ->setLabel(t('Fecha sincronizacion Stripe'))
-        ->setDefaultValue(0),
-    ];
-
-    foreach ($fields as $name => $definition) {
-      $existing = $updateManager->getFieldStorageDefinition($name, 'billing_usage_record');
-      if ($existing) {
-        $updateManager->updateFieldStorageDefinition($definition);
-        $results[] = "$name: updated";
-      }
-      else {
-        $updateManager->installFieldStorageDefinition(
-          $name, 'billing_usage_record', 'jaraba_billing', $definition
-        );
-        $results[] = "$name: installed";
-      }
-    }
+    $updateManager->updateFieldableEntityType($entityType, $fieldDefs, $sandbox);
   }
   catch (\Throwable $e) {
-    return 'Error: ' . $e->getMessage();
+    throw new \RuntimeException('Failed to update billing_usage_record: ' . $e->getMessage(), 0, $e);
   }
-
-  return implode(', ', $results);
 }

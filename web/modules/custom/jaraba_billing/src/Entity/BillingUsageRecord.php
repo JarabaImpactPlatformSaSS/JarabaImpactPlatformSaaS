@@ -153,6 +153,16 @@ class BillingUsageRecord extends ContentEntityBase {
       ->setDescription(t('JSON con datos adicionales del registro de uso.'))
       ->setDisplayConfigurable('view', TRUE);
 
+    $fields['synced_to_stripe'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Sincronizado con Stripe'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['stripe_synced_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Fecha sincronización Stripe'))
+      ->setDefaultValue(0)
+      ->setDisplayConfigurable('view', TRUE);
+
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Fecha de Registro'));
 

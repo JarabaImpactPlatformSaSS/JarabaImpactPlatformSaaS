@@ -501,36 +501,53 @@ jobs:
               \$applied = 0;
               \$errors = [];
 
+              // Constants: DEFINITION_CREATED=1, DEFINITION_UPDATED=2, DEFINITION_DELETED=3
+              \$CREATED = 1; \$UPDATED = 2; \$DELETED = 3;
+
               foreach (\$changes as \$entity_type_id => \$change_info) {
-                // Install new entity types.
-                if (isset(\$change_info['entity_type']) && \$change_info['entity_type'] === 'installed') {
+                // Install/update entity types.
+                if (isset(\$change_info['entity_type'])) {
+                  \$ct = \$change_info['entity_type'];
                   try {
                     \$definition = \Drupal::entityTypeManager()->getDefinition(\$entity_type_id);
-                    \$manager->installEntityType(\$definition);
-                    echo \"  ✅ Installed entity type: \$entity_type_id\" . PHP_EOL;
+                    if (\$ct === \$CREATED) {
+                      \$manager->installEntityType(\$definition);
+                      echo \"  ✅ Installed entity type: \$entity_type_id\" . PHP_EOL;
+                    } elseif (\$ct === \$UPDATED) {
+                      \$manager->updateEntityType(\$definition);
+                      echo \"  ✅ Updated entity type: \$entity_type_id\" . PHP_EOL;
+                    }
                     \$applied++;
                   } catch (\Throwable \$e) {
                     \$errors[] = \"Entity \$entity_type_id: \" . \$e->getMessage();
                   }
                 }
 
-                // Install/update individual fields.
+                // Install/update/uninstall individual fields.
                 if (isset(\$change_info['field_storage_definitions'])) {
                   \$field_definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions(\$entity_type_id);
                   foreach (\$change_info['field_storage_definitions'] as \$field_name => \$change_type) {
-                    if (!isset(\$field_definitions[\$field_name])) continue;
-                    \$field_def = \$field_definitions[\$field_name];
                     try {
-                      if (\$change_type === 'installed') {
-                        \$manager->installFieldStorageDefinition(\$field_name, \$entity_type_id, \$field_def->getProvider(), \$field_def);
+                      if (\$change_type === \$CREATED && isset(\$field_definitions[\$field_name])) {
+                        \$fd = \$field_definitions[\$field_name];
+                        \$manager->installFieldStorageDefinition(\$field_name, \$entity_type_id, \$fd->getProvider(), \$fd);
                         echo \"  ✅ Installed field: \$entity_type_id.\$field_name\" . PHP_EOL;
-                      } elseif (\$change_type === 'updated') {
-                        \$field_def->setName(\$field_name);
-                        \$field_def->setTargetEntityTypeId(\$entity_type_id);
-                        \$manager->updateFieldStorageDefinition(\$field_def);
+                        \$applied++;
+                      } elseif (\$change_type === \$UPDATED && isset(\$field_definitions[\$field_name])) {
+                        \$fd = \$field_definitions[\$field_name];
+                        \$fd->setName(\$field_name);
+                        \$fd->setTargetEntityTypeId(\$entity_type_id);
+                        \$manager->updateFieldStorageDefinition(\$fd);
                         echo \"  ✅ Updated field: \$entity_type_id.\$field_name\" . PHP_EOL;
+                        \$applied++;
+                      } elseif (\$change_type === \$DELETED) {
+                        \$storedDef = \$manager->getFieldStorageDefinition(\$field_name, \$entity_type_id);
+                        if (\$storedDef) {
+                          \$manager->uninstallFieldStorageDefinition(\$storedDef);
+                          echo \"  ✅ Uninstalled orphan field: \$entity_type_id.\$field_name\" . PHP_EOL;
+                          \$applied++;
+                        }
                       }
-                      \$applied++;
                     } catch (\Throwable \$e) {
                       \$errors[] = \"Field \$entity_type_id.\$field_name: \" . \$e->getMessage();
                     }
