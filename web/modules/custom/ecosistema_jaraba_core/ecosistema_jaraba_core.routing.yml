@@ -680,6 +680,26 @@ ecosistema_jaraba_core.tenant_self_service.webhooks:
   options:
     _admin_route: FALSE
 
+ecosistema_jaraba_core.tenant_self_service.branding:
+  path: '/my-settings/branding'
+  defaults:
+    _form: '\Drupal\ecosistema_jaraba_core\Form\TenantBrandingSettingsForm'
+    _title: 'Marca y Branding'
+  requirements:
+    _permission: 'edit site config' # AUDIT-SEC-002
+  options:
+    _admin_route: FALSE
+
+ecosistema_jaraba_core.tenant_self_service.design:
+  path: '/my-settings/design'
+  defaults:
+    _form: '\Drupal\jaraba_theming\Form\TenantThemeCustomizerForm'
+    _title: 'Diseno Visual'
+  requirements:
+    _permission: 'edit own theme config'
+  options:
+    _admin_route: FALSE
+
 # ---------------------------------------------------------------------------
 # MARKETPLACE - PHASE 13: CROSS-TENANT VISIBILITY
 # ---------------------------------------------------------------------------
@@ -1567,7 +1587,7 @@ ecosistema_jaraba_core.pricing.vertical:
     _title_callback: '\Drupal\ecosistema_jaraba_core\Controller\PricingController::verticalPricingTitle'
   requirements:
     _access: 'TRUE'
-    vertical_key: 'empleabilidad|emprendimiento|comercioconecta|agroconecta|jarabalex|serviciosconecta|formacion'
+    vertical_key: 'empleabilidad|emprendimiento|comercioconecta|agroconecta|jarabalex|serviciosconecta|formacion|andalucia_ei|jaraba_content_hub'
   options:
     _admin_route: FALSE
 

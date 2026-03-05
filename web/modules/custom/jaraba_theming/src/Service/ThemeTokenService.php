@@ -6,6 +6,7 @@ namespace Drupal\jaraba_theming\Service;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_theming\Entity\TenantThemeConfig;
 
 /**
@@ -27,6 +28,11 @@ class ThemeTokenService
     protected AccountInterface $currentUser;
 
     /**
+     * Servicio de contexto de tenant (opcional, cross-module).
+     */
+    protected ?TenantContextService $tenantContext;
+
+    /**
      * Cache de configuración activa.
      */
     protected ?TenantThemeConfig $activeConfig = NULL;
@@ -36,10 +42,28 @@ class ThemeTokenService
      */
     public function __construct(
         EntityTypeManagerInterface $entity_type_manager,
-        AccountInterface $current_user
+        AccountInterface $current_user,
+        ?TenantContextService $tenant_context = NULL,
     ) {
         $this->entityTypeManager = $entity_type_manager;
         $this->currentUser = $current_user;
+        $this->tenantContext = $tenant_context;
+    }
+
+    /**
+     * Resuelve el tenant_id desde el contexto actual.
+     */
+    public function resolveTenantId(): ?int
+    {
+        if ($this->tenantContext === NULL) {
+            return NULL;
+        }
+        try {
+            return $this->tenantContext->getCurrentTenantId();
+        }
+        catch (\Throwable) {
+            return NULL;
+        }
     }
 
     /**
@@ -55,6 +79,11 @@ class ThemeTokenService
     {
         if ($this->activeConfig !== NULL) {
             return $this->activeConfig;
+        }
+
+        // Auto-resolver tenant_id desde contexto si no se pasa explícitamente.
+        if ($tenant_id === NULL) {
+            $tenant_id = $this->resolveTenantId();
         }
 
         // Buscar configuración por tenant.
@@ -98,6 +127,10 @@ class ThemeTokenService
      */
     public function generateCss(?int $tenant_id = NULL): string
     {
+        // Auto-resolver tenant_id desde contexto si no se pasa explícitamente.
+        if ($tenant_id === NULL) {
+            $tenant_id = $this->resolveTenantId();
+        }
         $config = $this->getActiveConfig($tenant_id);
 
         if (!$config) {

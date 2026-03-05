@@ -4,6 +4,7 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@current_user'
+      - '@?ecosistema_jaraba_core.tenant_context'
 
   jaraba_theming.industry_preset_service:
     class: Drupal\jaraba_theming\Service\IndustryPresetService

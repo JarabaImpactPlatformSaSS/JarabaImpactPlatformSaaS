@@ -1804,3 +1804,46 @@ services:
     class: Drupal\ecosistema_jaraba_core\Service\VerticalBrandSeoService
     arguments:
       - '@config.factory'
+
+  # =========================================================================
+  # Tenant Settings Hub — Registry + Secciones (tagged services)
+  # =========================================================================
+
+  ecosistema_jaraba_core.tenant_settings_registry:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\TenantSettingsRegistry
+
+  ecosistema_jaraba_core.tenant_settings_section.domain:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\DomainSection
+    arguments: ['@current_user']
+    tags:
+      - { name: ecosistema_jaraba_core.tenant_settings_section }
+
+  ecosistema_jaraba_core.tenant_settings_section.plan:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\PlanSection
+    arguments: ['@current_user']
+    tags:
+      - { name: ecosistema_jaraba_core.tenant_settings_section }
+
+  ecosistema_jaraba_core.tenant_settings_section.branding:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\BrandingSection
+    arguments: ['@current_user']
+    tags:
+      - { name: ecosistema_jaraba_core.tenant_settings_section }
+
+  ecosistema_jaraba_core.tenant_settings_section.design:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\DesignSection
+    arguments: ['@current_user']
+    tags:
+      - { name: ecosistema_jaraba_core.tenant_settings_section }
+
+  ecosistema_jaraba_core.tenant_settings_section.api_keys:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\ApiKeysSection
+    arguments: ['@current_user']
+    tags:
+      - { name: ecosistema_jaraba_core.tenant_settings_section }
+
+  ecosistema_jaraba_core.tenant_settings_section.webhooks:
+    class: Drupal\ecosistema_jaraba_core\TenantSettings\Section\WebhooksSection
+    arguments: ['@current_user']
+    tags:
+      - { name: ecosistema_jaraba_core.tenant_settings_section }

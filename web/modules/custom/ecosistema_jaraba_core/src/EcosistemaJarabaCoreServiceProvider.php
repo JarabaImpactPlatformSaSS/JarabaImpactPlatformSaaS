@@ -6,6 +6,7 @@ namespace Drupal\ecosistema_jaraba_core;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
+use Drupal\ecosistema_jaraba_core\DependencyInjection\Compiler\TenantSettingsSectionPass;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -26,6 +27,8 @@ class EcosistemaJarabaCoreServiceProvider extends ServiceProviderBase
      */
     public function register(ContainerBuilder $container): void
     {
+        $container->addCompilerPass(new TenantSettingsSectionPass());
+
         $modules = $container->getParameter('container.modules');
 
         // @deprecated v6.3.0 — Alias de compatibilidad para stripe_connect.

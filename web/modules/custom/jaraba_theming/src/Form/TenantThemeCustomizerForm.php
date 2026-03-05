@@ -6,7 +6,7 @@ namespace Drupal\jaraba_theming\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Markup;
+use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
 use Drupal\jaraba_theming\Service\ThemeTokenService;
 use Drupal\jaraba_theming\Service\IndustryPresetService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -31,12 +31,21 @@ class TenantThemeCustomizerForm extends FormBase
     protected IndustryPresetService $presetService;
 
     /**
+     * Servicio de contexto de tenant.
+     */
+    protected ?TenantContextService $tenantContext;
+
+    /**
      * Constructor.
      */
-    public function __construct(ThemeTokenService $token_service, IndustryPresetService $preset_service)
-    {
+    public function __construct(
+        ThemeTokenService $token_service,
+        IndustryPresetService $preset_service,
+        ?TenantContextService $tenant_context = NULL,
+    ) {
         $this->tokenService = $token_service;
         $this->presetService = $preset_service;
+        $this->tenantContext = $tenant_context;
     }
 
     /**
@@ -46,7 +55,10 @@ class TenantThemeCustomizerForm extends FormBase
     {
         return new static(
             $container->get('jaraba_theming.token_service'),
-            $container->get('jaraba_theming.industry_preset_service')
+            $container->get('jaraba_theming.industry_preset_service'),
+            $container->has('ecosistema_jaraba_core.tenant_context')
+            ? $container->get('ecosistema_jaraba_core.tenant_context')
+            : NULL,
         );
     }
 
@@ -56,29 +68,6 @@ class TenantThemeCustomizerForm extends FormBase
     public function getFormId()
     {
         return 'tenant_theme_customizer_form';
-    }
-
-    /**
-     * Genera el markup de un icono SVG.
-     *
-     * @param string $category
-     *   Categoría del icono (ui, business, analytics, etc.).
-     * @param string $name
-     *   Nombre del icono.
-     * @param string $size
-     *   Tamaño: 'sm' (16px), 'md' (20px), 'lg' (24px).
-     *
-     * @return string
-     *   Markup del icono como img tag.
-     */
-    protected function getIcon(string $category, string $name, string $size = 'md'): string
-    {
-        $sizes = ['sm' => '16', 'md' => '20', 'lg' => '24'];
-        $px = $sizes[$size] ?? '20';
-        $basePath = '/' . \Drupal::service('extension.list.module')->getPath('ecosistema_jaraba_core');
-        $iconPath = "{$basePath}/images/icons/{$category}/{$name}.svg";
-
-        return '<img src="' . $iconPath . '" alt="" width="' . $px . '" height="' . $px . '" class="jaraba-icon jaraba-icon--' . $size . '" style="vertical-align: middle; margin-right: 0.5rem;" />';
     }
 
     /**
@@ -156,53 +145,173 @@ class TenantThemeCustomizerForm extends FormBase
             '#default_tab' => 'edit-identity',
         ];
 
-        // === TAB 1: INDUSTRY PRESETS ===
+        // === TAB 1: AJUSTES PREDEFINIDOS POR SECTOR ===
         $form['industry_preset'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'sparkles') . $this->t('Preset por Sector')),
+            '#title' => $this->t('Ajuste Predefinido por Sector'),
             '#group' => 'settings',
             '#weight' => -10,
             '#attributes' => ['class' => ['customizer-tab', 'customizer-tab--presets']],
         ];
 
         $form['industry_preset']['intro'] = [
-            '#markup' => '<p>' . $this->t('Selecciona un preset predefinido para tu sector. Esto aplicará una combinación de colores, tipografía y estilos optimizados para tu industria.') . '</p>',
+            '#markup' => '<p class="preset-picker-intro">' . $this->t('Selecciona un ajuste predefinido diseñado por expertos para tu sector. Se aplicará una combinación optimizada de colores, tipografía y estilos visuales.') . '</p>',
         ];
 
-        // Build visual preset selector
+        // --- Filtros por vertical ---
+        $verticalLabels = [
+            'todos' => $this->t('Todos'),
+            'agroconecta' => $this->t('Agroalimentario'),
+            'comercio' => $this->t('Comercio'),
+            'servicios' => $this->t('Servicios'),
+            'empleabilidad' => $this->t('Empleabilidad'),
+            'emprendimiento' => $this->t('Emprendimiento'),
+        ];
+
         $presets = $this->presetService->getAllPresets();
+        $verticalCounts = ['todos' => count($presets)];
+        foreach ($presets as $preset) {
+            $v = $preset['vertical'];
+            $verticalCounts[$v] = ($verticalCounts[$v] ?? 0) + 1;
+        }
+
+        $filterPills = '';
+        foreach ($verticalLabels as $key => $label) {
+            $count = $verticalCounts[$key] ?? 0;
+            $activeClass = ($key === 'todos') ? ' is-active' : '';
+            $filterPills .= '<button type="button" class="preset-filter-pill' . $activeClass . '" data-vertical="' . $key . '">'
+                . $label
+                . '<span class="preset-filter-count">' . $count . '</span>'
+                . '</button>';
+        }
+
+        $form['industry_preset']['filters'] = [
+            '#markup' => '<div class="preset-filter-bar">' . $filterPills . '</div>',
+        ];
+
+        // --- Build visual preset card options ---
         $presetOptions = [];
+        $checkSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+        // Opción: Sin ajuste predefinido
+        $customizeSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 2h4v4"/><path d="M21 2l-7 7"/><circle cx="8.5" cy="12.5" r="2.5"/><path d="M7 2H3v4"/><path d="M3 2l7 7"/><circle cx="6.5" cy="18.5" r="2.5"/></svg>';
+
+        $presetOptions[''] = '<div class="preset-picker-card preset-picker-card--none" data-vertical="todos">'
+            . '<span class="preset-picker-check">' . $checkSvg . '</span>'
+            . '<div class="preset-picker-none-content">'
+            . '<div class="preset-picker-none-icon">' . $customizeSvg . '</div>'
+            . '<span class="preset-picker-none-title">' . $this->t('Sin ajuste predefinido') . '</span>'
+            . '<span class="preset-picker-none-desc">' . $this->t('Configura manualmente todos los colores, tipografías y componentes a tu gusto.') . '</span>'
+            . '</div>'
+            . '</div>';
+
+        // Vertical labels for badges (translated)
+        $verticalBadgeLabels = [
+            'agroconecta' => $this->t('Agro'),
+            'comercio' => $this->t('Comercio'),
+            'servicios' => $this->t('Servicios'),
+            'empleabilidad' => $this->t('Empleo'),
+            'emprendimiento' => $this->t('Emprender'),
+        ];
+
         foreach ($presets as $id => $preset) {
-            $colors = implode('', array_map(fn($c) => '<span class="preset-color" style="background:' . $c . '"></span>', $preset['colors']));
-            $presetOptions[$id] = '<div class="jaraba-preset-card">
-                <div class="jaraba-preset-colors">' . $colors . '</div>
-                <div class="jaraba-preset-info">
-                    <span class="jaraba-preset-title">' . $preset['label'] . '</span>
-                    <span class="jaraba-preset-vertical">' . ucfirst($preset['vertical']) . '</span>
-                    <span class="jaraba-preset-fonts">' . $preset['typography']['headings'] . ' + ' . $preset['typography']['body'] . '</span>
-                </div>
-            </div>';
+            $imagePath = '/' . $themePath . '/images/pickers/presets/' . $id . '.png';
+            $colors = $preset['colors'];
+            $swatches = '<span class="preset-picker-swatch" style="background:' . $colors['primary'] . '"></span>'
+                . '<span class="preset-picker-swatch" style="background:' . $colors['secondary'] . '"></span>'
+                . '<span class="preset-picker-swatch" style="background:' . $colors['accent'] . '"></span>'
+                . '<span class="preset-picker-swatch" style="background:' . $colors['background'] . '"></span>';
+
+            $badgeLabel = $verticalBadgeLabels[$preset['vertical']] ?? ucfirst($preset['vertical']);
+
+            $presetOptions[$id] = '<div class="preset-picker-card" data-vertical="' . $preset['vertical'] . '">'
+                . '<span class="preset-picker-check">' . $checkSvg . '</span>'
+                . '<div class="preset-picker-thumb">'
+                . '<img src="' . $imagePath . '" alt="' . $this->t('Vista previa: @name', ['@name' => $preset['label']]) . '" loading="lazy" />'
+                . '</div>'
+                . '<div class="preset-picker-info">'
+                . '<div class="preset-picker-header">'
+                . '<span class="preset-picker-title">' . $this->t($preset['label']) . '</span>'
+                . '<span class="preset-picker-vertical-badge">' . $badgeLabel . '</span>'
+                . '</div>'
+                . '<div class="preset-picker-palette">' . $swatches . '</div>'
+                . '<span class="preset-picker-fonts">' . $preset['typography']['headings'] . ' + ' . $preset['typography']['body'] . '</span>'
+                . '</div>'
+                . '</div>';
         }
 
         $form['industry_preset']['preset_id'] = [
             '#type' => 'radios',
-            '#title' => $this->t('Elige tu sector'),
-            '#options' => ['' => '<div class="jaraba-preset-card jaraba-preset-card--none"><span>' . $this->t('Sin preset - Configuración manual') . '</span></div>'] + $presetOptions,
+            '#title' => $this->t('Elige el ajuste predefinido para tu sector'),
+            '#title_display' => 'invisible',
+            '#options' => $presetOptions,
             '#default_value' => $this->getConfigValue($config, 'industry_preset', ''),
-            '#attributes' => ['class' => ['jaraba-preset-picker']],
+            '#attributes' => ['class' => ['jaraba-preset-picker', 'preset-picker-grid']],
         ];
 
         $form['industry_preset']['apply_preset'] = [
             '#type' => 'checkbox',
-            '#title' => $this->t('Aplicar colores y tipografía del preset al guardar'),
+            '#title' => $this->t('Aplicar colores y tipografía del ajuste predefinido al guardar'),
             '#default_value' => FALSE,
-            '#description' => $this->t('Marca esta casilla para sobrescribir tus colores actuales con los del preset seleccionado.'),
+            '#description' => $this->t('Marca esta casilla para sobrescribir tus colores actuales con los del ajuste predefinido seleccionado.'),
+        ];
+
+        // JS inline for filter + card selection sync
+        $form['industry_preset']['#attached']['html_head'][] = [
+            [
+                '#type' => 'html_tag',
+                '#tag' => 'script',
+                '#value' => '
+(function() {
+  document.addEventListener("click", function(e) {
+    // --- Filter pills ---
+    var pill = e.target.closest(".preset-filter-pill");
+    if (pill) {
+      var vertical = pill.dataset.vertical;
+      document.querySelectorAll(".preset-filter-pill").forEach(function(p) { p.classList.remove("is-active"); });
+      pill.classList.add("is-active");
+      document.querySelectorAll(".preset-picker-card").forEach(function(card) {
+        card.setAttribute("data-hidden", vertical !== "todos" && card.dataset.vertical !== vertical ? "true" : "false");
+      });
+    }
+
+    // --- Card click → sync radio ---
+    var card = e.target.closest(".preset-picker-card");
+    if (card) {
+      var radio = card.closest(".form-type-radio");
+      if (radio) {
+        var input = radio.querySelector("input[type=radio]");
+        if (input) {
+          input.checked = true;
+          input.dispatchEvent(new Event("change", {bubbles: true}));
+        }
+      }
+      document.querySelectorAll(".preset-picker-card").forEach(function(c) { c.classList.remove("is-selected"); });
+      card.classList.add("is-selected");
+    }
+  });
+
+  // Init: mark the currently selected card
+  document.addEventListener("DOMContentLoaded", function() {
+    var checked = document.querySelector(".jaraba-preset-picker input[type=radio]:checked");
+    if (checked) {
+      var card = checked.closest(".form-type-radio");
+      if (card) {
+        var pc = card.querySelector(".preset-picker-card");
+        if (pc) pc.classList.add("is-selected");
+      }
+    }
+  });
+})();
+                ',
+            ],
+            'preset_picker_js',
         ];
 
         // === TAB 2: IDENTIDAD ===
         $form['identity'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'building') . $this->t('Identidad de Marca')),
+            '#title' => $this->t('Identidad de Marca'),
             '#group' => 'settings',
             '#attributes' => ['class' => ['customizer-tab']],
         ];
@@ -255,7 +364,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 2: COLORES ===
         $form['colors'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'star') . $this->t('Colores')),
+            '#title' => $this->t('Colores'),
             '#group' => 'settings',
         ];
 
@@ -335,7 +444,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 3: TIPOGRAFÍA ===
         $form['typography'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'book') . $this->t('Tipografía')),
+            '#title' => $this->t('Tipografía'),
             '#group' => 'settings',
         ];
 
@@ -421,7 +530,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 4: ENCABEZADO ===
         $form['header_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'menu') . $this->t('Encabezado')),
+            '#title' => $this->t('Encabezado'),
             '#group' => 'settings',
         ];
 
@@ -456,7 +565,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 5: HERO ===
         $form['hero_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'fire') . $this->t('Hero Section')),
+            '#title' => $this->t('Hero Section'),
             '#group' => 'settings',
         ];
 
@@ -478,7 +587,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 6: TARJETAS ===
         $form['cards_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'clipboard') . $this->t('Tarjetas')),
+            '#title' => $this->t('Tarjetas'),
             '#group' => 'settings',
         ];
 
@@ -518,7 +627,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 7: BOTONES ===
         $form['buttons_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'bolt') . $this->t('Botones')),
+            '#title' => $this->t('Botones'),
             '#group' => 'settings',
         ];
 
@@ -550,7 +659,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 8: FOOTER ===
         $form['footer_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'list') . $this->t('Pie de Página')),
+            '#title' => $this->t('Pie de Página'),
             '#group' => 'settings',
         ];
 
@@ -572,7 +681,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 9: REDES SOCIALES ===
         $form['social_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'globe') . $this->t('Redes Sociales')),
+            '#title' => $this->t('Redes Sociales'),
             '#group' => 'settings',
         ];
 
@@ -614,7 +723,7 @@ class TenantThemeCustomizerForm extends FormBase
         // === TAB 10: AVANZADO ===
         $form['advanced_options'] = [
             '#type' => 'details',
-            '#title' => Markup::create($this->getIcon('ui', 'cog') . $this->t('Opciones Avanzadas')),
+            '#title' => $this->t('Opciones Avanzadas'),
             '#group' => 'settings',
         ];
 
@@ -681,12 +790,14 @@ class TenantThemeCustomizerForm extends FormBase
         $config = $this->tokenService->getActiveConfig();
 
         if (!$config) {
-            // Crear nueva configuración si no existe
+            // Crear nueva configuración con tenant_id del contexto actual.
+            $tenantId = $this->tenantContext?->getCurrentTenantId();
             $config = \Drupal::entityTypeManager()
                 ->getStorage('tenant_theme_config')
                 ->create([
-                    'name' => $this->t('Configuración de @user', ['@user' => \Drupal::currentUser()->getDisplayName()]),
+                    'name' => $this->t('Configuracion de @user', ['@user' => \Drupal::currentUser()->getDisplayName()]),
                     'is_active' => TRUE,
+                    'tenant_id' => $tenantId,
                 ]);
         }
 

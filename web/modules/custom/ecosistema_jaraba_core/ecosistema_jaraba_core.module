@@ -315,6 +315,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
         'metrics' => [],
         'subscription_info' => [],
         'recent_activity' => [],
+        'quick_links' => [],
       ],
       'template' => 'tenant-self-service-dashboard',
       'path' => $path . '/templates',
@@ -325,8 +326,7 @@ function ecosistema_jaraba_core_theme($existing, $type, $theme, $path) {
     'tenant_self_service_settings' => [
       'variables' => [
         'tenant' => NULL,
-        'current_plan' => NULL,
-        'settings_sections' => [],
+        'sections' => [],
       ],
       'template' => 'tenant-self-service-settings',
       'path' => $path . '/templates',

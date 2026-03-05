@@ -6,7 +6,10 @@ namespace Drupal\ecosistema_jaraba_core\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\ecosistema_jaraba_core\Service\TenantContextService;
+use Drupal\ecosistema_jaraba_core\TenantSettings\TenantSettingsRegistry;
+use Drupal\jaraba_addons\Service\TenantVerticalService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,12 +31,80 @@ class TenantSelfServiceController extends ControllerBase
 {
 
     /**
+     * Mapa de acciones rapidas por vertical.
+     *
+     * Cada vertical tiene su propia ruta de "productos", etiqueta e icono
+     * segun el tipo de negocio que representa.
+     *
+     * @var array<string, array{route: string, label: string, icon: string}>
+     */
+    protected const VERTICAL_PRODUCT_MAP = [
+        'comercioconecta' => [
+            'route' => 'jaraba_comercio_conecta.merchant_portal.products',
+            'label' => 'Mis Productos',
+            'icon' => 'package',
+        ],
+        'serviciosconecta' => [
+            'route' => 'jaraba_servicios_conecta.provider_portal.offerings',
+            'label' => 'Mis Servicios',
+            'icon' => 'briefcase',
+        ],
+        'agroconecta' => [
+            'route' => 'jaraba_agroconecta_core.producer.products',
+            'label' => 'Mis Productos',
+            'icon' => 'package',
+        ],
+        'empleabilidad' => [
+            'route' => 'jaraba_job_board.employer_jobs',
+            'label' => 'Mis Ofertas',
+            'icon' => 'briefcase',
+        ],
+        'emprendimiento' => [
+            'route' => 'jaraba_business_tools.entrepreneur_dashboard',
+            'label' => 'Mis Proyectos',
+            'icon' => 'lightbulb',
+        ],
+        'jarabalex' => [
+            'route' => 'jaraba_legal_cases.dashboard',
+            'label' => 'Mis Casos',
+            'icon' => 'scale-balance',
+            'icon_category' => 'legal',
+        ],
+        'formacion' => [
+            'route' => 'jaraba_lms.my_courses',
+            'label' => 'Mis Cursos',
+            'icon' => 'graduation-cap',
+        ],
+        'jaraba_content_hub' => [
+            'route' => 'jaraba_content_hub.dashboard.frontend',
+            'label' => 'Mi Contenido',
+            'icon' => 'document',
+        ],
+        'andalucia_ei' => [
+            'route' => 'jaraba_andalucia_ei.dashboard',
+            'label' => 'Mi Programa',
+            'icon' => 'clipboard',
+        ],
+    ];
+
+    /**
+     * Servicio de verticales multi-tenant (opcional, de jaraba_addons).
+     *
+     * @var \Drupal\jaraba_addons\Service\TenantVerticalService|null
+     */
+    protected ?TenantVerticalService $tenantVerticalService;
+
+    /**
      * Constructor.
      */
     public function __construct(
         protected TenantContextService $tenantContext,
         protected Connection $database,
+        protected TenantSettingsRegistry $settingsRegistry,
+        protected RouteProviderInterface $routeProvider,
+        ?TenantVerticalService $tenantVerticalService = NULL,
     ) {
+        $this->tenantVerticalService = $tenantVerticalService;
     }
 
     /**
@@ -41,9 +112,17 @@ class TenantSelfServiceController extends ControllerBase
      */
     public static function create(ContainerInterface $container)
     {
+        $tenantVerticalService = NULL;
+        if ($container->has('jaraba_addons.tenant_vertical')) {
+            $tenantVerticalService = $container->get('jaraba_addons.tenant_vertical');
+        }
+
         return new static(
             $container->get('ecosistema_jaraba_core.tenant_context'),
-            $container->get('database')
+            $container->get('database'),
+            $container->get('ecosistema_jaraba_core.tenant_settings_registry'),
+            $container->get('router.route_provider'),
+            $tenantVerticalService,
         );
     }
 
@@ -67,6 +146,7 @@ class TenantSelfServiceController extends ControllerBase
         $metrics = $this->getTenantMetrics($tenant);
         $subscriptionInfo = $this->getSubscriptionInfo($tenant);
         $recentActivity = $this->getRecentActivity($tenant);
+        $quickLinks = $this->getQuickLinks($tenant);
 
         $build = [
             '#theme' => 'tenant_self_service_dashboard',
@@ -74,6 +154,7 @@ class TenantSelfServiceController extends ControllerBase
             '#metrics' => $metrics,
             '#subscription_info' => $subscriptionInfo,
             '#recent_activity' => $recentActivity,
+            '#quick_links' => $quickLinks,
             '#attached' => [
                 'library' => [
                     'ecosistema_jaraba_core/tenant-dashboard',
@@ -120,21 +201,21 @@ class TenantSelfServiceController extends ControllerBase
                 'label' => $this->t('MRR'),
                 'description' => $this->t('Ingresos Mensuales Recurrentes'),
                 'trend' => 0,
-                'icon' => '💰',
+                'icon' => ['category' => 'ui', 'name' => 'coin'],
             ],
             'members' => [
                 'value' => $membersCount,
                 'label' => $this->t('Miembros'),
                 'description' => $this->t('Usuarios asociados'),
                 'trend' => 0,
-                'icon' => '👥',
+                'icon' => ['category' => 'ui', 'name' => 'users'],
             ],
             'content' => [
                 'value' => $contentCount,
                 'label' => $this->t('Contenido'),
                 'description' => $this->t('Elementos creados'),
                 'trend' => 0,
-                'icon' => '📦',
+                'icon' => ['category' => 'ui', 'name' => 'package'],
             ],
             'sales_month' => [
                 'value' => '€' . number_format($salesMonth, 2, ',', '.'),
@@ -142,7 +223,7 @@ class TenantSelfServiceController extends ControllerBase
                 'label' => $this->t('Ventas del Mes'),
                 'description' => $this->t('Total de ventas este mes'),
                 'trend' => $salesTrend,
-                'icon' => '📈',
+                'icon' => ['category' => 'analytics', 'name' => 'chart-bar'],
             ],
         ];
     }
@@ -306,7 +387,151 @@ class TenantSelfServiceController extends ControllerBase
     }
 
     /**
-     * Página de configuración del tenant.
+     * Genera las acciones rapidas contextualizadas a TODOS los verticales del tenant.
+     *
+     * Modelo multi-vertical: resuelve primero via TenantVerticalService
+     * (primario + addon subscriptions), luego genera un link por cada
+     * vertical activo desde VERTICAL_PRODUCT_MAP.
+     *
+     * @return array
+     *   Array de acciones rapidas con route, label, icon, enabled, is_primary.
+     */
+    protected function getQuickLinks($tenant): array
+    {
+        $links = [];
+
+        // 1. Cambiar Plan — siempre disponible.
+        $links[] = [
+            'route' => 'ecosistema_jaraba_core.tenant.change_plan',
+            'route_params' => [],
+            'label' => $this->t('Cambiar Plan'),
+            'icon' => ['category' => 'ui', 'name' => 'wallet'],
+            'enabled' => TRUE,
+            'is_primary' => FALSE,
+        ];
+
+        // 2. Configuracion — siempre disponible.
+        $links[] = [
+            'route' => 'ecosistema_jaraba_core.tenant_self_service.settings',
+            'route_params' => [],
+            'label' => $this->t('Configuracion'),
+            'icon' => ['category' => 'ui', 'name' => 'settings'],
+            'enabled' => TRUE,
+            'is_primary' => FALSE,
+        ];
+
+        // 3. Links de verticales activos (primario + addons).
+        $activeVerticals = $this->resolveActiveVerticals($tenant);
+        $hasVerticalLinks = FALSE;
+
+        foreach ($activeVerticals as $verticalKey => $verticalData) {
+            $productLink = self::VERTICAL_PRODUCT_MAP[$verticalKey] ?? NULL;
+            if ($productLink && $this->routeExists($productLink['route'])) {
+                $iconCategory = $productLink['icon_category'] ?? 'ui';
+                $links[] = [
+                    'route' => $productLink['route'],
+                    'route_params' => [],
+                    'label' => $this->t($productLink['label']),
+                    'icon' => ['category' => $iconCategory, 'name' => $productLink['icon']],
+                    'enabled' => TRUE,
+                    'is_primary' => $verticalData['is_primary'],
+                ];
+                $hasVerticalLinks = TRUE;
+            }
+        }
+
+        // Fallback: site builder si no hay ningun vertical con portal.
+        if (!$hasVerticalLinks) {
+            $links[] = [
+                'route' => 'jaraba_site_builder.frontend.dashboard',
+                'route_params' => [],
+                'label' => $this->t('Mi Sitio'),
+                'icon' => ['category' => 'ui', 'name' => 'layout-template'],
+                'enabled' => $this->routeExists('jaraba_site_builder.frontend.dashboard'),
+                'is_primary' => FALSE,
+            ];
+        }
+
+        // 4. Marketplace de verticales — acceso rapido al catalogo de addons.
+        if ($this->routeExists('jaraba_addons.catalog')) {
+            $links[] = [
+                'route' => 'jaraba_addons.catalog',
+                'route_params' => [],
+                'label' => $this->t('Marketplace'),
+                'icon' => ['category' => 'ui', 'name' => 'grid'],
+                'enabled' => TRUE,
+                'is_primary' => FALSE,
+            ];
+        }
+
+        // 5. Soporte — siempre disponible si el modulo existe.
+        $supportEnabled = $this->routeExists('jaraba_support.portal');
+        $links[] = [
+            'route' => $supportEnabled ? 'jaraba_support.portal' : '',
+            'route_params' => [],
+            'label' => $this->t('Soporte'),
+            'icon' => ['category' => 'ui', 'name' => 'chat'],
+            'enabled' => $supportEnabled,
+            'is_primary' => FALSE,
+        ];
+
+        return $links;
+    }
+
+    /**
+     * Resuelve todos los verticales activos del tenant.
+     *
+     * Usa TenantVerticalService si disponible (multi-vertical).
+     * Fallback: solo el vertical primario del tenant.
+     *
+     * @return array<string, array{machine_name: string, label: string, is_primary: bool}>
+     */
+    protected function resolveActiveVerticals($tenant): array
+    {
+        // Preferir TenantVerticalService para resolucion completa.
+        if ($this->tenantVerticalService) {
+            $tenantId = (int) $tenant->id();
+            return $this->tenantVerticalService->getActiveVerticals($tenantId);
+        }
+
+        // Fallback: solo vertical primario.
+        $verticals = [];
+        $vertical = $tenant->getVertical();
+        if ($vertical) {
+            $machineName = $vertical->getMachineName();
+            if ($machineName) {
+                $verticals[$machineName] = [
+                    'machine_name' => $machineName,
+                    'label' => $vertical->label() ?? $machineName,
+                    'is_primary' => TRUE,
+                ];
+            }
+        }
+
+        return $verticals;
+    }
+
+    /**
+     * Verifica si una ruta existe en el sistema.
+     *
+     * Evita enlaces rotos a modulos no instalados.
+     */
+    protected function routeExists(string $routeName): bool
+    {
+        try {
+            $this->routeProvider->getRouteByName($routeName);
+            return TRUE;
+        }
+        catch (\Exception) {
+            return FALSE;
+        }
+    }
+
+    /**
+     * Pagina de configuracion del tenant.
+     *
+     * Usa TenantSettingsRegistry para generar las secciones
+     * dinamicamente desde tagged services.
      */
     public function settings(): array
     {
@@ -318,39 +543,13 @@ class TenantSelfServiceController extends ControllerBase
             ];
         }
 
-        $plan = $tenant->getSubscriptionPlan();
+        // Obtener secciones accesibles desde el registry (tagged services).
+        $sections = $this->settingsRegistry->getAccessibleSections();
 
         return [
             '#theme' => 'tenant_self_service_settings',
             '#tenant' => $tenant,
-            '#current_plan' => $plan,
-            '#settings_sections' => [
-                'domain' => [
-                    'title' => $this->t('Dominio Personalizado'),
-                    'description' => $this->t('Configura tu propio dominio para acceder a tu tienda.'),
-                    'status' => 'available',
-                    'icon' => '🌐',
-                ],
-                'plan' => [
-                    'title' => $this->t('Plan y Facturación'),
-                    'description' => $this->t('Gestiona tu plan y método de pago.'),
-                    'status' => 'available',
-                    'icon' => '💳',
-                    'link' => '/tenant/change-plan',
-                ],
-                'api_keys' => [
-                    'title' => $this->t('API Keys'),
-                    'description' => $this->t('Genera claves de API para integraciones.'),
-                    'status' => 'available',
-                    'icon' => '🔑',
-                ],
-                'webhooks' => [
-                    'title' => $this->t('Webhooks'),
-                    'description' => $this->t('Configura notificaciones automáticas a tus sistemas.'),
-                    'status' => 'available',
-                    'icon' => '🔗',
-                ],
-            ],
+            '#sections' => $sections,
         ];
     }
 

@@ -3,64 +3,82 @@
  * @file
  * Template para el Dashboard Self-Service del Tenant.
  *
- * Este dashboard permite a los tenants ver sus propias métricas
- * y gestionar su configuración sin intervención del administrador.
- *
  * Variables:
  * - tenant: Entidad del tenant actual
- * - metrics: Array de métricas con 'value', 'label', 'description', 'trend', 'icon'
- * - subscription_info: Información de la suscripción (plan, status, trial_days)
+ * - metrics: Array de metricas con 'value', 'label', 'description', 'trend', 'icon' (array)
+ * - subscription_info: Informacion de la suscripcion (plan, status, trial_days)
  * - recent_activity: Array de actividad reciente
+ * - quick_links: Array de acciones rapidas vertical-aware con route, label, icon, enabled
+ *
+ * ZERO-REGION-001: Sin CSS inline, sin regions Drupal.
+ * CSS-VAR-ALL-COLORS-001: Todos los colores via --ej-* tokens.
+ * ICON-CONVENTION-001: jaraba_icon() con variante duotone, NO emojis.
+ * i18n: Todos los textos en {% trans %} bloques.
  */
 #}
 
-<div class="tenant-dashboard">
-  
-  {# Cabecera con nombre del tenant #}
-  <header class="tenant-dashboard__header">
-    <div class="tenant-dashboard__greeting">
-      <h1 class="tenant-dashboard__title">
-        {{ 'Mi Dashboard'|t }}
-      </h1>
-      <p class="tenant-dashboard__subtitle">
-        {{ 'Bienvenido a tu panel de control, '|t }}<strong>{{ tenant.label }}</strong>
-      </p>
+<div class="tenant-dashboard" data-tenant-dashboard>
+
+  {# --- Premium Hero Header with Particles --- #}
+  <header class="tenant-dashboard__hero">
+    <canvas class="tenant-dashboard__particles" data-dashboard-particles aria-hidden="true"></canvas>
+    <div class="tenant-dashboard__hero-glow" aria-hidden="true"></div>
+
+    <div class="tenant-dashboard__hero-content">
+      <div class="tenant-dashboard__hero-icon">
+        {{ jaraba_icon('ui', 'dashboard', { variant: 'duotone', color: 'white', size: '36px' }) }}
+      </div>
+      <div class="tenant-dashboard__hero-text">
+        <h1 class="tenant-dashboard__title">{% trans %}Mi Dashboard{% endtrans %}</h1>
+        <p class="tenant-dashboard__subtitle">
+          {% trans %}Bienvenido a tu panel de control{% endtrans %}{% if tenant %}, <strong>{{ tenant.label }}</strong>{% endif %}
+        </p>
+      </div>
     </div>
-    <div class="tenant-dashboard__actions">
-      <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.settings') }}" class="tenant-btn tenant-btn--secondary">
-        {{ jaraba_icon('ui', 'settings', {variant: 'duotone', color: 'azul-corporativo', size: '16px'}) }} {% trans %}Configuración{% endtrans %}
+
+    <div class="tenant-dashboard__hero-actions">
+      <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.settings') }}"
+         class="tenant-dashboard__settings-link"
+         aria-label="{% trans %}Ir a configuracion{% endtrans %}">
+        {{ jaraba_icon('ui', 'settings', { variant: 'duotone', color: 'white', size: '16px' }) }}
+        {% trans %}Configuracion{% endtrans %}
       </a>
     </div>
   </header>
 
-  {# Banner de estado de suscripción #}
+  {# --- Banner de estado de suscripcion --- #}
   {% if subscription_info %}
-  <div class="tenant-subscription-banner tenant-subscription-banner--{{ subscription_info.status_class }}">
+  <div class="tenant-subscription-banner">
     <div class="tenant-subscription-banner__info">
       <span class="tenant-subscription-banner__plan">{{ subscription_info.plan_name }}</span>
-      <span class="tenant-subscription-banner__status {{ subscription_info.status_class }}">
+      <span class="tenant-subscription-banner__status tenant-subscription-banner__status--{{ subscription_info.status_class }}">
         {{ subscription_info.status_label }}
       </span>
     </div>
-    
+
     {% if subscription_info.is_trial and subscription_info.trial_days_remaining > 0 %}
     <div class="tenant-subscription-banner__trial">
       <span class="tenant-trial-badge">
-        ⏰ {{ subscription_info.trial_days_remaining }} {{ 'días restantes de prueba'|t }}
+        {{ jaraba_icon('ui', 'clock', { variant: 'duotone', size: '16px' }) }}
+        {{ subscription_info.trial_days_remaining }} {% trans %}dias restantes{% endtrans %}
       </span>
-      <a href="{{ path('ecosistema_jaraba_core.tenant.change_plan') }}" class="tenant-btn tenant-btn--primary tenant-btn--sm">
-        {{ 'Elegir Plan'|t }}
+      <a href="{{ path('ecosistema_jaraba_core.tenant.change_plan') }}"
+         class="tenant-trial-badge__btn">
+        {% trans %}Elegir Plan{% endtrans %}
       </a>
     </div>
     {% endif %}
   </div>
   {% endif %}
 
-  {# Grid de métricas principales #}
-  <section class="tenant-metrics-grid">
+  {# --- Grid de metricas principales --- #}
+  <section class="tenant-metrics-grid" aria-label="{% trans %}Metricas principales{% endtrans %}">
     {% for key, metric in metrics %}
     <div class="tenant-metric-card">
-      <span class="tenant-metric-card__icon">{{ metric.icon }}</span>
+      <div class="tenant-metric-card__shine" aria-hidden="true"></div>
+      <div class="tenant-metric-card__icon-wrapper">
+        {{ jaraba_icon(metric.icon.category, metric.icon.name, { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+      </div>
       <div class="tenant-metric-card__content">
         <span class="tenant-metric-card__value">{{ metric.value }}</span>
         <span class="tenant-metric-card__label">{{ metric.label }}</span>
@@ -68,19 +86,21 @@
       </div>
       {% if metric.trend != 0 %}
       <span class="tenant-metric-card__trend tenant-metric-card__trend--{{ metric.trend > 0 ? 'up' : 'down' }}">
-        {{ metric.trend > 0 ? '↑' : '↓' }} {{ metric.trend|abs }}%
+        {{ jaraba_icon('ui', metric.trend > 0 ? 'arrow-up' : 'arrow-down', { variant: 'duotone', size: '12px' }) }}
+        {{ metric.trend|abs }}%
       </span>
       {% endif %}
     </div>
     {% endfor %}
   </section>
 
-  {# Contenedor de dos columnas #}
+  {# --- Graficos: Ventas y MRR --- #}
   <div class="tenant-dashboard__grid">
-    
-    {# Gráfico de Ventas #}
     <section class="tenant-chart-section">
-      <h2 class="tenant-section-title">{{ jaraba_icon('analytics', 'trending-up', {variant: 'duotone', color: 'verde-innovacion', size: '20px'}) }} {% trans %}Ventas (últimos 30 días){% endtrans %}</h2>
+      <h2 class="tenant-section-title">
+        {{ jaraba_icon('analytics', 'trending-up', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        {% trans %}Ventas (ultimos 30 dias){% endtrans %}
+      </h2>
       <div class="tenant-chart-container" data-chart-type="sales" data-chart-id="sales-trend">
         <div class="tenant-chart-canvas-wrapper">
           <canvas id="sales-trend-chart" height="250"></canvas>
@@ -89,9 +109,11 @@
       </div>
     </section>
 
-    {# Gráfico de MRR #}
     <section class="tenant-chart-section">
-      <h2 class="tenant-section-title">{{ jaraba_icon('finance', 'coins', {variant: 'duotone', color: 'verde-innovacion', size: '20px'}) }} {% trans %}MRR (últimos 6 meses){% endtrans %}</h2>
+      <h2 class="tenant-section-title">
+        {{ jaraba_icon('finance', 'coins', { variant: 'duotone', color: 'verde-innovacion', size: '20px' }) }}
+        {% trans %}MRR (ultimos 6 meses){% endtrans %}
+      </h2>
       <div class="tenant-chart-container" data-chart-type="mrr" data-chart-id="mrr-trend">
         <div class="tenant-chart-canvas-wrapper">
           <canvas id="mrr-trend-chart" height="250"></canvas>
@@ -99,18 +121,18 @@
         <div class="tenant-chart-summary"></div>
       </div>
     </section>
-    
   </div>
 
-  {# Fila de actividad y clientes #}
+  {# --- Actividad y Clientes --- #}
   <div class="tenant-dashboard__grid">
-    
-    {# Actividad Reciente #}
     <section class="tenant-activity-section">
-      <h2 class="tenant-section-title">{{ jaraba_icon('ui', 'clipboard', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }} {% trans %}Actividad Reciente{% endtrans %}</h2>
+      <h2 class="tenant-section-title">
+        {{ jaraba_icon('ui', 'clipboard', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Actividad Reciente{% endtrans %}
+      </h2>
       <div class="tenant-activity-list">
         {% for activity in recent_activity %}
-        <div class="tenant-activity-item tenant-activity-item--{{ activity.type }}">
+        <div class="tenant-activity-item">
           <div class="tenant-activity-item__info">
             <span class="tenant-activity-item__desc">{{ activity.description }}</span>
             {% if activity.date %}
@@ -125,457 +147,45 @@
       </div>
     </section>
 
-    {# Gráfico de Clientes #}
     <section class="tenant-chart-section">
-      <h2 class="tenant-section-title">{{ jaraba_icon('ui', 'users', {variant: 'duotone', color: 'azul-corporativo', size: '20px'}) }} {% trans %}Clientes por Semana{% endtrans %}</h2>
+      <h2 class="tenant-section-title">
+        {{ jaraba_icon('ui', 'users', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Clientes por Semana{% endtrans %}
+      </h2>
       <div class="tenant-chart-container" data-chart-type="customers" data-chart-id="customers-trend">
         <div class="tenant-chart-canvas-wrapper">
           <canvas id="customers-trend-chart" height="250"></canvas>
         </div>
       </div>
     </section>
-    
   </div>
 
-  {# Enlaces rápidos #}
+  {# --- Acciones Rapidas (multi-vertical-aware) --- #}
   <section class="tenant-quick-links">
-    <h2 class="tenant-section-title">{{ 'Acciones Rápidas'|t }}</h2>
+    <h2 class="tenant-section-title">{% trans %}Acciones Rapidas{% endtrans %}</h2>
     <div class="tenant-quick-links__grid">
-      <a href="{{ path('ecosistema_jaraba_core.tenant.change_plan') }}" class="tenant-quick-link">
-        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'wallet', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
-        <span class="tenant-quick-link__label">{% trans %}Cambiar Plan{% endtrans %}</span>
-      </a>
-      <a href="{{ path('ecosistema_jaraba_core.tenant_self_service.settings') }}" class="tenant-quick-link">
-        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'settings', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
-        <span class="tenant-quick-link__label">{% trans %}Configuración{% endtrans %}</span>
-      </a>
-      <a href="#" class="tenant-quick-link tenant-quick-link--disabled">
-        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'package', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
-        <span class="tenant-quick-link__label">{% trans %}Mis Productos{% endtrans %}</span>
-      </a>
-      <a href="#" class="tenant-quick-link tenant-quick-link--disabled">
-        <span class="tenant-quick-link__icon" aria-hidden="true">{{ jaraba_icon('ui', 'chat', {variant: 'duotone', color: 'azul-corporativo', size: '24px'}) }}</span>
-        <span class="tenant-quick-link__label">{% trans %}Soporte{% endtrans %}</span>
-      </a>
+      {% for link in quick_links %}
+        {% if link.enabled %}
+          <a href="{{ path(link.route, link.route_params) }}"
+             class="tenant-quick-link{% if link.is_primary %} tenant-quick-link--primary{% endif %}">
+        {% else %}
+          <span class="tenant-quick-link tenant-quick-link--disabled"
+                title="{% trans %}Proximamente{% endtrans %}">
+        {% endif %}
+            <span class="tenant-quick-link__icon" aria-hidden="true">
+              {{ jaraba_icon(link.icon.category, link.icon.name, { variant: 'duotone', color: 'azul-corporativo', size: '24px' }) }}
+            </span>
+            <span class="tenant-quick-link__label">{{ link.label }}</span>
+            {% if link.is_primary %}
+              <span class="tenant-quick-link__badge">{% trans %}Principal{% endtrans %}</span>
+            {% endif %}
+        {% if link.enabled %}
+          </a>
+        {% else %}
+          </span>
+        {% endif %}
+      {% endfor %}
     </div>
   </section>
 
 </div>
-
-<style>
-/* Estilos del Tenant Dashboard - Premium UX */
-.tenant-dashboard {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: var(--ej-font-family, 'Inter', sans-serif);
-}
-
-.tenant-dashboard__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.tenant-dashboard__title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.tenant-dashboard__subtitle {
-  color: #64748b;
-  margin: 0.25rem 0 0;
-}
-
-/* Banner de suscripción */
-.tenant-subscription-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-  border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-.tenant-subscription-banner--status--trial {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
-  border-color: rgba(251, 191, 36, 0.3);
-}
-
-.tenant-subscription-banner__info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.tenant-subscription-banner__plan {
-  font-weight: 600;
-  font-size: 1.125rem;
-  color: #1e293b;
-}
-
-.tenant-subscription-banner__status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 2rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.tenant-subscription-banner__status.status--trial {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.tenant-subscription-banner__status.status--active {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.tenant-subscription-banner__status.status--warning {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.tenant-subscription-banner__trial {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.tenant-trial-badge {
-  color: #d97706;
-  font-weight: 500;
-}
-
-/* Botones */
-.tenant-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-}
-
-.tenant-btn--primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-}
-
-.tenant-btn--primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.tenant-btn--secondary {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.tenant-btn--secondary:hover {
-  background: #e2e8f0;
-}
-
-.tenant-btn--sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-}
-
-/* Grid de métricas */
-.tenant-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.tenant-metric-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.tenant-metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.tenant-metric-card__icon {
-  font-size: 2rem;
-}
-
-.tenant-metric-card__content {
-  display: flex;
-  flex-direction: column;
-}
-
-.tenant-metric-card__value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.tenant-metric-card__label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #475569;
-}
-
-.tenant-metric-card__description {
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
-
-.tenant-metric-card__trend {
-  margin-left: auto;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.tenant-metric-card__trend--up {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.tenant-metric-card__trend--down {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-/* Grid de dos columnas */
-.tenant-dashboard__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 768px) {
-  .tenant-dashboard__grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Sección de actividad */
-.tenant-activity-section,
-.tenant-chart-section {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 1rem;
-  padding: 1.5rem;
-}
-
-.tenant-section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 1rem;
-}
-
-.tenant-activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.tenant-activity-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: #f8fafc;
-  border-radius: 0.5rem;
-}
-
-.tenant-activity-item__info {
-  display: flex;
-  flex-direction: column;
-}
-
-.tenant-activity-item__desc {
-  font-weight: 500;
-  color: #1e293b;
-}
-
-.tenant-activity-item__date {
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
-
-.tenant-activity-item__amount {
-  font-weight: 600;
-  color: #16a34a;
-}
-
-/* Placeholder */
-.tenant-placeholder-card {
-  text-align: center;
-  padding: 2rem;
-}
-
-.tenant-placeholder-card__icon {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-}
-
-.tenant-placeholder-card__description {
-  color: #94a3b8;
-  margin: 0 0 1rem;
-}
-
-.tenant-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 2rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.tenant-badge--coming-soon {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-/* Quick Links */
-.tenant-quick-links {
-  margin-top: 1rem;
-}
-
-.tenant-quick-links__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-}
-
-.tenant-quick-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  text-decoration: none;
-  color: #475569;
-  transition: all 0.2s;
-}
-
-.tenant-quick-link:hover {
-  background: #f8fafc;
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-
-.tenant-quick-link--disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.tenant-quick-link__icon {
-  font-size: 1.25rem;
-}
-
-.tenant-quick-link__label {
-  font-weight: 500;
-}
-
-@media (max-width: 640px) {
-  .tenant-dashboard {
-    padding: 1rem;
-  }
-  
-  .tenant-dashboard__header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .tenant-dashboard__title {
-    font-size: 1.5rem;
-  }
-  
-  .tenant-subscription-banner {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-}
-
-/* Estilos de Chart.js containers */
-.tenant-chart-container {
-  min-height: 280px;
-}
-
-.tenant-chart-canvas-wrapper {
-  position: relative;
-  height: 250px;
-  width: 100%;
-}
-
-.tenant-chart-summary {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.tenant-chart-summary__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tenant-chart-summary__label {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.tenant-chart-summary__value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.tenant-chart-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #94a3b8;
-}
-
-.tenant-chart-error__icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.tenant-chart-error__text {
-  font-size: 0.875rem;
-}
-</style>
