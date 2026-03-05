@@ -42,10 +42,81 @@ function jaraba_billing_schema(): array {
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        'description' => 'Timestamp de la última acción ejecutada.',
+        'description' => 'Timestamp de la ultima accion ejecutada.',
       ],
     ],
     'primary key' => ['tenant_id'],
+  ];
+
+  // GAP-M04: Log de eventos Stripe procesados para deduplicacion.
+  $schema['stripe_webhook_event_log'] = [
+    'description' => 'Log de eventos Stripe procesados para prevenir duplicados.',
+    'fields' => [
+      'event_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Stripe Event ID (evt_xxx).',
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Tipo de evento Stripe.',
+      ],
+      'processed_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp de procesamiento.',
+      ],
+      'idempotency_key' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'description' => 'Clave de idempotencia.',
+      ],
+    ],
+    'primary key' => ['event_id'],
+    'indexes' => [
+      'event_type' => ['event_type'],
+      'processed_at' => ['processed_at'],
+    ],
+  ];
+
+  // GAP-M03: Wallet schema declarativo (previously ensureTablesExist).
+  $schema['billing_tenant_wallet'] = [
+    'description' => 'Saldos de wallet por tenant.',
+    'fields' => [
+      'tenant_id' => ['type' => 'int', 'not null' => TRUE],
+      'balance' => ['type' => 'numeric', 'precision' => 19, 'scale' => 4, 'not null' => TRUE, 'default' => 0],
+      'last_updated' => ['type' => 'int', 'not null' => TRUE],
+      'last_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+    ],
+    'primary key' => ['tenant_id'],
+  ];
+
+  $schema['billing_wallet_ledger'] = [
+    'description' => 'Libro mayor inmutable con encadenamiento criptografico.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'not null' => TRUE],
+      'tenant_id' => ['type' => 'int', 'not null' => TRUE],
+      'type' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      'amount' => ['type' => 'numeric', 'precision' => 19, 'scale' => 4, 'not null' => TRUE],
+      'balance_after' => ['type' => 'numeric', 'precision' => 19, 'scale' => 4, 'not null' => TRUE],
+      'source' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'reference_id' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+      'description' => ['type' => 'varchar', 'length' => 255],
+      'previous_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'nonce' => ['type' => 'varchar', 'length' => 16, 'not null' => TRUE],
+      'metadata' => ['type' => 'text', 'size' => 'normal'],
+      'created_at' => ['type' => 'int', 'not null' => TRUE],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'tenant_id' => ['tenant_id'],
+      'created_at' => ['created_at'],
+    ],
   ];
 
   return $schema;
@@ -86,4 +157,73 @@ function jaraba_billing_update_10001(): void {
     $spec = jaraba_billing_schema()['billing_dunning_state'];
     $schema->createTable('billing_dunning_state', $spec);
   }
+}
+
+/**
+ * GAP-C04/M03/M04: Create webhook event log, wallet tables, usage sync fields.
+ *
+ * - stripe_webhook_event_log: Deduplication of Stripe webhook events.
+ * - billing_tenant_wallet: Wallet balances (previously runtime-created).
+ * - billing_wallet_ledger: Immutable crypto-chained ledger.
+ * - synced_to_stripe/stripe_synced_at fields on billing_usage_record.
+ */
+function jaraba_billing_update_10002(): string {
+  $schema = \Drupal::database()->schema();
+  $allSchemas = jaraba_billing_schema();
+  $created = [];
+
+  // Create tables from hook_schema() if they don't exist.
+  $tables = [
+    'stripe_webhook_event_log',
+    'billing_tenant_wallet',
+    'billing_wallet_ledger',
+  ];
+
+  foreach ($tables as $table) {
+    try {
+      if (!$schema->tableExists($table) && isset($allSchemas[$table])) {
+        $schema->createTable($table, $allSchemas[$table]);
+        $created[] = $table;
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Failed to create table @table: @msg',
+        ['@table' => $table, '@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // Install synced_to_stripe and stripe_synced_at fields on billing_usage_record.
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  try {
+    if ($updateManager->getEntityType('billing_usage_record')) {
+      $syncedField = \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('synced_to_stripe')
+        ->setTargetEntityTypeId('billing_usage_record')
+        ->setLabel(t('Sincronizado con Stripe'))
+        ->setDefaultValue(FALSE);
+      $updateManager->installFieldStorageDefinition(
+        'synced_to_stripe', 'billing_usage_record', 'jaraba_billing', $syncedField
+      );
+
+      $syncedAtField = \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+        ->setName('stripe_synced_at')
+        ->setTargetEntityTypeId('billing_usage_record')
+        ->setLabel(t('Fecha sincronizacion Stripe'))
+        ->setDefaultValue(0);
+      $updateManager->installFieldStorageDefinition(
+        'stripe_synced_at', 'billing_usage_record', 'jaraba_billing', $syncedAtField
+      );
+      $created[] = 'billing_usage_record fields (synced_to_stripe, stripe_synced_at)';
+    }
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('jaraba_billing')->error(
+      'Failed to install usage sync fields: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+  }
+
+  return 'Created: ' . implode(', ', $created);
 }

@@ -304,7 +304,6 @@ class StripeWebhookHandlerTest extends UnitTestCase {
     return [
       'charge.succeeded' => ['charge.succeeded'],
       'charge.refunded' => ['charge.refunded'],
-      'checkout.session.completed' => ['checkout.session.completed'],
       'payout.paid' => ['payout.paid'],
       'account.updated' => ['account.updated'],
       'transfer.created' => ['transfer.created'],

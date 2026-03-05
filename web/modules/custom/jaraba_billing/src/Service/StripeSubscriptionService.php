@@ -20,8 +20,8 @@ use Psr\Log\LoggerInterface;
 class StripeSubscriptionService {
 
   public function __construct(
-    protected StripeConnectService $stripeConnect,
-    protected TenantSubscriptionService $tenantSubscription,
+    protected ?StripeConnectService $stripeConnect,
+    protected ?TenantSubscriptionService $tenantSubscription,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
     protected LockBackendInterface $lock,

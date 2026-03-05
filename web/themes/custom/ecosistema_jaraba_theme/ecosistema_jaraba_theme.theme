@@ -2205,6 +2205,35 @@ function ecosistema_jaraba_theme_preprocess_html(&$variables) {
   }
 
   // =========================================================================
+  // TENANT TOKEN OVERRIDE — Inyecta :root con tokens del tenant DESPUES
+  // de jaraba_css_vars (plataforma) para que gane por orden de cascada.
+  // ThemeTokenService auto-resuelve el tenant_id desde TenantContextService.
+  // =========================================================================
+  if (\Drupal::hasService('jaraba_theming.token_service')) {
+    try {
+      /** @var \Drupal\jaraba_theming\Service\ThemeTokenService $tokenService */
+      $tokenService = \Drupal::service('jaraba_theming.token_service');
+      $tenantId = $tokenService->resolveTenantId();
+      if ($tenantId !== NULL) {
+        $tenantCss = $tokenService->generateCss($tenantId);
+        if (!empty($tenantCss)) {
+          $variables['#attached']['html_head'][] = [
+            [
+              '#tag' => 'style',
+              '#value' => Markup::create($tenantCss),
+              '#attributes' => ['id' => 'jaraba-tenant-tokens'],
+            ],
+            'jaraba_tenant_tokens',
+          ];
+        }
+      }
+    }
+    catch (\Throwable) {
+      // Theme preprocess should never crash.
+    }
+  }
+
+  // =========================================================================
   // SEO META TAGS - Homepage optimizada para motores de búsqueda y GEO
   // Soporta datos dinámicos desde HomepageContent o fallbacks hardcodeados
   // =========================================================================
@@ -2461,6 +2490,12 @@ function ecosistema_jaraba_theme_preprocess_page(&$variables) {
       if ($metaSite) {
         $variables['meta_site'] = $metaSite;
         $tenantConfig = $metaSite['site_config'];
+
+        // Resolve SiteConfig translation for current language.
+        $currentLangcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+        if ($tenantConfig->isTranslatable() && $tenantConfig->hasTranslation($currentLangcode)) {
+          $tenantConfig = $tenantConfig->getTranslation($currentLangcode);
+        }
 
         // Override site_name con nombre del tenant.
         $variables['site_name'] = $metaSite['tenant_name'];
@@ -3477,6 +3512,9 @@ function ecosistema_jaraba_theme_preprocess_page__user(&$variables) {
           'description' => t('Métricas y gestión de tu negocio'),
           'slide_panel' => TRUE,
         ]),
+        $make_link(t('Configuración'), 'ecosistema_jaraba_core.tenant_self_service.settings', 'ui', 'settings', 'corporate', [
+          'description' => t('Marca, diseño, dominio, API y más'),
+        ]),
         $make_link(t('Cambiar plan'), 'ecosistema_jaraba_core.tenant.change_plan', 'commerce', 'tag', 'corporate', [
           'description' => t('Explora planes y funcionalidades'),
           'slide_panel' => TRUE,
@@ -4414,6 +4452,14 @@ function ecosistema_jaraba_theme_page_attachments_alter(array &$attachments): vo
   // Map route name prefixes to theme libraries (route CSS + extracted bundles).
   // HAL-AI-12: Each route gets its route-specific CSS plus extracted bundle CSS.
   $routeLibraryMap = [
+    // Tenant Settings Hub: exact route match BEFORE prefix match.
+    'ecosistema_jaraba_core.tenant_self_service.settings' => ['ecosistema_jaraba_theme/route-tenant-settings'],
+    'ecosistema_jaraba_core.tenant_self_service.branding' => ['ecosistema_jaraba_theme/route-tenant-settings'],
+    'ecosistema_jaraba_core.tenant_self_service.design' => ['ecosistema_jaraba_theme/route-tenant-settings'],
+    'ecosistema_jaraba_core.tenant_self_service.domain' => ['ecosistema_jaraba_theme/route-tenant-settings'],
+    'ecosistema_jaraba_core.tenant_self_service.api_keys' => ['ecosistema_jaraba_theme/route-tenant-settings'],
+    'ecosistema_jaraba_core.tenant_self_service.webhooks' => ['ecosistema_jaraba_theme/route-tenant-settings'],
+    'ecosistema_jaraba_core.tenant_self_service.dashboard' => ['ecosistema_jaraba_theme/route-tenant-dashboard'],
     'ecosistema_jaraba_core.tenant_dashboard' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'ecosistema_jaraba_core.tenant_analytics' => ['ecosistema_jaraba_theme/route-dashboard', 'ecosistema_jaraba_theme/bundle-ai-dashboard'],
     'jaraba_content_hub.' => ['ecosistema_jaraba_theme/route-content-hub', 'ecosistema_jaraba_theme/bundle-content-hub'],

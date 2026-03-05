@@ -15,6 +15,7 @@ class CheckoutService {
     protected AccountProxyInterface $currentUser,
     protected CartService $cartService,
     protected LoggerInterface $logger,
+    protected ?object $revenueMetrics = NULL,
   ) {}
 
   public function initiateCheckout(object $cart): array {
@@ -70,6 +71,7 @@ class CheckoutService {
     $this->createOrderItems($order, $items);
     $this->createSuborders($order, $items);
     $this->recordCouponRedemption($cart, $order);
+    $this->recordFinancialTransaction($order);
 
     $this->cartService->clearCart($cart);
 
@@ -129,10 +131,11 @@ class CheckoutService {
 
     $suborder_storage = $this->entityTypeManager->getStorage('suborder_retail');
     $tenant_id = $order->get('tenant_id')->target_id;
-    $commission_rate = 10.0;
+    $commissionConfig = $this->resolveCommissionConfig((int) $tenant_id);
 
     foreach ($merchants as $merchant_id => $subtotal) {
-      $commission = $subtotal * ($commission_rate / 100);
+      $commission_rate = $commissionConfig->getEffectiveRate();
+      $commission = $subtotal * ($commission_rate / 100) + $commissionConfig->getPlatformFee();
       $suborder_storage->create([
         'tenant_id' => $tenant_id,
         'order_id' => $order->id(),
@@ -140,8 +143,8 @@ class CheckoutService {
         'status' => 'pending',
         'subtotal' => $subtotal,
         'commission_rate' => $commission_rate,
-        'commission_amount' => $commission,
-        'merchant_payout' => $subtotal - $commission,
+        'commission_amount' => round($commission, 2),
+        'merchant_payout' => round($subtotal - $commission, 2),
         'payout_status' => 'pending',
       ])->save();
     }
@@ -196,6 +199,89 @@ class CheckoutService {
     $discount = (float) $cart->get('discount_amount')->value;
     $taxable = $subtotal - $discount;
     return round($taxable * 0.21, 2);
+  }
+
+  /**
+   * GAP-M02: Resolves the commission config for a tenant.
+   *
+   * Cascade: tenant-specific -> platform_default -> hardcoded fallback.
+   */
+  protected function resolveCommissionConfig(int $tenantId): object {
+    try {
+      if ($this->entityTypeManager->hasDefinition('marketplace_commission_config')) {
+        $storage = $this->entityTypeManager->getStorage('marketplace_commission_config');
+
+        // Try tenant-specific config first.
+        $tenantConfigs = $storage->loadByProperties(['tenant_id' => $tenantId]);
+        if (!empty($tenantConfigs)) {
+          return reset($tenantConfigs);
+        }
+
+        // Fallback to platform default.
+        $default = $storage->load('platform_default');
+        if ($default) {
+          return $default;
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error loading commission config: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+
+    // Hardcoded fallback — backwards compatible with pre-GAP-M02.
+    return new class {
+      public function getEffectiveRate(?string $cat = NULL): float { return 10.0; }
+      public function getPlatformFee(): float { return 0.0; }
+    };
+  }
+
+  /**
+   * GAP-H04: Registra la transacción financiera en el libro mayor FOC.
+   *
+   * Crea un FinancialTransaction append-only para que las ventas del
+   * marketplace aparezcan en los dashboards de revenue y P&L.
+   * Opcional: solo se ejecuta si jaraba_foc está instalado.
+   */
+  protected function recordFinancialTransaction(object $order): void {
+    try {
+      if (!$this->entityTypeManager->hasDefinition('financial_transaction')) {
+        return;
+      }
+
+      $tenantId = $order->get('tenant_id')->target_id;
+      $total = (float) $order->get('total')->value;
+      $orderNumber = $order->get('order_number')->value;
+
+      $this->entityTypeManager->getStorage('financial_transaction')->create([
+        'amount' => number_format($total, 4, '.', ''),
+        'currency' => 'EUR',
+        'transaction_timestamp' => \Drupal::time()->getRequestTime(),
+        'source_system' => 'comercioconecta',
+        'external_id' => 'order_retail_' . $order->id(),
+        'related_tenant' => $tenantId,
+        'related_vertical' => 'comercioconecta',
+        'is_recurring' => FALSE,
+        'description' => sprintf('Venta marketplace pedido %s', $orderNumber),
+        'metadata' => json_encode([
+          'order_id' => $order->id(),
+          'order_number' => $orderNumber,
+          'items_count' => count($this->cartService->getCartItems($order) ?: []),
+        ]),
+      ])->save();
+
+      // Track expansion revenue if service available.
+      if ($this->revenueMetrics && method_exists($this->revenueMetrics, 'trackCommerceRevenue')) {
+        $this->revenueMetrics->trackCommerceRevenue((int) $tenantId, $total);
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('GAP-H04: Error creating FinancialTransaction for order @id: @msg', [
+        '@id' => $order->id(),
+        '@msg' => $e->getMessage(),
+      ]);
+    }
   }
 
 }

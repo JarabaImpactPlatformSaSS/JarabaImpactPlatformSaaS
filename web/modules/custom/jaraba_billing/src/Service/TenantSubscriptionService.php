@@ -2,8 +2,10 @@
 
 namespace Drupal\jaraba_billing\Service;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Entity\SaasPlanInterface;
+use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,7 +29,18 @@ class TenantSubscriptionService
     public function __construct(
         protected PlanValidator $planValidator,
         protected LoggerInterface $logger,
+        protected ?PlanResolverService $planResolver = NULL,
     ) {
+    }
+
+    /**
+     * Lazy-loads StripeSubscriptionService to break circular dependency.
+     */
+    protected function getStripeSubscription(): ?StripeSubscriptionService {
+      if (\Drupal::hasService('jaraba_billing.stripe_subscription')) {
+        return \Drupal::service('jaraba_billing.stripe_subscription');
+      }
+      return NULL;
     }
 
     /**
@@ -138,37 +151,6 @@ class TenantSubscriptionService
     }
 
     /**
-     * Cancels a tenant subscription.
-     *
-     * BIZ-02: Deferred cancellation stores the end-of-period date so access
-     * continues until the billing period ends.
-     *
-     * BIZ-002 v6.3.0: Uses entity field instead of State API.
-     */
-    public function cancelSubscription(TenantInterface $tenant, bool $immediate = FALSE): TenantInterface
-    {
-        if ($immediate) {
-            $tenant->setSubscriptionStatus(TenantInterface::STATUS_CANCELLED);
-            $tenant->set('cancel_at', NULL);
-        } else {
-            // Deferred: schedule cancellation at end of current billing period.
-            $tenant->set(
-                'cancel_at',
-                (new \DateTime('+30 days'))->format('Y-m-d\TH:i:s')
-            );
-        }
-
-        $tenant->save();
-
-        $this->logger->info('Suscripción cancelada para tenant @id (inmediata: @immediate)', [
-            '@id' => $tenant->id(),
-            '@immediate' => $immediate ? 'sí' : 'no',
-        ]);
-
-        return $tenant;
-    }
-
-    /**
      * BIZ-02: Checks if a deferred cancellation date has arrived.
      *
      * BIZ-002 v6.3.0: Reads from entity field instead of State API.
@@ -231,6 +213,9 @@ class TenantSubscriptionService
     /**
      * Changes the subscription plan for a tenant.
      *
+     * GAP-C03: Synchronizes plan change with Stripe. If Stripe update
+     * fails, the local change is reverted to maintain consistency.
+     *
      * @throws \InvalidArgumentException
      *   If plan change validation fails.
      */
@@ -252,6 +237,42 @@ class TenantSubscriptionService
         $tenant->setSubscriptionPlan($new_plan);
         $tenant->save();
 
+        // GAP-C03: Sync with Stripe — revert local if Stripe fails.
+        $stripeSubId = $tenant->hasField('stripe_subscription_id')
+            ? $tenant->get('stripe_subscription_id')->value
+            : NULL;
+
+        $stripeSvc = $stripeSubId ? $this->getStripeSubscription() : NULL;
+        if ($stripeSvc) {
+            $newPriceId = $this->resolveStripePriceId($new_plan, $tenant);
+            if ($newPriceId) {
+                try {
+                    $stripeSvc->updateSubscription($stripeSubId, $newPriceId);
+                    $this->logger->info('Stripe subscription @sub updated to price @price for tenant @id.', [
+                        '@sub' => $stripeSubId,
+                        '@price' => $newPriceId,
+                        '@id' => $tenant->id(),
+                    ]);
+                }
+                catch (\Throwable $e) {
+                    // Revert local change.
+                    if ($old_plan) {
+                        $tenant->setSubscriptionPlan($old_plan);
+                    }
+                    $tenant->save();
+                    $this->logger->error('Stripe plan change failed for tenant @id, reverted local: @msg', [
+                        '@id' => $tenant->id(),
+                        '@msg' => $e->getMessage(),
+                    ]);
+                    throw new \RuntimeException(
+                        'Stripe plan update failed: ' . $e->getMessage(),
+                        (int) $e->getCode(),
+                        $e
+                    );
+                }
+            }
+        }
+
         $this->logger->info('Plan cambiado para tenant @id: @old -> @new', [
             '@id' => $tenant->id(),
             '@old' => $old_plan ? $old_plan->getName() : 'ninguno',
@@ -259,6 +280,88 @@ class TenantSubscriptionService
         ]);
 
         return $tenant;
+    }
+
+    /**
+     * Cancels a tenant subscription with Stripe synchronization.
+     *
+     * GAP-C03: Cancels the Stripe subscription at period end before
+     * marking the local subscription as cancelled.
+     */
+    public function cancelSubscription(TenantInterface $tenant, bool $immediate = FALSE): TenantInterface
+    {
+        // GAP-C03: Cancel in Stripe first.
+        $stripeSubId = $tenant->hasField('stripe_subscription_id')
+            ? $tenant->get('stripe_subscription_id')->value
+            : NULL;
+
+        $stripeSvc = $stripeSubId ? $this->getStripeSubscription() : NULL;
+        if ($stripeSvc) {
+            try {
+                $stripeSvc->cancelSubscription($stripeSubId, $immediate);
+                $this->logger->info('Stripe subscription @sub cancelled for tenant @id (immediate: @imm).', [
+                    '@sub' => $stripeSubId,
+                    '@id' => $tenant->id(),
+                    '@imm' => $immediate ? 'yes' : 'no',
+                ]);
+            }
+            catch (\Throwable $e) {
+                $this->logger->error('Stripe cancellation failed for tenant @id: @msg', [
+                    '@id' => $tenant->id(),
+                    '@msg' => $e->getMessage(),
+                ]);
+                // Continue with local cancellation — Stripe can be reconciled manually.
+            }
+        }
+
+        // Local cancellation (existing logic).
+        if ($immediate) {
+            $tenant->setSubscriptionStatus(TenantInterface::STATUS_CANCELLED);
+            $tenant->set('cancel_at', NULL);
+        } else {
+            $tenant->set(
+                'cancel_at',
+                (new \DateTime('+30 days'))->format('Y-m-d\TH:i:s')
+            );
+        }
+
+        $tenant->save();
+
+        $this->logger->info('Suscripcion cancelada para tenant @id (inmediata: @immediate)', [
+            '@id' => $tenant->id(),
+            '@immediate' => $immediate ? 'si' : 'no',
+        ]);
+
+        return $tenant;
+    }
+
+    /**
+     * Resolves the Stripe Price ID for a plan + vertical combination.
+     *
+     * Uses PlanResolverService to find the Stripe Price ID from
+     * SaasPlanTier ConfigEntities.
+     */
+    protected function resolveStripePriceId(SaasPlanInterface $plan, TenantInterface $tenant): ?string {
+        if (!$this->planResolver) {
+            return NULL;
+        }
+
+        try {
+            $vertical = $tenant->hasField('vertical')
+                ? ($tenant->get('vertical')->entity?->get('machine_name') ?? 'demo')
+                : 'demo';
+            $tier = $plan->get('tier')->value ?? $plan->id();
+            $tierConfig = $this->planResolver->getTierConfig($vertical, $tier);
+
+            return $tierConfig?->get('stripe_price_monthly') ?? NULL;
+        }
+        catch (\Throwable $e) {
+            $this->logger->warning('Could not resolve Stripe Price ID for plan @plan: @msg', [
+                '@plan' => $plan->id(),
+                '@msg' => $e->getMessage(),
+            ]);
+            return NULL;
+        }
     }
 
 }

@@ -21,14 +21,28 @@
 // HERO
 // ---------------------------------------------------------------------------
 .pricing-hub-hero {
+    position: relative;
     text-align: center;
     padding: 4rem 1.5rem 2rem;
     background: linear-gradient(135deg,
-            var(--ej-color-bg-primary, #0a0e1a) 0%,
-            var(--ej-color-bg-secondary, #1a1e2e) 100%);
+            var(--ej-color-azul-corporativo, #233D63) 0%,
+            var(--ej-color-azul-corporativo-dark, #1a2d4a) 100%);
     color: var(--ej-color-text-inverse, #fff);
+    overflow: hidden;
+
+    &__particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
 
     &__container {
+        position: relative;
+        z-index: 1;
         max-width: 720px;
         margin: 0 auto;
     }
@@ -49,6 +63,7 @@
         font-weight: 700;
         line-height: 1.15;
         margin: 0 0 1rem;
+        color: var(--ej-color-text-inverse, #fff);
     }
 
     &__subtitle {
@@ -64,7 +79,7 @@
 // ---------------------------------------------------------------------------
 .pricing-hub-grid {
     padding: 3rem 1.5rem 4rem;
-    background: var(--ej-color-bg-primary, #0a0e1a);
+    background: var(--ej-color-azul-corporativo-dark, #1a2d4a);
 
     &__container {
         max-width: 1200px;
@@ -97,10 +112,10 @@
     align-items: center;
     text-align: center;
     padding: 2rem 1.5rem;
-    background: color-mix(in srgb, white 5%, transparent);
+    background: color-mix(in srgb, white 7%, transparent);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid color-mix(in srgb, white 10%, transparent);
+    border: 1px solid color-mix(in srgb, white 12%, transparent);
     border-radius: var(--ej-radius-xl, 1.25rem);
     color: var(--ej-color-text-inverse, #fff);
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -163,6 +178,7 @@
         font-size: 1.25rem;
         font-weight: 700;
         margin: 0 0 0.5rem;
+        color: var(--ej-color-text-inverse, #fff);
     }
 
     &__tagline {
@@ -194,13 +210,17 @@
 // ---------------------------------------------------------------------------
 .pricing-hub-overview {
     padding: 4rem 1.5rem;
-    background: var(--ej-color-bg-secondary, #1a1e2e);
+    background: var(--ej-color-azul-corporativo, #233D63);
     color: var(--ej-color-text-inverse, #fff);
 
     &__container {
         max-width: 960px;
         margin: 0 auto;
         text-align: center;
+        background: color-mix(in srgb, white 4%, transparent);
+        border: 1px solid color-mix(in srgb, white 6%, transparent);
+        border-radius: var(--ej-radius-xl, 1.25rem);
+        padding: 2.5rem;
     }
 
     &__title {
@@ -208,6 +228,7 @@
         font-size: clamp(1.5rem, 4vw, 2rem);
         font-weight: 700;
         margin: 0 0 0.75rem;
+        color: var(--ej-color-text-inverse, #fff);
     }
 
     &__subtitle {
@@ -247,7 +268,7 @@
         left: 50%;
         transform: translateX(-50%);
         background: var(--ej-color-naranja-impulso, #FF8C42);
-        color: #fff;
+        color: var(--ej-color-text-inverse, #fff);
         font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
@@ -262,6 +283,7 @@
         font-size: 1.25rem;
         font-weight: 700;
         margin: 0 0 0.5rem;
+        color: var(--ej-color-text-inverse, #fff);
     }
 
     &__tier-price {

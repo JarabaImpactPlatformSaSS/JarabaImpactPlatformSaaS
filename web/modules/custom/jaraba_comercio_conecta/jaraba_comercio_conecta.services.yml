@@ -81,6 +81,7 @@ services:
   # Responsabilidad: validar stock, crear pedido desde carrito,
   #   crear sub-pedidos por comerciante, registrar cupones
   # =====================================================================
+  # GAP-H04: Inyecta RevenueMetricsService para registrar ventas en FOC.
   jaraba_comercio_conecta.checkout:
     class: Drupal\jaraba_comercio_conecta\Service\CheckoutService
     arguments:
@@ -88,6 +89,7 @@ services:
       - '@current_user'
       - '@jaraba_comercio_conecta.cart'
       - '@logger.channel.jaraba_comercio_conecta'
+      - '@?jaraba_billing.revenue_metrics'
 
   # =====================================================================
   # StripePaymentRetailService: Pagos Stripe Connect con split
@@ -100,6 +102,7 @@ services:
       - '@entity_type.manager'
       - '@current_user'
       - '@logger.channel.jaraba_comercio_conecta'
+      - '@?jaraba_foc.stripe_connect'
 
   # =====================================================================
   # CartRecoveryService: Deteccion y recuperacion de carritos abandonados

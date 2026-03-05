@@ -176,8 +176,8 @@
         {% endif %}
       {% endif %}
 
-      {# CTA principal — siempre visible #}
-      {% if not logged_in %}
+      {# CTA principal — respeta enable_header_cta de theme settings / SiteConfig #}
+      {% if ts.enable_header_cta|default(false) %}
         <a href="{{ ts.header_cta_url|default('/user/register') }}" class="btn-primary btn-primary--glow">
           {{ ts.header_cta_text|default('Empieza gratis'|t) }} →
         </a>

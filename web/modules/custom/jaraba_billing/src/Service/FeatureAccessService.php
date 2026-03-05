@@ -81,11 +81,21 @@ class FeatureAccessService {
     ],
   ];
 
+  /**
+   * Servicio de verticales multi-tenant (opcional, de jaraba_addons).
+   *
+   * @var object|null
+   */
+  protected $tenantVerticalService;
+
   public function __construct(
     protected PlanValidator $planValidator,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerInterface $logger,
-  ) {}
+    ?object $tenantVerticalService = NULL,
+  ) {
+    $this->tenantVerticalService = $tenantVerticalService;
+  }
 
   /**
    * Verifica si un tenant puede acceder a una feature.
@@ -104,10 +114,24 @@ class FeatureAccessService {
         return TRUE;
       }
 
-      // Check add-ons.
+      // GAP-H01: Check add-ons via AddonSubscription (unified SSoT).
+      // First try the new system (AddonSubscription in jaraba_addons).
+      if ($this->hasActiveAddonSubscription($tenantId, $feature)) {
+        return TRUE;
+      }
+
+      // Legacy fallback: Check TenantAddon entities in jaraba_billing.
+      // Will be removed after full migration (GAP-H01 deprecation cycle).
       $addonCode = $this->getAddonForFeature($feature);
       if ($addonCode && $this->hasActiveAddon($tenantId, $addonCode)) {
         return TRUE;
+      }
+
+      // Check vertical addons (AddonSubscription in jaraba_addons).
+      if ($this->tenantVerticalService && method_exists($this->tenantVerticalService, 'hasVertical')) {
+        if ($this->tenantVerticalService->hasVertical($tenantId, $feature)) {
+          return TRUE;
+        }
       }
 
       return FALSE;
@@ -165,6 +189,61 @@ class FeatureAccessService {
    */
   public function getAddonForFeature(string $feature): ?string {
     return self::FEATURE_ADDON_MAP[$feature] ?? NULL;
+  }
+
+  /**
+   * GAP-H01: Checks if tenant has an active AddonSubscription for a feature.
+   *
+   * Queries AddonSubscription entities via jaraba_addons module.
+   * Checks both the feature key directly and the features_included
+   * JSON array on the associated Addon entity.
+   */
+  protected function hasActiveAddonSubscription(int $tenantId, string $featureKey): bool {
+    try {
+      if (!$this->entityTypeManager->hasDefinition('addon_subscription')) {
+        return FALSE;
+      }
+
+      $subscriptions = $this->entityTypeManager
+        ->getStorage('addon_subscription')
+        ->loadByProperties([
+          'tenant_id' => $tenantId,
+          'status' => 'active',
+        ]);
+
+      foreach ($subscriptions as $sub) {
+        $addon = $sub->get('addon_id')->entity;
+        if (!$addon) {
+          continue;
+        }
+
+        // Check features_included JSON array.
+        $featuresJson = $addon->hasField('features_included')
+          ? ($addon->get('features_included')->value ?? '[]')
+          : '[]';
+        $features = json_decode($featuresJson, TRUE) ?: [];
+        if (in_array($featureKey, $features, TRUE)) {
+          return TRUE;
+        }
+
+        // Check machine_name match (for vertical features).
+        $machineName = $addon->hasField('machine_name')
+          ? $addon->get('machine_name')->value
+          : NULL;
+        if ($machineName === $featureKey) {
+          return TRUE;
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('Error checking AddonSubscription for tenant @id feature @f: @msg', [
+        '@id' => $tenantId,
+        '@f' => $featureKey,
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+
+    return FALSE;
   }
 
   /**

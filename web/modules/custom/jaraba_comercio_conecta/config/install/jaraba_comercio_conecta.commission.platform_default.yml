@@ -1,0 +1,8 @@
+id: platform_default
+label: 'Comisión por defecto de plataforma'
+tenant_id: 0
+default_rate: 10.0
+category_rates: {  }
+min_rate: 5.0
+max_rate: 25.0
+platform_fee: 0.0

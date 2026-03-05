@@ -437,3 +437,24 @@ function jaraba_comercio_conecta_update_10006(): string {
 
   return 'Uninstalled fields from comercio_review: ' . (empty($removed) ? 'none needed' : implode(', ', $removed));
 }
+
+/**
+ * GAP-M02: Install MarketplaceCommissionConfig ConfigEntity type.
+ */
+function jaraba_comercio_conecta_update_10007(): string {
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $entityTypeManager = \Drupal::entityTypeManager();
+
+    $entityType = $entityTypeManager->getDefinition('marketplace_commission_config', FALSE);
+    if ($entityType && !$updateManager->getEntityType('marketplace_commission_config')) {
+      $updateManager->installEntityType($entityType);
+      return 'Installed MarketplaceCommissionConfig entity type.';
+    }
+
+    return 'MarketplaceCommissionConfig entity type already installed or not defined.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+}

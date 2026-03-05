@@ -1,23 +1,34 @@
 {#
- # Template: Pagina de checkout de ComercioConecta.
- # Variables:
- #   - cart: Entidad carrito activo.
- #   - items: Array de items con producto, cantidad, precio.
- #   - empty: Boolean indicando carrito vacio.
- #   - subtotal, discount, shipping, total: Importes.
- #}
+/**
+ * @file
+ * Template: Pagina de checkout de ComercioConecta.
+ *
+ * DIRECTRIZ: Template limpia sin page.content (zero-region pattern).
+ * Traducciones: {% trans %}...{% endtrans %} (bloque, NO filtro |t).
+ * URLs: path() (ROUTE-LANGPREFIX-001, NUNCA hardcoded).
+ * Stripe: Integrado con Stripe Elements via drupalSettings.
+ *
+ * Variables:
+ *   - cart: Entidad carrito activo.
+ *   - items: Array de items con producto, cantidad, precio.
+ *   - empty: Boolean indicando carrito vacio.
+ *   - subtotal, discount, shipping, total: Importes.
+ */
+#}
 
-<div class="comercio-checkout" role="main" aria-label="{{ 'Checkout'|t }}">
+<div class="comercio-checkout" role="main" aria-label="{% trans %}Finalizar compra{% endtrans %}">
   {% if empty %}
     <div class="comercio-checkout__empty">
-      <h2>{{ 'Tu carrito esta vacio'|t }}</h2>
-      <p>{{ 'Explora el marketplace para encontrar productos de tu barrio.'|t }}</p>
-      <a href="/comercio-local" class="btn btn--primary">{{ 'Ir al Marketplace'|t }}</a>
+      <h2>{% trans %}Tu carrito está vacío{% endtrans %}</h2>
+      <p>{% trans %}Explora el marketplace para encontrar productos de tu barrio.{% endtrans %}</p>
+      <a href="{{ path('jaraba_comercio_conecta.marketplace') }}" class="btn btn--primary">
+        {% trans %}Ir al Marketplace{% endtrans %}
+      </a>
     </div>
   {% else %}
     <div class="comercio-checkout__layout">
       <div class="comercio-checkout__items">
-        <h2>{{ 'Tu carrito'|t }}</h2>
+        <h2>{% trans %}Tu carrito{% endtrans %}</h2>
         {% for item in items %}
           <div class="comercio-checkout__item" data-item-id="{{ item.item.id() }}">
             <div class="comercio-checkout__item-info">
@@ -25,10 +36,11 @@
               <p class="comercio-checkout__item-price">{{ item.unit_price|number_format(2, ',', '.') }} EUR</p>
             </div>
             <div class="comercio-checkout__item-qty">
-              <label>{{ 'Cantidad'|t }}:</label>
+              <label>{% trans %}Cantidad{% endtrans %}:</label>
               <input type="number" value="{{ item.quantity }}" min="1" max="99"
                      class="comercio-checkout__qty-input"
-                     data-item-id="{{ item.item.id() }}">
+                     data-item-id="{{ item.item.id() }}"
+                     aria-label="{% trans %}Cantidad{% endtrans %}">
             </div>
             <div class="comercio-checkout__item-total">
               {{ item.total|number_format(2, ',', '.') }} EUR
@@ -37,35 +49,57 @@
         {% endfor %}
       </div>
 
-      <div class="comercio-checkout__summary" aria-label="{{ 'Resumen del pedido'|t }}">
-        <h3>{{ 'Resumen del pedido'|t }}</h3>
+      <div class="comercio-checkout__summary" aria-label="{% trans %}Resumen del pedido{% endtrans %}">
+        <h3>{% trans %}Resumen del pedido{% endtrans %}</h3>
         <div class="comercio-checkout__summary-row">
-          <span>{{ 'Subtotal'|t }}</span>
+          <span>{% trans %}Subtotal{% endtrans %}</span>
           <span>{{ subtotal|number_format(2, ',', '.') }} EUR</span>
         </div>
         {% if discount > 0 %}
           <div class="comercio-checkout__summary-row comercio-checkout__summary-row--discount">
-            <span>{{ 'Descuento'|t }}</span>
+            <span>{% trans %}Descuento{% endtrans %}</span>
             <span>-{{ discount|number_format(2, ',', '.') }} EUR</span>
           </div>
         {% endif %}
         <div class="comercio-checkout__summary-row">
-          <span>{{ 'Envio'|t }}</span>
-          <span>{{ shipping > 0 ? shipping|number_format(2, ',', '.') ~ ' EUR' : 'Gratis'|t }}</span>
+          <span>{% trans %}Envío{% endtrans %}</span>
+          <span>{{ shipping > 0 ? shipping|number_format(2, ',', '.') ~ ' EUR' : 'Gratis'|trans }}</span>
         </div>
         <div class="comercio-checkout__summary-row comercio-checkout__summary-row--total">
-          <span>{{ 'Total'|t }}</span>
+          <span>{% trans %}Total{% endtrans %}</span>
           <span>{{ total|number_format(2, ',', '.') }} EUR</span>
         </div>
 
-        <div class="comercio-checkout__coupon" aria-label="{{ 'Pasos del checkout'|t }}">
-          <input type="text" placeholder="{{ 'Codigo de cupon'|t }}" class="comercio-checkout__coupon-input" aria-label="{{ 'Codigo de cupon'|t }}">
-          <button type="button" class="btn btn--secondary comercio-checkout__coupon-btn">{{ 'Aplicar'|t }}</button>
+        <div class="comercio-checkout__coupon">
+          <input type="text"
+                 placeholder="{% trans %}Código de cupón{% endtrans %}"
+                 class="comercio-checkout__coupon-input"
+                 aria-label="{% trans %}Código de cupón{% endtrans %}">
+          <button type="button" class="btn btn--secondary comercio-checkout__coupon-btn">
+            {% trans %}Aplicar{% endtrans %}
+          </button>
+        </div>
+
+        {# Zona de Stripe Elements para tarjeta #}
+        <div class="comercio-checkout__card-section">
+          <div id="comercio-card-element" class="comercio-checkout__card-element"></div>
+          <div id="comercio-card-errors" class="comercio-checkout__card-errors" role="alert"></div>
         </div>
 
         <button type="button" class="btn btn--primary comercio-checkout__pay-btn">
-          {{ 'Pagar @total EUR'|t({'@total': total|number_format(2, ',', '.')}) }}
+          {% trans %}Pagar{% endtrans %} {{ total|number_format(2, ',', '.') }} EUR
         </button>
+
+        {# Badges de seguridad #}
+        <div class="comercio-checkout__security-badges">
+          <span class="comercio-checkout__badge">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1L2 4v4c0 3.5 2.6 6.8 6 7.5 3.4-.7 6-4 6-7.5V4L8 1z" fill="var(--ej-color-verde-innovacion, #00A9A5)"/></svg>
+            {% trans %}Pago seguro SSL{% endtrans %}
+          </span>
+          <span class="comercio-checkout__badge">
+            {% trans %}Procesado por Stripe{% endtrans %}
+          </span>
+        </div>
       </div>
     </div>
   {% endif %}

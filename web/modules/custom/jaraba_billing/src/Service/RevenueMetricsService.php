@@ -253,9 +253,81 @@ class RevenueMetricsService {
       'tenant_distribution' => $distribution,
       'monthly_revenue' => $monthlyRevenue,
       'revenue_by_plan' => $this->getRevenueByPlan(),
+      'commerce_revenue' => $this->getCommerceRevenue(),
       'currency' => $mrr['currency'],
       'generated_at' => date('c'),
     ];
+  }
+
+  /**
+   * GAP-M07: Tracks a commerce sale event for revenue attribution.
+   *
+   * Called from CheckoutService when a marketplace order completes.
+   *
+   * @param int $tenantId
+   *   The tenant that owns the marketplace.
+   * @param float $amount
+   *   The total order amount in EUR.
+   */
+  public function trackCommerceRevenue(int $tenantId, float $amount): void {
+    try {
+      $this->database->merge('billing_expansion_events')
+        ->keys(['tenant_id' => $tenantId, 'event_type' => 'commerce_sale', 'event_date' => date('Y-m-d')])
+        ->fields([
+          'tenant_id' => $tenantId,
+          'event_type' => 'commerce_sale',
+          'event_date' => date('Y-m-d'),
+          'amount' => $amount,
+          'created' => \Drupal::time()->getRequestTime(),
+        ])
+        ->expression('amount', 'amount + :inc', [':inc' => $amount])
+        ->execute();
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('GAP-M07: Error tracking commerce revenue for tenant @id: @msg', [
+        '@id' => $tenantId,
+        '@msg' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  /**
+   * GAP-M07: Gets total commerce revenue from FinancialTransaction (FOC).
+   *
+   * Queries financial_transaction entities where source_system = 'comercioconecta'
+   * for the current period.
+   *
+   * @param int $months
+   *   Number of months to look back.
+   *
+   * @return array{total: float, count: int, period: string}
+   */
+  public function getCommerceRevenue(int $months = 1): array {
+    try {
+      if (!$this->entityTypeManager->hasDefinition('financial_transaction')) {
+        return ['total' => 0, 'count' => 0, 'period' => 'N/A'];
+      }
+
+      $startDate = strtotime("-{$months} months");
+      $query = $this->database->select('financial_transaction', 'ft');
+      $query->addExpression('SUM(ft.amount)', 'total');
+      $query->addExpression('COUNT(ft.id)', 'count');
+      $query->condition('ft.source_system', 'comercioconecta');
+      $query->condition('ft.created', $startDate, '>=');
+      $result = $query->execute()->fetchAssoc();
+
+      return [
+        'total' => (float) ($result['total'] ?? 0),
+        'count' => (int) ($result['count'] ?? 0),
+        'period' => sprintf('Last %d month(s)', $months),
+      ];
+    }
+    catch (\Throwable $e) {
+      $this->logger->warning('GAP-M07: Error querying commerce revenue: @msg', [
+        '@msg' => $e->getMessage(),
+      ]);
+      return ['total' => 0, 'count' => 0, 'period' => 'error'];
+    }
   }
 
 }

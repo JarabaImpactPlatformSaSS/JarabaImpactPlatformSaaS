@@ -11,6 +11,7 @@ use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\ecosistema_jaraba_core\Entity\TenantInterface;
 use Drupal\ecosistema_jaraba_core\Service\PlanResolverService;
 use Drupal\jaraba_billing\Service\DunningService;
+use Drupal\jaraba_billing\Service\FiscalInvoiceDelegationService;
 use Drupal\jaraba_billing\Service\StripeInvoiceService;
 use Drupal\jaraba_billing\Service\TenantSubscriptionService;
 use Drupal\jaraba_foc\Service\StripeConnectService;
@@ -52,6 +53,7 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     protected ?DunningService $dunningService = NULL,
     protected ?MailManagerInterface $mailManager = NULL,
     protected ?PlanResolverService $planResolver = NULL,
+    protected ?FiscalInvoiceDelegationService $fiscalDelegation = NULL,
   ) {}
 
   /**
@@ -68,6 +70,9 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
       $container->get('plugin.manager.mail'),
       $container->has('ecosistema_jaraba_core.plan_resolver')
         ? $container->get('ecosistema_jaraba_core.plan_resolver')
+        : NULL,
+      $container->has('jaraba_billing.fiscal_delegation')
+        ? $container->get('jaraba_billing.fiscal_delegation')
         : NULL,
     );
   }
@@ -99,12 +104,22 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
     }
 
     $eventType = $event['type'];
+    $eventId = $event['id'] ?? '';
     $eventData = $event['data']['object'] ?? [];
+
+    // GAP-M04: Deduplication — skip already-processed events.
+    if ($eventId && $this->isDuplicateEvent($eventId)) {
+      $this->billingLogger->debug('Billing webhook duplicate skipped: @id (@type)', [
+        '@id' => $eventId,
+        '@type' => $eventType,
+      ]);
+      return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'already_processed'], 'meta' => ['timestamp' => time()]]);
+    }
 
     $this->billingLogger->info('Billing webhook recibido: @type', ['@type' => $eventType]);
 
     try {
-      return match ($eventType) {
+      $result = match ($eventType) {
         'invoice.paid' => $this->handleInvoicePaid($eventData),
         'invoice.payment_failed' => $this->handleInvoicePaymentFailed($eventData),
         'invoice.finalized' => $this->handleInvoiceFinalized($eventData),
@@ -118,6 +133,13 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
         'payment_method.detached' => $this->handlePaymentMethodDetached($eventData),
         default => $this->handleUnknownEvent($eventType),
       };
+
+      // GAP-M04: Log processed event for deduplication.
+      if ($eventId) {
+        $this->logProcessedEvent($eventId, $eventType);
+      }
+
+      return $result;
     }
     catch (\Exception $e) {
       $this->billingLogger->error('Error procesando billing webhook @type: @error', [
@@ -129,10 +151,32 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
   }
 
   /**
-   * Factura pagada: sincronizar BillingInvoice local.
+   * Factura pagada: sincronizar BillingInvoice local + delegacion fiscal.
+   *
+   * GAP-C01: Tras sincronizar la factura localmente, invoca
+   * FiscalInvoiceDelegationService para registrar en VeriFactu
+   * (obligatorio RD 1007/2023) y delegar a Facturae B2G o E-Factura B2B
+   * segun el tipo de destinatario.
    */
   protected function handleInvoicePaid(array $data): JsonResponse {
-    $this->invoiceService->syncInvoice($data);
+    $invoiceEntity = $this->invoiceService->syncInvoice($data);
+
+    // GAP-C01: Delegacion fiscal — VeriFactu + Facturae/E-Factura.
+    if ($invoiceEntity && $this->fiscalDelegation) {
+      try {
+        $this->fiscalDelegation->processFinalizedInvoice($invoiceEntity);
+        $this->billingLogger->info('Fiscal delegation completed for invoice @id', [
+          '@id' => $invoiceEntity->id(),
+        ]);
+      }
+      catch (\Throwable $e) {
+        // Log but do NOT block the webhook — invoice is already paid.
+        $this->billingLogger->error('Fiscal delegation failed for invoice @id: @msg', [
+          '@id' => $invoiceEntity->id(),
+          '@msg' => $e->getMessage(),
+        ]);
+      }
+    }
 
     $this->billingLogger->info('Invoice pagada sincronizada: @id', [
       '@id' => $data['id'] ?? 'unknown',
@@ -665,6 +709,46 @@ class BillingWebhookController extends ControllerBase implements ContainerInject
   protected function handleUnknownEvent(string $eventType): JsonResponse {
     $this->billingLogger->debug('Billing webhook ignorado: @type', ['@type' => $eventType]);
     return new JsonResponse(['success' => TRUE, 'data' => ['status' => 'ignored'], 'meta' => ['timestamp' => time()]]);
+  }
+
+  /**
+   * GAP-M04: Checks if an event has already been processed.
+   */
+  protected function isDuplicateEvent(string $eventId): bool {
+    try {
+      $count = \Drupal::database()->select('stripe_webhook_event_log', 'l')
+        ->condition('event_id', $eventId)
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+      return (int) $count > 0;
+    }
+    catch (\Throwable) {
+      // Table may not exist yet — not a duplicate.
+      return FALSE;
+    }
+  }
+
+  /**
+   * GAP-M04: Logs a processed event for deduplication.
+   */
+  protected function logProcessedEvent(string $eventId, string $eventType): void {
+    try {
+      \Drupal::database()->insert('stripe_webhook_event_log')
+        ->fields([
+          'event_id' => $eventId,
+          'event_type' => $eventType,
+          'processed_at' => \Drupal::time()->getRequestTime(),
+        ])
+        ->execute();
+    }
+    catch (\Throwable $e) {
+      // Non-critical — log but don't fail.
+      $this->billingLogger->warning('Failed to log webhook event @id: @msg', [
+        '@id' => $eventId,
+        '@msg' => $e->getMessage(),
+      ]);
+    }
   }
 
 }

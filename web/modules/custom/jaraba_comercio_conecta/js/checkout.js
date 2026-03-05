@@ -1,18 +1,20 @@
 /**
  * @file
- * ComercioConecta — Checkout JavaScript.
+ * ComercioConecta — Checkout JavaScript con Stripe real.
  *
- * Estructura: Comportamientos Drupal para el flujo de checkout.
- * Lógica: Gestiona actualización de cantidades, aplicación de cupones,
- *   eliminación de items y procesamiento de pago via API.
+ * Estructura: Comportamientos Drupal para el flujo de checkout marketplace.
+ * Logica: Gestiona actualizacion de cantidades, aplicacion de cupones,
+ *   creacion de PaymentIntent en el servidor y confirmacion via Stripe.js.
  *
  * DIRECTRIZ: Todos los textos en Drupal.t() para traducibilidad.
+ * ROUTE-LANGPREFIX-001: Todas las URLs via drupalSettings (Url::fromRoute).
+ * STRIPE-ENV-UNIFY-001: Clave publica via drupalSettings (no hardcoded).
  */
 
-(function (Drupal) {
+(function (Drupal, drupalSettings) {
   'use strict';
 
-  // CSRF token cache for POST/PATCH/DELETE requests.
+  // CSRF token cache for POST/PATCH/DELETE requests (CSRF-JS-CACHE-001).
   var _csrfToken = null;
   function getCsrfToken() {
     if (_csrfToken) return Promise.resolve(_csrfToken);
@@ -21,11 +23,28 @@
       .then(function (token) { _csrfToken = token; return token; });
   }
 
+  // ROUTE-LANGPREFIX-001: URLs resolved server-side via Url::fromRoute()
+  // and injected via drupalSettings in CheckoutController::checkoutPage().
+  var _urls = (drupalSettings.comercioCheckout || {});
+  var _processPaymentUrl = _urls.processPaymentUrl || '/comercio-local/checkout/payment';
+  var _confirmationBaseUrl = _urls.confirmationBaseUrl || '/comercio-local/checkout/confirmacion/__ORDER_ID__';
+  var _couponUrl = _urls.couponUrl || '/api/v1/comercio/cart/coupon';
+  var _cartUpdateBaseUrl = _urls.cartUpdateBaseUrl || '/api/v1/comercio/cart/update/';
+  var _stripePublicKey = _urls.stripePublicKey || '';
+
+  // Stripe instance (lazy-initialized).
+  var _stripe = null;
+
+  function getStripe() {
+    if (_stripe) return _stripe;
+    if (_stripePublicKey && typeof Stripe !== 'undefined') {
+      _stripe = Stripe(_stripePublicKey);
+    }
+    return _stripe;
+  }
+
   /**
-   * Comportamiento: Actualización de cantidades en checkout.
-   *
-   * Lógica: Al cambiar la cantidad de un item, llama a la API de carrito
-   *   para actualizar la cantidad y refresca los totales.
+   * Comportamiento: Actualizacion de cantidades en checkout.
    */
   Drupal.behaviors.comercioCheckoutQuantity = {
     attach: function (context) {
@@ -56,10 +75,7 @@
   };
 
   /**
-   * Comportamiento: Aplicación de cupón de descuento.
-   *
-   * Lógica: Al pulsar el botón de aplicar cupón, envía el código a la API
-   *   y muestra mensaje de éxito o error.
+   * Comportamiento: Aplicacion de cupon de descuento.
    */
   Drupal.behaviors.comercioCheckoutCoupon = {
     attach: function (context) {
@@ -73,7 +89,7 @@
 
         var code = couponInput.value.trim();
         if (!code) {
-          _comercioShowMessage(Drupal.t('Introduce un código de cupón.'), 'warning');
+          _comercioShowMessage(Drupal.t('Introduce un codigo de cupon.'), 'warning');
           return;
         }
 
@@ -81,7 +97,7 @@
         couponBtn.textContent = Drupal.t('Aplicando...');
 
         getCsrfToken().then(function (token) {
-          fetch('/api/v1/comercio/cart/coupon', { // AUDIT-CONS-N07: Added API versioning prefix.
+          fetch(_couponUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -93,15 +109,15 @@
             .then(function (response) { return response.json(); })
             .then(function (result) {
               if (result.data && result.data.success) {
-                _comercioShowMessage(Drupal.t('Cupón aplicado correctamente.'), 'success');
+                _comercioShowMessage(Drupal.t('Cupon aplicado correctamente.'), 'success');
                 window.location.reload();
               } else {
-                var msg = (result.meta && result.meta.message) || Drupal.t('Cupón no válido.');
+                var msg = (result.meta && result.meta.message) || Drupal.t('Cupon no valido.');
                 _comercioShowMessage(msg, 'error');
               }
             })
             .catch(function () {
-              _comercioShowMessage(Drupal.t('Error al aplicar el cupón. Inténtalo de nuevo.'), 'error');
+              _comercioShowMessage(Drupal.t('Error al aplicar el cupon. Intentalo de nuevo.'), 'error');
             })
             .finally(function () {
               couponBtn.disabled = false;
@@ -113,11 +129,13 @@
   };
 
   /**
-   * Comportamiento: Botón de pago.
+   * Comportamiento: Boton de pago con Stripe real.
    *
-   * Lógica: Al pulsar el botón de pagar, envía una solicitud de pago
-   *   a la API. Si el pago es exitoso, redirige a la confirmación.
-   *   Si falla, muestra un mensaje de error.
+   * Flujo:
+   * 1. POST al servidor para crear pedido + PaymentIntent
+   * 2. Servidor devuelve client_secret
+   * 3. stripe.confirmCardPayment() con el client_secret
+   * 4. Redirigir a confirmacion si OK
    */
   Drupal.behaviors.comercioCheckoutPay = {
     attach: function (context) {
@@ -132,7 +150,8 @@
         payBtn.classList.add('comercio-checkout__pay-btn--loading');
 
         getCsrfToken().then(function (token) {
-          fetch('/checkout/procesar', {
+          // Paso 1: Crear pedido + PaymentIntent en el servidor
+          fetch(_processPaymentUrl, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -145,18 +164,48 @@
           })
             .then(function (response) { return response.json(); })
             .then(function (result) {
-              if (result.data && result.data.order_id) {
-                window.location.href = '/checkout/confirmacion/' + result.data.order_id;
-              } else {
-                var msg = (result.meta && result.meta.message) || Drupal.t('Error procesando el pago.');
+              if (!result.data || !result.data.client_secret) {
+                var msg = (result.error && result.error.message) || Drupal.t('Error procesando el pago.');
                 _comercioShowMessage(msg, 'error');
                 payBtn.disabled = false;
                 payBtn.textContent = originalText;
                 payBtn.classList.remove('comercio-checkout__pay-btn--loading');
+                return;
               }
+
+              var stripe = getStripe();
+              if (!stripe) {
+                // Sin Stripe.js (simulacion en dev): redirigir directamente
+                window.location.href = _confirmationBaseUrl.replace('__ORDER_ID__', result.data.order_id);
+                return;
+              }
+
+              // Paso 2: Confirmar pago con Stripe.js
+              payBtn.textContent = Drupal.t('Confirmando con banco...');
+
+              stripe.confirmCardPayment(result.data.client_secret).then(function (stripeResult) {
+                if (stripeResult.error) {
+                  _comercioShowMessage(stripeResult.error.message, 'error');
+                  payBtn.disabled = false;
+                  payBtn.textContent = originalText;
+                  payBtn.classList.remove('comercio-checkout__pay-btn--loading');
+                } else if (stripeResult.paymentIntent && stripeResult.paymentIntent.status === 'succeeded') {
+                  // Paso 3: Exito - redirigir a confirmacion
+                  payBtn.textContent = Drupal.t('Pago completado!');
+                  _comercioShowMessage(Drupal.t('Pago procesado correctamente.'), 'success');
+                  setTimeout(function () {
+                    window.location.href = _confirmationBaseUrl.replace('__ORDER_ID__', result.data.order_id);
+                  }, 1000);
+                } else {
+                  _comercioShowMessage(Drupal.t('El pago requiere verificacion adicional.'), 'warning');
+                  payBtn.disabled = false;
+                  payBtn.textContent = originalText;
+                  payBtn.classList.remove('comercio-checkout__pay-btn--loading');
+                }
+              });
             })
             .catch(function () {
-              _comercioShowMessage(Drupal.t('Error de conexión. Inténtalo de nuevo.'), 'error');
+              _comercioShowMessage(Drupal.t('Error de conexion. Intentalo de nuevo.'), 'error');
               payBtn.disabled = false;
               payBtn.textContent = originalText;
               payBtn.classList.remove('comercio-checkout__pay-btn--loading');
@@ -168,13 +217,10 @@
 
   /**
    * Actualiza la cantidad de un item en el carrito via API.
-   *
-   * @param {string} itemId - ID del item de carrito.
-   * @param {number} quantity - Nueva cantidad.
    */
   function _comercioUpdateCartItem(itemId, quantity) {
     getCsrfToken().then(function (token) {
-      fetch('/api/v1/comercio/cart/update/' + itemId, { // AUDIT-CONS-N07: Added API versioning prefix.
+      fetch(_cartUpdateBaseUrl + itemId, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -192,16 +238,13 @@
           }
         })
         .catch(function () {
-          _comercioShowMessage(Drupal.t('Error de conexión.'), 'error');
+          _comercioShowMessage(Drupal.t('Error de conexion.'), 'error');
         });
     });
   }
 
   /**
    * Muestra un mensaje temporal en la zona de checkout.
-   *
-   * @param {string} message - Texto del mensaje.
-   * @param {string} type - Tipo: 'success', 'error', 'warning'.
    */
   function _comercioShowMessage(message, type) {
     var existing = document.querySelector('.comercio-checkout__message');
@@ -227,4 +270,4 @@
     }, 5000);
   }
 
-})(Drupal);
+})(Drupal, drupalSettings);

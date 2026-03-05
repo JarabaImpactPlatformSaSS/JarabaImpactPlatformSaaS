@@ -9,6 +9,7 @@ use Drupal\jaraba_comercio_conecta\Service\CartService;
 use Drupal\jaraba_comercio_conecta\Service\CheckoutService;
 use Drupal\jaraba_comercio_conecta\Service\StripePaymentRetailService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -42,6 +43,14 @@ class CheckoutController extends ControllerBase {
         '#empty' => TRUE,
         '#attached' => [
           'library' => ['jaraba_comercio_conecta/checkout'],
+          'drupalSettings' => [
+            'comercioCheckout' => [
+              'processPaymentUrl' => Url::fromRoute('jaraba_comercio_conecta.checkout.process')->toString(),
+              'confirmationBaseUrl' => Url::fromRoute('jaraba_comercio_conecta.checkout.confirmation', ['order_id' => '__ORDER_ID__'])->toString(),
+              'couponUrl' => Url::fromRoute('jaraba_comercio_conecta.api.cart.coupon')->toString(),
+              'cartUpdateBaseUrl' => '/api/v1/comercio/cart/update/',
+            ],
+          ],
         ],
       ];
     }
@@ -68,7 +77,20 @@ class CheckoutController extends ControllerBase {
       '#shipping' => (float) $cart->get('shipping_cost')->value,
       '#total' => (float) $cart->get('total')->value,
       '#attached' => [
-        'library' => ['jaraba_comercio_conecta/checkout'],
+        'library' => [
+          'jaraba_comercio_conecta/checkout',
+          'ecosistema_jaraba_core/stripe',
+        ],
+        'drupalSettings' => [
+          'comercioCheckout' => [
+            'stripePublicKey' => $this->config('ecosistema_jaraba_core.stripe')->get('public_key') ?? '',
+            'processPaymentUrl' => Url::fromRoute('jaraba_comercio_conecta.checkout.process')->toString(),
+            'confirmationBaseUrl' => Url::fromRoute('jaraba_comercio_conecta.checkout.confirmation', ['order_id' => '__ORDER_ID__'])->toString(),
+            'couponUrl' => Url::fromRoute('jaraba_comercio_conecta.api.cart.coupon')->toString(),
+            'cartUpdateBaseUrl' => '/api/v1/comercio/cart/update/',
+            'marketplaceUrl' => Url::fromRoute('jaraba_comercio_conecta.marketplace')->toString(),
+          ],
+        ],
       ],
       '#cache' => [
         'contexts' => ['user', 'session'],

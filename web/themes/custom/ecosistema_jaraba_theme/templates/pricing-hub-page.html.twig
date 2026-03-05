@@ -32,8 +32,12 @@
  */
 #}
 
+{# === MAIN WRAPPER — rounded dark container === #}
+<div class="pricing-wrapper">
+
 {# === HERO SECTION === #}
 <section class="pricing-hub-hero reveal-element reveal-fade-up" aria-labelledby="hub-title">
+  <canvas class="pricing-hub-hero__particles" aria-hidden="true"></canvas>
   <div class="pricing-hub-hero__container">
     <span class="pricing-hub-hero__eyebrow">{% trans %}Planes y Precios{% endtrans %}</span>
     <h1 id="hub-title" class="pricing-hub-hero__title">
@@ -93,7 +97,7 @@
       <div class="pricing-hub-overview__tier pricing-hub-overview__tier--recommended">
         <span class="pricing-hub-overview__tier-badge">{% trans %}Más popular{% endtrans %}</span>
         <h3 class="pricing-hub-overview__tier-name">{% trans %}Profesional{% endtrans %}</h3>
-        <p class="pricing-hub-overview__tier-price">{% trans %}Desde 29€/mes{% endtrans %}</p>
+        <p class="pricing-hub-overview__tier-price">{% trans %}Desde 29€/mes + IVA{% endtrans %}</p>
         <p class="pricing-hub-overview__tier-desc">
           {% trans %}Para profesionales y negocios en crecimiento. IA integrada y analytics.{% endtrans %}
         </p>
@@ -106,6 +110,15 @@
         </p>
       </div>
     </div>
+  </div>
+</section>
+
+{# === TAX DISCLAIMER — GAP-M01: LSSI-CE Art. 10 === #}
+<section class="pricing-tax-disclaimer reveal-element reveal-fade-up" aria-label="{% trans %}Información fiscal{% endtrans %}">
+  <div class="pricing-tax-disclaimer__container">
+    <p class="pricing-tax-disclaimer__text">
+      {% trans %}Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente.{% endtrans %}
+    </p>
   </div>
 </section>
 
@@ -162,6 +175,8 @@
     </a>
   </div>
 </section>
+
+</div>{# /.pricing-wrapper #}
 
 {# === SCHEMA.ORG === #}
 <script type="application/ld+json">

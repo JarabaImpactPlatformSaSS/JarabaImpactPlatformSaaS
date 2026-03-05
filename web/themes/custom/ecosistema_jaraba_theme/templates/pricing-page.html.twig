@@ -28,7 +28,7 @@
  * - ICON-COLOR-001: Jaraba palette colors only
  * - CSS-VAR-ALL-COLORS-001: var(--ej-*) with inline fallbacks
  * - BRAND-FONT-001: Outfit as primary font-family
- * - TWIG-XSS-001: All data with autoescaping, NEVER |raw
+ * - TWIG-XSS-001: All data with autoescaping, NEVER use raw filter
  * - ROUTE-LANGPREFIX-001: URLs via path() / url(), never hardcoded
  *
  * DYNAMIC DATA:
@@ -44,8 +44,12 @@
  */
 #}
 
+{# === MAIN WRAPPER — rounded dark container === #}
+<div class="pricing-wrapper">
+
 {# === HERO SECTION === #}
 <section class="pricing-hero reveal-element reveal-fade-up" aria-labelledby="pricing-title">
+  <canvas class="pricing-hero__particles" aria-hidden="true"></canvas>
   <div class="pricing-hero__container">
     <span class="pricing-hero__eyebrow">{% trans %}Planes y Precios{% endtrans %}</span>
     <h1 id="pricing-title" class="pricing-hero__title">
@@ -120,6 +124,10 @@
               {{ yearly_monthly|number_format(0, ',', '.') }}&euro;
             </span>
             <span class="pricing-card__period">/{% trans %}mes{% endtrans %}</span>
+            {# GAP-M01: IVA note — LSSI-CE Art. 10 / Dir 2011/83/UE Art. 6.1.e #}
+            <span class="pricing-card__tax-note">
+              {% trans %}+ IVA{% endtrans %}
+            </span>
             {# Annual billing note (hidden by default) #}
             <span class="pricing-card__billing-note pricing-card__billing-note--yearly" hidden>
               {% trans %}Facturado anualmente{% endtrans %}
@@ -207,6 +215,15 @@
   </div>
 </section>
 
+{# === TAX DISCLAIMER — GAP-M01: LSSI-CE Art. 10 + Dir 2011/83/UE === #}
+<section class="pricing-tax-disclaimer reveal-element reveal-fade-up" aria-label="{% trans %}Información fiscal{% endtrans %}">
+  <div class="pricing-tax-disclaimer__container">
+    <p class="pricing-tax-disclaimer__text">
+      {% trans %}Todos los precios se muestran en EUR sin IVA. El IVA aplicable (21% en España peninsular) se calculará y desglosará en el proceso de contratación según la normativa vigente. Para Canarias, Ceuta y Melilla se aplican los impuestos indirectos correspondientes (IGIC/IPSI).{% endtrans %}
+    </p>
+  </div>
+</section>
+
 {# === GUARANTEE SECTION === #}
 <section class="pricing-guarantee reveal-element reveal-fade-up">
   <div class="pricing-guarantee__container">
@@ -262,6 +279,8 @@
     </a>
   </div>
 </section>
+
+</div>{# /.pricing-wrapper #}
 
 {# === SCHEMA.ORG STRUCTURED DATA === #}
 {# SoftwareApplication + dynamic Offer per tier + availability #}

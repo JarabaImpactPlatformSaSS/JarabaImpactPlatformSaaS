@@ -244,9 +244,17 @@ lead-magnet:
     - core/drupal
     - core/once
 
+# Pricing Hero Particles — Canvas particle network for pricing heroes
+pricing-hero-particles:
+  version: 1.0.0
+  js:
+    js/pricing-hero-particles.js: {}
+  dependencies:
+    - core/drupal
+
 # Pricing Page — /planes and /{vertical}/planes (178_MetaSite_Remediation)
 pricing-page:
-  version: 1.1.0
+  version: 1.2.0
   js:
     js/pricing-toggle.js: {}
   css:
@@ -257,16 +265,18 @@ pricing-page:
     - core/once
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_theme/scroll-animations
+    - ecosistema_jaraba_theme/pricing-hero-particles
 
 # Pricing Hub — /planes hub comparativo de verticales
 pricing-hub:
-  version: 1.0.0
+  version: 1.1.0
   css:
     theme:
       css/components/pricing-hub.css: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
     - ecosistema_jaraba_theme/scroll-animations
+    - ecosistema_jaraba_theme/pricing-hero-particles
 
 # Contact Form — /contacto (Sprint 3 Remediation)
 contact-form:
@@ -476,6 +486,31 @@ route-legal-pages:
       css/routes/legal-pages.css: {}
   dependencies:
     - ecosistema_jaraba_theme/global-styling
+
+route-tenant-settings:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/tenant-settings.css: {}
+  js:
+    /modules/custom/ecosistema_jaraba_core/js/tenant-settings.js: {}
+    /modules/custom/ecosistema_jaraba_core/js/tenant-dashboard-particles.js: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - core/drupal
+    - core/once
+
+route-tenant-dashboard:
+  version: 1.0.0
+  css:
+    theme:
+      css/routes/tenant-dashboard.css: {}
+  js:
+    /modules/custom/ecosistema_jaraba_core/js/tenant-dashboard-particles.js: {}
+  dependencies:
+    - ecosistema_jaraba_theme/global-styling
+    - core/drupal
+    - core/once
 
 # Legacy alias: AiComplianceDashboardController referenced this name
 bundle-ai-compliance:

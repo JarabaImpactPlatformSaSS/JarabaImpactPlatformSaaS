@@ -33,11 +33,14 @@ services:
       - [setStringTranslation, ['@string_translation']]
 
   # BE-03 + BIZ-002: Gestión del ciclo de vida de subscripciones
+  # GAP-C03: Inyecta StripeSubscriptionService y PlanResolverService para
+  # sincronizar cambios de plan y cancelaciones con Stripe.
   jaraba_billing.tenant_subscription:
     class: Drupal\jaraba_billing\Service\TenantSubscriptionService
     arguments:
       - '@jaraba_billing.plan_validator'
       - '@logger.channel.jaraba_billing'
+      - '@?ecosistema_jaraba_core.plan_resolver'
 
   # Metering avanzado por tenant (usage-based pricing)
   # Prices read from FairUsePolicy ConfigEntity via FairUsePolicyService.
@@ -118,7 +121,7 @@ services:
     class: Drupal\jaraba_billing\Service\StripeSubscriptionService
     arguments:
       - '@?jaraba_foc.stripe_connect'
-      - '@jaraba_billing.tenant_subscription'
+      - '@?jaraba_billing.tenant_subscription'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
       - '@lock'
@@ -162,6 +165,20 @@ services:
       - '@jaraba_billing.plan_validator'
       - '@entity_type.manager'
       - '@logger.channel.jaraba_billing'
+      - '@?jaraba_addons.tenant_vertical'
+
+  # ===========================================
+  # USAGE METERING — GAP-C04 Stripe Metered Billing
+  # ===========================================
+
+  # GAP-C04: Sincroniza registros de uso con Stripe Metered Billing API.
+  # Invocado desde hook_cron() diariamente.
+  jaraba_billing.usage_stripe_sync:
+    class: Drupal\jaraba_billing\Service\UsageStripeSyncService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_billing'
+      - '@?jaraba_foc.stripe_connect'
 
   # ===========================================
   # FISCAL INVOICE DELEGATION — FASE 11 (F11-5)

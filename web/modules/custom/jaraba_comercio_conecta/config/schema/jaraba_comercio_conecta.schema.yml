@@ -23,3 +23,35 @@ jaraba_comercio_conecta.settings:
     nearby_radius_default:
       type: integer
       label: 'Default nearby search radius (km)'
+
+jaraba_comercio_conecta.commission.*:
+  type: config_entity
+  label: 'Marketplace Commission Config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    tenant_id:
+      type: integer
+      label: 'Tenant ID'
+    default_rate:
+      type: float
+      label: 'Default commission rate'
+    category_rates:
+      type: sequence
+      label: 'Category-specific rates'
+      sequence:
+        type: float
+        label: 'Rate'
+    min_rate:
+      type: float
+      label: 'Minimum rate'
+    max_rate:
+      type: float
+      label: 'Maximum rate'
+    platform_fee:
+      type: float
+      label: 'Platform fee per transaction'

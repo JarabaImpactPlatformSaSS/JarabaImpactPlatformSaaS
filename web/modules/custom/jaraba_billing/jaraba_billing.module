@@ -8,6 +8,112 @@
 declare(strict_types=1);
 
 /**
+ * Implements hook_cron().
+ *
+ * GAP-C02: Procesa dunning diario para suscripciones con pagos fallidos.
+ * GAP-C04: Sincroniza metricas de uso con Stripe (metered billing).
+ * GAP-M04: Limpia log de webhooks procesados > 30 dias.
+ */
+function jaraba_billing_cron(): void {
+  $lastRun = \Drupal::state()->get('jaraba_billing.cron_last_run', 0);
+  $now = \Drupal::time()->getRequestTime();
+
+  // Ejecutar solo una vez al dia (no cada ejecucion de cron).
+  if (($now - $lastRun) < 72000) {
+    return;
+  }
+
+  // 1. Dunning: escalar pasos para tenants morosos.
+  if (\Drupal::hasService('jaraba_billing.dunning')) {
+    try {
+      /** @var \Drupal\jaraba_billing\Service\DunningService $dunning */
+      $dunning = \Drupal::service('jaraba_billing.dunning');
+      $processed = $dunning->processDunning();
+      if ($processed > 0) {
+        \Drupal::logger('jaraba_billing')->info(
+          'Dunning cron: @count suscripciones procesadas.',
+          ['@count' => $processed]
+        );
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Dunning cron error: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 2. Usage sync: enviar metricas de uso a Stripe.
+  if (\Drupal::hasService('jaraba_billing.usage_stripe_sync')) {
+    try {
+      /** @var \Drupal\jaraba_billing\Service\UsageStripeSyncService $usageSync */
+      $usageSync = \Drupal::service('jaraba_billing.usage_stripe_sync');
+      $synced = $usageSync->syncUsageToStripe();
+      if ($synced > 0) {
+        \Drupal::logger('jaraba_billing')->info(
+          'Usage sync cron: @count registros sincronizados con Stripe.',
+          ['@count' => $synced]
+        );
+      }
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Usage sync cron error: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+    }
+  }
+
+  // 3. Cleanup: eliminar log de webhooks procesados > 30 dias.
+  try {
+    $deleted = \Drupal::database()->delete('stripe_webhook_event_log')
+      ->condition('processed_at', $now - (30 * 86400), '<')
+      ->execute();
+    if ($deleted > 0) {
+      \Drupal::logger('jaraba_billing')->info(
+        'Webhook event log cleanup: @count eventos antiguos eliminados.',
+        ['@count' => $deleted]
+      );
+    }
+  }
+  catch (\Throwable $e) {
+    // Table may not exist yet — safe to ignore.
+  }
+
+  \Drupal::state()->set('jaraba_billing.cron_last_run', $now);
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * GAP-M05: Auto-crear Stripe Customer cuando se crea un Tenant.
+ */
+function jaraba_billing_entity_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'tenant') {
+    return;
+  }
+
+  if (\Drupal::hasService('jaraba_billing.stripe_customer')) {
+    try {
+      /** @var \Drupal\jaraba_billing\Service\StripeCustomerService $stripeCustomer */
+      $stripeCustomer = \Drupal::service('jaraba_billing.stripe_customer');
+      $stripeCustomer->createOrGetCustomer($entity);
+      \Drupal::logger('jaraba_billing')->info(
+        'Stripe customer auto-created for tenant @id.',
+        ['@id' => $entity->id()]
+      );
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('jaraba_billing')->error(
+        'Auto Stripe customer creation failed for tenant @id: @msg',
+        ['@id' => $entity->id(), '@msg' => $e->getMessage()]
+      );
+    }
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function jaraba_billing_theme(): array {
