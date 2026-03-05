@@ -4,7 +4,14 @@
 
 **Fecha de creación:** 2026-01-09 15:28
 **Última actualización:** 2026-03-05
-**Versión:** 141.0.0 (Multi-Tenant Route Cache Isolation + Vary:Host + Visual Customizer + golden rule #105 + aprendizaje #162)
+**Versión:** 143.0.0 (Salvaguardas 100% Madurez: SCSS-COMPILETIME-001, 275 hook_update_N, hex→tokens 2088 reemplazos, 0 SCSS failures + aprendizaje #164)
+
+> **🏗️ REMEDIACION ONBOARDING/CHECKOUT/CATALOGOS 32 GAPS CLASE MUNDIAL** (2026-03-05)
+> - **Contexto:** Implementacion completa del Plan REM-ONBOARDING-001 — 32 gaps en 4 sprints (P0-P3). Sprint P0 (5 bloqueadores): library CSS onboarding, Stripe checkout real, URLs hardcoded, template agro-producer-products, frontend instructor LMS. Sprint P1 (6 alta friccion): vertical-awareness VerticalOnboardingConfig, Stripe Connect auto-prompt, wizard progress bar, Chart.js dashboard, ProductAgro trazabilidad, ComercioConecta bulk import. Sprint P2 (8 clase mundial): password strength, billing pre-fill, email verification (ya existia), trial notifications, Google OAuth (GoogleOAuthService + GoogleOAuthController + 2 rutas), checkout confirmation, security badges, LMS analytics (courseAnalytics con Chart.js). Sprint P3 (4 excelencia): wizard animations (@keyframes), Schema.org Organization JSON-LD, WCAG 2.1 AA completa (skip nav, focus-visible, aria, semantic progress, touch targets), prefers-reduced-motion.
+> - **Bugs preexistentes corregidos:** FieldItemList en register template (vertical.name→getName()), page--auth preprocess sin onboarding routes (default→system_main_block extraction).
+> - **2 reglas nuevas:** TWIG-ENTITY-METHOD-001 (P0), GOOGLE-OAUTH-LIGHTWEIGHT-001 (P1). Regla de oro #106. Aprendizaje #163.
+> - **Cross-refs:** Directrices v113.0.0, Arquitectura v102.0.0, Flujo v66.0.0.
+> - **Docs:** `docs/tecnicos/aprendizajes/2026-03-05_remediacion_onboarding_checkout_clase_mundial.md`.
 
 > **🛡️ MULTI-TENANT ROUTE CACHE ISOLATION + VARY:HOST + VISUAL CUSTOMIZER FIX** (2026-03-05)
 > - **Contexto:** Debugging de homepage contamination (SaaS renderizaba contenido PED). Root cause: RouteProvider cachea route collections en Redis bin `data` por `[domain]` key. Sin Domain entity para el hostname de meta-sitio, el Domain module usaba la entidad default, colisionando cache keys. Cache HIT bypasa path processors completamente. Fix: Domain entity para cada hostname + Vary:Host header en SecurityHeadersSubscriber (prioridad -10). Visual customizer JS: 11 campos fantasma eliminados, 4 mismatches corregidos, 3 campos faltantes anadidos. Vertical tabs: plain text obligatorio (textContent ignora HTML).
