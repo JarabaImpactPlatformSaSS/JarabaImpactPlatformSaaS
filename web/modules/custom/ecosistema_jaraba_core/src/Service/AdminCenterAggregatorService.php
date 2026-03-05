@@ -190,25 +190,22 @@ class AdminCenterAggregatorService {
     try {
       $gmv = 0;
       if ($this->database->schema()->tableExists('agro_suborder')) {
-        $gmv += (float) $this->database->select('agro_suborder', 's')
-          ->condition('s.state', ['paid', 'shipped', 'delivered', 'completed'], 'IN')
-          ->addExpression('SUM(subtotal)', 'total')
-          ->execute()
-          ->fetchField();
+        $query = $this->database->select('agro_suborder', 's')
+          ->condition('s.state', ['paid', 'shipped', 'delivered', 'completed'], 'IN');
+        $query->addExpression('SUM(subtotal)', 'total');
+        $gmv += (float) $query->execute()->fetchField();
       }
       if ($this->database->schema()->tableExists('order_retail')) {
-        $gmv += (float) $this->database->select('order_retail', 'or')
-          ->condition('or.state', ['paid', 'shipped', 'delivered', 'completed'], 'IN')
-          ->addExpression('SUM(total_price)', 'total')
-          ->execute()
-          ->fetchField();
+        $query = $this->database->select('order_retail', 'o')
+          ->condition('o.status', ['paid', 'shipped', 'delivered', 'completed'], 'IN');
+        $query->addExpression('SUM(o.total)', 'total');
+        $gmv += (float) $query->execute()->fetchField();
       }
       if ($this->database->schema()->tableExists('servicios_booking')) {
-        $gmv += (float) $this->database->select('servicios_booking', 'sb')
-          ->condition('sb.status', ['paid', 'confirmed', 'completed'], 'IN')
-          ->addExpression('SUM(total_price)', 'total')
-          ->execute()
-          ->fetchField();
+        $query = $this->database->select('servicios_booking', 'sb')
+          ->condition('sb.status', ['paid', 'confirmed', 'completed'], 'IN');
+        $query->addExpression('SUM(total_price)', 'total');
+        $gmv += (float) $query->execute()->fetchField();
       }
       $kpis['gmv_total']['value'] = $gmv;
     }
