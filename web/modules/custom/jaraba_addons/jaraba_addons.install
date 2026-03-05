@@ -1,0 +1,289 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for jaraba_addons module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Add 'vertical' to addon_type allowed values and add vertical_ref field.
+ */
+function jaraba_addons_update_10001(): string {
+  $messages = [];
+
+  try {
+    $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+    // 1. Update addon_type field to include 'vertical' value.
+    $storage_definition = $update_manager->getFieldStorageDefinition('addon_type', 'addon');
+    if ($storage_definition) {
+      $allowed_values = $storage_definition->getSetting('allowed_values');
+      if (!isset($allowed_values['vertical'])) {
+        $allowed_values['vertical'] = t('Vertical');
+        $storage_definition->setSetting('allowed_values', $allowed_values);
+        $storage_definition->setName('addon_type');
+        $storage_definition->setTargetEntityTypeId('addon');
+        $update_manager->updateFieldStorageDefinition($storage_definition);
+        $messages[] = 'Added "vertical" to addon_type allowed values.';
+      }
+    }
+
+    // 2. Install vertical_ref field.
+    $vertical_ref = $update_manager->getFieldStorageDefinition('vertical_ref', 'addon');
+    if (!$vertical_ref) {
+      $field_definition = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+        ->setName('vertical_ref')
+        ->setTargetEntityTypeId('addon')
+        ->setLabel(t('Vertical (machine_name)'))
+        ->setDescription(t('Machine name del vertical asociado. Solo aplica cuando addon_type = vertical.'))
+        ->setSetting('max_length', 128)
+        ->setDisplayOptions('form', ['weight' => 6])
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayConfigurable('view', TRUE);
+
+      $update_manager->installFieldStorageDefinition(
+        'vertical_ref',
+        'addon',
+        'jaraba_addons',
+        $field_definition
+      );
+      $messages[] = 'Installed vertical_ref field on addon entity.';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * Create seed data: 9 vertical addon entities (one per canonical vertical).
+ */
+function jaraba_addons_update_10002(): string {
+  $messages = [];
+
+  try {
+    $storage = \Drupal::entityTypeManager()->getStorage('addon');
+
+    // Verticales canonicos con precios escalados por complejidad.
+    $verticals = [
+      'empleabilidad' => [
+        'label' => 'Vertical Empleabilidad',
+        'machine_name' => 'addon_vertical_empleabilidad',
+        'description' => 'Portal de empleo, gestion de ofertas y candidatos, matching IA.',
+        'price_monthly' => 29.00,
+        'price_yearly' => 290.00,
+        'features' => ['job_board', 'candidate_matching', 'cv_parser', 'employer_portal'],
+      ],
+      'emprendimiento' => [
+        'label' => 'Vertical Emprendimiento',
+        'machine_name' => 'addon_vertical_emprendimiento',
+        'description' => 'Herramientas de negocio, plan financiero, lean canvas, mentoria IA.',
+        'price_monthly' => 39.00,
+        'price_yearly' => 390.00,
+        'features' => ['business_plan', 'financial_tools', 'lean_canvas', 'mentor_copilot'],
+      ],
+      'comercioconecta' => [
+        'label' => 'Vertical ComercioConecta',
+        'machine_name' => 'addon_vertical_comercioconecta',
+        'description' => 'Marketplace de productos, gestion de pedidos, pasarela de pago.',
+        'price_monthly' => 49.00,
+        'price_yearly' => 490.00,
+        'features' => ['product_catalog', 'order_management', 'merchant_portal', 'payment_gateway'],
+      ],
+      'agroconecta' => [
+        'label' => 'Vertical AgroConecta',
+        'machine_name' => 'addon_vertical_agroconecta',
+        'description' => 'Marketplace agroalimentario, trazabilidad, gestion de explotaciones.',
+        'price_monthly' => 49.00,
+        'price_yearly' => 490.00,
+        'features' => ['agro_marketplace', 'traceability', 'farm_management', 'producer_portal'],
+      ],
+      'jarabalex' => [
+        'label' => 'Vertical JarabaLex',
+        'machine_name' => 'addon_vertical_jarabalex',
+        'description' => 'Gestion de casos legales, inteligencia normativa, copilot legal IA.',
+        'price_monthly' => 59.00,
+        'price_yearly' => 590.00,
+        'features' => ['legal_cases', 'normative_graph', 'legal_copilot', 'document_generation'],
+      ],
+      'serviciosconecta' => [
+        'label' => 'Vertical ServiciosConecta',
+        'machine_name' => 'addon_vertical_serviciosconecta',
+        'description' => 'Marketplace de servicios profesionales, agenda, videoconferencia.',
+        'price_monthly' => 39.00,
+        'price_yearly' => 390.00,
+        'features' => ['service_marketplace', 'calendar_sync', 'video_conferencing', 'provider_portal'],
+      ],
+      'andalucia_ei' => [
+        'label' => 'Vertical Andalucia Emprende e Innova',
+        'machine_name' => 'addon_vertical_andalucia_ei',
+        'description' => 'Programas de emprendimiento regional, aceleracion, mentoria.',
+        'price_monthly' => 29.00,
+        'price_yearly' => 290.00,
+        'features' => ['program_management', 'acceleration', 'regional_dashboard'],
+      ],
+      'jaraba_content_hub' => [
+        'label' => 'Vertical Content Hub',
+        'machine_name' => 'addon_vertical_content_hub',
+        'description' => 'Blog avanzado, gestion editorial, SEO, RSS, autores multiples.',
+        'price_monthly' => 19.00,
+        'price_yearly' => 190.00,
+        'features' => ['content_articles', 'editorial_workflow', 'seo_tools', 'rss_feeds'],
+      ],
+      'formacion' => [
+        'label' => 'Vertical Formacion',
+        'machine_name' => 'addon_vertical_formacion',
+        'description' => 'LMS completo, cursos, certificaciones, paths de aprendizaje.',
+        'price_monthly' => 39.00,
+        'price_yearly' => 390.00,
+        'features' => ['lms_courses', 'certifications', 'learning_paths', 'progress_tracking'],
+      ],
+    ];
+
+    $created = 0;
+    foreach ($verticals as $verticalRef => $data) {
+      // Verificar si ya existe un addon con este vertical_ref.
+      $existing = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('addon_type', 'vertical')
+        ->condition('vertical_ref', $verticalRef)
+        ->count()
+        ->execute();
+
+      if ((int) $existing > 0) {
+        $messages[] = sprintf('Vertical addon "%s" already exists, skipping.', $verticalRef);
+        continue;
+      }
+
+      $addon = $storage->create([
+        'label' => $data['label'],
+        'machine_name' => $data['machine_name'],
+        'description' => $data['description'],
+        'addon_type' => 'vertical',
+        'vertical_ref' => $verticalRef,
+        'price_monthly' => $data['price_monthly'],
+        'price_yearly' => $data['price_yearly'],
+        'is_active' => TRUE,
+        'features_included' => json_encode($data['features']),
+        'limits' => json_encode([]),
+        // tenant_id = 0 para addons globales de plataforma.
+        'tenant_id' => 0,
+      ]);
+      $addon->save();
+      $created++;
+    }
+
+    $messages[] = sprintf('Created %d vertical addon entities.', $created);
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Error: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}
+
+/**
+ * GAP-H01: Add stripe_subscription_item_id to AddonSubscription + migrate TenantAddon.
+ */
+function jaraba_addons_update_10003(): string {
+  $messages = [];
+
+  // Step 1: Install new field.
+  try {
+    $updateManager = \Drupal::entityDefinitionUpdateManager();
+    $existing = $updateManager->getFieldStorageDefinition('stripe_subscription_item_id', 'addon_subscription');
+    if (!$existing) {
+      $field = \Drupal\Core\Field\BaseFieldDefinition::create('string')
+        ->setName('stripe_subscription_item_id')
+        ->setTargetEntityTypeId('addon_subscription')
+        ->setLabel(t('Stripe Subscription Item ID'))
+        ->setDescription(t('ID del item en la suscripcion Stripe (si_xxx).'))
+        ->setSetting('max_length', 255)
+        ->setDisplayConfigurable('view', TRUE);
+      $updateManager->installFieldStorageDefinition(
+        'stripe_subscription_item_id', 'addon_subscription', 'jaraba_addons', $field
+      );
+      $messages[] = 'Installed stripe_subscription_item_id field.';
+    }
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Field install error: ' . $e->getMessage();
+  }
+
+  // Step 2: Migrate TenantAddon -> AddonSubscription.
+  try {
+    $etm = \Drupal::entityTypeManager();
+    if (!$etm->hasDefinition('tenant_addon')) {
+      $messages[] = 'TenantAddon entity not found, skipping migration.';
+      return implode(' ', $messages);
+    }
+
+    $tenantAddons = $etm->getStorage('tenant_addon')
+      ->loadByProperties(['status' => 'active']);
+
+    $bridge = \Drupal::hasService('ecosistema_jaraba_core.tenant_bridge')
+      ? \Drupal::service('ecosistema_jaraba_core.tenant_bridge')
+      : NULL;
+
+    $migrated = 0;
+    foreach ($tenantAddons as $tenantAddon) {
+      $addonCode = $tenantAddon->get('addon_code')->value;
+      $groupId = (int) $tenantAddon->get('tenant_id')->target_id;
+      $stripeItemId = $tenantAddon->hasField('stripe_subscription_item_id')
+        ? $tenantAddon->get('stripe_subscription_item_id')->value
+        : NULL;
+
+      // Resolve Group -> Tenant via TenantBridgeService (TENANT-BRIDGE-001).
+      $tenantId = NULL;
+      if ($bridge && method_exists($bridge, 'getTenantForGroup')) {
+        $tenant = $bridge->getTenantForGroup($groupId);
+        $tenantId = $tenant?->id();
+      }
+      if (!$tenantId) {
+        continue;
+      }
+
+      // Find Addon entity by machine_name.
+      $addons = $etm->getStorage('addon')
+        ->loadByProperties(['machine_name' => $addonCode]);
+      $addon = reset($addons);
+      if (!$addon) {
+        continue;
+      }
+
+      // Check if AddonSubscription already exists.
+      $existingSub = $etm->getStorage('addon_subscription')
+        ->loadByProperties([
+          'addon_id' => $addon->id(),
+          'tenant_id' => $tenantId,
+          'status' => 'active',
+        ]);
+      if (!empty($existingSub)) {
+        continue;
+      }
+
+      // Create AddonSubscription.
+      $sub = $etm->getStorage('addon_subscription')->create([
+        'addon_id' => $addon->id(),
+        'tenant_id' => $tenantId,
+        'status' => 'active',
+        'billing_cycle' => 'monthly',
+        'stripe_subscription_item_id' => $stripeItemId,
+        'start_date' => date('Y-m-d\TH:i:s', (int) $tenantAddon->get('created')->value),
+      ]);
+      $sub->save();
+      $migrated++;
+    }
+
+    $messages[] = sprintf('Migrated %d TenantAddon records to AddonSubscription.', $migrated);
+  }
+  catch (\Throwable $e) {
+    $messages[] = 'Migration error: ' . $e->getMessage();
+  }
+
+  return implode(' ', $messages);
+}

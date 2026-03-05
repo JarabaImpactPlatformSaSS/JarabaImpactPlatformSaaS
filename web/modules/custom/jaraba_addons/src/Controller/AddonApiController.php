@@ -126,7 +126,7 @@ class AddonApiController extends ControllerBase {
       $request = $this->requestStack->getCurrentRequest();
       $type = $request ? $request->query->get('type', '') : '';
 
-      $valid_types = ['feature', 'storage', 'api_calls', 'support', 'custom'];
+      $valid_types = ['vertical', 'feature', 'storage', 'api_calls', 'support', 'custom'];
 
       if ($type && in_array($type, $valid_types)) {
         $addons = $this->catalogService->getAddonsByType($type);
@@ -361,6 +361,7 @@ class AddonApiController extends ControllerBase {
       'is_active' => $addon->isActive(),
       'features_included' => $addon->getFeaturesIncluded(),
       'limits' => $addon->getLimits(),
+      'vertical_ref' => $addon->get('vertical_ref')->value ?? '',
     ];
   }
 

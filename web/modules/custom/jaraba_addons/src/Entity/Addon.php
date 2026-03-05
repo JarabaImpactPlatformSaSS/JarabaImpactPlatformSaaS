@@ -118,8 +118,18 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
         'api_calls' => t('API Calls'),
         'support' => t('Soporte'),
         'custom' => t('Personalizado'),
+        'vertical' => t('Vertical'),
       ])
       ->setDisplayOptions('form', ['weight' => 5])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    // --- Vertical de referencia (solo para addon_type = 'vertical') ---
+    $fields['vertical_ref'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Vertical (machine_name)'))
+      ->setDescription(t('Machine name del vertical asociado (ej: agroconecta, formacion). Solo aplica cuando addon_type = vertical.'))
+      ->setSetting('max_length', 128)
+      ->setDisplayOptions('form', ['weight' => 6])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -237,6 +247,29 @@ class Addon extends ContentEntityBase implements EntityChangedInterface {
     }
     $decoded = json_decode($json, TRUE);
     return is_array($decoded) ? $decoded : [];
+  }
+
+  /**
+   * Obtiene el machine_name del vertical asociado.
+   *
+   * Solo tiene valor cuando addon_type = 'vertical'.
+   *
+   * @return string|null
+   *   Machine name del vertical o NULL.
+   */
+  public function getVerticalRef(): ?string {
+    $value = $this->get('vertical_ref')->value;
+    return !empty($value) ? $value : NULL;
+  }
+
+  /**
+   * Comprueba si este addon es de tipo vertical.
+   *
+   * @return bool
+   *   TRUE si addon_type = 'vertical'.
+   */
+  public function isVerticalAddon(): bool {
+    return $this->get('addon_type')->value === 'vertical';
   }
 
   /**

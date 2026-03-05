@@ -152,12 +152,19 @@ class AddonSubscription extends ContentEntityBase implements EntityChangedInterf
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // --- Stripe Integration (GAP-H01) ---
+    $fields['stripe_subscription_item_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Stripe Subscription Item ID'))
+      ->setDescription(t('ID del item en la suscripcion Stripe (si_xxx). Migrado de TenantAddon.'))
+      ->setSetting('max_length', 255)
+      ->setDisplayConfigurable('view', TRUE);
+
     // --- Metadatos ---
     $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Fecha de Creación'));
+      ->setLabel(t('Fecha de Creacion'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
-      ->setLabel(t('Fecha de Modificación'));
+      ->setLabel(t('Fecha de Modificacion'));
 
     return $fields;
   }

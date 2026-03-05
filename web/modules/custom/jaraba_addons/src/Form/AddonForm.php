@@ -21,7 +21,7 @@ class AddonForm extends PremiumEntityFormBase {
         'label' => $this->t('Add-on'),
         'icon' => ['category' => 'ui', 'name' => 'package'],
         'description' => $this->t('Name, type, and description.'),
-        'fields' => ['label', 'machine_name', 'description', 'addon_type'],
+        'fields' => ['label', 'machine_name', 'description', 'addon_type', 'vertical_ref'],
       ],
       'pricing' => [
         'label' => $this->t('Pricing'),

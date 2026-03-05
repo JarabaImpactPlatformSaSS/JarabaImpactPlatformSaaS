@@ -91,6 +91,19 @@
   &--api_calls { @include addons-badge($addons-type-api-calls); }
   &--support { @include addons-badge($addons-type-support); }
   &--custom { @include addons-badge($addons-type-custom); }
+  &--vertical { @include addons-badge($addons-type-vertical); }
+}
+
+.ej-addons-detail__vertical-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $addons-spacing-xs;
+  font-size: $addons-font-size-xs;
+  font-weight: $addons-font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ej-naranja-impulso, #{$addons-type-vertical});
+  margin-bottom: $addons-spacing-sm;
 }
 
 .ej-addons-detail__title {

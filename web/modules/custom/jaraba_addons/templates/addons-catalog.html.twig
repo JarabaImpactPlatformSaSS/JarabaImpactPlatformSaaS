@@ -1,17 +1,17 @@
 {#
 /**
  * @file
- * Template: Catálogo de Add-ons (/addons).
+ * Template: Catalogo de Add-ons (/addons).
  *
  * ESTRUCTURA:
- * Plantilla que renderiza el catálogo público de add-ons con filtros por tipo
- * y grid de tarjetas. Sigue el patrón BEM ej-addons-* y usa CSS variables
- * inyectables con var(--ej-*, $fallback).
+ * Plantilla que renderiza el catalogo publico de add-ons con filtros por tipo,
+ * seccion hero para verticales componibles, y grid de tarjetas.
+ * Sigue el patron BEM ej-addons-* y usa CSS variables con var(--ej-*, $fallback).
  *
  * VARIABLES:
  * - addons: Array de add-ons con keys: id, label, description, addon_type,
- *     addon_type_label, price_monthly, price_yearly, is_subscribed.
- * - addon_types: Array asociativo de tipos válidos (key => label).
+ *     addon_type_label, price_monthly, price_yearly, is_subscribed, vertical_ref.
+ * - addon_types: Array asociativo de tipos validos (key => label).
  * - active_type: Tipo activo actual para filtro ('' = todos).
  * - tenant_subscriptions: Array de suscripciones del tenant actual.
  *
@@ -20,27 +20,32 @@
  * - addons-catalog.html.twig <- jaraba_addons.module hook_theme (registrado en)
  * - addons-catalog.html.twig <- addons-catalog.css (estilizado por)
  * - addons-catalog.html.twig <- addon-catalog.js (interactividad por)
+ *
+ * CSS-VAR-ALL-COLORS-001: Todos los colores via var(--ej-*, fallback).
+ * ICON-CONVENTION-001: jaraba_icon() duotone, NO emojis.
+ * i18n: Todos los textos en {% trans %} bloques.
+ * ZERO-REGION-001: Sin CSS inline, sin regions Drupal.
  */
 #}
 
 <div class="ej-addons-catalog">
 
-  {# ===== Cabecera del catálogo ===== #}
+  {# ===== Hero del catalogo ===== #}
   <header class="ej-addons-catalog__header">
     <h1 class="ej-addons-catalog__title">
-      {% trans %}Available Add-ons{% endtrans %}
+      {% trans %}Marketplace{% endtrans %}
     </h1>
     <p class="ej-addons-catalog__subtitle">
-      {% trans %}Enhance your platform with additional features, storage, API calls, and support options.{% endtrans %}
+      {% trans %}Amplifica tu plataforma con verticales adicionales, funcionalidades premium, almacenamiento extra y soporte avanzado.{% endtrans %}
     </p>
   </header>
 
   {# ===== Filtros por tipo (chips) ===== #}
-  <nav class="ej-addons-catalog__filters" aria-label="{% trans %}Filter by add-on type{% endtrans %}">
+  <nav class="ej-addons-catalog__filters" aria-label="{% trans %}Filtrar por tipo de add-on{% endtrans %}">
     <a href="{{ path('jaraba_addons.catalog') }}"
        class="ej-addons-catalog__filter-chip {{ active_type == '' ? 'ej-addons-catalog__filter-chip--active' : '' }}"
        data-type="">
-      {% trans %}All{% endtrans %}
+      {% trans %}Todos{% endtrans %}
     </a>
     {% for type_key, type_label in addon_types %}
       <a href="{{ path('jaraba_addons.catalog', {'type': type_key}) }}"
@@ -51,27 +56,101 @@
     {% endfor %}
   </nav>
 
-  {# ===== Grid de add-ons ===== #}
-  {% if addons|length > 0 %}
+  {# ===== Seccion destacada de verticales (cuando se muestran todos o filtro = vertical) ===== #}
+  {% set vertical_addons = [] %}
+  {% set other_addons = [] %}
+  {% for addon in addons %}
+    {% if addon.addon_type == 'vertical' %}
+      {% set vertical_addons = vertical_addons|merge([addon]) %}
+    {% else %}
+      {% set other_addons = other_addons|merge([addon]) %}
+    {% endif %}
+  {% endfor %}
+
+  {% if vertical_addons|length > 0 %}
+    <section class="ej-addons-catalog__verticals-section" aria-label="{% trans %}Verticales disponibles{% endtrans %}">
+      <h2 class="ej-addons-catalog__section-title">
+        {{ jaraba_icon('ui', 'grid', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Verticales Componibles{% endtrans %}
+      </h2>
+      <p class="ej-addons-catalog__section-desc">
+        {% trans %}Anade nuevos verticales de negocio a tu cuenta. Cada vertical incluye su propio portal, herramientas especializadas e inteligencia artificial.{% endtrans %}
+      </p>
+      <div class="ej-addons-catalog__grid ej-addons-catalog__grid--verticals">
+        {% for addon in vertical_addons %}
+          <article class="ej-addons-card ej-addons-card--vertical"
+                   data-addon-id="{{ addon.id }}"
+                   data-addon-type="vertical">
+
+            <div class="ej-addons-card__header">
+              <span class="ej-addons-card__type-badge ej-addons-card__type-badge--vertical">
+                {{ addon.addon_type_label }}
+              </span>
+              {% if addon.is_subscribed %}
+                <span class="ej-addons-card__subscribed-badge">
+                  {% trans %}Activo{% endtrans %}
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="ej-addons-card__body">
+              <h3 class="ej-addons-card__name">{{ addon.label }}</h3>
+              <p class="ej-addons-card__description">
+                {{ addon.description|striptags|length > 160 ? addon.description|striptags|slice(0, 160) ~ '...' : addon.description|striptags }}
+              </p>
+            </div>
+
+            <div class="ej-addons-card__footer">
+              <div class="ej-addons-card__price">
+                <span class="ej-addons-card__price-amount">
+                  {{ addon.price_monthly|number_format(2, ',', '.') }} &euro;
+                </span>
+                <span class="ej-addons-card__price-cycle">
+                  /{% trans %}mes{% endtrans %}
+                </span>
+              </div>
+              <a href="{{ path('jaraba_addons.catalog.detail', {'addon_id': addon.id}) }}"
+                 class="ej-addons-card__cta">
+                {% if addon.is_subscribed %}
+                  {% trans %}Ver Detalles{% endtrans %}
+                {% else %}
+                  {% trans %}Activar Vertical{% endtrans %}
+                {% endif %}
+              </a>
+            </div>
+
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {# ===== Grid de add-ons no-verticales ===== #}
+  {% set display_addons = active_type == 'vertical' ? [] : other_addons %}
+  {% if display_addons|length > 0 %}
+    {% if vertical_addons|length > 0 %}
+      <h2 class="ej-addons-catalog__section-title">
+        {{ jaraba_icon('ui', 'package', { variant: 'duotone', color: 'azul-corporativo', size: '20px' }) }}
+        {% trans %}Add-ons{% endtrans %}
+      </h2>
+    {% endif %}
     <div class="ej-addons-catalog__grid">
-      {% for addon in addons %}
+      {% for addon in display_addons %}
         <article class="ej-addons-card ej-addons-card--{{ addon.addon_type }}"
                  data-addon-id="{{ addon.id }}"
                  data-addon-type="{{ addon.addon_type }}">
 
-          {# Cabecera de la tarjeta #}
           <div class="ej-addons-card__header">
             <span class="ej-addons-card__type-badge ej-addons-card__type-badge--{{ addon.addon_type }}">
               {{ addon.addon_type_label }}
             </span>
             {% if addon.is_subscribed %}
               <span class="ej-addons-card__subscribed-badge">
-                {% trans %}Subscribed{% endtrans %}
+                {% trans %}Activo{% endtrans %}
               </span>
             {% endif %}
           </div>
 
-          {# Cuerpo de la tarjeta #}
           <div class="ej-addons-card__body">
             <h3 class="ej-addons-card__name">{{ addon.label }}</h3>
             <p class="ej-addons-card__description">
@@ -79,22 +158,21 @@
             </p>
           </div>
 
-          {# Pie de la tarjeta: precio y CTA #}
           <div class="ej-addons-card__footer">
             <div class="ej-addons-card__price">
               <span class="ej-addons-card__price-amount">
                 {{ addon.price_monthly|number_format(2, ',', '.') }} &euro;
               </span>
               <span class="ej-addons-card__price-cycle">
-                /{% trans %}month{% endtrans %}
+                /{% trans %}mes{% endtrans %}
               </span>
             </div>
             <a href="{{ path('jaraba_addons.catalog.detail', {'addon_id': addon.id}) }}"
                class="ej-addons-card__cta">
               {% if addon.is_subscribed %}
-                {% trans %}View Details{% endtrans %}
+                {% trans %}Ver Detalles{% endtrans %}
               {% else %}
-                {% trans %}Learn More{% endtrans %}
+                {% trans %}Mas Informacion{% endtrans %}
               {% endif %}
             </a>
           </div>
@@ -102,24 +180,22 @@
         </article>
       {% endfor %}
     </div>
-  {% else %}
-    {# ===== Estado vacío ===== #}
+  {% endif %}
+
+  {# ===== Estado vacio ===== #}
+  {% if addons|length == 0 %}
     <div class="ej-addons-catalog__empty">
       <div class="ej-addons-catalog__empty-icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-          <line x1="12" y1="22.08" x2="12" y2="12"/>
-        </svg>
+        {{ jaraba_icon('ui', 'package', { variant: 'duotone', color: 'neutral', size: '64px' }) }}
       </div>
       <h3 class="ej-addons-catalog__empty-title">
-        {% trans %}No add-ons available{% endtrans %}
+        {% trans %}No hay add-ons disponibles{% endtrans %}
       </h3>
       <p class="ej-addons-catalog__empty-message">
         {% if active_type %}
-          {% trans %}No add-ons found for the selected type. Try a different filter.{% endtrans %}
+          {% trans %}No se encontraron add-ons del tipo seleccionado. Prueba con otro filtro.{% endtrans %}
         {% else %}
-          {% trans %}There are no add-ons available at this time. Check back later for new options.{% endtrans %}
+          {% trans %}No hay add-ons disponibles en este momento. Vuelve a consultar mas adelante.{% endtrans %}
         {% endif %}
       </p>
     </div>

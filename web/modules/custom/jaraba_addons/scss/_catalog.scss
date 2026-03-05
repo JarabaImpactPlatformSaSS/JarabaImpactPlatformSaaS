@@ -132,6 +132,11 @@
     background: $addons-type-custom;
     border-color: $addons-type-custom;
   }
+
+  &--vertical.ej-addons-catalog__filter-chip--active {
+    background: var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback});
+    border-color: var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback});
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -195,6 +200,7 @@
   &--api_calls { @include addons-badge($addons-type-api-calls); }
   &--support { @include addons-badge($addons-type-support); }
   &--custom { @include addons-badge($addons-type-custom); }
+  &--vertical { @include addons-badge(var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback})); }
 }
 
 .ej-addons-card__subscribed-badge {
@@ -291,4 +297,53 @@
   max-width: 480px;
   margin-inline: auto;
   line-height: 1.6;
+}
+
+// ---------------------------------------------------------------------------
+// SECCION DE VERTICALES COMPONIBLES — Premium Section
+// ---------------------------------------------------------------------------
+
+.ej-addons-catalog__verticals-section {
+  margin-bottom: $addons-spacing-2xl;
+  padding: $addons-spacing-xl;
+  border-radius: $addons-border-radius-lg;
+  background: color-mix(in srgb, var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback}) 3%, var(--ej-addons-card-bg, #{$addons-color-surface-fallback}));
+  border: 1px solid color-mix(in srgb, var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback}) 12%, transparent);
+}
+
+.ej-addons-catalog__section-title {
+  display: flex;
+  align-items: center;
+  gap: $addons-spacing-sm;
+  font-size: $addons-font-size-xl;
+  font-weight: $addons-font-weight-bold;
+  color: var(--ej-addons-text, #{$addons-color-text-fallback});
+  margin: 0 0 $addons-spacing-sm;
+}
+
+.ej-addons-catalog__section-desc {
+  font-size: $addons-font-size-sm;
+  color: var(--ej-addons-text-muted, #{$addons-color-text-muted-fallback});
+  margin: 0 0 $addons-spacing-lg;
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+// Vertical cards use same grid but can have custom column count
+.ej-addons-catalog__grid--verticals {
+  @media (min-width: $addons-breakpoint-lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// Vertical card — premium accent border
+.ej-addons-card--vertical {
+  border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback}) 20%, transparent);
+
+  &.ej-addons-card--visible:hover {
+    border-color: color-mix(in srgb, var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback}) 40%, transparent);
+    box-shadow:
+      0 4px 12px color-mix(in srgb, var(--ej-color-azul-corporativo, #{$addons-color-primary-fallback}) 10%, transparent),
+      var(--ej-addons-card-shadow-hover, #{$addons-shadow-xl});
+  }
 }

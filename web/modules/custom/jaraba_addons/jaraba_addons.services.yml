@@ -21,6 +21,19 @@ services:
       - '@logger.channel.jaraba_addons'
 
   # =====================================================================
+  # TenantVerticalService: Resolución multi-vertical (primario + addons)
+  # Responsabilidad: resolver TODOS los verticales activos de un tenant,
+  #   combinando el vertical primario (Tenant.vertical) con verticales
+  #   contratados como add-ons (AddonSubscription activas tipo 'vertical')
+  # Relaciones: consume Tenant, Addon, AddonSubscription entities
+  # =====================================================================
+  jaraba_addons.tenant_vertical:
+    class: Drupal\jaraba_addons\Service\TenantVerticalService
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.channel.jaraba_addons'
+
+  # =====================================================================
   # AddonSubscriptionService: Gestión de suscripciones a add-ons
   # Responsabilidad: suscripción, cancelación, renovación,
   #   consulta de suscripciones por tenant, verificación de actividad
@@ -31,4 +44,18 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@?ecosistema_jaraba_core.tenant_context'
+      - '@logger.channel.jaraba_addons'
+
+  # =====================================================================
+  # VerticalAddonBillingService: Activacion/desactivacion de verticales
+  # Responsabilidad: orquestar suscripcion local + invalidacion de cache
+  #   de verticales. Futuro: integracion con Stripe Subscription Items
+  # Relaciones: consume AddonSubscriptionService, TenantVerticalService
+  # =====================================================================
+  jaraba_addons.vertical_billing:
+    class: Drupal\jaraba_addons\Service\VerticalAddonBillingService
+    arguments:
+      - '@jaraba_addons.subscription'
+      - '@jaraba_addons.tenant_vertical'
+      - '@entity_type.manager'
       - '@logger.channel.jaraba_addons'

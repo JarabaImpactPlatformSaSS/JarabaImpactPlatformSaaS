@@ -4,18 +4,19 @@
  * Template: Detalle de Add-on (/addons/{addon_id}).
  *
  * ESTRUCTURA:
- * Plantilla que renderiza la página de detalle de un add-on individual
+ * Plantilla que renderiza la pagina de detalle de un add-on individual
  * con hero, pricing toggle (mensual/anual), features, limits, y CTA.
- * Sigue el patrón BEM ej-addons-detail-* y usa CSS variables inyectables.
+ * Sigue el patron BEM ej-addons-detail-* y usa CSS variables inyectables.
+ * Soporte especial para addon_type = 'vertical' con CTA diferenciado.
  *
  * VARIABLES:
  * - addon: Array con keys: id, label, description, addon_type,
- *     addon_type_label, machine_name.
+ *     addon_type_label, machine_name, vertical_ref.
  * - features: Array de strings con las features incluidas.
- * - limits: Array asociativo con los límites (key => value).
+ * - limits: Array asociativo con los limites (key => value).
  * - price_monthly: Precio mensual (float).
  * - price_yearly: Precio anual (float).
- * - is_subscribed: Boolean si el tenant actual está suscrito.
+ * - is_subscribed: Boolean si el tenant actual esta suscrito.
  *
  * RELACIONES:
  * - addons-detail.html.twig <- AddonCatalogController::detail() (renderizado por)
@@ -25,15 +26,15 @@
  */
 #}
 
-<div class="ej-addons-detail" data-addon-id="{{ addon.id }}">
+{% set is_vertical = addon.addon_type == 'vertical' %}
+
+<div class="ej-addons-detail{{ is_vertical ? ' ej-addons-detail--vertical' : '' }}" data-addon-id="{{ addon.id }}">
 
   {# ===== Breadcrumb ===== #}
-  <nav class="ej-addons-detail__breadcrumb" aria-label="{% trans %}Breadcrumb{% endtrans %}">
+  <nav class="ej-addons-detail__breadcrumb" aria-label="{% trans %}Migas de pan{% endtrans %}">
     <a href="{{ path('jaraba_addons.catalog') }}" class="ej-addons-detail__breadcrumb-link">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      {% trans %}Back to Catalog{% endtrans %}
+      {{ jaraba_icon('ui', 'arrow-left', { size: '16px', color: 'azul-corporativo' }) }}
+      {% trans %}Volver al Catalogo{% endtrans %}
     </a>
   </nav>
 
@@ -43,6 +44,12 @@
       <span class="ej-addons-detail__type-badge ej-addons-detail__type-badge--{{ addon.addon_type }}">
         {{ addon.addon_type_label }}
       </span>
+      {% if is_vertical and addon.vertical_ref %}
+        <span class="ej-addons-detail__vertical-badge">
+          {{ jaraba_icon('ui', 'layers', { size: '14px', color: 'naranja-impulso' }) }}
+          {% trans %}Vertical Componible{% endtrans %}
+        </span>
+      {% endif %}
       <h1 class="ej-addons-detail__title">{{ addon.label }}</h1>
       <div class="ej-addons-detail__description">
         {{ addon.description|check_markup('basic_html') }}
@@ -51,24 +58,24 @@
   </section>
 
   {# ===== Pricing Section ===== #}
-  <section class="ej-addons-detail__pricing" aria-label="{% trans %}Pricing{% endtrans %}">
-    <h2 class="ej-addons-detail__section-title">{% trans %}Pricing{% endtrans %}</h2>
+  <section class="ej-addons-detail__pricing" aria-label="{% trans %}Precios{% endtrans %}">
+    <h2 class="ej-addons-detail__section-title">{% trans %}Precios{% endtrans %}</h2>
 
     {# Toggle mensual/anual #}
-    <div class="ej-addons-detail__pricing-toggle" role="radiogroup" aria-label="{% trans %}Billing cycle{% endtrans %}">
+    <div class="ej-addons-detail__pricing-toggle" role="radiogroup" aria-label="{% trans %}Ciclo de facturacion{% endtrans %}">
       <button type="button"
               class="ej-addons-detail__toggle-btn ej-addons-detail__toggle-btn--active"
               data-cycle="monthly"
               role="radio"
               aria-checked="true">
-        {% trans %}Monthly{% endtrans %}
+        {% trans %}Mensual{% endtrans %}
       </button>
       <button type="button"
               class="ej-addons-detail__toggle-btn"
               data-cycle="yearly"
               role="radio"
               aria-checked="false">
-        {% trans %}Yearly{% endtrans %}
+        {% trans %}Anual{% endtrans %}
         {% if price_monthly > 0 and price_yearly > 0 %}
           {% set yearly_equivalent = price_monthly * 12 %}
           {% set savings_pct = ((yearly_equivalent - price_yearly) / yearly_equivalent * 100)|round %}
@@ -87,8 +94,8 @@
         <span class="ej-addons-detail__price-amount" data-price-monthly="{{ price_monthly }}" data-price-yearly="{{ price_yearly }}">
           {{ price_monthly|number_format(2, ',', '.') }} &euro;
         </span>
-        <span class="ej-addons-detail__price-period" data-period-monthly="{% trans %}/month{% endtrans %}" data-period-yearly="{% trans %}/year{% endtrans %}">
-          /{% trans %}month{% endtrans %}
+        <span class="ej-addons-detail__price-period" data-period-monthly="{% trans %}/mes{% endtrans %}" data-period-yearly="{% trans %}/ano{% endtrans %}">
+          /{% trans %}mes{% endtrans %}
         </span>
       </div>
     </div>
@@ -96,14 +103,12 @@
 
   {# ===== Features Section ===== #}
   {% if features|length > 0 %}
-    <section class="ej-addons-detail__features" aria-label="{% trans %}Features included{% endtrans %}">
-      <h2 class="ej-addons-detail__section-title">{% trans %}Features Included{% endtrans %}</h2>
+    <section class="ej-addons-detail__features" aria-label="{% trans %}Funcionalidades incluidas{% endtrans %}">
+      <h2 class="ej-addons-detail__section-title">{% trans %}Funcionalidades Incluidas{% endtrans %}</h2>
       <ul class="ej-addons-detail__features-list">
         {% for feature in features %}
           <li class="ej-addons-detail__feature-item">
-            <svg class="ej-addons-detail__feature-check" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
+            {{ jaraba_icon('ui', 'check', { size: '20px', color: 'verde-innovacion' }) }}
             <span>{{ feature }}</span>
           </li>
         {% endfor %}
@@ -113,8 +118,8 @@
 
   {# ===== Limits Section ===== #}
   {% if limits|length > 0 %}
-    <section class="ej-addons-detail__limits" aria-label="{% trans %}Limits and quotas{% endtrans %}">
-      <h2 class="ej-addons-detail__section-title">{% trans %}Limits &amp; Quotas{% endtrans %}</h2>
+    <section class="ej-addons-detail__limits" aria-label="{% trans %}Limites y cuotas{% endtrans %}">
+      <h2 class="ej-addons-detail__section-title">{% trans %}Limites y Cuotas{% endtrans %}</h2>
       <div class="ej-addons-detail__limits-grid">
         {% for limit_key, limit_value in limits %}
           <div class="ej-addons-detail__limit-item">
@@ -134,22 +139,37 @@
   <section class="ej-addons-detail__cta-section">
     {% if is_subscribed %}
       <div class="ej-addons-detail__subscribed-notice">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <span>{% trans %}You are already subscribed to this add-on.{% endtrans %}</span>
+        {{ jaraba_icon('ui', 'check-circle', { size: '24px', color: 'verde-innovacion' }) }}
+        {% if is_vertical %}
+          <span>{% trans %}Ya tienes este vertical activo.{% endtrans %}</span>
+        {% else %}
+          <span>{% trans %}Ya estas suscrito a este add-on.{% endtrans %}</span>
+        {% endif %}
       </div>
     {% else %}
-      <button type="button"
-              class="ej-addons-detail__subscribe-btn"
-              data-addon-id="{{ addon.id }}"
-              data-billing-cycle="monthly">
-        {% trans %}Subscribe Now{% endtrans %}
-      </button>
-      <p class="ej-addons-detail__cta-note">
-        {% trans %}You can cancel your subscription at any time.{% endtrans %}
-      </p>
+      {% if is_vertical %}
+        <button type="button"
+                class="ej-addons-detail__subscribe-btn ej-addons-detail__subscribe-btn--vertical"
+                data-addon-id="{{ addon.id }}"
+                data-billing-cycle="monthly"
+                data-action="activate-vertical">
+          {{ jaraba_icon('ui', 'layers', { size: '20px', color: 'white' }) }}
+          {% trans %}Activar Vertical{% endtrans %}
+        </button>
+        <p class="ej-addons-detail__cta-note">
+          {% trans %}Activa este vertical para ampliar las capacidades de tu plataforma. Puedes desactivarlo en cualquier momento.{% endtrans %}
+        </p>
+      {% else %}
+        <button type="button"
+                class="ej-addons-detail__subscribe-btn"
+                data-addon-id="{{ addon.id }}"
+                data-billing-cycle="monthly">
+          {% trans %}Suscribirse Ahora{% endtrans %}
+        </button>
+        <p class="ej-addons-detail__cta-note">
+          {% trans %}Puedes cancelar tu suscripcion en cualquier momento.{% endtrans %}
+        </p>
+      {% endif %}
     {% endif %}
   </section>
 

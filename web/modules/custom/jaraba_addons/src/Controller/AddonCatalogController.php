@@ -132,6 +132,7 @@ class AddonCatalogController extends ControllerBase {
 
     // Tipos válidos de add-on para los filtros.
     $addon_types = [
+      'vertical' => $this->t('Vertical'),
       'feature' => $this->t('Feature'),
       'storage' => $this->t('Storage'),
       'api_calls' => $this->t('API Calls'),
@@ -191,6 +192,7 @@ class AddonCatalogController extends ControllerBase {
         'price_monthly' => (float) ($addon->get('price_monthly')->value ?? 0),
         'price_yearly' => (float) ($addon->get('price_yearly')->value ?? 0),
         'is_subscribed' => in_array($addon_id, $subscribed_addon_ids),
+        'vertical_ref' => $addon->get('vertical_ref')->value ?? '',
       ];
     }
 
@@ -274,6 +276,7 @@ class AddonCatalogController extends ControllerBase {
 
     // Tipos para badge.
     $addon_types = [
+      'vertical' => $this->t('Vertical'),
       'feature' => $this->t('Feature'),
       'storage' => $this->t('Storage'),
       'api_calls' => $this->t('API Calls'),
@@ -289,6 +292,7 @@ class AddonCatalogController extends ControllerBase {
       'addon_type' => $addon->get('addon_type')->value ?? 'custom',
       'addon_type_label' => $addon_types[$addon->get('addon_type')->value] ?? $this->t('Custom'),
       'machine_name' => $addon->get('machine_name')->value ?? '',
+      'vertical_ref' => $addon->get('vertical_ref')->value ?? '',
     ];
 
     return [

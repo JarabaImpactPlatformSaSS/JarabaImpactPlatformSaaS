@@ -42,6 +42,7 @@ class AddonListBuilder extends EntityListBuilder {
       'api_calls' => $this->t('API Calls'),
       'support' => $this->t('Soporte'),
       'custom' => $this->t('Personalizado'),
+      'vertical' => $this->t('Vertical'),
     ];
 
     $type = $entity->get('addon_type')->value;

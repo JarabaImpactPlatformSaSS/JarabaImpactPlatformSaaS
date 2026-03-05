@@ -79,3 +79,39 @@ jaraba_addons.api.addons.subscriptions:
   methods: [GET]
   requirements:
     _permission: 'purchase addons'
+
+# --- Rutas API Verticales Componibles ---
+
+jaraba_addons.api.verticals.active:
+  path: '/api/v1/addons/verticals/active'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\VerticalAddonApiController::listActiveVerticals'
+  methods: [GET]
+  requirements:
+    _permission: 'purchase addons'
+
+jaraba_addons.api.verticals.available:
+  path: '/api/v1/addons/verticals/available'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\VerticalAddonApiController::listAvailableVerticals'
+  methods: [GET]
+  requirements:
+    _permission: 'view addon catalog'
+
+jaraba_addons.api.verticals.activate:
+  path: '/api/v1/addons/verticals/{addon_id}/activate'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\VerticalAddonApiController::activate'
+  methods: [POST]
+  requirements:
+    _permission: 'purchase addons'
+    addon_id: '\d+'
+
+jaraba_addons.api.verticals.deactivate:
+  path: '/api/v1/addons/verticals/subscriptions/{subscription_id}/deactivate'
+  defaults:
+    _controller: '\Drupal\jaraba_addons\Controller\VerticalAddonApiController::deactivate'
+  methods: [POST]
+  requirements:
+    _permission: 'purchase addons'
+    subscription_id: '\d+'
