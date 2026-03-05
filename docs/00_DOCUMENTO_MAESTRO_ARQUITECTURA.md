@@ -2,7 +2,7 @@
 ## Jaraba Impact Platform SaaS v74.0
 
 **Fecha:** 2026-03-05
-**Versión:** 103.0.0 (Salvaguardas 100% Madurez: 275 hook_update_N generados, hex→tokens 2088 reemplazos, SCSS 0 failures, SCSS-COMPILETIME-001 + aprendizaje #164)
+**Versión:** 104.0.0 (Stripe Embedded Checkout: STRIPE-CHECKOUT-001, checkout self-service ui_mode embedded, sync Product/Price bidireccional, zero-region templates + aprendizaje #165)
 **Estado:** Verticales Componibles (addon_type=vertical + TenantVerticalService) + Tenant Settings Hub (6 secciones tagged) + Stripe Sync Bidireccional + Landing Elevation 3 Niveles + Claude Code DX Pipeline + Meta-Sitios 3 Idiomas (ES+EN+PT-BR) + Secrets Remediation (SECRET-MGMT-001) + Analytics Stack Completo + Auditoria IA 30/30 (100/100) + AI Stack Clase Mundial (33 items) + Streaming Real + MCP Server + Native Function Calling + Produccion
 **Nivel de Madurez:** 5.0 / 5.0 (Resiliencia & Cumplimiento Certificado)
 
@@ -813,6 +813,48 @@ Integración unificada de soberanía legal y resiliencia técnica:
 │   ├── PlanValidator (jaraba_billing): 3-source cascade                │
 │   │   FVL → PlanFeatures → SaasPlan fallback                         │
 │   └── BillingWebhookController: Stripe Price ID → tier resolution    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      STRIPE EMBEDDED CHECKOUT ⭐                       │
+│                      STRIPE-CHECKOUT-001                                │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   📦 jaraba_billing (Checkout Self-Service)                             │
+│   ├── StripeProductSyncService: SaasPlan → Stripe Product/Price        │
+│   │   ├── syncPlan(): idempotente con LockBackend                      │
+│   │   ├── Crea Product si no existe (stripe_product_id)                │
+│   │   ├── Crea/archiva Price al cambiar importe (immutable prices)    │
+│   │   └── presave hook: sync automatico al guardar SaasPlan           │
+│   ├── CheckoutSessionService: crea Stripe Checkout Session             │
+│   │   ├── ui_mode: 'embedded' (NO hosted redirect)                    │
+│   │   ├── return_url (NUNCA success_url/cancel_url)                   │
+│   │   └── metadata: saas_plan_id + billing_cycle + vertical           │
+│   ├── CheckoutController: 4 handlers zero-region                       │
+│   │   ├── page(): render checkout-page.html.twig (2 columnas)         │
+│   │   ├── createSession(): API POST → client_secret JSON              │
+│   │   ├── success(): render checkout-success.html.twig                │
+│   │   └── cancel(): render checkout-cancel.html.twig                  │
+│   └── BillingWebhookController: checkout.session.completed handler    │
+│       └── Auto-provisioning: crear suscripcion + asignar plan         │
+│                                                                         │
+│   Flujo frontend:                                                       │
+│   ├── stripe-checkout.js: Drupal.behaviors.stripeCheckout              │
+│   │   ├── Carga Stripe.js dinamicamente (PCI compliance)              │
+│   │   ├── CSRF token via /session/token (cacheado)                    │
+│   │   ├── POST a createSession → client_secret                       │
+│   │   └── stripe.initEmbeddedCheckout() → mount en DOM               │
+│   ├── pricing-toggle.js: sync ?cycle= en CTAs checkout                │
+│   └── pricing-page.html.twig: CTA → checkout si saas_plan_id existe  │
+│                                                                         │
+│   Templates zero-region (page--checkout.html.twig):                    │
+│   ├── checkout-page.html.twig: resumen plan + formulario Stripe       │
+│   ├── checkout-success.html.twig: confirmacion con SVG animado        │
+│   └── checkout-cancel.html.twig: cancelacion con warning              │
+│                                                                         │
+│   SCSS: _checkout.scss (BEM + var(--ej-*) + mobile-first)             │
+│   Body class: page-checkout via hook_preprocess_html()                 │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -2864,6 +2906,7 @@ Reglas: LANDING-ELEVATION-001, METRICS-HONESTY-001 en Directrices v105.0.0. Apre
 
 | Fecha | Versión | Descripción |
 |-------|---------|-------------|
+| 2026-03-05 | **104.0.0** | **Stripe Embedded Checkout Self-Service (STRIPE-CHECKOUT-001):** Nueva seccion STRIPE EMBEDDED CHECKOUT con ASCII box. jaraba_billing: +StripeProductSyncService (SaasPlan→Stripe Product/Price, idempotente con lock, archiva precios obsoletos), +CheckoutSessionService (ui_mode embedded, return_url), +CheckoutController (4 handlers zero-region), +stripe-checkout.js (carga Stripe.js dinamicamente, CSRF, POST session, initEmbeddedCheckout), +presave hook auto-sync. SaasPlan entity +2 campos (stripe_product_id, stripe_price_yearly_id) + hook_update_9035. Templates: page--checkout.html.twig (zero-region), checkout-page (2 columnas), checkout-success (SVG animado), checkout-cancel (warning). SCSS: _checkout.scss BEM + var(--ej-*). MetaSitePricingService +saas_plan_id en getPricingPreview(). pricing-page.html.twig: CTAs checkout directos si saas_plan_id existe. pricing-toggle.js: sync ?cycle= param. ecosistema_jaraba_theme.theme: +body class page-checkout + theme suggestion page__checkout. Drush: StripeSyncCommands (jaraba:stripe:sync-plans). 4 rutas, 3 templates checkout, 1 JS, 1 SCSS. Aprendizaje #165. |
 | 2026-03-05 | **103.0.0** | **Salvaguardas 100% Madurez:** GAP-01 SCSS hex→tokens: migrate-hex-to-tokens.php (180+ mappings, 2088 reemplazos, 3 pasadas), regla SCSS-COMPILETIME-001 (Sass compile-time `color.scale/adjust/change` requiere hex estatico, NUNCA `var()`; usar `color-mix()` para runtime). 8 modulos corregidos (comercio_conecta, einvoice_b2b, legal_intelligence, success_cases, foc, tenant_knowledge, facturae, ecosistema_jaraba_core). GAP-05 hook_update_N: generate-install-hooks.php genera hook_update_N + hook_requirements para 275 entities en 67 modulos (20 .install nuevos, 47 existentes). GAP-04 presave resilience: 3 modulos corregidos (content_hub, legal_calendar, page_builder) con hasService()+try-catch. Compilacion SCSS: 0 failures en todos los modulos y temas. 16 validadores: 15 PASS + 1 SKIP. Aprendizaje #164. |
 | 2026-03-05 | **102.0.0** | **Remediacion Onboarding/Checkout/Catalogos 32 Gaps Clase Mundial:** ecosistema_jaraba_core: +GoogleOAuthService (OAuth2 client sin contrib, credenciales via settings.secrets.php), +GoogleOAuthController (redirect+callback+user creation, CSRF state token session), +2 rutas OAuth (/user/login/google, /user/login/google/callback). OnboardingController: +isConfigured() check para Google OAuth. Register template: +boton Google + Schema.org Organization JSON-LD + WCAG 2.1 AA (skip nav, aria-describedby, role=alert, focus-visible, touch targets 44px). _onboarding-progress.html.twig reescrito como semantic nav+ol con aria-current=step. SCSS: +skip-link, +focus-visible, +social-login, +wizard-animations, +prefers-reduced-motion. ecosistema_jaraba_theme: page--auth preprocess ampliado para onboarding routes (extrae system_main_block). jaraba_lms: InstructorDashboardController +courseAnalytics() (KPIs, per-lesson stats, enrollment trend, engagement chart), +1 ruta analytics, +1 library instructor-analytics con Chart.js. jaraba_billing: trial expiration notifications. jaraba_comercio_conecta: checkout con Stripe real, security badges. Bugs corregidos: FieldItemList en register template, page--auth preprocess. 2 reglas nuevas. Aprendizaje #163. |
 | 2026-03-05 | **101.0.0** | **Multi-Tenant Route Cache Isolation + Vary:Host + Visual Customizer Fix:** SecurityHeadersSubscriber ampliado con onAddVaryHost() prioridad -10 (appends Vary:Host DESPUES de FinishResponseSubscriber). Domain entity PED local dev creada. SEC-08 completado. visual-customizer.js: 11 campos fantasma eliminados, 4 mismatches, 3 faltantes. TenantThemeCustomizerForm: tab titles plain text. TenantSubscriptionService: lazy-load dedup. 3 reglas: DOMAIN-ROUTE-CACHE-001, VARY-HOST-001, PHANTOM-ARG-JS-001. Aprendizaje #162. |
