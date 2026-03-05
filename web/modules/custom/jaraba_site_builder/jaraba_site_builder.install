@@ -139,6 +139,13 @@ function jaraba_site_builder_update_10005(array &$sandbox): void {
  * Install metatag field on site_config (added by metatag module).
  */
 function jaraba_site_builder_update_10006(): string {
+  return 'Superseded by update_10007.';
+}
+
+/**
+ * Sync metatag field definition on site_config (install or update).
+ */
+function jaraba_site_builder_update_10007(): string {
   $updateManager = \Drupal::entityDefinitionUpdateManager();
 
   try {
@@ -146,12 +153,6 @@ function jaraba_site_builder_update_10006(): string {
       return 'site_config entity type not found — skipped.';
     }
 
-    $existing = $updateManager->getFieldStorageDefinition('metatag', 'site_config');
-    if ($existing) {
-      return 'metatag field already installed.';
-    }
-
-    // Get the field definition from EntityFieldManager (provided by metatag module).
     /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $fieldManager */
     $fieldManager = \Drupal::service('entity_field.manager');
     $fieldManager->clearCachedFieldDefinitions();
@@ -165,11 +166,17 @@ function jaraba_site_builder_update_10006(): string {
     $metatagField->setName('metatag');
     $metatagField->setTargetEntityTypeId('site_config');
 
-    $updateManager->installFieldStorageDefinition(
-      'metatag', 'site_config', 'metatag', $metatagField
-    );
-
-    return 'Installed metatag field on site_config.';
+    $existing = $updateManager->getFieldStorageDefinition('metatag', 'site_config');
+    if ($existing) {
+      $updateManager->updateFieldStorageDefinition($metatagField);
+      return 'metatag field updated on site_config.';
+    }
+    else {
+      $updateManager->installFieldStorageDefinition(
+        'metatag', 'site_config', 'metatag', $metatagField
+      );
+      return 'metatag field installed on site_config.';
+    }
   }
   catch (\Throwable $e) {
     return 'Error: ' . $e->getMessage();
