@@ -1,3 +1,7 @@
+uuid: 1f75cf83-6dbd-4e81-b43f-21e4321bcb38
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_profesional_presupuestador_ai
 label: 'ServiciosConecta Profesional: Presupuestador IA'
 vertical: serviciosconecta
@@ -6,6 +10,5 @@ feature_key: presupuestador_ai
 limit_value: -1
 description: 'Presupuestador IA disponible en plan Profesional ServiciosConecta.'
 upgrade_message: 'Ya tienes acceso al presupuestador IA con todas las funciones.'
-expected_conversion: 0.10
+expected_conversion: 0.1
 weight: 252
-status: true

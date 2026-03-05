@@ -1,5 +1,7 @@
+uuid: null
 langcode: es
 status: true
+dependencies: {  }
 id: agroconecta_starter_traceability_qr
 label: 'AgroConecta Starter: Trazabilidad QR'
 vertical: agroconecta

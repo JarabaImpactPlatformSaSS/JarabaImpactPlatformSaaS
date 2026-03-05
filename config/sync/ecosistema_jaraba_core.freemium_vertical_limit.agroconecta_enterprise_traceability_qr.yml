@@ -1,3 +1,7 @@
+uuid: 38a4f2f2-149d-43df-8960-fac08dc884c6
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_traceability_qr
 label: 'AgroConecta Enterprise: Trazabilidad QR'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: traceability_qr
 limit_value: -1
 description: 'QR de trazabilidad ilimitados en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 207
-status: true

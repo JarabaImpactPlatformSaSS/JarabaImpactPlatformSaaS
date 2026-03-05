@@ -1,3 +1,7 @@
+uuid: 098e31c4-296f-4932-b803-4117ac07e3ba
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_free_bookings_per_month
 label: 'ServiciosConecta Free: Reservas/mes'
 vertical: serviciosconecta
@@ -8,4 +12,3 @@ description: 'Maximo 10 reservas mensuales en plan gratuito ServiciosConecta.'
 upgrade_message: 'Has alcanzado el limite de 10 reservas este mes. Actualiza a Starter para reservas ilimitadas.'
 expected_conversion: 0.35
 weight: 210
-status: true

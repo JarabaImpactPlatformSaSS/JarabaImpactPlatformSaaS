@@ -1,3 +1,7 @@
+uuid: 4caac3fa-8cd9-4ec1-a1bd-e836b9a33b99
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_citation_insert
 label: 'JarabaLex Starter: Inserciones de citas'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: citation_insert
 limit_value: -1
 description: 'Citas automatizadas ilimitadas en plan Starter JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 313
-status: true

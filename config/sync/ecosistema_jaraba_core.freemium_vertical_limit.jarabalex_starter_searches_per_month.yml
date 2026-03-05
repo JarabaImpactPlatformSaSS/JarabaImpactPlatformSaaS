@@ -1,3 +1,7 @@
+uuid: 664f6428-75ba-4532-9335-7ef6b07dfff5
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_searches_per_month
 label: 'JarabaLex Starter: Busquedas por mes'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: searches_per_month
 limit_value: 50
 description: 'Maximo 50 busquedas juridicas por mes en plan Starter JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 303
-status: true

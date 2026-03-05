@@ -1,3 +1,7 @@
+uuid: cc0744d9-f9bd-4741-902a-053e982f9f8e
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_max_alerts
 label: 'JarabaLex Profesional: Alertas'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: max_alerts
 limit_value: -1
 description: 'Alertas juridicas ilimitadas en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 307
-status: true

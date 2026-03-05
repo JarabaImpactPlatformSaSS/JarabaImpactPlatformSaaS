@@ -1,3 +1,7 @@
+uuid: adbfdf92-2cb2-48f9-bcdb-5d76afd493c3
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_free_copilot_sessions_daily
 label: 'Andalucía +ei Free: Sesiones Copiloto Diarias'
 vertical: andalucia_ei
@@ -8,4 +12,3 @@ description: '3 sesiones diarias con el tutor IA en plan gratuito.'
 upgrade_message: 'Has alcanzado tu limite de 3 sesiones IA hoy. Actualiza a Starter para 15 sesiones diarias.'
 expected_conversion: 0.32
 weight: 500
-status: true

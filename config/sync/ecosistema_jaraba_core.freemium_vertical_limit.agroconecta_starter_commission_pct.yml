@@ -1,3 +1,7 @@
+uuid: ca96452f-971a-4a81-9f1a-1f7e8bba4ea2
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_starter_commission_pct
 label: 'AgroConecta Starter: Comision %'
 vertical: agroconecta
@@ -8,4 +12,3 @@ description: 'Comision del 8% por transaccion en plan Starter AgroConecta.'
 upgrade_message: 'Tu comision actual es del 8%. Actualiza a Profesional para reducirla al 5%.'
 expected_conversion: 0.35
 weight: 41
-status: true

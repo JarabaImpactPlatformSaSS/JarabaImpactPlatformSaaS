@@ -23,7 +23,7 @@ steps:
     conditions: 'vertical:jarabalex'
   -
     id: registration
-    label: 'Registro'
+    label: Registro
     event: user_register
     conditions: 'vertical:jarabalex'
   -

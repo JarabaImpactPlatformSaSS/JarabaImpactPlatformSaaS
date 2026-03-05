@@ -1,3 +1,7 @@
+uuid: 1fc0e9a5-9c86-4646-a2d4-48f9085fee62
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_profesional_experiments_monthly
 label: 'Emprendimiento Profesional: Experimentos Mensuales'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: experiments_monthly
 limit_value: -1
 description: 'Experimentos mensuales ilimitados en plan Profesional Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 419
-status: true

@@ -1,8 +1,9 @@
+uuid: 071405d2-9559-4b31-8832-2862ada5de8a
 langcode: es
 status: true
 dependencies: {  }
 id: vertical_serviciosconecta
-label: 'ServiciosConecta'
+label: ServiciosConecta
 description: 'Paleta corporativa de confianza digital para la vertical ServiciosConecta'
 scope: vertical
 vertical_id: serviciosconecta

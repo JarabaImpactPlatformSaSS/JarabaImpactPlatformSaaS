@@ -1,11 +1,14 @@
+uuid: d583cc59-bf35-441d-b1c7-7180a827cc6e
+langcode: es
+status: true
+dependencies: {  }
 id: eca_lms_001
-label: 'Auto-Enrollment'
+label: Auto-Enrollment
 description: 'Al completar un diagnostico, el usuario se matricula automaticamente en la ruta de aprendizaje recomendada segun sus gaps de competencias identificados.'
 domain: LMS
-trigger_event: 'hook_entity_insert(diagnostic)'
+trigger_event: hook_entity_insert(diagnostic)
 module: jaraba_lms
 hook_function: jaraba_lms_diagnostic_insert
 spec_reference: 30_LMS
 implementation_status: implemented
 weight: 50
-status: true

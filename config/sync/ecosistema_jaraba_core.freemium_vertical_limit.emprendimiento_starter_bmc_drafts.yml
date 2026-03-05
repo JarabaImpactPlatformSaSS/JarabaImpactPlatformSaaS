@@ -1,5 +1,7 @@
+uuid: 49b022fa-6c58-4a0f-87fe-2216ac98c9fc
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_starter_bmc_drafts
 label: 'Emprendimiento Starter: Borradores BMC'
 vertical: emprendimiento

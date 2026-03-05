@@ -1,3 +1,7 @@
+uuid: 058dcf8f-9def-4d33-993b-8867ded7a767
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_citation_insert
 label: 'JarabaLex Free: Inserciones de citas'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Citas automatizadas no disponibles en plan gratuito JarabaLex.'
 upgrade_message: 'Las citas automatizadas requieren plan Starter o superior. Actualiza para insertar citas con un clic.'
 expected_conversion: 0.35
 weight: 310
-status: true

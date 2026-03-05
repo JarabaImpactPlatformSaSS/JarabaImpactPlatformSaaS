@@ -1,5 +1,7 @@
+uuid: 0b79511c-5005-47f3-aaca-62638d234e11
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_starter_copilot_uses
 label: 'ComercioConecta Starter: Usos Copilot'
 vertical: comercioconecta

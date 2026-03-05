@@ -1,3 +1,7 @@
+uuid: 1be96af4-2bc8-4340-b913-985c84778a3a
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_profesional_training_modules
 label: 'Andalucía +ei Profesional: Módulos Formación'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: training_modules
 limit_value: -1
 description: 'Acceso ilimitado a todos los modulos formativos en plan Profesional.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 538
-status: true

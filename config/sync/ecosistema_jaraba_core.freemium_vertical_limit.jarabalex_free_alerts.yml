@@ -1,5 +1,7 @@
+uuid: 84b717d7-e1a5-4b6f-a43f-4084ccc46a39
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_free_alerts
 label: 'JarabaLex Free: Alertas juridicas'
 vertical: jarabalex

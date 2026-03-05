@@ -1,7 +1,14 @@
+uuid: 24b0cc1a-00f5-43e3-9af3-6b180201ba32
+langcode: es
+status: true
+dependencies: {  }
 id: legal_alerts
 label: 'Alertas juridicas inteligentes'
 description: 'Alertas automaticas sobre cambios legislativos, nueva jurisprudencia y actualizaciones normativas relevantes.'
 category: legal
 icon: alert
 weight: 21
-status: true
+base_cost_monthly: 0.0
+unit_cost: 0.0
+cost_category: compute
+usage_metric: ''

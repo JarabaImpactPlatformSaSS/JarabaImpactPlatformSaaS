@@ -1,5 +1,7 @@
+uuid: 50b341cb-00ad-4a6e-b57a-7ab3b4b605a9
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_free_hypotheses
 label: 'Emprendimiento Free: Hipotesis'
 vertical: emprendimiento

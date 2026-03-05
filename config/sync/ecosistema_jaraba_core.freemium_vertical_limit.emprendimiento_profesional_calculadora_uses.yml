@@ -1,3 +1,7 @@
+uuid: 997cf5b3-58bf-4d9c-aea3-484c568149fd
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_profesional_calculadora_uses
 label: 'Emprendimiento Profesional: Calculadora financiera'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: calculadora_uses
 limit_value: -1
 description: 'Usos ilimitados de la calculadora financiera en plan Profesional Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 412
-status: true

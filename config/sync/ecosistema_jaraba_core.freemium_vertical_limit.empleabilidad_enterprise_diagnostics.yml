@@ -1,3 +1,7 @@
+uuid: 113a059c-1723-4e79-8ef6-da93f9679ca8
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_enterprise_diagnostics
 label: 'Empleabilidad Enterprise: Diagnosticos'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: diagnostics
 limit_value: -1
 description: 'Diagnosticos ilimitados en plan Enterprise Empleabilidad.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 303
-status: true

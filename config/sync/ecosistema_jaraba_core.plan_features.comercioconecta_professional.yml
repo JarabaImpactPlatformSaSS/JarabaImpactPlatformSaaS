@@ -1,3 +1,7 @@
+uuid: 6df5b0e6-3f05-451a-a33e-7604a7641d9a
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_professional
 label: 'ComercioConecta - Professional'
 vertical: comercioconecta
@@ -16,4 +20,3 @@ limits:
   analytics_advanced: -1
   pos_integration: 0
 description: 'Limites del tier Professional para la vertical ComercioConecta.'
-status: true

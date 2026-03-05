@@ -1,3 +1,7 @@
+uuid: 38a4287d-315f-41b9-8cd9-2b989055ad58
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_enterprise
 label: 'Empleabilidad - Enterprise'
 vertical: empleabilidad
@@ -17,4 +21,3 @@ limits:
   offers_visible_per_day: 10000
   diagnostics: 10000
 description: 'Limites del tier Enterprise para la vertical Empleabilidad (ilimitado).'
-status: true

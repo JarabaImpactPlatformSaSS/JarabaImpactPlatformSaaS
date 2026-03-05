@@ -1,3 +1,7 @@
+uuid: ed8179f4-d86f-48a5-9e9a-2c4a812117d6
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_profesional_mentoring_sessions_monthly
 label: 'Emprendimiento Profesional: Sesiones Mentoria Mensuales'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: mentoring_sessions_monthly
 limit_value: -1
 description: 'Sesiones de mentoria ilimitadas en plan Profesional Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 421
-status: true

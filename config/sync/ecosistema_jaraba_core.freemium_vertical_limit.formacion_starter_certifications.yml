@@ -1,5 +1,7 @@
+uuid: f84eb16c-afa9-4c5f-9cea-2c40b798bc49
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_starter_certifications
 label: 'Formacion Starter: Certificaciones'
 vertical: formacion

@@ -1,3 +1,7 @@
+uuid: a5f07e06-8f00-415d-ac8b-1de13f023001
+langcode: es
+status: true
+dependencies: {  }
 id: eca_ord_006
 label: 'Payout Completado'
 description: 'Al recibir webhook payout.paid de Stripe, se registra el pago al productor, se actualiza el balance del tenant y se genera notificacion de cobro exitoso.'
@@ -8,4 +12,3 @@ hook_function: jaraba_foc_stripe_webhook_payout_paid
 spec_reference: 50_Checkout
 implementation_status: implemented
 weight: 45
-status: true

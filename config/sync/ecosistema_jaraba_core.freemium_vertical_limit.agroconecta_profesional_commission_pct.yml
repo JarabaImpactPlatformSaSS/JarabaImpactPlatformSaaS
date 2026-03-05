@@ -1,3 +1,7 @@
+uuid: f8124159-3946-42e7-a796-78efcde00eab
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_profesional_commission_pct
 label: 'AgroConecta Profesional: Comision %'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: commission_pct
 limit_value: 5
 description: 'Comision del 5% por transaccion en plan Profesional AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 42
-status: true

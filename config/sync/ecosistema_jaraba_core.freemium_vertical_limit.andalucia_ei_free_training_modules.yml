@@ -1,3 +1,7 @@
+uuid: 3871d54a-9cf3-40af-a57d-d6e3cc6c3ece
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_free_training_modules
 label: 'Andalucía +ei Free: Módulos Formación'
 vertical: andalucia_ei
@@ -8,4 +12,3 @@ description: 'Acceso a 3 modulos formativos en plan gratuito.'
 upgrade_message: 'Solo tienes acceso a 3 modulos. Actualiza a Starter para acceder a 10 modulos formativos.'
 expected_conversion: 0.25
 weight: 530
-status: true

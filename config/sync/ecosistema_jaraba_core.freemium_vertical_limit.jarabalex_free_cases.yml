@@ -1,5 +1,7 @@
+uuid: bb3429b1-b77f-4fae-ae72-0a3191538cff
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_free_cases
 label: 'JarabaLex Free: Expedientes'
 vertical: jarabalex

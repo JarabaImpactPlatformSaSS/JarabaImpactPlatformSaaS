@@ -1,5 +1,7 @@
+uuid: b1e7719d-414b-4f8d-84ad-86a5c31ce506
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_starter_flash_offers
 label: 'ComercioConecta Starter: Ofertas flash'
 vertical: comercioconecta

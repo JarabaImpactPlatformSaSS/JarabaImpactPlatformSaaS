@@ -1,3 +1,7 @@
+uuid: 3e75a276-b722-48a8-95af-2f867539ee29
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_free_packages
 label: 'ServiciosConecta Free: Paquetes de sesiones'
 vertical: serviciosconecta
@@ -6,6 +10,5 @@ feature_key: packages
 limit_value: 0
 description: 'Paquetes de sesiones no disponibles en plan gratuito ServiciosConecta.'
 upgrade_message: 'Los paquetes de sesiones no estan disponibles en tu plan actual. Actualiza a Profesional para crear hasta 10 paquetes.'
-expected_conversion: 0.30
+expected_conversion: 0.3
 weight: 220
-status: true

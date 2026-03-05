@@ -1,5 +1,7 @@
+uuid: 1dd11561-a69c-4dbe-8e38-a5f4c9108e94
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_starter_job_applications
 label: 'Empleabilidad Starter: Aplicaciones empleo'
 vertical: empleabilidad

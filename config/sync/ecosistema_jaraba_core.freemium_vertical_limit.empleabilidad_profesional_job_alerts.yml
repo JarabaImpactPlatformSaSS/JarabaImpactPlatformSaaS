@@ -1,3 +1,7 @@
+uuid: ad32be32-408d-4786-adc9-687d19d07aaf
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_profesional_job_alerts
 label: 'Empleabilidad Profesional: Alertas de empleo'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: job_alerts
 limit_value: -1
 description: 'Alertas de empleo ilimitadas en plan Profesional Empleabilidad.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 362
-status: true

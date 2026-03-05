@@ -1,3 +1,7 @@
+uuid: 5fcaaebb-096c-4c20-a16a-df4aafa66d43
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_starter_packages
 label: 'ServiciosConecta Starter: Paquetes de sesiones'
 vertical: serviciosconecta
@@ -8,4 +12,3 @@ description: 'Paquetes de sesiones no disponibles en plan Starter ServiciosConec
 upgrade_message: 'Los paquetes de sesiones no estan disponibles en tu plan actual. Actualiza a Profesional para crear hasta 10 paquetes.'
 expected_conversion: 0.28
 weight: 221
-status: true

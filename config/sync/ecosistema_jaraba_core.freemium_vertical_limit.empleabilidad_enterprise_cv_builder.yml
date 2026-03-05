@@ -1,3 +1,7 @@
+uuid: 7b495db7-fcab-4a36-a668-fd620816db2e
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_enterprise_cv_builder
 label: 'Empleabilidad Enterprise: Generador CV'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: cv_builder
 limit_value: -1
 description: 'CVs generados con IA ilimitados en plan Enterprise Empleabilidad.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 323
-status: true

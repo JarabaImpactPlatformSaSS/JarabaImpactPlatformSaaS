@@ -1,3 +1,7 @@
+uuid: c1342269-efd0-41ef-ac09-98a0e5709eea
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_starter
 label: 'Empleabilidad - Starter'
 vertical: empleabilidad
@@ -13,4 +17,3 @@ limits:
   offers_visible_per_day: 25
   diagnostics: 3
 description: 'Limites del tier Starter para la vertical Empleabilidad.'
-status: true

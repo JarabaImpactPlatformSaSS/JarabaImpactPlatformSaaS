@@ -1,5 +1,7 @@
+uuid: b717c07e-5028-4ed7-bd30-e18dfc9ae852
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_starter_products
 label: 'ComercioConecta Starter: Productos'
 vertical: comercioconecta

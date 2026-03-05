@@ -1,3 +1,7 @@
+uuid: 10f811ab-8293-4b8d-a718-816bb58808b3
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_citation_insert
 label: 'JarabaLex Profesional: Inserciones de citas'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: citation_insert
 limit_value: -1
 description: 'Citas automatizadas ilimitadas en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 316
-status: true

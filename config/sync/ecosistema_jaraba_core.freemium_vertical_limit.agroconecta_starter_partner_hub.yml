@@ -1,5 +1,7 @@
+uuid: null
 langcode: es
 status: true
+dependencies: {  }
 id: agroconecta_starter_partner_hub
 label: 'AgroConecta Starter: Hub B2B'
 vertical: agroconecta

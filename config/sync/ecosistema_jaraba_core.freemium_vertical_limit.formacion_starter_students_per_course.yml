@@ -1,5 +1,7 @@
+uuid: a4d14c7c-8c63-4b2c-b380-adb7dfba0895
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_starter_students_per_course
 label: 'Formacion Starter: Alumnos por curso'
 vertical: formacion

@@ -1,5 +1,7 @@
+uuid: f06fe480-4e8e-48a5-a7a0-ae1b75b514f1
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_profesional_copilot_uses
 label: 'Formacion Profesional: Usos Copilot'
 vertical: formacion

@@ -1,3 +1,7 @@
+uuid: a4339e10-1a1a-4fea-afe3-2d6ef15b65d0
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_profesional_copilot_sessions_daily
 label: 'Emprendimiento Profesional: Sesiones Copiloto Diarias'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: copilot_sessions_daily
 limit_value: -1
 description: 'Sesiones diarias de Copiloto IA ilimitadas en plan Profesional Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 420
-status: true

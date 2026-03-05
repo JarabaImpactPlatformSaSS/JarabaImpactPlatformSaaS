@@ -1,3 +1,7 @@
+uuid: afa81be4-b9b5-4b62-8c58-b82fd09ffacd
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_starter_analytics_advanced
 label: 'ComercioConecta Starter: Analytics Avanzados'
 vertical: comercioconecta
@@ -6,6 +10,5 @@ feature_key: analytics_advanced
 limit_value: 0
 description: 'Analytics avanzados no disponibles en plan Starter ComercioConecta.'
 upgrade_message: 'Los analytics avanzados te ayudan a entender tus ventas y clientes. Disponible desde Profesional.'
-expected_conversion: 0.20
+expected_conversion: 0.2
 weight: 141
-status: true

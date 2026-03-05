@@ -1,5 +1,7 @@
+uuid: 2d80e9ce-f11e-4793-a3b7-e7863b764f51
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_profesional_cv_builder
 label: 'Empleabilidad Profesional: CV Builder'
 vertical: empleabilidad

@@ -1,3 +1,7 @@
+uuid: d46a86b5-a506-408d-84c7-20abe892eac8
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_profesional_mentoring_hours_monthly
 label: 'Andalucía +ei Profesional: Horas Mentoría Mensual'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: mentoring_hours_monthly
 limit_value: -1
 description: 'Horas de mentoria humana ilimitadas en plan Profesional.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 518
-status: true

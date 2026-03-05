@@ -1,5 +1,7 @@
+uuid: 1243236b-55bc-4696-bb64-31d508bb0a78
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_profesional_courses
 label: 'Formacion Profesional: Cursos'
 vertical: formacion

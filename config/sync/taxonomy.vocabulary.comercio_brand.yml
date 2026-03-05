@@ -1,3 +1,4 @@
+uuid: a5f662db-5add-48b9-a454-19a3edc2ea8d
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Marcas Comercio'
 vid: comercio_brand
 description: 'Marcas comerciales para productos del marketplace ComercioConecta. Vocabulario plano.'
 weight: 0
+new_revision: false

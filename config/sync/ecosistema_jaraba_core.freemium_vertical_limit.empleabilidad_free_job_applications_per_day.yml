@@ -1,3 +1,7 @@
+uuid: d0359bcd-f72e-46f6-8cde-ee146352fd0e
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_free_job_applications_per_day
 label: 'Empleabilidad Free: Candidaturas diarias'
 vertical: empleabilidad
@@ -8,4 +12,3 @@ description: '3 candidaturas diarias en plan gratuito Empleabilidad.'
 upgrade_message: 'Has alcanzado el límite de 3 candidaturas diarias. Actualiza a Starter para hasta 15 candidaturas al día.'
 expected_conversion: 0.35
 weight: 340
-status: true

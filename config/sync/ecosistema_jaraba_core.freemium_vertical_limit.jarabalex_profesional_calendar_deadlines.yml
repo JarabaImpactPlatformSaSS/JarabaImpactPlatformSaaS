@@ -1,3 +1,7 @@
+uuid: b4789f49-7084-40f0-acc2-727240d4f0ef
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_calendar_deadlines
 label: 'JarabaLex Profesional: Plazos ilimitados'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: calendar_deadlines
 limit_value: -1
 description: 'Plazos ilimitados en agenda en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 348
-status: true

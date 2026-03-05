@@ -1,3 +1,4 @@
+uuid: 4d79719d-3490-4040-86f8-2f964472eff2
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Materia Subvenciones'
 vid: legal_topic_subvenciones
 description: 'Materias de subvenciones y ayudas publicas: Justificacion, Reintegro, Auditoria, Bases reguladoras, Convocatoria.'
 weight: 0
+new_revision: false

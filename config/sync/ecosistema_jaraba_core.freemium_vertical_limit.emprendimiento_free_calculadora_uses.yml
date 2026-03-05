@@ -1,3 +1,7 @@
+uuid: f8b64b02-7018-4a0a-84cc-4b6b48cc0e02
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_free_calculadora_uses
 label: 'Emprendimiento Free: Calculadora financiera'
 vertical: emprendimiento
@@ -8,4 +12,3 @@ description: '1 uso de la calculadora financiera en plan gratuito Emprendimiento
 upgrade_message: 'Ya has usado la calculadora financiera gratuita. Actualiza a Starter para usos ilimitados.'
 expected_conversion: 0.28
 weight: 410
-status: true

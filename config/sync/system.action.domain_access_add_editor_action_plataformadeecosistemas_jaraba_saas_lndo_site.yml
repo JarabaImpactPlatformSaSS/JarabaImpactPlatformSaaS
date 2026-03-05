@@ -1,0 +1,15 @@
+uuid: ecec8ae6-76b0-4a08-98e5-d96fd3c85c3e
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.plataformadeecosistemas_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_editor_action_plataformadeecosistemas_jaraba_saas_lndo_site
+label: 'Agregar editores al dominio PED Local Dev'
+type: user
+plugin: domain_access_add_editor_action
+configuration:
+  domain_id:
+    - plataformadeecosistemas_jaraba_saas_lndo_site

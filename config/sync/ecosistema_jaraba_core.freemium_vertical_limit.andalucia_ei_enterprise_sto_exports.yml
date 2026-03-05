@@ -1,3 +1,7 @@
+uuid: 25e51a98-6064-45e2-a650-a1bc4b20762d
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_enterprise_sto_exports
 label: 'Andalucía +ei Enterprise: Exportaciones STO'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: sto_exports
 limit_value: -1
 description: 'Exportaciones STO ilimitadas en plan Enterprise.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 529
-status: true

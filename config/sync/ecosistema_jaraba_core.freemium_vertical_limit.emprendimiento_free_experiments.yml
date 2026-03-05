@@ -1,5 +1,7 @@
+uuid: 59904f54-51cc-41c2-92d1-a9fdb2162443
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_free_experiments
 label: 'Emprendimiento Free: Experimentos'
 vertical: emprendimiento

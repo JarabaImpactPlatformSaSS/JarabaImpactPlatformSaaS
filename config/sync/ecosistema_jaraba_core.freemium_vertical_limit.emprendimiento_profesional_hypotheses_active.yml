@@ -1,3 +1,7 @@
+uuid: bb694531-f891-455b-bc6a-9554d19f6a12
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_profesional_hypotheses_active
 label: 'Emprendimiento Profesional: Hipotesis Activas'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: hypotheses_active
 limit_value: -1
 description: 'Hipotesis activas ilimitadas en plan Profesional Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 418
-status: true

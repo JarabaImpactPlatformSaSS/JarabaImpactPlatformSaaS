@@ -1,6 +1,6 @@
 favicon:
   mimetype: image/png
-  path: themes/custom/ecosistema_jaraba_theme/images/EcosistemaJaraba_icono_v6_0.png
+  path: 'public://EcosistemaJaraba_icono_v6_0_0.png'
   use_default: false
 features:
   comment_user_picture: true
@@ -10,7 +10,7 @@ features:
   node_user_picture: true
   slogan: false
 logo:
-  path: themes/custom/ecosistema_jaraba_theme/images/EcosistemaJaraba_icono_v6.png
+  path: 'public://EcosistemaJaraba_icono_v6_1.png'
   use_default: false
 color_primary: '#ff8c42'
 color_secondary: '#00a9a5'
@@ -108,3 +108,35 @@ color_breadcrumb_text: '#64748b'
 color_breadcrumb_link: '#ff8c42'
 color_breadcrumb_active: '#1a1a2e'
 enable_avatar_nav: 1
+command_bar_enabled: 1
+legal_privacy_content: ''
+legal_privacy_updated: ''
+legal_terms_content: ''
+legal_terms_updated: ''
+legal_cookies_content: ''
+legal_cookies_updated: ''
+legal_dpa_content: ''
+legal_dpa_updated: ''
+about_content: ''
+contact_email: ''
+contact_phone: ''
+contact_address: ''
+contact_content: ''
+hero_eyebrow: ''
+hero_headline: ''
+hero_subtitle: ''
+hero_cta_primary_text: ''
+hero_cta_secondary_text: ''
+hero_cta_secondary_url: /metodo
+stat_value_1: ''
+stat_suffix_1: ''
+stat_label_1: ''
+stat_value_2: ''
+stat_suffix_2: ''
+stat_label_2: ''
+stat_value_3: ''
+stat_suffix_3: ''
+stat_label_3: ''
+stat_value_4: ''
+stat_suffix_4: ''
+stat_label_4: ''

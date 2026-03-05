@@ -1,3 +1,4 @@
+uuid: e01f6b82-1e51-49ad-a1bf-e63c29b289d2
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Materia Fiscal'
 vid: legal_topic_fiscal
 description: 'Materias de derecho fiscal y tributario: IRPF, IS, IVA, ITP, Sucesiones, Aduanas, Procedimiento tributario.'
 weight: 0
+new_revision: false

@@ -1,3 +1,7 @@
+uuid: 6c4a9551-1533-40ed-a63e-ca51ea08c6aa
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_profesional_seo_local_audit
 label: 'ComercioConecta Profesional: Auditoria SEO Local'
 vertical: comercioconecta
@@ -6,6 +10,5 @@ feature_key: seo_local_audit
 limit_value: -1
 description: 'Auditoria SEO local ilimitada en plan Profesional ComercioConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 132
-status: true

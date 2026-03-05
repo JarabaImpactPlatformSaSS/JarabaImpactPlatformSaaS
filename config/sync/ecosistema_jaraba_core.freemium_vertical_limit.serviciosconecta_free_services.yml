@@ -1,5 +1,7 @@
+uuid: 29dea6bd-5e44-4520-87e7-366e22ebb855
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_free_services
 label: 'ServiciosConecta Free: Servicios'
 vertical: serviciosconecta

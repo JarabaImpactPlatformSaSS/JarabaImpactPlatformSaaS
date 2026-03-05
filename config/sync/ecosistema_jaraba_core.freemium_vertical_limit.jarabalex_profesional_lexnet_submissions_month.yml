@@ -1,3 +1,7 @@
+uuid: edb1445e-748c-4ec4-8c5b-90863c8ef0d0
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_lexnet_submissions_month
 label: 'JarabaLex Profesional: Presentaciones LexNET ilimitadas'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: lexnet_submissions_month
 limit_value: -1
 description: 'Presentaciones LexNET ilimitadas en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 354
-status: true

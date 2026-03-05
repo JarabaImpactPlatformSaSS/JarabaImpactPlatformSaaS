@@ -1,3 +1,7 @@
+uuid: 0d7bc448-6c4a-40dd-b312-de6b109e08ea
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_partner_hub
 label: 'AgroConecta Enterprise: Hub B2B Partners'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: partner_hub
 limit_value: -1
 description: 'Hub B2B Partners ilimitado en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 208
-status: true

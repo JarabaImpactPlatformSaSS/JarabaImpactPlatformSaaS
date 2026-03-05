@@ -1,5 +1,7 @@
+uuid: 56819358-1bee-47cf-98e5-858239078069
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_profesional_experiments
 label: 'Emprendimiento Profesional: Experimentos'
 vertical: emprendimiento

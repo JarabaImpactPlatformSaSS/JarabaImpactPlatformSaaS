@@ -1,3 +1,7 @@
+uuid: cee476d8-7d7f-47ab-aadc-5fc5290fca7f
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_api_access
 label: 'JarabaLex Profesional: Acceso API'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: api_access
 limit_value: -1
 description: 'Acceso ilimitado a la API REST en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 336
-status: true

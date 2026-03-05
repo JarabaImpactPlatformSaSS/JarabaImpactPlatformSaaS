@@ -1,5 +1,7 @@
+uuid: e79e54a8-b38d-4d07-898c-7246e662bfa1
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_profesional_flash_offers
 label: 'ComercioConecta Profesional: Ofertas flash'
 vertical: comercioconecta

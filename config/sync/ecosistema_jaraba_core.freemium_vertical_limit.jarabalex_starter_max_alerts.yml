@@ -1,3 +1,7 @@
+uuid: 6d3c2c3d-9b7b-45ac-9bc6-a78074663a48
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_max_alerts
 label: 'JarabaLex Starter: Alertas'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: max_alerts
 limit_value: 5
 description: 'Maximo 5 alertas juridicas activas en plan Starter JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 304
-status: true

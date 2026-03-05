@@ -1,3 +1,7 @@
+uuid: 3788a369-8067-4fc6-9be9-b770aa71793d
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_enterprise_offers_visible_per_day
 label: 'Empleabilidad Enterprise: Ofertas visibles/dia'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: offers_visible_per_day
 limit_value: -1
 description: 'Ofertas de empleo ilimitadas en plan Enterprise Empleabilidad.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 313
-status: true

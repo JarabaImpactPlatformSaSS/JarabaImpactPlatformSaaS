@@ -1,3 +1,7 @@
+uuid: 6ca21f1b-f016-4437-9cfe-7fda72e01299
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_max_bookmarks
 label: 'JarabaLex Starter: Marcadores'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: max_bookmarks
 limit_value: 100
 description: 'Maximo 100 marcadores de documentos en plan Starter JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 305
-status: true

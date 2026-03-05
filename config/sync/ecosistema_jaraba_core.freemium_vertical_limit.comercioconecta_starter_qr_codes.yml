@@ -1,3 +1,7 @@
+uuid: 52ab0c71-12cd-4efa-abd2-9ae40fe4f43a
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_starter_qr_codes
 label: 'ComercioConecta Starter: Codigos QR'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: '10 codigos QR en plan Starter ComercioConecta.'
 upgrade_message: 'Has alcanzado el limite de 10 codigos QR. Actualiza a Profesional para codigos ilimitados.'
 expected_conversion: 0.22
 weight: 111
-status: true

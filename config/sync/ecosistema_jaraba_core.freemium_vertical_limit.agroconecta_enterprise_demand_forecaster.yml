@@ -1,3 +1,7 @@
+uuid: f5a5cff2-e262-4ae5-82a3-939c7de6d5d0
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_demand_forecaster
 label: 'AgroConecta Enterprise: Prevision de Demanda'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: demand_forecaster
 limit_value: -1
 description: 'Prevision de demanda IA ilimitada en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 206
-status: true

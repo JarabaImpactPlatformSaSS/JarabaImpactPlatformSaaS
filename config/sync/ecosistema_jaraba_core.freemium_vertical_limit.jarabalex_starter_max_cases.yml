@@ -1,3 +1,7 @@
+uuid: 184830ee-3d81-402a-abbb-9d0638691185
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_max_cases
 label: 'JarabaLex Starter: Expedientes maximos'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Maximo 50 expedientes activos en plan Starter JarabaLex.'
 upgrade_message: 'Has alcanzado el limite de 50 expedientes. Actualiza a Profesional para expedientes ilimitados.'
 expected_conversion: 0.35
 weight: 341
-status: true

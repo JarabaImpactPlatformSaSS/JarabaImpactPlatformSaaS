@@ -1,3 +1,7 @@
+uuid: 06cc214b-0267-4589-b7be-e1c4cd20e34c
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_free_commission_pct
 label: 'AgroConecta Free: Comision %'
 vertical: agroconecta
@@ -8,4 +12,3 @@ description: 'Comision del 10% por transaccion en plan gratuito AgroConecta.'
 upgrade_message: 'Tu comision actual es del 10%. Actualiza a Starter para reducirla al 8%.'
 expected_conversion: 0.42
 weight: 40
-status: true

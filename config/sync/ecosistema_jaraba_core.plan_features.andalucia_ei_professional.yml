@@ -1,3 +1,7 @@
+uuid: 8f3fc55e-fa34-41a5-a640-a0de24850ee7
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_professional
 label: 'Andalucía +ei - Professional'
 vertical: andalucia_ei
@@ -18,4 +22,3 @@ limits:
   diagnostic_access: 15
   report_downloads: 25
 description: 'Limites del tier Professional para el vertical Andalucia +ei (institucional).'
-status: true

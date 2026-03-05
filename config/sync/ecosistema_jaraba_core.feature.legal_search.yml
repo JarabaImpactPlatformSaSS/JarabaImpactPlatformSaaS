@@ -1,7 +1,14 @@
+uuid: b398bf7b-ac2f-48fd-8144-f2b4d0c595ae
+langcode: es
+status: true
+dependencies: {  }
 id: legal_search
 label: 'Busqueda juridica semantica'
 description: 'Busqueda semantica con IA sobre legislacion, jurisprudencia y doctrina nacional y europea.'
 category: legal
 icon: search-legal
 weight: 20
-status: true
+base_cost_monthly: 0.0
+unit_cost: 0.0
+cost_category: compute
+usage_metric: ''

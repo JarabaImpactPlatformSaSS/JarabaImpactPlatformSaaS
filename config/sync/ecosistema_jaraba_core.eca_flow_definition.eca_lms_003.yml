@@ -1,11 +1,14 @@
+uuid: 6856814f-853b-4093-b865-1716b1abcd16
+langcode: es
+status: true
+dependencies: {  }
 id: eca_lms_003
 label: 'XP Automatico'
 description: 'Al registrar progreso en una leccion o actividad LMS, se calculan y acreditan puntos de experiencia (XP) segun la dificultad y el tipo de actividad completada.'
 domain: LMS
-trigger_event: 'hook_entity_insert(lms_progress)'
+trigger_event: hook_entity_insert(lms_progress)
 module: jaraba_lms
 hook_function: jaraba_lms_progress_insert
 spec_reference: 30_LMS
 implementation_status: implemented
 weight: 52
-status: true

@@ -1,6 +1,3 @@
-# Plan SaaS ComercioConecta Enterprise - Para cadenas y multi-tienda
-# Se importa al instalar el modulo
-
 langcode: es
 status: true
 name: 'ComercioConecta Enterprise'
@@ -25,6 +22,6 @@ features:
   - soporte_email
   - soporte_chat
   - soporte_dedicado
-limits: '{"products": -1, "flash_offers_active": -1, "copilot_uses_per_month": 10000, "qr_codes": -1, "seo_local_audit": -1, "analytics_advanced": -1, "pos_integration": -1}'
+limits: '{"products":-1,"flash_offers_active":-1,"copilot_uses_per_month":10000,"qr_codes":-1,"seo_local_audit":-1,"analytics_advanced":-1,"pos_integration":-1}'
 stripe_price_id: ''
 weight: 12

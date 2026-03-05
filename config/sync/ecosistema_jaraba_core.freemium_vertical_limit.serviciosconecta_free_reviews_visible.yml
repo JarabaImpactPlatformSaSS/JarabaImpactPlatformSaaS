@@ -1,3 +1,7 @@
+uuid: 5da111ae-9d6a-4dd9-ac46-5df80d7a3f43
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_free_reviews_visible
 label: 'ServiciosConecta Free: Resenas visibles'
 vertical: serviciosconecta
@@ -8,4 +12,3 @@ description: 'Maximo 5 resenas visibles en perfil en plan gratuito ServiciosCone
 upgrade_message: 'Solo tus 5 resenas mas recientes son visibles. Actualiza a Starter para mostrar 10 resenas.'
 expected_conversion: 0.25
 weight: 240
-status: true

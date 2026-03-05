@@ -1,5 +1,7 @@
+uuid: edb7547b-153f-4cae-9f0c-844e239d56e2
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_starter_cases
 label: 'JarabaLex Starter: Expedientes'
 vertical: jarabalex

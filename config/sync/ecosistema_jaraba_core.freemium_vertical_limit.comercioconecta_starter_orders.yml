@@ -1,5 +1,7 @@
+uuid: 17769290-0a65-438b-930e-75429dcf2dca
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_starter_orders
 label: 'ComercioConecta Starter: Pedidos'
 vertical: comercioconecta

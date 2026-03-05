@@ -1,5 +1,7 @@
+uuid: 17285095-c773-4236-9b04-31c649122ddb
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_free_copilot_uses
 label: 'ComercioConecta Free: Usos Copilot'
 vertical: comercioconecta

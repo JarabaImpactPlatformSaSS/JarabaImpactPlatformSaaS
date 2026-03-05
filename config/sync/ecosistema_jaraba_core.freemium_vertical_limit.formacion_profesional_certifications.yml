@@ -1,5 +1,7 @@
+uuid: cf53b856-6641-4642-844b-911cbb9fb63a
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_profesional_certifications
 label: 'Formacion Profesional: Certificaciones'
 vertical: formacion

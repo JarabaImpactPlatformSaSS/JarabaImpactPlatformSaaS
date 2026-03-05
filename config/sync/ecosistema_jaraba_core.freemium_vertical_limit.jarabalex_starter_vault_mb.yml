@@ -1,5 +1,7 @@
+uuid: 074c9258-9fcc-47f1-bf5b-7075c3092625
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_starter_vault_mb
 label: 'JarabaLex Starter: Boveda documental (MB)'
 vertical: jarabalex

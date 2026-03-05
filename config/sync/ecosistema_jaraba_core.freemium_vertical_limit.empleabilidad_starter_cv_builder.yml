@@ -1,5 +1,7 @@
+uuid: 364d1a29-d11d-4fad-90f3-d58ded24defa
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_starter_cv_builder
 label: 'Empleabilidad Starter: CV Builder'
 vertical: empleabilidad

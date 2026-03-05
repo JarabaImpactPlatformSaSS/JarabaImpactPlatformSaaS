@@ -1,5 +1,7 @@
+uuid: 6fd80d57-4edc-40d1-8082-3f45871658d1
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_free_students_per_course
 label: 'Formacion Free: Alumnos por curso'
 vertical: formacion

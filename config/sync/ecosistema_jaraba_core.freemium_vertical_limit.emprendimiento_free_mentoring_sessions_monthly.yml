@@ -1,3 +1,7 @@
+uuid: 559d9cd0-4b26-44c9-8d8d-3175de11f5e9
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_free_mentoring_sessions_monthly
 label: 'Emprendimiento Free: Sesiones Mentoria Mensuales'
 vertical: emprendimiento
@@ -8,4 +12,3 @@ description: 'Mentoria no incluida en plan gratuito Emprendimiento.'
 upgrade_message: 'La mentoria no esta disponible en el plan gratuito. Actualiza a Starter para acceder a 2 sesiones mensuales con mentores expertos.'
 expected_conversion: 0.22
 weight: 413
-status: true

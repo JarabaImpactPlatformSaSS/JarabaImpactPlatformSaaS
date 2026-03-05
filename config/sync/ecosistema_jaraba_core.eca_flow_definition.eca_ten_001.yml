@@ -1,11 +1,14 @@
+uuid: 9d197cb3-088b-49ba-b4b7-cc1eba716b4e
+langcode: es
+status: true
+dependencies: {  }
 id: eca_ten_001
 label: 'Tenant Onboarding'
 description: 'Al crear un nuevo tenant (grupo), se inicializan configuraciones por defecto, se genera subdominio, se asigna plan trial y se dispara wizard de setup.'
 domain: TEN
-trigger_event: 'hook_entity_insert(tenant)'
+trigger_event: hook_entity_insert(tenant)
 module: ecosistema_jaraba_core
 hook_function: ecosistema_jaraba_core_group_insert
 spec_reference: 06_Core
 implementation_status: implemented
 weight: 10
-status: true

@@ -1,5 +1,7 @@
+uuid: 1cf1fb5c-950c-44da-8ccf-78fcc0d58354
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_profesional_services
 label: 'ServiciosConecta Profesional: Servicios'
 vertical: serviciosconecta

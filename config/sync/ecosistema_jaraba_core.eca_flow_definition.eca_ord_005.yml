@@ -1,11 +1,14 @@
+uuid: eaa7aad3-6bb0-4912-b29f-e8f7515b59a2
+langcode: es
+status: true
+dependencies: {  }
 id: eca_ord_005
 label: 'Review Recibida'
 description: 'Al crear una resena de producto, se notifica al productor, se actualiza la puntuacion media del producto y se genera respuesta sugerida via IA si el productor tiene plan Pro.'
 domain: ORD
-trigger_event: 'hook_entity_insert(review)'
+trigger_event: hook_entity_insert(review)
 module: jaraba_agroconecta_core
 hook_function: jaraba_agroconecta_core_review_insert
 spec_reference: 54_Reviews
 implementation_status: partial
 weight: 44
-status: true

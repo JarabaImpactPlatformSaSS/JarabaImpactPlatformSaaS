@@ -1,3 +1,7 @@
+uuid: d17d6092-b195-473b-9e6d-7aec84aed543
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_enterprise_training_modules
 label: 'Andalucía +ei Enterprise: Módulos Formación'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: training_modules
 limit_value: -1
 description: 'Acceso ilimitado a todos los modulos formativos en plan Enterprise.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 539
-status: true

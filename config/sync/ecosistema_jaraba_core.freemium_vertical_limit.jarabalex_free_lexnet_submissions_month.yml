@@ -1,3 +1,7 @@
+uuid: 0ac6322a-84eb-4aa3-a8d0-631247fd6023
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_lexnet_submissions_month
 label: 'JarabaLex Free: Presentaciones LexNET por mes'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Presentaciones LexNET no incluidas en plan gratuito JarabaLex.'
 upgrade_message: 'La integracion con LexNET para presentaciones electronicas esta disponible desde el plan Starter.'
 expected_conversion: 0.45
 weight: 352
-status: true

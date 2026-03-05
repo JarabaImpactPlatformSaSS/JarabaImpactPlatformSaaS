@@ -1,3 +1,7 @@
+uuid: 6f1dee52-ab87-4465-a6fc-a10fa8ee9fca
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_billing_invoices_month
 label: 'JarabaLex Starter: Facturas por mes'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: billing_invoices_month
 limit_value: 20
 description: 'Maximo 20 facturas por mes en plan Starter JarabaLex.'
 upgrade_message: 'Has alcanzado el limite de 20 facturas mensuales. Actualiza a Profesional para facturacion ilimitada.'
-expected_conversion: 0.40
+expected_conversion: 0.4
 weight: 350
-status: true

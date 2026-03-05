@@ -1,9 +1,7 @@
-# S4-02: Plantilla Demo Showcase Landing
-# Landing page para demostración interactiva del SaaS PLG.
-
+uuid: 9e8efffc-21d3-4d00-929e-d13e8769c1b3
 langcode: es
 status: true
-dependencies: {}
+dependencies: {  }
 id: demo_showcase_landing
 label: 'Demo Showcase Landing'
 description: 'Landing page completa para la experiencia demo interactiva. Incluye selector de perfil, métricas, playground IA y CTA de conversión.'
@@ -17,19 +15,19 @@ fields_schema:
       type: string
       title: 'Título Hero'
       maxLength: 150
-      ui:widget: text
-      ui:placeholder: 'Prueba la plataforma sin registro'
+      'ui:widget': text
+      'ui:placeholder': 'Prueba la plataforma sin registro'
     hero_subtitle:
       type: string
       title: 'Subtítulo Hero'
       maxLength: 300
-      ui:widget: textarea
-      ui:placeholder: 'Experimenta todas las funcionalidades en menos de 60 segundos'
+      'ui:widget': textarea
+      'ui:placeholder': 'Experimenta todas las funcionalidades en menos de 60 segundos'
     profiles_title:
       type: string
       title: 'Título Sección Perfiles'
       maxLength: 100
-      ui:widget: text
+      'ui:widget': text
       default: 'Elige tu sector'
     profiles:
       type: array
@@ -44,7 +42,7 @@ fields_schema:
             maxLength: 50
           vertical:
             type: string
-            title: 'Vertical'
+            title: Vertical
             enum:
               - agroconecta
               - comercioconecta
@@ -56,15 +54,15 @@ fields_schema:
               - jaraba_content_hub
               - formacion
             enumLabels:
-              agroconecta: 'AgroConecta'
-              comercioconecta: 'ComercioConecta'
-              empleabilidad: 'Empleabilidad'
-              emprendimiento: 'Emprendimiento'
-              jarabalex: 'JarabaLex'
-              serviciosconecta: 'ServiciosConecta'
+              agroconecta: AgroConecta
+              comercioconecta: ComercioConecta
+              empleabilidad: Empleabilidad
+              emprendimiento: Emprendimiento
+              jarabalex: JarabaLex
+              serviciosconecta: ServiciosConecta
               andalucia_ei: 'Andalucía e+i'
               jaraba_content_hub: 'Content Hub'
-              formacion: 'Formación'
+              formacion: Formación
           description:
             type: string
             title: 'Descripción corta'
@@ -72,7 +70,7 @@ fields_schema:
           icon_color:
             type: string
             title: 'Color del icono'
-            ui:widget: color
+            'ui:widget': color
             default: '#233D63'
     cta_text:
       type: string
@@ -99,30 +97,34 @@ plans_required:
   - professional
   - enterprise
 is_premium: false
-preview_image: '/modules/custom/jaraba_page_builder/images/previews/demo-showcase-landing.png'
-weight: 0
+preview_image: /modules/custom/jaraba_page_builder/images/previews/demo-showcase-landing.png
 preview_data:
   hero_title: 'Prueba la plataforma sin registro'
   hero_subtitle: 'Experimenta todas las funcionalidades en menos de 60 segundos'
   profiles_title: 'Elige tu sector'
   profiles:
-    - name: 'AgroConecta'
-      vertical: 'agroconecta'
+    -
+      name: AgroConecta
+      vertical: agroconecta
       description: 'Productores, bodegas y cooperativas agroalimentarias'
       icon_color: '#556B2F'
-    - name: 'ComercioConecta'
-      vertical: 'comercioconecta'
+    -
+      name: ComercioConecta
+      vertical: comercioconecta
       description: 'Tiendas, marketplace y comercio digital'
       icon_color: '#233D63'
-    - name: 'Empleabilidad'
-      vertical: 'empleabilidad'
+    -
+      name: Empleabilidad
+      vertical: empleabilidad
       description: 'Bolsas de empleo y selección de talento'
       icon_color: '#00A9A5'
-    - name: 'Emprendimiento'
-      vertical: 'emprendimiento'
+    -
+      name: Emprendimiento
+      vertical: emprendimiento
       description: 'Startups, incubadoras y aceleradoras'
       icon_color: '#FF8C42'
   cta_text: 'Crear cuenta gratis'
   cta_url: '#register'
   metrics_enabled: true
   ai_playground_enabled: true
+weight: 0

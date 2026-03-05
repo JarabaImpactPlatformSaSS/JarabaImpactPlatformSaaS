@@ -1,3 +1,7 @@
+uuid: 0a3b7024-d2d0-4858-9b0c-862900495592
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_billing_invoices_month
 label: 'JarabaLex Free: Facturas por mes'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: billing_invoices_month
 limit_value: 0
 description: 'Facturacion no incluida en plan gratuito JarabaLex.'
 upgrade_message: 'La facturacion automatizada esta disponible desde el plan Starter. Genera facturas con serie fiscal legal.'
-expected_conversion: 0.40
+expected_conversion: 0.4
 weight: 349
-status: true

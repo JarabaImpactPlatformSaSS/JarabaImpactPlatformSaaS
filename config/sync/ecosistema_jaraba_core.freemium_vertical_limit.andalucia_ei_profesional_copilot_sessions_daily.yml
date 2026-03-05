@@ -1,3 +1,7 @@
+uuid: 167b3be0-157f-407d-96c5-09ee3c4bcaf3
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_profesional_copilot_sessions_daily
 label: 'Andalucía +ei Profesional: Sesiones Copiloto Diarias'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: copilot_sessions_daily
 limit_value: -1
 description: 'Sesiones diarias de tutor IA ilimitadas en plan Profesional.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 508
-status: true

@@ -1,3 +1,7 @@
+uuid: 35e3f60a-9b0e-42a6-bd05-182e40df600a
+langcode: en
+status: true
+dependencies: {  }
 id: formacion_professional
 label: 'Formacion - Professional'
 vertical: formacion
@@ -22,4 +26,3 @@ limits:
   copilot_uses_per_month: -1
   storage_gb: 25
 description: 'Limites del tier Professional para la vertical Formacion.'
-status: true

@@ -1,3 +1,7 @@
+uuid: 7848e462-91a7-4088-9a3b-bba90743561f
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise
 label: 'AgroConecta - Enterprise'
 vertical: agroconecta
@@ -21,4 +25,3 @@ limits:
   demand_forecaster: -1
   partner_hub: -1
 description: 'Limites del tier Enterprise para la vertical AgroConecta (ilimitado).'
-status: true

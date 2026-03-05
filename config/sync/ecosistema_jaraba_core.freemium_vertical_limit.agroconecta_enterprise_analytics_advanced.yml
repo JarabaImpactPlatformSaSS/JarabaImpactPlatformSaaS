@@ -1,3 +1,7 @@
+uuid: 5e1c4217-6357-49bc-92fa-94965d100f8d
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_analytics_advanced
 label: 'AgroConecta Enterprise: Analytics Avanzados'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: analytics_advanced
 limit_value: -1
 description: 'Analytics avanzados ilimitados en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 205
-status: true

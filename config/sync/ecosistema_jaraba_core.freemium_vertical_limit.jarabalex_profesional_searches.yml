@@ -1,5 +1,7 @@
+uuid: f1976d61-dabd-41bc-8b0f-1c788c2fac2c
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_profesional_searches
 label: 'JarabaLex Profesional: Busquedas legales'
 vertical: jarabalex

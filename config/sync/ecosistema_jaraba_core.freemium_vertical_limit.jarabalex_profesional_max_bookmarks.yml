@@ -1,3 +1,7 @@
+uuid: b59afb77-54a3-4297-9724-c803eb1f5a41
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_max_bookmarks
 label: 'JarabaLex Profesional: Marcadores'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: max_bookmarks
 limit_value: -1
 description: 'Marcadores ilimitados en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 308
-status: true

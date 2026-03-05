@@ -1,3 +1,7 @@
+uuid: edbb9dd2-a5b9-418c-ace0-a860fe8afac7
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_enterprise_copilot_messages_per_day
 label: 'Empleabilidad Enterprise: Mensajes Copilot diarios'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: copilot_messages_per_day
 limit_value: -1
 description: 'Mensajes al copilot ilimitados en plan Enterprise Empleabilidad.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 353
-status: true

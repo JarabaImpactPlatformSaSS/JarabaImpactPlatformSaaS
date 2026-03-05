@@ -1,3 +1,7 @@
+uuid: b2cff23f-e452-4c58-a690-aeb90cd77804
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_free_diagnostic_access
 label: 'Andalucía +ei Free: Acceso Diagnóstico DIME'
 vertical: andalucia_ei
@@ -8,4 +12,3 @@ description: '1 acceso al diagnostico DIME en plan gratuito.'
 upgrade_message: 'Has usado tu acceso gratuito al diagnostico. Actualiza a Starter para 3 diagnosticos.'
 expected_conversion: 0.22
 weight: 540
-status: true

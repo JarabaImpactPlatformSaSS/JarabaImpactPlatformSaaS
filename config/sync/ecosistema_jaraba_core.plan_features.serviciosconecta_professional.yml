@@ -1,3 +1,7 @@
+uuid: 959b2464-40f8-43fc-91e2-4d1bf723a368
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_professional
 label: 'ServiciosConecta - Professional'
 vertical: serviciosconecta
@@ -16,4 +20,3 @@ limits:
   firma_digital: 0
   presupuestador_ai: 1
 description: 'Limites del tier Professional para la vertical ServiciosConecta.'
-status: true

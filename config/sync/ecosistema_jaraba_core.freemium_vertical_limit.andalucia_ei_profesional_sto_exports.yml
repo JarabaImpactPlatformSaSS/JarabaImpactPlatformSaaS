@@ -1,3 +1,7 @@
+uuid: b03eab94-d338-48b4-8c07-ba1e2071b055
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_profesional_sto_exports
 label: 'Andalucía +ei Profesional: Exportaciones STO'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: sto_exports
 limit_value: -1
 description: 'Exportaciones STO ilimitadas en plan Profesional.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 528
-status: true

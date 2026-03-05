@@ -1,3 +1,7 @@
+uuid: b66bf55c-8a4c-473f-8a62-33b41cf1cb96
+langcode: en
+status: true
+dependencies: {  }
 id: jarabalex_starter
 label: 'JarabaLex - Starter'
 vertical: jarabalex
@@ -19,4 +23,3 @@ limits:
   lexnet_submissions_month: 10
   template_generations_month: 5
 description: 'Limites del tier Starter para la vertical JarabaLex.'
-status: true

@@ -1,12 +1,17 @@
+uuid: 1a91841b-8df5-48e5-89a2-b4083e60c15a
+langcode: en
+status: true
+dependencies: {  }
 id: commerce_product.field_ai_summary
 field_name: field_ai_summary
 entity_type: commerce_product
 type: string_long
-settings: {}
+settings:
+  case_sensitive: false
 module: core
 locked: false
 cardinality: 1
 translatable: true
-indexes: {}
+indexes: {  }
 persist_with_no_fields: false
 custom_storage: false

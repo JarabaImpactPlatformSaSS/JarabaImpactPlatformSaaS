@@ -1,3 +1,7 @@
+uuid: 7a903747-2d08-4eb9-9787-7f9d6dc486cb
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_starter_bookings_per_month
 label: 'ServiciosConecta Starter: Reservas/mes'
 vertical: serviciosconecta
@@ -6,6 +10,5 @@ feature_key: bookings_per_month
 limit_value: -1
 description: 'Reservas ilimitadas en plan Starter ServiciosConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 211
-status: true

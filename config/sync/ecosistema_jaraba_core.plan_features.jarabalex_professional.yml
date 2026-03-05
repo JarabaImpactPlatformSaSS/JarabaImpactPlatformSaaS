@@ -1,3 +1,7 @@
+uuid: 10c59678-311e-436a-8e2c-c6766a8f69a4
+langcode: en
+status: true
+dependencies: {  }
 id: jarabalex_professional
 label: 'JarabaLex - Professional'
 vertical: jarabalex
@@ -25,4 +29,3 @@ limits:
   lexnet_submissions_month: -1
   template_generations_month: -1
 description: 'Limites del tier Professional para la vertical JarabaLex.'
-status: true

@@ -1,5 +1,7 @@
+uuid: 4dccc95d-61e5-42b3-8160-096b288cceee
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_free_bookings
 label: 'ServiciosConecta Free: Reservas'
 vertical: serviciosconecta

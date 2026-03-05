@@ -1,3 +1,7 @@
+uuid: 19fc5ef7-0f27-4847-9758-80eda209f74a
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_enterprise_calculadora_uses
 label: 'Emprendimiento Enterprise: Usos Calculadora'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: calculadora_uses
 limit_value: -1
 description: 'Usos de calculadora de madurez ilimitados en plan Enterprise Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 653
-status: true

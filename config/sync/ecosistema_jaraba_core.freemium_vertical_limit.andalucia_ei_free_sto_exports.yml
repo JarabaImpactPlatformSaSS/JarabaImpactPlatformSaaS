@@ -1,3 +1,7 @@
+uuid: c460dff0-1487-44d8-9075-74a73c481191
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_free_sto_exports
 label: 'Andalucía +ei Free: Exportaciones STO'
 vertical: andalucia_ei
@@ -8,4 +12,3 @@ description: '1 exportacion STO mensual en plan gratuito.'
 upgrade_message: 'Has alcanzado tu limite de exportaciones STO. Actualiza a Starter para 10 exportaciones mensuales.'
 expected_conversion: 0.18
 weight: 520
-status: true

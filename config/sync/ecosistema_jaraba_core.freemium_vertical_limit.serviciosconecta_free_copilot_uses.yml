@@ -1,5 +1,7 @@
+uuid: 5851cc53-0bf3-4304-8099-8659923cab9e
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_free_copilot_uses
 label: 'ServiciosConecta Free: Usos Copilot'
 vertical: serviciosconecta

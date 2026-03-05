@@ -1,3 +1,7 @@
+uuid: e6b67fa6-96db-49d4-ba6b-5c28a594a62c
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_starter_flash_offers_active
 label: 'ComercioConecta Starter: Ofertas flash activas'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: '10 ofertas flash activas en plan Starter ComercioConecta.'
 upgrade_message: 'Has alcanzado el limite de 10 ofertas flash activas. Actualiza a Profesional para ofertas ilimitadas.'
 expected_conversion: 0.22
 weight: 121
-status: true

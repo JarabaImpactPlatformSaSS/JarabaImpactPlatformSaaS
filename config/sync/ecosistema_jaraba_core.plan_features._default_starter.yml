@@ -1,8 +1,12 @@
+uuid: cc169265-1a85-4e25-8fa6-69f2d6513961
+langcode: es
+status: true
+dependencies: {  }
 id: _default_starter
 label: 'Default - Starter'
 vertical: _default
 tier: starter
-features: []
+features: {  }
 limits:
   max_pages: 5
   basic_templates: 10
@@ -17,4 +21,3 @@ limits:
   ai_queries: 50
   productores: 3
 description: 'Limites por defecto para el tier Starter.'
-status: true

@@ -1,5 +1,7 @@
+uuid: db5077aa-265c-4101-aa69-053646db1382
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_profesional_vault_mb
 label: 'JarabaLex Profesional: Boveda documental (MB)'
 vertical: jarabalex

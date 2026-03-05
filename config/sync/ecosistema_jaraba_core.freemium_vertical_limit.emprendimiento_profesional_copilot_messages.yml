@@ -1,5 +1,7 @@
+uuid: d47bd3ac-54e9-46fa-a75d-0010d0b61297
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_profesional_copilot_messages
 label: 'Emprendimiento Profesional: Mensajes Copilot'
 vertical: emprendimiento

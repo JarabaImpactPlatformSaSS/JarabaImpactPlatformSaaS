@@ -1,5 +1,7 @@
+uuid: c9dcc376-8b8c-4b94-adc7-9ce6bfcdeedd
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_starter_hypotheses
 label: 'Emprendimiento Starter: Hipotesis'
 vertical: emprendimiento

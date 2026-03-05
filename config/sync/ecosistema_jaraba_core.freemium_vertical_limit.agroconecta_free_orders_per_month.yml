@@ -1,3 +1,7 @@
+uuid: 1524cf10-de11-4d4f-835d-e5f8f7a041b0
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_free_orders_per_month
 label: 'AgroConecta Free: Pedidos/mes'
 vertical: agroconecta
@@ -8,4 +12,3 @@ description: 'Maximo 10 pedidos mensuales en plan gratuito AgroConecta.'
 upgrade_message: 'Has alcanzado el limite de 10 pedidos este mes. Actualiza a Starter para pedidos ilimitados.'
 expected_conversion: 0.35
 weight: 10
-status: true

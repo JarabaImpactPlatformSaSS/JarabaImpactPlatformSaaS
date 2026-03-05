@@ -1,0 +1,15 @@
+uuid: 15309e9f-a94d-4c8d-9a35-c42442ffbcef
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.plataformadeecosistemas_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_remove_action_plataformadeecosistemas_jaraba_saas_lndo_site
+label: 'Eliminar el contenido seleccionado del dominio PED Local Dev'
+type: node
+plugin: domain_access_remove_action
+configuration:
+  domain_id:
+    - plataformadeecosistemas_jaraba_saas_lndo_site

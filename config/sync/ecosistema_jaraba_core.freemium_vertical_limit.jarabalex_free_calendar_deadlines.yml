@@ -1,3 +1,7 @@
+uuid: 4f58008d-01a3-4a75-8654-10b6e5dcec57
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_calendar_deadlines
 label: 'JarabaLex Free: Plazos en agenda'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Maximo 10 plazos activos en agenda en plan gratuito JarabaLex.'
 upgrade_message: 'Has alcanzado el limite de 10 plazos. Actualiza a Starter para gestionar hasta 100 plazos con alertas.'
 expected_conversion: 0.25
 weight: 346
-status: true

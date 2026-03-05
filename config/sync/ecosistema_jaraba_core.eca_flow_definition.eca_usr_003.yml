@@ -1,3 +1,7 @@
+uuid: a50f87bb-8680-4ded-9b6c-41d504acb653
+langcode: es
+status: true
+dependencies: {  }
 id: eca_usr_003
 label: 'Welcome Email'
 description: 'Envia email de bienvenida personalizado al usuario recien registrado con datos del tenant, vertical y proximos pasos recomendados.'
@@ -8,4 +12,3 @@ hook_function: jaraba_email_user_insert
 spec_reference: 06_Core
 implementation_status: implemented
 weight: 2
-status: true

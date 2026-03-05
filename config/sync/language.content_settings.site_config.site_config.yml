@@ -1,0 +1,8 @@
+third_party_settings:
+  content_translation:
+    enabled: true
+id: site_config.site_config
+target_entity_type_id: site_config
+target_bundle: site_config
+default_langcode: site_default
+language_alterable: true

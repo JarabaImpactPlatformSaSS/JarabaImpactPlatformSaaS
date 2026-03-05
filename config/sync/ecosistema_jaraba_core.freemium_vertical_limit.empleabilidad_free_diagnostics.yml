@@ -1,5 +1,7 @@
+uuid: 15a50bbc-c651-41c9-b65b-62d6a2cc4187
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_free_diagnostics
 label: 'Empleabilidad Free: Diagnosticos'
 vertical: empleabilidad

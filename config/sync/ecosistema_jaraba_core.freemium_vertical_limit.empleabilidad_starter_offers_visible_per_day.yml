@@ -1,3 +1,7 @@
+uuid: 63949bcb-bff0-4843-b690-a765fdec4e3e
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_starter_offers_visible_per_day
 label: 'Empleabilidad Starter: Ofertas visibles/dia'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: offers_visible_per_day
 limit_value: 25
 description: '25 ofertas de empleo visibles al dia en plan Starter Empleabilidad.'
 upgrade_message: 'Has alcanzado el limite de 25 ofertas diarias. Actualiza a Profesional para ofertas ilimitadas.'
-expected_conversion: 0.20
+expected_conversion: 0.2
 weight: 311
-status: true

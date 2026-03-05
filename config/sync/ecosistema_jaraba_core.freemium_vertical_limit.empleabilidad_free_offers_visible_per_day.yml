@@ -1,3 +1,7 @@
+uuid: 8bb7d2cc-b51e-4643-afbf-41acfcb3c6d4
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_free_offers_visible_per_day
 label: 'Empleabilidad Free: Ofertas visibles/dia'
 vertical: empleabilidad
@@ -8,4 +12,3 @@ description: '10 ofertas de empleo visibles al dia en plan gratuito Empleabilida
 upgrade_message: 'Solo puedes ver 10 ofertas al dia. Actualiza a Starter para ver todas las ofertas disponibles.'
 expected_conversion: 0.22
 weight: 310
-status: true

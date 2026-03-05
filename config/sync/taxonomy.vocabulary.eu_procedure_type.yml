@@ -1,3 +1,4 @@
+uuid: 2c53b715-1d88-4980-80b1-4a9c8d9507fe
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Tipo de Procedimiento UE'
 vid: eu_procedure_type
 description: 'Tipos de procedimientos ante el TJUE: Cuestion prejudicial, Recurso por incumplimiento, Recurso de anulacion, Accion por omision.'
 weight: 0
+new_revision: false

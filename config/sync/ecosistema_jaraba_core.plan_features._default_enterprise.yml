@@ -1,3 +1,7 @@
+uuid: 0c3433a8-8a69-4239-a2e0-fbe7e31e1bfc
+langcode: es
+status: true
+dependencies: {  }
 id: _default_enterprise
 label: 'Default - Enterprise'
 vertical: _default
@@ -24,4 +28,3 @@ limits:
   ai_queries: 10000
   productores: -1
 description: 'Limites por defecto para el tier Enterprise (ilimitado).'
-status: true

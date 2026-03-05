@@ -1,3 +1,7 @@
+uuid: 0626ae3d-6b5c-439e-b8d4-3c8e6c31d1e5
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_searches_per_month
 label: 'JarabaLex Profesional: Busquedas por mes'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: searches_per_month
 limit_value: -1
 description: 'Busquedas juridicas ilimitadas en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 306
-status: true

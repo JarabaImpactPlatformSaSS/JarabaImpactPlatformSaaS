@@ -1,3 +1,4 @@
+uuid: 227ab576-d346-4ced-9fd8-a1ccff70f61a
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Categorías Comercio'
 vid: comercio_category
 description: 'Categorías jerárquicas de productos para el marketplace ComercioConecta. Hasta 3 niveles de profundidad.'
 weight: 0
+new_revision: false

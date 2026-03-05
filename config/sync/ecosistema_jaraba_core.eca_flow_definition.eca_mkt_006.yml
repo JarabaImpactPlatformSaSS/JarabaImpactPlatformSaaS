@@ -1,3 +1,7 @@
+uuid: b60c0d65-0e4d-431f-82e5-78a099e75103
+langcode: es
+status: true
+dependencies: {  }
 id: eca_mkt_006
 label: 'Referral Conversion'
 description: 'Al completarse una orden con codigo de referido, se acredita la recompensa al referidor (credito en cuenta o descuento) y se notifica a ambas partes.'
@@ -8,4 +12,3 @@ hook_function: jaraba_referral_order_complete
 spec_reference: 157_Referral
 implementation_status: implemented
 weight: 35
-status: true

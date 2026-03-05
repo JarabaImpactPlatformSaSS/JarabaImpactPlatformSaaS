@@ -1,3 +1,7 @@
+uuid: 7dcc306a-6b69-4a22-a64b-b3cfd622495c
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_enterprise_job_applications_per_day
 label: 'Empleabilidad Enterprise: Candidaturas diarias'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: job_applications_per_day
 limit_value: -1
 description: 'Candidaturas diarias ilimitadas en plan Enterprise Empleabilidad.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 343
-status: true

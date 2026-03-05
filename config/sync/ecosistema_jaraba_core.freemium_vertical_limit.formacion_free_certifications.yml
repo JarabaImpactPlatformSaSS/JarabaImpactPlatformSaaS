@@ -1,5 +1,7 @@
+uuid: 1775de2d-6201-41c4-afe7-f0625a7d55c4
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_free_certifications
 label: 'Formacion Free: Certificaciones'
 vertical: formacion

@@ -1,3 +1,7 @@
+uuid: dace5ec4-2ef2-4b5c-acc4-74ab139b78d7
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_enterprise_mentoring_sessions_monthly
 label: 'Emprendimiento Enterprise: Sesiones Mentoría Mensuales'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: mentoring_sessions_monthly
 limit_value: -1
 description: 'Sesiones de mentoria mensuales ilimitadas en plan Enterprise Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 633
-status: true

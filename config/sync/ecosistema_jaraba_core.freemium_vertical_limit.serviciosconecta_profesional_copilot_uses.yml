@@ -1,5 +1,7 @@
+uuid: 94e6e9d8-dfaa-42c9-97d0-f49403661ada
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_profesional_copilot_uses
 label: 'ServiciosConecta Profesional: Usos Copilot'
 vertical: serviciosconecta

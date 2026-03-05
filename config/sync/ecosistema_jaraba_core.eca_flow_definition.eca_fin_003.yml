@@ -1,3 +1,7 @@
+uuid: fc4d0035-fc9f-458e-ae38-09dbc9d0869d
+langcode: es
+status: true
+dependencies: {  }
 id: eca_fin_003
 label: 'Grant Burn Rate Warning'
 description: 'Cron job que monitoriza la velocidad de consumo de subvenciones (burn rate). Genera alerta cuando el desvio supera el 15% respecto al plan presupuestario.'
@@ -8,4 +12,3 @@ hook_function: jaraba_foc_cron_grant_burn_rate
 spec_reference: 13_FOC
 implementation_status: pending
 weight: 22
-status: true

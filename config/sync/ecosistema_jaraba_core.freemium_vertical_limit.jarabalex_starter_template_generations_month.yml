@@ -1,3 +1,7 @@
+uuid: 6d568923-ac95-4764-bb38-ec144734b82f
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_template_generations_month
 label: 'JarabaLex Starter: Generaciones de plantilla por mes'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: template_generations_month
 limit_value: 5
 description: 'Maximo 5 generaciones de documentos con plantilla por mes en plan Starter.'
 upgrade_message: 'Has alcanzado el limite de 5 generaciones de plantilla mensuales. Actualiza a Profesional para generaciones ilimitadas.'
-expected_conversion: 0.30
+expected_conversion: 0.3
 weight: 356
-status: true

@@ -1,3 +1,7 @@
+uuid: 64bea63f-a48b-44e0-8bae-2a85b2bc07ca
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_profesional_bookings_per_month
 label: 'ServiciosConecta Profesional: Reservas/mes'
 vertical: serviciosconecta
@@ -6,6 +10,5 @@ feature_key: bookings_per_month
 limit_value: -1
 description: 'Reservas ilimitadas en plan Profesional ServiciosConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 212
-status: true

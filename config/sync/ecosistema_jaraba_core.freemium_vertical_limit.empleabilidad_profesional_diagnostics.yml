@@ -1,5 +1,7 @@
+uuid: 8b63e0ac-41cf-4a69-bf17-b77022e8e378
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_profesional_diagnostics
 label: 'Empleabilidad Profesional: Diagnosticos'
 vertical: empleabilidad

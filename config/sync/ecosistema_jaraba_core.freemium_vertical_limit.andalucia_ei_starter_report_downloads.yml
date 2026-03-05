@@ -1,3 +1,7 @@
+uuid: ca7b2b27-8f30-462a-8e74-bca27e2eb114
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_starter_report_downloads
 label: 'Andalucía +ei Starter: Descargas Informes'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: report_downloads
 limit_value: 5
 description: 'Hasta 5 descargas de informes mensuales en plan Starter.'
 upgrade_message: 'Has alcanzado el limite de descargas en Starter. Actualiza a Profesional para descargas ilimitadas.'
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 554
-status: true

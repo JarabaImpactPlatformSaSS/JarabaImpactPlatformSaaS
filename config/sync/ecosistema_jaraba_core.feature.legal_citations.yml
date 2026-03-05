@@ -1,7 +1,14 @@
+uuid: 8410e372-0553-4e56-96fc-ae55cbdc945a
+langcode: es
+status: true
+dependencies: {  }
 id: legal_citations
 label: 'Citaciones cruzadas'
 description: 'Grafo de citaciones entre resoluciones, legislacion y doctrina con navegacion contextual.'
 category: legal
 icon: citation
 weight: 22
-status: true
+base_cost_monthly: 0.0
+unit_cost: 0.0
+cost_category: compute
+usage_metric: ''

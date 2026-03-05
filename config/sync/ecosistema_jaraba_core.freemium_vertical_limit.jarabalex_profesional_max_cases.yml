@@ -1,3 +1,7 @@
+uuid: d77c6e1b-f156-44d7-bdaf-e17c4e347ba8
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_max_cases
 label: 'JarabaLex Profesional: Expedientes ilimitados'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: max_cases
 limit_value: -1
 description: 'Expedientes ilimitados en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 342
-status: true

@@ -1,3 +1,7 @@
+uuid: d15b2dee-f16b-4378-bcce-b1ed9b952529
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_starter
 label: 'Andalucía +ei - Starter'
 vertical: andalucia_ei
@@ -14,4 +18,3 @@ limits:
   diagnostic_access: 3
   report_downloads: 5
 description: 'Limites del tier Starter para el vertical Andalucia +ei (institucional).'
-status: true

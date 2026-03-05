@@ -1,3 +1,7 @@
+uuid: 2483313b-43d8-478d-bf5b-13f429aebfc8
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_profesional_digest_access
 label: 'JarabaLex Profesional: Digest semanal'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: digest_access
 limit_value: -1
 description: 'Digest semanal de jurisprudencia disponible en plan Profesional JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 326
-status: true

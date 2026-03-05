@@ -1,3 +1,7 @@
+uuid: 7a2b0b28-b068-4678-a4a1-01e89a43c8e6
+langcode: en
+status: true
+dependencies: {  }
 id: formacion_enterprise
 label: 'Formacion - Enterprise'
 vertical: formacion
@@ -26,4 +30,3 @@ limits:
   copilot_uses_per_month: 10000
   storage_gb: 500
 description: 'Limites del tier Enterprise para la vertical Formacion.'
-status: true

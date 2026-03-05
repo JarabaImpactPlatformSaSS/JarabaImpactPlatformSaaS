@@ -1,5 +1,7 @@
+uuid: 612d5471-c4cc-4311-b8fa-017f80860cff
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_free_copilot_messages
 label: 'Emprendimiento Free: Mensajes Copilot'
 vertical: emprendimiento

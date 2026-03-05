@@ -1,3 +1,7 @@
+uuid: 4b185445-608a-4183-9f0c-463275709c5c
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_enterprise
 label: 'Emprendimiento - Enterprise'
 vertical: emprendimiento
@@ -18,4 +22,3 @@ limits:
   bmc_drafts: -1
   calculadora_uses: -1
 description: 'Limites del tier Enterprise para la vertical Emprendimiento (ilimitado).'
-status: true

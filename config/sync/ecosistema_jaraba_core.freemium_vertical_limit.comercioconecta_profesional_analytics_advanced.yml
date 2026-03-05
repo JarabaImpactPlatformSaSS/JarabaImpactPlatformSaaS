@@ -1,3 +1,7 @@
+uuid: 356b3c69-4dad-4de1-ae47-9d131cde582a
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_profesional_analytics_advanced
 label: 'ComercioConecta Profesional: Analytics Avanzados'
 vertical: comercioconecta
@@ -6,6 +10,5 @@ feature_key: analytics_advanced
 limit_value: -1
 description: 'Analytics avanzados ilimitados en plan Profesional ComercioConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 142
-status: true

@@ -1,3 +1,7 @@
+uuid: 374f1937-e7cd-4d2e-99dc-c643d5bcb309
+langcode: en
+status: true
+dependencies: {  }
 id: formacion_starter
 label: 'Formacion - Starter'
 vertical: formacion
@@ -17,4 +21,3 @@ limits:
   copilot_uses_per_month: 30
   storage_gb: 5
 description: 'Limites del tier Starter para la vertical Formacion.'
-status: true

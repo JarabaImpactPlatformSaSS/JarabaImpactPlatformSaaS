@@ -1,3 +1,7 @@
+uuid: 7b1ba176-95e8-4917-8592-e8b4adf2b195
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_profesional_report_downloads
 label: 'Andalucía +ei Profesional: Descargas Informes'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: report_downloads
 limit_value: -1
 description: 'Descargas de informes ilimitadas en plan Profesional.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 558
-status: true

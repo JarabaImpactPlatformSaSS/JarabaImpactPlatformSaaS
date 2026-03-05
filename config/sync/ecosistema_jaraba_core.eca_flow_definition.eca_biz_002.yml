@@ -1,3 +1,7 @@
+uuid: 8cfb0db0-c608-4d1a-9295-89ad81ccce57
+langcode: es
+status: true
+dependencies: {  }
 id: eca_biz_002
 label: 'Experiment Completed'
 description: 'Al marcar un experimento como completado, se actualizan las metricas de validacion de la hipotesis asociada, se recalcula el BMC Score y se sugieren proximos pasos via IA.'
@@ -8,4 +12,3 @@ hook_function: jaraba_copilot_v2_experiment_update
 spec_reference: 40_Emprendimiento
 implementation_status: implemented
 weight: 71
-status: true

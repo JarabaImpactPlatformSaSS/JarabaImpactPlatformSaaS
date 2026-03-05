@@ -1,3 +1,7 @@
+uuid: 6a5643f8-6c1b-4d45-990b-53f33eba4f1d
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_profesional_pos_integration
 label: 'ComercioConecta Profesional: Integracion TPV'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: 'Integracion TPV no disponible en plan Profesional ComercioConecta.
 upgrade_message: 'La integracion con tu TPV/datafono sincroniza ventas fisicas y online. Disponible en Enterprise.'
 expected_conversion: 0.18
 weight: 152
-status: true

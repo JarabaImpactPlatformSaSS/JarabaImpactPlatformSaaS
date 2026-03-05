@@ -1,3 +1,4 @@
+uuid: e6e8feb2-6cda-4e32-b6fc-b5043a2a3bc3
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Organo Emisor Legal'
 vid: legal_issuing_body
 description: 'Organos emisores de resoluciones: TS, TC, AN, TSJ, AP, DGT, TEAC, IGAE, ICAC, DGRN, AEPD, TJUE, TEDH, EDPB.'
 weight: 0
+new_revision: false

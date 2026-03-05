@@ -1,3 +1,7 @@
+uuid: f61e0eee-db28-4905-a021-70ef620d9ffc
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_max_cases
 label: 'JarabaLex Free: Expedientes maximos'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Maximo 5 expedientes activos en plan gratuito JarabaLex.'
 upgrade_message: 'Has alcanzado el limite de 5 expedientes. Actualiza a Starter para gestionar hasta 50 expedientes.'
 expected_conversion: 0.35
 weight: 340
-status: true

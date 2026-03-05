@@ -1,3 +1,7 @@
+uuid: d2bd04d5-2a60-42b9-b38c-e5e7ea43cf9f
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_free_mentoring_hours_monthly
 label: 'Andalucía +ei Free: Horas Mentoría Mensual'
 vertical: andalucia_ei
@@ -8,4 +12,3 @@ description: 'Mentoria humana no disponible en plan gratuito.'
 upgrade_message: 'La mentoria humana no esta incluida en tu plan. Actualiza a Starter para 5 horas mensuales.'
 expected_conversion: 0.28
 weight: 510
-status: true

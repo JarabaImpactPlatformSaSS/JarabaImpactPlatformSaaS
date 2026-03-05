@@ -1,3 +1,4 @@
+uuid: 099b6a31-7f89-4111-a2b0-1c6e3aaac7fa
 langcode: es
 status: true
 dependencies:
@@ -13,7 +14,7 @@ label: 'Answer Capsule (AI Summary)'
 description: 'Resumen optimizado para LLMs. Los primeros 150 caracteres deben responder directamente a preguntas de intención de compra.'
 required: false
 translatable: true
-default_value: []
+default_value: {  }
 default_value_callback: ''
-settings: {}
+settings: {  }
 field_type: string_long

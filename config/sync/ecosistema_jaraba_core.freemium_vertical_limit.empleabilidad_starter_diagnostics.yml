@@ -1,5 +1,7 @@
+uuid: 407b299b-e295-40f9-8c6b-5f26b35ff92a
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_starter_diagnostics
 label: 'Empleabilidad Starter: Diagnosticos'
 vertical: empleabilidad

@@ -1,3 +1,7 @@
+uuid: 4486f19a-7eee-423b-b411-02ca7eb79f83
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_lexnet_submissions_month
 label: 'JarabaLex Starter: Presentaciones LexNET por mes'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Maximo 10 presentaciones LexNET por mes en plan Starter JarabaLex.
 upgrade_message: 'Has alcanzado el limite de 10 presentaciones LexNET mensuales. Actualiza a Profesional para presentaciones ilimitadas.'
 expected_conversion: 0.45
 weight: 353
-status: true

@@ -1,5 +1,7 @@
+uuid: d6277a48-7232-4326-a39c-666684247f51
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_free_cv_builder
 label: 'Empleabilidad Free: CV Builder'
 vertical: empleabilidad

@@ -1,0 +1,15 @@
+uuid: d8db55ee-5389-421a-bfca-7090f686b771
+langcode: es
+status: true
+dependencies:
+  config:
+    - domain.record.plataformadeecosistemas_jaraba_saas_lndo_site
+  module:
+    - domain_access
+id: domain_access_add_action_plataformadeecosistemas_jaraba_saas_lndo_site
+label: 'Agregar el contenido seleccionado al dominio PED Local Dev'
+type: node
+plugin: domain_access_add_action
+configuration:
+  domain_id:
+    - plataformadeecosistemas_jaraba_saas_lndo_site

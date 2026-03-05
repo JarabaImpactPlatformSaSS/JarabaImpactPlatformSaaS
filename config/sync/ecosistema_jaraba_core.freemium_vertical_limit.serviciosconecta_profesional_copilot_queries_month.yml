@@ -1,3 +1,7 @@
+uuid: 2ebe1470-bd20-44ce-bcb1-e437d2226704
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_profesional_copilot_queries_month
 label: 'ServiciosConecta Profesional: Consultas Copilot IA por mes'
 vertical: serviciosconecta
@@ -6,6 +10,5 @@ feature_key: copilot_queries_month
 limit_value: 100
 description: 'Maximo 100 consultas al Copilot IA por mes en plan Profesional ServiciosConecta.'
 upgrade_message: 'Has alcanzado el limite de 100 consultas IA mensuales. Actualiza a Enterprise para consultas ilimitadas.'
-expected_conversion: 0.20
+expected_conversion: 0.2
 weight: 232
-status: true

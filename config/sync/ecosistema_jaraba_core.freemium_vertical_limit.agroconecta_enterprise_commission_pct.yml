@@ -1,3 +1,7 @@
+uuid: 78bdf6f2-5a87-4e2e-afd1-31e8943c65b5
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_commission_pct
 label: 'AgroConecta Enterprise: Comision'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: commission_pct
 limit_value: 3
 description: 'Comision del 3% por transaccion en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 202
-status: true

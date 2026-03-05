@@ -1,5 +1,7 @@
+uuid: fee85d87-f3e0-4d8e-8ed0-0946c4dde415
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_profesional_orders
 label: 'ComercioConecta Profesional: Pedidos'
 vertical: comercioconecta

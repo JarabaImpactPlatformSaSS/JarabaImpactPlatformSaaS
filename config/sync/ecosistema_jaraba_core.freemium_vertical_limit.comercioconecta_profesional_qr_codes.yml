@@ -1,3 +1,7 @@
+uuid: 2141e4c9-6ddc-444f-991d-a8e33b183e6a
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_profesional_qr_codes
 label: 'ComercioConecta Profesional: Codigos QR'
 vertical: comercioconecta
@@ -6,6 +10,5 @@ feature_key: qr_codes
 limit_value: -1
 description: 'Codigos QR ilimitados en plan Profesional ComercioConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 112
-status: true

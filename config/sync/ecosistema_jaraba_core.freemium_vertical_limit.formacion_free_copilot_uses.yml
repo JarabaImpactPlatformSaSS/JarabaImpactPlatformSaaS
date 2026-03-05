@@ -1,5 +1,7 @@
+uuid: 2972c166-1acd-4eec-9469-6c208bd7f9af
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_free_copilot_uses
 label: 'Formacion Free: Usos Copilot'
 vertical: formacion

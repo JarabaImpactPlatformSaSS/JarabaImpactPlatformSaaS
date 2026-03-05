@@ -1,3 +1,7 @@
+uuid: 69fe57ca-2d1e-413f-b307-29d9272f0618
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_free_qr_codes
 label: 'ComercioConecta Free: Codigos QR'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: '1 codigo QR en plan gratuito ComercioConecta.'
 upgrade_message: 'Solo puedes generar 1 codigo QR. Actualiza a Starter para hasta 10.'
 expected_conversion: 0.28
 weight: 110
-status: true

@@ -1,5 +1,7 @@
+uuid: d1fbeac0-0b30-42b6-83c6-3af2f4764a54
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_starter_courses
 label: 'Formacion Starter: Cursos'
 vertical: formacion

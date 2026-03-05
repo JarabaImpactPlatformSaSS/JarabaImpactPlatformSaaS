@@ -1,5 +1,7 @@
+uuid: ce45632c-4c0a-47a8-adfa-0b0c3c75dc3e
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_profesional_products
 label: 'ComercioConecta Profesional: Productos'
 vertical: comercioconecta

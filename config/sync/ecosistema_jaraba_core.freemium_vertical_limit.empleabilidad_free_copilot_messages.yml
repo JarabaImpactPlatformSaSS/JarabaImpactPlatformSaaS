@@ -1,5 +1,7 @@
+uuid: 545b0318-2b47-41fb-95dc-961556797b69
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_free_copilot_messages
 label: 'Empleabilidad Free: Mensajes Copilot'
 vertical: empleabilidad

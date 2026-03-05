@@ -1,3 +1,7 @@
+uuid: 268c1a93-3a67-455e-bf67-1c2e9f12ef73
+langcode: es
+status: true
+dependencies: {  }
 id: eca_usr_001
 label: 'Onboarding Usuario Nuevo'
 description: 'Al registrarse un nuevo usuario, se asigna rol basico, se genera perfil inicial, se dispara secuencia de bienvenida y se vincula al tenant correspondiente.'
@@ -8,4 +12,3 @@ hook_function: ecosistema_jaraba_core_user_insert
 spec_reference: 06_Core
 implementation_status: implemented
 weight: 0
-status: true

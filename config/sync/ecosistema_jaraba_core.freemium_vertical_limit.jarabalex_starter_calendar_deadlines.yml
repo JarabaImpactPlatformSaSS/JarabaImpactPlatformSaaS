@@ -1,3 +1,7 @@
+uuid: f16a783b-b156-455b-b499-9bba8ecca046
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_calendar_deadlines
 label: 'JarabaLex Starter: Plazos en agenda'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Maximo 100 plazos activos en agenda en plan Starter JarabaLex.'
 upgrade_message: 'Has alcanzado el limite de 100 plazos. Actualiza a Profesional para plazos ilimitados.'
 expected_conversion: 0.25
 weight: 347
-status: true

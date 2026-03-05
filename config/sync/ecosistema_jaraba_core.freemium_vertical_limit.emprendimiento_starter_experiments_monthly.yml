@@ -1,3 +1,7 @@
+uuid: 0144a83f-99ef-4df6-ac19-a421ef75068c
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_starter_experiments_monthly
 label: 'Emprendimiento Starter: Experimentos Mensuales'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: experiments_monthly
 limit_value: 10
 description: 'Hasta 10 experimentos mensuales en plan Starter Emprendimiento.'
 upgrade_message: 'Has alcanzado el limite de experimentos en Starter. Actualiza a Profesional para experimentos ilimitados.'
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 415
-status: true

@@ -1,3 +1,7 @@
+uuid: 2a43d0cb-dbdd-45aa-863b-f8febf97f52e
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_starter_digest_access
 label: 'JarabaLex Starter: Digest semanal'
 vertical: jarabalex
@@ -6,6 +10,5 @@ feature_key: digest_access
 limit_value: -1
 description: 'Digest semanal de jurisprudencia disponible en plan Starter JarabaLex.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 323
-status: true

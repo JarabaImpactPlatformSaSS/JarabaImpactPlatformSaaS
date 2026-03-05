@@ -1,3 +1,7 @@
+uuid: 15fcef89-3f7a-4d7b-90c0-83ecfb6cf0a4
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_profesional_orders_per_month
 label: 'AgroConecta Profesional: Pedidos/mes'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: orders_per_month
 limit_value: -1
 description: 'Pedidos ilimitados en plan Profesional AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 12
-status: true

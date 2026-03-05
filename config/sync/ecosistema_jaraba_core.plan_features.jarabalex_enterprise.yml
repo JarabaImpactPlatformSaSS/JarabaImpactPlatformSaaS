@@ -1,3 +1,7 @@
+uuid: ebbae4e1-bd0d-43b3-93fc-892c7e71af7f
+langcode: en
+status: true
+dependencies: {  }
 id: jarabalex_enterprise
 label: 'JarabaLex - Enterprise'
 vertical: jarabalex
@@ -28,4 +32,3 @@ limits:
   lexnet_submissions_month: 500
   template_generations_month: 10000
 description: 'Limites del tier Enterprise para la vertical JarabaLex.'
-status: true

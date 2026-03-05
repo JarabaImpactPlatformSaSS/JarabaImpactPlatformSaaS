@@ -1,5 +1,7 @@
+uuid: 60d86bec-a6c5-463b-8005-a0ef93fe69fe
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_starter_reviews
 label: 'ServiciosConecta Starter: Resenas'
 vertical: serviciosconecta

@@ -1,3 +1,7 @@
+uuid: 14127b93-f4b3-46de-98e8-a5b28a620ab2
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_copilot_uses_per_month
 label: 'AgroConecta Enterprise: Copilot IA'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: copilot_uses_per_month
 limit_value: -1
 description: 'Usos ilimitados del Copilot IA en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 204
-status: true

@@ -1,5 +1,7 @@
+uuid: f411d38c-3fc3-43c9-a5bb-17787781db37
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_starter_copilot_uses
 label: 'ServiciosConecta Starter: Usos Copilot'
 vertical: serviciosconecta

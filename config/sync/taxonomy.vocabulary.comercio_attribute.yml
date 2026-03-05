@@ -1,3 +1,4 @@
+uuid: b51c7e95-2c55-4391-80db-234874ee3f82
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Atributos Comercio'
 vid: comercio_attribute
 description: 'Atributos de variación de producto (color, talla, material) para ComercioConecta. Vocabulario jerárquico de 2 niveles.'
 weight: 0
+new_revision: false

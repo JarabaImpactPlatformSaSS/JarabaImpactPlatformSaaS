@@ -1,5 +1,7 @@
+uuid: 4554d128-e0fb-489c-b650-1f452fd5c95c
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_starter_bookings
 label: 'ServiciosConecta Starter: Reservas'
 vertical: serviciosconecta

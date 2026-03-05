@@ -1,3 +1,7 @@
+uuid: dfe363b7-0555-4a41-bf1a-1e3c9c5aeb2f
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_free_pos_integration
 label: 'ComercioConecta Free: Integracion TPV'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: 'Integracion TPV no disponible en plan gratuito ComercioConecta.'
 upgrade_message: 'La integracion con tu TPV/datafono sincroniza ventas fisicas y online. Disponible en Enterprise.'
 expected_conversion: 0.12
 weight: 150
-status: true

@@ -1,5 +1,7 @@
+uuid: 683196cc-10d6-4e91-b0c6-f2a7ac27099c
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_profesional_cases
 label: 'JarabaLex Profesional: Expedientes'
 vertical: jarabalex

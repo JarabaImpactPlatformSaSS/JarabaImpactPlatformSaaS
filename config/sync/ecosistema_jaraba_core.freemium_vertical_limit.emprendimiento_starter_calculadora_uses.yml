@@ -1,3 +1,7 @@
+uuid: 4b1c6963-410b-4853-b929-cb8d1df2860a
+langcode: es
+status: true
+dependencies: {  }
 id: emprendimiento_starter_calculadora_uses
 label: 'Emprendimiento Starter: Calculadora financiera'
 vertical: emprendimiento
@@ -6,6 +10,5 @@ feature_key: calculadora_uses
 limit_value: -1
 description: 'Usos ilimitados de la calculadora financiera en plan Starter Emprendimiento.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 411
-status: true

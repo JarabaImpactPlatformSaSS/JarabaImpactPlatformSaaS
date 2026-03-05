@@ -1,11 +1,14 @@
+uuid: e70b01cd-8b8d-4e53-80a3-9dccb534d6bf
+langcode: es
+status: true
+dependencies: {  }
 id: eca_usr_002
 label: 'Asignacion Rol por Diagnostico'
 description: 'Al completar un diagnostico de empleabilidad, se asigna automaticamente el rol correspondiente al perfil del usuario (buscador_empleo, emprendedor, etc.).'
 domain: USR
-trigger_event: 'hook_entity_insert(employability_diagnostic)'
+trigger_event: hook_entity_insert(employability_diagnostic)
 module: jaraba_diagnostic
 hook_function: jaraba_diagnostic_entity_insert
 spec_reference: 06_Core
 implementation_status: implemented
 weight: 1
-status: true

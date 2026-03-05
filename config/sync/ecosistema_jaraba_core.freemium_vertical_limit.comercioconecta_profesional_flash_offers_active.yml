@@ -1,3 +1,7 @@
+uuid: fde65304-99b4-46fb-908d-5fcd5ae92b7b
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_profesional_flash_offers_active
 label: 'ComercioConecta Profesional: Ofertas flash activas'
 vertical: comercioconecta
@@ -6,6 +10,5 @@ feature_key: flash_offers_active
 limit_value: -1
 description: 'Ofertas flash ilimitadas en plan Profesional ComercioConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 122
-status: true

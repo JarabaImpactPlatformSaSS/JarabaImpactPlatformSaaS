@@ -1,5 +1,7 @@
+uuid: 931653d7-50a8-40fa-b385-ea40247e1a46
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_starter_services
 label: 'ServiciosConecta Starter: Servicios'
 vertical: serviciosconecta

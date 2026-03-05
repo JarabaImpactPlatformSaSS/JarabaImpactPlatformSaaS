@@ -1,3 +1,7 @@
+uuid: 49075c52-d504-4389-b32a-5d9745729452
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_free_products
 label: 'AgroConecta Free: Productos'
 vertical: agroconecta
@@ -8,4 +12,3 @@ description: 'Maximo 5 productos en plan gratuito AgroConecta.'
 upgrade_message: 'Has alcanzado el limite de 5 productos. Actualiza a Starter para publicar productos ilimitados.'
 expected_conversion: 0.35
 weight: 0
-status: true

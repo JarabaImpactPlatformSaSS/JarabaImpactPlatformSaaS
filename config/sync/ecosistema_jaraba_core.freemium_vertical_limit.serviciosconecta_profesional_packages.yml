@@ -1,3 +1,7 @@
+uuid: a50e9e80-fcaa-4975-9eb8-b8682295cde3
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_profesional_packages
 label: 'ServiciosConecta Profesional: Paquetes de sesiones'
 vertical: serviciosconecta
@@ -8,4 +12,3 @@ description: 'Maximo 10 paquetes de sesiones en plan Profesional ServiciosConect
 upgrade_message: 'Has alcanzado el limite de 10 paquetes de sesiones. Actualiza a Enterprise para paquetes ilimitados.'
 expected_conversion: 0.22
 weight: 222
-status: true

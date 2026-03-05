@@ -1,5 +1,7 @@
+uuid: b20b16ca-9eea-4030-9f2c-c17084867de7
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_profesional_students_per_course
 label: 'Formacion Profesional: Alumnos por curso'
 vertical: formacion

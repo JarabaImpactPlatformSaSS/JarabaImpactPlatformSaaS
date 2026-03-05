@@ -1,5 +1,7 @@
+uuid: 35b36801-aaed-4e5c-a124-e004898a78e3
 langcode: es
 status: true
+dependencies: {  }
 id: formacion_starter_copilot_uses
 label: 'Formacion Starter: Usos Copilot'
 vertical: formacion

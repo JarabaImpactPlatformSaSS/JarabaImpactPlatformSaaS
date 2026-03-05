@@ -1,9 +1,6 @@
-# Configuracion inicial para la vertical JarabaLex
-# Este archivo se importa al instalar el modulo
-
 langcode: es
 status: true
-name: 'JarabaLex'
+name: JarabaLex
 machine_name: jarabalex
 description: |
   Hub de inteligencia juridica profesional con busqueda semantica IA

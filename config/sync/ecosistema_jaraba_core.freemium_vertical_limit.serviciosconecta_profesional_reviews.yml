@@ -1,5 +1,7 @@
+uuid: fcf427c5-f027-430d-b84f-f812af533b94
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_profesional_reviews
 label: 'ServiciosConecta Profesional: Resenas'
 vertical: serviciosconecta

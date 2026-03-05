@@ -1,3 +1,7 @@
+uuid: ef820f01-b9b7-464f-988e-272a48f5bae4
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_api_access
 label: 'JarabaLex Free: Acceso API'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Acceso a la API REST no disponible en plan gratuito JarabaLex.'
 upgrade_message: 'El acceso a la API REST requiere plan Profesional o superior.'
 expected_conversion: 0.15
 weight: 330
-status: true

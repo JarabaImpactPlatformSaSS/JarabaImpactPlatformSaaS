@@ -1,3 +1,7 @@
+uuid: 75122c5b-9f12-42a7-9eba-ecf111a4083d
+langcode: es
+status: true
+dependencies: {  }
 id: jarabalex_free_digest_access
 label: 'JarabaLex Free: Digest semanal'
 vertical: jarabalex
@@ -8,4 +12,3 @@ description: 'Digest semanal no disponible en plan gratuito JarabaLex.'
 upgrade_message: 'El digest semanal de jurisprudencia requiere plan Starter o superior.'
 expected_conversion: 0.25
 weight: 320
-status: true

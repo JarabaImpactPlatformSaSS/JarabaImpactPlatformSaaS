@@ -1,3 +1,7 @@
+uuid: f6bc6fbb-0977-4ac1-afc8-98ca4d92c70a
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_starter
 label: 'AgroConecta - Starter'
 vertical: agroconecta
@@ -15,4 +19,3 @@ limits:
   demand_forecaster: 0
   partner_hub: 0
 description: 'Limites del tier Starter para la vertical AgroConecta.'
-status: true

@@ -1,0 +1,11 @@
+uuid: 6bcb3fd8-9d72-48fa-bae0-85ac0f257d6e
+langcode: es
+status: true
+dependencies: {  }
+id: plataformadeecosistemas_jaraba_saas_lndo_site
+domain_id: 15792139
+hostname: plataformadeecosistemas.jaraba-saas.lndo.site
+name: 'PED Local Dev'
+scheme: https
+weight: 0
+is_default: false

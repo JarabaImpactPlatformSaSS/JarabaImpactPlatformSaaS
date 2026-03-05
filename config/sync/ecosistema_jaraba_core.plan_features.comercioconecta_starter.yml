@@ -1,3 +1,7 @@
+uuid: bef35519-4a9a-4a71-883c-2cc7c955e472
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_starter
 label: 'ComercioConecta - Starter'
 vertical: comercioconecta
@@ -13,4 +17,3 @@ limits:
   analytics_advanced: 0
   pos_integration: 0
 description: 'Limites del tier Starter para la vertical ComercioConecta.'
-status: true

@@ -1,5 +1,9 @@
+uuid: 69d1b7c5-156c-4b9a-a0c2-3178ea1e35b8
+langcode: es
+status: true
+dependencies: {  }
 id: starter
-label: 'Starter'
+label: Starter
 tier_key: starter
 aliases:
   - starter
@@ -10,4 +14,3 @@ stripe_price_monthly: ''
 stripe_price_yearly: ''
 description: 'Plan de entrada con funcionalidades basicas para empezar.'
 weight: 0
-status: true

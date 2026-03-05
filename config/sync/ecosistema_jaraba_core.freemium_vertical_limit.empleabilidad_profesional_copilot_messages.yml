@@ -1,5 +1,7 @@
+uuid: 255bfe6e-f9e9-4687-9de2-ee61c739bfcf
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_profesional_copilot_messages
 label: 'Empleabilidad Profesional: Mensajes Copilot'
 vertical: empleabilidad

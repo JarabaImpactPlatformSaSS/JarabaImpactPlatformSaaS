@@ -1,3 +1,7 @@
+uuid: 2aa449be-561e-41b6-af1b-52ef5d3848bb
+langcode: es
+status: true
+dependencies: {  }
 id: eca_mkt_004
 label: 'Churn Risk Sequence'
 description: 'Secuencia de emails de retencion activada cuando el Health Score del tenant baja de 40. Incluye encuesta de satisfaccion, oferta de soporte y descuento de retencion.'
@@ -8,4 +12,3 @@ hook_function: jaraba_email_churn_risk_sequence
 spec_reference: 145_AC
 implementation_status: pending
 weight: 33
-status: true

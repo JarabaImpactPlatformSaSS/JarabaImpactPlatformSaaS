@@ -1,5 +1,7 @@
+uuid: 1c9395d3-e7e0-40b2-86d7-a3b31f8ffbea
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_profesional_copilot_uses
 label: 'ComercioConecta Profesional: Usos Copilot'
 vertical: comercioconecta

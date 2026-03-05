@@ -1,3 +1,7 @@
+uuid: e309d08e-63da-4efa-89ce-c27b2b93e529
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_photos_per_product
 label: 'AgroConecta Enterprise: Fotos por Producto'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: photos_per_product
 limit_value: -1
 description: 'Fotos ilimitadas por producto en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 201
-status: true

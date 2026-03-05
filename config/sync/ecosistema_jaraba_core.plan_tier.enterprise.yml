@@ -1,5 +1,9 @@
+uuid: 2ca6e137-3b19-4330-9627-d3b96b911754
+langcode: es
+status: true
+dependencies: {  }
 id: enterprise
-label: 'Enterprise'
+label: Enterprise
 tier_key: enterprise
 aliases:
   - enterprise
@@ -10,4 +14,3 @@ stripe_price_monthly: ''
 stripe_price_yearly: ''
 description: 'Plan enterprise con funcionalidades ilimitadas y soporte premium.'
 weight: 20
-status: true

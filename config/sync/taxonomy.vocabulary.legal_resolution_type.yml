@@ -1,3 +1,4 @@
+uuid: 56b23992-870f-4c7a-91f0-05bcaff2867e
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Tipo de Resolucion Legal'
 vid: legal_resolution_type
 description: 'Tipos de resoluciones juridicas: sentencias, autos, consultas vinculantes, directivas, reglamentos, etc.'
 weight: 0
+new_revision: false

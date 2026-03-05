@@ -1,5 +1,7 @@
+uuid: null
 langcode: es
 status: true
+dependencies: {  }
 id: agroconecta_profesional_analytics_advanced
 label: 'AgroConecta Profesional: Analytics Avanzados'
 vertical: agroconecta

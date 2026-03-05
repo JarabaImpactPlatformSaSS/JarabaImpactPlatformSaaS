@@ -1,3 +1,7 @@
+uuid: ba26880c-a862-4296-8b9d-ffe75d60ffac
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_enterprise_products
 label: 'AgroConecta Enterprise: Productos'
 vertical: agroconecta
@@ -6,6 +10,5 @@ feature_key: products
 limit_value: -1
 description: 'Productos ilimitados en plan Enterprise AgroConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 200
-status: true

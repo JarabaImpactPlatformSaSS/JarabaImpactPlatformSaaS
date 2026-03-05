@@ -18,7 +18,7 @@ steps:
     conditions: 'vertical:comercioconecta'
   -
     id: registration
-    label: 'Registro'
+    label: Registro
     event: user_register
     conditions: 'vertical:comercioconecta'
   -

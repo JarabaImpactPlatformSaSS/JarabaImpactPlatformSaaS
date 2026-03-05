@@ -1,3 +1,4 @@
+uuid: 7cc358e4-9c36-49ec-99aa-f51a1130f7b4
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Materia Civil'
 vid: legal_topic_civil
 description: 'Materias de derecho civil: Contratos, Familia, Herencias, Propiedad, Responsabilidad, Arrendamientos.'
 weight: 0
+new_revision: false

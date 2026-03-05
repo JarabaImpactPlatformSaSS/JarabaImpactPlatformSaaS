@@ -1,5 +1,9 @@
+uuid: 72e6f313-6502-4960-b571-f78facc23995
+langcode: es
+status: true
+dependencies: {  }
 id: professional
-label: 'Professional'
+label: Professional
 tier_key: professional
 aliases:
   - professional
@@ -10,4 +14,3 @@ stripe_price_monthly: ''
 stripe_price_yearly: ''
 description: 'Plan profesional con funcionalidades avanzadas.'
 weight: 10
-status: true

@@ -1,3 +1,7 @@
+uuid: 7410b9fe-1ece-4786-a0e2-45d9f6ae32d0
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_profesional_diagnostic_access
 label: 'Andalucía +ei Profesional: Acceso Diagnóstico DIME'
 vertical: andalucia_ei
@@ -6,6 +10,5 @@ feature_key: diagnostic_access
 limit_value: -1
 description: 'Acceso ilimitado al diagnostico DIME en plan Profesional.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 548
-status: true

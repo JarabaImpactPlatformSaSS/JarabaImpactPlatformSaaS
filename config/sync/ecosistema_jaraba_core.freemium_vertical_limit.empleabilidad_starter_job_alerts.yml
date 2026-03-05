@@ -1,3 +1,7 @@
+uuid: 16b73238-34f2-41bf-ac5c-23d5832ea1f7
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_starter_job_alerts
 label: 'Empleabilidad Starter: Alertas de empleo'
 vertical: empleabilidad
@@ -6,6 +10,5 @@ feature_key: job_alerts
 limit_value: 5
 description: '5 alertas de empleo activas en plan Starter Empleabilidad.'
 upgrade_message: 'Has alcanzado el limite de 5 alertas. Actualiza a Profesional para alertas ilimitadas.'
-expected_conversion: 0.20
+expected_conversion: 0.2
 weight: 361
-status: true

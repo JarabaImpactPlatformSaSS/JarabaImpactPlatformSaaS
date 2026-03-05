@@ -1,5 +1,7 @@
+uuid: d978fa20-d81e-448b-a716-169a1b4f4580
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_profesional_job_applications
 label: 'Empleabilidad Profesional: Aplicaciones empleo'
 vertical: empleabilidad

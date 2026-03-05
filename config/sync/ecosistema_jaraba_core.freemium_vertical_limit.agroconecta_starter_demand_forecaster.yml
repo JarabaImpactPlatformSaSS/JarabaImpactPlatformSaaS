@@ -1,5 +1,7 @@
+uuid: null
 langcode: es
 status: true
+dependencies: {  }
 id: agroconecta_starter_demand_forecaster
 label: 'AgroConecta Starter: Prediccion de Demanda'
 vertical: agroconecta

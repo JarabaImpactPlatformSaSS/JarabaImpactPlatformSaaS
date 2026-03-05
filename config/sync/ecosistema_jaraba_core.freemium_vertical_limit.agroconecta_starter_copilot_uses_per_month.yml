@@ -1,3 +1,7 @@
+uuid: a08e4f78-89f2-482e-8130-b03e1951cd5a
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_starter_copilot_uses_per_month
 label: 'AgroConecta Starter: Copiloto IA/mes'
 vertical: agroconecta
@@ -8,4 +12,3 @@ description: '30 consultas al copiloto IA mensuales en plan Starter AgroConecta.
 upgrade_message: 'Has usado tus 30 consultas de copiloto IA este mes. Actualiza a Profesional para consultas ilimitadas.'
 expected_conversion: 0.22
 weight: 21
-status: true

@@ -1,3 +1,7 @@
+uuid: a1159baa-ac6f-4e0d-a8a2-6083dcc195e3
+langcode: es
+status: true
+dependencies: {  }
 id: agroconecta_professional
 label: 'AgroConecta - Professional'
 vertical: agroconecta
@@ -18,4 +22,3 @@ limits:
   demand_forecaster: -1
   partner_hub: 0
 description: 'Limites del tier Professional para la vertical AgroConecta.'
-status: true

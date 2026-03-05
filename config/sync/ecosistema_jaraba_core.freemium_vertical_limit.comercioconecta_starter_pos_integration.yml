@@ -1,3 +1,7 @@
+uuid: 0238693b-60a0-4cd4-be51-8b8b39fb0e80
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_starter_pos_integration
 label: 'ComercioConecta Starter: Integracion TPV'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: 'Integracion TPV no disponible en plan Starter ComercioConecta.'
 upgrade_message: 'La integracion con tu TPV/datafono sincroniza ventas fisicas y online. Disponible en Enterprise.'
 expected_conversion: 0.15
 weight: 151
-status: true

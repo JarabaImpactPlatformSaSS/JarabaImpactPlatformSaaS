@@ -1,3 +1,7 @@
+uuid: dcd0a192-a083-4f53-b980-9818bd9c93a0
+langcode: es
+status: true
+dependencies: {  }
 id: empleabilidad_free_job_alerts
 label: 'Empleabilidad Free: Alertas de empleo'
 vertical: empleabilidad
@@ -8,4 +12,3 @@ description: '1 alerta de empleo activa en plan gratuito Empleabilidad.'
 upgrade_message: 'Solo puedes tener 1 alerta de empleo activa en el plan gratuito. Actualiza a Starter para hasta 5 alertas simultáneas.'
 expected_conversion: 0.22
 weight: 360
-status: true

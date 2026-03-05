@@ -1,5 +1,7 @@
+uuid: 44742bff-dc01-47b1-a56d-5da048fd1cd3
 langcode: es
 status: true
+dependencies: {  }
 id: emprendimiento_profesional_hypotheses
 label: 'Emprendimiento Profesional: Hipotesis'
 vertical: emprendimiento

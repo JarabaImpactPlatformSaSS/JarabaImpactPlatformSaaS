@@ -1,5 +1,7 @@
+uuid: 7f072b16-1f84-4324-8f3e-25fd9a26cf97
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_free_searches
 label: 'JarabaLex Free: Busquedas legales'
 vertical: jarabalex

@@ -3,17 +3,23 @@ label: 'ServiciosConecta: Embudo Profesional'
 vertical: serviciosconecta
 avatar: profesional
 steps:
-  - event_type: visit_landing
+  -
+    event_type: visit_landing
     label: 'Visita landing /servicios'
-  - event_type: register
+  -
+    event_type: register
     label: 'Registro como profesional'
-  - event_type: complete_profile
+  -
+    event_type: complete_profile
     label: 'Perfil completo (foto + bio + especialidades)'
-  - event_type: publish_service
+  -
+    event_type: publish_service
     label: 'Primer servicio publicado'
-  - event_type: first_booking
+  -
+    event_type: first_booking
     label: 'Primera reserva recibida'
-  - event_type: recurring_client
+  -
+    event_type: recurring_client
     label: 'Cliente recurrente (3+ reservas)'
 conversion_window_hours: 336
 status: true

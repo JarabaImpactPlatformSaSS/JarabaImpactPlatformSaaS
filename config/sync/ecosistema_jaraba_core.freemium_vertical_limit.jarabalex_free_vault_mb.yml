@@ -1,5 +1,7 @@
+uuid: ad748842-15fd-45c6-aba2-9763b49e34fe
 langcode: es
 status: true
+dependencies: {  }
 id: jarabalex_free_vault_mb
 label: 'JarabaLex Free: Boveda documental (MB)'
 vertical: jarabalex

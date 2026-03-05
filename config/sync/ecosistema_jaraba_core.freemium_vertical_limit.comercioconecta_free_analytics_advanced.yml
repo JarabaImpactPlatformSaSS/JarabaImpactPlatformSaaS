@@ -1,3 +1,7 @@
+uuid: 0157f2f6-3789-41ce-b58a-eee1949c8a22
+langcode: es
+status: true
+dependencies: {  }
 id: comercioconecta_free_analytics_advanced
 label: 'ComercioConecta Free: Analytics Avanzados'
 vertical: comercioconecta
@@ -8,4 +12,3 @@ description: 'Analytics avanzados no disponibles en plan gratuito ComercioConect
 upgrade_message: 'Los analytics avanzados te ayudan a entender tus ventas y clientes. Disponible desde Profesional.'
 expected_conversion: 0.18
 weight: 140
-status: true

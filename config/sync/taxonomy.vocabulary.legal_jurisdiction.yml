@@ -1,3 +1,4 @@
+uuid: da5a100c-e4e7-4532-8f9c-ec8a9a9ff62c
 langcode: es
 status: true
 dependencies:
@@ -8,3 +9,4 @@ name: 'Jurisdiccion Legal'
 vid: legal_jurisdiction
 description: 'Jurisdicciones del sistema judicial espanol y europeo.'
 weight: 0
+new_revision: false

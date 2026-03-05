@@ -1,5 +1,7 @@
+uuid: a27ba691-f140-486f-9b24-4e970fc38df9
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_free_reviews
 label: 'ServiciosConecta Free: Resenas'
 vertical: serviciosconecta

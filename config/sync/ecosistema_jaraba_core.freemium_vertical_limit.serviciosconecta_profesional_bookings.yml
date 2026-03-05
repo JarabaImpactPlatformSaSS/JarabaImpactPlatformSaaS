@@ -1,5 +1,7 @@
+uuid: a5421c85-1270-42d1-a8be-3a515a9361a1
 langcode: es
 status: true
+dependencies: {  }
 id: serviciosconecta_profesional_bookings
 label: 'ServiciosConecta Profesional: Reservas'
 vertical: serviciosconecta

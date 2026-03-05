@@ -1,3 +1,7 @@
+uuid: 8c6b141b-35ea-4af7-ad3a-704fa54873d8
+langcode: es
+status: true
+dependencies: {  }
 id: eca_ten_002
 label: 'Stripe Connect Completado'
 description: 'Al recibir webhook account.updated de Stripe confirmando la activacion de la cuenta Connect del tenant, se actualizan campos del tenant y se habilitan features de pago.'
@@ -8,4 +12,3 @@ hook_function: jaraba_foc_stripe_webhook_account_updated
 spec_reference: 06_Core
 implementation_status: partial
 weight: 11
-status: true

@@ -1,5 +1,7 @@
+uuid: 90ed4de0-713a-4269-83b7-bbaf09b902e6
 langcode: es
 status: true
+dependencies: {  }
 id: comercioconecta_free_products
 label: 'ComercioConecta Free: Productos'
 vertical: comercioconecta

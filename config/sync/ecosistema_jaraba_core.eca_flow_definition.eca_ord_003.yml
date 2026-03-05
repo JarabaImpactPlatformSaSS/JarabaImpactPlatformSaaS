@@ -1,3 +1,7 @@
+uuid: 9a3bf845-9335-4296-a01f-038c1ad4d9b3
+langcode: es
+status: true
+dependencies: {  }
 id: eca_ord_003
 label: 'Reembolso Procesado'
 description: 'Al recibir webhook charge.refunded de Stripe, se actualiza el estado de la orden, se notifica al comprador y productor, y se ajustan las metricas financieras del tenant.'
@@ -8,4 +12,3 @@ hook_function: jaraba_billing_stripe_webhook_refund
 spec_reference: 49_Order
 implementation_status: implemented
 weight: 42
-status: true

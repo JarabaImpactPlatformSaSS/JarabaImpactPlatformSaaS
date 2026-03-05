@@ -1,3 +1,7 @@
+uuid: c3adc817-dfa3-42df-9197-0f3945fb1063
+langcode: es
+status: true
+dependencies: {  }
 id: andalucia_ei_enterprise
 label: 'Andalucía +ei - Enterprise'
 vertical: andalucia_ei
@@ -21,4 +25,3 @@ limits:
   diagnostic_access: 10000
   report_downloads: 10000
 description: 'Limites del tier Enterprise para el vertical Andalucia +ei (institucional, ilimitado).'
-status: true

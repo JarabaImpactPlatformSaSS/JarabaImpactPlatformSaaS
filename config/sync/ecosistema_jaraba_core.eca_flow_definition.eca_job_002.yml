@@ -1,3 +1,7 @@
+uuid: efd3110d-149d-4801-b733-0571830d6b47
+langcode: es
+status: true
+dependencies: {  }
 id: eca_job_002
 label: 'Job Alerts Matching'
 description: 'Cron job diario (9:00) que cruza nuevas ofertas publicadas con perfiles de candidatos con alertas activas. Envia email personalizado con ofertas matching al perfil.'
@@ -8,4 +12,3 @@ hook_function: jaraba_job_board_cron_job_alerts
 spec_reference: 35_JobBoard
 implementation_status: implemented
 weight: 61
-status: true

@@ -1,3 +1,7 @@
+uuid: 2a9869c6-31fa-4adc-959d-f8d37f894daa
+langcode: es
+status: true
+dependencies: {  }
 id: serviciosconecta_profesional_reviews_visible
 label: 'ServiciosConecta Profesional: Resenas visibles'
 vertical: serviciosconecta
@@ -6,6 +10,5 @@ feature_key: reviews_visible
 limit_value: -1
 description: 'Resenas ilimitadas visibles en plan Profesional ServiciosConecta.'
 upgrade_message: ''
-expected_conversion: 0
+expected_conversion: 0.0
 weight: 242
-status: true

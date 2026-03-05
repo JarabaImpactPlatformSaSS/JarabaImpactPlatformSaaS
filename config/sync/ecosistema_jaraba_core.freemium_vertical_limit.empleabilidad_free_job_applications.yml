@@ -1,5 +1,7 @@
+uuid: dccaf155-0143-44b7-9d34-3f0e12d4d072
 langcode: es
 status: true
+dependencies: {  }
 id: empleabilidad_free_job_applications
 label: 'Empleabilidad Free: Aplicaciones empleo'
 vertical: empleabilidad
