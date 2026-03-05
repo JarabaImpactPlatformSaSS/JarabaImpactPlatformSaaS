@@ -134,3 +134,44 @@ function jaraba_site_builder_update_10005(array &$sandbox): void {
     throw new \RuntimeException('Failed to make site_config translatable: ' . $e->getMessage(), 0, $e);
   }
 }
+
+/**
+ * Install metatag field on site_config (added by metatag module).
+ */
+function jaraba_site_builder_update_10006(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+
+  try {
+    if (!$updateManager->getEntityType('site_config')) {
+      return 'site_config entity type not found — skipped.';
+    }
+
+    $existing = $updateManager->getFieldStorageDefinition('metatag', 'site_config');
+    if ($existing) {
+      return 'metatag field already installed.';
+    }
+
+    // Get the field definition from EntityFieldManager (provided by metatag module).
+    /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $fieldManager */
+    $fieldManager = \Drupal::service('entity_field.manager');
+    $fieldManager->clearCachedFieldDefinitions();
+    $fields = $fieldManager->getBaseFieldDefinitions('site_config');
+
+    if (!isset($fields['metatag'])) {
+      return 'metatag field not defined for site_config — metatag module may not be enabled.';
+    }
+
+    $metatagField = $fields['metatag'];
+    $metatagField->setName('metatag');
+    $metatagField->setTargetEntityTypeId('site_config');
+
+    $updateManager->installFieldStorageDefinition(
+      'metatag', 'site_config', 'metatag', $metatagField
+    );
+
+    return 'Installed metatag field on site_config.';
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+}

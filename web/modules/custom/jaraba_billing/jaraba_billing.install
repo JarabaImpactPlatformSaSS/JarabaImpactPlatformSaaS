@@ -227,3 +227,50 @@ function jaraba_billing_update_10002(): string {
 
   return 'Created: ' . implode(', ', $created);
 }
+
+/**
+ * Re-install synced_to_stripe/stripe_synced_at fields (retry for production).
+ */
+function jaraba_billing_update_10003(): string {
+  $updateManager = \Drupal::entityDefinitionUpdateManager();
+  $installed = [];
+
+  try {
+    if (!$updateManager->getEntityType('billing_usage_record')) {
+      return 'billing_usage_record entity type not found — skipped.';
+    }
+
+    // synced_to_stripe.
+    $existing = $updateManager->getFieldStorageDefinition('synced_to_stripe', 'billing_usage_record');
+    if (!$existing) {
+      $field = \Drupal\Core\Field\BaseFieldDefinition::create('boolean')
+        ->setName('synced_to_stripe')
+        ->setTargetEntityTypeId('billing_usage_record')
+        ->setLabel(t('Sincronizado con Stripe'))
+        ->setDefaultValue(FALSE);
+      $updateManager->installFieldStorageDefinition(
+        'synced_to_stripe', 'billing_usage_record', 'jaraba_billing', $field
+      );
+      $installed[] = 'synced_to_stripe';
+    }
+
+    // stripe_synced_at.
+    $existing = $updateManager->getFieldStorageDefinition('stripe_synced_at', 'billing_usage_record');
+    if (!$existing) {
+      $field = \Drupal\Core\Field\BaseFieldDefinition::create('timestamp')
+        ->setName('stripe_synced_at')
+        ->setTargetEntityTypeId('billing_usage_record')
+        ->setLabel(t('Fecha sincronizacion Stripe'))
+        ->setDefaultValue(0);
+      $updateManager->installFieldStorageDefinition(
+        'stripe_synced_at', 'billing_usage_record', 'jaraba_billing', $field
+      );
+      $installed[] = 'stripe_synced_at';
+    }
+  }
+  catch (\Throwable $e) {
+    return 'Error: ' . $e->getMessage();
+  }
+
+  return $installed ? 'Installed: ' . implode(', ', $installed) : 'Fields already exist.';
+}
